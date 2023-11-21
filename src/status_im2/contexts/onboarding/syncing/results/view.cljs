@@ -1,23 +1,25 @@
 (ns status-im2.contexts.onboarding.syncing.results.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.onboarding.syncing.results.style :as style]
-            [status-im2.contexts.syncing.device.view :as device]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [react-native.reanimated :as reanimated]
-            [status-im2.constants :as constants]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.syncing.results.style :as style]
+    [status-im2.contexts.syncing.device.view :as device]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn page-title
   []
-  [quo/title
-   {:title                        (i18n/label :t/sync-devices-complete-title)
-    :title-accessibility-label    :sync-devices-title
-    :subtitle                     (i18n/label :t/sync-devices-complete-sub-title)
-    :subtitle-accessibility-label :sync-devices-complete-sub-title}])
+  [quo/text-combinations
+   {:container-style                 {:margin-horizontal 20}
+    :title                           (i18n/label :t/sync-devices-complete-title)
+    :title-accessibility-label       :sync-devices-title
+    :description                     (i18n/label :t/sync-devices-complete-sub-title)
+    :description-accessibility-label :sync-devices-complete-sub-title}])
 
 (defn current-device
   [installation]
@@ -52,7 +54,7 @@
      {:on-press            (fn []
                              (when on-press
                                (on-press))
-                             (rf/dispatch [:open-modal :enable-notifications]))
+                             (rf/dispatch [:onboarding-2/navigate-to-enable-biometrics]))
       :accessibility-label :continue-button
       :customization-color profile-color
       :container-style     style/continue-button}

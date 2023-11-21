@@ -1,11 +1,11 @@
 (ns status-im2.contexts.contacts.events
   (:require
     [oops.core :as oops]
-    [status-im.utils.types :as types]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (defn <-rpc-js
   [^js js-contact]
@@ -15,7 +15,7 @@
    :secondary-name        (.-secondaryName js-contact)
    :ens-name              (.-name js-contact)
    :nickname              (.-localNickname js-contact)
-   :images                (types/js->clj (oops/oget js-contact "images"))
+   :images                (transforms/js->clj (oops/oget js-contact "images"))
    :ens-verified          (oops/oget js-contact "ensVerified")
    :contact-request-state (oops/oget js-contact "contactRequestState")
    :last-updated          (oops/oget js-contact "lastUpdated")
@@ -129,3 +129,4 @@
                     :on-success  on-success
                     :js-response true
                     :on-error    #(log/error "failed to unblock contact" % contact-id)}]})
+

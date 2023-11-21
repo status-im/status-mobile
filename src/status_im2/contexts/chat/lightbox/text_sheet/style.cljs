@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.lightbox.text-sheet.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.lightbox.constants :as constants]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.lightbox.constants :as constants]))
 
 (defn sheet-container
   [{:keys [height top]}]
@@ -12,10 +13,11 @@
     :left     0
     :right    0}))
 
-(def text-style
+(defn text-style
+  [expanding-message?]
   {:color             colors/white
    :margin-horizontal 20
-   :margin-bottom     constants/text-margin
+   :align-items       (when-not expanding-message? :center)
    :flex-grow         1})
 
 (def bar-container
@@ -30,30 +32,37 @@
   {:width            32
    :height           4
    :border-radius    100
-   :background-color colors/white-opa-40
-   :border-width     0.5
-   :border-color     colors/neutral-100})
+   :background-color colors/white-opa-10})
 
 (defn top-gradient
-  [{:keys [gradient-opacity]} insets]
-  (reanimated/apply-animations-to-style
-   {:opacity gradient-opacity}
-   {:position :absolute
-    :left     0
-    :right    0
-    :top      (- (+ (:top insets)
-                    constants/top-view-height))
-    :height   (+ (:top insets)
-                 constants/top-view-height
-                 constants/bar-container-height
-                 constants/text-margin
-                 (* constants/line-height 2))
-    :z-index  1}))
+  [{:keys [derived-value]} {:keys [top]} insets max-height]
+  (let [initial-top (- (+ (:top insets)
+                          constants/top-view-height))
+        height      (+ (:top insets)
+                       constants/top-view-height
+                       (* constants/line-height 2))]
+    (reanimated/apply-animations-to-style
+     {:opacity (reanimated/interpolate derived-value
+                                       [max-height (+ max-height constants/line-height)]
+                                       [0 1])
+      :top     (reanimated/interpolate top
+                                       [0 (- max-height)]
+                                       [initial-top (- initial-top max-height)]
+                                       {:extrapolateLeft  "clamp"
+                                        :extrapolateRight "clamp"})}
+     {:position :absolute
+      :left     0
+      :height   height
+      :right    0
+      :z-index  1})))
 
-(def bottom-gradient
-  {:position :absolute
-   :left     0
-   :right    0
-   :height   28
-   :bottom   0
-   :z-index  1})
+(defn bottom-gradient
+  [bottom-inset]
+  (let [gradient-distance (+ constants/small-list-height bottom-inset)]
+    {:position :absolute
+     :left     0
+     :right    0
+     :height   (+ gradient-distance (* 2 constants/line-height))
+     :bottom   (- gradient-distance)
+     :opacity  0.8
+     :z-index  1}))

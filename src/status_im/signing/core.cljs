@@ -1,27 +1,30 @@
 (ns status-im.signing.core
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.tokens :as tokens]
-            [utils.i18n :as i18n]
-            [status-im.keycard.card :as keycard.card]
-            [status-im.keycard.common :as keycard.common]
-            [native-module.core :as native-module]
-            [status-im.signing.eip1559 :as eip1559]
-            [status-im.signing.keycard :as signing.keycard]
-            [utils.re-frame :as rf]
-            [status-im.utils.hex :as utils.hex]
-            [utils.money :as money]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [status-im.wallet.core :as wallet]
-            [status-im.wallet.prices :as prices]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.keycard.card :as keycard.card]
+    [status-im.keycard.common :as keycard.common]
+    [status-im.signing.eip1559 :as eip1559]
+    [status-im.signing.keycard :as signing.keycard]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.hex :as utils.hex]
+    [status-im.utils.utils :as utils]
+    [status-im.wallet.core :as wallet]
+    [status-im.wallet.prices :as prices]
+    [status-im.wallet.utils :as wallet.utils]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.i18n :as i18n]
+    [utils.money :as money]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -64,7 +67,7 @@
   (let [to (utils.hex/normalize-hex to)]
     (or
      (get-in db [:contacts/contacts to])
-     {:address (ethereum/normalized-hex to)})))
+     {:address (address/normalized-hex to)})))
 
 (rf/defn change-password
   {:events [:signing.ui/password-is-changed]}
@@ -80,8 +83,9 @@
   [{{:signing/keys [sign tx] :as db} :db}]
   (let [{{:keys [data typed? from v4]} :message} tx
         {:keys [in-progress? password]}          sign
-        from                                     (or from (ethereum/default-address db))
-        hashed-password                          (ethereum/sha3 (security/safe-unmask-data password))]
+        from                                     (or from (wallet.utils/default-address db))
+        hashed-password                          (native-module/sha3 (security/safe-unmask-data
+                                                                      password))]
     (when-not in-progress?
       (merge
        {:db (update db :signing/sign assoc :error nil :in-progress? true)}
@@ -100,40 +104,87 @@
 
 (rf/defn send-transaction
   {:events [:signing.ui/sign-is-pressed]}
-  [{{:signing/keys [sign tx] :as db} :db :as cofx}]
-  (let [{:keys [in-progress? password]}      sign
+  [{{:signing/keys [sign tx] :ens/keys [registration] :as db} :db :as cofx}]
+  (let [{:keys [in-progress? password]}          sign
         {:keys [tx-obj gas gasPrice maxPriorityFeePerGas
-                maxFeePerGas message nonce]} tx
-        hashed-password                      (ethereum/sha3 (security/safe-unmask-data password))]
+                maxFeePerGas message nonce]}     tx
+        hashed-password                          (native-module/sha3 (security/safe-unmask-data
+                                                                      password))
+        {:keys [action username custom-domain?]} registration
+        {:keys [public-key]}                     (:profile/profile db)
+        chain-id                                 (chain/chain-id db)]
     (if message
       (sign-message cofx)
-      (let [tx-obj-to-send (merge tx-obj
-                                  (when gas
-                                    {:gas (str "0x" (native-module/number-to-hex gas))})
-                                  (when gasPrice
-                                    {:gasPrice (str "0x" (native-module/number-to-hex gasPrice))})
-                                  (when nonce
-                                    {:nonce (str "0x" (native-module/number-to-hex nonce))})
-                                  (when maxPriorityFeePerGas
-                                    {:maxPriorityFeePerGas (str "0x"
-                                                                (native-module/number-to-hex
-                                                                 (js/parseInt maxPriorityFeePerGas)))})
-                                  (when maxFeePerGas
-                                    {:maxFeePerGas (str "0x"
-                                                        (native-module/number-to-hex
-                                                         (js/parseInt maxFeePerGas)))}))]
+      (let [tx-obj-to-send  (merge tx-obj
+                                   (when gas
+                                     {:gas (str "0x" (native-module/number-to-hex gas))})
+                                   (when gasPrice
+                                     {:gasPrice (str "0x" (native-module/number-to-hex gasPrice))})
+                                   (when nonce
+                                     {:nonce (str "0x" (native-module/number-to-hex nonce))})
+                                   (when maxPriorityFeePerGas
+                                     {:maxPriorityFeePerGas (str "0x"
+                                                                 (native-module/number-to-hex
+                                                                  (js/parseInt maxPriorityFeePerGas)))})
+                                   (when maxFeePerGas
+                                     {:maxFeePerGas (str "0x"
+                                                         (native-module/number-to-hex
+                                                          (js/parseInt maxFeePerGas)))}))
+            cb              #(re-frame/dispatch
+                              [:signing/transaction-completed %
+                               tx-obj-to-send hashed-password])
+            watch-ens-tx-fn #(re-frame/dispatch
+                              [:transactions/watch-transaction
+                               %
+                               {:trigger-fn
+                                (fn [_ {:keys [hash type]}]
+                                  (and (= hash %)
+                                       (contains? #{:outbound :failed} type)))
+                                :on-trigger
+                                (fn [{:keys [type]}]
+                                  (case type
+                                    :outbound (do (rf/dispatch [:ens/clear-registration %])
+                                                  (rf/dispatch [:ens/save-username custom-domain?
+                                                                username false]))
+
+                                    :failed   (rf/dispatch [:ens/update-ens-tx-state :failure username
+                                                            custom-domain? %])
+                                    nil))}])]
         (when-not in-progress?
-          {:db                          (update db :signing/sign assoc :error nil :in-progress? true)
-           :signing/send-transaction-fx {:tx-obj          tx-obj-to-send
-                                         :hashed-password hashed-password
-                                         :cb              #(re-frame/dispatch
-                                                            [:signing/transaction-completed %
-                                                             tx-obj-to-send hashed-password])}})))))
+          (cond-> {:db (update db :signing/sign assoc :error nil :in-progress? true)}
+            (nil? action)                                 (assoc :signing/send-transaction-fx
+                                                                 {:tx-obj          tx-obj-to-send
+                                                                  :hashed-password hashed-password
+                                                                  :cb              cb})
+            (= action constants/ens-action-type-register) (assoc :json-rpc/call
+                                                                 [{:method "ens_register"
+                                                                   :params [chain-id tx-obj-to-send
+                                                                            hashed-password username
+                                                                            public-key]
+                                                                   :on-success
+                                                                   #(do
+                                                                      (cb (types/clj->json
+                                                                           {:result %}))
+                                                                      (watch-ens-tx-fn %))
+                                                                   :on-error #(cb (types/clj->json
+                                                                                   {:error %}))}])
+            (= action
+               constants/ens-action-type-set-pub-key)     (assoc :json-rpc/call
+                                                                 [{:method     "ens_setPubKey"
+                                                                   :params     [chain-id tx-obj-to-send
+                                                                                hashed-password username
+                                                                                public-key]
+                                                                   :on-success #(do (cb (types/clj->json
+                                                                                         {:result %}))
+                                                                                    (watch-ens-tx-fn %))
+                                                                   :on-error   #(cb (types/clj->json
+                                                                                     {:error
+                                                                                      %}))}])))))))
 
 (rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash
    {:keys [value gasPrice maxFeePerGas maxPriorityFeePerGas gas data to from hash]} symbol amount]
-  (let [token       (tokens/symbol->token (:wallet/all-tokens db) symbol)
+  (let [token       (tokens/symbol->token (:wallet-legacy/all-tokens db) symbol)
         from        (eip55/address->checksum from)
         ;;if there is a hash in the tx object that means we resending transaction
         old-tx-hash hash
@@ -155,19 +206,10 @@
                      :tip-cap   maxPriorityFeePerGas
                      :gas-limit gas-limit}]
     (log/info "[signing] prepare-unconfirmed-transaction" tx)
-    {:db            (-> db
-                        ;;remove old transaction, because we replace it with the new one
-                        (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
-                        (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))
-     :json-rpc/call [{:method     "wallet_storePendingTransaction"
-                      :params     [(-> tx
-                                       (dissoc :gas-price :gas-limit)
-                                       (assoc :gasPrice
-                                              (money/to-fixed (money/bignumber gasPrice))
-                                              :gasLimit (money/to-fixed (money/bignumber gas)))
-                                       clj->js)]
-                      :on-success #(log/info "pending transfer is saved")
-                      :on-error   #(log/info "pending transfer was not saved" %)}]}))
+    {:db (-> db
+             ;;remove old transaction, because we replace it with the new one
+             (update-in [:wallet-legacy :accounts from :transactions] dissoc old-tx-hash)
+             (assoc-in [:wallet-legacy :accounts from :transactions new-tx-hash] tx))}))
 
 (defn get-method-type
   [data]
@@ -181,7 +223,7 @@
 
 (defn get-transfer-token
   [db to data]
-  (let [{:keys [decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
+  (let [{:keys [decimals] :as token} (tokens/address->token (:wallet-legacy/all-tokens db) to)]
     (when (and token data (string? data))
       (when-let [type (get-method-type data)]
         (let [[address value _] (native-module/decode-parameters
@@ -200,10 +242,10 @@
              :symbol   (:symbol token)}))))))
 
 (defn parse-tx-obj
-  [db {:keys [from to value data cancel? hash]}]
+  [db {:keys [from to value data cancel?] :as tx}]
   (merge {:from    {:address from}
           :cancel? cancel?
-          :hash    hash}
+          :hash    (:hash tx)}
          (if (nil? to)
            {:contact {:name (i18n/label :t/new-contract)}}
            (let [eth-value  (when value (money/bignumber value))
@@ -216,14 +258,14 @@
                 :symbol  :ETH
                 :value   value
                 :amount  (str eth-amount)
-                :token   (tokens/asset-for (:wallet/all-tokens db)
-                                           (ethereum/get-current-network db)
+                :token   (tokens/asset-for (:wallet-legacy/all-tokens db)
+                                           (chain/get-current-network db)
                                            :ETH)}
                (not (nil? token))
                token
                :else
                {:to      to
-                :contact {:address (ethereum/normalized-hex to)}})))))
+                :contact {:address (address/normalized-hex to)}})))))
 
 (defn prepare-tx
   [db {{:keys [data gas gasPrice maxFeePerGas maxPriorityFeePerGas] :as tx-obj} :tx-obj :as tx}]
@@ -237,6 +279,18 @@
                             (money/bignumber maxFeePerGas))
     :maxPriorityFeePerGas (when maxPriorityFeePerGas
                             (money/bignumber maxPriorityFeePerGas))}))
+
+(defn hex-to-utf8
+  [s]
+  (let [utf8 (native-module/hex-to-utf8 s)]
+    (if (empty? utf8)
+      nil
+      utf8)))
+
+(defn hex->text
+  "Converts a hexstring to UTF8 text."
+  [data]
+  (or (hex-to-utf8 data) data))
 
 (rf/defn show-sign
   [{:keys [db] :as cofx}]
@@ -259,7 +313,7 @@
                                                    :formatted-data (if typed?
                                                                      (types/js->pretty-json
                                                                       (types/json->js data))
-                                                                     (ethereum/hex->text data))
+                                                                     (hex->text data))
                                                    :keycard-step   (when pinless? :connect)})
         :show-signing-sheet nil}
        #(when-not wallet-set-up-passed?
@@ -298,9 +352,9 @@
          {:db (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
           :signing/update-gas-price
           {:success-callback #(re-frame/dispatch
-                               [:wallet.send/update-gas-price-success :signing/tx % tx-obj])
+                               [:wallet-legacy.send/update-gas-price-success :signing/tx % tx-obj])
            :error-callback   #(re-frame/dispatch [:signing/update-gas-price-error %])
-           :network-id       (get-in (ethereum/current-network db)
+           :network-id       (get-in (chain/current-network db)
                                      [:config :NetworkId])}})))))
 
 (rf/defn check-queue
@@ -317,7 +371,7 @@
                     ;; big-int
                     :params [chat-id (str value) contract transaction-hash
                              (or (:result (types/json->clj signature))
-                                 (ethereum/normalized-hex signature))]
+                                 (address/normalized-hex signature))]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
@@ -328,7 +382,7 @@
   {:json-rpc/call [{:method "wakuext_acceptRequestTransaction"
                     :params [transaction-hash message-id
                              (or (:result (types/json->clj signature))
-                                 (ethereum/normalized-hex signature))]
+                                 (address/normalized-hex signature))]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
@@ -431,6 +485,7 @@
   {:events       [:signing/transaction-completed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx response tx-obj hashed-password]
+  (log/info "transaction-completed" "tx-obj" tx-obj "response" response)
   (let [cofx-in-progress-false (assoc-in cofx [:db :signing/sign :in-progress?] false)
         {:keys [result error]} (types/json->clj response)]
     (if error
@@ -457,7 +512,7 @@
 
 (defn normalize-tx-obj
   [db tx]
-  (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (ethereum/default-address db)))))
+  (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (wallet.utils/default-address db)))))
 
 (rf/defn sign
   "Signing transaction or message, shows signing sheet
@@ -473,14 +528,14 @@
             (check-queue)))
 
 (rf/defn sign-transaction-button-clicked-from-chat
-  {:events [:wallet.ui/sign-transaction-button-clicked-from-chat]}
+  {:events [:wallet-legacy.ui/sign-transaction-button-clicked-from-chat]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (native-module/number-to-hex amount))
-        to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
+        to-norm                  (address/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)
         identity                 (:current-chat-id db)
-        db                       (dissoc db :wallet/prepare-transaction :signing/edit-fee)]
+        db                       (dissoc db :wallet-legacy/prepare-transaction :signing/edit-fee)]
     (if to-norm
       (rf/merge
        cofx
@@ -491,7 +546,7 @@
                          :chat-id  identity
                          :command? true
                          :value    amount-hex}
-                        {:to       (ethereum/normalized-hex address)
+                        {:to       (address/normalized-hex address)
                          :from     from-address
                          :chat-id  identity
                          :command? true
@@ -508,15 +563,15 @@
          :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})))
 
 (rf/defn sign-transaction-button-clicked-from-request
-  {:events [:wallet.ui/sign-transaction-button-clicked-from-request]}
+  {:events [:wallet-legacy.ui/sign-transaction-button-clicked-from-request]}
   [{:keys [db] :as cofx} {:keys [amount from token]}]
-  (let [{:keys [request-parameters chat-id]} (:wallet/prepare-transaction db)
+  (let [{:keys [request-parameters chat-id]} (:wallet-legacy/prepare-transaction db)
         {:keys [symbol address]}             token
         amount-hex                           (str "0x" (native-module/number-to-hex amount))
         to-norm                              (:address request-parameters)
         from-address                         (:address from)]
     (rf/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
+              {:db (dissoc db :wallet-legacy/prepare-transaction :signing/edit-fee)}
               (fn [cofx]
                 (sign
                  cofx
@@ -527,7 +582,7 @@
                              :chat-id    chat-id
                              :command?   true
                              :value      amount-hex}
-                            {:to         (ethereum/normalized-hex address)
+                            {:to         (address/normalized-hex address)
                              :from       from-address
                              :command?   true
                              :message-id (:id request-parameters)
@@ -535,14 +590,14 @@
                              :data       (native-module/encode-transfer to-norm amount-hex)})})))))
 
 (rf/defn sign-transaction-button-clicked
-  {:events [:wallet.ui/sign-transaction-button-clicked]}
+  {:events [:wallet-legacy.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice maxFeePerGas maxPriorityFeePerGas]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (native-module/number-to-hex amount))
-        to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
+        to-norm                  (address/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)]
     (rf/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
+              {:db (dissoc db :wallet-legacy/prepare-transaction :signing/edit-fee)}
               (sign
                {:tx-obj (merge (if (eip1559/sync-enabled?)
                                  {:from                 from-address
@@ -557,15 +612,15 @@
                                (if (= symbol :ETH)
                                  {:to    to-norm
                                   :value amount-hex}
-                                 {:to   (ethereum/normalized-hex address)
+                                 {:to   (address/normalized-hex address)
                                   :data (native-module/encode-transfer to-norm amount-hex)}))}))))
 
 (re-frame/reg-fx
  :signing/get-transaction-by-hash-fx
- (fn [[hash handler]]
+ (fn [[tx-hash handler]]
    (json-rpc/call
     {:method     "eth_getTransactionByHash"
-     :params     [hash]
+     :params     [tx-hash]
      :on-success handler})))
 
 (rf/defn cancel-transaction-pressed

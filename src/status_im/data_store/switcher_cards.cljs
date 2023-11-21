@@ -1,8 +1,9 @@
 (ns status-im.data-store.switcher-cards
-  (:require [clojure.set :as set]
-            [clojure.walk :as walk]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.set :as set]
+    [clojure.walk :as walk]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn <-rpc
   [switcher-cards]

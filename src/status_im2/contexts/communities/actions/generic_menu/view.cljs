@@ -1,8 +1,9 @@
 (ns status-im2.contexts.communities.actions.generic-menu.view
-  (:require [quo2.core :as quo]
-            [status-im2.contexts.communities.actions.generic-menu.style :as style]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.communities.actions.generic-menu.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [id title]} children]
@@ -12,7 +13,7 @@
       [quo/text
        {:accessibility-label :communities-join-community
         :weight              :semi-bold
-        :size                :heading-1}
+        :size                :heading-2}
        title]]
      [rn/view {:style style/community-tag}
       [quo/context-tag

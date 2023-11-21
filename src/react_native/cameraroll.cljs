@@ -1,8 +1,9 @@
 (ns react-native.cameraroll
-  (:require ["@react-native-community/cameraroll" :as CameraRoll]
-            [react-native.fs :as fs]
-            [utils.transforms :as transforms]
-            [taoensso.timbre :as log]))
+  (:require
+    ["@react-native-camera-roll/camera-roll" :refer [CameraRoll]]
+    [react-native.fs :as fs]
+    [taoensso.timbre :as log]
+    [utils.transforms :as transforms]))
 
 (defn get-photos
   [opts callback]
@@ -21,3 +22,9 @@
   (-> (.save CameraRoll (clj->js path))
       (.then #(fs/unlink path))
       (.catch #(fs/unlink path))))
+
+(defn get-photos-count-ios
+  [cb]
+  (-> (.getPhotosCountiOS CameraRoll)
+      (.then #(cb %))
+      (.catch #(js/console.error %))))

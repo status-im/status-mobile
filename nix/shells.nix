@@ -18,7 +18,11 @@ let
 
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
-      buildInputs = with pkgs; [ clojure flock maven openjdk ];
+      buildInputs = with pkgs; [
+        clojure flock maven openjdk
+        # lint specific utilities
+        babashka clj-kondo clojure-lsp ripgrep zprint
+      ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''
         export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"
@@ -38,7 +42,7 @@ let
 
     # for running gradle by hand
     gradle = mkShell {
-      buildInputs = with pkgs; [ gradle maven goMavenResolver ];
+      buildInputs = with pkgs; [ gradle maven goMavenResolver htmlq ];
       shellHook = ''
         export STATUS_GO_ANDROID_LIBDIR="DUMMY"
         export STATUS_NIX_MAVEN_REPO="${pkgs.deps.gradle}"

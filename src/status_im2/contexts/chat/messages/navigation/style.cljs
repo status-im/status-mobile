@@ -1,20 +1,10 @@
 (ns status-im2.contexts.chat.messages.navigation.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defonce ^:const navigation-bar-height 100)
 (defonce ^:const header-offset 56)
-
-(defn button-container
-  [position]
-  (merge
-   {:width            32
-    :height           32
-    :border-radius    10
-    :justify-content  :center
-    :align-items      :center
-    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
-   position))
 
 (defn background-view
   [theme]
@@ -52,18 +42,25 @@
      {:opacity animation})
    blur-view))
 
-(def navigation-view
-  {:z-index 1})
+(defn navigation-view
+  [loaded?]
+  {:z-index  1
+   :top      0
+   :right    0
+   :left     0
+   :position :absolute
+   :opacity  (if loaded? 1 0)})
 
 (def header-container
-  {:position       :absolute
-   :top            header-offset
-   :left           0
-   :right          0
-   :padding-bottom 8
-   :display        :flex
-   :flex-direction :row
-   :overflow       :hidden})
+  {:position           :absolute
+   :top                header-offset
+   :left               0
+   :right              0
+   :padding-bottom     8
+   :padding-horizontal 20
+   :display            :flex
+   :flex-direction     :row
+   :overflow           :hidden})
 
 (def header
   {:flex 1})

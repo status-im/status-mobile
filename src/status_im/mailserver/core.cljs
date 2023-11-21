@@ -1,13 +1,14 @@
 (ns ^{:doc "Mailserver events and API"} status-im.mailserver.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.node.core :as node]
-            [utils.re-frame :as rf]
-            [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.node.core :as node]
+    [status-im.utils.mobile-sync :as mobile-network-utils]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 ;; How do mailserver work ?
 ;;

@@ -1,16 +1,18 @@
 (ns status-im.ui.screens.communities.members
-  (:require [quo.core :as quo]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.communities.core :as communities]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-            [utils.re-frame :as rf]))
+  (:require
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.communities.core :as communities]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -20,7 +22,7 @@
 (defn member-sheet
   [primary-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users? admin?]
   [:<>
-   [quo/list-item
+   [list.item/list-item
     {:theme               :accent
      :icon                [chat-icon/contact-icon-contacts-tab member]
      :title               primary-name
@@ -31,21 +33,21 @@
    (when can-kick-users?
      [:<>
       [quo/separator {:style {:margin-vertical 8}}]
-      [quo/list-item
+      [list.item/list-item
        {:theme    :negative
         :icon     :main-icons/arrow-left
         :title    (i18n/label :t/member-kick)
         :on-press #(rf/dispatch [::communities/member-kick community-id public-key])}]])
    (when can-manage-users?
      [:<>
-      [quo/list-item
+      [list.item/list-item
        {:theme    :negative
         :icon     :main-icons/cancel
         :title    (i18n/label :t/member-ban)
         :on-press #(rf/dispatch [::communities/member-ban community-id public-key])}]])
    (when admin?
      [:<>
-      [quo/list-item
+      [list.item/list-item
        {:theme    :accent
         :icon     :main-icons/make-admin
         :title    (i18n/label :t/make-moderator)
@@ -61,13 +63,13 @@
            admin?]}]
   (let [member                        (rf/sub [:contacts/contact-by-identity public-key])
         [primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity public-key])]
-    [quo/list-item
+    [list.item/list-item
      {:title               primary-name
       :subtitle            secondary-name
       :accessibility-label :member-item
       :icon                [chat-icon/profile-photo-plus-dot-view
                             {:public-key public-key
-                             :photo-path (multiaccounts/displayed-photo member)}]
+                             :photo-path (profile.utils/photo member)}]
       :accessory           (when (not= public-key my-public-key)
                              [quo/button
                               {:on-press
@@ -83,7 +85,7 @@
 (defn header
   [community-id]
   [:<>
-   [quo/list-item
+   [list.item/list-item
     {:icon                :main-icons/share
      :title               (i18n/label :t/invite-people)
      :accessibility-label :community-invite-people
@@ -96,7 +98,7 @@
   (let [requests       (rf/sub [:communities/requests-to-join-for-community community-id])
         requests-count (count requests)]
     [:<>
-     [quo/list-item
+     [list.item/list-item
       {:chevron true
        :accessory
        [react/view {:flex-direction :row}

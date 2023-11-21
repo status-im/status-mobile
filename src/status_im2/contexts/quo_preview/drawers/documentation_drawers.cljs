@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.drawers.documentation-drawers
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (def descriptor
   [{:key  :title
@@ -71,7 +72,7 @@
      [quo/text {:style text-style}
       "Group chats are always end-to-end encrypted with secure cryptographic keys. Only the group chat members will have access to the messages in it. Status doesn't have the keys and can't access any messages by design."]]))
 
-(defn documenation-drawer
+(defn documentation-drawer
   [title show-button? button-label expanded? shell?]
   [quo/documentation-drawers
    {:title           title
@@ -99,11 +100,11 @@
         {:container-style {:margin-horizontal 40
                            :margin-bottom     20}
          :on-press        #(rf/dispatch [:show-bottom-sheet
-                                         {:content     (constantly [documenation-drawer @title
+                                         {:content     (constantly [documentation-drawer @title
                                                                     @show-button?
                                                                     @button-label expanded? @shell?])
                                           :expandable? @show-button?
                                           :shell?      @shell?
                                           :expanded?   @expanded?}])}
         "Open drawer"]
-       [documenation-drawer @title @show-button? @button-label expanded?]])))
+       [documentation-drawer @title @show-button? @button-label expanded?]])))

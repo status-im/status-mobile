@@ -1,128 +1,180 @@
 (ns status-im2.contexts.quo-preview.main
   (:refer-clojure :exclude [filter])
   (:require
-    [quo2.core :as quo]
-    [reagent.core :as reagent]
+    [quo.core :as quo]
     [react-native.core :as rn]
-    [status-im2.contexts.quo-preview.style :as style]
-    [status-im2.common.theme.core :as theme]
-    [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.animated-header-list.animated-header-list
+     :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
+    [status-im2.contexts.quo-preview.avatars.collection-avatar :as collection-avatar]
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
-    [status-im2.contexts.quo-preview.selectors.reactions :as selector-reactions]
-    [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
+    [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as
+     wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
+    [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.buttons.button :as button]
-    [status-im2.contexts.quo-preview.buttons.composer-button :as composer-button]
-    [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
+    [status-im2.contexts.quo-preview.buttons.composer-button :as
+     composer-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
-    [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as
+     predictive-keyboard]
+    [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.wallet-button :as wallet-button]
     [status-im2.contexts.quo-preview.buttons.wallet-ctas :as wallet-ctas]
     [status-im2.contexts.quo-preview.calendar.calendar :as calendar]
     [status-im2.contexts.quo-preview.calendar.calendar-day :as calendar-day]
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
-    [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
-    [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
+    [status-im2.contexts.quo-preview.code.snippet-preview :as code-snippet-preview]
+    [status-im2.contexts.quo-preview.colors.color :as color]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
-    [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
-    [status-im2.contexts.quo-preview.community.community-membership-list-view :as
-     community-membership-list-view]
+    [status-im2.contexts.quo-preview.common :as common]
+    [status-im2.contexts.quo-preview.community.channel-actions :as
+     channel-actions]
+    [status-im2.contexts.quo-preview.community.community-card-view :as
+     community-card]
+    [status-im2.contexts.quo-preview.community.community-membership-list-view
+     :as community-membership-list-view]
+    [status-im2.contexts.quo-preview.community.community-stat :as community-stat]
     [status-im2.contexts.quo-preview.community.discover-card :as discover-card]
     [status-im2.contexts.quo-preview.community.token-gating :as token-gating]
     [status-im2.contexts.quo-preview.counter.counter :as counter]
     [status-im2.contexts.quo-preview.counter.step :as step]
     [status-im2.contexts.quo-preview.dividers.date :as divider-date]
     [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
+    [status-im2.contexts.quo-preview.dividers.divider-line :as divider-line]
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
-    [status-im2.contexts.quo-preview.dividers.strength-divider :as strength-divider]
+    [status-im2.contexts.quo-preview.dividers.strength-divider :as
+     strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
-    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documenation-drawers]
+    [status-im2.contexts.quo-preview.drawers.bottom-actions :as bottom-actions]
+    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documentation-drawers]
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
-    [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
+    [status-im2.contexts.quo-preview.drawers.drawer-top :as drawer-top]
+    [status-im2.contexts.quo-preview.drawers.permission-drawers :as
+     permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
-    [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as network-dropdown]
+    [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as
+     network-dropdown]
+    [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
+    [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
+    [status-im2.contexts.quo-preview.graph.interactive-graph :as
+     interactive-graph]
+    [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
+    [status-im2.contexts.quo-preview.inputs.address-input :as address-input]
     [status-im2.contexts.quo-preview.inputs.input :as input]
     [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
-    [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
+    [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as
+     recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
-    [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as keyboard-key]
-    [status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard :as numbered-keyboard]
-    [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
-    [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
+    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
-    [status-im2.contexts.quo-preview.list-items.account-list-card :as account-list-card]
+    [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
+    [status-im2.contexts.quo-preview.links.url-preview-list :as
+     url-preview-list]
+    [status-im2.contexts.quo-preview.list-items.account :as
+     account-item]
+    [status-im2.contexts.quo-preview.list-items.account-list-card :as
+     account-list-card]
+    [status-im2.contexts.quo-preview.list-items.address :as address]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
+    [status-im2.contexts.quo-preview.list-items.community-list :as
+     community-list]
     [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
-    [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
-    [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
+    [status-im2.contexts.quo-preview.list-items.saved-address :as saved-address]
+    [status-im2.contexts.quo-preview.list-items.saved-contact-address :as saved-contact-address]
+    [status-im2.contexts.quo-preview.list-items.token-network :as token-network]
     [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
-    [status-im2.contexts.quo-preview.markdown.text :as text]
+    [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
+    [status-im2.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
+    [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
     [status-im2.contexts.quo-preview.messages.gap :as messages-gap]
     [status-im2.contexts.quo-preview.messages.system-message :as system-message]
-    [status-im2.contexts.quo-preview.navigation.bottom-nav-tab :as bottom-nav-tab]
-    [status-im2.contexts.quo-preview.navigation.floating-shell-button :as floating-shell-button]
+    [status-im2.contexts.quo-preview.navigation.bottom-nav-tab :as
+     bottom-nav-tab]
+    [status-im2.contexts.quo-preview.navigation.floating-shell-button :as
+     floating-shell-button]
     [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
     [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
-    [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
-    [status-im2.contexts.quo-preview.notifications.activity-logs-photos :as activity-logs-photos]
-    [status-im2.contexts.quo-preview.notifications.notification :as notification]
+    [status-im2.contexts.quo-preview.notifications.activity-logs :as
+     activity-logs]
+    [status-im2.contexts.quo-preview.notifications.activity-logs-photos :as
+     activity-logs-photos]
+    [status-im2.contexts.quo-preview.notifications.notification :as
+     notification]
     [status-im2.contexts.quo-preview.notifications.toast :as toast]
-    [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
+    [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as
+     keyboard-key]
+    [status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard :as
+     numbered-keyboard]
+    [status-im2.contexts.quo-preview.onboarding.small-option-card :as
+     small-option-card]
     [status-im2.contexts.quo-preview.password.tips :as tips]
     [status-im2.contexts.quo-preview.profile.collectible :as collectible]
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
     [status-im2.contexts.quo-preview.profile.select-profile :as select-profile]
     [status-im2.contexts.quo-preview.profile.showcase-nav :as showcase-nav]
-    [status-im2.contexts.quo-preview.reactions.react :as react]
     [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
     [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
     [status-im2.contexts.quo-preview.selectors.filter :as filter]
+    [status-im2.contexts.quo-preview.selectors.react :as react]
+    [status-im2.contexts.quo-preview.selectors.react-selector :as react-selector]
+    [status-im2.contexts.quo-preview.selectors.reactions-selector :as reactions-selector]
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
+    [status-im2.contexts.quo-preview.settings.category :as category]
     [status-im2.contexts.quo-preview.settings.data-item :as data-item]
-    [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
-    [status-im2.contexts.quo-preview.settings.category :as category]
+    [status-im2.contexts.quo-preview.settings.section-label :as section-label]
+    [status-im2.contexts.quo-preview.settings.settings-item :as settings-item]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
+    [status-im2.contexts.quo-preview.style :as style]
+    [status-im2.contexts.quo-preview.switcher.group-messaging-card :as group-messaging-card]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
     [status-im2.contexts.quo-preview.tabs.tabs :as tabs]
-    [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.tags.context-tags :as context-tags]
+    [status-im2.contexts.quo-preview.tags.network-tags :as network-tags]
+    [status-im2.contexts.quo-preview.tags.number-tag :as number-tag]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
+    [status-im2.contexts.quo-preview.tags.summary-tag :as summary-tag]
+    [status-im2.contexts.quo-preview.tags.tag :as tag]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
+    [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
-    [status-im2.contexts.quo-preview.title.title :as title]
-    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
-    [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
-    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
-    [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
+    [status-im2.contexts.quo-preview.text-combinations.preview :as
+     text-combinations]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
-    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
+    [status-im2.contexts.quo-preview.wallet.account-origin :as account-origin]
+    [status-im2.contexts.quo-preview.wallet.account-overview :as
+     account-overview]
     [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.network-link :as network-link]
+    [status-im2.contexts.quo-preview.wallet.network-routing :as network-routing]
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
+    [status-im2.contexts.quo-preview.wallet.transaction-summary :as
+     transaction-summary]
+    [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
 
@@ -141,6 +193,8 @@
                         :component wallet-user-avatar/view}
                        {:name      :channel-avatar
                         :component channel-avatar/view}
+                       {:name      :collection-avatar
+                        :component collection-avatar/view}
                        {:name      :account-avatar
                         :component account-avatar/view}]
    :banner            [{:name      :banner
@@ -160,7 +214,7 @@
                        {:name      :wallet-ctas
                         :component wallet-ctas/view}]
    :browser           [{:name      :browser-input
-                        :component browser-input/preview-browser-input}]
+                        :component browser-input/view}]
    :calendar          [{:name      :calendar
                         :component calendar/view}
                        {:name      :calendar-day
@@ -168,13 +222,19 @@
                        {:name      :calendar-year
                         :component calendar-year/view}]
    :code              [{:name      :snippet
-                        :component code-snippet/view}]
+                        :component code-snippet/view}
+                       {:name      :snippet-preview
+                        :component code-snippet-preview/view}]
    :colors            [{:name      :color-picker
-                        :component color-picker/view}]
+                        :component color-picker/view}
+                       {:name      :color
+                        :component color/view}]
    :community         [{:name      :community-card-view
                         :component community-card/view}
                        {:name      :community-membership-list-view
                         :component community-membership-list-view/view}
+                       {:name      :community-stat
+                        :component community-stat/view}
                        {:name      :discover-card
                         :component discover-card/view}
                        {:name      :token-gating
@@ -189,6 +249,8 @@
                         :component step/view}]
    :dividers          [{:name      :divider-label
                         :component divider-label/view}
+                       {:name      :divider-line
+                        :component divider-line/view}
                        {:name      :new-messages
                         :component new-messages/view}
                        {:name      :divider-date
@@ -198,11 +260,16 @@
    :drawers           [{:name      :action-drawers
                         :component action-drawers/view}
                        {:name      :documentation-drawer
-                        :component documenation-drawers/view}
+                        :component documentation-drawers/view}
                        {:name      :drawer-buttons
                         :component drawer-buttons/view}
+                       {:name      :drawer-top
+                        :component drawer-top/view}
                        {:name      :permission-drawers
-                        :component permission-drawers/view}]
+                        :component permission-drawers/view}
+                       {:name :bottom-actions
+                        :component
+                        bottom-actions/view}]
    :dropdowns         [{:name      :dropdown
                         :component dropdown/view}
                        {:name      :network-dropdown
@@ -211,7 +278,11 @@
                         :component empty-state/view}]
    :gradient          [{:name      :gradient-cover
                         :component gradient-cover/view}]
-   :graph             [{:name      :wallet-graph
+   :graph             [{:name      :interactive-graph
+                        :options   {:topBar {:visible true}}
+                        :component interactive-graph/view}
+                       {:name      :wallet-graph
+                        :options   {:topBar {:visible true}}
                         :component wallet-graph/view}]
    :info              [{:name      :info-message
                         :component info-message/view}
@@ -219,6 +290,8 @@
                         :component information-box/view}]
    :inputs            [{:name      :input
                         :component input/view}
+                       {:name      :address-input
+                        :component address-input/view}
                        {:name      :locked-input
                         :component locked-input/view}
                        {:name      :profile-input
@@ -230,11 +303,9 @@
                        {:name      :title-input
                         :component title-input/view}]
    :numbered-keyboard [{:name      :keyboard-key
-                        :options   {:insets {:top? true}}
-                        :component keyboard-key/preview-keyboard-key}
+                        :component keyboard-key/view}
                        {:name      :numbered-keyboard
-                        :options   {:insets {:top? true}}
-                        :component numbered-keyboard/preview-numbered-keyboard}]
+                        :component numbered-keyboard/view}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}}
                         :component url-preview/view}
@@ -244,8 +315,12 @@
                        {:name      :link-preview
                         :options   {:insets {:top? true}}
                         :component link-preview/view}]
-   :list-items        [{:name      :account-list-card
+   :list-items        [{:name      :account
+                        :component account-item/view}
+                       {:name      :account-list-card
                         :component account-list-card/view}
+                       {:name      :address
+                        :component address/view}
                        {:name      :channel
                         :component channel/view}
                        {:name      :community-list
@@ -255,155 +330,150 @@
                         :component dapp/preview}
                        {:name      :preview-lists
                         :component preview-lists/view}
-                       {:name      :user-list
-                        :component user-list/preview-user-list}
+                       {:name      :saved-address
+                        :component saved-address/view}
+                       {:name      :saved-contact-address
+                        :component saved-contact-address/view}
+                       {:name      :token-network
+                        :component token-network/view}
                        {:name      :token-value
-                        :component token-value/preview}]
-   :loaders           [{:name      :skeleton
-                        :component skeleton/preview-skeleton}]
+                        :component token-value/view}
+                       {:name      :user-list
+                        :options   {:topBar {:visible true}}
+                        :component user-list/view}]
+   :loaders           [{:name      :skeleton-list
+                        :options   {:topBar {:visible true}}
+                        :component skeleton-list/view}]
    :markdown          [{:name      :texts
-                        :component text/preview-text}
+                        :component text/view}
                        {:name      :markdown-list
-                        :component markdown-list/preview-markdown-list}]
-   :messages          [{:name      :gap
-                        :component messages-gap/preview-messages-gap}
+                        :component markdown-list/view}]
+   :messages          [{:name      :author
+                        :component messages-author/view}
+                       {:name      :gap
+                        :component messages-gap/view}
                        {:name      :system-messages
-                        :component system-message/preview-system-message}
-                       {:name      :author
-                        :component messages-author/preview-author}]
+                        :component system-message/view}]
    :navigation        [{:name      :bottom-nav-tab
-                        :component bottom-nav-tab/preview-bottom-nav-tab}
+                        :component bottom-nav-tab/view}
                        {:name      :top-nav
-                        :component top-nav/preview-top-nav}
+                        :component top-nav/view}
                        {:name      :page-nav
-                        :component page-nav/preview-page-nav}
+                        :component page-nav/view}
                        {:name      :floating-shell-button
-                        :component floating-shell-button/preview-floating-shell-button}]
+                        :component floating-shell-button/view}]
    :notifications     [{:name      :activity-logs
-                        :component activity-logs/preview-activity-logs}
+                        :component activity-logs/view}
                        {:name      :activity-logs-photos
-                        :component activity-logs-photos/preview-activity-logs-photos}
+                        :component activity-logs-photos/view}
                        {:name      :toast
-                        :component toast/preview-toasts}
+                        :component toast/view}
                        {:name      :notification
-                        :component notification/preview-notification}]
+                        :component notification/view}]
    :onboarding        [{:name      :small-option-card
-                        :component small-option-card/preview-small-option-card}]
+                        :component small-option-card/view}]
    :password          [{:name      :tips
-                        :component tips/preview-tips}]
+                        :component tips/view}]
    :profile           [{:name      :profile-card
-                        :component profile-card/preview-profile-card}
+                        :component profile-card/view}
                        {:name      :collectible
-                        :component collectible/preview-collectible}
+                        :component collectible/view}
                        {:name      :select-profile
-                        :component select-profile/preview-select-profile}
+                        :component select-profile/view}
                        {:name      :showcase-nav
                         :component showcase-nav/view}]
-   :reactions         [{:name      :react
-                        :component react/preview-react}]
    :record-audio      [{:name      :record-audio
-                        :component record-audio/preview-record-audio}]
-   :switcher          [{:name      :switcher-cards
-                        :component switcher-cards/preview-switcher-cards}]
+                        :component record-audio/view}]
    :selectors         [{:name      :disclaimer
-                        :component disclaimer/preview-disclaimer}
+                        :component disclaimer/view}
                        {:name      :filter
-                        :component filter/preview}
+                        :component filter/view}
                        {:name      :selectors
-                        :component selectors/preview-selectors}
-                       {:name      :select-reactions
-                        :component selector-reactions/preview}]
+                        :component selectors/view}
+                       {:name      :reactions-selector
+                        :component reactions-selector/preview}
+                       {:name      :react-selector
+                        :component (react-selector/preview-react-selector)}
+                       {:name      :react
+                        :component react/preview-react}]
    :settings          [{:name      :privacy-option
-                        :component privacy-option/preview-options}
+                        :component privacy-option/view}
                        {:name      :accounts
-                        :component accounts/preview-accounts}
-                       {:name      :settings-list
-                        :component settings-list/preview-settings-list}
+                        :component accounts/view}
+                       {:name      :settings-item
+                        :component settings-item/view}
                        {:name      :reorder-item
-                        :component reorder-item/preview-reorder-item}
+                        :component reorder-item/view}
                        {:name      :category
-                        :options   {:topBar {:visible true}}
-                        :component category/preview}
+                        :component category/view}
                        {:name      :data-item
-                        :component data-item/preview-data-item}]
+                        :component data-item/view}
+                       {:name      :section-label
+                        :component section-label/view}]
    :share             [{:name      :qr-code
-                        :component qr-code/preview-qr-code}
+                        :component qr-code/view}
                        {:name      :share-qr-code
-                        :component share-qr-code/preview-share-qr-code}]
+                        :component share-qr-code/view}]
+   :switchers         [{:name      :group-messaging-card
+                        :component group-messaging-card/view}
+                       {:name      :switcher-cards
+                        :component switcher-cards/view}]
    :tabs              [{:name      :segmented
-                        :component segmented/preview-segmented}
+                        :component segmented/view}
                        {:name      :tabs
-                        :component tabs/preview-tabs}
+                        :component tabs/view}
                        {:name      :account-selector
-                        :component account-selector/preview-this}]
+                        :component account-selector/view}]
    :tags              [{:name      :context-tags
-                        :component context-tags/preview-context-tags}
-                       {:name      :tags
-                        :component tags/preview-tags}
+                        :component context-tags/view}
+                       {:name      :network-tags
+                        :component network-tags/view}
+                       {:name      :number-tag
+                        :component number-tag/view}
                        {:name      :permission-tag
-                        :component permission-tag/preview-permission-tag}
+                        :component permission-tag/view}
                        {:name      :status-tags
-                        :component status-tags/preview-status-tags}
+                        :component status-tags/view}
+                       {:name      :summary-tag
+                        :component summary-tag/view}
+                       {:name      :tag
+                        :component tag/view}
+                       {:name      :tags
+                        :component tags/view}
+                       {:name      :tiny-tag
+                        :component tiny-tag/view}
                        {:name      :token-tag
-                        :component token-tag/preview-token-tag}]
-   :text-combinations [{:name      :title
-                        :component title/preview-title}]
-   :wallet            [{:name      :account-card
-                        :component account-card/preview-account-card}
+                        :component token-tag/view}]
+   :text-combinations [{:name      :text-combinations
+                        :component text-combinations/view}]
+   :wallet            [{:name :account-card :component account-card/view}
+                       {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
-                        :component account-overview/preview-account-overview}
-                       {:name      :keypair
-                        :options   {:topBar {:visible true}}
-                        :component keypair/preview}
-                       {:name      :network-amount
-                        :component network-amount/preview}
-                       {:name      :network-bridge
-                        :component network-bridge/preview}
-                       {:name      :network-link
-                        :component network-link/preview}
-                       {:name      :progress-bar
-                        :component progress-bar/preview}
-                       {:name      :summary-info
-                        :component summary-info/preview}
-                       {:name      :token-input
-                        :component token-input/preview}
+                        :component account-overview/view}
+                       {:name :keypair :component keypair/view}
+                       {:name :network-amount :component network-amount/view}
+                       {:name :network-bridge :component network-bridge/view}
+                       {:name :network-link :component network-link/view}
+                       {:name :network-routing :component network-routing/view}
+                       {:name :progress-bar :component progress-bar/view}
+                       {:name :summary-info :component summary-info/view}
+                       {:name :token-input :component token-input/view}
+                       {:name :wallet-activity :component wallet-activity/view}
+                       {:name :transaction-summary :component transaction-summary/view}
                        {:name      :wallet-overview
-                        :component wallet-overview/preview-wallet-overview}]
-   :keycard           [{:name      :keycard-component
-                        :component keycard/view}]})
-
-(defn- navigation-bar
-  []
-  (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
-        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
-        root          (if has-profiles? :profiles :intro)]
-    [quo/page-nav
-     {:type       :title
-      :title      "Quo2 components preview"
-      :text-align :left
-      :icon-name  :i/close
-      :on-press   #(if logged-in?
-                     (rf/dispatch [:navigate-back])
-                     (do
-                       (theme/set-theme :dark)
-                       (rf/dispatch [:init-root root])))}]))
-
-(defn- theme-switcher
-  []
-  [rn/view {:style style/theme-switcher}
-   [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-   [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
+                        :component wallet-overview/view}]
+   :keycard           [{:name :keycard-component :component keycard/view}]})
 
 (defn- category-view
   []
-  (let [open?     (reagent/atom false)
-        on-change #(swap! open? not)]
+  (let [open?    (reagent/atom false)
+        on-press #(swap! open? not)]
     (fn [category]
       [rn/view {:style {:margin-vertical 8}}
        [quo/dropdown
-        {:selected  @open?
-         :on-change on-change
-         :type      :grey}
+        {:type     :grey
+         :state    (if @open? :active :default)
+         :on-press on-press}
         (name (key category))]
        (when @open?
          (for [{category-name :name} (val category)]
@@ -417,8 +487,7 @@
 (defn- main-screen
   []
   [:<>
-   [navigation-bar]
-   [theme-switcher]
+   [common/navigation-bar {:title "Quo components preview"}]
    [rn/scroll-view {:style (style/main)}
     (for [category (sort screens-categories)]
       ^{:key (first category)}
@@ -432,10 +501,10 @@
               (update-in subcategory
                          [:options :topBar]
                          merge
-                         {:visible true})))))
+                         {:visible false})))))
 
 (def main-screens
-  [{:name      :quo2-preview
+  [{:name      :quo-preview
     :options   {:topBar {:visible false}
                 :insets {:top? true}}
     :component main-screen}])

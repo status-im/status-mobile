@@ -1,12 +1,15 @@
 (ns status-im.keycard.sign
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.keycard.common :as common]
-            [utils.re-frame :as rf]
-            [utils.money :as money]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.keycard.common :as common]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.wallet.utils :as wallet.utils]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.money :as money]
+    [utils.re-frame :as rf]))
 
 (rf/defn sign
   {:events [:keycard/sign]}
@@ -22,10 +25,10 @@
         pin                 (common/vector->string (get-in db [:keycard :pin :sign]))
         from                (or (get-in db [:signing/tx :from :address])
                                 (get-in db [:signing/tx :message :from])
-                                (ethereum/default-address db))
+                                (wallet.utils/default-address db))
         path                (reduce
                              (fn [_ {:keys [address path]}]
-                               (when (ethereum/address= from address)
+                               (when (address/address= from address)
                                  (reduced path)))
                              nil
                              (:profile/wallet-accounts db))]
@@ -43,7 +46,7 @@
       {:db           (-> db
                          (assoc-in [:keycard :card-read-in-progress?] true)
                          (assoc-in [:keycard :pin :status] :verifying))
-       :keycard/sign {:hash       (ethereum/naked-address hash)
+       :keycard/sign {:hash       (address/naked-address hash)
                       :data       data
                       :typed?     typed? ; this parameter is for e2e
                       :on-success on-success
@@ -55,7 +58,7 @@
   (-> signature
       (string/replace-first #"00$" "1b")
       (string/replace-first #"01$" "1c")
-      ethereum/normalized-hex))
+      address/normalized-hex))
 
 (rf/defn sign-message
   {:events [:keycard/sign-message]}
@@ -63,7 +66,7 @@
   (let [{:keys [result error]} (types/json->clj result)
         on-success             #(re-frame/dispatch [:keycard/on-sign-message-success params
                                                     (normalize-signature %)])
-        hash                   (ethereum/naked-address result)]
+        hash                   (address/naked-address result)]
     (sign cofx hash on-success)))
 
 (rf/defn on-sign-message-success
@@ -92,7 +95,7 @@
       {:db                      (-> db
                                     (assoc-in [:keycard :card-read-in-progress?] true)
                                     (assoc-in [:signing/sign :keycard-step] :signing))
-       :keycard/sign-typed-data {:hash (ethereum/naked-address hash)}}
+       :keycard/sign-typed-data {:hash (address/naked-address hash)}}
       (rf/merge cofx
                 (common/set-on-card-connected :keycard/sign-typed-data)
                 {:db (assoc-in db [:signing/sign :keycard-step] :signing)}))))
@@ -116,7 +119,7 @@
         currency-contract (:currency message)]
     (when currency-contract
       {:json-rpc/call [{:method     "wallet_discoverToken"
-                        :params     [(ethereum/chain-id db) currency-contract]
+                        :params     [(chain/chain-id db) currency-contract]
                         :on-success #(re-frame/dispatch [:keycard/fetch-currency-token-on-success
                                                          %])}]})
     (rf/merge cofx

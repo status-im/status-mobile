@@ -1,16 +1,17 @@
 (ns utils.red-black-tree
   (:refer-clojure :exclude [remove update find])
-  (:require ["functional-red-black-tree" :as red-black-tree]))
+  (:require
+    ["functional-red-black-tree" :as red-black-tree]))
 
 (def tree ^js red-black-tree)
 
 (defn find
-  [^js tree item]
-  (.find tree item))
+  [^js t item]
+  (.find t item))
 
 (defn insert
-  [^js tree item]
-  (.insert tree item))
+  [^js t item]
+  (.insert t item))
 
 (defn update
   [^js iterator item]
@@ -21,8 +22,8 @@
   (.remove iterator))
 
 (defn get-values
-  [^js tree]
-  (.-values ^js tree))
+  [^js t]
+  (.-values ^js t))
 
 (defn get-prev-element
   "Get previous item in the iterator, and wind it back to the initial state"

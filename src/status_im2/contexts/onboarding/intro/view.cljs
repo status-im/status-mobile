@@ -1,14 +1,15 @@
 (ns status-im2.contexts.onboarding.intro.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [status-im2.contexts.onboarding.intro.style :as style]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
-            [utils.debounce :as debounce]
-            [status-im2.contexts.onboarding.common.overlay.view :as overlay]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.overlay.view :as overlay]
+    [status-im2.contexts.onboarding.intro.style :as style]
+    [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -26,8 +27,8 @@
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
      :bottom-card         {:on-press            (fn []
-                                                  (when @overlay/blur-show-fn-atom
-                                                    (@overlay/blur-show-fn-atom))
+                                                  (when-let [blur-show-fn @overlay/blur-show-fn-atom]
+                                                    (blur-show-fn))
                                                   (rf/dispatch [:open-modal :new-to-status]))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}

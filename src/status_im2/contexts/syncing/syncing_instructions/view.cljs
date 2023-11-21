@@ -1,11 +1,12 @@
 (ns status-im2.contexts.syncing.syncing-instructions.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.syncing.syncing-instructions.style :as style]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.syncing.syncing-instructions.style :as style]
+    [utils.i18n :as i18n]))
 
 (defn- render-element
   [[type value]]
@@ -63,7 +64,7 @@
                 list-item)])
 
 (defn- render-instruction
-  [{:keys [title image list]}]
+  [{title :title image :image coll :list}]
   [rn/view
    (when title
      [quo/text
@@ -83,7 +84,7 @@
     (map-indexed (fn [i item]
                    ^{:key i}
                    [render-item (inc i) item])
-                 list)]])
+                 coll)]])
 
 (defn- map-instructions
   [idx instructions instructions-count]
@@ -100,8 +101,8 @@
                        {:id    :desktop
                         :label (i18n/label :t/desktop)}]]
     (fn []
-      (let [instructions       (get props @platform)
-            instructions-count (count instructions)]
+      (let [sync-instructions  (get props @platform)
+            instructions-count (count sync-instructions)]
         [rn/view {:style style/container-outer}
          [quo/text
           {:size   :heading-1
@@ -119,4 +120,4 @@
            (map-indexed (fn [idx item]
                           ^{:key idx}
                           [map-instructions idx item instructions-count])
-                        instructions))]]))))
+                        sync-instructions))]]))))

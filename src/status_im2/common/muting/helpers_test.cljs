@@ -1,11 +1,12 @@
 (ns status-im2.common.muting.helpers-test
-  (:require [cljs-time.coerce :as time-coerce]
-            [cljs-time.core :as t]
-            [cljs-time.format :as t.format]
-            [cljs.test :refer-macros [deftest testing is are]]
-            [clojure.string :as string]
-            [utils.datetime :as datetime]
-            [status-im2.common.muting.helpers :as muting]))
+  (:require
+    [cljs-time.coerce :as time-coerce]
+    [cljs-time.core :as t]
+    [cljs-time.format :as t.format]
+    [cljs.test :refer-macros [deftest testing is are]]
+    [clojure.string :as string]
+    [status-im2.common.muting.helpers :as muting]
+    [utils.datetime :as datetime]))
 
 (def mock-current-time-epoch 1655731506000)
 

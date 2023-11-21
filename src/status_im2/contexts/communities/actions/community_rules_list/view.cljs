@@ -1,9 +1,10 @@
 (ns status-im2.contexts.communities.actions.community-rules-list.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.contexts.communities.actions.community-rules-list.style :as style]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.communities.actions.community-rules-list.style :as style]))
 
-(def rules
+(def standard-rules
   [{:index 1
     :title "Be respectful"
     :content
@@ -32,13 +33,13 @@
   [rn/view {:style style/community-rule}
    [quo/text
     {:style  style/community-rule-index
-     :weight :medium
+     :weight :regular
      :size   :paragraph-2}
     (str index ". ")]
    [quo/text
     {:style               style/community-rule-text
      :accessibility-label :communities-rule-index
-     :weight              :medium
+     :weight              :regular
      :size                :paragraph-2}
     (str title ": " content)]])
 

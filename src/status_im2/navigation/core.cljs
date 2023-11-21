@@ -1,14 +1,15 @@
 (ns status-im2.navigation.core
-  (:require [re-frame.core :as re-frame]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.navigation :as navigation]
-            [status-im2.navigation.roots :as roots]
-            [status-im2.navigation.state :as state]
-            [status-im2.navigation.view :as views]
-            [taoensso.timbre :as log]
-            [status-im2.common.theme.core :as theme]
-            [status-im2.navigation.options :as options]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.navigation :as navigation]
+    [status-im2.common.theme.core :as theme]
+    [status-im2.navigation.options :as options]
+    [status-im2.navigation.roots :as roots]
+    [status-im2.navigation.state :as state]
+    [status-im2.navigation.view :as views]
+    [taoensso.timbre :as log]))
 
 (navigation/set-lazy-component-registrator
  (fn [screen-key]
@@ -48,8 +49,12 @@
 (navigation/reg-component-did-appear-listener
  (fn [view-id]
    (when (get views/screens view-id)
-     (set-view-id view-id)
+     ;;NOTE when back from the background on Android, this event happens for all screens, but we need
+     ;;only for active one
+     (when (and @state/curr-modal (= @state/curr-modal view-id))
+       (set-view-id view-id))
      (when-not @state/curr-modal
+       (set-view-id view-id)
        (reset! state/pushed-screen-id view-id)))))
 
 (defn dissmissModal
@@ -73,7 +78,7 @@
  (fn [root-id]
    (let [root (get (roots/roots) root-id)]
      (dismiss-all-modals)
-     (re-frame/dispatch [:multiaccounts.ui/switch-theme
+     (re-frame/dispatch [:profile.settings/switch-theme
                          (get roots/themes root-id)
                          root-id])
      (reset! state/root-id (or (get-in root [:root :stack :id]) root-id))
@@ -81,13 +86,13 @@
 
 ;; NAVIGATE-TO
 (defn navigate
-  [comp]
-  (let [{:keys [options]} (get views/screens comp)]
+  [component]
+  (let [{:keys [options]} (get views/screens component)]
     (dismiss-all-modals)
     (navigation/push
      (name @state/root-id)
-     {:component {:id      comp
-                  :name    comp
+     {:component {:id      component
+                  :name    component
                   :options (merge (options/default-root)
                                   (options/statusbar-and-navbar)
                                   options
@@ -97,12 +102,12 @@
 
 ;; NAVIGATE-TO-WITHIN-STACK
 (defn navigate-to-within-stack
-  [[comp comp-id]]
-  (let [{:keys [options]} (get views/screens comp)]
+  [[component comp-id]]
+  (let [{:keys [options]} (get views/screens component)]
     (navigation/push
      (name comp-id)
-     {:component {:id      comp
-                  :name    comp
+     {:component {:id      component
+                  :name    component
                   :options (merge (options/statusbar-and-navbar)
                                   options
                                   (if (:topBar options)
@@ -145,18 +150,18 @@
 
 ;; MODAL
 (defn open-modal
-  [comp]
-  (let [{:keys [options]} (get views/screens comp)
+  [component]
+  (let [{:keys [options]} (get views/screens component)
         sheet?            (:sheet? options)]
     (if @state/dissmissing
-      (reset! state/dissmissing comp)
+      (reset! state/dissmissing component)
       (do
         (reset! state/curr-modal true)
-        (swap! state/modals conj comp)
+        (swap! state/modals conj component)
         (navigation/show-modal
          {:stack {:children [{:component
-                              {:name    comp
-                               :id      comp
+                              {:name    component
+                               :id      component
                                :options (merge (options/default-root)
                                                (options/statusbar-and-navbar)
                                                options
@@ -167,18 +172,11 @@
 
 (navigation/reg-button-pressed-listener
  (fn [id]
-   (cond
-     (= "dismiss-modal" id)
+   (if (= "dismiss-modal" id)
      (do
        (when-let [event (get-in views/screens [(last @state/modals) :on-dissmiss])]
          (re-frame/dispatch event))
        (dissmissModal))
-     (= "RNN.hardwareBackButton" id)
-     (when-let [handler (get-in views/screens
-                                [(or (last @state/modals) @state/pushed-screen-id)
-                                 :hardware-back-button-handler])]
-       (handler))
-     :else
      (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
        (handler)))))
 
@@ -193,21 +191,21 @@
        (reset! state/curr-modal false)
        (set-view-id @state/pushed-screen-id)))
 
-   (let [comp @state/dissmissing]
+   (let [component @state/dissmissing]
      (reset! state/dissmissing false)
-     (when (keyword? comp)
-       (open-modal comp)))))
+     (when (keyword? component)
+       (open-modal component)))))
 
 ;; OVERLAY
 (def dissmiss-overlay navigation/dissmiss-overlay)
 
 (defn show-overlay
-  ([comp] (show-overlay comp {}))
-  ([comp opts]
-   (dissmiss-overlay comp)
+  ([component] (show-overlay component {}))
+  ([component opts]
+   (dissmiss-overlay component)
    (navigation/show-overlay
-    {:component {:name    comp
-                 :id      comp
+    {:component {:name    component
+                 :id      component
                  :options (merge (options/statusbar)
                                  {:layout  {:componentBackgroundColor :transparent
                                             :orientation              ["portrait"]}
@@ -249,27 +247,27 @@
 
 ;; LEGACY (should be removed in status 2.0)
 (defn get-screen-component
-  [comp]
-  (let [{:keys [options]} (get views/screens comp)]
-    {:component {:id      comp
-                 :name    comp
+  [component]
+  (let [{:keys [options]} (get views/screens component)]
+    {:component {:id      component
+                 :name    component
                  :options (merge (options/statusbar-and-navbar)
                                  options
                                  (options/merge-top-bar (options/topbar-options) options))}}))
 
 (re-frame/reg-fx
  :set-stack-root-fx
- (fn [[stack comp]]
+ (fn [[stack component]]
    ;; We don't have bottom tabs as separate stacks anymore,. So the old way of pushing screens in
    ;; specific tabs will not work. Disabled set-stack-root for :shell-stack as it is not working
    ;; and currently only being used for browser and some rare keycard flows after login
    (when-not (= @state/root-id :shell-stack)
-     (log/debug :set-stack-root-fx stack comp)
+     (log/debug :set-stack-root-fx stack component)
      (navigation/set-stack-root
       (name stack)
-      (if (vector? comp)
-        (mapv get-screen-component comp)
-        (get-screen-component comp))))))
+      (if (vector? component)
+        (mapv get-screen-component component)
+        (get-screen-component component))))))
 
 (re-frame/reg-fx :show-popover (fn [] (show-overlay "popover")))
 (re-frame/reg-fx :hide-popover (fn [] (dissmiss-overlay "popover")))

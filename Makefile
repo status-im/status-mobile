@@ -108,7 +108,7 @@ nix-update-clojure: export TARGET := clojure
 nix-update-clojure: ##@nix Update maven Nix expressions based on current clojure setup
 	nix/deps/clojure/generate.sh
 
-nix-update-gems: export TARGET := default
+nix-update-gems: export TARGET := fastlane
 nix-update-gems: ##@nix Update Ruby gems in fastlane/Gemfile.lock and fastlane/gemset.nix
 	fastlane/update.sh
 
@@ -224,6 +224,7 @@ release-android: keystore build-android ##@build Build signed Android APK
 	@scripts/sign-android.sh result/app-release-unsigned.apk
 
 release-ios: export TARGET := ios
+release-ios: export IOS_STATUS_GO_TARGETS := ios/arm64
 release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ios-clean jsbundle ##@build Build release for iOS release
 	xcodebuild \
@@ -272,11 +273,14 @@ run-re-frisk: ##@run Start re-frisk server
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
+# INFO: If it's empty (no devices attached, parsing issues, script error) - for Nix it's the same as not set.
+run-android: export ANDROID_ABI_INCLUDE ?= $(shell ./scripts/adb_devices_abis.sh)
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
-SIMULATOR=iPhone 11 Pro
+SIMULATOR=iPhone 13
 run-ios: export TARGET := ios
+run-ios: export IOS_STATUS_GO_TARGETS := iossimulator/amd64
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
 	npx react-native run-ios --simulator="$(SIMULATOR)"
@@ -284,11 +288,11 @@ else
 	npx react-native run-ios
 endif
 
-show-ios-devices: export TARGET := ios
 show-ios-devices: ##@other shows connected ios device and its name
 	xcrun xctrace list devices
 
 run-ios-device: export TARGET := ios
+run-ios-device: export IOS_STATUS_GO_TARGETS := ios/arm64
 run-ios-device: ##@run iOS app and start it on a connected device by its name
 ifndef DEVICE_NAME
 	$(error Usage: make run-ios-device DEVICE_NAME=your-device-name)
@@ -305,13 +309,17 @@ $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort 
 endef
 
 lint: export TARGET := clojure
+lint: export CLJ_LINTER_PRINT_WARNINGS ?= false
 lint: ##@test Run code style checks
-	@sh scripts/lint-re-frame-in-quo-components.sh && \
-	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
+	@sh scripts/lint/re-frame-in-quo-components.sh && \
+	sh scripts/lint/direct-require-component-outside-quo.sh && \
+	sh scripts/lint/require-i18n-resource-first.sh && \
+	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src $(if $(filter $(CLJ_LINTER_PRINT_WARNINGS),true),,| grep -v ': warning: ') && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
+	scripts/lint/translations.clj && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
-	sh scripts/lint-trailing-newline.sh && \
-	yarn prettier
+	sh scripts/lint/trailing-newline.sh && \
+	node_modules/.bin/prettier --write .
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := clojure
@@ -319,8 +327,9 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	sh scripts/lint-trailing-newline.sh --fix && \
-	yarn prettier
+	clojure-lsp --ns-exclude-regex ".*/src/status_im2/core\.cljs$$" clean-ns && \
+	sh scripts/lint/trailing-newline.sh --fix && \
+	node_modules/.bin/prettier --write .
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
@@ -347,10 +356,17 @@ test: ##@test Run tests once in NodeJS
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
 
+android-test: jsbundle
+android-test: export TARGET := android
+android-test:
+	cd android && ./gradlew test
+
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
+	@@scripts/check-metro-shadow-process.sh
+	rm -rf ./component-spec
 	yarn install
 	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
 
@@ -358,6 +374,8 @@ component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
 component-test: export BABEL_ENV := test
 component-test: ##@test Run component tests once in NodeJS
+	@scripts/check-metro-shadow-process.sh
+	rm -rf ./component-spec
 	yarn install
 	yarn shadow-cljs compile component-test && \
 	jest --config=test/jest/jest.config.js

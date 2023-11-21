@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.7.12'
+library 'status-jenkins-lib@v1.7.15'
 
 pipeline {
 
@@ -83,7 +83,7 @@ pipeline {
             sh 'cp -f $TEST_ETH_ACCOUNTS_FILE users.py'
             sh """
               python3 -m pytest \
-                --numprocesses 6 \
+                --numprocesses 8 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m testrail_id \

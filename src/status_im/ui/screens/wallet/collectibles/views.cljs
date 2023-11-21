@@ -1,22 +1,23 @@
 (ns status-im.ui.screens.wallet.collectibles.views
-  (:require ["react-native-svg" :refer (SvgUri)]
-            [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.accordion :as accordion]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [utils.re-frame :as rf]
-            [status-im.wallet.core :as wallet]))
+  (:require
+    ["react-native-svg" :refer (SvgUri)]
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.accordion :as accordion]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [status-im.wallet.core :as wallet-legacy]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def svg-uri (reagent/adapt-react-class SvgUri))
 
@@ -118,7 +119,7 @@
     {:width         width
      :border-radius 16
      :margin-bottom 16}
-    :on-press (when clickable? #(re-frame/dispatch [::wallet/show-nft-details asset]))
+    :on-press (when clickable? #(re-frame/dispatch [::wallet-legacy/show-nft-details asset]))
     :accessibility-label
     :nft-asset}
    (cond
@@ -150,9 +151,9 @@
 
 (defn nft-assets
   [{:keys [num-assets address collectible-slug]}]
-  (let [assets    (rf/sub [:wallet/collectible-assets-by-collection-and-address address
+  (let [assets    (rf/sub [:wallet-legacy/collectible-assets-by-collection-and-address address
                            collectible-slug])
-        fetching? (rf/sub [:wallet/fetching-assets-by-collectible-slug collectible-slug])]
+        fetching? (rf/sub [:wallet-legacy/fetching-assets-by-collectible-slug collectible-slug])]
     [react/view
      {:flex            1
       :flex-wrap       :wrap
@@ -162,8 +163,7 @@
      (cond
        fetching? [nft-assets-skeleton num-assets]
 
-       ;; <shivekkhurana> OpenSea sometimes doesn't return an asset
-       ;; This condition handles it
+       ;; <shivekkhurana> OpenSea sometimes doesn't return an asset. This condition handles it
        (and (not fetching?)
             (not (seq assets)))
        [no-assets-error]
@@ -178,14 +178,14 @@
 
 (defn nft-collections
   [address]
-  (let [collection (rf/sub [:wallet/collectible-collection address])]
+  (let [collection (rf/sub [:wallet-legacy/collectible-collection address])]
     [:<>
      (for [[index collectible] (map-indexed vector collection)]
        ^{:key (:slug collectible)}
        [accordion/section
         {:title
          [react/view {:flex 1}
-          [quo/list-item
+          [list.item/list-item
            {:title (:name collectible)
             :text-size :large
             :accessibility-label
@@ -206,7 +206,7 @@
                                 :border-bottom-width 8
                                 :border-color        colors/gray-lighter}
          :on-open #(re-frame/dispatch
-                    [::wallet/fetch-collectible-assets-by-owner-and-collection
+                    [::wallet-legacy/fetch-collectible-assets-by-owner-and-collection
                      address
                      (:slug collectible)
                      (:owned_asset_count collectible)])
@@ -240,7 +240,7 @@
         [::multiaccounts.update/toggle-opensea-nfts-visiblity true])
       :theme :main
       :type :primary}
-     (i18n/label :display-collectibles)]]
+     (i18n/label :t/display-collectibles)]]
    [quo/text
     {:size  :small
      :color :secondary
@@ -250,7 +250,7 @@
 
 (defn nft-details-modal
   []
-  (let [nft (rf/sub [:wallet/selected-collectible])]
+  (let [nft (rf/sub [:wallet-legacy/selected-collectible])]
     [react/scroll-view
      [topbar/topbar
       {:navigation    {:icon :main-icons/close}
@@ -284,22 +284,18 @@
                :border-color        colors/gray-lighter}}]
 
      ;; TODO <shivekkhurana>: Enable txns
-     ;; [quo/list-item {:title    (i18n/label :t/wallet-send)
-     ;;                 :icon     :main-icons/send
-     ;;                 :accessibility-label
-     ;;                 :nft-send
-     ;;                 :theme    :accent
+     ;; [list/list-item {:title    (i18n/label :t/wallet-send)
+     ;;                 :icon     :main-icons/send :accessibility-label :nft-send :theme    :accent
      ;;                 :on-press #()}]
 
-     ;; TODO <shivekkhurana>: What to do with share?
-     ;; Share links or share image?
-     ;; [quo/list-item {:title    (i18n/label :t/share)
+     ;; TODO <shivekkhurana>: What to do with share? Share links or share image?
+     ;; [list/list-item {:title    (i18n/label :t/share)
      ;;                 :theme    :accent
      ;;                 :accessibility-label
      ;;                 :nft-share
      ;;                 :on-press #()
      ;;                 :icon     :main-icons/share}]
-     [quo/list-item
+     [list.item/list-item
       {:title    (i18n/label :t/view-on-opensea)
        :theme    :accent
        :icon     :main-icons/browser
@@ -307,12 +303,12 @@
      (when (is-image? nft)
        [toastable-highlight-view
         ;; the last string is an emoji. It might not show up in all editors but its there
-        {:toast-label (str (i18n/label :profile-picture-updated)) " " "😎"}
-        [quo/list-item
+        {:toast-label (str (i18n/label :t/profile-picture-updated)) " " "😎"}
+        [list.item/list-item
          {:title (i18n/label :t/use-as-profile-picture)
           :theme :accent
-          :on-press #(re-frame/dispatch
-                      [::multiaccounts/save-profile-picture-from-url (:image_url nft)])
+          :on-press #(re-frame/dispatch [:profile.settings/save-profile-picture-from-url
+                                         (:image_url nft)])
           :icon :main-icons/profile
           :accessibility-label
           :set-nft-as-pfp}]])]))

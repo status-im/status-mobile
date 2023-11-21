@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.graph.wallet-graph
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn generate-crypto-token-prices
   [num-elements volatility]
@@ -30,7 +31,8 @@
               {:key :3-months}
               {:key :1-year}
               {:key   :all-time
-               :value "All time (500 years data)"}]}])
+               :value "All time (500 years data)"}]}
+   (preview/customization-color-option)])
 
 (defn generate-data
   [time-frame]
@@ -60,6 +62,7 @@
         :descriptor                descriptor
         :component-container-style {:padding-horizontal 0 :margin-top 200}}
        [quo/wallet-graph
-        {:data       (generate-data (:time-frame @state))
-         :state      (:state @state)
-         :time-frame (:time-frame @state)}]])))
+        {:data                (generate-data (:time-frame @state))
+         :state               (:state @state)
+         :time-frame          (:time-frame @state)
+         :customization-color (:customization-color @state)}]])))

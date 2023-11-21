@@ -1,7 +1,8 @@
 (ns react-native.hooks
-  (:require ["@react-native-community/hooks" :as hooks]
-            [react-native.core :as rn]
-            [oops.core :as oops]))
+  (:require
+    ["@react-native-community/hooks" :as hooks]
+    [oops.core :as oops]
+    [react-native.core :as rn]))
 
 (defn use-keyboard
   []
@@ -14,7 +15,7 @@
   (.useBackHandler hooks handler))
 
 (defn use-interval
-  [cb cleanup-cb delay]
+  [cb cleanup-cb delay-ms]
   (let [saved-callback (rn/use-ref)]
     (rn/use-effect
      (fn []
@@ -24,9 +25,9 @@
     (rn/use-effect
      (fn []
        (let [tick (oops/oget saved-callback "current")]
-         (when delay
-           (let [id (js/setInterval tick delay)]
+         (when delay-ms
+           (let [id (js/setInterval tick delay-ms)]
              (fn []
                (cleanup-cb)
                (js/clearInterval id))))))
-     [delay])))
+     [delay-ms])))

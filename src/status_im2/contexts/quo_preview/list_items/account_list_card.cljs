@@ -1,30 +1,36 @@
 (ns status-im2.contexts.quo-preview.list-items.account-list-card
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:key     :state
-    :type    :select
-    :options [{:key :default}
-              {:key :pressed}]}
-   {:key     :action
+  [{:key     :action
     :type    :select
     :options [{:key :none}
-              {:key :icon}]}])
+              {:key :icon}]}
+   {:key  :blur?
+    :type :boolean}])
 
 (defn view
   []
-  (let [state (reagent/atom {:account-props {:customization-color :purple
-                                             :size                32
-                                             :emoji               "🍑"
-                                             :type                :default
-                                             :name                "Trip to Vegas"
-                                             :address             "0x0ah...78b"}
-                             :networks      [:ethereum :optimism]
-                             :state         :default
-                             :action        :none
-                             :on-press      (fn [] (js/alert "Button pressed"))})]
+  (let [state (reagent/atom {:account-props    {:customization-color :purple
+                                                :size                32
+                                                :emoji               "🍑"
+                                                :type                :default
+                                                :name                "Trip to Vegas"
+                                                :address             "0x0ah...78b"}
+                             :networks         [{:name :ethereum :short-name "eth"}
+                                                {:name :optimism :short-name "opt"}]
+                             :action           :none
+                             :on-press         (fn [] (js/alert "Item pressed"))
+                             :on-options-press (fn [] (js/alert "Options pressed"))
+                             :blur?            false})]
     (fn []
-      [preview/preview-container {:state state :descriptor descriptor}
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true
+        :blur-dark-only?       true}
        [quo/account-list-card @state]])))

@@ -1,8 +1,10 @@
 (ns status-im2.navigation.roots
-  (:require [status-im2.navigation.view :as views]
-            [quo2.foundations.colors :as colors]
-            [status-im2.navigation.options :as options]
-            [status-im2.constants :as constants]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [status-im2.constants :as constants]
+    [status-im2.navigation.options :as options]
+    [status-im2.navigation.view :as views]))
 
 (defn get-screen-options
   [screen]
@@ -80,38 +82,39 @@
 
 (defn roots
   []
-  (merge (old-roots)
+  (merge
+   (old-roots)
 
-         {:intro
-          {:root
-           {:stack {:id       :intro
-                    :children [{:component {:name    :intro
-                                            :id      :intro
-                                            :options (options/default-root nil colors/neutral-100)}}]}}}
-          :shell-stack
-          {:root
-           {:stack {:id       :shell-stack
-                    :children [{:component {:name    :shell-stack
-                                            :id      :shell-stack
-                                            :options (options/default-root
-                                                      (if (colors/dark?) :light :dark))}}]}}}
-          :profiles
-          {:root
-           {:stack {:id       :profiles
-                    :children [{:component {:name    :profiles
-                                            :id      :profiles
+   {:intro
+    {:root
+     {:stack {:id       :intro
+              :children [{:component {:name    :intro
+                                      :id      :intro
+                                      :options (options/default-root nil colors/neutral-100)}}]}}}
+    :shell-stack
+    {:root
+     {:stack {:id       :shell-stack
+              :children [{:component {:name    :shell-stack
+                                      :id      :shell-stack
+                                      :options (options/default-root
+                                                (if (= :dark (quo.theme/get-theme)) :light :dark))}}]}}}
+    :profiles
+    {:root
+     {:stack {:id       :profiles
+              :children [{:component {:name    :profiles
+                                      :id      :profiles
+                                      :options (options/default-root)}}]}}}
+
+    :enable-notifications
+    {:root {:stack {:children [{:component {:name    :enable-notifications
+                                            :id      :enable-notifications
                                             :options (options/default-root)}}]}}}
 
-          :enable-notifications
-          {:root {:stack {:children [{:component {:name    :enable-notifications
-                                                  :id      :enable-notifications
-                                                  :options (options/default-root)}}]}}}
-
-          :welcome
-          {:root {:stack {:children [{:component {:name    :welcome
-                                                  :id      :welcome
-                                                  :options (options/default-root)}}]}}}
-          :syncing-results
-          {:root {:stack {:children [{:component {:name    :syncing-results
-                                                  :id      :syncing-results
-                                                  :options (options/default-root)}}]}}}}))
+    :welcome
+    {:root {:stack {:children [{:component {:name    :welcome
+                                            :id      :welcome
+                                            :options (options/default-root)}}]}}}
+    :syncing-results
+    {:root {:stack {:children [{:component {:name    :syncing-results
+                                            :id      :syncing-results
+                                            :options (options/default-root)}}]}}}}))

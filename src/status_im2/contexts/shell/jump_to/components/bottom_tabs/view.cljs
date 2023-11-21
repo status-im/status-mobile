@@ -1,15 +1,17 @@
 (ns status-im2.contexts.shell.jump-to.components.bottom-tabs.view
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [quo2.components.navigation.bottom-nav-tab.view :as bottom-nav-tab]
-            [status-im2.contexts.shell.jump-to.components.bottom-tabs.style :as style]))
+  (:require
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.shell.jump-to.animation :as animation]
+    [status-im2.contexts.shell.jump-to.components.bottom-tabs.style :as style]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.re-frame :as rf]))
 
 (defn blur-overlay-params
   [style]
@@ -25,7 +27,7 @@
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
                                  (get shared-values))]
-    [bottom-nav-tab/bottom-nav-tab
+    [quo/bottom-nav-tab
      (-> notifications-data
          (get stack-id)
          (assoc :test-ID             stack-id
@@ -58,14 +60,15 @@
                                                                         shared-values))]
     (utils/load-stack @state/selected-stack-id)
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
-    [reanimated/view
-     {:style (style/bottom-tabs-container pass-through? (:bottom-tabs-height shared-values))}
-     (when pass-through?
-       [reanimated/blur-view (blur-overlay-params bottom-tabs-blur-overlay-style)])
-     [rn/view {:style (style/bottom-tabs)}
-      [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-       [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
-      [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-       [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
-      [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
-      [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]))
+    [quo.theme/provider {:theme :dark}
+     [reanimated/view
+      {:style (style/bottom-tabs-container pass-through? (:bottom-tabs-height shared-values))}
+      (when pass-through?
+        [reanimated/blur-view (blur-overlay-params bottom-tabs-blur-overlay-style)])
+      [rn/view {:style (style/bottom-tabs)}
+       [gesture/gesture-detector {:gesture communities-double-tab-gesture}
+        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
+       [gesture/gesture-detector {:gesture messages-double-tap-gesture}
+        [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
+       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
+       [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]]))

@@ -1,17 +1,18 @@
 (ns status-im2.contexts.chat.lightbox.zoomable-image.view
   (:require
+    [oops.core :refer [oget]]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
+    [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [utils.re-frame :as rf]
-    [oops.core :refer [oget]]
-    [react-native.orientation :as orientation]
+    [reagent.core :as r]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [status-im2.contexts.chat.lightbox.zoomable-image.style :as style]
     [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]
-    [status-im.utils.http :as http]))
+    [utils.re-frame :as rf]
+    [utils.url :as url]))
 
 (defn tap-gesture
   [on-tap]
@@ -209,7 +210,8 @@
    image-dimensions-nil?]
   (let [{:keys [transparent? set-full-height?]} render-data
         portrait? (= curr-orientation orientation/portrait)
-        on-tap #(utils/toggle-opacity index render-data portrait?)
+        last-overlay-opacity (r/atom 0)
+        on-tap #(utils/toggle-opacity index render-data portrait? last-overlay-opacity)
         tap (tap-gesture on-tap)
         double-tap (double-tap-gesture dimensions animations rescale transparent? on-tap)
         pinch (pinch-gesture dimensions animations state rescale transparent? on-tap)
@@ -227,7 +229,7 @@
                                (= curr-orientation orientation/portrait))}
       [reanimated/fast-image
        (merge
-        {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
+        {:source    {:uri (url/replace-port (:image content) (rf/sub [:mediaserver/port]))}
          :native-ID (when focused? :shared-element)
          :style     (style/image dimensions animations render-data index)}
         (when image-dimensions-nil?
@@ -242,8 +244,8 @@
             zoom-out-signal                             (rf/sub [:lightbox/zoom-out-signal])
             {:keys [set-full-height? curr-orientation]} render-data
             focused?                                    (= shared-element-id message-id)
-            ;; TODO - remove `image-dimensions` check,
-            ;; once https://github.com/status-im/status-desktop/issues/10944 is fixed
+            ;; TODO - remove `image-dimensions` check, once
+            ;; https://github.com/status-im/status-desktop/issues/10944 is fixed
             image-dimensions-nil?                       (not (and image-width image-height))
             dimensions                                  (utils/get-dimensions
                                                          (or image-width (:screen-width render-data))

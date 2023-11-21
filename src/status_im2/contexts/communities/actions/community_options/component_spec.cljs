@@ -1,11 +1,12 @@
 (ns status-im2.contexts.communities.actions.community-options.component-spec
-  (:require [re-frame.core :as re-frame]
-            [test-helpers.component :as h]
-            [status-im2.contexts.communities.actions.community-options.view :as options]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.communities.actions.community-options.view :as options]
+    [test-helpers.component :as h]))
 
 (defn setup-subs
-  [subs]
-  (doseq [keyval subs]
+  [subscriptions]
+  (doseq [keyval subscriptions]
     (re-frame/reg-sub
      (key keyval)
      (fn [_] (val keyval)))))

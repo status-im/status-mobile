@@ -1,5 +1,6 @@
 (ns react-native.touch-id
-  (:require ["react-native-touch-id" :default touchid]))
+  (:require
+    ["react-native-touch-id" :default touchid]))
 
 ;; currently, for android, react-native-touch-id
 ;; is not returning supported biometric type
@@ -15,5 +16,5 @@
 (defn authenticate
   [{:keys [on-success on-fail reason options]}]
   (-> (.authenticate ^js touchid reason (clj->js options))
-      (.then #(when on-success (on-success)))
+      (.then #(when on-success (on-success %)))
       (.catch #(when on-fail (on-fail (aget % "code"))))))

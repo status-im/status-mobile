@@ -1,129 +1,183 @@
 (ns status-im2.subs.wallet.wallet-test
-  (:require [cljs.test :refer [deftest is testing]]
+  (:require [cljs.test :refer [is testing use-fixtures]]
             [re-frame.db :as rf-db]
+            status-im2.subs.root
             [test-helpers.unit :as h]
-            [utils.money :as money]
-            [status-im2.subs.wallet.wallet :as wallet]
             [utils.re-frame :as rf]))
 
-(def money-zero (money/bignumber 0))
-(def money-eth (money/bignumber 8000000000000000000))
-(def money-snt (money/bignumber 756000000000000000000))
-(def main-account-id "0x0Fbd")
+(use-fixtures :each
+              {:before #(reset! rf-db/app-db {})})
+
+(def tokens-0x1
+  [{:decimals                   1
+    :symbol                     "ETH"
+    :name                       "Ether"
+    :balances-per-chain         {1 {:raw-balance "20" :has-error false}
+                                 2 {:raw-balance "10" :has-error false}}
+    :market-values-per-currency {:usd {:price 1000}}}
+   {:decimals                   2
+    :symbol                     "DAI"
+    :name                       "Dai Stablecoin"
+    :balances-per-chain         {1 {:raw-balance "100" :has-error false}
+                                 2 {:raw-balance "150" :has-error false}}
+    :market-values-per-currency {:usd {:price 100}}}])
+
+(def tokens-0x2
+  [{:decimals                   3
+    :symbol                     "ETH"
+    :name                       "Ether"
+    :balances-per-chain         {1 {:raw-balance "2500" :has-error false}
+                                 2 {:raw-balance "3000" :has-error false}
+                                 3 {:raw-balance "<nil>" :has-error false}}
+    :market-values-per-currency {:usd {:price 200}}}
+   {:decimals                   10
+    :symbol                     "DAI"
+    :name                       "Dai Stablecoin"
+    :balances-per-chain         {1 {:raw-balance "10000000000" :has-error false}
+                                 2 {:raw-balance "0" :has-error false}
+                                 3 {:raw-balance "<nil>" :has-error false}}
+    :market-values-per-currency {:usd {:price 1000}}}])
 
 (def accounts
-  [{:address "0x0Fbd"
-    :name    "Main account"
-    :hidden  false
-    :removed false}
-   {:address "0x5B03"
-    :name    "Secondary account"
-    :hidden  false
-    :removed false}])
+  {"0x1" {:path                     "m/44'/60'/0'/0/0"
+          :emoji                    "😃"
+          :key-uid                  "0x2f5ea39"
+          :address                  "0x1"
+          :wallet                   false
+          :name                     "Account One"
+          :type                     :generated
+          :chat                     false
+          :test-preferred-chain-ids #{5 420 421613}
+          :color                    :blue
+          :hidden                   false
+          :prod-preferred-chain-ids #{1 10 42161}
+          :position                 0
+          :clock                    1698945829328
+          :created-at               1698928839000
+          :operable                 "fully"
+          :mixedcase-address        "0x7bcDfc75c431"
+          :public-key               "0x04371e2d9d66b82f056bc128064"
+          :removed                  false
+          :tokens                   tokens-0x1}
+   "0x2" {:path                     "m/44'/60'/0'/0/1"
+          :emoji                    "💎"
+          :key-uid                  "0x2f5ea39"
+          :address                  "0x2"
+          :wallet                   false
+          :name                     "Account Two"
+          :type                     :generated
+          :chat                     false
+          :test-preferred-chain-ids #{5 420 421613}
+          :color                    :purple
+          :hidden                   false
+          :prod-preferred-chain-ids #{1 10 42161}
+          :position                 1
+          :clock                    1698945829328
+          :created-at               1698928839000
+          :operable                 "fully"
+          :mixedcase-address        "0x7bcDfc75c431"
+          :public-key               "0x04371e2d9d66b82f056bc128064"
+          :removed                  false
+          :tokens                   tokens-0x2}})
 
-(def wallet
-  {:accounts {main-account-id
-              {:balance      {:ETH money-eth :SNT money-snt}
-               :transactions {}
-               :max-block    0}
-              "0x5B03"
-              {:balance      {:ETH money-eth :SNT money-snt}
-               :transactions {}
-               :max-block    10}}})
-
-(def prices
-  {:ETH {:USD 1282.23}
-   :SNT {:USD 0.0232}})
-
-(def tokens
-  {"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-   {:address  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-    :name     "Ether"
-    :symbol   :ETH
-    :decimals 18
-    :chainId  1}
-   "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-   {:address  "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-    :name     "Status Network Token"
-    :symbol   :SNT
-    :decimals 18
-    :chainId  1}})
-
-(h/deftest-sub :balances
+(h/deftest-sub :wallet/balances
   [sub-name]
-  (swap! rf-db/app-db assoc
-    :profile/wallet-accounts accounts
-    :wallet                  wallet)
-  (is (= [{:ETH money-eth
-           :SNT money-snt}
-          {:ETH money-eth
-           :SNT money-snt}]
-         (rf/sub [sub-name]))))
+  (testing "a map: address->balance"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
 
-(h/deftest-sub :wallet/token->decimals
+    (is (= {"0x1" 3250 "0x2" 2100}
+           (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/accounts
   [sub-name]
-  (swap! rf-db/app-db assoc :wallet/all-tokens tokens)
-  (is (= {:SNT 18 :ETH 18}
-         (rf/sub [sub-name]))))
+  (testing "returns all accounts without balance"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
 
-(deftest get-balance-total-value-test
-  (is (= 697.53
-         (wallet/get-balance-total-value
-          {:ETH (money/bignumber 1000000000000000000)
-           :SNT (money/bignumber 100000000000000000000)
-           :AST (money/bignumber 10000)}
-          {:ETH {:USD 677.91}
-           :SNT {:USD 0.1562}
-           :AST {:USD 4}}
-          :USD
-          {:ETH 18
-           :SNT 18
-           :AST 4}))))
+    (is
+     (= (list {:path                     "m/44'/60'/0'/0/0"
+               :emoji                    "😃"
+               :key-uid                  "0x2f5ea39"
+               :address                  "0x1"
+               :wallet                   false
+               :name                     "Account One"
+               :type                     :generated
+               :chat                     false
+               :test-preferred-chain-ids #{5 420 421613}
+               :color                    :blue
+               :hidden                   false
+               :prod-preferred-chain-ids #{1 10 42161}
+               :position                 0
+               :clock                    1698945829328
+               :created-at               1698928839000
+               :operable                 "fully"
+               :mixedcase-address        "0x7bcDfc75c431"
+               :public-key               "0x04371e2d9d66b82f056bc128064"
+               :removed                  false
+               :tokens                   tokens-0x1}
+              {:path                     "m/44'/60'/0'/0/1"
+               :emoji                    "💎"
+               :key-uid                  "0x2f5ea39"
+               :address                  "0x2"
+               :wallet                   false
+               :name                     "Account Two"
+               :type                     :generated
+               :chat                     false
+               :test-preferred-chain-ids #{5 420 421613}
+               :color                    :purple
+               :hidden                   false
+               :prod-preferred-chain-ids #{1 10 42161}
+               :position                 1
+               :clock                    1698945829328
+               :created-at               1698928839000
+               :operable                 "fully"
+               :mixedcase-address        "0x7bcDfc75c431"
+               :public-key               "0x04371e2d9d66b82f056bc128064"
+               :removed                  false
+               :tokens                   tokens-0x2})
+        (rf/sub [sub-name])))))
 
-(h/deftest-sub :portfolio-value
+(h/deftest-sub :wallet/current-viewing-account
   [sub-name]
-  (testing "returns fallback value when balances and prices are not available"
-    (is (= "..." (rf/sub [sub-name]))))
+  (testing "returns current account with balance base"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")))
 
-  (testing "returns zero when balance is not positive"
-    (let [empty-wallet {:accounts {main-account-id
-                                   {:balance {:ETH money-zero
-                                              :SNT money-zero}}}}]
-      (swap! rf-db/app-db assoc
-        :profile/wallet-accounts accounts
-        :prices                  prices
-        :wallet                  empty-wallet
-        :wallet/all-tokens       tokens)
-      (is (= "0" (rf/sub [sub-name])))))
+    (is
+     (= {:path                     "m/44'/60'/0'/0/0"
+         :emoji                    "😃"
+         :key-uid                  "0x2f5ea39"
+         :address                  "0x1"
+         :wallet                   false
+         :name                     "Account One"
+         :type                     :generated
+         :chat                     false
+         :test-preferred-chain-ids #{5 420 421613}
+         :color                    :blue
+         :hidden                   false
+         :prod-preferred-chain-ids #{1 10 42161}
+         :position                 0
+         :clock                    1698945829328
+         :created-at               1698928839000
+         :operable                 "fully"
+         :mixedcase-address        "0x7bcDfc75c431"
+         :public-key               "0x04371e2d9d66b82f056bc128064"
+         :removed                  false
+         :balance                  3250
+         :tokens                   tokens-0x1}
+        (rf/sub [sub-name])))))
 
-  (testing "returns formatted value in the default USD currency"
-    (swap! rf-db/app-db assoc
-      :profile/wallet-accounts accounts
-      :prices                  prices
-      :wallet                  wallet
-      :wallet/all-tokens       tokens)
-    (is (= "20,550.76" (rf/sub [sub-name])))))
 
-(h/deftest-sub :account-portfolio-value
+(h/deftest-sub :wallet/addresses
   [sub-name]
-  (testing "returns fallback value when balances and prices are not available"
-    (is (= "..." (rf/sub [sub-name]))))
+  (testing "returns all addresses"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")))
 
-  (testing "returns zero when balance is not positive"
-    (let [empty-wallet {:accounts {main-account-id
-                                   {:balance {:ETH money-zero
-                                              :SNT money-zero}}}}]
-      (swap! rf-db/app-db assoc
-        :profile/wallet-accounts accounts
-        :prices                  prices
-        :wallet                  empty-wallet
-        :wallet/all-tokens       tokens)
-      (is (= "0" (rf/sub [sub-name main-account-id])))))
+    (is
+     (= (set ["0x1" "0x2"])
+        (rf/sub [sub-name])))))
 
-  (testing "returns formatted value in the default USD currency"
-    (swap! rf-db/app-db assoc
-      :profile/wallet-accounts accounts
-      :prices                  prices
-      :wallet                  wallet
-      :wallet/all-tokens       tokens)
-    (is (= "10,275.38" (rf/sub [sub-name main-account-id])))))

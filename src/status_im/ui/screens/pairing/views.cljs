@@ -1,14 +1,16 @@
 (ns status-im.ui.screens.pairing.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.pairing.styles :as styles]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.pairing.styles :as styles]
+    [utils.i18n :as i18n]))
 
 (def syncing (reagent/atom false))
 (def installation-name (reagent/atom ""))
@@ -20,8 +22,7 @@
 (defn synchronize-installations!
   []
   (reset! syncing true)
-  ;; Currently we don't know how long it takes, so we just disable for 10s, to avoid
-  ;; spamming
+  ;; Currently we don't know how long it takes, so we just disable for 10s, to avoid spamming
   (js/setTimeout #(reset! syncing false) 10000)
   (re-frame/dispatch [:pairing.ui/synchronize-installation-pressed]))
 
@@ -44,7 +45,7 @@
     (enable-installation! installation-id)))
 
 (defn footer
-  [syncing]
+  []
   [react/touchable-highlight
    {:on-press (when-not @syncing
                 synchronize-installations!)
@@ -76,7 +77,7 @@
 
 (defn your-device
   [{:keys [installation-id name device-type]}]
-  [quo/list-item
+  [list.item/list-item
    {:icon  (if (= "desktop"
                   device-type)
              :main-icons/desktop
@@ -88,7 +89,7 @@
            enabled?
            device-type
            installation-id]}]
-  [quo/list-item
+  [list.item/list-item
    {:icon      (if (= "desktop" device-type)
                  :main-icons/desktop
                  :main-icons/mobile)
@@ -152,13 +153,13 @@
 
 (views/defview installations
   []
-  (views/letsubs [installations [:pairing/installations]]
+  (views/letsubs [installs [:pairing/installations]]
     [:<>
      [react/scroll-view
-      (if (string/blank? (-> installations first :name))
+      (if (string/blank? (-> installs first :name))
         [edit-installation-name]
         [react/view
          [pair-this-device]
          [info-section]
-         [installations-list installations]])]
-     (when (seq installations) [footer syncing])]))
+         [installations-list installs]])]
+     (when (seq installs) [footer])]))

@@ -1,23 +1,25 @@
 (ns status-im2.contexts.onboarding.create-profile.view
-  (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.hooks :as hooks]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.constants :as c]
-            [status-im2.contexts.onboarding.create-profile.style :as style]
-            [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.constants :as c]
+    [status-im2.contexts.onboarding.create-profile.style :as style]
+    [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.responsiveness :as responsiveness]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
-;; 
+;;
 (def emoji-regex
   (new
    js/RegExp
@@ -130,13 +132,14 @@
           {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
           show-background?                         (show-button-background keyboard-height
                                                                            keyboard-shown
-                                                                           @content-scroll-y)]
+                                                                           @content-scroll-y)
+          {window-width :width}                    (rn/get-window)]
       [rn/view {:style style/page-container}
        [quo/page-nav
         {:margin-top navigation-bar-top
          :background :blur
          :icon-name  :i/arrow-left
-         :on-press   #(rf/dispatch [:navigate-back])}]
+         :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])}]
        [rn/scroll-view
         {:on-layout               (fn [event]
                                     (let [height (oops/oget event "nativeEvent.layout.height")]
@@ -168,14 +171,10 @@
                                      (rf/dispatch [:dismiss-keyboard])
                                      (rf/dispatch
                                       [:show-bottom-sheet
-                                       {:content
-                                        (fn []
-                                          [method-menu/view on-change-profile-pic])}]))
-              :image-picker-props  {:profile-picture     (or
-                                                          @profile-pic
-                                                          (rf/sub
-                                                           [:profile/onboarding-placeholder-avatar
-                                                            @profile-pic]))
+                                       {:content (fn []
+                                                   [method-menu/view on-change-profile-pic])
+                                        :shell?  true}]))
+              :image-picker-props  {:profile-picture     @profile-pic
                                     :full-name           (if (seq @full-name)
                                                            @full-name
                                                            (i18n/label :t/your-name))
@@ -197,12 +196,14 @@
             {:size   :paragraph-2
              :weight :medium
              :style  style/color-title}
-            (i18n/label :t/accent-colour)]
-           [quo/color-picker
-            {:blur?             true
-             :default-selected? :blue
-             :selected          @custom-color
-             :on-change         on-change}]]]]]
+            (i18n/label :t/accent-colour)]]]
+         [quo/color-picker
+          {:blur?            true
+           :default-selected :blue
+           :on-change        on-change
+           :window-width     window-width
+           :container-style  {:padding-left (responsiveness/iphone-11-Pro-20-pixel-from-width
+                                             window-width)}}]]]
 
        [rn/keyboard-avoiding-view
         {:style          {:position :absolute

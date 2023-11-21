@@ -1,43 +1,43 @@
 (ns status-im.ethereum.transactions.core
-  (:require [cljs.spec.alpha :as spec]
-            [re-frame.core :as re-frame]
-            [status-im.ens.core :as ens]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.decode :as decode]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.encode :as encode]
-            [utils.re-frame :as rf]
-            [status-im.utils.mobile-sync :as utils.mobile-sync]
-            [status-im.wallet.core :as wallet]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]))
+  (:require
+    [cljs.spec.alpha :as spec]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.decode :as decode]
+    [status-im.ethereum.encode :as encode]
+    [status-im.utils.mobile-sync :as utils.mobile-sync]
+    [status-im.wallet.core :as wallet]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.re-frame :as rf]))
 
 (def confirmations-count-threshold 12)
 
 (def etherscan-supported?
-  #{(ethereum/chain-keyword->chain-id :mainnet)
-    (ethereum/chain-keyword->chain-id :goerli)})
+  #{(chain/chain-keyword->chain-id :mainnet)
+    (chain/chain-keyword->chain-id :goerli)})
 
-(def binance-mainnet-chain-id (ethereum/chain-keyword->chain-id :bsc))
-(def binance-testnet-chain-id (ethereum/chain-keyword->chain-id :bsc-testnet))
+(def binance-mainnet-chain-id (chain/chain-keyword->chain-id :bsc))
+(def binance-testnet-chain-id (chain/chain-keyword->chain-id :bsc-testnet))
 
 (def network->subdomain {5 "goerli"})
 
 (defn get-transaction-details-url
-  [chain-id hash]
-  {:pre  [(number? chain-id) (string? hash)]
+  [chain-id tx-hash]
+  {:pre  [(number? chain-id) (string? tx-hash)]
    :post [(or (nil? %) (string? %))]}
   (cond
     (etherscan-supported? chain-id)
     (let [network-subdomain (when-let [subdomain (network->subdomain chain-id)]
                               (str subdomain "."))]
-      (str "https://" network-subdomain "etherscan.io/tx/" hash))
+      (str "https://" network-subdomain "etherscan.io/tx/" tx-hash))
 
     (= chain-id binance-mainnet-chain-id)
-    (str "https://bscscan.com/tx/" hash)
+    (str "https://bscscan.com/tx/" tx-hash)
 
     (= chain-id binance-testnet-chain-id)
-    (str "https://testnet.bscscan.com/tx/" hash)))
+    (str "https://testnet.bscscan.com/tx/" tx-hash)))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -111,6 +111,7 @@
    `trigger-fn` is a function that returns true if the watch has been triggered
    `on-trigger` is a function that returns the effects to apply when the
    transaction has been triggered"
+  {:events [:transactions/watch-transaction]}
   [{:keys [db]} transaction-id {:keys [trigger-fn on-trigger] :as watch-params}]
   (when (and (fn? trigger-fn)
              (fn? on-trigger))
@@ -141,7 +142,7 @@
                             (select-keys transactions
                                          (keys (get db :ethereum/watched-transactions)))))
                    {}
-                   (get-in db [:wallet :accounts]))]
+                   (get-in db [:wallet-legacy :accounts]))]
     (apply rf/merge
            cofx
            (map (fn [[_ transaction]]
@@ -153,7 +154,7 @@
    transaction can contain multiple transfers and they would overwrite each other
    in the transfer map if identified by hash"
   [{:keys [db] :as cofx} {:keys [hash id address] :as transfer}]
-  (let [transfer-by-hash (get-in db [:wallet :accounts address :transactions hash])]
+  (let [transfer-by-hash (get-in db [:wallet-legacy :accounts address :transactions hash])]
     (when-let [unique-id (when-not (= transfer transfer-by-hash)
                            (if (and transfer-by-hash
                                     (not (= :pending
@@ -162,22 +163,22 @@
                              hash))]
       (rf/merge cofx
                 {:db (assoc-in db
-                      [:wallet :accounts address :transactions unique-id]
+                      [:wallet-legacy :accounts address :transactions unique-id]
                       (assoc transfer :hash unique-id))}
                 (check-transaction transfer)))))
 
 (defn get-min-known-block
   [db address]
-  (get-in db [:wallet :accounts (eip55/address->checksum address) :min-block]))
+  (get-in db [:wallet-legacy :accounts (eip55/address->checksum address) :min-block]))
 
 (defn get-max-block-with-transfers
   [db address]
-  (get-in db [:wallet :accounts (eip55/address->checksum address) :max-block]))
+  (get-in db [:wallet-legacy :accounts (eip55/address->checksum address) :max-block]))
 
 (defn min-block-transfers-count
   [db address]
   (get-in db
-          [:wallet :accounts
+          [:wallet-legacy :accounts
            (eip55/address->checksum address)
            :min-block-transfers-count]))
 
@@ -194,7 +195,7 @@
               :min-block-transfers-count 1}
 
              (and (= min-block block)
-                  (nil? (get-in db [:wallet :accounts checksum :transactions hash])))
+                  (nil? (get-in db [:wallet-legacy :accounts checksum :transactions hash])))
              (update acc :min-block-transfers-count inc)
 
              :else acc))
@@ -210,7 +211,7 @@
                "min-block"                 min-block
                "min-block-transfers-count" min-block-transfers-count)
     {:db (update-in db
-                    [:wallet :accounts checksum]
+                    [:wallet-legacy :accounts checksum]
                     assoc
                     :min-block                 min-block
                     :min-block-transfers-count min-block-transfers-count)}))
@@ -219,7 +220,7 @@
   [db addresses fetching-type state]
   (update-in
    db
-   [:wallet :fetching]
+   [:wallet-legacy :fetching]
    (fn [accounts]
      (reduce
       (fn [accounts address]
@@ -241,23 +242,10 @@
   [{:keys [db] :as cofx} address]
   (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? cofx)]
     {:db (assoc-in db
-          [:wallet :fetching address :all-fetched?]
+          [:wallet-legacy :fetching address :all-fetched?]
           (if syncing-allowed?
             :all
             :all-preloaded))}))
-
-(rf/defn delete-pending-transactions
-  [{:keys [db]} address transactions]
-  (let [all-transactions
-        (get-in db [:wallet :accounts (eip55/address->checksum address) :transactions])
-        pending-tx-hashes (keep (fn [{:keys [hash]}]
-                                  (let [{:keys [type] :as old-tx}
-                                        (get all-transactions hash)]
-                                    (when (and (get all-transactions hash)
-                                               (= type :pending))
-                                      hash)))
-                                transactions)]
-    {:wallet/delete-pending-transactions pending-tx-hashes}))
 
 (rf/defn handle-new-transfer
   [{:keys [db] :as cofx} transfers {:keys [address limit]}]
@@ -273,7 +261,7 @@
 
                           (seq transfers)
                           (concat
-                           [(delete-pending-transactions address transfers)]
+                           []
                            (mapv add-transfer transfers))
 
                           (and max-known-block
@@ -290,44 +278,12 @@
                           (conj (tx-history-end-reached checksum)))]
     (apply rf/merge cofx (tx-fetching-ended [checksum]) effects)))
 
-(rf/defn check-ens-transactions
-  [{:keys [db] :as cofx} transfers]
-  (let [set-of-transactions-hash (reduce (fn [acc {:keys [hash]}] (conj acc hash)) #{} transfers)
-        registrations            (filter
-                                  (fn [[hash {:keys [state]}]]
-                                    (and
-                                     (or (= state :dismissed) (= state :submitted))
-                                     (contains? set-of-transactions-hash hash)))
-                                  (get db :ens/registrations))
-        fxs                      (map
-                                  (fn [[hash {:keys [username custom-domain?]}]]
-                                    (let [transfer            (first (filter (fn [transfer]
-                                                                               (let [transfer-hash
-                                                                                     (get transfer
-                                                                                          :hash)]
-                                                                                 (= transfer-hash hash)))
-                                                                             transfers))
-                                          type                (get transfer :type)
-                                          transaction-success (get transfer :transfer)]
-                                      (cond
-                                        (= transaction-success true)
-                                        (rf/merge cofx
-                                                  (ens/clear-ens-registration hash)
-                                                  (ens/save-username custom-domain? username false))
-                                        (= type :failed)
-                                        (ens/update-ens-tx-state :failure username custom-domain? hash)
-                                        :else
-                                        nil)))
-                                  registrations)]
-    (apply rf/merge cofx fxs)))
-
 (rf/defn new-transfers
   {:events [::new-transfers]}
   [cofx transfers params]
   (rf/merge cofx
             (handle-new-transfer transfers params)
-            (wallet/stop-fetching-on-empty-tx-history transfers)
-            (check-ens-transactions transfers)))
+            (wallet/stop-fetching-on-empty-tx-history transfers)))
 
 (rf/defn tx-fetching-failed
   {:events [::tx-fetching-failed]}
@@ -370,7 +326,7 @@
 
 (defn some-transactions-loaded?
   [db address]
-  (not-empty (get-in db [:wallet :accounts address :transactions])))
+  (not-empty (get-in db [:wallet-legacy :accounts address :transactions])))
 
 (rf/defn fetch-more-tx
   {:events [:transactions/fetch-more]}
@@ -381,7 +337,7 @@
     (rf/merge
      cofx
      {:transactions/get-transfers
-      {:chain-tokens      (:wallet/all-tokens db)
+      {:chain-tokens      (:wallet-legacy/all-tokens db)
        :addresses         [address]
        :before-block      min-known-block
        :fetch-more?       (utils.mobile-sync/syncing-allowed? cofx)
@@ -397,6 +353,6 @@
   {:events [:transaction/get-fetched-transfers]}
   [{:keys [db]}]
   {:transactions/get-transfers
-   {:chain-tokens (:wallet/all-tokens db)
+   {:chain-tokens (:wallet-legacy/all-tokens db)
     :addresses    (map :address (get db :profile/wallet-accounts))
     :fetch-more?  false}})

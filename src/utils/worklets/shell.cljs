@@ -1,6 +1,4 @@
-(ns utils.worklets.shell
-  (:require [utils.collection]
-            [camel-snake-kebab.core :as csk]))
+(ns utils.worklets.shell)
 
 (def bottom-tabs-worklets (js/require "../src/js/worklets/shell/bottom_tabs.js"))
 (def home-stack-worklets (js/require "../src/js/worklets/shell/home_stack.js"))
@@ -71,8 +69,8 @@
   (.screenLeft ^js floating-screen-worklets screen-state screen-width switcher-card-left-position))
 
 (defn floating-screen-top
-  [screen-state switcher-card-top-position]
-  (.screenTop ^js floating-screen-worklets screen-state switcher-card-top-position))
+  [screen-state screen-height switcher-card-top-position]
+  (.screenTop ^js floating-screen-worklets screen-state screen-height switcher-card-top-position))
 
 (defn floating-screen-width
   [screen-state screen-width switcher-card-size]
@@ -96,6 +94,4 @@
 
 (defn floating-screen-gesture-on-end
   [data]
-  (.screenGestureOnEnd
-   ^js floating-screen-worklets
-   (clj->js (utils.collection/map-keys csk/->camelCaseString data))))
+  (.screenGestureOnEnd ^js floating-screen-worklets (clj->js data)))

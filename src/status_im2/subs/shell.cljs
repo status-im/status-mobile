@@ -1,12 +1,12 @@
 (ns status-im2.subs.shell
-  (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im2.common.resources :as resources]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.common.resources :as resources]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 ;; Helper Functions
 (defn community-avatar
@@ -18,9 +18,11 @@
                       (first images)))})))
 
 (defn get-card-content
-  [{:keys [chat communities group-chat? primary-name]}]
+  [{:keys [chat communities group-chat? primary-name unviewed-messages-count unviewed-mentions-count]}]
   (let [{:keys [content-type content deleted? outgoing deleted-for-me?] :as last-message}
-        (:last-message chat)]
+        (:last-message chat)
+        unviewed-messages-count (or unviewed-messages-count (:unviewed-messages-count chat))
+        unviewed-mentions-count (or unviewed-mentions-count (:unviewed-mentions-count chat))]
     (merge
      (when last-message
        (cond
@@ -72,54 +74,67 @@
           content-type)
          {:content-type constants/content-type-contact-request}))
 
-     {:new-notifications?     (pos? (:unviewed-messages-count chat))
-      :notification-indicator (if (pos? (:unviewed-mentions-count chat))
+     {:new-notifications?     (pos? unviewed-messages-count)
+      :notification-indicator (if (or
+                                   (= (:chat-type chat) constants/one-to-one-chat-type)
+                                   (pos? unviewed-mentions-count))
                                 :counter
                                 :unread-dot)
-      :counter-label          (:unviewed-mentions-count chat)})))
+      :counter-label          (if (= (:chat-type chat) constants/one-to-one-chat-type)
+                                unviewed-messages-count
+                                unviewed-mentions-count)})))
 
 (defn one-to-one-chat-card
-  [contact names profile-picture chat id communities]
+  [contact names profile-picture chat id communities profile-customization-color]
   (let [display-name (first names)]
-    {:title               display-name
-     :avatar-params       {:full-name       display-name
-                           :profile-picture profile-picture}
-     :customization-color (or (:customization-color contact) :primary)
-     :content             (get-card-content
-                           {:chat        chat
-                            :communities communities})
-     :id                  id}))
+    {:title                       display-name
+     :avatar-params               {:full-name       display-name
+                                   :profile-picture profile-picture}
+     :customization-color         (or (:customization-color contact) :primary)
+     :content                     (get-card-content
+                                   {:chat        chat
+                                    :communities communities})
+     :id                          id
+     :profile-customization-color profile-customization-color}))
 
 (defn private-group-chat-card
-  [chat id communities primary-name]
-  {:title               (:chat-name chat)
-   :avatar-params       {}
-   :customization-color (or (:color chat) :primary)
-   :content             (get-card-content
-                         {:chat         chat
-                          :communities  communities
-                          :group-chat?  true
-                          :primary-name primary-name})
-   :id                  id})
+  [chat id communities primary-name profile-customization-color]
+  {:title                       (:chat-name chat)
+   :avatar-params               {}
+   :customization-color         (or (:color chat) :primary)
+   :content                     (get-card-content
+                                 {:chat         chat
+                                  :communities  communities
+                                  :group-chat?  true
+                                  :primary-name primary-name})
+   :id                          id
+   :profile-customization-color profile-customization-color})
 
 (defn community-card
-  [community id]
+  [community id profile-customization-color]
   (let [profile-picture (community-avatar community)]
-    {:title               (:name community)
-     :banner              {:uri (get-in (:images community) [:banner :uri])}
-     :avatar-params       (if profile-picture
-                            {:source profile-picture}
-                            {:name (:name community)})
-     :customization-color (or (:color community) :primary)
-     :content             {:community-info {:type :permission}}
-     :id                  id}))
+    {:title                       (:name community)
+     :banner                      {:uri (get-in (:images community) [:banner :uri])}
+     :avatar-params               (if profile-picture
+                                    {:source profile-picture}
+                                    {:name (:name community)})
+     :customization-color         (or (:color community) :primary)
+     :content                     (merge
+                                   {:community-info {:type :permission}}
+                                   (get-card-content
+                                    {:unviewed-messages-count (:unviewed-messages-count community)
+                                     :unviewed-mentions-count (:unviewed-mentions-count community)}))
+     :id                          id
+     :profile-customization-color profile-customization-color}))
 
 (defn community-channel-card
-  [community community-id channel channel-id]
+  [community community-id channel channel-id profile-customization-color]
   (merge
-   (community-card community community-id)
-   {:content             {:community-channel {:emoji        (:emoji channel)
-                                              :channel-name (str "# " (:name channel))}}
+   (community-card community community-id profile-customization-color)
+   {:content             (merge
+                          {:community-channel {:emoji        (:emoji channel)
+                                               :channel-name (str "# " (:name channel))}}
+                          (get-card-content {:chat channel}))
     :customization-color (or (:color channel) :primary)
     :channel-id          channel-id}))
 
@@ -151,14 +166,16 @@
     (re-frame/subscribe [:contacts/contact-two-names-by-identity id])
     (re-frame/subscribe [:chats/photo-path id])
     (re-frame/subscribe [:chats/chat id])
-    (re-frame/subscribe [:communities])])
- (fn [[contact names profile-picture chat communities] [_ id]]
+    (re-frame/subscribe [:communities])
+    (re-frame/subscribe [:profile/customization-color])])
+ (fn [[contact names profile-picture chat communities profile-customization-color] [_ id]]
    (one-to-one-chat-card contact
                          names
                          profile-picture
                          chat
                          id
-                         communities)))
+                         communities
+                         profile-customization-color)))
 
 (re-frame/reg-sub
  :shell/private-group-chat-card
@@ -166,33 +183,34 @@
    [(re-frame/subscribe [:chats/chat id])
     (re-frame/subscribe [:communities])
     (re-frame/subscribe [:contacts/contacts])
-    (re-frame/subscribe [:profile/profile])])
- (fn [[chat communities contacts current-multiaccount] [_ id]]
-   (let [from         (get-in chat [:last-message :from])
-         contact      (when from (multiaccounts/contact-by-identity contacts from))
-         primary-name (when from
-                        (first (multiaccounts/contact-two-names-by-identity
-                                contact
-                                current-multiaccount
-                                from)))]
-     (private-group-chat-card chat id communities primary-name))))
+    (re-frame/subscribe [:profile/profile])
+    (re-frame/subscribe [:profile/customization-color])])
+ (fn [[chat communities contacts current-profile profile-customization-color] [_ id]]
+   (let [from    (get-in chat [:last-message :from])
+         contact (if from
+                   (get contacts from {:public-key from})
+                   current-profile)]
+     (private-group-chat-card chat id communities (:primary-name contact) profile-customization-color))))
 
 (re-frame/reg-sub
  :shell/community-card
  (fn [[_ id] _]
-   [(re-frame/subscribe [:communities/community id])])
- (fn [[community] [_ id]]
-   (community-card community id)))
+   [(re-frame/subscribe [:communities/community id])
+    (re-frame/subscribe [:communities/unviewed-counts id])
+    (re-frame/subscribe [:profile/customization-color])])
+ (fn [[community unviewed-counts profile-customization-color] [_ id]]
+   (community-card (merge community unviewed-counts) id profile-customization-color)))
 
 (re-frame/reg-sub
  :shell/community-channel-card
  (fn [[_ channel-id] _]
    [(re-frame/subscribe [:chats/chat channel-id])
-    (re-frame/subscribe [:communities])])
- (fn [[channel communities] [_ channel-id]]
+    (re-frame/subscribe [:communities])
+    (re-frame/subscribe [:profile/customization-color])])
+ (fn [[channel communities profile-customization-color] [_ channel-id]]
    (let [community-id (:community-id channel)
          community    (get communities (:community-id channel))]
-     (community-channel-card community community-id channel channel-id))))
+     (community-channel-card community community-id channel channel-id profile-customization-color))))
 
 ;; Bottom tabs
 (re-frame/reg-sub
@@ -210,10 +228,18 @@
                   (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count))
 
               (and (not muted)
-                   (#{constants/private-group-chat-type constants/one-to-one-chat-type} chat-type))
+                   (= chat-type constants/private-group-chat-type))
               (-> acc
                   (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
                   (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count))
+
+              (and (not muted)
+                   (= chat-type constants/one-to-one-chat-type))
+              ;; Note - for 1-1 chats, all unread messages are counted as mentions and shown with counter
+              (-> acc
+                  (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
+                  (update-in [:chats-stack :unviewed-mentions-count] + unviewed-messages-count))
+
               :else
               acc))
           {:chats-stack     {:unviewed-messages-count 0 :unviewed-mentions-count 0}
@@ -227,8 +253,10 @@
        :counter-label          (:unviewed-mentions-count community-stack)}
       :chats-stack
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
-       :notification-indicator :counter
-       :counter-label          (:unviewed-messages-count chats-stack)}})))
+       :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack))
+                                 :counter
+                                 :unread-dot)
+       :counter-label          (:unviewed-mentions-count chats-stack)}})))
 
 ;; Floating screens
 (re-frame/reg-sub

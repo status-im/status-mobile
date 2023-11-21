@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.profile.visibility-status.utils
-  (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.ui.screens.profile.visibility-status.styles :as styles]
-            [utils.datetime :as datetime]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.foundations.colors :as quo.colors]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.screens.profile.visibility-status.styles :as styles]
+    [status-im2.constants :as constants]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 ;; Specs:
 ;; :visibility-status-automatic
@@ -24,7 +24,7 @@
    {:color colors/red
     :title (i18n/label :t/error)}
    constants/visibility-status-automatic
-   {:color    quo2.colors/success-50
+   {:color    quo.colors/success-50
     :title    (i18n/label :t/status-automatic)
     :subtitle (i18n/label :t/status-automatic-subtitle)}
    constants/visibility-status-dnd
@@ -32,7 +32,7 @@
     :title    (i18n/label :t/status-dnd)
     :subtitle (i18n/label :t/status-dnd-subtitle)}
    constants/visibility-status-always-online
-   {:color quo2.colors/success-50
+   {:color quo.colors/success-50
     :title (i18n/label :t/status-always-online)}
    constants/visibility-status-inactive
    {:color    colors/color-inactive
@@ -77,20 +77,9 @@
   [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
   (:color (get visibility-status-type-data status-type)))
 
-(defn my-icon?
-  [public-key]
-  (or (string/blank? public-key)
-      (= public-key (rf/sub [:multiaccount/public-key]))))
-
-(defn visibility-status-update
-  [public-key my-icon?]
-  (if my-icon?
-    (rf/sub [:multiaccount/current-user-visibility-status])
-    (rf/sub [:visibility-status-updates/visibility-status-update public-key])))
-
 (defn icon-dot-accessibility-label
   [dot-color]
-  (if (= dot-color quo2.colors/success-50)
+  (if (= dot-color quo.colors/success-50)
     :online-profile-photo-dot
     :offline-profile-photo-dot))
 
@@ -100,12 +89,11 @@
 
 (defn icon-visibility-status-dot
   [public-key container-size]
-  (let [my-icon?                 (my-icon? public-key)
-        visibility-status-update (visibility-status-update public-key my-icon?)
-        size                     (icon-dot-size container-size)
-        margin                   -2
-        dot-color                (icon-dot-color visibility-status-update)
-        new-ui?                  true]
+  (let [status    (rf/sub [:visibility-status-updates/visibility-status-update public-key])
+        size      (icon-dot-size container-size)
+        margin    -2
+        dot-color (icon-dot-color status)
+        new-ui?   true]
     (merge (styles/visibility-status-dot {:color   dot-color
                                           :size    size
                                           :new-ui? new-ui?})
@@ -116,7 +104,6 @@
 
 (defn visibility-status-order
   [public-key]
-  (let [my-icon?                 (my-icon? public-key)
-        visibility-status-update (visibility-status-update public-key my-icon?)
-        dot-color                (icon-dot-color visibility-status-update)]
+  (let [status    (rf/sub [:visibility-status-updates/visibility-status-update public-key])
+        dot-color (icon-dot-color status)]
     (if (= dot-color colors/color-online) 0 1)))

@@ -1,28 +1,32 @@
 (ns status-im2.common.confirmation-drawer.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.confirmation-drawer.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.confirmation-drawer.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn avatar
   [group-chat color display-name photo-path]
   (if group-chat
     [quo/group-avatar
      {:customization-color color
-      :size                :size/s-20}]
+      :size                :size-20}]
     [quo/user-avatar
      {:full-name         display-name
       :profile-picture   photo-path
       :size              :xxs
+      :ring?             false
       :status-indicator? false}]))
 
 (defn extra-action-view
   [extra-action extra-text extra-action-selected?]
   (when extra-action
     [rn/view {:style {:margin-top 16 :flex-direction :row}}
-     [quo/checkbox {:on-change (fn [selected?] (reset! extra-action-selected? selected?))}]
+     [quo/selectors
+      {:type      :checkbox
+       :on-change #(reset! extra-action-selected? %)}]
      [quo/text {:style {:margin-left 10}} extra-text]]))
 
 (defn confirmation-drawer
@@ -33,14 +37,15 @@
       (let [{:keys [group-chat chat-id public-key color
                     profile-picture name]} context
             id                             (or chat-id public-key)
-            contact-name-by-identity       (when-not group-chat
-                                             (rf/sub [:contacts/contact-name-by-identity id]))
+            [primary-name _]               (when-not group-chat
+                                             (rf/sub [:contacts/contact-two-names-by-identity id]))
             display-name                   (cond
-                                             (= contact-name-by-identity
-                                                "Unknown") name
-                                             (= contact-name-by-identity
-                                                nil)       name
-                                             :else         contact-name-by-identity)
+                                             (= primary-name "Unknown")
+                                             name
+                                             (= primary-name nil)
+                                             name
+                                             :else
+                                             primary-name)
             photo-path                     (or profile-picture (rf/sub [:chats/photo-path id]))]
         [rn/view
          {:style               {:margin-horizontal 20}

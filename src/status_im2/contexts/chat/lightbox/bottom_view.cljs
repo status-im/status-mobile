@@ -1,14 +1,14 @@
 (ns status-im2.contexts.chat.lightbox.bottom-view
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.lightbox.style :as style]
-    [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.constants :as c]
-    [status-im2.contexts.chat.lightbox.text-sheet.view :as text-sheet]))
+    [status-im2.contexts.chat.lightbox.style :as style]
+    [status-im2.contexts.chat.lightbox.text-sheet.view :as text-sheet]
+    [utils.re-frame :as rf]))
 
 (defn get-small-item-layout
   [_ index]
@@ -49,15 +49,15 @@
   [item index _ render-data]
   [:f> f-small-image item index _ render-data])
 
-
 (defn bottom-view
-  [messages index scroll-index insets animations derived item-width props state]
+  [messages index scroll-index insets animations derived item-width props state transparent?]
   (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
-     {:colors [colors/neutral-100-opa-100 colors/neutral-100-opa-50]
-      :start  {:x 0 :y 1}
-      :end    {:x 0 :y 0}
-      :style  (style/gradient-container insets animations derived)}
+     {:colors   [colors/neutral-100-opa-100 colors/neutral-100-opa-80 colors/neutral-100-opa-0]
+      :location [0.2 0.9]
+      :start    {:x 0 :y 1}
+      :end      {:x 0 :y 0}
+      :style    (style/gradient-container insets animations derived transparent?)}
      [text-sheet/view messages animations state props]
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)

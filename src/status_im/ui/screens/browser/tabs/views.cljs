@@ -1,17 +1,18 @@
 (ns status-im.ui.screens.browser.tabs.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.utils.http :as http]))
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.plus-button :as components.plus-button]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as components]
+    [utils.i18n :as i18n]
+    [utils.url :as url]))
 
 (defn list-item
   [_]
@@ -19,7 +20,7 @@
     (fn [{:keys [browser-id name url empty-tab]}]
       [react/view {:flex-direction :row :flex 1}
        [react/view {:flex 1}
-        [quo/list-item
+        [list.item/list-item
          {:on-press            #(if empty-tab
                                   (re-frame/dispatch [:browser.ui/open-empty-tab])
                                   (re-frame/dispatch [:browser.ui/browser-item-selected browser-id]))
@@ -35,7 +36,7 @@
                                   [react/image
                                    {:onLoad #(reset! loaded true)
                                     :style  {:width 32 :height 32 :position :absolute :top 4 :left 4}
-                                    :source {:uri (str "https://" (http/url-host url) "/favicon.ico")}}])
+                                    :source {:uri (str "https://" (url/url-host url) "/favicon.ico")}}])
                                 (when-not @loaded
                                   [react/view
                                    {:width            40

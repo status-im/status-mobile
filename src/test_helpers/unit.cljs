@@ -6,12 +6,13 @@
   prefer to use it for more general purpose concepts, such as the re-frame event
   layer."
   (:require-macros test-helpers.unit)
-  (:require [re-frame.core :as rf]
-            [re-frame.db :as rf-db]
-            [re-frame.events :as rf-events]
-            [re-frame.registrar :as rf-registrar]
-            [re-frame.subs :as rf-subs]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as rf]
+    [re-frame.db :as rf-db]
+    [re-frame.events :as rf-events]
+    [re-frame.registrar :as rf-registrar]
+    [re-frame.subs :as rf-subs]
+    [taoensso.timbre :as log]))
 
 (defn db
   "A simple wrapper to get the latest value from the app db."
@@ -26,8 +27,8 @@
   []
   (rf/reg-event-db
    :test/assoc-in
-   (fn [db [_ keys value]]
-     (assoc-in db keys value))))
+   (fn [app-db [_ path value]]
+     (assoc-in app-db path value))))
 
 (defn spy-event-fx
   "Re-register event effect using id `id`, but conj to `state` the event

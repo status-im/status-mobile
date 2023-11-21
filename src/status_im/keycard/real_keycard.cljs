@@ -1,13 +1,14 @@
 (ns status-im.keycard.real-keycard
-  (:require ["react-native" :as rn]
-            ["react-native-status-keycard" :default status-keycard]
-            [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.keycard.keycard :as keycard]
-            [native-module.core :as native-module]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+    ["react-native" :as rn]
+    ["react-native-status-keycard" :default status-keycard]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [react-native.platform :as platform]
+    [status-im.keycard.keycard :as keycard]
+    [status-im.utils.deprecated-types :as types]
+    [taoensso.timbre :as log]
+    [utils.address :as address]))
 
 (defonce event-emitter
   (if platform/ios?
@@ -114,7 +115,7 @@
       (then (fn [response]
               (let [info (-> response
                              (js->clj :keywordize-keys true)
-                             (update :key-uid ethereum/normalized-hex))]
+                             (update :key-uid address/normalized-hex))]
                 (on-success info))))
       (catch on-failure)))
 
@@ -125,7 +126,7 @@
       (then (fn [response]
               (let [info (-> response
                              (js->clj :keywordize-keys true)
-                             (update :key-uid ethereum/normalized-hex))]
+                             (update :key-uid address/normalized-hex))]
                 (on-success info))))
       (catch on-failure)))
 
@@ -273,24 +274,24 @@
         (catch on-failure))))
 
 (defn sign
-  [{:keys [pin path hash on-success on-failure]}]
+  [{pin :pin path :path card-hash :hash on-success :on-success on-failure :on-failure}]
   (log/debug "keycard sign" "path" path)
-  (when (and pin hash)
+  (when (and pin card-hash)
     (if path
       (.. status-keycard
-          (signWithPath pin path hash)
+          (signWithPath pin path card-hash)
           (then on-success)
           (catch on-failure))
       (.. status-keycard
-          (sign pin hash)
+          (sign pin card-hash)
           (then on-success)
           (catch on-failure)))))
 
 (defn sign-typed-data
-  [{:keys [hash on-success on-failure]}]
-  (when hash
+  [{card-hash :hash on-success :on-success on-failure :on-failure}]
+  (when card-hash
     (.. status-keycard
-        (signPinless hash)
+        (signPinless card-hash)
         (then on-success)
         (catch on-failure))))
 

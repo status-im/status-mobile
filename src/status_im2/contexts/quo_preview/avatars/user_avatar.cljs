@@ -1,13 +1,15 @@
 (ns status-im2.contexts.quo-preview.avatars.user-avatar
-  (:require [quo2.components.avatars.user-avatar.view :as quo]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :size
     :type    :select
     :options [{:key :big}
+              {:key :size-64}
               {:key :medium}
               {:key :small}
               {:key :xs}

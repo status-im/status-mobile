@@ -1,17 +1,19 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.masked-view :as masked-view]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im2.contexts.onboarding.identifiers.profile-card.style :as style]
-            [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.masked-view :as masked-view]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.contexts.onboarding.identifiers.profile-card.style :as style]
+    [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]))
 
 (defn- f-profile-card-component
-  [{:keys [profile-picture name hash emoji-hash
+  [{:keys [profile-picture name emoji-hash
            customization-color progress]
-    :or   {customization-color :turquoise}}]
+    :or   {customization-color :turquoise}
+    :as   props}]
   (let [container-background (worklets.identifiers-highlighting/background
                               (colors/custom-color customization-color 50)
                               @progress)
@@ -48,7 +50,7 @@
       [reanimated/text
        {:number-of-lines 3
         :style           (style/user-hash user-hash-color user-hash-opacity)}
-       hash]
+       (:hash props)]
       [reanimated/view
        {:style [emoji-hash-style]}
        [quo/text

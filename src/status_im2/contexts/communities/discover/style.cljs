@@ -1,5 +1,7 @@
 (ns status-im2.contexts.communities.discover.style
-  (:require [react-native.platform :as platform]))
+  (:require
+    [react-native.platform :as platform]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]))
 
 (def screen-title-container
   {:height            56
@@ -10,10 +12,11 @@
 (def featured-communities-header
   {:flex-direction  :row
    :height          30
-   :padding-top     8
-   :margin-bottom   8
+   :padding-top     6
+   :margin-bottom   7
    :padding-right   20
    :margin-left     20
+   :align-items     :center
    :justify-content :space-between})
 
 (def featured-communities-title-container
@@ -30,6 +33,7 @@
 
 (def other-communities-container
   {:flex              1
+   :padding-bottom    (+ jump-to.constants/floating-shell-button-height 34)
    :margin-horizontal 20})
 
 (defn discover-communities-segments
@@ -57,7 +61,7 @@
    :justify-content :center})
 
 (def render-communities-container
-  {:margin-top 100})
+  {:margin-top (if platform/ios? 57 104)})
 
 (defn blur-tabs-header
   []
@@ -70,3 +74,7 @@
    :justify-content    :center
    :flex               1
    :background-color   :transparent})
+
+(def floating-shell-button
+  {:position :absolute
+   :bottom   34})

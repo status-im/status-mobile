@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.profile.user.edit-picture
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]
-            [status-im2.config :as config]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im2.config :as config]
+    [status-im2.contexts.profile.settings.events]
+    [utils.i18n :as i18n]))
 
 (def crop-size 1000)
 (def crop-opts
@@ -17,27 +18,27 @@
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (react/show-image-picker
-   #(re-frame/dispatch [::multiaccounts/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
+   #(re-frame/dispatch [:profile.settings/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
    crop-opts))
 
 (defn take-pic
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (react/show-image-picker-camera
-   #(re-frame/dispatch [::multiaccounts/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
+   #(re-frame/dispatch [:profile.settings/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
    crop-opts))
 
 (defn bottom-sheet
   [has-picture]
   (fn []
     [:<>
-     [quo/list-item
+     [list.item/list-item
       {:accessibility-label :take-photo
        :theme               :accent
        :icon                :main-icons/camera
        :title               (i18n/label :t/profile-pic-take)
        :on-press            take-pic}]
-     [quo/list-item
+     [list.item/list-item
       {:accessibility-label :pick-photo
        :icon                :main-icons/gallery
        :theme               :accent
@@ -45,9 +46,9 @@
        :on-press            pick-pic}]
      (when (and config/enable-remove-profile-picture?
                 has-picture)
-       [quo/list-item
+       [list.item/list-item
         {:accessibility-label :remove-photo
          :icon                :main-icons/delete
          :theme               :accent
          :title               (i18n/label :t/profile-pic-remove)
-         :on-press            #(re-frame/dispatch [::multiaccounts/delete-profile-picture nil])}])]))
+         :on-press            #(re-frame/dispatch [:profile.settings/delete-profile-picture nil])}])]))

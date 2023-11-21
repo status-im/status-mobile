@@ -33,7 +33,8 @@
             android:name=".MainApplication"
             android:largeHeap="true"
             android:usesCleartextTraffic="true"
-            android:extractNativeLibs="true">
+            android:extractNativeLibs="true"
+            android:requestLegacyExternalStorage="true">
 <!--        After upgrading Android Gradle Plugin to 4.2.0 and above we must get rid of `extractNativeLibs="true"`
             and use`useLegacyPackaging` flag in our app's `build.gradle`-->
         <meta-data android:name="commitHash" android:value="${commitHash}"/>
@@ -62,14 +63,14 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="join.status.im" />
-                <data android:scheme="https" android:host="join.status.im" />
+                <data android:scheme="http" android:host="status.app" />
+                <data android:scheme="https" android:host="status.app" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="status-im" />
+                <data android:scheme="status-app" />
                 <data android:scheme="ethereum" />
             </intent-filter>
         </activity>

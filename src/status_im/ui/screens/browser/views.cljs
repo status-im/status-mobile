@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.browser.views
   (:require
-    [quo.core :as quo]
-    [quo.design-system.colors :as colors]
     [re-frame.core :as re-frame]
+    [react-native.permissions :as components.permissions]
     [reagent.core :as reagent]
     [status-im.browser.core :as browser]
     [status-im.browser.webview-ref :as webview-ref]
-    [utils.i18n :as i18n]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.connectivity.view :as connectivity]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
-    [react-native.permissions :as components.permissions]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.tooltip.views :as tooltip]
     [status-im.ui.components.webview :as components.webview]
@@ -21,9 +20,10 @@
     [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
     [status-im.ui.screens.browser.styles :as styles]
     [status-im.ui.screens.wallet.components.views :as components]
-    [status-im.utils.http :as http]
     [status-im.utils.js-resources :as js-res]
-    [utils.debounce :as debounce])
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.url :as url])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-content
@@ -52,7 +52,7 @@
        [react/touchable-highlight
         {:style    styles/url-text-container
          :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-        [react/text {:number-of-lines 1} (http/url-host url-original)]])
+        [react/text {:number-of-lines 1} (url/url-host url-original)]])
      (when-not unsafe?
        [react/touchable-highlight
         {:on-press            #(.reload ^js @webview-ref/webview-ref)
@@ -192,7 +192,7 @@
    {:flex      1
     :elevation -10}
    [react/view {:flex 1}
-    (if (and unsafe? (not= (http/url-host url) ignore-unsafe))
+    (if (and unsafe? (not= (url/url-host url) ignore-unsafe))
       [site-blocked.views/view
        {:can-go-back? can-go-back?
         :site         browser-id}]
@@ -220,13 +220,14 @@
                                                         url
                                                         @webview-ref/webview-ref)
                                                        (block-resources-access-and-notify-user url))
-        ;; Extract event data here due to
-        ;; https://reactjs.org/docs/events.html#event-pooling
+        ;; Extract event data here due to https://reactjs.org/docs/events.html#event-pooling
         :on-message                                 #(re-frame/dispatch [:browser/bridge-message-received
                                                                          (.. ^js % -nativeEvent -data)])
         :on-load                                    #(re-frame/dispatch [:browser/loading-started])
         :on-error                                   #(re-frame/dispatch [:browser/error-occured])
-        :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id))}])]
+        :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id))
+        ;; https://github.com/status-im/status-mobile/issues/17854
+        :allows-inline-media-playback               true}])]
    [navigation
     {:url             url-original
      :name            name
@@ -245,16 +246,16 @@
 (views/defview browser
   []
   (views/letsubs [window-width [:dimensions/window-width]
-                  {:keys [browser-id dapp? dapp name unsafe? ignore-unsafe secure?] :as browser}
+                  {:keys [browser-id dapp? dapp name unsafe? ignore-unsafe secure?] :as current-browser}
                   [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]}
                   [:browser/options]
                   dapps-account [:dapps-account]
                   network-id [:chain-id]
                   {:keys [webview-allow-permission-requests?]} [:profile/profile]]
-    (let [can-go-back?    (browser/can-go-back? browser)
-          can-go-forward? (browser/can-go-forward? browser)
-          url-original    (browser/get-current-url browser)]
+    (let [can-go-back?    (browser/can-go-back? current-browser)
+          can-go-forward? (browser/can-go-forward? current-browser)
+          url-original    (browser/get-current-url current-browser)]
       [react/view {:style styles/browser}
        [toolbar-content url url-original secure? url-editing? unsafe?]
        [components/separator-dark]

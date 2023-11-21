@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.orientation :as orientation]
@@ -10,9 +10,9 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.lightbox.animations :as anim]
+    [status-im2.contexts.chat.lightbox.constants :as constants]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.constants :as constants]
     [utils.worklets.lightbox :as worklet]))
 
 (defn clear-timers

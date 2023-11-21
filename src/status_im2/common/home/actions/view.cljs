@@ -1,15 +1,16 @@
 (ns status-im2.common.home.actions.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [status-im2.contexts.communities.actions.chat.view :as chat-actions]
-            [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.common.mute-drawer.view :as mute-drawer]
-            [status-im2.common.muting.helpers :refer [format-mute-till]]))
+  (:require
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
+    [status-im2.common.mute-drawer.view :as mute-drawer]
+    [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.communities.actions.chat.view :as chat-actions]
+    [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -341,9 +342,9 @@
 
 (defn remove-from-group-entry
   [{:keys [public-key]} chat-id]
-  (let [username (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity public-key])]
     (entry {:icon                :i/placeholder
-            :label               (i18n/label :t/remove-user-from-group {:username username})
+            :label               (i18n/label :t/remove-user-from-group {:username primary-name})
             :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/remove-member-pressed chat-id
                                                             public-key true])
             :danger?             true

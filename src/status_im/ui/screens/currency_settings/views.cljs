@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.currency-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.screens.currency-settings.styles :as styles]))
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.screens.currency-settings.styles :as styles]))
 
 (defonce search-active? (reagent/atom false))
 
@@ -14,7 +15,7 @@
   [{:keys [id code display-name]} _ _ current-currency-id]
   (let [selected? (= id current-currency-id)]
     [react/touchable-highlight
-     {:on-press            #(re-frame/dispatch [:wallet.settings.ui/currency-selected id])
+     {:on-press            #(re-frame/dispatch [:wallet-legacy.settings.ui/currency-selected id])
       :accessibility-label :currency-item}
      [react/view styles/currency-item
       [react/text {:style styles/currency-name-text}
@@ -24,8 +25,8 @@
 
 (views/defview currency-settings
   []
-  (views/letsubs [currency-id                        [:wallet.settings/currency]
-                  {:keys [currencies search-filter]} [:search/filtered-currencies]]
+  (views/letsubs [currency-id                        [:wallet-legacy/settings-currency]
+                  {:keys [currencies search-filter]} [:wallet-legacy/search-filtered-currencies]]
     {:component-will-unmount #(do
                                 (re-frame/dispatch [:search/currency-filter-changed nil])
                                 (reset! search-active? false))}

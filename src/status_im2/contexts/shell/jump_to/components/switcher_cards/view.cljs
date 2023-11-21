@@ -1,17 +1,18 @@
 (ns status-im2.contexts.shell.jump-to.components.switcher-cards.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
-            [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
+    [status-im2.contexts.shell.jump-to.animation :as animation]
+    [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- channel-card
   [{:keys [emoji channel-name customization-color]}]
@@ -35,7 +36,7 @@
                                        community-info community-channel]
     {:keys [text parsed-text source]} :data}]
   [rn/view {:style (style/content-container new-notifications?)}
-   (case type
+   (condp = type
      shell.constants/community-card
      (case (:type community-info)
        :pending             [quo/status-tag
@@ -52,7 +53,7 @@
      shell.constants/community-channel-card
      [channel-card (assoc community-channel :customization-color color-50)]
 
-     (case content-type
+     (condp = content-type
        constants/content-type-text
        [quo/text
         {:size            :paragraph-2
@@ -66,9 +67,8 @@
 
        constants/content-type-image
        [quo/preview-list
-        {:type               :collectibles
-         :more-than-99-label (i18n/label :counter-99-plus)
-         :size               :size/s-24}
+        {:type :collectibles
+         :size :size-24}
         data]
 
        constants/content-type-sticker
@@ -91,20 +91,20 @@
          :community-logo (:avatar data)
          :community-name (:community-name data)}]
 
-       (constants/content-type-link) ;; Components not available
+       constants/content-type-link ;; Components not available
        ;; Code snippet content type is not supported yet
        [:<>]
 
        nil))])
 
 (defn notification-container
-  [{:keys [notification-indicator counter-label customization-color]}]
+  [{:keys [notification-indicator counter-label profile-customization-color]}]
   [rn/view {:style style/notification-container}
    (if (= notification-indicator :counter)
      [quo/counter
-      {:customization-color customization-color}
+      {:customization-color profile-customization-color}
       counter-label]
-     [rn/view {:style (style/unread-dot customization-color)}])])
+     [rn/view {:style (style/unread-dot profile-customization-color)}])])
 
 (defn bottom-container
   [type {:keys [new-notifications?] :as content}]
@@ -115,21 +115,22 @@
 
 (defn avatar
   [avatar-params type customization-color]
-  (case type
-    shell.constants/one-to-one-chat-card
+  (cond
+    (= type shell.constants/one-to-one-chat-card)
     [quo/user-avatar
      (merge {:size              :medium
              :status-indicator? false}
             avatar-params)]
 
-    shell.constants/private-group-chat-card
+    (= type shell.constants/private-group-chat-card)
     [quo/group-avatar
      {:customization-color customization-color
-      :size                :size/s-48
+      :size                :size-48
       :override-theme      :dark}]
 
-    (shell.constants/community-card
-     shell.constants/community-channel-card)
+    (#{shell.constants/community-card
+       shell.constants/community-channel-card}
+     type)
     (cond
       (:source avatar-params)
       [fast-image/fast-image
@@ -145,18 +146,19 @@
          :style  {:color colors/white-opa-70}}
         (string/upper-case (first (:name avatar-params)))]])
 
+    :else
     nil))
 
 (defn subtitle
   [type {:keys [content-type data]}]
-  (case type
+  (condp = type
     shell.constants/community-card
     (i18n/label :t/community)
 
     shell.constants/community-channel-card
     (i18n/label :t/community-channel)
 
-    (case content-type
+    (condp = content-type
       constants/content-type-text
       (i18n/label :t/message)
 
@@ -225,7 +227,7 @@
   []
   (let [card-ref (atom nil)]
     (fn [{:keys [avatar-params title type customization-color
-                 content banner id channel-id]}]
+                 content banner id channel-id profile-customization-color]}]
       (let [color-50 (colors/custom-color customization-color 50)]
         [rn/touchable-opacity
          {:on-press       #(calculate-card-position-and-open-screen
@@ -255,8 +257,9 @@
              :style  style/subtitle}
             (subtitle type content)]
            [bottom-container type
-            (merge {:color-50            color-50
-                    :customization-color customization-color}
+            (merge {:color-50                    color-50
+                    :customization-color         customization-color
+                    :profile-customization-color profile-customization-color}
                    content)]]
           (when avatar-params
             [rn/view {:style style/avatar-container}
@@ -298,29 +301,32 @@
 
 (defn card
   [{:keys [type] :as data}]
-  (case type
-    shell.constants/empty-card            ;; Placeholder
+  (cond
+    (= type shell.constants/empty-card) ; Placeholder
     [empty-card]
 
-    (shell.constants/one-to-one-chat-card ;; Screens Card
-     shell.constants/private-group-chat-card
-     shell.constants/community-card
-     shell.constants/community-channel-card)
+    ;; Screens Card
+    (#{shell.constants/one-to-one-chat-card
+       shell.constants/private-group-chat-card
+       shell.constants/community-card
+       shell.constants/community-channel-card}
+     type)
     [screens-card data]
 
-    shell.constants/browser-card         ;; Browser Card
+    (= type shell.constants/browser-card) ; Browser Card
     [browser-card data]
 
-    shell.constants/wallet-card          ;; Wallet Card
+    (= type shell.constants/wallet-card) ; Wallet Card
     [wallet-card data]
 
-    shell.constants/wallet-collectible   ;; Wallet Card
+    (= type shell.constants/wallet-collectible) ; Wallet Card
     [wallet-collectible data]
 
-    shell.constants/wallet-graph         ;; Wallet Card
+    (= type shell.constants/wallet-graph) ; Wallet Card
     [wallet-graph data]
 
-    shell.constants/communities-discover ;; Home Card
+    (= type shell.constants/communities-discover) ; Home Card
     [communities-discover data]
 
+    :else
     nil))

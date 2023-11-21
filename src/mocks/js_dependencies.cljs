@@ -1,6 +1,7 @@
 (ns mocks.js-dependencies
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [status-im.fleet.default-fleet :refer (default-fleets)])
+  (:require
+    [status-im.fleet.default-fleet :refer (default-fleets)])
   (:require [status-im.utils.test :as utils.test]))
 
 ;; to generate a js Proxy at js/__STATUS_MOBILE_JS_IDENTITY_PROXY__ that accept any (.xxx) call and
@@ -299,6 +300,11 @@
    {:clamp     nil
     :withPause (fn [])})
 
+(def react-native-intersection-observer
+  #js
+   {:InView     #js {}
+    :IOFlatList #js {}})
+
 (def react-native-languages
   (clj->js {:default {:language            "en"
                       :addEventListener    (fn [])
@@ -323,7 +329,11 @@
 
 (def react-native-permissions #js {:default #js {}})
 
-(def push-notification-ios #js {:default #js {:abandonPermissions identity}})
+(def push-notification-ios
+  #js
+   {:default #js
+              {:abandonPermissions              identity
+               :removeAllDeliveredNotifications identity}})
 
 (def rn-emoji-keyboard
   #js {:EmojiKeyboard #js {}})
@@ -341,7 +351,8 @@
   (clj->js {:BlurView {}}))
 
 (def react-native-camera-roll
-  (clj->js {:default #js {}}))
+  (clj->js {:default    #js {}
+            :CameraRoll #js {}}))
 
 (def react-native-orientation-locker
   (clj->js {:default                    #js {}
@@ -405,7 +416,7 @@
     "react-native-navigation"                        react-native-navigation
     "@react-native-community/push-notification-ios"  push-notification-ios
     "@react-native-community/blur"                   react-native-blur
-    "@react-native-community/cameraroll"             react-native-camera-roll
+    "@react-native-camera-roll/camera-roll"          react-native-camera-roll
     "react-native-camera-kit"                        react-native-camera-kit
     "react-native-permissions"                       react-native-permissions
     "rn-emoji-keyboard"                              rn-emoji-keyboard
@@ -420,6 +431,9 @@
     "react-native-transparent-video"                 react-native-transparent-video
     "react-native-orientation-locker"                react-native-orientation-locker
     "react-native-gifted-charts"                     react-native-gifted-charts
+    "react-native-intersection-observer"             react-native-intersection-observer
+    "../resources/data/emojis/en.json"               (js/JSON.parse (slurp
+                                                                     "./resources/data/emojis/en.json"))
     "../src/js/worklets/core.js"                     worklet-factory
     "../src/js/worklets/shell/bottom_tabs.js"        #js {}
     "../src/js/worklets/shell/home_stack.js"         #js {}

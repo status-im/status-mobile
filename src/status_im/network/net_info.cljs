@@ -1,18 +1,19 @@
 (ns status-im.network.net-info
-  (:require ["@react-native-community/netinfo" :default net-info]
-            [re-frame.core :as re-frame]
-            [status-im.mobile-sync-settings.core :as mobile-network]
-            [native-module.core :as native-module]
-            [utils.re-frame :as rf]
-            [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]))
+  (:require
+    ["@react-native-community/netinfo" :default net-info]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.mobile-sync-settings.core :as mobile-network]
+    [status-im.wallet.core :as wallet]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn change-network-status
   [{:keys [db] :as cofx} is-connected?]
   (rf/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (when (and is-connected?
-                       (or (not= (count (get-in db [:wallet :accounts]))
+                       (or (not= (count (get-in db [:wallet-legacy :accounts]))
                                  (count (get db :profile/wallet-accounts)))
                            (wallet/has-empty-balances? db)))
               (wallet/update-balances nil nil))))

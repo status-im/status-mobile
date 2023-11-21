@@ -1,7 +1,8 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as typography]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
+    [react-native.reanimated :as reanimated]))
 
 (def card-view
   {:margin-horizontal 20
@@ -36,7 +37,7 @@
     :background-color :transparent
     :height           48
     :border-color     :black
-    :border-width     3
+    :border-width     2
     :border-radius    44}))
 
 (def picture-avatar-mask
@@ -66,4 +67,5 @@
           {:margin-top 2})))
 
 (def emoji-hash
-  {:margin-top 12})
+  {:margin-top  12
+   :line-height 20.5})

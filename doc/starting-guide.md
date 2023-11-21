@@ -4,7 +4,7 @@ This document provides information on how to start developing Status App.
 
 # Getting Started
 
-To start developing start a shell for platform you are interested in.
+To start developing start a shell for the platform you are interested in.
 ```
 make shell TARGET=android
 ```
@@ -30,23 +30,23 @@ You need to have an emulator like [AVD](https://developer.android.com/studio/run
 
 #### Running on a simulator
 
-We highly recommend using the `iPhone 11 Pro` simulator as its screen dimensions match with our design.
+We highly recommend using either the `iPhone 11 Pro` or `iPhone 13` simulator as its screen dimensions match with our design.
 
-If you have Xcode `v12.x` (and above) installed in your system, you need to follow the below steps to add `iPhone 11 Pro` simulator:
+If you have Xcode `v12.x` (and above) installed in your system, you need to follow the below steps to add `iPhone 13` simulator:
 
 1. Open Xcode
 2. Menu `>` Window `>` Devices and Simulators
 3. Tap `+` button on bottom left
-4. Select **Device Type** as `iPhone 11 Pro`
+4. Select **Device Type** as `iPhone 13`
 5. Leave the **Simulator Name** empty and tap on **Create**
 
 ##### NOTE ⚠️
 
-Running `make run-ios` will target `iPhone 11 Pro` by default.
+Running `make run-ios` will target `iPhone 13` by default.
 
 If you need to run on any other simulator, you can specify the simulator type by adding the `SIMULATOR` flag:
 ```sh
-make run-ios SIMULATOR="iPhone 11 Pro"
+make run-ios SIMULATOR="iPhone 13"
 ```
 
 #### Running on a physical device
@@ -55,7 +55,7 @@ Some manual steps are necessary for [developing on a physical iOS Device](#physi
 
 # Build release
 
-To build the app, your can simply run on of the following:
+To build the app, you can simply run on of the following:
 ```
 make release-android
 make release-ios
@@ -88,9 +88,9 @@ https://facebook.github.io/react-native/docs/getting-started.html
 
 ## Configure GitHub Account
 
-The optimal way of pushing to GitHubis using SSH instead of user/pass auth.
+The optimal way of pushing to GitHub is using SSH instead of user/pass auth.
 
-It's recommented that you [add your public SSH key to your GitHub account](https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account).
+It's recommended that you [add your public SSH key to your GitHub account](https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account).
 
 ## Configure GPG Keys for signing commits
 

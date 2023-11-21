@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -51,7 +52,9 @@ public class PushNotificationActions extends BroadcastReceiver {
 
       // Notify the action.
       if(invokeApp) {
-          PushNotificationHelper helper = new PushNotificationHelper((Application) context.getApplicationContext());
+
+          IntentFilter intentFilter = new IntentFilter();
+          PushNotificationHelper helper = new PushNotificationHelper((Application) context.getApplicationContext(), intentFilter);
 
           helper.invokeApp(bundle);
       } else {

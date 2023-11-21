@@ -1,7 +1,9 @@
 (ns utils.money
-  (:require ["bignumber.js" :as BigNumber]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]))
+  (:require
+    ["bignumber.js" :as BigNumber]
+    [clojure.string :as string]
+    [schema.core :as schema]
+    [utils.i18n :as i18n]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which
@@ -236,3 +238,7 @@
 
       :else
       (str amount))))
+
+(schema/=> format-amount
+  [:=> [:cat [:maybe :int]]
+   [:maybe :string]])

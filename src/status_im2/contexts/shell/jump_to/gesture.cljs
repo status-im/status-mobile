@@ -1,10 +1,11 @@
 (ns status-im2.contexts.shell.jump-to.gesture
-  (:require [utils.re-frame :as rf]
-            [react-native.gesture :as gesture]
-            [utils.worklets.shell :as worklets.shell]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.constants :as constants]))
+  (:require
+    [react-native.gesture :as gesture]
+    [status-im2.contexts.shell.jump-to.constants :as constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.re-frame :as rf]
+    [utils.worklets.shell :as worklets.shell]))
 
 (defn on-screen-closed
   [animation-time]
@@ -12,6 +13,9 @@
    #(rf/dispatch [:shell/navigate-back constants/close-screen-without-animation])
    (or animation-time constants/shell-animation-time)))
 
+;; Make sure issue is fixed before enabling gesture for floating screens
+;; Issue: https://github.com/status-im/status-mobile/pull/16438#issuecomment-1621397789
+;; More Info: https://github.com/status-im/status-mobile/pull/16438#issuecomment-1622589147
 (defn floating-screen-gesture
   [screen-id]
   (let [{:keys [screen-left screen-state]} (get @state/shared-values-atom screen-id)

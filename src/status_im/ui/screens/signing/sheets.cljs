@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.signing.sheets
   (:require-macros [status-im.utils.views :as views])
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.signing.gas :as gas]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [utils.money :as money]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.signing.gas :as gas]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (views/defview fee-bottom-sheet
   [fee-display-symbol]
@@ -87,7 +88,7 @@
                      [gas-edit
                       max-fee-per-gas-edit
                       max-priority-fee-per-gas-edit])
-        base-fee @(re-frame/subscribe [:wallet/current-base-fee])
+        base-fee @(re-frame/subscribe [:wallet-legacy/current-base-fee])
         [fee-currency fiat-currency price]
         @(re-frame/subscribe [:signing/currencies])
         fee-eth
@@ -305,9 +306,9 @@
 
 (defn fees-warning
   []
-  (let [base-fee @(re-frame/subscribe [:wallet/current-base-fee])
+  (let [base-fee @(re-frame/subscribe [:wallet-legacy/current-base-fee])
         base-fee-gwei (money/wei-> :gwei (money/bignumber base-fee))
-        priority-fee @(re-frame/subscribe [:wallet/current-priority-fee])
+        priority-fee @(re-frame/subscribe [:wallet-legacy/current-priority-fee])
         priority-fee-gwei (money/wei-> :gwei (money/bignumber priority-fee))
         {priority-fee-edit :maxPriorityFeePerGas
          fee-edit          :maxFeePerGas}

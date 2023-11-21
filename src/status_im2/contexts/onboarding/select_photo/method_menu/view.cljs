@@ -1,9 +1,8 @@
 (ns status-im2.contexts.onboarding.select-photo.method-menu.view
   (:require
-    [quo2.core :as quo]
-    [utils.i18n :as i18n]
     ["react-native-image-crop-picker" :default image-picker]
-    [status-im.multiaccounts.core]
+    [quo.core :as quo]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (def crop-size 1000)

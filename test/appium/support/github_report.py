@@ -1,7 +1,7 @@
 import os
+
 from support.base_test_report import BaseTestReport
 from support.testrail_report import TestrailReport
-import re
 
 
 class GithubHtmlReport(BaseTestReport):
@@ -19,21 +19,22 @@ class GithubHtmlReport(BaseTestReport):
 
     def build_html_report(self, run_id):
         tests = self.get_all_tests()
-        passed_tests = self.get_passed_tests()
-        failed_tests = self.get_failed_tests()
+        passed, failed, xfailed = self.get_tests_by_status()
         not_executed_tests = TestrailReport().get_not_executed_tests(run_id)
 
         if len(tests) > 0:
-            title_html = "## %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
+            title_html = "## %.0f%% of end-end tests have passed\n" % (len(passed) / len(tests) * 100)
             summary_html = "```\n"
             summary_html += "Total executed tests: %d\n" % len(tests)
-            summary_html += "Failed tests: %d\n" % len(failed_tests)
-            summary_html += "Passed tests: %d\n" % len(passed_tests)
+            summary_html += "Failed tests: %d\n" % len(failed)
+            summary_html += "Expected to fail tests: %d\n" % len(xfailed)
+            summary_html += "Passed tests: %d\n" % len(passed)
             if not_executed_tests:
                 summary_html += "Not executed tests: %d\n" % len(not_executed_tests)
             summary_html += "```\n"
             not_executed_tests_html = str()
             failed_tests_html = str()
+            xfailed_tests_html = str()
             passed_tests_html = str()
             if not_executed_tests:
                 not_executed_tests_html = self.build_tests_table_html(not_executed_tests, run_id,
@@ -41,22 +42,30 @@ class GithubHtmlReport(BaseTestReport):
                 summary_html += "```\n"
                 summary_html += 'IDs of not executed tests: %s \n' % ','.join([str(i) for i in not_executed_tests])
                 summary_html += "```\n"
-            if failed_tests:
-                failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
+            if failed:
+                failed_tests_html = self.build_tests_table_html(failed, run_id, failed_tests=True)
                 summary_html += "```\n"
-                summary_html += 'IDs of failed tests: %s \n' % self.list_of_failed_testrail_ids(failed_tests)
+                summary_html += 'IDs of failed tests: %s \n' % self.list_of_failed_testrail_ids(failed)
                 summary_html += "```\n"
-            if passed_tests:
-                passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
-            return title_html + summary_html + not_executed_tests_html + failed_tests_html + passed_tests_html
+            if xfailed:
+                xfailed_tests_html = self.build_tests_table_html(xfailed, run_id, xfailed_tests=True)
+                summary_html += "```\n"
+                summary_html += 'IDs of expected to fail tests: %s \n' % self.list_of_failed_testrail_ids(xfailed)
+                summary_html += "```\n"
+            if passed:
+                passed_tests_html = self.build_tests_table_html(passed, run_id, failed_tests=False)
+            return title_html + summary_html + not_executed_tests_html + failed_tests_html + xfailed_tests_html \
+                + passed_tests_html
         else:
             return None
 
-    def build_tests_table_html(self, tests, run_id, failed_tests=False, not_executed_tests=False):
+    def build_tests_table_html(self, tests, run_id, failed_tests=False, xfailed_tests=False, not_executed_tests=False):
         if failed_tests:
             tests_type = "Failed tests"
         elif not_executed_tests:
             tests_type = "Not executed tests"
+        elif xfailed_tests:
+            tests_type = "Expected to fail tests"
         else:
             tests_type = "Passed tests"
         html = "<h3>%s (%d)</h3>" % (tests_type, len(tests))
@@ -66,7 +75,6 @@ class GithubHtmlReport(BaseTestReport):
 
         from tests import pytest_config_global
         pr_id = pytest_config_global['pr_number']
-        apk_name = pytest_config_global['apk']
 
         if not_executed_tests:
             html += "<li><a href=\"%s\">Rerun not executed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(

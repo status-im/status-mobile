@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.network-info.views
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ethereum.decode :as decode]
-            [native-module.core :as native-module]
-            [status-im.ui.components.react :as react]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [utils.datetime :as datetime]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ethereum.decode :as decode]
+    [status-im.ui.components.react :as react]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [utils.datetime :as datetime]))
 
 (defn get-block
   [block callback]
@@ -14,10 +15,6 @@
     :params     [block false]
     :on-success callback
     :on-error   #(js/alert (str "can't fetch latest block" %))}))
-
-(defn last-loaded-block-number
-  []
-  @(re-frame/subscribe [:ethereum/current-block]))
 
 (defn to-date
   [timestamp]
@@ -37,7 +34,7 @@
              (get-block
               (str "0x"
                    (native-module/number-to-hex
-                    (last-loaded-block-number)))
+                    @(re-frame/subscribe [:ethereum/current-block])))
               (fn [res]
                 (reset! last-loaded-block res))))))]
     (fn []

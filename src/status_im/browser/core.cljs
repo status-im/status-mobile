@@ -2,30 +2,32 @@
   (:require
     ["eth-phishing-detect" :as eth-phishing-detect]
     [clojure.string :as string]
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.browser.eip3085 :as eip3085]
     [status-im.browser.eip3326 :as eip3326]
     [status-im.browser.permissions :as browser.permissions]
     [status-im.browser.webview-ref :as webview-ref]
-    [status-im2.constants :as constants]
-    [status-im.ethereum.core :as ethereum]
     [status-im.ethereum.ens :as ens]
-    [utils.i18n :as i18n]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [native-module.core :as native-module]
     [status-im.signing.core :as signing]
     [status-im.ui.components.list-selection :as list-selection]
-    [utils.re-frame :as rf]
-    [status-im.utils.http :as http]
-    [status-im.utils.platform :as platform]
+    [status-im.utils.deprecated-types :as types]
     [status-im.utils.random :as random]
-    [status-im.utils.types :as types]
-    [status-im.utils.universal-links.utils :as links]
+    [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
+    [utils.address :as address]
     [utils.debounce :as debounce]
-    [utils.security.core :as security]))
+    [utils.ens.core :as utils.ens]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]
+    [utils.universal-links :as links]
+    [utils.url :as url]))
 
 (rf/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -75,7 +77,7 @@
 
 (defn check-if-phishing-url
   [{:keys [history history-index] :as browser}]
-  (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
+  (let [history-host (url/url-host (try (nth history history-index) (catch js/Error _)))]
     (cond-> browser history-host (assoc :unsafe? (eth-phishing-detect history-host)))))
 
 (defn resolve-ens-contenthash-callback
@@ -88,10 +90,10 @@
   [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
-          host        (http/url-host current-url)]
-      (if (and (not resolved-url) (ens/is-valid-eth-name? host))
+          host        (url/url-host current-url)]
+      (if (and (not resolved-url) (utils.ens/is-valid-eth-name? host))
         {:db                              (update db :browser/options assoc :resolving? true)
-         :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
+         :browser/resolve-ens-contenthash {:chain-id (chain/chain-id db)
                                            :ens-name host
                                            :cb       resolve-ens-contenthash-callback}}
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
@@ -162,7 +164,7 @@
   {:events [:browser/ignore-unsafe]}
   [cofx]
   (let [browser (get-current-browser (:db cofx))
-        host    (http/url-host (get-current-url browser))]
+        host    (url/url-host (get-current-url browser))]
     (update-browser cofx (assoc browser :ignore-unsafe host))))
 
 (defn can-go-forward?
@@ -194,7 +196,7 @@
   {:events [:browser.callback/resolve-ens-multihash-success]}
   [{:keys [db] :as cofx} url]
   (let [current-url (get-current-url (get-current-browser db))
-        host        (http/url-host current-url)
+        host        (url/url-host current-url)
         path        (subs current-url (+ (.indexOf ^js current-url host) (count host)))
         gateway     url]
     (rf/merge cofx
@@ -247,9 +249,9 @@
                                           (not= (.indexOf ^js url (second v)) -1))
                                         (:resolved-ens options)))
             resolved-url (if resolved-ens
-                           (http/normalize-url (string/replace url
-                                                               (second resolved-ens)
-                                                               (first resolved-ens)))
+                           (url/normalize-url (string/replace url
+                                                              (second resolved-ens)
+                                                              (first resolved-ens)))
                            url)]
         (rf/merge cofx
                   (update-browser-history browser resolved-url)
@@ -282,7 +284,7 @@
   {:events [:browser.ui/url-submitted]}
   [cofx url]
   (let [browser        (get-current-browser (:db cofx))
-        normalized-url (http/normalize-and-decode-url url)]
+        normalized-url (url/normalize-and-decode-url url)]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
       (rf/merge cofx
@@ -296,7 +298,7 @@
   If the browser is reused, the history is flushed"
   {:events [:browser.ui/open-url]}
   [{:keys [db] :as cofx} url]
-  (let [normalized-url (http/normalize-and-decode-url url)
+  (let [normalized-url (url/normalize-and-decode-url url)
         browser        {:browser-id    (random/id)
                         :history-index 0
                         :history       [normalized-url]}]
@@ -352,12 +354,19 @@
                 :id      (int id)
                 :result  result}}})
 
+(defn utf8-to-hex
+  [s]
+  (let [hex (native-module/utf8-to-hex (str s))]
+    (if (empty? hex)
+      nil
+      hex)))
+
 (defn normalize-message
   "NOTE (andrey) there is no spec for this, so this implementation just to be compatible with MM"
   [message]
   (if (string/starts-with? message "0x")
     message
-    (ethereum/utf8-to-hex message)))
+    (utf8-to-hex message)))
 
 (defn normalize-sign-message-params
   "NOTE (andrey) we need this function, because params may be mixed up"
@@ -365,9 +374,9 @@
   (let [[first-param second-param] params]
     (when (and (string? first-param) (string? second-param))
       (cond
-        (ethereum/address? first-param)
+        (address/address? first-param)
         [first-param (if typed? second-param (normalize-message second-param))]
-        (ethereum/address? second-param)
+        (address/address? second-param)
         [second-param (if typed? first-param (normalize-message first-param))]))))
 
 (rf/defn send-to-bridge
@@ -503,7 +512,7 @@
         {:keys [dapp? name]}                                                       browser
         dapp-name                                                                  (if dapp?
                                                                                      name
-                                                                                     (http/url-host
+                                                                                     (url/url-host
                                                                                       url-original))]
     (cond
       (and (= type constants/history-state-changed)

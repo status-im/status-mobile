@@ -1,16 +1,17 @@
 (ns status-im.group-chats.core
   (:refer-clojure :exclude [remove])
-  (:require [clojure.spec.alpha :as spec]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [oops.core :as oops]
-            [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.events :as chat.events]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]
-            [utils.re-frame :as rf]
-            [status-im.data-store.invitations :as data-store.invitations]))
+  (:require
+    [clojure.spec.alpha :as spec]
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [re-frame.core :as re-frame]
+    [status-im.data-store.invitations :as data-store.invitations]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.navigation.events :as navigation]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
@@ -20,10 +21,11 @@
 
 (rf/defn handle-chat-removed
   {:events [:chat-removed]}
-  [cofx response]
+  [cofx response chat-id]
   (rf/merge cofx
             {:db         (dissoc (:db cofx) :current-chat-id)
-             :dispatch-n [[:sanitize-messages-and-process-response response]
+             :dispatch-n [[:shell/close-switcher-card chat-id]
+                          [:sanitize-messages-and-process-response response]
                           [:pop-to-root :shell-stack]]}
             (activity-center/notifications-fetch-unread-count)))
 
@@ -75,6 +77,7 @@
                       :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
 
 (rf/defn create-from-link
+  {:events [:group-chats/create-from-link]}
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
     {:dispatch [:chat/navigate-to-chat chat-id]}
@@ -117,7 +120,7 @@
   {:json-rpc/call [{:method      "wakuext_leaveGroupChat"
                     :params      [nil chat-id true]
                     :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-removed %])}]})
+                    :on-success  #(re-frame/dispatch [:chat-removed % chat-id])}]})
 
 (rf/defn remove
   "Remove chat"

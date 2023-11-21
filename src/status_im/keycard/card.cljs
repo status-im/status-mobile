@@ -1,10 +1,11 @@
 (ns status-im.keycard.card
-  (:require [re-frame.core :as re-frame]
-            [status-im.keycard.keycard :as keycard]
-            [status-im.keycard.real-keycard :as real-keycard]
-            [status-im.keycard.simulated-keycard :as simulated-keycard]
-            [status-im2.config :as config]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.keycard.keycard :as keycard]
+    [status-im.keycard.real-keycard :as real-keycard]
+    [status-im.keycard.simulated-keycard :as simulated-keycard]
+    [status-im2.config :as config]
+    [taoensso.timbre :as log]))
 
 (defonce card
   (if config/keycard-test-menu-enabled?
@@ -504,11 +505,11 @@
         (error-object->map response)]))}))
 
 (defn sign-typed-data
-  [{:keys [hash]}]
+  [{card-hash :hash}]
   (log/debug "[keycard] sign-typed-data")
   (keycard/sign-typed-data
    card
-   {:hash hash
+   {:hash card-hash
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] sign-typed-data")

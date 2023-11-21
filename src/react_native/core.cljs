@@ -1,12 +1,13 @@
 (ns react-native.core
-  (:require ["react" :as react]
-            ["react-native" :as react-native]
-            [cljs-bean.core :as bean]
-            [oops.core :as oops]
-            [react-native.flat-list :as flat-list]
-            [react-native.platform :as platform]
-            [react-native.section-list :as section-list]
-            [reagent.core :as reagent]))
+  (:require
+    ["react" :as react]
+    ["react-native" :as react-native]
+    [cljs-bean.core :as bean]
+    [oops.core :as oops]
+    [react-native.flat-list :as flat-list]
+    [react-native.platform :as platform]
+    [react-native.section-list :as section-list]
+    [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
 
@@ -16,7 +17,17 @@
 
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
-(def image (reagent/adapt-react-class (.-Image ^js react-native)))
+
+(def ^:private image-native
+  (reagent/adapt-react-class (.-Image ^js react-native)))
+
+(defn image
+  [{:keys [source] :as props}]
+  [image-native
+   (if (string? source)
+     (assoc props :source {:uri source})
+     props)])
+
 (defn image-get-size [uri callback] (.getSize ^js (.-Image ^js react-native) uri callback))
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
 (def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
@@ -34,6 +45,7 @@
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js react-native)))
 
 (def modal (reagent/adapt-react-class (.-Modal ^js react-native)))
+(def refresh-control (reagent/adapt-react-class (.-RefreshControl ^js react-native)))
 
 (def keyboard ^js (.-Keyboard ^js react-native))
 
@@ -146,3 +158,7 @@
     (reagent/adapt-react-class
      (.requireNativeComponent ^js react-native "RNSelectableTextInput"))
     view))
+
+(def linking (.-Linking react-native))
+
+(defn open-url [link] (.openURL ^js linking link))

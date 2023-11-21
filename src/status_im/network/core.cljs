@@ -1,13 +1,12 @@
 (ns status-im.network.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [utils.i18n :as i18n]
-            [status-im.node.core :as node]
-            [utils.re-frame :as rf]
-            [status-im.utils.http :as http]
-            [status-im.utils.types :as types]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.node.core :as node]
+    [status-im2.navigation.events :as navigation]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -97,31 +96,8 @@
 (rf/defn connect
   {:events [::connect-network-pressed]}
   [{:keys [db] :as cofx} network-id]
-  (if-let [config (get-in db [:networks/networks network-id :config])]
-    (if-let [upstream-url (get-in config [:UpstreamConfig :URL])]
-      {:http-post {:url        upstream-url
-                   :data       (types/clj->json {:jsonrpc "2.0"
-                                                 :method  "net_version"
-                                                 :id      2})
-                   :opts       {:headers {"Content-Type" "application/json"}}
-                   :on-success (fn [{:keys [response-body]}]
-                                 (let [response            (http/parse-payload response-body)
-                                       expected-network-id (:NetworkId config)
-                                       rpc-network-id      (when-let [res (:result response)]
-                                                             (js/parseInt res))]
-                                   (if (and network-id (= expected-network-id rpc-network-id))
-                                     (re-frame/dispatch [::connect-success network-id])
-                                     (re-frame/dispatch [::connect-failure
-                                                         (if (not= expected-network-id rpc-network-id)
-                                                           (i18n/label :t/network-invalid-network-id)
-                                                           (i18n/label :t/network-invalid-url))]))))
-                   :on-error   (fn [{:keys [response-body status-code]}]
-                                 (let [reason (if status-code
-                                                (i18n/label :t/network-invalid-status-code
-                                                            {:code status-code})
-                                                (str response-body))]
-                                   (re-frame/dispatch [::connect-failure reason])))}}
-      (connect-success cofx network-id))
+  (if (get-in db [:networks/networks network-id :config])
+    (connect-success cofx network-id)
     (connect-failure cofx "A network with the specified id doesn't exist")))
 
 (rf/defn delete
@@ -161,7 +137,7 @@
   [random-id network-name sym upstream-url chain-type chain-id]
   (let [data-dir (str "/ethereum/" (name chain-type) "_rpc")
         config   {:NetworkId      (or (when chain-id (int chain-id))
-                                      (ethereum/chain-keyword->chain-id chain-type))
+                                      (chain/chain-keyword->chain-id chain-type))
                   :DataDir        data-dir
                   :UpstreamConfig {:Enabled true
                                    :URL     upstream-url}}]

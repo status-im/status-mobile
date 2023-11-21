@@ -1,9 +1,12 @@
 (ns status-im2.contexts.quo-preview.notifications.toast
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (defn toast-button
   ([id opts] (toast-button id id opts))
@@ -66,6 +69,14 @@
     :text       "This is an example toast"
     :duration   30000}])
 
+(defn toast-button-with-user-avatar
+  []
+  [toast-button
+   "Toast: with user-avatar"
+   {:text "This is an example toast"
+    :user {:profile-picture (resources/mock-images :user-picture-female2)
+           :size            :small}}])
+
 (defn update-toast-button
   []
   (let [suffix (reagent/atom 0)]
@@ -85,31 +96,18 @@
                  :duration   3000}])}
             "update above toast"]])))))
 
-(defn preview
+(defn view
   []
-  (fn []
-    [rn/view
-     [rn/view
-      {:background-color "#508485"
-       :flex-direction   :column
-       :justify-content  :flex-start
-       :height           300}]
-     [into
-      [rn/view
-       {:flex    1
-        :padding 16}]
-      [^{:key :basic} [toast-button-basic]
-       ^{:key :with-undo-action} [toast-button-with-undo-action]
-       ^{:key :with-multiline} [toast-button-multiline]
-       ^{:key :30s-duration} [toast-button-30s-duration]
-       ^{:key :upsert}
-       [update-toast-button]]]]))
-
-(defn preview-toasts
-  []
-  [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                         1
-     :header                       [preview]
-     :key-fn                       str
-     :keyboard-should-persist-taps :always}]])
+  [preview/preview-container
+   {:component-container-style
+    {:flex-direction  :column
+     :justify-content :flex-start}}
+   [into
+    [rn/view {:style {:flex 1 :padding 16}}
+     [toast-button-basic]
+     [toast-button-with-undo-action]
+     [toast-button-multiline]
+     [toast-button-30s-duration]
+     [toast-button-with-user-avatar]
+     [update-toast-button]
+     [update-toast-button]]]])

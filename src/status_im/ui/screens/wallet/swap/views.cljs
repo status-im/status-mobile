@@ -1,22 +1,24 @@
 (ns status-im.ui.screens.wallet.swap.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.tokens :as tokens]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.slider :as slider]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [utils.re-frame :as rf]
-            [status-im.wallet.swap.core :as wallet.swap]
-            [status-im.wallet.utils :as wallet.utils]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.components.slider :as slider]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [status-im.wallet.swap.core :as wallet-legacy.swap]
+    [status-im.wallet.utils :as wallet.utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn render-asset
   [{{:keys
@@ -25,7 +27,7 @@
     :token
     currency :currency
     on-press :on-press}]
-  [quo/list-item
+  [list.item/list-item
    {:title [quo/text {:weight :medium}
             [quo/text {:weight :inherit}
              (str (if amount
@@ -47,9 +49,9 @@
 (defn asset-selector
   []
   (let [{:keys [address]} (rf/sub [:multiaccount/current-account])
-        {:keys [tokens]}  (rf/sub [:wallet/visible-assets-with-values address])
-        source?           (rf/sub [:wallet/modal-selecting-source-token?])
-        currency          (rf/sub [:wallet/currency])]
+        {:keys [tokens]}  (rf/sub [:wallet-legacy/visible-assets-with-values address])
+        source?           (rf/sub [:wallet-legacy/modal-selecting-source-token?])
+        currency          (rf/sub [:wallet-legacy/currency])]
     [:<>
      [topbar/topbar
       {:title  (if source?
@@ -67,8 +69,8 @@
          {:token    token
           :on-press #(re-frame/dispatch
                       [(if source?
-                         ::wallet.swap/set-from-token
-                         ::wallet.swap/set-to-token)
+                         ::wallet-legacy.swap/set-from-token
+                         ::wallet-legacy.swap/set-to-token)
                        (:symbol token)])
           :currency (:code currency)}])]]))
 
@@ -90,7 +92,7 @@
   [{:keys [token source?]}]
   (let [token-icon-source (-> token :icon :source)]
     [react/touchable-highlight
-     {:on-press #(re-frame/dispatch [::wallet.swap/open-asset-selector-modal source?])}
+     {:on-press #(re-frame/dispatch [::wallet-legacy.swap/open-asset-selector-modal source?])}
      [react/view
       {:style {:flex-direction     :row
                :align-items        :center
@@ -137,7 +139,7 @@
         :editable            true
         :auto-focus          true
         :on-change-text      #(re-frame/dispatch [(when source?
-                                                    ::wallet.swap/set-from-token-amount)
+                                                    ::wallet-legacy.swap/set-from-token-amount)
                                                   %])
         :placeholder         "0.0"}]]
      [token-display
@@ -150,7 +152,7 @@
    {:margin-vertical 8}
    [quo/separator]
    [react/touchable-opacity
-    {:on-press #(re-frame/dispatch [::wallet.swap/switch-from-token-with-to])}
+    {:on-press #(re-frame/dispatch [::wallet-legacy.swap/switch-from-token-with-to])}
     [react/view
      {:style {:background-color colors/gray-lighter
               :width            40
@@ -176,7 +178,7 @@
             :border-radius 12
             :margin-top    12
             :border-color  colors/gray-lighter}}
-   [quo/list-item
+   [list.item/list-item
     {:title title
      :subtitle body
      :active-background-enabled
@@ -346,7 +348,7 @@
         :on-change  #()
         :on-save    #()}]
 
-      [quo/list-item
+      [list.item/list-item
        {:title             (i18n/label :t/maximum-fee)
         :text-size         :base
         :title-text-weight :regular
@@ -383,7 +385,7 @@
         :on-change  #()
         :on-save    #()}]
 
-      [quo/list-item
+      [list.item/list-item
        {:title             (i18n/label :t/price-impact)
         :text-size         :base
         :title-text-weight :regular
@@ -410,7 +412,7 @@
     [pill-button
      {:label       (i18n/label :t/switch-to-simple-interface)
       :margin-left 0
-      :on-press    #(re-frame/dispatch [::wallet.swap/set-advanced-mode false])}]]
+      :on-press    #(re-frame/dispatch [::wallet-legacy.swap/set-advanced-mode false])}]]
    [transaction-fee-card
     {:gas-amount  21000
      :price-limit 74
@@ -430,10 +432,10 @@
   []
   (let [{:keys [name]}
         (rf/sub [:multiaccount/current-account])
-        all-tokens (rf/sub [:wallet/all-tokens])
-        from-symbol (rf/sub [:wallet/swap-from-token])
-        to-symbol (rf/sub [:wallet/swap-to-token])
-        advanced-mode? (rf/sub [:wallet/swap-advanced-mode?])
+        all-tokens (rf/sub [:wallet-legacy/all-tokens])
+        from-symbol (rf/sub [:wallet-legacy/swap-from-token])
+        to-symbol (rf/sub [:wallet-legacy/swap-to-token])
+        advanced-mode? (rf/sub [:wallet-legacy/swap-advanced-mode?])
         amount "0.02"
         from-token (tokens/symbol->token all-tokens (or from-symbol :DGX))
         to-token (tokens/symbol->token all-tokens (or to-symbol :SNT))]
@@ -479,12 +481,12 @@
          [quo/text {} (i18n/label :t/priority)]
          [pill-button
           {:label    (i18n/label :t/advanced)
-           :on-press #(re-frame/dispatch [::wallet.swap/set-advanced-mode true])}]]
+           :on-press #(re-frame/dispatch [::wallet-legacy.swap/set-advanced-mode true])}]]
 
         [quo/text {:color :secondary} "0.0034 ETH/ $ 8.09"]])
 
      (comment
-       (re-frame/dispatch [::wallet.swap/set-advanced-mode false]))
+       (re-frame/dispatch [::wallet-legacy.swap/set-advanced-mode false]))
 
      (when-not advanced-mode?
        [react/view {:style {:padding-horizontal 16}}

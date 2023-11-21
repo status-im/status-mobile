@@ -1,48 +1,57 @@
 (ns status-im2.navigation.screens
   (:require
+    [status-im.ui.screens.screens :as old-screens]
     [status-im2.config :as config]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
+    [status-im2.contexts.chat.camera.view :as camera-screen]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
     [status-im2.contexts.chat.new-chat.view :as new-chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
-    [status-im2.contexts.chat.camera.view :as camera-screen]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.onboarding.intro.view :as intro]
+    [status-im2.contexts.emoji-picker.view :as emoji-picker]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
     [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+    [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
+    [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.identifiers.view :as identifiers]
-    [status-im2.contexts.onboarding.welcome.view :as welcome]
+    [status-im2.contexts.onboarding.intro.view :as intro]
     [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
-    [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
-    [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
-    [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.navigation.transitions :as transitions]
+    [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
+    [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.shell.jump-to.view :as shell]
     [status-im2.contexts.shell.share.view :as share]
-    [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
+    [status-im2.contexts.status-im-preview.main :as status-im-preview]
     [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
+    [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im2.contexts.wallet.account.bridge.view :as bridge]
     [status-im2.contexts.wallet.account.view :as wallet-accounts]
-    [status-im2.contexts.wallet.collectible.view :as wallet-collectibles]
+    [status-im2.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
+    [status-im2.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
+    [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
+    [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
+    [status-im2.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
-    [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
+    [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
-    [status-im2.contexts.wallet.send.view :as wallet-send]
-    [status-im.ui.screens.screens :as old-screens]
-    [status-im2.navigation.options :as options]))
+    [status-im2.contexts.wallet.scan-account.view :as scan-address]
+    [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
+    [status-im2.navigation.options :as options]
+    [status-im2.navigation.transitions :as transitions]))
 
 (defn screens
   []
@@ -102,7 +111,7 @@
      :component find-sync-code/view}
 
     {:name      :discover-communities
-     :component communities.discover/discover}
+     :component communities.discover/view}
 
     {:name      :community-overview
      :component communities.overview/overview}
@@ -118,25 +127,24 @@
     ;; Onboarding
     {:name      :intro
      :options   {:theme :dark}
+     :on-focus  [:onboarding/overlay-dismiss]
      :component intro/view}
 
     {:name      :profiles
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
+     :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}
 
-    {:name                         :new-to-status
-     :options                      {:theme :dark
-                                    :layout options/onboarding-transparent-layout
-                                    :animations (merge
-                                                 transitions/new-to-status-modal-animations
-                                                 transitions/push-animations-for-transparent-background)
-                                    :popGesture false
-                                    :modalPresentationStyle :overCurrentContext
-                                    :hardwareBackButton {:dismissModalOnPress false
-                                                         :popStackOnPress     false}}
-     :hardware-back-button-handler new-to-status/navigate-back
-     :component                    new-to-status/new-to-status}
+    {:name      :new-to-status
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/new-to-status-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext}
+     :component new-to-status/new-to-status}
 
     {:name      :create-profile
      :options   {:theme      :dark
@@ -154,11 +162,15 @@
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:theme      :dark
-                 :layout     options/onboarding-transparent-layout
-                 :animations transitions/push-animations-for-transparent-background
-                 :popGesture false}
-     :component enable-biometrics/enable-biometrics}
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge transitions/new-to-status-modal-animations
+                                                transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
+     :component enable-biometrics/view}
 
     {:name      :generating-keys
      :options   {:theme              :dark
@@ -181,10 +193,7 @@
                  :layout                 options/onboarding-transparent-layout
                  :animations             (merge transitions/new-to-status-modal-animations
                                                 transitions/push-animations-for-transparent-background)
-                 :modalPresentationStyle :overCurrentContext
-                 :popGesture             false
-                 :hardwareBackButton     {:dismissModalOnPress false
-                                          :popStackOnPress     false}}
+                 :modalPresentationStyle :overCurrentContext}
      :component enable-notifications/enable-notifications}
 
     {:name      :identifiers
@@ -200,16 +209,13 @@
      :options   options/dark-screen
      :component scan-sync-code-page/view}
 
-    {:name                         :sign-in-intro
-     :options                      {:layout options/onboarding-transparent-layout
-                                    :animations (merge
-                                                 transitions/sign-in-modal-animations
-                                                 transitions/push-animations-for-transparent-background)
-                                    :modalPresentationStyle :overCurrentContext
-                                    :hardwareBackButton {:dismissModalOnPress false
-                                                         :popStackOnPress     false}}
-     :hardware-back-button-handler sign-in/navigate-back
-     :component                    sign-in/animated-view}
+    {:name      :sign-in-intro
+     :options   {:layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/sign-in-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext}
+     :component sign-in/animated-view}
 
     {:name      :sign-in
      :options   {:theme                  :dark
@@ -240,26 +246,71 @@
                  :animations transitions/push-animations-for-transparent-background}
      :component welcome/view}
 
+    {:name      :emoji-picker
+     :options   {:sheet? true}
+     :component emoji-picker/view}
+
     {:name      :wallet-accounts
+     :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
-    {:name      :wallet-collectibles
-     :component wallet-collectibles/view}
+    {:name      :wallet-edit-account
+     :component wallet-edit-account/view}
+
+    {:name      :add-address-to-watch
+     :options   {:insets {:top?    true
+                          :bottom? true}}
+     :component add-address-to-watch/view}
+
+    {:name      :confirm-address-to-watch
+     :component confirm-address-to-watch/view}
+
+    {:name      :wallet-bridge
+     :options   {:insets                 {:top? true}
+                 :modalPresentationStyle :overCurrentContext}
+     :component bridge/view}
+
+    {:name      :wallet-edit-derivation-path
+     :component wallet-edit-derivation-path/view}
+
+    {:name      :wallet-collectible
+     :component wallet-collectible/view}
+
+    {:name      :wallet-select-keypair
+     :options   {:insets {:top? true}}
+     :component wallet-select-keypair/view}
 
     {:name      :wallet-create-account
+     :options   {:insets {:top? true}}
      :component wallet-create-account/view}
-
-    {:name      :wallet-saved-address
-     :component wallet-saved-address/view}
 
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
 
-    {:name      :wallet-send
-     :component wallet-send/view}]
+    {:name      :wallet-select-address
+     :options   {:modalPresentationStyle :overCurrentContext}
+     :component wallet-select-address/view}
+
+    {:name      :scan-address
+     :options   (merge
+                 options/dark-screen
+                 {:modalPresentationStyle :overCurrentContext})
+     :component scan-address/view}]
+
+   (when js/goog.DEBUG
+     [{:name      :dev-component-preview
+       :options   {:sheet? true}
+       :component component-preview/view}])
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
 
    (when config/quo-preview-enabled?
-     quo.preview/main-screens)))
+     quo.preview/main-screens)
+
+   (when config/quo-preview-enabled?
+     status-im-preview/screens)
+
+   (when config/quo-preview-enabled?
+     status-im-preview/main-screens)))
+

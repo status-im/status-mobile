@@ -1,25 +1,27 @@
 (ns status-im.ui.screens.keycard.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.keycard.login :as keycard.login]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.ui.screens.keycard.styles :as styles]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation])
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.keycard.login :as keycard.login]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view]
+    [status-im.ui.screens.keycard.pin.views :as pin.views]
+    [status-im.ui.screens.keycard.styles :as styles]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im2.navigation.events :as navigation]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
@@ -210,7 +212,7 @@
     :reagent-render
     (fn [account small-screen?]
       ;;TODO this should be done in a subscription
-      [photos/photo (multiaccounts/displayed-photo account)
+      [photos/photo (profile.utils/photo account)
        {:size (if small-screen? 45 61)}])}))
 
 (defn access-is-reset
@@ -449,7 +451,7 @@
 (defn- more-sheet-content
   []
   [react/view {:flex 1}
-   [quo/list-item
+   [list.item/list-item
     {:theme    :accent
      :title    (i18n/label :t/create-new-key)
      :icon     :main-icons/profile

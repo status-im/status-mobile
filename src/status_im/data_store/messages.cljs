@@ -1,7 +1,8 @@
 (ns status-im.data-store.messages
-  (:require [clojure.set :as set]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.set :as set]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn ->rpc
   [{:keys [content] :as message}]
@@ -17,10 +18,11 @@
 
 (defn- <-link-preview-rpc
   [preview]
-  (update preview
-          :thumbnail
-          (fn [thumbnail]
-            (set/rename-keys thumbnail {:dataUri :data-uri}))))
+  (update preview :thumbnail set/rename-keys {:dataUri :data-uri}))
+
+(defn ->link-preview-rpc
+  [preview]
+  (update preview :thumbnail set/rename-keys {:data-uri :dataUri}))
 
 (defn <-rpc
   [message]

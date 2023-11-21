@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.wallet.signing-phrase.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]))
 
 (views/defview signing-phrase
   []
@@ -46,7 +47,8 @@
        [quo/button
         {:on-press #(do
                       (when-not wallet-set-up-passed?
-                        (re-frame/dispatch [:multiaccounts.ui/wallet-set-up-confirmed]))
+                        (re-frame/dispatch [:profile.settings/update-value
+                                            :wallet-set-up-passed? true]))
                       (re-frame/dispatch [:hide-popover]))
          :type     :secondary}
         (i18n/label :t/ok-got-it)]]]]))

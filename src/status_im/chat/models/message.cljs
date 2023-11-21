@@ -1,16 +1,17 @@
 (ns status-im.chat.models.message
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.loading :as chat.loading]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
-            [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.contexts.chat.messages.list.state :as view.state]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.chat.models.loading :as chat.loading]
+    [status-im.data-store.messages :as data-store.messages]
+    [status-im.transport.message.protocol :as protocol]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [status-im2.contexts.chat.messages.list.state :as view.state]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn- message-loaded?
   [db chat-id message-id]
@@ -47,7 +48,7 @@
 
 (defn add-message
   [{:keys [db] :as acc} message-js chat-id message-id cursor-clock-value]
-  (let [{:keys [replace from clock-value] :as message}
+  (let [{:keys [from clock-value] :as message}
         (data-store.messages/<-rpc (types/js->clj message-js))
         acc-with-pinned-message (add-pinned-message acc chat-id message-id message)]
     (if (message-loaded? db chat-id message-id)
@@ -72,9 +73,9 @@
         (not (get-in db [:chats chat-id :users from]))
         (update :senders assoc from message)
 
-        (not (string/blank? replace))
+        (not (string/blank? (:replace message)))
         ;;TODO this is expensive
-        (hide-message chat-id replace)))))
+        (hide-message chat-id (:replace message))))))
 
 (defn reduce-js-messages
   [{:keys [db] :as acc} ^js message-js]
@@ -93,11 +94,11 @@
         (add-message acc message-js chat-id message-id cursor-clock-value)
         ;; Not in the current view, set all-loaded to false
         ;; and offload to db and update cursor if necessary
-        ;;TODO if we'll offload messages , it will conflict with end reached, so probably if we reached
-        ;;the end of visible area,
-        ;; we need to drop other messages with (< clock-value cursor-clock-value) from response-js so we
-        ;; don't update
-        ;; :cursor-clock-value because it will be changed when we loadMore message
+        ;;TODO if we'll offload messages , it will conflict with end reached, so probably if we
+        ;;reached the end of visible area,
+        ;; we need to drop other messages with (< clock-value cursor-clock-value) from response-js
+        ;; so we don't update :cursor-clock-value because it will be changed when we loadMore
+        ;; message
         {:db (cond-> (assoc-in db [:pagination-info chat-id :all-loaded?] false)
                (> clock-value cursor-clock-value)
                ;;TODO cut older messages from messages-list
@@ -114,8 +115,8 @@
         (reduce reduce-js-messages
                 {:db db :chats #{} :senders {} :transactions #{}}
                 messages-js)]
-    ;;we want to render new messages as soon as possible
-    ;;so we dispatch later all other events which can be handled async
+    ;;we want to render new messages as soon as possible so we dispatch later all other events which
+    ;;can be handled async
     {:db db
      :utils/dispatch-later
      (concat [{:ms 20 :dispatch [:process-response response-js]}]

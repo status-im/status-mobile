@@ -1,11 +1,11 @@
 (ns status-im2.contexts.quo-preview.list-items.community-list
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.community.data :as data]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.community.data :as data]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor-type
   {:type    :select
@@ -94,17 +94,15 @@
                              :active-count        112100
                              :unread-count        5})]
     (fn []
-      (let [customization-color (colors/custom-color-by-theme (:customization-color @state) 50 60)]
-        [preview/preview-container {:state state :descriptor (descriptors @state)}
-         [quo/community-list-item
-          (merge @state
-                 {:container-style     {:width 335}
-                  :logo                (resources/get-mock-image :status-logo)
-                  :tokens              (:tokens data/community)
-                  :customization-color customization-color
-                  :on-press            #(js/alert "List item pressed")
-                  :on-long-press       #(js/alert "Long pressed item")
-                  :on-press-info       #(js/alert "Info pressed")
-                  :members             (when (:members? @state)
-                                         {:members-count (:members-count @state)
-                                          :active-count  (:active-count @state)})})]]))))
+      [preview/preview-container {:state state :descriptor (descriptors @state)}
+       [quo/community-list-item
+        (merge @state
+               {:container-style {:width 335}
+                :logo            (resources/get-mock-image :status-logo)
+                :tokens          (:tokens data/community)
+                :on-press        #(js/alert "List item pressed")
+                :on-long-press   #(js/alert "Long pressed item")
+                :on-press-info   #(js/alert "Info pressed")
+                :members         (when (:members? @state)
+                                   {:members-count (:members-count @state)
+                                    :active-count  (:active-count @state)})})]])))

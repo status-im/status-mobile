@@ -1,6 +1,6 @@
 (ns status-im2.common.device-permissions
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

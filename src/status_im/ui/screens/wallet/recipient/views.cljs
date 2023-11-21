@@ -1,23 +1,25 @@
 (ns status-im.ui.screens.wallet.recipient.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.stateofus :as stateofus]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.utils.utils :as utils]
-            [utils.debounce :as debounce]
-            [utils.string :as utils.string])
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as components]
+    [status-im.utils.utils :as utils]
+    [utils.address :as address]
+    [utils.debounce :as debounce]
+    [utils.ens.stateofus :as stateofus]
+    [utils.i18n :as i18n]
+    [utils.string :as utils.string])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- recipient-topbar
@@ -25,8 +27,8 @@
   [topbar/topbar
    {:navigation {:on-press
                  #(do
-                    (re-frame/dispatch [:wallet/recipient-modal-closed])
-                    (re-frame/dispatch [:search/recipient-filter-changed nil])
+                    (re-frame/dispatch [:wallet-legacy/recipient-modal-closed])
+                    (re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed nil])
                     (re-frame/dispatch [:navigate-back]))}
     :modal? true
     :border-bottom false
@@ -34,24 +36,24 @@
     :right-accessories
     [{:icon                :qr
       :accessibility-label :scan-contact-code-button
-      :on-press            #(re-frame/dispatch [:wallet.send/qr-scanner
+      :on-press            #(re-frame/dispatch [:wallet-legacy.send/qr-scanner
                                                 {:ignore-url true
-                                                 :handler    :wallet.send/qr-scanner-result}])}]}])
+                                                 :handler :wallet-legacy.send/qr-scanner-result}])}]}])
 
 (defonce search-active? (reagent/atom false))
 
 (defn search-input-wrapper
   []
-  (let [search-filter @(re-frame/subscribe [:search/recipient-filter])]
+  (let [search-filter @(re-frame/subscribe [:wallet-legacy/search-recipient-filter])]
     [react/view
      {:padding-horizontal 16
       :padding-vertical   10}
      [search-input/search-input-old
       {:search-active? search-active?
        :search-filter  search-filter
-       :on-cancel      #(re-frame/dispatch [:search/recipient-filter-changed nil])
+       :on-cancel      #(re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed nil])
        :on-change      (fn [text]
-                         (re-frame/dispatch [:search/recipient-filter-changed text])
+                         (re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed text])
                          (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
                          (debounce/debounce-and-dispatch [:contacts/set-new-identity text] 300))}]]))
 
@@ -60,7 +62,7 @@
   (let [opened? (reagent/atom false)]
     (fn [title cnt content]
       [react/view {:padding-vertical 8}
-       [quo/list-item
+       [list.item/list-item
         {:title title
          :on-press #(swap! opened? not)
          :accessory
@@ -78,10 +80,10 @@
 
 (defn render-account
   [account]
-  [quo/list-item
+  [list.item/list-item
    {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
     :title    (:name account)
-    :on-press #(re-frame/dispatch [:wallet.send/set-recipient (:address account)])
+    :on-press #(re-frame/dispatch [:wallet-legacy.send/set-recipient (:address account)])
     :subtitle [quo/text
                {:monospace true
                 :color     :secondary}
@@ -91,13 +93,13 @@
 
 (defn contacts-list-item
   [{:keys [name] :as contact}]
-  [quo/list-item
+  [list.item/list-item
    {:title    (:primary-name contact)
     :subtitle (:secondary-name contact)
     :on-press #(do
                  (some-> ^js @scroll-view-ref
                          (.scrollTo #js {:x 0 :animated true}))
-                 (re-frame/dispatch [:wallet.recipient/address-changed name]))
+                 (re-frame/dispatch [:wallet-legacy.recipient/address-changed name]))
     :icon     [chat-icon/contact-icon-contacts-tab contact]}])
 
 (defn empty-items
@@ -125,10 +127,10 @@
   [{:keys [from to type amount-text currency-text]}]
   (let [inbound? (= type :inbound)
         address  (if inbound? from to)]
-    [quo/list-item
+    [list.item/list-item
      {:title     [quo/text {:monospace true}
                   (utils/get-shortened-checksum-address address)]
-      :on-press  #(re-frame/dispatch [:wallet.recipient/address-changed address])
+      :on-press  #(re-frame/dispatch [:wallet-legacy.recipient/address-changed address])
       :size      :small
       :accessory [react/text
                   {:style {:flex-shrink 1
@@ -137,8 +139,8 @@
 
 (defn recent-section
   []
-  (let [{:keys [from]} @(re-frame/subscribe [:wallet/prepare-transaction])
-        txs            @(re-frame/subscribe [:wallet/recipient-recent-txs (:address from)])
+  (let [{:keys [from]} @(re-frame/subscribe [:wallet-legacy/prepare-transaction])
+        txs            @(re-frame/subscribe [:wallet-legacy/recipient-recent-txs (:address from)])
         cnt            (count txs)]
     [section
      (i18n/label :t/recent)
@@ -153,7 +155,7 @@
   [{:keys [address name]}]
   (let [noname?       (string/blank? name)
         short-address (utils/get-shortened-checksum-address address)]
-    [quo/list-item
+    [list.item/list-item
      {:icon     [chat-icon/custom-icon-view-list
                  (if noname? " 2" name)
                  (rand-nth colors/chat-colors)]
@@ -166,19 +168,19 @@
                    {:monospace true
                     :color     :secondary}
                    short-address])
-      :on-press #(re-frame/dispatch [:wallet.send/set-recipient address])
+      :on-press #(re-frame/dispatch [:wallet-legacy.send/set-recipient address])
       :size     (when noname? :small)}]))
 
 (views/defview fav-section
   []
-  (views/letsubs [favourites [:wallet/favourites-filtered]]
+  (views/letsubs [favourites [:wallet-legacy/favourites-filtered]]
     (let [cnt (count favourites)]
       [section
        (i18n/label :t/favourites)
        cnt
        [react/view
         ;;TODO implement later
-        #_[quo/list-item
+        #_[list/list-item
            {:title "Add favourite"
             :icon  :main-icons/add
             :theme :accent}]
@@ -204,7 +206,7 @@
 (views/defview search-results
   []
   (views/letsubs [contacts   [:contacts/active-with-ens-names]
-                  favourites [:wallet/favourites-filtered]
+                  favourites [:wallet-legacy/favourites-filtered]
                   accounts   [:accounts-for-recipient]]
     [react/view
      (for [account accounts]
@@ -231,7 +233,7 @@
 
 (views/defview new-favourite
   []
-  (views/letsubs [{:keys [resolved-address]} [:wallet/recipient]
+  (views/letsubs [{:keys [resolved-address]} [:wallet-legacy/recipient]
                   fav-name                   (atom "")]
     [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
      [react/view {:flex 1}
@@ -263,13 +265,14 @@
         [quo/button
          {:accessibility-label :add-fav
           :type                :secondary
-          :on-press            #(re-frame/dispatch [:wallet/add-favourite resolved-address @fav-name])}
+          :on-press            #(re-frame/dispatch [:wallet-legacy/add-favourite resolved-address
+                                                    @fav-name])}
          (i18n/label :t/add)]}]]]))
 
 (views/defview recipient
   []
-  (views/letsubs [{:keys [address resolved-address searching]} [:wallet/recipient]
-                  search-filter                                [:search/recipient-filter]]
+  (views/letsubs [{:keys [address resolved-address searching]} [:wallet-legacy/recipient]
+                  search-filter                                [:wallet-legacy/search-recipient-filter]]
     (let [disabled? (or searching (not resolved-address))]
       [kb-presentation/keyboard-avoiding-view
        {:style         {:flex 1}
@@ -293,7 +296,7 @@
             [quo/text (i18n/label :t/address-or-ens-name)]
             [quo/button
              {:type     :secondary
-              :on-press #(re-frame/dispatch [:wallet.recipient/address-paste-pressed])}
+              :on-press #(re-frame/dispatch [:wallet-legacy.recipient/address-paste-pressed])}
              (i18n/label :t/paste)]]
            [quo/text-input
             {:multiline           true
@@ -302,11 +305,12 @@
              :placeholder         (i18n/label :t/recipient-code-placeholder)
              :text-align-vertical :top
              :on-change-text      #(do
-                                     (re-frame/dispatch [:set-in [:wallet/recipient :searching]
+                                     (re-frame/dispatch [:set-in [:wallet-legacy/recipient :searching]
                                                          :searching])
-                                     (debounce/debounce-and-dispatch [:wallet.recipient/address-changed
-                                                                      (utils.string/safe-trim %)]
-                                                                     600))
+                                     (debounce/debounce-and-dispatch
+                                      [:wallet-legacy.recipient/address-changed
+                                       (utils.string/safe-trim %)]
+                                      600))
              :accessibility-label :recipient-address-input}]]
           [react/view {:align-items :center :height 30 :padding-bottom 8}
            (if searching
@@ -317,7 +321,7 @@
                  :size  :small
                  :align :center
                  :color :secondary}
-                (when-not (ethereum/address? address)
+                (when-not (address/address? address)
                   (str (stateofus/username-with-domain address) " • "))
                 [quo/text
                  {:monospace true
@@ -340,5 +344,6 @@
             :type                :secondary
             :after               :main-icons/next
             :disabled            disabled?
-            :on-press            #(re-frame/dispatch [:wallet.send/set-recipient resolved-address])}
+            :on-press            #(re-frame/dispatch [:wallet-legacy.send/set-recipient
+                                                      resolved-address])}
            (i18n/label :t/done)]}]]])))

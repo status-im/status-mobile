@@ -1,53 +1,27 @@
 (ns status-im2.contexts.quo-preview.wallet.account-card
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.markdown.text :as text]
-            [quo2.core :as quo]
-            [quo2.components.icon :as icon]
-            [reagent.core :as reagent]
-            [utils.collection]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.collection]))
 
 (def descriptor
-  [{:label   "Type:"
-    :key     :type
+  [{:key     :type
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :watch-only
-               :value "Watch Only"}
-              {:key   :add-account
-               :value "Add Account"}
-              {:key   :empty
-               :value "Empty"}]}
-   {:label   "Customization color:"
-    :key     :customization-color
-    :type    :select
-    :options (map (fn [[color-kw _]]
-                    {:key   color-kw
-                     :value (name color-kw)})
-                  colors/customization)}
-   {:label "Name:"
-    :key   :name
-    :type  :text}
-   {:label "Balance:"
-    :key   :balance
-    :type  :text}
-   {:label "Percentage value:"
-    :key   :percentage-value
-    :type  :text}
-   {:label "Amount:"
-    :key   :amount
-    :type  :text}
-   {:label "Metrics:"
-    :key   :metrics?
-    :type  :boolean}
-   {:label "Loading:"
-    :key   :loading?
-    :type  :boolean}
-   {:label "Emoji:"
-    :key   :emoji
-    :type  :text}])
+    :options [{:key :default}
+              {:key :watch-only}
+              {:key :add-account}
+              {:key :empty}
+              {:key :missing-keypair}]}
+   (preview/customization-color-option)
+   {:key :name :type :text}
+   {:key :balance :type :text}
+   {:key :percentage-value :type :text}
+   {:key :amount :type :text}
+   {:key :metrics? :type :boolean}
+   {:key :loading? :type :boolean}
+   {:key :emoji :type :text}])
 
 (defn initial-state
   [type]
@@ -72,13 +46,24 @@
      :emoji               "🍑"}
 
     :watch-only
-    {:name             "Alisher account"
-     :balance          "€2,269.12"
-     :percentage-value "16.9%"
-     :amount           "€570.24"
-     :metrics?         true
-     :type             :watch-only
-     :emoji            "💸"}
+    {:name                "Ben’s fortune"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :type                :watch-only
+     :customization-color :army
+     :emoji               "💸"}
+
+    :missing-keypair
+    {:name                "Trip to Vegas"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :customization-color :turquoise
+     :type                :missing-keypair
+     :emoji               "🎲"}
 
     :add-account
     {:customization-color :blue
@@ -86,7 +71,8 @@
      :metrics?            true
      :type                :add-account}))
 
-(defn cool-preview
+
+(defn view
   []
   (let [state (reagent/atom (initial-state :default))]
     [:f>
@@ -94,39 +80,7 @@
        (rn/use-effect
         (fn [] (reset! state (initial-state (:type @state))))
         [(:type @state)])
-       [rn/view
-        {:style {:flex 1}}
-        [rn/view
-         {:style {:margin-vertical 40
-                  :padding-left    40
-                  :flex-direction  :row
-                  :align-items     :center}}
-         [text/text
-          {:size   :heading-1
-           :weight :semi-bold}
-          "Account card"]
-         [rn/view
-          {:style {:width            20
-                   :height           20
-                   :border-radius    60
-                   :background-color colors/success-50
-                   :align-items      :center
-                   :justify-content  :center
-                   :margin-left      8}}
-          [icon/icon :i/check {:color colors/white :size 16}]]]
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
-        [rn/view {:style {:align-items :center :margin-top 40}}
-         [quo/account-card @state]]])]))
-
-(defn preview-account-card
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+       [preview/preview-container
+        {:state      state
+         :descriptor descriptor}
+        [quo/account-card @state]])]))

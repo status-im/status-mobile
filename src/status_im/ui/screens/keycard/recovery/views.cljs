@@ -1,22 +1,21 @@
 (ns status-im.ui.screens.keycard.recovery.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.keycard.recovery :as keycard.recovery]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as bottom-toolbar]
-            [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.ui.screens.keycard.styles :as styles]
-            [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.identicon :as identicon])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.keycard.recovery :as keycard.recovery]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as bottom-toolbar]
+    [status-im.ui.components.tooltip.views :as tooltip]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.keycard.pin.views :as pin.views]
+    [status-im.ui.screens.keycard.styles :as styles]
+    [status-im.ui.screens.keycard.views :as keycard.views]
+    [status-im.utils.core :as utils.core]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro
@@ -80,7 +79,7 @@
 
 (defview pin
   []
-  (letsubs [pin           [:keycard/pin]
+  (letsubs [card-pin      [:keycard/pin]
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
             small-screen? [:dimensions/small-screen?]
@@ -114,7 +113,7 @@
                     :text-align :center}}
            (i18n/label :t/enter-your-code)]]]
         [pin.views/pin-view
-         {:pin           pin
+         {:pin           card-pin
           :retry-counter retry-counter
           :small-screen? small-screen?
           :status        status
@@ -206,24 +205,13 @@
        [react/view
         {:margin-horizontal 16
          :flex-direction    :column}
-        [react/view
-         {:justify-content :center
-          :align-items     :center
-          :margin-bottom   11}
-         [react/image
-          {:source {:uri (identicon/identicon whisper-public-key)}
-           :style  {:width         61
-                    :height        61
-                    :border-radius 30
-                    :border-width  1
-                    :border-color  colors/black-transparent}}]]
         [react/text
          {:style           {:text-align  :center
                             :color       colors/black
                             :font-weight "500"}
           :number-of-lines 1
           :ellipsize-mode  :middle}
-         (gfy/generate-gfy whisper-public-key)]
+         whisper-public-key]
         [quo/text
          {:style           {:margin-top 4}
           :monospace       true

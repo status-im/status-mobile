@@ -1,5 +1,6 @@
 (ns status-im.wallet.utils
-  (:require [utils.money :as money]))
+  (:require
+    [utils.money :as money]))
 
 (defn format-amount
   [amount decimals]
@@ -24,3 +25,13 @@
   (name (or (:symbol-exchange m)
             (:symbol-display m)
             (:symbol m))))
+
+(defn get-default-account
+  [accounts]
+  (some #(when (:wallet %) %) accounts))
+
+(defn default-address
+  [db]
+  (-> (get db :profile/wallet-accounts)
+      get-default-account
+      :address))

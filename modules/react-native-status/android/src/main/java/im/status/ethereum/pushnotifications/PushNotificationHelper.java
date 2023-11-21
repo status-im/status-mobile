@@ -76,8 +76,11 @@ public class PushNotificationHelper {
     private HashMap<String, Person> persons;
     private HashMap<String, StatusMessageGroup> messageGroups;
 
-    public PushNotificationHelper(Application context) {
+    private IntentFilter intentFilter;
+
+    public PushNotificationHelper(Application context, IntentFilter intentFilter) {
         this.context = context;
+        this.intentFilter = intentFilter;
         this.persons = new HashMap<String, Person>();
         this.messageGroups = new HashMap<String, StatusMessageGroup>();
         this.notificationManager = context.getSystemService(NotificationManager.class);
@@ -133,11 +136,10 @@ public class PushNotificationHelper {
             }
         };
 
-    private void registerBroadcastReceiver() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_DELETE_NOTIFICATION);
-        filter.addAction(ACTION_TAP_STOP);
-        context.registerReceiver(notificationActionReceiver, filter);
+    public void registerBroadcastReceiver() {
+        this.intentFilter.addAction(ACTION_DELETE_NOTIFICATION);
+        this.intentFilter.addAction(ACTION_TAP_STOP);
+        context.registerReceiver(notificationActionReceiver, this.intentFilter);
         Log.e(LOG_TAG, "Broadcast Receiver registered");
     }
 
@@ -684,13 +686,9 @@ public class PushNotificationHelper {
     }
     
     private Person getPerson(Bundle bundle) {
-      String base64Image = bundle.getString("icon").split(",")[1];
-      byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-      Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+     String name = bundle.getString("name");
 
-      String name = bundle.getString("name");
-
-      return new Person.Builder().setIcon(IconCompat.createWithBitmap(getCircleBitmap(decodedByte))).setName(name).build();
+      return new Person.Builder().setName(name).build();
     }
 
     private StatusMessage createMessage(Bundle data) {
@@ -737,6 +735,10 @@ public class PushNotificationHelper {
       group.removeMessage(id);
 
       this.showMessages(bundle);
+    }
+
+    public StatusMessageGroup getMessageGroup(String conversationId) {
+      return this.messageGroups.get(conversationId);
     }
 
     public void addStatusMessage(Bundle bundle) {

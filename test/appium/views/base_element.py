@@ -149,14 +149,6 @@ class BaseElement(object):
                 "Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
                     self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
-    def wait_for_staleness_of_element(self, seconds=10):
-        try:
-            return WebDriverWait(self.driver, seconds).until(expected_conditions.staleness_of(self.find_element()))
-        except TimeoutException:
-            raise TimeoutException(
-                "Device %s: %s by %s: `%s` is not stale after %s seconds" % (
-                    self.driver.number, self.name, self.by, self.locator, seconds)) from None
-
     def wait_for_rendering_ended_and_click(self, attempts=3):
         for i in range(attempts):
             try:
@@ -302,12 +294,12 @@ class BaseElement(object):
         width, height = size['width'], size['height']
         self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
 
-    def swipe_right_on_element(self):
+    def swipe_right_on_element(self, width_percentage=0.75):
         self.driver.info("Swiping right on element %s" % self.name)
         location, size = self.get_element_coordinates()
         x, y = location['x'], location['y']
         width, height = size['width'], size['height']
-        self.driver.swipe(start_x=x, start_y=y + height / 2, end_x=x + width * 0.75, end_y=y + height / 2)
+        self.driver.swipe(start_x=x, start_y=y + height / 2, end_x=x + width * width_percentage, end_y=y + height / 2)
 
     def swipe_to_web_element(self, depth=700):
         element = self.find_element()
@@ -374,10 +366,6 @@ class EditBox(BaseElement):
     def send_keys(self, value):
         self.find_element().send_keys(value)
         self.driver.info("Type `%s` to `%s`" % (self.exclude_emoji(value), self.name))
-
-    def set_value(self, value):
-        self.find_element().set_value(value)
-        self.driver.info("Set `%s` value for `%s`" % (self.exclude_emoji(value), self.name))
 
     def clear(self):
         self.find_element().clear()

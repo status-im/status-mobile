@@ -1,11 +1,11 @@
 (ns status-im.keycard.fx
-  (:require ["@react-native-async-storage/async-storage" :default AsyncStorage]
-            ["react-native" :refer (BackHandler)]
-            [re-frame.core :as re-frame]
-            [status-im.keycard.card :as card]
-            [native-module.core :as native-module]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+    ["@react-native-async-storage/async-storage" :default AsyncStorage]
+    ["react-native" :refer (BackHandler)]
+    [re-frame.core :as re-frame]
+    [status-im.keycard.card :as card]
+    [status-im.utils.deprecated-types :as types]
+    [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  :keycard/start-nfc
@@ -198,15 +198,6 @@
  :keycard/remove-listener-to-hardware-back-button
  (fn [^js listener]
    (.remove listener)))
-
-(re-frame/reg-fx
- :keycard/generate-name
- (fn [{:keys [public-key on-success]}]
-   (native-module/gfycat-identicon-async
-    public-key
-    (fn [whisper-name photo-path]
-      (re-frame/dispatch
-       [on-success whisper-name photo-path])))))
 
 (re-frame/reg-fx
  :keycard/save-multiaccount-and-login

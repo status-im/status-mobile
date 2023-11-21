@@ -1,9 +1,10 @@
 (ns utils.re-frame
   (:require-macros utils.re-frame)
-  (:require [re-frame.core :as re-frame]
-            [re-frame.interceptor :as interceptor]
-            [taoensso.timbre :as log]
-            [utils.datetime :as datetime])
+  (:require
+    [re-frame.core :as re-frame]
+    [re-frame.interceptor :as interceptor]
+    [taoensso.timbre :as log]
+    [utils.datetime :as datetime])
   (:refer-clojure :exclude [merge reduce]))
 
 (def handler-nesting-level (atom 0))
@@ -20,15 +21,6 @@
                (reset! handler-nesting-level 0))
              (log/debug "Handling re-frame event: " (first (interceptor/get-coeffect context :event)))
              context)))
-
-(defn register-handler-fx
-  ([name handler]
-   (register-handler-fx name nil handler))
-  ([name interceptors handler]
-   (re-frame/reg-event-fx
-    name
-    [debug-handlers-names (re-frame/inject-cofx :now) interceptors]
-    handler)))
 
 (defn- update-db
   [cofx fx]
@@ -87,3 +79,9 @@
 (def sub (comp deref re-frame/subscribe))
 
 (def dispatch re-frame/dispatch)
+
+(def reg-fx re-frame/reg-fx)
+
+(def dispatch-sync re-frame/dispatch-sync)
+
+(def reg-event-fx re-frame/reg-event-fx)

@@ -1,39 +1,40 @@
 (ns status-im.ui.screens.profile.group-chat.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.chat.sheets :as chat.sheets]
-            [status-im.ui.screens.chat.utils :as chat.utils]
-            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
-            [utils.debounce :as debounce])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.common.common :as components.common]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.profile-header.view :as profile-header]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im.ui.screens.chat.sheets :as chat.sheets]
+    [status-im.ui.screens.chat.utils :as chat.utils]
+    [status-im.ui.screens.profile.components.styles :as profile.components.styles]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn member-sheet
   [chat-id member us-admin?]
   [react/view
-   [quo/list-item
+   [list.item/list-item
     {:theme               :accent
      :icon                [chat-icon/contact-icon-contacts-tab member]
-     :title               (:primary-name member)
+     :title               (profile.utils/displayed-name member)
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
      :chevron             true
      :on-press            #(chat.sheets/hide-sheet-and-dispatch
                             [:chat.ui/show-profile
                              (:public-key member)])}]
-   (when (and us-admin?
-              (not (:admin? member)))
-     [quo/list-item
+   (when (and us-admin? (not (:admin? member)))
+     [list.item/list-item
       {:theme               :accent
        :title               (i18n/label :t/make-admin)
        :accessibility-label :make-admin
@@ -41,7 +42,7 @@
        :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed
                                                                    chat-id (:public-key member)])}])
    (when-not (:admin? member)
-     [quo/list-item
+     [list.item/list-item
       {:theme               :accent
        :title               (i18n/label :t/remove-from-chat)
        :accessibility-label :remove-from-chat
@@ -52,10 +53,10 @@
 
 (defn render-member
   [{:keys [public-key] :as member} _ _ {:keys [chat-id admin? current-user-identity]}]
-  (let [{:keys [primary-name secondary-name]} member]
-    [quo/list-item
+  (let [{:keys [secondary-name]} member]
+    [list.item/list-item
      (merge
-      {:title               primary-name
+      {:title               (profile.utils/displayed-name member)
        :subtitle            secondary-name
        :accessibility-label :member-item
        :icon                [chat-icon/contact-icon-contacts-tab member]
@@ -94,7 +95,7 @@
   [react/view
    [quo/list-header (i18n/label :t/members-title)]
    (when allow-adding-members?
-     [quo/list-item
+     [list.item/list-item
       {:title    (i18n/label :t/add-members)
        :icon     :main-icons/add-contact
        :theme    :accent
@@ -116,8 +117,8 @@
        (chat.utils/format-author-old contact)]
       [react/view {:flex-direction :row :align-items :flex-end}
        [react/view {:padding-left 16 :padding-top 4}
-        [photos/photo (multiaccounts/displayed-photo contact) {:size 36}]]]]
-     [quo/list-item
+        [photos/photo (profile.utils/photo contact) {:size 36}]]]]
+     [list.item/list-item
       {:theme               :accent
        :disabled            (not allow-adding-members?)
        :title               (i18n/label :t/accept)
@@ -126,7 +127,7 @@
        :icon                :main-icons/checkmark-circle
        :on-press            #(hide-sheet-and-dispatch
                               [:group-chats.ui/add-members-from-invitation id (:public-key contact)])}]
-     [quo/list-item
+     [list.item/list-item
       {:theme               :negative
        :title               (i18n/label :t/decline)
        :accessibility-label :decline-invitation-button
@@ -135,9 +136,10 @@
 
 (defn contacts-list-item
   [{:keys [from] :as invitation}]
-  (let [contact (or @(re-frame/subscribe [:contacts/contact-by-identity from]) {:public-key from})]
-    [quo/list-item
-     {:title    (multiaccounts/displayed-name contact)
+  (let [contact (or @(re-frame/subscribe [:contacts/contact-by-identity from])
+                    {:public-key from})]
+    [list.item/list-item
+     {:title    (profile.utils/displayed-name contact)
       :icon     [chat-icon/contact-icon-contacts-tab contact]
       :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                      {:content (fn []
@@ -193,7 +195,7 @@
                                 :subtitle-icon :icons/tiny-group})}
           [react/view profile.components.styles/profile-form
            (when admin?
-             [quo/list-item
+             [list.item/list-item
               {:chevron             true
                :title               (i18n/label :t/membership-requests)
                :accessibility-label :invite-chat-button
@@ -205,7 +207,7 @@
                                       (when (pos? invitations)
                                         [components.common/counter {:size 22} invitations]))
                :on-press            #(re-frame/dispatch [:navigate-to :group-chat-invite])}])
-           [quo/list-item
+           [list.item/list-item
             {:title          (i18n/label :t/pinned-messages)
              :icon           :main-icons/pin
              :accessory      :text
@@ -213,7 +215,7 @@
              :chevron        true
              :on-press       #(re-frame/dispatch [:pin-message/show-pins-bottom-sheet chat-id])}]
            (when member?
-             [quo/list-item
+             [list.item/list-item
               {:theme               :negative
                :title               (i18n/label :t/leave-chat)
                :accessibility-label :leave-chat-button

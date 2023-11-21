@@ -43,8 +43,7 @@
     (reset! emoji-kb-extra-height nil))
   (reset! maximized? false)
   (rf/dispatch [:chat.ui/set-input-maximized false])
-  (when @input-ref
-    (.blur ^js @input-ref)))
+  (utils/blur-input input-ref))
 
 (defn bounce-back
   [{:keys [height saved-height opacity background-y]}
@@ -59,7 +58,6 @@
   [{:keys [input-ref] :as props}
    {:keys [gesture-enabled?] :as state}
    {:keys [height saved-height last-height opacity background-y container-opacity] :as animations}
-   {:keys [images link-previews?]}
    {:keys [max-height lines] :as dimensions}
    keyboard-shown]
   (let [expanding?       (atom true)
@@ -82,7 +80,7 @@
         (gesture/on-update
          (fn [event]
            (let [translation    (oops/oget event "translationY")
-                 min-height     (utils/get-min-height lines images link-previews?)
+                 min-height     (utils/get-min-height lines)
                  new-height     (- (reanimated/get-shared-value saved-height) translation)
                  bounded-height (utils.number/value-in-range new-height min-height max-height)]
              (when keyboard-shown
@@ -97,13 +95,13 @@
                                 max-height
                                 bounded-height
                                 saved-height))
-                 (when @input-ref ; sheet at min-height, collapse keyboard
-                   (.blur ^js @input-ref)))))))
+                 ; sheet at min-height, collapse keyboard
+                 (utils/blur-input input-ref))))))
         (gesture/on-end (fn []
                           (let [diff (- (reanimated/get-shared-value height)
                                         (reanimated/get-shared-value saved-height))]
                             (if @gesture-enabled?
-                              (if (>= diff 0)
+                              (if (and @expanding? (>= diff 0))
                                 (if (> diff constants/drag-threshold)
                                   (maximize state animations dimensions)
                                   (bounce-back animations dimensions starting-opacity))

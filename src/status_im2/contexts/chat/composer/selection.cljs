@@ -1,9 +1,9 @@
 (ns status-im2.contexts.chat.composer.selection
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [oops.core :as oops]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

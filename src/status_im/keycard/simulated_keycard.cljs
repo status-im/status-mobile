@@ -1,22 +1,23 @@
 (ns status-im.keycard.simulated-keycard
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [re-frame.db :as re-frame.db]
-            [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [utils.i18n :as i18n]
-            [status-im.keycard.keycard :as keycard]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [native-module.core :as native-module]
-            [status-im.node.core :as node]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [re-frame.db :as re-frame.db]
+    [status-im.keycard.keycard :as keycard]
+    [status-im.multiaccounts.create.core :as multiaccounts.create]
+    [status-im.node.core :as node]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.utils :as utils]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.i18n :as i18n]))
 
 (def kk1-password "000000")
 (def default-pin "111111")
 (def default-puk "000000000000")
-(def account-password (ethereum/sha3 "no password"))
+(def account-password (native-module/sha3 "no password"))
 
 (def initial-state
   {:card-connected?  false
@@ -264,16 +265,10 @@
            constants/path-default-wallet]
           (fn [result]
             (let [derived-data (multiaccounts.create/normalize-derived-data-keys
-                                (types/json->clj result))
-                  public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-              (native-module/gfycat-identicon-async
-               public-key
-               (fn [name _]
-                 (let [derived-data-extended
-                       (update derived-data constants/path-whisper-keyword assoc :name name)]
-                   (reset! derived-acc
-                     {:root-key root-data
-                      :derived  derived-data-extended})))))))))))
+                                (types/json->clj result))]
+              (reset! derived-acc
+                {:root-key root-data
+                 :derived  derived-data}))))))))
   (when (= password (get @state :password))
     (swap! state assoc-in [:application-info :paired?] true)
     (later #(on-success (str (rand-int 10000000))))))
@@ -429,19 +424,19 @@
   (with-pin pin
             on-failure
             (if @derived-acc
-              (let [[id keys] (multiaccount->keys @derived-acc)]
+              (let [[id account-keys] (multiaccount->keys @derived-acc)]
                 (swap! state assoc-in
                   [:application-info :key-uid]
-                  (:key-uid keys))
+                  (:key-uid account-keys))
                 (native-module/multiaccount-store-derived
                  id
-                 (:key-uid keys)
+                 (:key-uid account-keys)
                  [constants/path-wallet-root
                   constants/path-eip1581
                   constants/path-whisper
                   constants/path-default-wallet]
                  account-password
-                 #(on-success keys)))
+                 #(on-success account-keys)))
               #(on-success
                 {:key-uid               (get-in @state [:application-info :key-uid])
                  :instance-uid          (get-in @state [:application-info :instance-uid])
@@ -450,7 +445,7 @@
 (def import-keys get-keys)
 
 (defn sign
-  [{:keys [pin hash data path typed? on-success on-failure]}]
+  [{:keys [pin data path typed? on-success on-failure] :as card}]
   (with-pin pin
             on-failure
             #(let [address
@@ -469,14 +464,14 @@
                  (let [params (types/clj->json
                                {:account  address
                                 :password password
-                                :data     (or data (str "0x" hash))})]
+                                :data     (or data (str "0x" (:hash card)))})]
                    (native-module/sign-message
                     params
                     (fn [res]
                       (let [signature (-> res
                                           types/json->clj
                                           :result
-                                          ethereum/normalized-hex)]
+                                          address/normalized-hex)]
                         (on-success signature)))))
                  (native-module/sign-typed-data
                   data
@@ -486,7 +481,7 @@
                     (let [signature (-> res
                                         types/json->clj
                                         :result
-                                        ethereum/normalized-hex)]
+                                        address/normalized-hex)]
                       (on-success signature))))))))
 
 (defn sign-typed-data

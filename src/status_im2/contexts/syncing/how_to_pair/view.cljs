@@ -1,5 +1,6 @@
 (ns status-im2.contexts.syncing.how-to-pair.view
-  (:require [status-im2.contexts.syncing.syncing-instructions.view :as syncing-instructions]))
+  (:require
+    [status-im2.contexts.syncing.syncing-instructions.view :as syncing-instructions]))
 
 (defn view
   []

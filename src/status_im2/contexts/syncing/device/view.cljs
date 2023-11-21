@@ -1,8 +1,8 @@
 (ns status-im2.contexts.syncing.device.view
-  [:require
-   [quo2.core :as quo]
-   [utils.i18n :as i18n]
-   [status-im2.contexts.syncing.device.style :as style]])
+  (:require
+    [quo.core :as quo]
+    [status-im2.contexts.syncing.device.style :as style]
+    [utils.i18n :as i18n]))
 
 (defn view
   [{:keys [name
@@ -12,23 +12,25 @@
            show-button?]}]
   (let [paired?   (and (not this-device?) enabled?)
         unpaired? (not enabled?)]
-    [quo/settings-list
+    [quo/settings-item
      (cond->
        {:container-style style/device-container
         :title           name
-        :override-theme  :dark
-        :left-icon       (if (= device-type :mobile) :i/mobile :i/desktop)}
-       (and show-button? unpaired?) (assoc :button-props
-                                           {:title    (i18n/label :t/pair)
-                                            :on-press #(js/alert "feature not added yet")})
-       (and show-button? paired?)   (assoc
-                                     :button-props
-                                     {:title    (i18n/label :t/unpair)
+        :blur?           true
+        :image           :icon
+        :image-props     (cond (#{:mobile :ios :android} (keyword device-type))
+                               :i/mobile
+                               :else :i/desktop)}
+       (and show-button? unpaired?) (assoc
+                                     :action :button
+                                     :action-props
+                                     {:title    (i18n/label :t/pair)
                                       :on-press #(js/alert "feature not added yet")})
+       (and show-button? paired?)   (assoc
+                                     :action :button
+                                     :action-props
+                                     {:button-text (i18n/label :t/unpair)
+                                      :on-press    #(js/alert "feature not added yet")})
        this-device?                 (assoc
-                                     :status-tag-props
-                                     {:size           :small
-                                      :status         {:type :positive}
-                                      :no-icon?       true
-                                      :label          (i18n/label :t/this-device)
-                                      :override-theme :dark}))]))
+                                     :tag       :positive
+                                     :tag-props {:label (i18n/label :t/this-device)}))]))

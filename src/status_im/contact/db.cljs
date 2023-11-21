@@ -1,21 +1,13 @@
 (ns status-im.contact.db
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.gfycat.core :as gfycat]))
-
-(defn public-key->new-contact
-  [public-key]
-  (let [alias (gfycat/generate-gfy public-key)]
-    {:alias        alias
-     :name         alias
-     :primary-name alias
-     :public-key   public-key}))
+  (:require
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [status-im2.constants :as constants]
+    [utils.address :as address]))
 
 (defn public-key-and-ens-name->new-contact
   [public-key ens-name]
-  (let [contact (public-key->new-contact public-key)]
+  (let [contact {:public-key public-key}]
     (if ens-name
       (-> contact
           (assoc :ens-name ens-name)
@@ -26,12 +18,11 @@
 (defn public-key->contact
   [contacts public-key]
   (when public-key
-    (or (get contacts public-key)
-        (public-key->new-contact public-key))))
+    (get contacts public-key {:public-key public-key})))
 
 (defn- contact-by-address
   [[addr contact] address]
-  (when (ethereum/address= addr address)
+  (when (address/address= addr address)
     contact))
 
 (defn find-contact-by-address
@@ -65,8 +56,13 @@
                           (assoc public-key current-contact))]
     (->> members
          (map #(or (get all-contacts %)
-                   (public-key->new-contact %)))
-         (sort-by (comp string/lower-case #(or (:primary-name %) (:name %) (:alias %))))
+                   {:public-key %}))
+         (sort-by (comp string/lower-case
+                        (fn [{:keys [primary-name name alias public-key]}]
+                          (or primary-name
+                              name
+                              alias
+                              public-key))))
          (map #(if (get admins (:public-key %))
                  (assoc % :admin? true)
                  %)))))

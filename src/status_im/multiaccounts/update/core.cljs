@@ -1,9 +1,10 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im.ethereum.ens :as ens]
-            [status-im.utils.types :as types]
-            [status-im2.constants :as constants]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.ens.core :as utils.ens]
+    [utils.re-frame :as rf]))
 
 (rf/defn send-contact-update
   [{:keys [db]}]
@@ -22,7 +23,9 @@
     (when-let [new-name (and account (or preferred-name display-name name))]
       (rf/merge
        cofx
-       {:db            (assoc-in db [:profile/profile :ens-name?] (ens/is-valid-eth-name? new-name))
+       {:db            (assoc-in db
+                        [:profile/profile :ens-name?]
+                        (utils.ens/is-valid-eth-name? new-name))
         :json-rpc/call [{:method     "multiaccounts_updateAccount"
                          :params     [(assoc account :name new-name)]
                          :on-success #(log/debug "sent multiaccount update")}]}))))

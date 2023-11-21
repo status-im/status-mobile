@@ -1,6 +1,7 @@
 (ns status-im2.contexts.contacts.drawers.nickname-drawer.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (defn context-container
   []
@@ -9,10 +10,9 @@
    :border-radius    20
    :align-items      :center
    :align-self       :flex-start
-   :padding          4
-   :margin-top       8
+   :margin-top       4
    :margin-left      -4
-   :margin-bottom    16})
+   :margin-bottom    20})
 
 (def buttons-container
   {:flex-direction  :row

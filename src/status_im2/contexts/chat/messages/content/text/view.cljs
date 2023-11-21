@@ -1,15 +1,16 @@
 (ns status-im2.contexts.chat.messages.content.text.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [status-im2.contexts.chat.messages.content.link-preview.view :as link-preview]
     [status-im2.contexts.chat.messages.content.text.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn render-inline
-  [units {:keys [type literal destination]} chat-id style-override]
+  [units {:keys [type literal destination]} chat-id style-override first-child-mention]
   (let [show-as-plain-text? (seq style-override)]
     (case (keyword type)
       :code
@@ -55,21 +56,17 @@
       :mention
       (conj
        units
-       [rn/view
-        {:style style/mention-tag-wrapper}
-        [rn/touchable-opacity
-         {:active-opacity 1
-          :on-press       #(rf/dispatch [:chat.ui/show-profile literal])
-          :style          style/mention-tag}
-         [quo/text
-          {:weight :medium
-           :style  style/mention-tag-text
-           :size   :paragraph-1}
-          (rf/sub [:messages/resolve-mention literal])]]])
+       [rn/pressable
+        {:on-press #(rf/dispatch [:chat.ui/show-profile literal])
+         :style    (style/mention-tag-wrapper first-child-mention)}
+        [quo/text
+         {:weight :medium
+          :style  style/mention-tag-text
+          :size   :paragraph-1}
+         (rf/sub [:messages/resolve-mention literal])]])
 
       :edited
       (conj units
-
             [quo/text
              {:weight :medium
               :style  {:font-size 11 ; Font-size must be used instead of props or the
@@ -90,39 +87,48 @@
 
       (conj units literal))))
 
+(defn first-child-mention
+  [children]
+  (and (> (count children) 0)
+       (= (keyword (:type (second children))) :mention)
+       (empty? (get-in children [0 :literal]))))
 
 (defn render-block
   [blocks {:keys [type literal children]} chat-id style-override]
-  (case (keyword type)
-    :paragraph
-    (conj blocks
-          [rn/view
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id style-override))
-            [quo/text
-             {:style {:size  :paragraph-1
-                      :color (when (seq style-override) colors/white)}}]
-            children)])
+  (let [mention-first (first-child-mention children)]
+    (case (keyword type)
+      :paragraph
+      (conj blocks
+            [rn/view
+             (reduce
+              (fn [acc e]
+                (render-inline acc e chat-id style-override mention-first))
+              [quo/text
+               {:size  :paragraph-1
+                :style {:margin-bottom (if mention-first (if platform/ios? 4 0) 2)
+                        :margin-top    (if mention-first (if platform/ios? -4 0) -1)
+                        :color         (when (seq style-override) colors/white)
+                        :line-height   22.75}}]
+              children)])
 
-    :edited-block
-    (conj blocks
-          (reduce
-           (fn [acc e]
-             (render-inline acc e chat-id style-override))
-           [quo/text {:size :paragraph-1}]
-           children))
+      :edited-block
+      (conj blocks
+            (reduce
+             (fn [acc e]
+               (render-inline acc e chat-id style-override first-child-mention))
+             [quo/text {:size :paragraph-1}]
+             children))
 
-    :blockquote
-    (conj blocks
-          [rn/view {:style style/quote}
-           [quo/text literal]])
+      :blockquote
+      (conj blocks
+            [rn/view {:style style/quote}
+             [quo/text literal]])
 
-    :codeblock
-    (conj blocks
-          [rn/view {:style (merge style/block (style/code))}
-           [quo/text (subs literal 0 (dec (count literal)))]])
-    blocks))
+      :codeblock
+      (conj blocks
+            [rn/view {:style (merge style/block (style/code))}
+             [quo/text (subs literal 0 (dec (count literal)))]])
+      blocks)))
 
 (def edited-tag
   {:literal (str "(" (i18n/label :t/edited) ")")

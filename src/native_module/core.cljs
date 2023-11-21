@@ -1,11 +1,10 @@
 (ns native-module.core
-  (:require ["react-native" :as react-native]
-            [utils.validators :as validators]
-            [taoensso.timbre :as log]
-            [react-native.platform :as platform]
-            [react-native.core :as rn]
-            [utils.transforms :as types]
-            [clojure.string :as string]))
+  (:require
+    ["react-native" :as react-native]
+    [clojure.string :as string]
+    [react-native.platform :as platform]
+    [taoensso.timbre :as log]
+    [utils.transforms :as types]))
 
 (defn status
   []
@@ -14,7 +13,7 @@
 
 (defn init
   [handler]
-  (.addListener ^js rn/device-event-emitter "gethEvent" #(handler (.-jsonEvent ^js %))))
+  (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
 
 (defn clear-web-data
   []
@@ -389,11 +388,11 @@
   []
   (log/debug "[native-module] get-device-model-info")
   ;;NOTE: we have to check for status module because of tests
-  (when-let [^js status (status)]
-    {:model     (.-model status)
-     :brand     (.-brand status)
-     :build-id  (.-buildId status)
-     :device-id (.-deviceId status)}))
+  (when-let [^js status-module (status)]
+    {:model     (.-model status-module)
+     :brand     (.-brand status-module)
+     :build-id  (.-buildId status-module)
+     :device-id (.-deviceId status-module)}))
 
 (defn get-installation-name
   []
@@ -431,19 +430,6 @@
     ;; in unknown scenarios we also consider the device rooted to avoid degrading security
     :else (callback true)))
 
-(defn generate-gfycat
-  "Generate a 3 words random name based on the user public-key, synchronously"
-  [public-key]
-  (log/debug "[native-module] generate-gfycat")
-  (when (validators/valid-public-key? public-key)
-    (.generateAlias ^js (status) public-key)))
-
-(defn identicon
-  "Generate a icon based on a string, synchronously"
-  [seed]
-  (log/debug "[native-module] identicon")
-  (.identicon ^js (status) seed))
-
 (defn encode-transfer
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
@@ -470,7 +456,8 @@
 (defn sha3
   [s]
   (log/debug "[native-module] sha3")
-  (.sha3 ^js (status) s))
+  (when s
+    (.sha3 ^js (status) (str s))))
 
 (defn utf8-to-hex
   [s]
@@ -491,19 +478,14 @@
 (defn address?
   [address]
   (log/debug "[native-module] address?")
-  (let [result (.isAddress ^js (status) address)]
-    (types/json->clj result)))
+  (when address
+    (let [result (.isAddress ^js (status) address)]
+      (types/json->clj result))))
 
 (defn to-checksum-address
   [address]
   (log/debug "[native-module] to-checksum-address")
   (.toChecksumAddress ^js (status) address))
-
-(defn gfycat-identicon-async
-  "Generate an icon based on a string and 3 words random name asynchronously"
-  [seed callback]
-  (log/debug "[native-module] gfycat-identicon-async")
-  (.generateAliasAndIdenticonAsync ^js (status) seed callback))
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"

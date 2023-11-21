@@ -1,25 +1,19 @@
 (ns status-im2.contexts.quo-preview.wallet.wallet-overview
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "State"
-    :key     :state
+  [{:key     :state
     :type    :select
-    :options [{:key   :loading
-               :value "Loading"}
-              {:key   :default
-               :value "Default"}]}
-   {:label   "Time frame"
-    :key     :time-frame
+    :options [{:key :loading}
+              {:key :default}]}
+   {:key     :time-frame
     :type    :select
-    :options [{:key   :none
-               :value "None"}
-              {:key   :selected
-               :value "Selected"}
+    :options [{:key :none}
+              {:key :selected}
               {:key   :one-week
                :value "1 Week"}
               {:key   :one-month
@@ -30,19 +24,19 @@
                :value "1 Year"}
               {:key   :all-time
                :value "All time"}
-              {:key   :custom
-               :value "Custom"}]}
-   {:label   "Metrics"
-    :key     :metrics
+              {:key :custom}]}
+   {:key     :metrics
     :type    :select
-    :options [{:key   :none
-               :value "None"}
-              {:key   :positive
-               :value "Positive"}
-              {:key   :negative
-               :value "Negative"}]}])
+    :options [{:key :none}
+              {:key :positive}
+              {:key :negative}]}])
 
-(defn cool-preview
+(def ^:private networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
+
+(defn view
   []
   (let [state (reagent/atom {:state             :default
                              :time-frame        :one-week
@@ -54,24 +48,13 @@
                              :currency-change   "€0.00"
                              :percentage-change "0.00%"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:padding-vertical 60
-          :flex-direction   :row
-          :justify-content  :center}
-         [quo/wallet-overview @state]]]])))
-
-(defn preview-wallet-overview
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60
+                                    :flex-direction   :row
+                                    :justify-content  :center}}
+       [quo/wallet-overview
+        (assoc @state
+               :networks          networks-list
+               :dropdown-on-press #(js/alert "On pressed dropdown"))]])))

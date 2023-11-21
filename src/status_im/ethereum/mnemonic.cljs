@@ -1,5 +1,6 @@
 (ns status-im.ethereum.mnemonic
-  (:require [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]))
 
 (def dictionary
   #{"abandon" "ability" "able" "about" "above" "absent" "absorb" "abstract" "absurd" "abuse" "access"
@@ -188,10 +189,6 @@
   (when s
     (-> (sanitize-passphrase s)
         (string/split #" "))))
-
-(defn words->passphrase
-  [v]
-  (string/join " " v))
 
 (def valid-word-counts #{12 15 18 21 24})
 

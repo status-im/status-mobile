@@ -1,12 +1,8 @@
 (ns status-im2.contexts.onboarding.sign-in.view
-  (:require [utils.i18n :as i18n]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]))
-
-(defn navigate-back
-  []
-  (when @scan-sync-code/navigate-back-fn
-    (@scan-sync-code/navigate-back-fn)))
+  (:require
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
+    [utils.i18n :as i18n]))
 
 (defn view
   []

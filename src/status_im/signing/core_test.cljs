@@ -1,7 +1,8 @@
 (ns status-im.signing.core-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [native-module.core :as native-module]
-            [status-im.signing.core :as signing]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [native-module.core :as native-module]
+    [status-im.signing.core :as signing]))
 
 (deftest signing-test
   (testing "showing sheet"

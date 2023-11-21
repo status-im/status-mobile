@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.notification.contact-requests.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.gesture :as gesture]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
@@ -59,9 +59,9 @@
 
 (defn- outgoing-contact-request-view
   [{:keys [notification set-swipeable-height customization-color]}]
-  (let [{:keys [chat-id message last-message]}      notification
-        {:keys [contact-request-state] :as message} (or message last-message)]
-    (if (= contact-request-state constants/contact-request-message-state-accepted)
+  (let [{:keys [chat-id message last-message accepted]} notification
+        {:keys [contact-request-state] :as message}     (or message last-message)]
+    (if accepted
       [quo/activity-log
        {:title               (i18n/label :t/contact-request-was-accepted)
         :customization-color customization-color
@@ -83,7 +83,7 @@
         :context             [(i18n/label :t/contact-request-outgoing)
                               [common/user-avatar-tag chat-id]]
         :message             {:body (get-in message [:content :text])}
-        :items               (case contact-request-state
+        :items               (condp = contact-request-state
                                constants/contact-request-message-state-pending
                                [{:type    :status
                                  :subtype :pending
@@ -115,7 +115,7 @@
                 (i18n/label :t/contact-request-sent)]
       :message {:body (get-in message [:content :text])}
       :items
-      (case (:contact-request-state message)
+      (condp = (:contact-request-state message)
         constants/contact-request-message-state-accepted
         [{:type    :status
           :subtype :positive
@@ -143,6 +143,7 @@
           :label               (i18n/label :t/accept)
           :accessibility-label :accept-contact-request
           :on-press            #(rf/dispatch [:activity-center.contact-requests/accept id])}]
+
         nil)}]))
 
 (defn view

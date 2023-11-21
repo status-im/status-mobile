@@ -1,12 +1,11 @@
 (ns status-im.multiaccounts.login.core
   (:require
-    [re-frame.core :as re-frame]
-    [status-im.ethereum.core :as ethereum]
     [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im.ui.components.react :as react]
+    [status-im.utils.deprecated-types :as types]
     [utils.re-frame :as rf]
-    [status-im.utils.platform :as platform]
-    [status-im.utils.types :as types]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
@@ -26,7 +25,7 @@
     {::export-db [key-uid
                   (types/clj->json {:name    name
                                     :key-uid key-uid})
-                  (ethereum/sha3 (security/safe-unmask-data password))
+                  (native-module/sha3 (security/safe-unmask-data password))
                   (fn [path]
                     (when platform/ios?
                       (let [uri (str "file://" path)]
@@ -41,4 +40,4 @@
     {::import-db [key-uid
                   (types/clj->json {:name    name
                                     :key-uid key-uid})
-                  (ethereum/sha3 (security/safe-unmask-data password))]}))
+                  (native-module/sha3 (security/safe-unmask-data password))]}))

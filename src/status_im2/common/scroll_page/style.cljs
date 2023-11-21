@@ -1,11 +1,12 @@
 (ns status-im2.common.scroll-page.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]))
 
 (defn image-slider
   [size]
-  {:top     (if platform/ios? 0 -64)
+  {:top     -64
    :height  size
    :width   size
    :z-index 4
@@ -65,9 +66,11 @@
     :border-color  (colors/theme-colors colors/white colors/neutral-95)
     :position      :absolute
     :top           (- (+ picture-radius picture-border-width))
-    :left          (- (/ picture-radius 2) picture-border-width)}))
+    :left          (+ (/ picture-radius 2) picture-border-width)}))
 
-(def display-picture
-  {:border-radius picture-diameter
-   :width         picture-diameter
-   :height        picture-diameter})
+(defn display-picture
+  [theme]
+  {:border-radius    picture-diameter
+   :width            picture-diameter
+   :height           picture-diameter
+   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})

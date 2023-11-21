@@ -1,10 +1,11 @@
 (ns status-im2.contexts.onboarding.syncing.progress.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.onboarding.syncing.progress.style :as style]
-            [status-im2.contexts.onboarding.common.background.view :as background]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.syncing.progress.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn pairing-progress
   [status]
@@ -12,16 +13,16 @@
 
 (defn page-title
   [pairing-progress?]
-  [quo/title
-   {:container-style              {:margin-top 56}
-    :title                        (i18n/label (if pairing-progress?
-                                                :t/sync-devices-title
-                                                :t/sync-devices-error-title))
-    :subtitle                     (i18n/label (if pairing-progress?
-                                                :t/sync-devices-sub-title
-                                                :t/sync-devices-error-sub-title))
-    :title-accessibility-label    :progress-screen-title
-    :subtitle-accessibility-label :progress-screen-sub-title}])
+  [quo/text-combinations
+   {:container-style                 {:margin-top 56 :margin-horizontal 20}
+    :title                           (i18n/label (if pairing-progress?
+                                                   :t/sync-devices-title
+                                                   :t/sync-devices-error-title))
+    :description                     (i18n/label (if pairing-progress?
+                                                   :t/sync-devices-sub-title
+                                                   :t/sync-devices-error-sub-title))
+    :title-accessibility-label       :progress-screen-title
+    :description-accessibility-label :progress-screen-sub-title}])
 
 (defn try-again-button
   [profile-color in-onboarding?]

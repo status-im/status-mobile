@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.chat.styles.message.message
-  (:require [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im2.constants :as constants]
-            [status-im.ui.components.react :as react]
-            [quo2.foundations.typography :as typography]))
+  (:require
+    [quo.foundations.colors :as quo.colors]
+    [quo.foundations.typography :as typography]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [status-im2.constants :as constants]))
 
 (defn style-message-text
   []
@@ -190,7 +191,7 @@
 (defn message-default-style
   []
   {:font-family    "Inter-Regular"
-   :color          (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)
+   :color          (quo.colors/theme-colors quo.colors/neutral-100 quo.colors/white)
    :font-size      15
    :line-height    21.75
    :letter-spacing -0.135})
@@ -278,7 +279,7 @@
     (update (default-text-style)
             :style
             assoc
-            :color (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)
+            :color (quo.colors/theme-colors quo.colors/neutral-40 quo.colors/neutral-50)
             :font-size 13
             :line-height 18.2
             :letter-spacing (typography/tracking 13))))
@@ -389,10 +390,11 @@
    :background-color   (when (= :retry state)
                          colors/blue-light)
    :border-width       1
-   :border-color       (case state
+   :border-color       (condp = state
                          constants/contact-request-message-state-accepted colors/green-transparent-10
                          constants/contact-request-message-state-declined colors/red-light
-                         constants/contact-request-message-state-pending  colors/gray-lighter)
+                         constants/contact-request-message-state-pending  colors/gray-lighter
+                         nil)
    :padding-vertical   10
    :padding-horizontal 16})
 

@@ -1,6 +1,7 @@
 (ns status-im2.common.timer.events
-  (:require [re-frame.core :as re-frame]
-            [react-native.background-timer :as background-timer]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.background-timer :as background-timer]))
 
 (re-frame/reg-fx
  :background-timer/dispatch-later

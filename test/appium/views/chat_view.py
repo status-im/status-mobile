@@ -5,9 +5,10 @@ from time import sleep
 
 import dateutil.parser
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException, \
+    InvalidElementStateException
 
-from tests import emojis
+from tests import emojis, common_password
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
 from views.base_view import BaseView
 from views.home_view import HomeView
@@ -183,6 +184,11 @@ class ChatElementByText(Text):
             xpath="//%s//android.widget.TextView[contains(@text,'%s')]" % (self.chat_item_locator, self.message_text)
         )
 
+    @property
+    def message_body_with_mention(self):
+        return Text(self.driver,
+                    xpath=self.message_body.locator + "/../following-sibling::android.widget.TextView")
+
     def click_on_link_inside_message_body(self):
         self.message_body.wait_for_visibility_of_element(30)
         self.message_body.click_inside_element_by_coordinate(rel_x=0.1, rel_y=0.9)
@@ -334,9 +340,10 @@ class UsernameOptions(Button):
 
 
 class UsernameCheckbox(Button):
-    def __init__(self, driver, username):
+    def __init__(self, driver, username, state_on):
         self.username = username
-        super().__init__(driver, xpath="//*[@text='%s']/..//*[@content-desc='checkbox-off']" % username)
+        super().__init__(driver, xpath="//*[@text='%s']/..//*[@content-desc='checkbox-%s']" % (
+            username, 'on' if state_on else 'off'))
 
     def click(self):
         try:
@@ -408,14 +415,22 @@ class CommunityView(HomeView):
 
         #### NEW UI
         # Communities initial page
+        self.close_community_view_button = Button(
+            self.driver,
+            xpath="//*[@content-desc='community-options-for-community']/../*[1]//android.widget.ImageView")
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
+        self.community_status_joined = Text(self.driver, accessibility_id="status-tag-positive")
+        self.community_status_pending = Text(self.driver, accessibility_id="status-tag-pending")
 
-    def join_community(self):
+    def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
         self.join_button.click()
-        self.checkbox_button.scroll_to_element()
-        self.checkbox_button.enable()
         self.join_community_button.scroll_and_click()
+        self.password_input.send_keys(password)
+        Button(self.driver,
+               xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
+        if open_community:
+            self.community_status_joined.wait_for_visibility_of_element(60)
 
     def get_channel(self, channel_name: str):
         self.driver.info("Getting  %s channel element in community" % channel_name)
@@ -426,18 +441,21 @@ class CommunityView(HomeView):
         self.driver.info("Adding channel in community")
         self.plus_button.click()
         self.community_create_a_channel_button.wait_and_click()
-        self.channel_name_edit_box.set_value(name)
-        self.channel_descripton.set_value(description)
+        self.channel_name_edit_box.send_keys(name)
+        self.channel_descripton.send_keys(description)
         chat_view = ChatView(self.driver)
         chat_view.confirm_create_in_community_button.click()
         self.get_chat(name).click()
         return chat_view
 
-    def leave_community(self):
-        self.driver.info("Leaving community")
-        self.community_options_button.wait_and_click()
-        self.community_info_button.wait_and_click()
-        self.leave_community_button.scroll_and_click()
+    def leave_community(self, community_name: str):
+        self.driver.info("Leaving %s" % community_name)
+        home = self.get_home_view()
+        home.communities_tab.click()
+        community_element = home.get_chat(community_name, community=True)
+        community_element.long_press_until_element_is_shown(self.leave_community_button)
+        self.leave_community_button.click()
+        self.leave_community_button.click()
 
     def get_channel_avatar(self, channel_name='general'):
         return Button(self.driver, xpath='//*[@text="# %s"]/../*[@content-desc="channel-avatar"]' % channel_name)
@@ -485,8 +503,8 @@ class CommunityView(HomeView):
         self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_share)))
         self.jump_to_communities_home()
         home = self.get_home_view()
+        home.communities_tab.click()
         community_element = home.get_chat(community_name, community=True)
-        # community_element.long_press_until_element_is_shown(self.view_members_button)
         community_element.long_press_until_element_is_shown(self.share_community_button)
         self.share_community_button.click()
         for user_name in user_names_to_share:
@@ -510,7 +528,7 @@ class PreviewMessage(ChatElementByText):
     def preview_image(self):
         class PreviewImage(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='thumbnail']")
 
         return PreviewMessage.return_element_or_empty(PreviewImage(self.driver, self.locator))
 
@@ -742,10 +760,6 @@ class ChatView(BaseView):
         self.view_profile_new_contact_button = Button(self.driver, accessibility_id="new-contact-button")
 
         # Chat header
-        self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")
-        self.user_name_text_new_UI = Text(
-            self.driver,
-            xpath="//*[@content-desc='user-avatar']/../following-sibling::android.widget.TextView")
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)
@@ -789,7 +803,8 @@ class ChatView(BaseView):
 
         # Images
         self.show_images_button = Button(self.driver, accessibility_id="open-images-button")
-        self.take_photo_button = Button(self.driver, accessibility_id="take-picture")
+        self.take_photo_button = Button(self.driver, accessibility_id="camera-button")
+        self.snap_button = Button(self.driver, accessibility_id="snap")
         self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
         self.images_confirm_selection_button = Button(self.driver, accessibility_id="confirm-selection")
         self.images_area_in_gallery = Button(self.driver,
@@ -923,7 +938,7 @@ class ChatView(BaseView):
         self.chat_options.click()
         self.group_info.click()
         self.edit_group_chat_name_button.click()
-        self.edit_group_chat_name_edit_box.set_value(new_chat_name)
+        self.edit_group_chat_name_edit_box.send_keys(new_chat_name)
         self.done_button.click()
 
     def get_group_invite_via_group_info(self):
@@ -935,12 +950,12 @@ class ChatView(BaseView):
 
     def request_membership_for_group_chat(self, intro_message):
         self.driver.info("Requesting membership to group chat")
-        self.introduce_yourself_edit_box.set_value(intro_message)
+        self.introduce_yourself_edit_box.send_keys(intro_message)
         self.request_membership_button.click_until_presence_of_element(self.element_by_text('Request pending…'))
 
-    def get_username_checkbox(self, username: str):
+    def get_username_checkbox(self, username: str, state_on=False):
         self.driver.info("Getting %s checkbox" % username)
-        return UsernameCheckbox(self.driver, username)
+        return UsernameCheckbox(self.driver, username, state_on)
 
     def accept_membership_for_group_chat_via_chat_view(self, username, accept=True):
         info = "%s membership to group chat" % username
@@ -986,8 +1001,22 @@ class ChatView(BaseView):
     def send_message(self, message: str = 'test message', wait_chat_input_sec=5):
         self.driver.info("Sending message '%s'" % BaseElement(self.driver).exclude_emoji(message))
         self.chat_message_input.wait_for_element(wait_chat_input_sec)
-        self.chat_message_input.send_keys(message)
-        self.send_message_button.click()
+        for _ in range(3):
+            try:
+                self.chat_message_input.send_keys(message)
+                break
+            except (StaleElementReferenceException, InvalidElementStateException):
+                time.sleep(1)
+            except Exception as e:
+                raise e
+        else:
+            raise StaleElementReferenceException(msg="Can't send keys to chat message input, loading")
+        try:
+            self.send_message_button.click()
+        except NoSuchElementException:
+            self.chat_message_input.clear()
+            self.chat_message_input.send_keys(message)
+            self.send_message_button.click()
 
     def send_contact_request(self, message: str = 'Contact request message', wait_chat_input_sec=5):
         self.driver.info("Sending contact request message '%s'" % BaseElement(self.driver).exclude_emoji(message))
@@ -1005,7 +1034,7 @@ class ChatView(BaseView):
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
         element = self.element_by_translation_id("edit-message")
-        self.chat_view_element_starts_with_text(message_to_edit).long_press_until_element_is_shown(element)
+        self.chat_element_by_text(message_to_edit).message_body.long_press_until_element_is_shown(element)
         element.click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
@@ -1013,14 +1042,17 @@ class ChatView(BaseView):
 
     def delete_message_in_chat(self, message, everyone=True):
         self.driver.info("Looking for message '%s' to delete it" % message)
-        self.chat_view_element_starts_with_text(message).long_press_element()
-        for_everyone, for_me = self.element_by_translation_id("delete-for-everyone"), self.element_by_translation_id(
-            "delete-for-me")
-        for_everyone.click() if everyone else for_me.click()
+        if everyone:
+            delete_button = self.element_by_translation_id("delete-for-everyone")
+        else:
+            delete_button = self.element_by_translation_id("delete-for-me")
+        self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
+        delete_button.click()
 
     def copy_message_text(self, message_text):
         self.driver.info("Copying '%s' message via long press" % message_text)
-        self.element_by_text_part(message_text).long_press_element()
+        self.chat_element_by_text(message_text).wait_for_visibility_of_element()
+        self.chat_element_by_text(message_text).long_press_element()
         self.element_by_translation_id("copy-text").click()
 
     def quote_message(self, message: str):
@@ -1109,7 +1141,7 @@ class ChatView(BaseView):
 
     def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern=''):
         self.driver.info("Selecting '%s' from suggestion list by '%s'" % (username_in_list, typed_search_pattern))
-        self.chat_message_input.set_value('@' + typed_search_pattern)
+        self.chat_message_input.send_keys('@' + typed_search_pattern)
         self.chat_message_input.click()
         self.search_user_in_mention_suggestion_list(username_in_list).wait_for_visibility_of_element(10).click()
 
@@ -1179,13 +1211,13 @@ class ChatView(BaseView):
 
     def mention_user(self, user_name: str):
         self.driver.info("Mention user %s in the chat" % user_name)
-        gboard = self.driver.available_ime_engines[0]
-        self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
+        # gboard = self.driver.available_ime_engines[0]
+        # self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
         self.chat_message_input.click_inside()
         self.chat_message_input.send_keys("@")
         try:
             self.mentions_list.wait_for_element()
-            self.user_list_element_by_name(user_name).click()
+            self.user_list_element_by_name(user_name).wait_for_rendering_ended_and_click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
 
@@ -1200,6 +1232,15 @@ class ChatView(BaseView):
         [self.get_image_by_index(i).click() for i in indexes]
         self.images_confirm_selection_button.click()
         self.chat_message_input.send_keys(description)
+        self.send_message_button.click()
+
+    def send_image_with_camera(self, description=None):
+        self.take_photo_button.click()
+        self.allow_button.click_if_shown()
+        self.snap_button.click()
+        self.element_by_translation_id("use-photo").click()
+        if description:
+            self.chat_message_input.send_keys(description)
         self.send_message_button.click()
 
     @staticmethod

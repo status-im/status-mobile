@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.text.style
-  (:require [quo2.foundations.colors :as colors]))
-
-(def spacing-between-blocks 0)
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (def block
   {:border-radius      6
@@ -13,24 +13,20 @@
    :border-left-color colors/neutral-40})
 
 (defn mention-tag-wrapper
-  []
-  {:flex-direction :row
-   :align-items    :center
-   :height         22})
-
-(def mention-tag
-  {:background-color   colors/primary-50-opa-10
+  [first-child-mention]
+  {:flex-direction     :row
+   :align-items        :center
+   :height             (if platform/ios? 22 21)
+   :background-color   colors/primary-50-opa-10
    :padding-horizontal 3
    :border-radius      6
-   :margin-bottom      -3
-   :height             22})
+   :transform          [{:translateY (if platform/ios? (if first-child-mention 4.5 3) 4.5)}]})
 
 (def mention-tag-text
   {:color                 (colors/theme-colors colors/primary-50
                                                colors/primary-60)
    :selection-color       :transparent
-   :suppress-highlighting true
-   :line-height           21})
+   :suppress-highlighting true})
 
 (defn code
   []

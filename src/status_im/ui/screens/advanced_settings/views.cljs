@@ -1,8 +1,10 @@
 (ns status-im.ui.screens.advanced-settings.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.list.views :as list])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data
@@ -90,7 +92,7 @@
      :container-margin-bottom 8
      :on-press
      #(re-frame/dispatch
-       [:multiaccounts.ui/switch-webview-debug (not webview-debug)])
+       [:profile.settings/change-webview-debug (not webview-debug)])
      :accessory :switch
      :active webview-debug}
     {:size :small
@@ -111,7 +113,7 @@
   [props]
   (if (= (:type props) :section-header)
     [quo/list-header (:title props)]
-    [quo/list-item props]))
+    [list.item/list-item props]))
 
 (views/defview advanced-settings
   []
@@ -119,7 +121,7 @@
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
                   wakuv2-flag                      [:waku/v2-flag]
-                  transactions-management-enabled? [:wallet/transactions-management-enabled?]
+                  transactions-management-enabled? [:wallet-legacy/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
                   current-fleet                    [:fleets/current-fleet]]
     [list/flat-list

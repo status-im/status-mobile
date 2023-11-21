@@ -1,16 +1,15 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.constants :as constants]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (def descriptor
-  [{:label   "Type"
-    :key     :type
+  [{:key     :type
     :type    :select
     :options [{:key   shell.constants/communities-discover
                :value "Communities Discover"}
@@ -32,27 +31,15 @@
                :value "Wallet Graph"}
               {:key   shell.constants/empty-card
                :value "Empty Card"}]}
-   {:label "Title"
-    :key   :title
-    :type  :text}
-   {:label "New Notifications?"
-    :key   :new-notifications?
-    :type  :boolean}
-   {:label "Banner?"
-    :key   :banner?
-    :type  :boolean}
-   {:label   "Notification Indicator"
-    :key     :notification-indicator
+   {:key :title :type :text}
+   {:key :new-notifications? :type :boolean}
+   {:key :banner? :type :boolean}
+   {:key     :notification-indicator
     :type    :select
-    :options [{:key   :counter
-               :value :counter}
-              {:key   :unread-dot
-               :value :unread-dot}]}
-   {:label "Counter Label"
-    :key   :counter-label
-    :type  :text}
-   {:label   "Content Type"
-    :key     :content-type
+    :options [{:key :counter}
+              {:key :unread-dot}]}
+   {:key :counter-label :type :text}
+   {:key     :content-type
     :type    :select
     :options [{:key   constants/content-type-text
                :value :text}
@@ -68,21 +55,10 @@
                :value :community}
               {:key   constants/content-type-link
                :value :link}]}
-   {:label "Last Message"
-    :key   :last-message
-    :type  :text}
-   {:label "Customization"
-    :key :customization-color
-    :type :select
-    :options
-    (map
-     (fn [c]
-       {:key   c
-        :value c})
-     (keys colors/customization))}])
+   {:key :last-message :type :text}
+   (preview/customization-color-option)])
 
 ;; Mocked Data
-
 (def banner (resources/get-mock-image :community-banner))
 (def sticker {:source (resources/get-mock-image :sticker)})
 (def community-avatar {:source (resources/get-mock-image :community-logo)})
@@ -99,7 +75,7 @@
 
 (defn get-mock-content
   [data]
-  (case (:content-type data)
+  (condp = (:content-type data)
     constants/content-type-text
     (:last-message data)
 
@@ -135,19 +111,22 @@
               :community-channel      {:emoji "🍑" :channel-name "# random"}
               :community-info         {:type :kicked}
               :data                   (get-mock-content data)}}
-   (case type
-     shell.constants/one-to-one-chat-card
+   (cond
+     (= type shell.constants/one-to-one-chat-card)
      {:avatar-params {:full-name (:title data)}}
 
-     shell.constants/private-group-chat-card
+     (= type shell.constants/private-group-chat-card)
      {}
 
-     (shell.constants/community-card
-      shell.constants/community-channel-card)
+     (#{shell.constants/community-card
+        shell.constants/community-channel-card}
+      type)
      {:avatar-params community-avatar}
+
+     :else
      {})))
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:type                   shell.constants/private-group-chat-card
                              :title                  "Alisher Yakupov"
@@ -160,21 +139,8 @@
                              :last-message           "This is fantastic! Ethereum"
                              :preview-label-color    colors/white})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [switcher-cards/card (get-mock-data @state)]]]])))
-
-(defn preview-switcher-cards
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [switcher-cards/card (get-mock-data @state)]])))

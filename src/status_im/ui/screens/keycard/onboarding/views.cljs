@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.keycard.onboarding.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.keycard.onboarding :as keycard.onboarding]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as bottom-toolbar]
-            [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.ui.screens.keycard.styles :as styles]
-            [utils.re-frame :as rf])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.keycard.onboarding :as keycard.onboarding]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.checkbox.view :as checkbox]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as bottom-toolbar]
+    [status-im.ui.components.tooltip.views :as tooltip]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.keycard.pin.views :as pin.views]
+    [status-im.ui.screens.keycard.styles :as styles]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro
@@ -93,9 +94,9 @@
 
 (defview puk-code
   []
-  (letsubs [secrets  [:keycard-secrets]
-            steps    [:keycard-flow-steps]
-            puk-code [:keycard-puk-code]]
+  (letsubs [secrets [:keycard-secrets]
+            steps   [:keycard-flow-steps]
+            puk     [:keycard-puk-code]]
     [react/view styles/container
      [topbar/topbar
       {:navigation {:on-press #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
@@ -151,7 +152,7 @@
               :size                :large
               :monospace           true
               :accessibility-label :puk-code}
-             puk-code]]]]
+             puk]]]]
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/puk-code-explanation)]]
@@ -199,7 +200,7 @@
 
 (defview pin
   []
-  (letsubs [pin           [:keycard/pin]
+  (letsubs [card-pin      [:keycard/pin]
             enter-step    [:keycard/pin-enter-step]
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
@@ -236,7 +237,7 @@
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/intro-wizard-text4)])]]
       [pin.views/pin-view
-       {:pin           pin
+       {:pin           card-pin
         :status        status
         :small-screen? small-screen?
         :error-label   error-label

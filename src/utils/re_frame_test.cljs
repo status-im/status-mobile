@@ -1,6 +1,7 @@
 (ns utils.re-frame-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [utils.re-frame :as rf]))
 
 (rf/defn hello
   "this is a very nice useless function"

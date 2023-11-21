@@ -1,31 +1,40 @@
 (ns status-im2.contexts.shell.activity-center.notification.reply.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [react-native.gesture :as gesture]
-            [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
-            [status-im2.common.not-implemented :as not-implemented]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.notification.common.view :as common]
-            [status-im2.contexts.shell.activity-center.notification.reply.style :as style]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im.utils.http :as http]))
+  (:require
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.gesture :as gesture]
+    [status-im.ui.screens.chat.message.legacy-view :as old-message]
+    [status-im2.common.not-implemented :as not-implemented]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.activity-center.notification.common.view :as common]
+    [status-im2.contexts.shell.activity-center.notification.reply.style :as style]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.url :as url]))
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
-  [{:keys [content-type] :as message}]
-  (case content-type
-    constants/content-type-text [quo/text {:style style/tag-text}
-                                 (get-in message [:content :text])]
+  [{:keys [content-type] :as message} album-messages media-server-port]
+  (condp = content-type
+    constants/content-type-text
+    [quo/text {:style style/tag-text}
+     (get-in message [:content :text])]
 
     constants/content-type-image
-    (let [image           (get-in message [:content :image])
-          image-local-url (http/replace-port image (rf/sub [:mediaserver/port]))
-          photos          (when image-local-url [{:uri image-local-url}])]
-      [quo/activity-logs-photos {:photos photos}])
+    (let [images           (or album-messages message)
+          image-urls       (if album-messages
+                             (map :image images)
+                             [(get-in message [:content :image])])
+          image-local-urls (map (fn [url]
+                                  {:uri (url/replace-port url media-server-port)})
+                                image-urls)]
+      [quo/activity-logs-photos
+       {:photos       image-local-urls
+        :message-text (get-in message [:content :text])}])
 
-    constants/content-type-sticker [old-message/sticker message]
+    constants/content-type-sticker
+    [old-message/sticker message]
 
     constants/content-type-system-pinned-message
     [not-implemented/not-implemented
@@ -34,9 +43,10 @@
 
     ;; NOTE: The following type (system-text) doesn't have a design yet.
     ;; https://github.com/status-im/status-mobile/issues/14915
-    constants/content-type-system-text [not-implemented/not-implemented
-                                        [quo/text {:style style/tag-text}
-                                         (get-in message [:content :text])]]
+    constants/content-type-system-text
+    [not-implemented/not-implemented
+     [quo/text {:style style/tag-text}
+      (get-in message [:content :text])]]
 
     nil))
 
@@ -54,11 +64,12 @@
 (defn view
   [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author chat-name community-id chat-id
-                message read timestamp]} notification
-        community-chat?                  (not (string/blank? community-id))
-        community                        (rf/sub [:communities/community community-id])
-        community-name                   (:name community)
-        community-image                  (get-in community [:images :thumbnail :uri])]
+                message read timestamp album-messages]} notification
+        community-chat?                                 (not (string/blank? community-id))
+        community                                       (rf/sub [:communities/community community-id])
+        community-name                                  (:name community)
+        community-image                                 (get-in community [:images :thumbnail :uri])
+        media-server-port                               (rf/sub [:mediaserver/port])]
     [swipeable props
      [gesture/touchable-without-feedback
       {:on-press (fn []
@@ -106,4 +117,6 @@
 
                                                       :else
                                                       nil)
-                              :body                 (get-message-content message)}}]]]))
+                              :body                 (get-message-content message
+                                                                         album-messages
+                                                                         media-server-port)}}]]]))

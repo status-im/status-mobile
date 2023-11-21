@@ -1,15 +1,17 @@
 (ns status-im.ui.screens.dapps-permissions.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.dapps-permissions.styles :as styles]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.dapps-permissions.styles :as styles]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]))
 
 (defn d-icon
   []
@@ -41,7 +43,7 @@
     [list/flat-list
      {:data      (vec (map prepare-items (vals permissions)))
       :key-fn    (fn [_ i] (str i))
-      :render-fn quo/list-item}]))
+      :render-fn list.item/list-item}]))
 
 (views/defview manage
   []
@@ -52,7 +54,7 @@
      [list/flat-list
       {:data      (vec (map (prepare-items-manage name) permissions))
        :key-fn    (fn [_ i] (str i))
-       :render-fn quo/list-item}]
+       :render-fn list.item/list-item}]
      [react/view
       {:padding-vertical   16
        :padding-horizontal 16}

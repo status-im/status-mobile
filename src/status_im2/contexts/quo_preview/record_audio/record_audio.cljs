@@ -1,17 +1,18 @@
 (ns status-im2.contexts.quo-preview.record-audio.record-audio
-  (:require [quo2.components.record-audio.record-audio.view :as record-audio]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [utils.re-frame :as rf]
-            [status-im2.common.alert.events :as alert]
-            [utils.i18n :as i18n]
-            [react-native.permissions :as permissions]
-            [status-im2.constants :as constants]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.permissions :as permissions]
+    [reagent.core :as reagent]
+    [status-im2.common.alert.events :as alert]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defonce record-audio-permission-granted (reagent/atom false))
 
-(defn cool-preview
+(defn view
   []
   (let [message                            (reagent/atom
                                             "Press & hold the mic button to start recording...")
@@ -40,13 +41,11 @@
                                                       :t/audio-recorder-permissions-error)))
                                                   50)}]))]
     (fn []
-      [rn/view
+      [preview/preview-container {:component-container-style {:justify-content :center}}
        [rn/view
-        {:padding-top      150
-         :align-items      :center
-         :background-color :transparent
-         :flex-direction   :row}
-        [record-audio/record-audio
+        {:align-items     :center
+         :justify-content :center}
+        [quo/record-audio
          {:record-audio-permission-granted    @record-audio-permission-granted
           :on-send                            on-send
           :on-start-recording                 on-start-recording
@@ -55,14 +54,4 @@
           :on-check-audio-permissions         on-check-audio-permissions
           :on-request-record-audio-permission on-request-record-audio-permission
           :max-duration-ms                    constants/audio-max-duration-ms}]]
-       [quo/text {:style {:margin-horizontal 20}} @message]])))
-
-(defn preview-record-audio
-  []
-  [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :never
-     :scroll-enabled               false
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+       [quo/text @message]])))

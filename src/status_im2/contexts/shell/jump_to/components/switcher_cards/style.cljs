@@ -1,5 +1,6 @@
 (ns status-im2.contexts.shell.jump-to.components.switcher-cards.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo.foundations.colors :as colors]))
 
 (def colors-map
   {:secondary-container-bg-color colors/neutral-95
@@ -80,11 +81,11 @@
    :position        :absolute})
 
 (defn unread-dot
-  [background-color]
+  [customization-color]
   {:width            8
    :height           8
    :border-radius    4
-   :background-color background-color})
+   :background-color (colors/custom-color customization-color 60)})
 
 (def bottom-container
   {:position        :absolute

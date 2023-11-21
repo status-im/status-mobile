@@ -1,17 +1,18 @@
 (ns status-im.ui.components.chat-icon.screen
-  (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-            [quo2.core :as quo]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame.core]
-            [status-im.ethereum.ens :as ens]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.styles :as styles]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
+  (:require
+    [clojure.string :as string]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.core :as quo]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame.core]
+    [react-native.core :as rn]
+    [status-im.ui.components.chat-icon.styles :as styles]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.ens.core :as utils.ens]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -77,7 +78,8 @@
                 :indicator-color  "#000000"
                 :color            (get text-style :color)
                 :length           2
-                :ring?            (not (ens/is-valid-eth-name? full-name))})}
+                :ring?            (not (utils.ens/is-valid-eth-name? full-name))
+                :ring-width       2})}
         {:size size}]
        [photos/photo photo-path {:size size}])
      (when-not community?
@@ -159,14 +161,14 @@
 (defn contact-icon-view
   [contact {:keys [container] :as styles}]
   [rn/view container
-   [photos/photo (multiaccounts/displayed-photo contact) styles]])
+   [photos/photo (profile.utils/photo contact) styles]])
 
 (defn contact-icon-contacts-tab
-  [{:keys [primary-name] :as contact}]
+  [profile]
   [rn/view styles/container-chat-list
    [quo/user-avatar
-    {:full-name         primary-name
-     :profile-picture   (multiaccounts/displayed-photo contact)
+    {:full-name         (profile.utils/displayed-name profile)
+     :profile-picture   (profile.utils/photo profile)
      :size              :small
      :status-indicator? false}]])
 
@@ -219,7 +221,8 @@
                              :indicator-color  "#000000"
                              :color            (get-in styles [:default-chat-icon-text :color])
                              :length           2
-                             :ring?            (not (ens/is-valid-eth-name? name))})}
+                             :ring?            (not (utils.ens/is-valid-eth-name? name))
+                             :ring-width       2})}
                      photo-path)]
     [rn/view (:container styles)
      (if (and photo-path (seq photo-path))

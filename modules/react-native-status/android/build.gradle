@@ -37,4 +37,7 @@ dependencies {
     implementation 'com.github.status-im:function:0.0.1'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation(group: 'status-im', name: 'status-go', version: getStatusGoSHA1(), ext: 'aar')
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.mockito:mockito-core:3.+"
 }

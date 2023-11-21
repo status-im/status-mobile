@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.chat.group
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
-            [utils.debounce :as debounce])
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.react :as react]
+    [status-im2.constants :as constants]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn decline-chat

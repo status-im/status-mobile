@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.mobile-network-settings.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            status-im.mobile-sync-settings.core
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
-            [status-im.ui.screens.mobile-network-settings.style :as styles]
-            [status-im.ui.screens.profile.components.views :as profile.components]))
+  (:require
+    [re-frame.core :as re-frame]
+    status-im.mobile-sync-settings.core
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
+    [status-im.ui.screens.mobile-network-settings.style :as styles]
+    [status-im.ui.screens.profile.components.views :as profile.components]
+    [utils.i18n :as i18n]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -51,9 +52,6 @@
         :accessibility-label "restore-defaults"
         :on-press            #(hide-sheet-and-dispatch [:mobile-network/restore-defaults])}
        (i18n/label :t/restore-defaults)]]]))
-
-(def settings-sheet
-  {:content sheets/settings-sheet})
 
 (def offline-sheet
   {:content sheets/offline-sheet})

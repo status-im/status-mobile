@@ -1,5 +1,6 @@
 (ns status-im.popover.core
-  (:require [utils.re-frame :as rf]))
+  (:require
+    [utils.re-frame :as rf]))
 
 (rf/defn show-popover
   {:events [:show-popover]}

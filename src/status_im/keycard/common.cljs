@@ -1,19 +1,20 @@
 (ns status-im.keycard.common
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im.ethereum.core :as ethereum]
-            [utils.i18n :as i18n]
-            [status-im.keycard.nfc :as nfc]
-            [status-im.popover.core :as popover]
-            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.keycard.nfc :as nfc]
+    [status-im.popover.core :as popover]
+    [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.keychain.core :as keychain]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def default-pin "000000")
 
@@ -78,7 +79,7 @@
   (when key-uid
     (->> (:profile/profiles-overview db)
          vals
-         (filter #(= (ethereum/normalized-hex key-uid) (:key-uid %)))
+         (filter #(= (address/normalized-hex key-uid) (:key-uid %)))
          first)))
 
 (defn get-pairing
@@ -354,7 +355,7 @@
                               :puk-retry-counter 5
                               :pin-retry-counter 3)
                    (assoc-in [:keycard :profile/profile]
-                             (update account-data :whisper-public-key ethereum/normalized-hex))
+                             (update account-data :whisper-public-key address/normalized-hex))
                    (assoc-in [:keycard :flow] nil)
                    (update :profile/login assoc
                            :password      encryption-public-key

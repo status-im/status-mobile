@@ -1,13 +1,12 @@
 (ns status-im.multiaccounts.logout.core
-  (:require [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.notifications.core :as notifications]
-            [status-im.wallet.core :as wallet]
-            [status-im2.common.keychain.events :as keychain]
-            [status-im2.db :as db]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.wallet.core :as wallet]
+    [status-im2.common.keychain.events :as keychain]
+    [status-im2.db :as db]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  ::logout
@@ -30,15 +29,15 @@
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     (rf/merge cofx
-              {:set-root                             :progress
-               :chat.ui/clear-inputs                 nil
-               :shell/reset-state                    nil
-               :hide-popover                         nil
-               ::logout                              nil
-               ::multiaccounts/webview-debug-changed false
-               :keychain/clear-user-password         key-uid
-               :profile/get-profiles-overview        #(rf/dispatch
-                                                       [:profile/get-profiles-overview-success %])}
+              {:set-root                               :progress
+               :chat.ui/clear-inputs                   nil
+               :shell/reset-state                      nil
+               :hide-popover                           nil
+               ::logout                                nil
+               :profile.settings/webview-debug-changed false
+               :keychain/clear-user-password           key-uid
+               :profile/get-profiles-overview          #(rf/dispatch
+                                                         [:profile/get-profiles-overview-success %])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (initialize-app-db))))
@@ -46,14 +45,13 @@
 (rf/defn logout
   {:events [:logout :multiaccounts.logout.ui/logout-confirmed
             :multiaccounts.update.callback/save-settings-success]}
-  [cofx]
+  [_]
   ;; we need to disable notifications before starting the logout process
-  (rf/merge cofx
-            {:dispatch-later [{:ms       100
-                               :dispatch [::logout-method
-                                          {:auth-method keychain/auth-method-none
-                                           :logout?     true}]}]}
-            (notifications/logout-disable)))
+  {:effects/push-notifications-disable nil
+   :dispatch-later                     [{:ms       100
+                                         :dispatch [::logout-method
+                                                    {:auth-method keychain/auth-method-none
+                                                     :logout?     true}]}]})
 
 (rf/defn show-logout-confirmation
   {:events [:multiaccounts.logout.ui/logout-pressed]}

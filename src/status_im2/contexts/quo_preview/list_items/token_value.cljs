@@ -1,42 +1,23 @@
 (ns status-im2.contexts.quo-preview.list-items.token-value
   (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
+    [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Token:"
-    :key     :token
+  [{:key     :token
     :type    :select
-    :options [{:key   :eth
-               :value "ETH"}
-              {:key   :snt
-               :value "SNT"}]}
-   {:label   "State:"
-    :key     :state
+    :options [{:key :eth}
+              {:key :snt}]}
+   {:key     :status
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :pressed
-               :value "Pressed"}
-              {:key   :active
-               :value "Active"}]}
-   {:label   "Status:"
-    :key     :status
-    :type    :select
-    :options [{:key   :empty
-               :value "Empty"}
-              {:key   :positive
-               :value "Positive"}
-              {:key   :negative
-               :value "Negative"}]}
+    :options [{:key :empty}
+              {:key :positive}
+              {:key :negative}]}
    (preview/customization-color-option)
-   {:label "Metrics?:"
-    :key   :metrics?
-    :type  :boolean}])
+   {:key :metrics? :type :boolean}])
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:token               :snt
                              :state               :default
@@ -48,11 +29,10 @@
                                                    :percentage-change "0.00"
                                                    :fiat-change       "€0.00"}})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view
-        [rn/view {:style {:min-height 300}} [preview/customizer state descriptor]]
-        [rn/view
-         {:style {:align-items :center
-                  :margin-top  50}}
-         [quo/token-value @state]]]])))
+      [preview/preview-container
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:align-items :center
+                                    :margin-top  50}}
+       [quo/token-value @state]])))
 

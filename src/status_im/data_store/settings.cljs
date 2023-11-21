@@ -1,8 +1,9 @@
 (ns status-im.data-store.settings
-  (:require [status-im.data-store.visibility-status-updates :as visibility-status-updates]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im2.config :as config]
-            [clojure.set :as set]))
+  (:require
+    [clojure.set :as set]
+    [status-im.data-store.visibility-status-updates :as visibility-status-updates]
+    [status-im2.config :as config]
+    [utils.ethereum.eip.eip55 :as eip55]))
 
 (defn rpc->networks
   [networks]
@@ -41,7 +42,7 @@
       (update :address eip55/address->checksum)
       (update :networks/networks rpc->networks)
       (update :networks/current-network #(if (seq %) % config/default-network))
-      (update :wallet/visible-tokens rpc->visible-tokens)
+      (update :wallet-legacy/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
       (update :link-previews-enabled-sites set)
       (update :custom-bootnodes rpc->custom-bootnodes)

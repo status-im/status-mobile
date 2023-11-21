@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.keycard.components.description
-  (:require [reagent.core :as reagent]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.components.style :as styles]))
+  (:require
+    [reagent.core :as reagent]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.keycard.components.style :as styles]))
 
 (defn text-block-style
   [animated]

@@ -1,6 +1,7 @@
 (ns status-im.utils.js-resources
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [status-im2.config :as config]))
+  (:require
+    [status-im2.config :as config]))
 
 (def provider-file (slurp "resources/js/provider.js"))
 (defn ethereum-provider

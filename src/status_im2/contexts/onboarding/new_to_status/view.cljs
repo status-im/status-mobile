@@ -1,24 +1,15 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
+    re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
+    [status-im2.config :as config]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.onboarding.common.overlay.view :as overlay]
-    [status-im2.contexts.profile.profiles.view :as profiles]
-    [status-im2.config :as config]))
-
-(defn navigate-back
-  []
-  (when @overlay/blur-dismiss-fn-atom
-    (@overlay/blur-dismiss-fn-atom))
-  (when @profiles/pop-animation-fn-atom
-    (@profiles/pop-animation-fn-atom))
-  (rf/dispatch [:dismiss-modal :new-to-status]))
+    [utils.re-frame :as rf]))
 
 (defn sign-in-options
   []
@@ -30,15 +21,16 @@
        :weight :semi-bold}
       (i18n/label :t/new-to-status)]
      [quo/small-option-card
-      {:variant    :main
-       :title      (i18n/label :t/generate-keys)
-       :subtitle   (i18n/label :t/generate-keys-subtitle)
-       :image      (resources/get-image :generate-keys)
-       :max-height (- (:height window)
-                      (* 2 56) ;; two other list items
-                      (* 2 16) ;; spacing between items
-                      220)     ;; extra spacing (top bar)
-       :on-press   #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
+      {:variant      :main
+       :title        (i18n/label :t/generate-keys)
+       :subtitle     (i18n/label :t/generate-keys-subtitle)
+       :button-label (i18n/label :t/lets-go)
+       :image        (resources/get-image :generate-keys)
+       :max-height   (- (:height window)
+                        (* 2 56) ;; two other list items
+                        (* 2 16) ;; spacing between items
+                        220)     ;; extra spacing (top bar)
+       :on-press     #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
      [rn/view {:style style/subtitle-container}
       [quo/text
        {:style  style/subtitle
@@ -107,12 +99,14 @@
        :type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigate-back
+       :on-press   #(do
+                      (rf/dispatch [:onboarding/overlay-dismiss])
+                      (rf/dispatch [:navigate-back]))
        :right-side [{:icon-name :i/info
                      :on-press  #(rf/dispatch [:show-bottom-sheet
                                                {:content getting-started-doc
                                                 :shell?  true}])}
                     (when config/quo-preview-enabled?
                       {:icon-name :i/reveal-whitelist
-                       :on-press  #(rf/dispatch [:navigate-to :quo2-preview])})]}]
+                       :on-press  #(rf/dispatch [:navigate-to :quo-preview])})]}]
      [sign-in-options]]))

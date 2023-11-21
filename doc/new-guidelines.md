@@ -76,7 +76,7 @@ It's important to name functional components with `f-` prefix.
 
 ### Component props and API scheme to match Figma as closely as possible
 
-Ideally, the prop names for components (particularly in quo2 Design System)
+Ideally, the prop names for components (particularly in quo Design System)
 should match the Figma properties as best as possible. This makes it easier for
 the developer using that component to configure it correctly for the screen it
 is being used on and avoids unnecessary overwrites and adjustments being made.
@@ -134,7 +134,7 @@ For example if Figma has sizes `:small`, `:medium` and `:large`
 
 Prefer to define styles in a separate file named `style.cljs`, colocated with
 the source file. For a real example, see
-[src/quo2/components/record_audio/record_audio/style.cljs](../src/quo2/components/record_audio/record_audio/style.cljs).
+[src/quo/components/record_audio/record_audio/style.cljs](../src/quo/components/record_audio/record_audio/style.cljs).
 
 ```clojure
 ;; bad
@@ -467,21 +467,28 @@ Prefer the pure version of `:json-rpc/call` (no callbacks).
 
 ### Registering event handlers
 
-Events must always be declared with the `utils.fx/defn` macro. Also, don't use
+Register events with `utils.re-frame/reg-event-fx` and follow [re-frame's best
+practice](https://github.com/day8/re-frame/blob/39adca93673f334dc751ee2d99d340b51a9cc6db/docs/FAQs/BestPractice.md#use-the-fx-effect)
+so use only `:db` and `:fx` effects. `utils.re-frame/merge` and `utils.re-frame/defn` are deprecated and should not be
+used in the new code in `src/status_im2/`. Don't use
 `re-frame.core/reg-event-db`.
 
 ```clojure
 ;; bad
-(re-frame/reg-event-fx
- :wakuv2.ui/save-all-confirmed
- (fn [{:keys [db] :as cofx}]
-   ...))
+(rf/defn invite-people-pressed
+  {:events [:communities/invite-people-pressed]}
+  [cofx id]
+  (rf/merge cofx
+            (reset-community-id-input id)
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/open-modal :invite-people-community {:invite? true})))
 
 ;; good
-(fx/defn save-all
-  {:events [:wakuv2.ui/save-all-confirmed]}
-  [{:keys [db] :as cofx}]
-  ...)
+(re-frame/reg-event-fx :communities/invite-people-pressed
+ (fn [{:keys [db]} [id]]
+   {:db (assoc db :communities/community-id-input id)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:open-modal :invite-people-community {:invite? true}]]]}))
 ```
 
 ### Registering top-level re-frame subscriptions
@@ -521,27 +528,27 @@ due to performance constraints.
    (:preferred-name multiaccount)))
 ```
 
-### Requiring quo2 components
+### Requiring quo components
 
-Consume `quo2` components from `quo2.core`, unless the namespace is also inside
-the `quo2/` directory.
+Consume `quo` components from `quo.core`, unless the namespace is also inside
+the `quo/` directory.
 
 ```clojure
 ;; bad
 (ns my-namespace
-  (:require [quo2.components.icon :as icon]))
+  (:require [quo.components.icon :as icon]))
 
 (icon/icon :i/verified)
 
 ;; good
 (ns my-namespace
-  (:require [quo2.core :as quo]))
+  (:require [quo.core :as quo]))
 
 (quo/icon :i/verified)
 
-;; also good because both namespaces are inside quo2/
-(ns quo2.components.tabs.account-selector
-  (:require [quo2.components.markdown.text :as text]))
+;; also good because both namespaces are inside quo/
+(ns quo.components.tabs.account-selector
+  (:require [quo.components.markdown.text :as text]))
 ```
 
 ### Require/import
@@ -608,12 +615,12 @@ Use the appropriate keyword qualification/namespace.
 
 ```clojure
 ;; bad
-(require '[quo2.components.icon :as icons])
+(require '[quo.components.icon :as icons])
 (icons/icon :main-icons2/verified)
 
 ;; good
-(require '[quo2.core :as quo2])
-(quo2/icon :i/verified)
+(require '[quo.core :as quo])
+(quo/icon :i/verified)
 ```
 
 ### Translations
@@ -688,7 +695,7 @@ First, the bird's-eye view with some example ClojureScript files:
 src
 ├── js/
 ├── mocks/
-├── quo2
+├── quo
 │   ├── components/
 │   ├── foundations/
 │   └── theme.cljs
@@ -709,7 +716,7 @@ src
 
 - `src/js`: Raw Javascript files, e.g. React Native Reanimated worklets.
 - `src/mocks`: Plumbing configuration to be able to run tests.
-- `src/quo2/`: The component library for Status Mobile.
+- `src/quo/`: The component library for Status Mobile.
 - `src/react_native/`: Contains only low-level constructs to help React Native
   work in tandem with Clojure(Script).
 - `src/status_im2/`: Directory where we try to be as strict as possible about
@@ -721,7 +728,7 @@ src
   of the directory tree. Just like directories named `utils`, their directory
   nesting level communicates their applicable limits.
 - `src/status_im2/common/components/`: Contains reusable components that are not
-  part of the design system (quo2).
+  part of the design system (quo).
 - `src/status_im2/contexts/`: Contains [bounded contexts](#glossary), like
   `browser/`, `messaging/`, etc. As much as possible, _bounded contexts_ should
   not directly require each other's namespaces.
@@ -736,9 +743,9 @@ directory nesting level precisely indicates its boundaries. For example, a
 `contexts/user_settings/utils/datetime.cljs` file communicates that it should
 only be used in the `user_settings` context.
 
-### src/quo2
+### src/quo
 
-The `src/quo2/` directory holds all components for the new design system. As
+The `src/quo/` directory holds all components for the new design system. As
 much as possible, its sub-directories and component names should reflect the
 same language used by designers.
 
@@ -746,14 +753,14 @@ Even though the directory lives alongside the rest of the codebase, we should
 think of it as an external entity that abstracts away particular Status domain
 knowledge.
 
-Components inside `src/quo2/` should not rely on re-frame, i.e. they should not
+Components inside `src/quo/` should not rely on re-frame, i.e. they should not
 dispatch events or use subscriptions.
 
 Example structure:
 
 ```
 src
-└── quo2
+└── quo
     ├── components
     │   └── dropdown
     │       ├── style.cljs
@@ -783,6 +790,28 @@ src
         ├── style.cljs
         └── view.cljs
 ```
+
+## Deprecation process
+
+To deprecate a var, add the `:deprecated` metadata and, if necessary, suggest an
+alternative.
+
+```clojure
+;; Good if there's no better alternative yet, but we want to deprecate it anyway.
+(defn ^:deprecated foo
+  []
+  (bar))
+
+;; Good
+(defn foo
+  {:deprecated "Use some.namespace/var-name instead."}
+  []
+  (bar))
+```
+
+Please check the [Clojure Style](https://guide.clojure.style/#deprecated) documentation
+
+To reduce visual clutter from deprecated methods in your text editor, consult this [example](https://rider-support.jetbrains.com/hc/en-us/community/posts/4419728641810-How-to-disable-the-the-strike-thru-for-deprecated-methods-in-Javascript-#:~:text=Try%20disabling%20%22Preferences%20%7C%20Editor%20%7C,It%20works%20for%20me). The approach can be adapted for settings in VSCode, Emacs, VIM, and others.
 
 ### Test structure
 

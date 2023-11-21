@@ -1,11 +1,12 @@
 (ns status-im2.contexts.shell.jump-to.shared-values
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]
-            [react-native.reanimated :as reanimated]
-            [utils.worklets.shell :as worklets.shell]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.worklets.shell :as worklets.shell]))
 
 (defn calculate-home-stack-position
   [{:keys [width height]}]
@@ -88,7 +89,9 @@
      :screen-left          (worklets.shell/floating-screen-left screen-state
                                                                 width
                                                                 switcher-card-left-position)
-     :screen-top           (worklets.shell/floating-screen-top screen-state switcher-card-top-position)
+     :screen-top           (worklets.shell/floating-screen-top screen-state
+                                                               height
+                                                               switcher-card-top-position)
      :screen-z-index       (worklets.shell/floating-screen-z-index screen-state)
      :screen-width         (worklets.shell/floating-screen-width screen-state
                                                                  width
@@ -118,14 +121,12 @@
        shared-values
        (stacks-and-bottom-tabs-derived-values shared-values)
        (home-stack-derived-values shared-values dimensions)
-       {shell.constants/community-screen (floating-screen-derived-values
-                                          shell.constants/community-screen
-                                          dimensions
-                                          switcher-card-left-position
-                                          switcher-card-top-position)
-        shell.constants/chat-screen      (floating-screen-derived-values
-                                          shell.constants/chat-screen
-                                          dimensions
-                                          switcher-card-left-position
-                                          switcher-card-top-position)}))
+       (into {}
+             (for [screen-id shell.constants/floating-screens]
+               [screen-id
+                (floating-screen-derived-values
+                 screen-id
+                 dimensions
+                 switcher-card-left-position
+                 switcher-card-top-position)]))))
     @state/shared-values-atom))

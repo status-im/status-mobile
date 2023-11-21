@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as typography]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]))
 
 ;;;; Form fields
 
@@ -54,6 +55,16 @@
 (def customizer-container
   {:flex-shrink 1
    :padding-top 12})
+
+(defn multi-select-option
+  []
+  (merge (field-container false)
+         {:justify-content  :space-between
+          :align-items      :space-between
+          :flex             1
+          :flex-direction   :row
+          :margin-vertical  4
+          :background-color (field-default-bg-color)}))
 
 (defn select-container
   []
@@ -171,9 +182,3 @@
    :padding-bottom     8
    :padding-horizontal 16
    :background-color   (colors/theme-colors colors/white colors/neutral-90)})
-
-(def theme-switcher
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :padding-horizontal 24
-   :padding-vertical   12})

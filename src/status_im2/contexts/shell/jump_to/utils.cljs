@@ -1,14 +1,15 @@
 (ns status-im2.contexts.shell.jump-to.utils
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [status-im2.config :as config]
-            [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [react-native.reanimated :as reanimated]
-            [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [quo.theme :as quo.theme]
+    [react-native.async-storage :as async-storage]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im2.config :as config]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [utils.re-frame :as rf]))
 
 ;;;;  Helper Functions
 
@@ -96,27 +97,43 @@
        shell.constants/close-screen-without-animation))))
 
 ;;; Floating screen
+(defn- screen-state-open?
+  [state]
+  (#{shell.constants/open-screen-without-animation
+     shell.constants/open-screen-with-shell-animation
+     shell.constants/open-screen-with-slide-from-right-animation
+     shell.constants/open-screen-with-slide-from-bottom-animation}
+   state))
+
 (defn floating-screen-open?
   [screen-id]
-  (let [state (get @state/floating-screens-state screen-id)]
-    (or (= state shell.constants/open-screen-with-slide-animation)
-        (= state shell.constants/open-screen-with-shell-animation)
-        (= state shell.constants/open-screen-without-animation))))
+  (screen-state-open? (get @state/floating-screens-state screen-id)))
+
+(defn open-floating-screens
+  []
+  (reduce (fn [acc [screen-id state]]
+            (let [open? (screen-state-open? state)]
+              (if open? (assoc acc screen-id true) acc)))
+          {}
+          @state/floating-screens-state))
 
 ;;; Navigation
 (defn shell-navigation?
   [view-id]
   (when-not config/shell-navigation-disabled?
-    (#{:chat :community-overview} view-id)))
+    (some #{view-id} shell.constants/floating-screens)))
 
 (defn calculate-view-id
   []
-  (cond
-    (floating-screen-open? shell.constants/chat-screen)
-    shell.constants/chat-screen
-    (floating-screen-open? shell.constants/community-screen)
-    shell.constants/community-screen
-    :else (or @state/selected-stack-id :shell)))
+  (let [screens (open-floating-screens)]
+    (cond
+      (get screens shell.constants/chat-screen)
+      shell.constants/chat-screen
+      (get screens shell.constants/community-screen)
+      shell.constants/community-screen
+      (get screens shell.constants/discover-communities-screen)
+      shell.constants/discover-communities-screen
+      :else (or @state/selected-stack-id :shell))))
 
 (defn update-view-id
   [view-id]
@@ -126,7 +143,7 @@
 (defn change-shell-status-bar-style
   []
   (rf/dispatch [:change-shell-status-bar-style
-                (if (or (colors/dark?)
+                (if (or (= :dark (quo.theme/get-theme))
                         (not (home-stack-open?)))
                   :light
                   :dark)]))

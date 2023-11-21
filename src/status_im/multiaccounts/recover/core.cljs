@@ -1,10 +1,11 @@
 (ns status-im.multiaccounts.recover.core
-  (:require [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [native-module.core :as native-module]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.create.core :as multiaccounts.create]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  ::import-multiaccount
@@ -25,12 +26,6 @@
           constants/path-default-wallet]
          (fn [result]
            (let [derived-data (multiaccounts.create/normalize-derived-data-keys
-                               (types/json->clj result))
-                 public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-             (native-module/gfycat-identicon-async
-              public-key
-              (fn [name _]
-                (let [derived-data-extended
-                      (update derived-data constants/path-whisper-keyword assoc :name name)]
-                  (re-frame/dispatch [success-event root-data derived-data-extended]))))))))))))
+                               (types/json->clj result))]
+             (re-frame/dispatch [success-event root-data derived-data])))))))))
 

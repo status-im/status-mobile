@@ -26,6 +26,8 @@
 
 [Creating a pixel perfect UI](pixel-perfection.md)
 
+[Contributing to status-go](status-go-changes.md)
+
 ## Testing
 
 [How to run local tests](testing.md)
@@ -35,6 +37,13 @@
 [Component tests (jest) overview](component-tests-overview.md)
 
 
+## Project details
+
+[status-go introduction (recorded meeting)](https://drive.google.com/file/d/1B7TljmTZ8fHkqJH8ChU1Cp4FGDFM03gq/view)
+
+[re-frame usage (recorded meeting)](https://drive.google.com/file/d/1qv_E0CEGzQpu_zGXD0gCTU5EvhC2k8Jy/view)
+
+[status app functionality demo](https://drive.google.com/file/u/0/d/1PmwsMLTLDNNIdv5_6wvMOwoj2PfT50c6/view)
 
 ## Misc
 

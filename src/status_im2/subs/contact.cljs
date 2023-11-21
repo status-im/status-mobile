@@ -1,16 +1,16 @@
 (ns status-im2.subs.contact
-  (:require [clojure.string :as string]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame]
-            [status-im.contact.db :as contact.db]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im2.constants :as constants]
-            [utils.collection]
-            [utils.i18n :as i18n]
-            [utils.image-server :as image-server]))
+  (:require
+    [clojure.string :as string]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame]
+    [status-im.contact.db :as contact.db]
+    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.address :as address]
+    [utils.collection]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -180,7 +180,7 @@
 (re-frame/reg-sub
  :contacts/active-with-ens-names
  :<- [:contacts/active]
- :<- [:search/recipient-filter]
+ :<- [:wallet-legacy/search-recipient-filter]
  (fn [[contacts search-filter]]
    (let [contacts (filter :ens-verified contacts)]
      (if (string/blank? search-filter)
@@ -212,7 +212,7 @@
  :contacts/contact-by-identity
  :<- [:contacts/contacts]
  (fn [contacts [_ contact-identity]]
-   (multiaccounts/contact-by-identity contacts contact-identity)))
+   (get contacts contact-identity {:public-key contact-identity})))
 
 (re-frame/reg-sub
  :contacts/contact-added?
@@ -233,40 +233,17 @@
  (fn [[_ contact-identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])
     (re-frame/subscribe [:profile/profile])])
- (fn [[contact current-multiaccount] [_ contact-identity]]
-   (multiaccounts/contact-two-names-by-identity contact
-                                                current-multiaccount
-                                                contact-identity)))
-
-(re-frame/reg-sub
- :contacts/contact-name-by-identity
- (fn [[_ contact-identity] _]
-   [(re-frame/subscribe [:contacts/contact-two-names-by-identity contact-identity])])
- (fn [[names] _]
-   (first names)))
-
-(re-frame/reg-sub
- :messages/quote-info
- :<- [:chats/messages]
- :<- [:contacts/contacts]
- :<- [:profile/profile]
- (fn [[messages contacts current-multiaccount] [_ message-id]]
-   (when-let [message (get messages message-id)]
-     (let [from-identity (:from message)
-           me?           (= (:public-key current-multiaccount) from-identity)]
-       (if me?
-         {:quote    {:from from-identity
-                     :text (get-in message [:content :text])}
-          :ens-name (:preferred-name current-multiaccount)
-          :alias    (gfycat/generate-gfy from-identity)}
-         (let [contact (or (contacts from-identity)
-                           (contact.db/public-key->new-contact from-identity))]
-           {:quote    {:from from-identity
-                       :text (get-in message [:content :text])}
-            :ens-name (when (:ens-verified contact)
-                        (:name contact))
-            :alias    (or (:alias contact)
-                          (gfycat/generate-gfy from-identity))}))))))
+ (fn [[{:keys [primary-name] :as contact}
+       {:keys [public-key preferred-name display-name]}]
+      [_ contact-identity]]
+   [(if (= public-key contact-identity)
+      (cond
+        (not (string/blank? preferred-name)) preferred-name
+        (not (string/blank? display-name))   display-name
+        (not (string/blank? primary-name))   primary-name
+        :else                                public-key)
+      (profile.utils/displayed-name contact))
+    (:secondary-name contact)]))
 
 (re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat
@@ -295,7 +272,7 @@
  :<- [:contacts/contacts]
  :<- [:multiaccount/contact]
  (fn [[contacts multiaccount] [_ address]]
-   (if (ethereum/address= address (:public-key multiaccount))
+   (if (address/address= address (:public-key multiaccount))
      multiaccount
      (contact.db/find-contact-by-address contacts address))))
 

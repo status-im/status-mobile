@@ -1,30 +1,43 @@
 (ns status-im2.contexts.shell.share.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.contexts.shell.share.style :as style]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [status-im.ui.components.list-selection :as list-selection]
-            [utils.image-server :as image-server]
-            [react-native.navigation :as navigation]
-            [clojure.string :as string]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.ui.components.list-selection :as list-selection]
+    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im2.contexts.shell.share.style :as style]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (defn header
   []
   [:<>
-   [quo/button
-    {:icon-only?          true
-     :type                :grey
-     :background          :blur
-     :size                32
-     :accessibility-label :close-shell-share-tab
-     :container-style     style/header-button
-     :on-press            #(rf/dispatch [:navigate-back])}
-    :i/close]
+   [rn/view {:style style/header-row}
+    [quo/button
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
+      :size                32
+      :accessibility-label :close-shell-share-tab
+      :container-style     style/header-button
+      :on-press            #(rf/dispatch [:navigate-back])}
+     :i/close]
+    [quo/button
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
+      :size                32
+      :accessibility-label :shell-scan-button
+      :on-press            #(rf/dispatch [:navigate-back])}
+     :i/scan]]
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
@@ -32,61 +45,33 @@
     (i18n/label :t/share)]])
 
 (defn profile-tab
-  [window-width]
+  []
   (let [{:keys [emoji-hash
                 compressed-key
-                key-uid]} (rf/sub [:profile/profile])
-        port              (rf/sub [:mediaserver/port])
-        emoji-hash-string (string/join emoji-hash)
-        qr-size           (int (- window-width 64))
+                customization-color]
+         :as   profile}   (rf/sub [:profile/profile])
+        profile-url       (str image-server/status-profile-base-url compressed-key)
         abbreviated-url   (address/get-abbreviated-profile-url
                            image-server/status-profile-base-url-without-https
                            compressed-key)
-        profile-url       (str image-server/status-profile-base-url compressed-key)
-        source-uri        (image-server/get-account-qr-image-uri
-                           {:key-uid    key-uid
-                            :public-key compressed-key
-                            :port       port
-                            :qr-size    qr-size})]
+        emoji-hash-string (string/join emoji-hash)]
     [:<>
      [rn/view {:style style/qr-code-container}
-      [quo/qr-code
-       {:source {:uri source-uri}
-        :width  qr-size
-        :height qr-size}]
-      [rn/view {:style style/profile-address-container}
-       [rn/view {:style style/profile-address-column}
-        [quo/text
-         {:size   :paragraph-2
-          :weight :medium
-          :style  style/profile-address-label}
-         (i18n/label :t/link-to-profile)]
-        [rn/touchable-highlight
-         {:active-opacity   1
-          :underlay-color   colors/neutral-80-opa-1-blur
-          :background-color :transparent
-          :on-press         #(rf/dispatch [:share/copy-text-and-show-toast
-                                           {:text-to-copy      profile-url
-                                            :post-copy-message (i18n/label :t/link-to-profile-copied)}])
-          :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast
-                                           {:text-to-copy      profile-url
-                                            :post-copy-message (i18n/label :t/link-to-profile-copied)}])}
-         [quo/text
-          {:style           style/profile-address-content
-           :size            :paragraph-1
-           :weight          :medium
-           :ellipsize-mode  :middle
-           :number-of-lines 1}
-          abbreviated-url]]]
-       [rn/view {:style style/share-button-container}
-        [quo/button
-         {:icon-only?          true
-          :type                :grey
-          :background          :blur
-          :size                32
-          :accessibility-label :link-to-profile
-          :on-press            #(list-selection/open-share {:message profile-url})}
-         :i/share]]]]
+      [qr-codes/share-qr-code
+       {:type                :profile
+        :unblur-on-android?  true
+        :qr-data             profile-url
+        :qr-data-label-shown abbreviated-url
+        :on-share-press      #(list-selection/open-share {:message profile-url})
+        :on-text-press       #(rf/dispatch [:share/copy-text-and-show-toast
+                                            {:text-to-copy      profile-url
+                                             :post-copy-message (i18n/label :t/link-to-profile-copied)}])
+        :on-text-long-press  #(rf/dispatch [:share/copy-text-and-show-toast
+                                            {:text-to-copy      profile-url
+                                             :post-copy-message (i18n/label :t/link-to-profile-copied)}])
+        :profile-picture     (:uri (profile.utils/photo profile))
+        :full-name           (profile.utils/displayed-name profile)
+        :customization-color customization-color}]]
 
      [rn/view {:style style/emoji-hash-container}
       [rn/view {:style style/emoji-address-container}
@@ -128,7 +113,7 @@
   [rn/text {:style style/wip-style} "not implemented"])
 
 (defn tab-content
-  [window-width]
+  []
   (let [selected-tab (reagent/atom :profile)]
     (fn []
       [:<>
@@ -144,15 +129,14 @@
                            {:id    :wallet
                             :label (i18n/label :t/wallet)}]}]]
        (if (= @selected-tab :profile)
-         [profile-tab window-width]
+         [profile-tab]
          [wallet-tab])])))
 
 (defn view
   []
-  (let [window-width (rf/sub [:dimensions/window-width])]
-    (fn []
-      [rn/view
-       {:flex        1
-        :padding-top (navigation/status-bar-height)}
-       [blur/view style/blur]
-       [tab-content window-width]])))
+  [rn/view {:flex 1 :padding-top (safe-area/get-top)}
+   [blur/view
+    {:style       style/blur
+     :blur-amount 20
+     :blur-radius (if platform/android? 25 10)}]
+   [tab-content]])

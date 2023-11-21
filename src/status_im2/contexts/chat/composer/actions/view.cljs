@@ -1,26 +1,28 @@
 (ns status-im2.contexts.chat.composer.actions.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.common.alert.events :as alert]
-    [status-im2.contexts.chat.composer.constants :as comp-constants]
-    [status-im2.contexts.chat.messages.list.view :as messages.list]
     [status-im2.common.device-permissions :as device-permissions]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
+    [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.actions.style :as style]
-    [status-im2.constants :as constants]))
+    [status-im2.contexts.chat.composer.constants :as comp-constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn send-message
+  "Minimize composer, animate-out background overlay, clear input and flush state"
   [{:keys [sending-images? sending-links?]}
    {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
-   window-height edit]
+   window-height
+   edit
+   scroll-to-bottom-fn]
   (reanimated/animate height comp-constants/input-height)
   (reanimated/set-shared-value saved-height comp-constants/input-height)
   (reanimated/set-shared-value last-height comp-constants/input-height)
@@ -38,42 +40,50 @@
   (reset! text-value "")
   (reset! sending-links? false)
   (reset! sending-images? false)
-  (when-not (some? edit)
-    (messages.list/scroll-to-bottom)))
+  (when (and (not (some? edit)) scroll-to-bottom-fn)
+    (scroll-to-bottom-fn)))
 
 (defn f-send-button
-  [props {:keys [text-value] :as state}
-   animations window-height images?
-   btn-opacity z-index edit]
-  (rn/use-effect (fn []
-                   (if (or (seq @text-value) images?)
-                     (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
-                       (reset! z-index 1)
-                       (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
-                     (when (or (not= @z-index 0) (not= (reanimated/get-shared-value btn-opacity) 0))
-                       (reanimated/animate btn-opacity 0)
-                       (js/setTimeout #(when (and (empty? @text-value) (not images?)) (reset! z-index 0))
-                                      300))))
-                 [(and (empty? @text-value) (not images?))])
-  [reanimated/view
-   {:style (style/send-button btn-opacity @z-index)}
-   [quo/button
-    {:icon-only?          true
-     :size                32
-     :accessibility-label :send-message-button
-     :on-press            #(send-message props state animations window-height edit)}
-    :i/arrow-up]])
+  [props state animations window-height images? btn-opacity scroll-to-bottom-fn z-index edit]
+  (let [{:keys [text-value]} state
+        customization-color  (rf/sub [:profile/customization-color])]
+    (rn/use-effect (fn []
+                     ;; Handle send button opacity animation and z-index when input content changes
+                     (if (or (seq @text-value) images?)
+                       (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
+                         (reset! z-index 1)
+                         (js/setTimeout #(reanimated/animate btn-opacity 1) 50))
+                       (when (or (not= @z-index 0) (not= (reanimated/get-shared-value btn-opacity) 0))
+                         (reanimated/animate btn-opacity 0)
+                         (js/setTimeout #(when (and (empty? @text-value) (not images?))
+                                           (reset! z-index 0))
+                                        300))))
+                   [(and (empty? @text-value) (not images?))])
+    [reanimated/view
+     {:style (style/send-button btn-opacity @z-index)}
+     [quo/button
+      {:icon-only? true
+       :size 32
+       :customization-color customization-color
+       :accessibility-label :send-message-button
+       :on-press #(send-message props state animations window-height edit scroll-to-bottom-fn)}
+      :i/arrow-up]]))
 
 (defn send-button
-  [props {:keys [text-value] :as state} animations window-height images? edit btn-opacity]
+  [props {:keys [text-value] :as state} animations window-height images? edit btn-opacity
+   scroll-to-bottom-fn]
   (let [z-index (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
-    [:f> f-send-button props state animations window-height images? btn-opacity z-index edit]))
+    [:f> f-send-button props state animations window-height images? btn-opacity scroll-to-bottom-fn
+     z-index edit]))
 
 (defn disabled-audio-button
   [opacity]
   [reanimated/view {:style (reanimated/apply-animations-to-style {:opacity opacity} {})}
    [quo/composer-button
-    {:on-press #(js/alert "to be implemented")
+    {:on-press (fn []
+                 (rf/dispatch [:chat.ui/set-input-focused false])
+                 (rn/dismiss-keyboard!)
+                 (js/alert "to be implemented"))
      :icon     :i/audio}]])
 
 (defn audio-button
@@ -164,12 +174,15 @@
                                 (rf/dispatch [:navigate-to :camera-screen]))))
 
 (defn camera-button
-  []
+  [edit]
   (let [images-count (count (vals (rf/sub [:chats/sending-image])))]
     [quo/composer-button
-     {:on-press        #(go-to-camera images-count)
-      :icon            :i/camera
-      :container-style {:margin-right 12}}]))
+     {:on-press            (if edit
+                             #(js/alert "This feature is temporarily unavailable in edit mode.")
+                             #(go-to-camera images-count))
+      :accessibility-label :camera-button
+      :icon                :i/camera
+      :container-style     {:margin-right 12}}]))
 
 
 (defn open-photo-selector
@@ -190,9 +203,11 @@
                                       :t/external-storage-denied)))}))
 
 (defn image-button
-  [props animations insets]
+  [props animations insets edit]
   [quo/composer-button
-   {:on-press            #(open-photo-selector props animations insets)
+   {:on-press            (if edit
+                           #(js/alert "This feature is temporarily unavailable in edit mode.")
+                           #(open-photo-selector props animations insets))
     :accessibility-label :open-images-button
     :container-style     {:margin-right 12}
     :icon                :i/image}])
@@ -201,28 +216,35 @@
   []
   [quo/composer-button
    {:icon            :i/reaction
-    :on-press        #(js/alert "to be implemented")
+    :on-press        (fn []
+                       (rf/dispatch [:chat.ui/set-input-focused false])
+                       (rn/dismiss-keyboard!)
+                       (js/alert "to be implemented"))
     :container-style {:margin-right 12}}])
 
 (defn format-button
   []
   [quo/composer-button
-   {:on-press #(js/alert "to be implemented")
+   {:on-press (fn []
+                (rf/dispatch [:chat.ui/set-input-focused false])
+                (rn/dismiss-keyboard!)
+                (js/alert "to be implemented"))
     :icon     :i/format}])
 
 (defn view
-  [props state animations window-height insets {:keys [edit images]}]
+  [props state animations window-height insets scroll-to-bottom-fn {:keys [edit images]}]
   (let [send-btn-opacity  (reanimated/use-shared-value 0)
         audio-btn-opacity (reanimated/interpolate send-btn-opacity [0 1] [1 0])]
     [rn/view {:style style/actions-container}
      [rn/view
       {:style {:flex-direction :row
                :display        (if @(:recording? state) :none :flex)}}
-      [camera-button]
-      [image-button props animations insets]
+      [camera-button edit]
+      [image-button props animations insets edit]
       [reaction-button]
       [format-button]]
-     [:f> send-button props state animations window-height images edit send-btn-opacity]
+     [:f> send-button props state animations window-height images edit send-btn-opacity
+      scroll-to-bottom-fn]
      (when (and (not edit) (not images))
        ;; TODO(alwx): needs to be replaced with an `audio-button` later.
        ;; See https://github.com/status-im/status-mobile/issues/16084 for more details.

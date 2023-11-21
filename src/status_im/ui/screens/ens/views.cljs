@@ -1,21 +1,18 @@
 (ns status-im.ui.screens.ens.views
   (:require
     [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.design-system.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ens.core :as ens]
-    [status-im.ethereum.core :as ethereum]
-    [status-im.ethereum.ens :as ethereum.ens]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
-    [utils.i18n :as i18n]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.checkbox.view :as checkbox]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.common.common :as components.common]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.toolbar :as toolbar]
     [status-im.ui.components.topbar :as topbar]
@@ -23,7 +20,12 @@
     [status-im.ui.screens.profile.components.views :as profile.components]
     [status-im.ui.screens.wallet.send.sheets :as sheets]
     [status-im.utils.utils :as utils]
-    [utils.debounce :as debounce])
+    [status-im2.config :as config]
+    [utils.address :as address]
+    [utils.debounce :as debounce]
+    [utils.ens.core :as utils.ens]
+    [utils.ens.stateofus :as stateofus]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- link
@@ -146,7 +148,7 @@
     :owned
     [help-message-text-element
      :t/ens-username-owned
-     :t/ens-username-continue]
+     :t/ens-username-owned-continue]
     :connected
     [help-message-text-element
      :t/ens-username-connected
@@ -182,8 +184,7 @@
   (let [input-ref (atom nil)]
     (fn [_ state placeholder]
       [react/view {:flex-direction :row :justify-content :center}
-       ;;NOTE required so that the keyboards shows up when navigating
-       ;;back from checkout screen
+       ;;NOTE required so that the keyboards shows up when navigating back from checkout screen
        ;; TODO: navigation-events were deprecated
        ;; [:> navigation/navigation-events
        ;;  {:on-did-focus
@@ -220,8 +221,7 @@
     [react/keyboard-avoiding-view {:flex 1}
      [react/scroll-view
       {:style                        {:flex 1}
-       ;;NOTE required so that switching custom-domain
-       ;;works on first tap and persists keyboard
+       ;;NOTE required so that switching custom-domain works on first tap and persists keyboard
        ;;instead of dismissing keyboard and requiring two taps
        :keyboard-should-persist-taps :always}
       [react/view {:style {:flex 1}}
@@ -287,7 +287,7 @@
 (defn render-account
   [address]
   (let [account @(re-frame/subscribe [:account-by-address address])]
-    [quo/list-item
+    [list.item/list-item
      {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
       :title    (:name account)
       :subtitle (utils/get-shortened-checksum-address (:address account))
@@ -344,7 +344,12 @@
                       :typography :main-medium}}
              (domain-label custom-domain?)]
             [react/view {:flex 1 :min-width 24}]]]
-          [registration checked? (stateofus/get-cached-registrar chain) address public-key]]
+          [registration
+           checked?
+           (when (or (not= chain :goerli) config/test-stateofus?)
+             (stateofus/get-cached-registrar chain))
+           address
+           public-key]]
          [toolbar/toolbar
           {:show-border? true
            :size         :large
@@ -513,7 +518,7 @@
        (i18n/label :t/ens-terms-point-10)]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
        [link
-        {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
+        {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet utils.ens/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -549,18 +554,17 @@
        (when-not pending?
          [section
           {:title   (i18n/label :t/wallet-address)
-           :content (ethereum/normalized-hex address)}])
+           :content (address/normalized-hex address)}])
        (when-not pending?
          [react/view {:style {:margin-top 14}}
           [section
            {:title   (i18n/label :t/key)
             :content public-key}]])
        [react/view {:style {:margin-top 16 :margin-bottom 32}}
-        ;;TODO this is temporary fix for accounts with failed txs
-        ;;we still need this for regular ens names (not pending) but we need to detach public key in the
-        ;;contract
+        ;;TODO this is temporary fix for accounts with failed txs we still need this for regular ens
+        ;;names (not pending) but we need to detach public key in the contract
         (when pending?
-          [quo/list-item
+          [list.item/list-item
            {:title    (i18n/label :t/ens-remove-username)
             ;:subtext       (i18n/label :t/ens-remove-hints)
             :icon     :main-icons/close
@@ -568,7 +572,7 @@
             :on-press #(re-frame/dispatch [::ens/remove-username name])}])
         (when (and (not custom-domain?) (not pending?))
           [react/view {:style {:margin-top 18}}
-           [quo/list-item
+           [list.item/list-item
             {:title    (i18n/label :t/ens-release-username)
              :theme    :accent
              :disabled (not releasable?)
@@ -660,7 +664,7 @@
   [{:keys [name action subtitle]}]
   (let [stateofus-username (stateofus/username name)
         s                  (or stateofus-username name)]
-    [quo/list-item
+    [list.item/list-item
      (merge {:title    s
              :subtitle (if subtitle
                          subtitle
@@ -685,7 +689,7 @@
             stateofus-username (stateofus/username name)
             s                  (or stateofus-username name)]
         ^{:key name}
-        [quo/list-item
+        [list.item/list-item
          {:accessibility-label (if (= name preferred-name)
                                  :primary-username
                                  :not-primary-username)
@@ -699,13 +703,13 @@
 (views/defview in-progress-registrations
   [registrations]
   [react/view {:style {:margin-top 8}}
-   (for [[hash {:keys [state username]}] registrations
-         :when                           (or (= state :submitted) (= state :failure))]
-     ^{:key hash}
+   (for [[tx-hash {:keys [state username]}] registrations
+         :when                              (or (= state :submitted) (= state :failure))]
+     ^{:key tx-hash}
      [name-item
       {:name     username
        :action   (when-not (= state :submitted)
-                   #(re-frame/dispatch [:clear-ens-registration hash]))
+                   #(re-frame/dispatch [:ens/clear-registration tx-hash]))
        :subtitle (case state
                    :submitted (i18n/label :t/ens-registration-in-progress)
                    :failure   (i18n/label :t/ens-registration-failure)
@@ -725,7 +729,7 @@
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
-     [quo/list-item
+     [list.item/list-item
       {:title    (i18n/label :t/ens-add-username)
        :theme    :accent
        :on-press #(re-frame/dispatch [::ens/add-username-pressed])

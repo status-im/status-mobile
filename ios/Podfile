@@ -12,6 +12,15 @@ production = ENV["PRODUCTION"] == "1"
 # TODO: remove this flag once you upgrade react-native above version 0.70
 ENV['USE_CODEGEN_DISCOVERY'] = "1"
 
+# If inside a Nix shell, allow pod install
+inside_nix_shell = ENV['IN_NIX_SHELL']
+allow_pod_install = !inside_nix_shell.nil?
+
+unless allow_pod_install
+    puts "ERROR: 'pod install' must be run inside a Nix shell. Please ensure you're inside a nix shell and try again."
+    exit 1
+end
+
 abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!
@@ -33,7 +42,6 @@ abstract_target 'Status' do
   pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
-  pod 'SQLCipher', '~>3.0'
   pod 'SSZipArchive', '2.4.3'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
@@ -62,6 +70,17 @@ abstract_target 'Status' do
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+        # fix for no template named 'unary_function' in namespace 'std'; did you mean '__unary_function'?
+        # ref : https://github.com/facebook/react-native/issues/37748
+        # TODO : remove after upgrading to react-native 0.72.x
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION']
+      end
+      # We need to remove the predefinition of IPHONEOS_DEPLOYMENT_TARGET from RNCK lib to use our own.
+      case target.name
+      when 'ReactNativeCameraKit'
+        target.build_configurations.each do |config|
+          config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+        end
       end
     end
   end

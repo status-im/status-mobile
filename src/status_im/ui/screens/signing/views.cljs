@@ -2,47 +2,42 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.design-system.colors :as colors]
     [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.ethereum.tokens :as tokens]
-    [utils.i18n :as i18n]
     [status-im.keycard.common :as keycard.common]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.react-native.resources :as resources]
     [status-im.signing.eip1559 :as eip1559]
     [status-im.ui.components.bottom-panel.views :as bottom-panel]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
     [status-im.ui.screens.keycard.pin.views :as pin.views]
     [status-im.ui.screens.signing.sheets :as sheets]
     [status-im.ui.screens.signing.styles :as styles]
     [status-im.ui.screens.wallet.components.views :as wallet.components]
-    [status-im.utils.platform :as platform]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.utils.utils :as utils]
     [status-im.wallet.utils :as wallet.utils]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.i18n :as i18n]
     [utils.security.core :as security]))
 
 (defn separator
   []
   [react/view {:height 1 :background-color colors/gray-lighter}])
 
-(defn displayed-name
-  [contact]
-  (if (or (:preferred-name contact) (:name contact))
-    (multiaccounts/displayed-name contact)
-    (utils/get-shortened-checksum-address (:address contact))))
-
 (defn contact-item
-  [title contact]
+  [title {:keys [address] :as profile}]
   [copyable-text/copyable-text-view
-   {:copied-text (:address contact)}
-   [quo/list-item
+   {:copied-text address}
+   [list.item/list-item
     {:title              title
      :title-prefix-width 45
      :size               :small
@@ -51,13 +46,13 @@
                           {:ellipsize-mode  :middle
                            :number-of-lines 1
                            :monospace       true}
-                          (displayed-name contact)]}]])
+                          (profile.utils/displayed-name profile)]}]])
 
 (defn token-item
   [{:keys [icon color] :as token} display-symbol]
   (when token
     [react/view
-     [quo/list-item
+     [list.item/list-item
       {:size      :small
        :title     (i18n/label :t/wallet-asset)
        :accessory [react/view {:flex-direction :row}
@@ -76,7 +71,7 @@
 
 (defn header
   [{:keys [in-progress?] :as sign}
-   {:keys [contact amount approve? cancel? hash]}
+   {:keys [contact amount approve? cancel?] :as tx}
    display-symbol fee fee-display-symbol]
   [react/view styles/header
    (when sign
@@ -94,15 +89,15 @@
                   :else
                   (i18n/label :t/sending))
             (if cancel?
-              (str " " (utils/get-shortened-address hash))
+              (str " " (utils/get-shortened-address (:hash tx)))
               (str " " amount " " display-symbol)))]
       [react/text {:style {:typography :title-bold}} (i18n/label :t/contract-interaction)])
     (if sign
       [react/nested-text
        {:style           {:color colors/gray}
         :ellipsize-mode  :middle
-        :number-of-lines 1} (i18n/label :t/to) " "
-       [{:style {:color colors/black}} (displayed-name contact)]]
+        :number-of-lines 1} (i18n/label :t/to-capitalized) " "
+       [{:style {:color colors/black}} (profile.utils/displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
    [react/view {:padding-horizontal 24}
@@ -385,7 +380,7 @@
       (let [converted-value (* amount
                                (get-in prices
                                        [(keyword display-symbol) (keyword (:code wallet-currency))]))]
-        [quo/list-item
+        [list.item/list-item
          {:size      :small
           :title     (if amount-error
                        [error-item :t/send-request-amount show-error]
@@ -413,7 +408,7 @@
                                  (get-in prices
                                          [(keyword fee-display-symbol)
                                           (keyword (:code wallet-currency))]))]
-      [quo/list-item
+      [list.item/list-item
        {:size      :small
         :title     (if (and (not (or gas-price-loading? gas-loading?)) gas-error)
                      [error-item :t/network-fee show-error]
@@ -455,7 +450,7 @@
 (views/defview network-item
   []
   (views/letsubs [network-name [:network-name]]
-    [quo/list-item
+    [list.item/list-item
      {:title          (i18n/label :t/network)
       :size           :small
       :accessory      :text
@@ -465,7 +460,7 @@
   []
   [:<>
    [separator]
-   [quo/list-item
+   [list.item/list-item
     {:size     :small
      :title    (i18n/label :t/advanced)
      :chevron  true
@@ -480,10 +475,10 @@
                   [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]
                   prices [:prices]
-                  wallet-currency [:wallet/currency]
+                  wallet-currency [:wallet-legacy/currency]
                   mainnet? [:mainnet?]
                   prices-loading? [:prices-loading?]
-                  management-enabled? [:wallet/transactions-management-enabled?]]
+                  management-enabled? [:wallet-legacy/transactions-management-enabled?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view (styles/sheet)
@@ -497,9 +492,9 @@
             [react/view
              [network-item]
              [separator]])
-          [contact-item (i18n/label :t/from) from]
+          [contact-item (i18n/label :t/from-capitalized) from]
           [separator]
-          [contact-item (i18n/label :t/to) contact]
+          [contact-item (i18n/label :t/to-capitalized) contact]
           (when-not cancel?
             [separator])
           (when-not cancel?

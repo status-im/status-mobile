@@ -3,10 +3,10 @@
 (defn- register-events
   [events interceptors name argsyms]
   (mapv (fn [event]
-          `(utils.re-frame/register-handler-fx
+          `(re-frame.core/reg-event-fx
             ~event
             ~interceptors
-            (fn [cofx# [_# ~@argsyms]] (~name cofx# ~@argsyms))))
+            (fn [cofx# [~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
 (defn- fully-qualified-name
@@ -28,7 +28,9 @@
   event keywords under which the function will be registered
   - TODO: add suport for `prepost-map?` (don't forget to add it to arglist)
   - TODO: add validation of macro parameters"
-  {:arglists '([name doc-string? attr-map? [params*] body])}
+  {:arglists      '([name doc-string? attr-map? [params*] body])
+   :deprecated    true
+   :superseded-by "utils.re-frame/reg-event-fx"}
   [name & fdecl]
   (let [m             (if (string? (first fdecl))
                         {:doc (first fdecl)}
@@ -56,7 +58,7 @@
             (when js/goog.DEBUG
               (when (taoensso.timbre/level>=
                      :trace
-                     (:level taoensso.timbre/*config*))
+                     (:min-level taoensso.timbre/*config*))
                 (println
                  (clojure.string/join
                   (concat

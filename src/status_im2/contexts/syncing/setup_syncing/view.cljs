@@ -1,57 +1,64 @@
 (ns status-im2.contexts.syncing.setup-syncing.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.clipboard :as clipboard]
-            [react-native.core :as rn]
-            [react-native.hooks :as hooks]
-            [reagent.core :as reagent]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.syncing.setup-syncing.style :as style]
-            [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [reagent.core :as reagent]
+    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im2.common.resources :as resources]
+    [status-im2.common.standard-authentication.core :as standard-auth]
+    [status-im2.contexts.syncing.setup-syncing.style :as style]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def code-valid-for-ms 120000)
 (def one-min-ms 60000)
 
 (defn f-use-interval
-  [clock cleanup-clock delay]
-  (hooks/use-interval clock cleanup-clock delay)
+  [clock cleanup-clock delay-ms]
+  (hooks/use-interval clock cleanup-clock delay-ms)
   nil)
 
 (defn view
   []
-  (let [profile-color (rf/sub [:profile/customization-color])
-        valid-for-ms  (reagent/atom code-valid-for-ms)
-        code          (reagent/atom nil)
-        delay         (reagent/atom nil)
-        timestamp     (reagent/atom nil)
-        set-code      (fn [connection-string]
-                        (when (sync-utils/valid-connection-string? connection-string)
-                          (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
-                          (reset! delay 1000)
-                          (reset! code connection-string)))
-        clock         (fn []
-                        (if (pos? (- code-valid-for-ms
-                                     (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                        @timestamp)))
-                          (swap! valid-for-ms (fn [_]
-                                                (- code-valid-for-ms
-                                                   (- (* 1000
-                                                         (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                                      @timestamp))))
-                          (reset! delay nil)))
-        cleanup-clock (fn []
-                        (reset! code nil)
-                        (reset! timestamp nil)
-                        (reset! valid-for-ms code-valid-for-ms))]
-
+  (let [{:keys [customization-color]} (rf/sub [:profile/profile-with-image])
+        valid-for-ms                  (reagent/atom code-valid-for-ms)
+        code                          (reagent/atom nil)
+        delay-ms                      (reagent/atom nil)
+        timestamp                     (reagent/atom nil)
+        set-code                      (fn [connection-string]
+                                        (when (sync-utils/valid-connection-string? connection-string)
+                                          (reset! timestamp (* 1000
+                                                               (js/Math.ceil (/ (datetime/timestamp)
+                                                                                1000))))
+                                          (reset! delay-ms 1000)
+                                          (reset! code connection-string)))
+        clock                         (fn []
+                                        (if (pos? (- code-valid-for-ms
+                                                     (- (* 1000
+                                                           (js/Math.ceil (/ (datetime/timestamp) 1000)))
+                                                        @timestamp)))
+                                          (swap! valid-for-ms (fn [_]
+                                                                (- code-valid-for-ms
+                                                                   (- (* 1000
+                                                                         (js/Math.ceil
+                                                                          (/ (datetime/timestamp) 1000)))
+                                                                      @timestamp))))
+                                          (reset! delay-ms nil)))
+        cleanup-clock                 (fn []
+                                        (reset! code nil)
+                                        (reset! timestamp nil)
+                                        (reset! valid-for-ms code-valid-for-ms))
+        on-enter-password             (fn [entered-password]
+                                        (rf/dispatch [:syncing/get-connection-string entered-password
+                                                      set-code]))]
     (fn []
       [rn/view {:style style/container-main}
-       [:f> f-use-interval clock cleanup-clock @delay]
+       [:f> f-use-interval clock cleanup-clock @delay-ms]
        [rn/scroll-view {}
         [quo/page-nav
          {:type       :no-title
@@ -68,29 +75,16 @@
             :weight :semi-bold
             :style  {:color colors/white}}
            (i18n/label :t/setup-syncing)]]
-         [rn/view {:style (style/qr-container (sync-utils/valid-connection-string? @code))}
+         [rn/view {:style style/qr-container}
           (if (sync-utils/valid-connection-string? @code)
-            [qr-code-viewer/qr-code-view 331 @code]
-            [quo/qr-code
-             {:source (resources/get-image :qr-code)
-              :height 220
-              :width  "100%"}])
-          (when-not (sync-utils/valid-connection-string? @code)
-            [quo/button
-             {:on-press            (fn []
-                                     ;TODO https://github.com/status-im/status-mobile/issues/15570
-                                     ;remove old bottom sheet when Authentication process design is
-                                     ;created.
-                                     (rf/dispatch [:bottom-sheet/hide-old])
-                                     (rf/dispatch [:bottom-sheet/show-sheet-old
-                                                   {:content (fn []
-                                                               [enter-password/sheet set-code])}]))
-              :type                :primary
-              :customization-color profile-color
-              :size                40
-              :container-style     style/generate-button
-              :icon-left           :i/reveal}
-             (i18n/label :t/reveal-sync-code)])
+            [qr-codes/qr-code {:url @code}]
+            [rn/view {:style {:flex-direction :row}}
+             [rn/image
+              {:source (resources/get-image :qr-code)
+               :style  {:width            "100%"
+                        :background-color colors/white-opa-70
+                        :border-radius    12
+                        :aspect-ratio     1}}]])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
@@ -122,7 +116,18 @@
                :type            :grey
                :container-style {:margin-top 12}
                :icon-left       :i/copy}
-              (i18n/label :t/copy-qr)]])]]
+              (i18n/label :t/copy-qr)]])
+          (when-not (sync-utils/valid-connection-string? @code)
+            [rn/view {:style style/standard-auth}
+             [standard-auth/slide-button
+              {:blur?                 true
+               :size                  :size-40
+               :track-text            (i18n/label :t/slide-to-reveal-code)
+               :customization-color   customization-color
+               :on-enter-password     on-enter-password
+               :biometric-auth?       false
+               :auth-button-label     (i18n/label :t/reveal-sync-code)
+               :auth-button-icon-left :i/reveal}]])]]
         [rn/view {:style style/sync-code}
          [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer

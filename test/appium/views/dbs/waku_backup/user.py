@@ -10,5 +10,5 @@ communities = {
 
 #contacts = ['Test_contact', 'MyCustomNickname'] # enable back when https://github.com/status-im/status-mobile/issues/15500 is fixed
 
-contacts = ['zQ3...rLSpUs', 'zQ3...mxAZUU']
+contacts = ['zQ3...LSpUs', 'zQ3...xAZUU']
 blocked_user = 'Clear Flat Milkweedbug'

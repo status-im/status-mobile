@@ -2,12 +2,9 @@
   (:require
     [clojure.string :as string]
     [status-im.browser.core :as browser]
-    [status-im2.contexts.chat.events :as chat.events]
     [status-im.chat.models.message :as models.message]
     [status-im.chat.models.reactions :as models.reactions]
     [status-im.communities.core :as models.communities]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.contacts.events :as models.contact]
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.invitations :as data-store.invitations]
@@ -15,14 +12,18 @@
     [status-im.group-chats.core :as models.group]
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
-    [utils.re-frame :as rf]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.visibility-status-updates.core :as models.visibility-status-updates]
-    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im.wallet.core :as wallet]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
-    [status-im.wallet.core :as wallet]))
+    [status-im2.contexts.contacts.events :as models.contact]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [utils.re-frame :as rf]))
 
 (rf/defn process-next
+  {:events [:transport/process-next]}
   [cofx ^js response-js sync-handler]
   (if sync-handler
     (sync-handler cofx response-js true)
@@ -51,6 +52,7 @@
         ^js cleared-histories          (.-clearedHistories response-js)
         ^js identity-images            (.-identityImages response-js)
         ^js accounts                   (.-accounts response-js)
+        ^js ens-username-details-js    (.-ensUsernameDetails response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -59,7 +61,7 @@
         (js-delete response-js "chats")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (chat.events/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
+                  #(chat.events/ensure-chats % [(map data-store.chats/<-rpc (types/js->clj chats))])))
 
       (seq messages)
       (models.message/receive-many cofx response-js)
@@ -193,7 +195,14 @@
         (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.visibility-status-updates/sync-visibility-status-update
-                   current-visibility-status-clj))))))
+                   current-visibility-status-clj)))
+
+      (seq ens-username-details-js)
+      (let [ens-username-details-clj (types/js->clj ens-username-details-js)]
+        (js-delete response-js "ensUsernameDetails")
+        (rf/merge cofx
+                  (process-next response-js sync-handler)
+                  (rf/dispatch [:ens/update-usernames ens-username-details-clj]))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"
@@ -202,10 +211,10 @@
         message-type            (.-messageType message-js)
         from                    (.-from message-js)
         mentioned               (.-mentioned message-js)
-        new                     (.-new message-js)
+        new-message             (.-new message-js)
         current                 (= current-chat-id chat-id)
         should-update-unviewed? (and (not current)
-                                     new
+                                     new-message
                                      (not (= message-type
                                              constants/message-type-private-group-system-message))
                                      (not (= from (get-in db [:profile/profile :public-key]))))
@@ -300,8 +309,7 @@
            (get-in db [:transport/message-envelopes message-id])]
     (when-let [{:keys [from]} (get-in db [:messages chat-id message-id])]
       (check-confirmations cofx status chat-id message-id))
-    ;; We don't have a message-envelope for this, might be that the confirmation
-    ;; came too early
+    ;; We don't have a message-envelope for this, might be that the confirmation came too early
     {:db (update-in db [:transport/message-confirmations message-id] conj status)}))
 
 (rf/defn update-envelopes-status

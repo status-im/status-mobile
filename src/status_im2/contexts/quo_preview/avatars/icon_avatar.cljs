@@ -1,14 +1,16 @@
 (ns status-im2.contexts.quo-preview.avatars.icon-avatar
-  (:require [quo2.components.avatars.icon-avatar :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key :small}
-              {:key :medium}
-              {:key :big}]}
+    :options [{:key :size-20}
+              {:key :size-24}
+              {:key :size-32}
+              {:key :size-48}]}
    {:key     :icon
     :type    :select
     :options [{:key   :i/placeholder20
@@ -19,7 +21,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:size  :big
+  (let [state (reagent/atom {:size  :size-48
                              :icon  :i/placeholder20
                              :color :primary})]
     (fn []

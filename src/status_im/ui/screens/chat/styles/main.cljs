@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.main
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def toolbar-container
   {:flex           1

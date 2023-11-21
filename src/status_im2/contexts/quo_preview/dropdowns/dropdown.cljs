@@ -1,57 +1,83 @@
 (ns status-im2.contexts.quo-preview.dropdowns.dropdown
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :type
     :type    :select
-    :options [{:key :primary}
-              {:key :secondary}
+    :options [{:key :outline}
               {:key :grey}
-              {:key :dark-grey}
-              {:key :outline}
               {:key :ghost}
-              {:key :danger}
-              {:key :positive}]}
+              {:key :customization}]}
+   {:key     :state
+    :type    :select
+    :options [{:key :default}
+              {:key :active}
+              {:key :disabled}]}
    {:key     :size
     :type    :select
-    :options [{:key   56
-               :value "56"}
-              {:key   40
+    :options [{:key   :size-40
                :value "40"}
-              {:key   32
+              {:key   :size-32
                :value "32"}
-              {:key   24
+              {:key   :size-24
                :value "24"}]}
-   {:key  :icon
+   {:key     :background
+    :type    :select
+    :options [{:key :photo}
+              {:key :blur}]}
+   {:key  :icon?
     :type :boolean}
-   {:label "Before icon:"
-    :key   :before
-    :type  :boolean}
-   {:key  :disabled
+   {:key     :icon-name
+    :type    :select
+    :options [{:key :i/wallet}
+              {:key :i/group}
+              {:key :i/locked}]}
+   {:key  :emoji?
     :type :boolean}
    {:key  :label
-    :type :text}])
+    :type :text}
+   (preview/customization-color-option)])
 
 (defn view
   []
-  (let [state  (reagent/atom {:label "Press Me"
-                              :size  40})
-        label  (reagent/cursor state [:label])
-        before (reagent/cursor state [:before])
-        icon   (reagent/cursor state [:icon])]
-    (fn []
-      [preview/preview-container
-       {:state                     state
-        :descriptor                descriptor
-        :component-container-style {:align-items :center}}
-       [quo/dropdown
-        (merge (dissoc @state
-                :theme
-                :before
-                :after)
-               {:on-press #(println "Hello world!")}
-               (when @before
-                 {:before :i/placeholder}))
-        (if @icon :i/placeholder @label)]])))
+  (let [state      (reagent/atom {:type                :outline
+                                  :state               :default
+                                  :size                :size-40
+                                  :label               "Dropdown"
+                                  :icon?               false
+                                  :emoji?              false
+                                  :customization-color :purple})
+        label      (reagent/cursor state [:label])
+        emoji?     (reagent/cursor state [:emoji?])
+        background (reagent/cursor state [:background])]
+    [:f>
+     (fn []
+       (rn/use-effect (fn []
+                        (swap! state assoc :label (if @emoji? "🍑" "Dropdown")))
+                      [@emoji?])
+       [preview/preview-container
+        {:state                     state
+         :descriptor                descriptor
+         :component-container-style (when-not (= @background :blur) {:align-items :center})
+         :blur-container-style      {:align-items :center}
+         :blur?                     (= @background :blur)
+         :show-blur-background?     true}
+        (when (= :photo (:background @state))
+          [rn/image
+           {:source (resources/get-mock-image :dark-blur-bg)
+            :style  {:position      :absolute
+                     :top           12
+                     :left          20
+                     :right         0
+                     :bottom        0
+                     :border-radius 12}
+            :height 250
+            :width  "100%"}])
+        [quo/dropdown
+         (assoc @state :on-press #(js/alert "Pressed dropdown"))
+         @label]])]))

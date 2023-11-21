@@ -1,12 +1,12 @@
 (ns test-helpers.component
   "Helpers for writing component tests using React Native Testing Library."
-  (:require-macros test-helpers.component)
-  (:require
-    ["@testing-library/react-native" :as rtl]
-    [camel-snake-kebab.core :as camel-snake-kebab]
-    [quo2.theme :as quo.theme]
-    [reagent.core :as reagent]
-    [utils.i18n :as i18n]))
+  (:require-macros [test-helpers.component])
+  (:require ["@testing-library/react-native" :as rtl]
+            [camel-snake-kebab.core :as camel-snake-kebab]
+            [oops.core :as oops]
+            [quo.theme :as quo.theme]
+            [reagent.core :as reagent]
+            [utils.i18n :as i18n]))
 
 ;;;; React Native Testing Library
 
@@ -201,6 +201,10 @@
   [element]
   (.toBeNull (js/expect element)))
 
+(defn is-disabled
+  [element]
+  (.toBeDisabled (js/expect element)))
+
 (defn is-equal
   [element-1 element-2]
   (.toBe (js/expect element-1) element-2))
@@ -224,3 +228,26 @@
 (defn has-style
   [mock styles]
   (.toHaveStyle (js/expect mock) (clj->js styles)))
+
+(defn has-prop
+  ([element prop] (has-prop element prop js/undefined))
+  ([element prop value]
+   (.toHaveProp (js/expect element) (camel-snake-kebab/->camelCaseString prop) value)))
+
+(defn get-rerender-fn
+  "Returns a rerender function from React Native Testing Library.
+   Takes a JS Object representing a component and returns a function that accepts hiccup
+   representing the component to rerender with the new props to rerender it.
+   e.g.
+     (let [rerender-fn (h/get-rerender-fn
+                        (h/render [my-component {:prop-1 :A
+                                                 :prop-2 :B}]))]
+       ;; Rerenders `my-component` with the new props
+       (rerender-fn [my-component {:prop-1 :new-A
+                                   :prop-2 :new-B}]))
+  "
+  [component]
+  (fn [component-updated]
+    (let [rerender-fn   (oops/oget component "rerender")
+          react-element (reagent/as-element component-updated)]
+      (rerender-fn react-element))))

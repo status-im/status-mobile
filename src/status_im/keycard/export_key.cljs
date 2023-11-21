@@ -1,8 +1,9 @@
 (ns status-im.keycard.export-key
-  (:require [status-im.keycard.common :as common]
-            [status-im.keycard.wallet :as wallet]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [status-im.keycard.common :as common]
+    [status-im.keycard.wallet :as wallet]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn on-export-key-error
   {:events [:keycard.callback/on-export-key-error]}
@@ -14,7 +15,7 @@
       tag-was-lost?
       (rf/merge cofx
                 {:db (assoc-in db [:keycard :pin :status] nil)}
-                (common/set-on-card-connected :wallet.accounts/generate-new-keycard-account))
+                (common/set-on-card-connected :wallet-legacy.accounts/generate-new-keycard-account))
 
       (not (nil? pin-retries))
       (rf/merge cofx

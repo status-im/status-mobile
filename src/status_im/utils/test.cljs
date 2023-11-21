@@ -1,6 +1,7 @@
 (ns status-im.utils.test
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.utils.deprecated-types :as types]))
 
 (def native-status (js/require "../../modules/react-native-status/nodejs/bindings"))
 
@@ -14,6 +15,8 @@
 
 (def test-dir (.mkdtempSync fs test-dir-prefix))
 
+(def initialized? (atom false))
+
 (defn signal-received-callback
   [a]
   (re-frame/dispatch [:signals/signal-received a]))
@@ -21,10 +24,12 @@
 ;; We poll for signals, could not get callback working
 (defn init!
   []
-  (.setSignalEventCallback native-status)
-  (js/setInterval (fn []
-                    (.pollSignal native-status signal-received-callback)
-                    100)))
+  (when-not @initialized?
+    (.setSignalEventCallback native-status)
+    (reset! initialized? true)
+    (js/setInterval (fn []
+                      (.pollSignal native-status signal-received-callback)
+                      100))))
 
 (def status
   (clj->js
@@ -58,15 +63,6 @@
     :logout
     (fn [] (.logout native-status))
 
-    :generateAlias
-    (fn [seed] (.generateAlias native-status seed))
-
-    :generateAliasAndIdenticonAsync
-    (fn [seed callback]
-      (let [generated-identicon (.identicon native-status seed)
-            generated-alias     (.generateAlias native-status seed)]
-        (callback generated-alias generated-identicon)))
-
     :multiAccountGenerateAndDeriveAddresses
     (fn [json callback]
       (callback (.multiAccountGenerateAndDeriveAddresses native-status json)))
@@ -94,9 +90,6 @@
     (fn [key-uid callback]
       (callback (.initKeystore native-status
                                (str test-dir "/keystore/" key-uid))))
-
-    :identicon
-    (fn [pk] (.identicon native-status pk))
 
     :encodeTransfer
     (fn [to-norm amount-hex]

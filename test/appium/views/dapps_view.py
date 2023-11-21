@@ -67,7 +67,7 @@ class DappsView(BaseView):
             web_view.open_new_tab_plus_button.click_if_shown()
             self.enter_url_editbox.wait_for_visibility_of_element(20)
         self.enter_url_editbox.click()
-        self.enter_url_editbox.set_value(url)
+        self.enter_url_editbox.send_keys(url)
         self.confirm()
         from views.web_views.base_web_view import BaseWebView
         BaseWebView(self.driver).wait_for_d_aap_to_load()

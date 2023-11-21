@@ -1,16 +1,18 @@
 (ns status-im2.contexts.chat.composer.reply.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.reanimated :as reanimated]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im2.constants :as constant]
-            [status-im2.contexts.chat.composer.constants :as constants]
-            [status-im2.contexts.chat.composer.reply.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.reanimated :as reanimated]
+    [status-im2.constants :as constant]
+    [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.reply.style :as style]
+    [status-im2.contexts.chat.composer.utils :as utils]
+    [utils.ens.stateofus :as stateofus]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn get-quoted-text-with-mentions
   [parsed-text]
@@ -22,6 +24,9 @@
 
              (= type "mention")
              (rf/sub [:messages/resolve-mention literal])
+
+             (= type "status-tag")
+             (str "#" literal)
 
              (seq children)
              (get-quoted-text-with-mentions children)
@@ -61,19 +66,19 @@
     (i18n/label :t/message-deleted)]])
 
 (defn reply-from
-  [{:keys [from contact-name current-public-key]}]
-  (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-        photo-path   (rf/sub [:chats/photo-path from])]
+  [{:keys [from contact-name current-public-key pin?]}]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
+        photo-path       (rf/sub [:chats/photo-path from])]
     [rn/view {:style style/reply-from}
      [quo/user-avatar
-      {:full-name         display-name
+      {:full-name         primary-name
        :profile-picture   photo-path
        :status-indicator? false
        :size              :xxxs
        :ring?             false}]
      [quo/text
       {:weight          :semi-bold
-       :size            :paragraph-2
+       :size            (if pin? :label :paragraph-2)
        :number-of-lines 1
        :style           style/message-author-text}
       (format-reply-author from contact-name current-public-key)]]))
@@ -81,8 +86,8 @@
 (defn quoted-message
   [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
            album-images-count]}
-   in-chat-input? pin? recording-audio?]
-  (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
+   in-chat-input? pin? recording-audio? input-ref]
+  (let [[primary-name _]   (rf/sub [:contacts/contact-two-names-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)
         text               (get-quoted-text-with-mentions (or parsed-text (:parsed-text content)))]
@@ -100,8 +105,9 @@
          [reply-deleted-message]]
         [rn/view {:style (style/quoted-message pin?)}
          [reply-from
-          {:from               from
-           :contact-name       contact-name
+          {:pin?               pin?
+           :from               from
+           :contact-name       primary-name
            :current-public-key current-public-key}]
          (when (not-empty text)
            [quo/text
@@ -118,7 +124,7 @@
            :style  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40)
                     :margin-top 2}}
           (str " "
-               (case (or content-type contentType)
+               (condp = (or content-type contentType)
                  constant/content-type-image   (if (pos? album-images-count)
                                                  (i18n/label :t/album-images-count
                                                              {:album-images-count album-images-count})
@@ -131,7 +137,7 @@
         {:icon-only?          true
          :size                24
          :accessibility-label :reply-cancel-button
-         :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])
+         :on-press            #(utils/cancel-reply-message input-ref)
          :type                :outline}
         :i/close])
      (when (and in-chat-input? recording-audio?)
@@ -143,13 +149,13 @@
          :style  style/gradient}])]))
 
 (defn- f-view
-  [recording?]
+  [recording? input-ref]
   (let [reply  (rf/sub [:chats/reply-message])
         height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
     (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when reply [quoted-message reply true false recording?])]))
+     (when reply [quoted-message reply true false recording? input-ref])]))
 
 (defn view
-  [{:keys [recording?]}]
-  [:f> f-view @recording?])
+  [{:keys [recording?]} input-ref]
+  [:f> f-view @recording? input-ref])

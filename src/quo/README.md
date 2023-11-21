@@ -1,49 +1,215 @@
-# Status Quo Components
-All components in **Quo** should be independent of the app state. They should be _pure_
-and _easy to reason about_. Avoiding the app state is also required to make the library
-independent and easy to be pulled off as a separate repository when needed.
-To avoid high coupling and direct use of internal styling, the components should be
-exported via namespace `quo.core` and used by the Status app only from there. This will
-allow a more flexible way to update components without possible breakages into the
-app style.
+# Quo Library
 
-**Quo** components should not have any dependency on the Status app, this
-will avoid circular dependency and also benefit the independence of the components.
+Quo is the name of our mobile *component library* that implements the [Status
+Design System for Mobile](https://www.figma.com/file/WQZcp6S0EnzxdTL4taoKDv/Design-System-for-Mobile).
 
-All components are stored inside `components` namespaces. They are stateless and do
-not dispatch and subscribe to re-frame database. All state should be passed by props
-and all events can be passed as functions. Avoiding direct connection with re-frame
-will allow components to grow and be reused in different places without the
-conditionals hell.
+The overarching goals of having this component library are:
 
-All style system constants are stored inside `design-system` namespaces. They are used
-to build components and can be directly required by the status app. Avoid
-duplication of these vars and do not use them in code directly as a value.
+- Achieve the highest possible fidelity between code and the design system in
+  Figma.
+- Decouple components from ever-changing business requirements.
 
-For each component introduced, add previews of all possible states.
+> [!NOTE]
+> This document captures our current practices and guidelines for implementing
+> the design system. For guidelines that apply across the entire project, take
+> a look at [new-guidelines](/doc/new-guidelines.md).
 
-Do not introduce components for slightly modified existing components, if they are
-not a part of the design system. In case they are required in one place in the app,
-use style override.
+## Directory structure and file names
 
-# Code style
-Ensure that your changes match the style of the rest of the code.
-This library uses Clojure Community code style [The Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide).
-To ensure consistency, run `make lint`, which uses the [clj-kondo linter](https://github.com/borkdude/clj-kondo).
+We follow one basic rule: mirror Figma *pages* and their *component names* in
+the directory structure.
 
-# Best practices
+For example, in the screenshot below we see the Figma page is `Banners`
+and the component name is `Banner`.
 
-- Design components atomically and compose them into bigger components.
-- Do not export individual atoms, only components. This way we can limit design
-system to be used in too many way which can creating disjointed experiences.
-- Avoid external margins for atom components, it can be added on the wrapper
-where they are used but can't be removed without overriding.
-[Max Stoiber article on margins](https://mxstbr.com/thoughts/margin)
-- Design reusable components into [Layout Isolated Components](https://visly.app/blogposts/layout-isolated-components)
-(Article more relates to web, but ideas fits also to mobile development)
-- Explicit is better than implicit, do not rely on platform default, if you expect
-a specific value, then override it
+<img src="/doc/images/quo-component.png" width="600" />
 
-**TBD:**
-- Components documentation
-- Check props using spec in pre conditions.
+Therefore, the structure should look like:
+
+```
+quo/
+└── components/
+    └── banners/
+        └── banner/
+            ├── component_spec.cljs
+            ├── style.cljs
+            └── view.cljs
+```
+
+Files `view.cljs`, `style.cljs`, and `component_spec.cljs` should always have
+the same name, regardless of component.
+
+## Component API
+
+Adhere to the **same component properties and values** used in a Figma component
+when translating it to Clojure. This means using the same names for props and
+the same values. If the Figma property is a boolean, use a question mark suffix
+to make the name more idiomatic in Clojure.
+
+We have found over time that the less we drift from the design system the
+better. Some key benefits:
+
+- It helps developers quickly check for issues when comparing the code with the
+  source of truth in Figma.
+- It is easier for pull-request reviewers to double-check components for
+  correctness.
+- It helps developers create preview screens that are identical or very similar
+  to Figma, which aids in spotting bugs more easily.
+- It helps designers review all component variations in preview screens.
+
+<img src="/doc/images/figma-properties.png" width="600" />
+
+In the image above we can see the properties are `Type`, `State`, `Size`,
+`Icon`, `Theme`, and `Background`. Translated to Clojure:
+
+```clojure
+;; ns quo.components.buttons.button.view
+(def view
+  [{:keys [type state size icon theme background]}]
+  ...)
+```
+
+### Handling Sizes
+In the designs, sizes are referred to as integers. To avoid having the codebase littered with magic numbers we instead have a keyword convention to use in components to map these keywords with their sizes.
+
+The convention is `:size-<number>`, e.g size `20` is `:size-20`
+
+```clojure
+;; bad
+(defn button
+  [{:keys [size]}]
+  [rn/view
+   {:style {:height (case size
+                      20 20
+                      40 40
+                      0)}}]
+  ...)
+```
+
+```clojure
+;; good
+(defn button
+  [{:keys [size]}]
+  [rn/view
+   {:style {:height (case size
+                      :size-20 20
+                      :size-40 40
+                      0)}}]
+  ...)
+```
+
+## Clojure var conventions
+
+- Due to the fact that every `view` namespace should export only one component
+  and to avoid the redundancy of `[some-component/some-component ...]`, name the
+  public var `view` as well.
+- Try to make all other vars private because they should almost never be used
+  directly.
+
+## Component tests
+
+We don't attempt to write component tests verifying how components look on the
+screen. Instead, we have found a middle ground, where the focus is on verifying
+if events are triggered as intended and that all component variations are
+rendered. We use [React Native Testing Library](https://callstack.github.io/react-native-testing-library/).
+
+There are dozens of examples in the repository, so use them as a reference. A
+good and complete example is [quo.components.avatars.user-avatar.component-spec](/src/quo/components/avatars/user_avatar/component_spec.cljs)
+
+## Do not couple the library with re-frame
+
+Don't use re-frame inside this library (e.g. dispatch & subscribe). If a
+component needs to be stateful, the state should be local to its rendering
+lifecycle (using `reagent.core/atom`). Additionally, if the component requires
+any other data, it should be passed as arguments.
+
+```clojure
+;; bad
+(defn view []
+  (let [window-width (rf/sub [:dimensions/window-width])]
+    [rn/pressable {:on-press #(rf/dispatch [:do-xyz])}
+     (do-something window-width)]))
+
+;; good
+(defn view [{:keys [window-width on-press]}]
+  [rn/pressable {:on-press on-press}
+   (do-something window-width)])
+```
+
+## Themes
+
+Our goal is to make all design system components *themeable*, which means they
+should not use, nor fallback to the OS theme, because themes are *contextual*
+and can be overridden in specific parts of the app.
+
+To achieve this, use the higher-order function `quo.theme/with-theme` to
+automatically inject the current theme context (based on the [React Context
+API](https://react.dev/learn/passing-data-deeply-with-context)).
+
+Use the following pattern:
+
+```clojure
+(ns quo.components.<figma page>.<component name>.view
+  (:require [quo.theme :as quo.theme]))
+
+(defn- view-internal [{:keys [theme]}]
+  ...)
+
+(def view (quo.theme/with-theme view-internal))
+```
+
+Then pass the `theme` value down to all functions that may rely on the OS theme,
+like `quo.foundations.colors/theme-colors` or `quo.foundations.shadows/get`.
+
+## Avoid using quo's version number in namespace aliases
+
+When requiring quo namespaces, don't use the version number in the
+[alias](https://clojure.org/guides/learn/namespaces#_require), unless for a
+special reason you need to require both the old and new namespaces in the same
+file.
+
+> [!NOTE]
+> Keep in mind that, at the moment, we need to keep both `src/quo/` and
+> `src/quo/` directories in the repository, but eventually the old one will go
+> away and the version number will lose its meaning.
+
+```clojure
+;; bad
+(ns ...
+  (require [quo.theme :as quo.theme]
+           [quo.core :as quo]))
+
+;; good
+(ns ...
+  (require [quo.theme :as quo.theme]
+           [quo.core :as quo]))
+```
+
+## Preview screens
+
+Every component should be accompanied by a preview screen in
+`src/status_im2/contexts/quo_preview/`. Ideally, **all possible variations in
+Figma should be achievable in the preview screen** by changing the input values
+without resorting to code changes. Designers will also use this capability to
+review components in PR builds.
+
+## Allow outermost containers to have their styles overridden
+
+If a component needs to be wrapped in a `rn/view` instance to force it to be
+styled differently, consider changing the component to accept a
+`container-style` argument. This will help reduce the number of nodes to be
+rendered.
+
+```clojure
+;; bad
+[rn/view {:style {:margin-right 12}}
+ [quo/button
+  {:size 32}
+  :i/info]]
+
+;; good
+[quo/button
+ {:size            32
+  :container-style {:margin-right 12}}
+ :i/info]
+```

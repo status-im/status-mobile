@@ -1,17 +1,18 @@
 (ns status-im2.contexts.add-new-contact.events
-  (:require [clojure.string :as string]
-            [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.stateofus :as stateofus]
-            [native-module.core :as native-module]
-            [status-im2.navigation.events :as navigation]
-            [utils.validators :as validators]
-            [status-im2.contexts.contacts.events :as data-store.contacts]
-            [status-im2.constants :as constants]
-            [utils.string :as utils.string]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.ens :as ens]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.contacts.events :as data-store.contacts]
+    [status-im2.navigation.events :as navigation]
+    [utils.ens.stateofus :as stateofus]
+    [utils.ethereum.chain :as chain]
+    [utils.re-frame :as rf]
+    [utils.string :as utils.string]
+    [utils.transforms :as transforms]
+    [utils.validators :as validators]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).
@@ -33,14 +34,14 @@
        (zipmap (repeat nil))))
   ([kv] (-> (init-contact) (merge kv))))
 
-(def url-regex #"^https?://join.status.im/u/(.+)")
+(def url-regex #"^https?://status.app/u(/([a-zA-Z0-9_-]+)(={0,2}))?#(.+)")
 
 (defn ->id
   [{:keys [input] :as contact}]
   (let [trimmed-input (utils.string/safe-trim input)]
     (->> {:id (if (empty? trimmed-input)
                 nil
-                (if-some [[_ id] (re-matches url-regex trimmed-input)]
+                (if-some [id (last (re-matches url-regex trimmed-input))]
                   id
                   trimmed-input))}
          (merge contact))))
@@ -115,7 +116,7 @@
                           (dispatcher :contacts/set-new-identity-error input)}}
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
                          :contacts/resolve-public-key-from-ens
-                         {:chain-id (ethereum/chain-id db)
+                         {:chain-id (chain/chain-id db)
                           :ens ens
                           :on-success
                           (dispatcher :contacts/set-new-identity-success input)
@@ -129,7 +130,7 @@
     compressed-key
     constants/deserialization-key
     (fn [resp]
-      (let [{:keys [error]} (types/json->clj resp)]
+      (let [{:keys [error]} (transforms/json->clj resp)]
         (if error
           (on-error error)
           (on-success (str "0x" (subs resp 5)))))))))
@@ -174,8 +175,11 @@
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
       (let [state (cond
-                    (or (string/includes? (:message err) "fallback failed")
-                        (string/includes? (:message err) "no such host"))
+                    (and (string? err) (string/includes? err "invalid public key"))
+                    {:state :invalid :msg :t/not-a-chatkey}
+                    (and (string? (:message err))
+                         (or (string/includes? (:message err) "fallback failed")
+                             (string/includes? (:message err) "no such host")))
                     {:state :invalid :msg :t/lost-connection}
                     :else {:state :invalid})]
         {:db (assoc db :contacts/new-identity (merge contact state))}))))
@@ -194,6 +198,5 @@
 
 (rf/defn set-new-identity-reconnected
   [{:keys [db]}]
-  (let [input     (get-in db [:contacts/new-identity :input])
-        resubmit? (and input (= :new-contact (get-in db [:view-id])))]
+  (let [input (get-in db [:contacts/new-identity :input])]
     (rf/dispatch [:contacts/set-new-identity input])))

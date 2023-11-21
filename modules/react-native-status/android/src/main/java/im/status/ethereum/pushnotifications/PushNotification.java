@@ -45,7 +45,8 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
         reactContext.addActivityEventListener(this);
         Application applicationContext = (Application) reactContext.getApplicationContext();
 
-        pushNotificationHelper = new PushNotificationHelper(applicationContext);
+        IntentFilter intentFilter = new IntentFilter();
+        pushNotificationHelper = new PushNotificationHelper(applicationContext, intentFilter);
 
         delivery = new PushNotificationJsDelivery(reactContext);
     }

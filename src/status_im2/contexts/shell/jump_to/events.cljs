@@ -1,15 +1,16 @@
 (ns status-im2.contexts.shell.jump-to.events
-  (:require [utils.re-frame :as rf]
-            [re-frame.core :as re-frame]
-            [status-im2.config :as config]
-            [status-im.utils.core :as utils]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [status-im2.navigation.state :as navigation.state]
-            [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [status-im.data-store.switcher-cards :as switcher-cards-store]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.data-store.switcher-cards :as switcher-cards-store]
+    [status-im.utils.core :as utils]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.jump-to.animation :as animation]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im2.navigation.state :as navigation.state]
+    [utils.re-frame :as rf]))
 
 ;;;; Effects
 
@@ -57,7 +58,7 @@
   (case view-id
     :chat
     (let [chat (get-in db [:chats id])]
-      (case (:chat-type chat)
+      (condp = (:chat-type chat)
         constants/one-to-one-chat-type
         {:card-id       id
          :switcher-card {:type      shell.constants/one-to-one-chat-card
@@ -125,25 +126,30 @@
 (rf/defn navigate-to-jump-to
   {:events [:shell/navigate-to-jump-to]}
   [{:keys [db]}]
-  (let [chat-screen-open?      (shell.utils/floating-screen-open? shell.constants/chat-screen)
-        community-screen-open? (shell.utils/floating-screen-open? shell.constants/community-screen)]
+  (let [open-floating-screens (shell.utils/open-floating-screens)]
     (merge
      (if config/shell-navigation-disabled?
        {:pop-to-root-fx :shell-stack}
        {:db
         (cond-> db
 
-          chat-screen-open?
+          (get open-floating-screens shell.constants/chat-screen)
           (assoc-in [:shell/floating-screens shell.constants/chat-screen :animation]
            shell.constants/close-screen-with-shell-animation)
 
-          (and chat-screen-open? community-screen-open?)
+          (and (get open-floating-screens shell.constants/chat-screen)
+               (get open-floating-screens shell.constants/community-screen))
           (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
            shell.constants/close-screen-without-animation)
 
-          (and (not chat-screen-open?) community-screen-open?)
+          (and (not (get open-floating-screens shell.constants/chat-screen))
+               (get open-floating-screens shell.constants/community-screen))
           (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
-           shell.constants/close-screen-with-shell-animation))
+           shell.constants/close-screen-with-shell-animation)
+
+          (get open-floating-screens shell.constants/discover-communities-screen)
+          (assoc-in [:shell/floating-screens shell.constants/discover-communities-screen :animation]
+           shell.constants/close-screen-without-animation))
 
         :dispatch [:set-view-id :shell]})
      {:shell/navigate-to-jump-to-fx nil})))
@@ -171,11 +177,17 @@
                      :community-id   community-id
                      :hidden-screen? hidden-screen?
                      :clock          now
-                     :animation      (or animation
-                                         (case current-view-id
-                                           :shell shell.constants/open-screen-with-shell-animation
-                                           :chat  shell.constants/open-screen-without-animation
-                                           shell.constants/open-screen-with-slide-animation))})
+                     :animation      (or
+                                      animation
+                                      (cond
+                                        (= current-view-id :shell)
+                                        shell.constants/open-screen-with-shell-animation
+                                        (= current-view-id :chat)
+                                        shell.constants/open-screen-without-animation
+                                        (= go-to-view-id shell.constants/discover-communities-screen)
+                                        shell.constants/open-screen-with-slide-from-bottom-animation
+                                        :else
+                                        shell.constants/open-screen-with-slide-from-right-animation))})
        :dispatch-n (cond-> []
                      (not hidden-screen?)
                      (conj [:set-view-id go-to-view-id])
@@ -196,31 +208,25 @@
 (rf/defn shell-navigate-back
   {:events [:shell/navigate-back]}
   [{:keys [db]} animation]
-  (let [chat-screen-open?      (shell.utils/floating-screen-open? shell.constants/chat-screen)
-        community-screen-open? (shell.utils/floating-screen-open? shell.constants/community-screen)
-        current-chat-id        (:current-chat-id db)
-        current-view-id        (:view-id db)
-        community-id           (when current-chat-id
-                                 (get-in db [:chats current-chat-id :community-id]))]
+  (let [current-chat-id (:current-chat-id db)
+        current-view-id (:view-id db)
+        community-id    (when current-chat-id
+                          (get-in db [:chats current-chat-id :community-id]))]
     (if (and (not @navigation.state/curr-modal)
              (shell.utils/shell-navigation? current-view-id)
-             (or chat-screen-open? community-screen-open?))
-      {:db         (assoc-in
-                    db
-                    [:shell/floating-screens
-                     (if chat-screen-open? shell.constants/chat-screen shell.constants/community-screen)
-                     :animation]
-                    (or animation shell.constants/close-screen-with-slide-animation))
-       :dispatch-n (cond-> [[:set-view-id
-                             (cond
-                               (and chat-screen-open? community-screen-open?)
-                               shell.constants/community-screen
-                               community-screen-open?
-                               :communities-stack
-                               :else :chats-stack)]]
-                     ;; When navigating back from community chat to community, update switcher card
-                     (and chat-screen-open? community-screen-open? community-id)
-                     (conj [:shell/add-switcher-card shell.constants/community-screen community-id]))}
+             (seq (shell.utils/open-floating-screens)))
+      (merge
+       {:db (assoc-in
+             db
+             [:shell/floating-screens current-view-id :animation]
+             (cond
+               animation animation
+               (= current-view-id shell.constants/discover-communities-screen)
+               shell.constants/close-screen-with-slide-to-bottom-animation
+               :else
+               shell.constants/close-screen-with-slide-to-right-animation))}
+       (when (and current-chat-id community-id)
+         {:dispatch [:shell/add-switcher-card shell.constants/community-screen community-id]}))
       {:navigate-back nil})))
 
 (rf/defn floating-screen-opened
@@ -236,10 +242,10 @@
              :dispatch [:shell/navigate-to shell.constants/community-screen
                         community-id shell.constants/open-screen-without-animation true]})
       ;; Only update switcher cards for top screen
-      (not hidden-screen?)
+      (and id (not hidden-screen?))
       (conj {:ms       (* 2 shell.constants/shell-animation-time)
              :dispatch [:shell/add-switcher-card screen-id id]}))}
-   (when-not hidden-screen?
+   (when (and id (not hidden-screen?))
      {:shell/change-tab-fx (if (or (= screen-id shell.constants/community-screen)
                                    community-id)
                              :communities-stack
@@ -249,7 +255,8 @@
   {:events [:shell/floating-screen-closed]}
   [{:keys [db]} screen-id]
   (merge
-   {:db (-> (update db :shell/floating-screens dissoc screen-id)
-            (update :shell/loaded-screens dissoc screen-id))}
-   (when (= screen-id shell.constants/chat-screen)
-     {:dispatch [:chat/close]})))
+   {:db         (-> (update db :shell/floating-screens dissoc screen-id)
+                    (update :shell/loaded-screens dissoc screen-id))
+    :dispatch-n (cond-> [[:set-view-id :shell-stack]]
+                  (= screen-id shell.constants/chat-screen)
+                  (conj [:chat/close]))}))

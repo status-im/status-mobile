@@ -1,19 +1,19 @@
 (ns status-im2.contexts.chat.lightbox.top-view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.utils.http :as http]
+    [status-im.chat.models.images :as images]
     [status-im2.contexts.chat.lightbox.animations :as anim]
+    [status-im2.contexts.chat.lightbox.constants :as c]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [status-im.chat.models.images :as images]
-    [status-im2.contexts.chat.lightbox.constants :as c]))
+    [utils.url :as url]))
 
 (defn animate-rotation
   [result screen-width screen-height insets
@@ -45,8 +45,7 @@
 (defn drawer
   [messages index]
   (let [{:keys [content]} (nth messages index)
-        uri               (http/replace-port (:image content)
-                                             (rf/sub [:mediaserver/port]))]
+        uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/save
         :accessibility-label :save-image
@@ -65,15 +64,13 @@
 (defn share-image
   [messages index]
   (let [{:keys [content]} (nth messages index)
-        uri               (http/replace-port (:image content)
-                                             (rf/sub [:mediaserver/port]))]
+        uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     (images/share-image uri)))
 
 (defn top-view
   [messages insets index animations derived landscape? screen-width]
   (let [{:keys [from timestamp]}  (first messages)
-        display-name              (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                  from]))
+        [primary-name _]          (rf/sub [:contacts/contact-two-names-by-identity from])
         bg-color                  (if landscape?
                                     colors/neutral-100-opa-70
                                     colors/neutral-100-opa-0)
@@ -104,7 +101,7 @@
        [quo/text
         {:weight :semi-bold
          :size   :paragraph-1
-         :style  {:color colors/white}} display-name]
+         :style  {:color colors/white}} primary-name]
        [quo/text
         {:weight :medium
          :size   :paragraph-2

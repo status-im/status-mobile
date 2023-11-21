@@ -10,6 +10,7 @@ from http.client import RemoteDisconnected
 import pytest
 import requests
 from appium import webdriver
+from appium.options.common import AppiumOptions
 from appium.webdriver.common.mobileby import MobileBy
 from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
@@ -88,13 +89,16 @@ def get_capabilities_sauce_lab():
     caps['sauce:options']['maxDuration'] = 3600
     caps['sauce:options']['idleTimeout'] = 1000
 
-    return caps
+    options = AppiumOptions()
+    options.load_capabilities(caps)
+
+    return options
 
 
-def update_capabilities_sauce_lab(new_capabilities: dict):
-    caps = get_capabilities_sauce_lab().copy()
-    caps.update(new_capabilities)
-    return caps
+# def update_capabilities_sauce_lab(new_capabilities: dict):
+#     caps = get_capabilities_sauce_lab().copy()
+#     caps.update(new_capabilities)
+#     return caps
 
 
 def get_app_path():
@@ -256,12 +260,11 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         self.errors = Errors()
 
     def create_drivers(self, quantity=2, max_duration=1800, custom_implicitly_wait=None):
-        capabilities = {'maxDuration': max_duration}
         self.drivers = self.loop.run_until_complete(start_threads(quantity,
                                                                   Driver,
                                                                   self.drivers,
                                                                   executor_sauce_lab,
-                                                                  update_capabilities_sauce_lab(capabilities)))
+                                                                  get_capabilities_sauce_lab()))
         for driver in range(quantity):
             test_suite_data.current_test.testruns[-1].jobs[self.drivers[driver].session_id] = driver + 1
             self.drivers[driver].implicitly_wait(
@@ -301,15 +304,14 @@ def create_shared_drivers(quantity):
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        capabilities = {'maxDuration': 3600}
         print('SC Executor: %s' % executor_sauce_lab)
         try:
             drivers = loop.run_until_complete(start_threads(test_suite_data.current_test.name,
                                                             quantity,
                                                             Driver,
                                                             drivers,
-                                                            executor_sauce_lab,
-                                                            update_capabilities_sauce_lab(capabilities)))
+                                                            command_executor=executor_sauce_lab,
+                                                            options=get_capabilities_sauce_lab()))
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
@@ -413,7 +415,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-                except (RemoteDisconnected, SauceException):
+                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError):
                     pass
                 try:
                     driver.quit()

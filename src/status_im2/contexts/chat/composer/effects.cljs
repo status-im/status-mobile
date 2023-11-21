@@ -2,10 +2,11 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.async-storage.core :as async-storage]
+    [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]
@@ -85,63 +86,81 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input audio] :as subs}]
+   {:keys [chat-input audio] :as subscriptions}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
-     (reenter-screen-effect state dimensions chat-input)
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
      (link-preview-effect state)
      (audio-effect state animations audio)
-     (empty-effect state animations subs)
+     (empty-effect state animations subscriptions)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
-   [max-height]))
-
-(defn edit
-  [{:keys [input-ref]}
-   {:keys [text-value saved-cursor-position]}
-   {:keys [edit]}]
+   [max-height])
   (rn/use-effect
    (fn []
-     (let [edit-text (get-in edit [:content :text])]
-       (when (and edit @input-ref)
-         (.focus ^js @input-ref)
-         (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
-         (reset! text-value edit-text)
-         (reset! saved-cursor-position (count edit-text)))))
-   [(:message-id edit)]))
+     (reenter-screen-effect state dimensions subscriptions))
+   [max-height subscriptions]))
 
-(defn reply
+(defn use-edit
+  [{:keys [input-ref]}
+   {:keys [text-value saved-cursor-position cursor-position]}
+   {:keys [edit input-with-mentions]}
+   messages-list-on-layout-finished?]
+  (let [mention?              (some #(= :mention (first %)) (seq input-with-mentions))
+        composer-just-opened? (not @messages-list-on-layout-finished?)]
+    (rn/use-effect
+     (fn []
+       (let [mention-text     (reduce (fn [acc item]
+                                        (str acc (second item)))
+                                      ""
+                                      input-with-mentions)
+             edit-text        (cond
+                                mention? mention-text
+                                ;; NOTE: using text-value for cases when the user
+                                ;; leaves the app with an unfinished edit and re-opens
+                                ;; the chat.
+                                (and (seq @text-value) composer-just-opened?)
+                                @text-value
+                                :else (get-in edit [:content :text]))
+             selection-pos    (count edit-text)
+             inject-edit-text (fn []
+                                (reset! text-value edit-text)
+                                (reset! cursor-position selection-pos)
+                                (reset! saved-cursor-position selection-pos)
+                                (when @input-ref
+                                  (.setNativeProps ^js @input-ref
+                                                   (clj->js {:text edit-text}))))]
+
+         (when (and edit @input-ref)
+           ;; NOTE: A small setTimeout is necessary to ensure the focus is enqueued and is executed
+           ;; ASAP. Check https://github.com/software-mansion/react-native-screens/issues/472
+           ;;
+           ;; The nested setTimeout is necessary to avoid both `on-focus` and
+           ;; `on-content-size-change` handlers triggering the height animation simultaneously, as
+           ;; this causes a jump in the
+           ;; UI. This way, `on-focus` will trigger first without changing the height, after which
+           ;; `on-content-size-change` will animate the height of the input based on the injected
+           ;; text.
+           (js/setTimeout #(do (when @messages-list-on-layout-finished? (.focus ^js @input-ref))
+                               (reagent/next-tick inject-edit-text))
+                          600))))
+     [(:message-id edit)])))
+
+(defn use-reply
   [{:keys [input-ref]}
    {:keys [container-opacity]}
-   {:keys [reply]}]
+   {:keys [reply]}
+   messages-list-on-layout-finished?]
   (rn/use-effect
    (fn []
      (when reply
        (reanimated/animate container-opacity 1))
-     (when (and reply @input-ref)
-       (.focus ^js @input-ref)))
+     (when (and reply @input-ref @messages-list-on-layout-finished?)
+       (js/setTimeout #(.focus ^js @input-ref) 600)))
    [(:message-id reply)]))
-
-(defn edit-mentions
-  [{:keys [input-ref]} {:keys [text-value cursor-position]} {:keys [input-with-mentions]}]
-  (rn/use-effect (fn []
-                   (let [input-text (reduce (fn [acc item]
-                                              (str acc (second item)))
-                                            ""
-                                            input-with-mentions)]
-                     (reset! text-value input-text)
-                     (reset! cursor-position (count input-text))
-                     (js/setTimeout #(when @input-ref
-                                       (.setNativeProps ^js @input-ref
-                                                        (clj->js {:selection {:start (count input-text)
-                                                                              :end   (count
-                                                                                      input-text)}})))
-                                    300)))
-                 [(some #(= :mention (first %)) (seq input-with-mentions))]))
 
 (defn update-input-mention
   [{:keys [input-ref]}
@@ -159,30 +178,23 @@
 (defn link-previews
   [{:keys [sending-links?]}
    {:keys [text-value maximized?]}
-   {:keys [height saved-height last-height]}
+   {:keys [height saved-height]}
    {:keys [link-previews?]}]
   (rn/use-effect
    (fn []
      (if-not @maximized?
-       (let [value (if link-previews?
-                     constants/links-container-height
-                     (- constants/links-container-height))]
-         (when (not= @sending-links? link-previews?)
-           (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
-           (reanimated/set-shared-value saved-height
-                                        (+ (reanimated/get-shared-value saved-height) value))
-           (reanimated/set-shared-value last-height
-                                        (+ (reanimated/get-shared-value last-height) value))))
+       (when (not= @sending-links? link-previews?)
+         (reanimated/animate height (reanimated/get-shared-value saved-height)))
        (let [curr-text @text-value]
          (reset! text-value (str @text-value " "))
-         (js/setTimeout #(reset! text-value curr-text) 10)))
+         (js/setTimeout #(reset! text-value curr-text) 100)))
      (reset! sending-links? link-previews?))
    [link-previews?]))
 
-(defn images
+(defn use-images
   [{:keys [sending-images? input-ref]}
    {:keys [text-value maximized?]}
-   {:keys [container-opacity height saved-height last-height]}
+   {:keys [container-opacity height saved-height]}
    {:keys [images]}]
   (rn/use-effect
    (fn []
@@ -191,18 +203,11 @@
      (when (and (not @sending-images?) (seq images) @input-ref)
        (.focus ^js @input-ref))
      (if-not @maximized?
-       (let [value (if (seq images)
-                     constants/images-container-height
-                     (- constants/images-container-height))]
-         (when (not= @sending-images? (boolean (seq images)))
-           (reanimated/animate height (+ (reanimated/get-shared-value saved-height) value))
-           (reanimated/set-shared-value saved-height
-                                        (+ (reanimated/get-shared-value saved-height) value))
-           (reanimated/set-shared-value last-height
-                                        (+ (reanimated/get-shared-value last-height) value))))
+       (when (not= @sending-images? (boolean (seq images)))
+         (reanimated/animate height (reanimated/get-shared-value saved-height)))
        (let [curr-text @text-value]
          (reset! text-value (str @text-value " "))
-         (js/setTimeout #(reset! text-value curr-text) 10)))
+         (js/setTimeout #(reset! text-value curr-text) 100)))
      (reset! sending-images? (boolean (seq images))))
    [(boolean (seq images))]))
 

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.tags.context-tags
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def example-pk
   "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917")
@@ -20,15 +21,13 @@
     :value "User pic female 2"}])
 
 (def size-descriptor
-  {:label   "Size"
-   :key     :size
+  {:key     :size
    :type    :select
    :options [{:key 24}
              {:key 32}]})
 
-(def main-descriptor
-  [{:label   "Type"
-    :key     :type
+(def descriptor
+  [{:key     :type
     :type    :select
     :options [{:key :default}
               {:key :multiuser}
@@ -65,13 +64,13 @@
                nil
                (resources/mock-images :user-picture-female2)
                nil]]
-    [{:label   "users"
-      :key     :users
+    [{:key     :users
       :type    :select
       :options (map (fn [idx]
                       {:key   (mapv (fn [picture idx-name]
-                                      {:profile-picture picture
-                                       :full-name       (str (inc idx-name))})
+                                      {:profile-picture     picture
+                                       :full-name           (str (inc idx-name))
+                                       :customization-color (rand-nth (keys colors/customization))})
                                     (take idx (cycle users))
                                     (range))
                        :value (str idx)})
@@ -79,44 +78,36 @@
 
 (def group-descriptor
   [size-descriptor
-   {:label "Group"
-    :key   :group-name
-    :type  :text}])
+   {:key  :group-name
+    :type :text}])
 
 (def channel-descriptor
   [size-descriptor
-   {:label "Community name"
-    :key   :community-name
-    :type  :text}
-   {:label "Channel name"
-    :key   :channel-name
-    :type  :text}])
+   {:key  :community-name
+    :type :text}
+   {:key  :channel-name
+    :type :text}])
 
 (def community-descriptor
   [size-descriptor
-   {:label "Community name"
-    :key   :community-name
-    :type  :text}])
+   {:key  :community-name
+    :type :text}])
 
 (def token-descriptor
   [size-descriptor
-   {:label "Amount"
-    :key   :amount
-    :type  :text}
-   {:label "Token name"
-    :key   :token-name
-    :type  :text}])
+   {:key  :amount
+    :type :text}
+   {:key  :token-name
+    :type :text}])
 
 (def network-descriptor
   [size-descriptor
-   {:label "Network name"
-    :key   :network-name
-    :type  :text}])
+   {:key  :network-name
+    :type :text}])
 
 (def multinetwork-descriptor
   (let [networks (cycle [(resources/mock-images :monkey) (resources/mock-images :diamond)])]
-    [{:label   "Networks"
-      :key     :networks
+    [{:key     :networks
       :type    :select
       :options (map (fn [size]
                       {:key   (take size networks)
@@ -125,11 +116,9 @@
 
 (def account-descriptor
   [size-descriptor
-   {:label "Account name"
-    :key   :account-name
-    :type  :text}
-   {:label   "Emoji"
-    :key     :emoji
+   {:key  :account-name
+    :type :text}
+   {:key     :emoji
     :type    :select
     :options [{:key "🐷" :value "🐷"}
               {:key "🍇" :value "🍇"}
@@ -137,51 +126,78 @@
 
 (def collectible-descriptor
   [size-descriptor
-   {:label "Collectible name"
-    :key   :collectible-name
-    :type  :text}
-   {:label "Collectible number"
-    :key   :collectible-number
-    :type  :text}])
+   {:key  :collectible-name
+    :type :text}
+   {:key  :collectible-number
+    :type :text}])
 
 (def address-descriptor
   [size-descriptor])
 
 (def icon-descriptor
   [size-descriptor
-   {:label "Context"
-    :key   :context
-    :type  :text}
-   {:label   "Icon"
-    :key     :icon
+   {:key  :context
+    :type :text}
+   {:key     :icon
     :type    :select
     :options [{:key :i/placeholder :value "Placeholder"}
               {:key :i/add :value "Add"}
               {:key :i/alert :value "Alert"}]}])
 
 (def audio-descriptor
-  [{:label "Duration"
-    :key   :duration
-    :type  :text}])
+  [{:key  :duration
+    :type :text}])
 
-(defn cool-preview
+(defn f-view
+  [state type]
+  (rn/use-effect (fn []
+                   (when (#{:multiuser :multinetwork :audio} @type)
+                     (swap! state assoc :size 24)))
+                 [@type])
+  [preview/preview-container
+   {:state                 state
+    :descriptor            (concat descriptor
+                                   (case (:type @state)
+                                     :default      default-descriptor
+                                     :multiuser    multiuser-descriptor
+                                     :group        group-descriptor
+                                     :channel      channel-descriptor
+                                     :community    community-descriptor
+                                     :token        token-descriptor
+                                     :network      network-descriptor
+                                     :multinetwork multinetwork-descriptor
+                                     :account      account-descriptor
+                                     :collectible  collectible-descriptor
+                                     :address      address-descriptor
+                                     :icon         icon-descriptor
+                                     :audio        audio-descriptor
+                                     default-descriptor))
+    :blur-height           80
+    :blur?                 (:blur? @state)
+    :show-blur-background? true}
+   [rn/view {:style {:align-items :center}}
+    [quo/context-tag @state]]])
+
+(defn view
   []
   (let [state
         (reagent/atom
-         {:label               "Name"
-          :size                32
+         {:size                32
           :type                :group
           :blur?               false
           :state               :selected
           :customization-color :army
           :profile-picture     nil
           :full-name           "Full Name"
-          :users               [{:profile-picture (resources/mock-images :user-picture-male5)
-                                 :full-name       "1"}
-                                {:profile-picture nil
-                                 :full-name       "3"}
-                                {:profile-picture (resources/mock-images :user-picture-male5)
-                                 :full-name       "2"}]
+          :users               [{:profile-picture     (resources/mock-images :user-picture-male5)
+                                 :full-name           "1"
+                                 :customization-color (rand-nth (keys colors/customization))}
+                                {:profile-picture     nil
+                                 :full-name           "3"
+                                 :customization-color (rand-nth (keys colors/customization))}
+                                {:profile-picture     (resources/mock-images :user-picture-male5)
+                                 :full-name           "2"
+                                 :customization-color (rand-nth (keys colors/customization))}]
           :group-name          "Group"
           :community-logo      (resources/mock-images :coinbase)
           :community-name      "Community"
@@ -201,43 +217,6 @@
           :address             example-pk
           :icon                :i/placeholder
           :context             "Context"
-          :duration            "00:32"})]
-    (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state
-          (concat main-descriptor
-                  (case (:type @state)
-                    :default      default-descriptor
-                    :multiuser    multiuser-descriptor
-                    :group        group-descriptor
-                    :channel      channel-descriptor
-                    :community    community-descriptor
-                    :token        token-descriptor
-                    :network      network-descriptor
-                    :multinetwork multinetwork-descriptor
-                    :account      account-descriptor
-                    :collectible  collectible-descriptor
-                    :address      address-descriptor
-                    :icon         icon-descriptor
-                    :audio        audio-descriptor
-                    default-descriptor))]]
-        [rn/view {:style {:padding-vertical 60}}
-         [preview/blur-view
-          {:style                 {:flex              1
-                                   :margin-vertical   20
-                                   :margin-horizontal 40}
-           :show-blur-background? (:blur? @state)}
-          [quo/context-tag @state]]]]])))
-
-(defn preview-context-tags
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+          :duration            "00:32"})
+        type (reagent/cursor state [:type])]
+    [:f> f-view state type]))

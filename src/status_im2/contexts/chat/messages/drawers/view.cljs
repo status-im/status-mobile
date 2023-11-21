@@ -1,21 +1,21 @@
 (ns status-im2.contexts.chat.messages.drawers.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im.ui.components.react :as react]
-            [status-im2.contexts.chat.composer.reply.view :as reply]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.contexts.chat.messages.drawers.style :as style]
-            [react-native.gesture :as gesture]
-            [quo2.components.reactions.resource :as reactions.resource]))
+  (:require
+    [quo.components.selectors.reaction-resource :as reactions.resource]
+    [quo.core :as quo]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [reagent.core :as reagent]
+    [status-im2.common.contact-list-item.view :as contact-list-item]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.contexts.chat.messages.drawers.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]
-  (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity
-                                               from])
+  (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
         {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
     ^{:key compressed-key}
     [contact-list-item/contact-list-item
@@ -27,8 +27,8 @@
       :ens-verified   ens-verified
       :added?         added?}]))
 
-(defn get-tabs-data
-  [reaction-authors selected-tab reactions-order]
+(defn- get-tabs-data
+  [{:keys [reaction-authors selected-tab reactions-order theme]}]
   (map (fn [reaction-type-int]
          (let [author-details (get reaction-authors reaction-type-int)]
            {:id                  reaction-type-int
@@ -42,12 +42,13 @@
                                    {:weight :medium
                                     :size   :paragraph-1
                                     :style  (style/tab-count (= selected-tab
-                                                                reaction-type-int))}
+                                                                reaction-type-int)
+                                                             theme)}
                                    (count author-details)]]}))
        reactions-order))
 
-(defn reaction-authors-comp
-  [selected-tab reaction-authors reactions-order]
+(defn- reaction-authors-comp
+  [{:keys [selected-tab reaction-authors reactions-order theme]}]
   [:<>
    [rn/view style/tabs-container
     [quo/tabs
@@ -56,7 +57,10 @@
       :in-scroll-view? true
       :on-change       #(reset! selected-tab %)
       :default-active  @selected-tab
-      :data            (get-tabs-data reaction-authors @selected-tab reactions-order)}]]
+      :data            (get-tabs-data {:reaction-authors reaction-authors
+                                       :selected-tab     @selected-tab
+                                       :reactions-order  reactions-order
+                                       :theme            theme})}]]
    [gesture/flat-list
     {:data      (for [contact (get reaction-authors @selected-tab)]
                   contact)
@@ -65,13 +69,17 @@
      :style     style/authors-list}]])
 
 (defn reaction-authors
-  [reactions-order]
+  [{:keys [reactions-order theme]}]
   (let [{:keys [reaction-authors-list
                 selected-reaction]} (rf/sub [:chat/reactions-authors])
         selected-tab                (reagent/atom (or selected-reaction
                                                       (first (keys reaction-authors-list))))]
     (fn []
-      [reaction-authors-comp selected-tab reaction-authors-list reactions-order])))
+      [reaction-authors-comp
+       {:selected-tab     selected-tab
+        :reaction-authors reaction-authors-list
+        :reactions-order  reactions-order
+        :theme            theme}])))
 
 (defn pin-message
   [{:keys [chat-id pinned pinned-by] :as message-data}]
@@ -93,8 +101,7 @@
    (when (and outgoing
               (not (or deleted? deleted-for-me?))
               ;; temporarily disable edit image message until
-              ;; https://github.com/status-im/status-mobile/issues/15298
-              ;; is implemented
+              ;; https://github.com/status-im/status-mobile/issues/15298 is implemented
               (not= content-type constants/content-type-image)
               (not= content-type constants/content-type-audio))
      [{:type     :main
@@ -111,7 +118,7 @@
    (when (and (not (or deleted? deleted-for-me?))
               (not= content-type constants/content-type-audio))
      [{:type     :main
-       :on-press #(react/copy-to-clipboard
+       :on-press #(clipboard/set-string
                    (reply/get-quoted-text-with-mentions
                     (get content :parsed-text)))
        :label    (i18n/label :t/copy-text)
@@ -162,13 +169,13 @@
 
 (defn reactions
   [{:keys [chat-id message-id]}]
-  (let [reactions     (rf/sub [:chats/message-reactions message-id chat-id])
+  (let [msg-reactions (rf/sub [:chats/message-reactions message-id chat-id])
         own-reactions (reduce (fn [acc {:keys [emoji-id own emoji-reaction-id]}]
                                 (if own
                                   (assoc acc emoji-id emoji-reaction-id)
                                   acc))
                               {}
-                              reactions)]
+                              msg-reactions)]
     [rn/view
      {:style {:flex-direction     :row
               :justify-content    :space-between
@@ -178,8 +185,9 @@
      (for [[id reaction-name] constants/reactions
            :let               [emoji-reaction-id (get own-reactions id)]]
        ^{:key id}
-       [quo/reactions reaction-name
-        {:start-pressed? (boolean emoji-reaction-id)
+       [quo/reactions-selector
+        {:emoji reaction-name
+         :start-pressed? (boolean emoji-reaction-id)
          :accessibility-label (str "reaction-" (name reaction-name))
          :on-press
          (fn []
@@ -222,11 +230,13 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))
-        (when-not (empty? danger-actions)
-          [quo/separator])
+                                     (when on-press (on-press)))}]))]
 
-        ;; DANGER ACTIONS
+       (when-not (empty? danger-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
+
+       ;; DANGER ACTIONS
+       [rn/view {:style {:padding-horizontal 8}}
         (for [action danger-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
@@ -237,11 +247,13 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))
-        (when-not (empty? admin-actions)
-          [quo/separator])
+                                     (when on-press (on-press)))}]))]
 
-        ;; ADMIN ACTIONS
+       (when-not (empty? admin-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
+
+       ;; ADMIN ACTIONS
+       [rn/view {:style {:padding-horizontal 8}}
         (for [action admin-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}

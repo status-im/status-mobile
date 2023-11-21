@@ -1,17 +1,18 @@
 (ns status-im2.common.password-authentication.view
-  (:require [react-native.core :as rn]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [utils.i18n :as i18n]
-            [status-im.ethereum.core :as ethereum]
-            [reagent.core :as reagent]))
+  (:require
+    [native-module.core :as native-module]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []
   (let [entered-password (reagent/atom "")]
     (fn []
-      (let [account                (rf/sub [:profile/multiaccount])
+      (let [profile                (rf/sub [:profile/profile-with-image])
             {:keys [error button]} (rf/sub [:password-authentication])]
         [rn/view {:padding-horizontal 20}
          [quo/text {:size :heading-1 :weight :semi-bold}
@@ -19,8 +20,8 @@
          [rn/view {:style {:margin-top 8 :margin-bottom 20}}
           [quo/context-tag
            {:size            24
-            :profile-picture (multiaccounts/displayed-photo account)
-            :full-name       (multiaccounts/displayed-name account)}]]
+            :full-name       (profile.utils/displayed-name profile)
+            :profile-picture (profile.utils/photo profile)}]]
          [quo/input
           {:type           :password
            :label          (i18n/label :t/profile-password)
@@ -30,12 +31,12 @@
            :on-change-text #(reset! entered-password %)}]
          (when (not-empty error)
            [quo/info-message
-            {:type  :error
-             :size  :default
-             :icon  :i/info
-             :style {:margin-top 8}}
+            {:type         :error
+             :size         :default
+             :icon         :i/info
+             :containstyle {:margin-top 8}}
             (i18n/label :t/oops-wrong-password)])
          [quo/button
           {:container-style {:margin-bottom 12 :margin-top 40}
-           :on-press        #((:on-press button) (ethereum/sha3 @entered-password))}
+           :on-press        #((:on-press button) (native-module/sha3 @entered-password))}
           (:label button)]]))))

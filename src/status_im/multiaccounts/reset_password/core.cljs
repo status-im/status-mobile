@@ -1,12 +1,12 @@
 (ns status-im.multiaccounts.reset-password.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [native-module.core :as native-module]
-            [status-im.popover.core :as popover]
-            [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
-            [utils.security.core :as security]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.popover.core :as popover]
+    [status-im.utils.deprecated-types :as types]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/defn on-input-change
   {:events [::handle-input-change]}
@@ -54,8 +54,8 @@
  (fn [[key-uid {:keys [current-password new-password]}]]
    (native-module/reset-password
     key-uid
-    (ethereum/sha3 (security/safe-unmask-data current-password))
-    (ethereum/sha3 (security/safe-unmask-data new-password))
+    (native-module/sha3 (security/safe-unmask-data current-password))
+    (native-module/sha3 (security/safe-unmask-data new-password))
     change-db-password-cb)))
 
 (rf/defn handle-verification-success
@@ -80,7 +80,7 @@
 (re-frame/reg-fx
  ::validate-current-password-and-reset
  (fn [{:keys [address current-password] :as form-vals}]
-   (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data current-password))]
+   (let [hashed-pass (native-module/sha3 (security/safe-unmask-data current-password))]
      (native-module/verify address
                            hashed-pass
                            (partial handle-verification form-vals)))))

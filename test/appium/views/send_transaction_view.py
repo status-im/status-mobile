@@ -8,8 +8,8 @@ class AmountEditBox(EditBox, Button):
     def __init__(self, driver):
         super(AmountEditBox, self).__init__(driver, accessibility_id="amount-input")
 
-    def set_value(self, value):
-        EditBox.set_value(self, value)
+    def send_keys(self, value):
+        EditBox.send_keys(self, value)
         self.driver.press_keycode(66)
 
 
@@ -130,7 +130,7 @@ class SendTransactionView(BaseView):
     def set_recipient_address(self, address):
         self.driver.info("Setting recipient address to '%s'" % address)
         self.chose_recipient_button.click()
-        self.enter_recipient_address_input.set_value(address)
+        self.enter_recipient_address_input.send_keys(address)
         self.enter_recipient_address_input.click()
         self.done_button.click_until_absense_of_element(self.done_button)
 
@@ -189,5 +189,5 @@ class SendTransactionView(BaseView):
     def add_to_favorites(self, name):
         self.driver.info("Adding '%s' to favorite recipients" % name)
         self.recipient_add_to_favorites.click()
-        self.new_favorite_name_input.set_value(name)
+        self.new_favorite_name_input.send_keys(name)
         self.new_favorite_add_favorite.click()

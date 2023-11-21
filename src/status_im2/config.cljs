@@ -1,8 +1,9 @@
 (ns status-im2.config
-  (:require [clojure.string :as string]
-            [react-native.config :as react-native-config]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ens]))
+  (:require
+    [clojure.string :as string]
+    [react-native.config :as react-native-config]
+    [utils.ens.core :as utils.ens]
+    [utils.ethereum.chain :as chain]))
 
 (def get-config react-native-config/get-config)
 
@@ -55,25 +56,25 @@
 
 (def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
 (def verify-transaction-url
-  (if (= :mainnet (ethereum/chain-id->chain-keyword verify-transaction-chain-id))
+  (if (= :mainnet (chain/chain-id->chain-keyword verify-transaction-chain-id))
     mainnet-rpc-url
     goerli-rpc-url))
 
 (def verify-ens-chain-id (js/parseInt (get-config :VERIFY_ENS_CHAIN_ID "1")))
 (def verify-ens-url
-  (if (= :mainnet (ethereum/chain-id->chain-keyword verify-ens-chain-id))
+  (if (= :mainnet (chain/chain-id->chain-keyword verify-ens-chain-id))
     mainnet-rpc-url
     goerli-rpc-url))
 (def verify-ens-contract-address
   (get-config :VERIFY_ENS_CONTRACT_ADDRESS
-              ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
+              ((chain/chain-id->chain-keyword verify-ens-chain-id) utils.ens/ens-registries)))
 
 (def fast-create-community-enabled?
   (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))
 
 (def default-multiaccount
   {:preview-privacy?                   blank-preview?
-   :wallet/visible-tokens              {:mainnet #{:SNT}}
+   :wallet-legacy/visible-tokens       {:mainnet #{:SNT}}
    :currency                           :usd
    :appearance                         0
    :profile-pictures-show-to           2
@@ -86,13 +87,13 @@
 
 (defn default-visible-tokens
   [chain]
-  (get-in default-multiaccount [:wallet/visible-tokens chain]))
+  (get-in default-multiaccount [:wallet-legacy/visible-tokens chain]))
 
 (def mainnet-networks
   [{:id                  "mainnet_rpc"
     :chain-explorer-link "https://etherscan.io/address/"
     :name                "Mainnet with upstream RPC"
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+    :config              {:NetworkId      (chain/chain-keyword->chain-id :mainnet)
                           :DataDir        "/ethereum/mainnet_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     mainnet-rpc-url}}}])
@@ -101,14 +102,14 @@
   [{:id                  "xdai_rpc"
     :name                "xDai Chain"
     :chain-explorer-link "https://blockscout.com/xdai/mainnet/address/"
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
+    :config              {:NetworkId      (chain/chain-keyword->chain-id :xdai)
                           :DataDir        "/ethereum/xdai_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     "https://gnosischain-rpc.gateway.pokt.network"}}}
    {:id                  "bsc_rpc"
     :chain-explorer-link "https://bscscan.com/address/"
     :name                "BSC Network"
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :bsc)
+    :config              {:NetworkId      (chain/chain-keyword->chain-id :bsc)
                           :DataDir        "/ethereum/bsc_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     "https://bsc-dataseed.binance.org"}}}])
@@ -117,14 +118,14 @@
   [{:id                  "goerli_rpc"
     :chain-explorer-link "https://goerli.etherscan.io/address/"
     :name                "Goerli with upstream RPC"
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
+    :config              {:NetworkId      (chain/chain-keyword->chain-id :goerli)
                           :DataDir        "/ethereum/goerli_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL     goerli-rpc-url}}}
    {:id                  "bsc_testnet_rpc"
     :chain-explorer-link "https://testnet.bscscan.com/address/"
     :name                "BSC testnet"
-    :config              {:NetworkId      (ethereum/chain-keyword->chain-id :bsc-testnet)
+    :config              {:NetworkId      (chain/chain-keyword->chain-id :bsc-testnet)
                           :DataDir        "/ethereum/bsc_testnet_rpc"
                           :UpstreamConfig {:Enabled true
                                            :URL "https://data-seed-prebsc-1-s1.binance.org:8545/"}}}])
@@ -157,12 +158,14 @@
 (def delete-message-for-me-undo-time-limit-ms 4000)
 
 (def waku-nodes-config
-  {:status.prod ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.nodes.status.im"]
-   :status.test ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.nodes.status.im"]
+  {:status.prod
+   ["enrtree://AL65EKLJAUXKKPG43HVTML5EFFWEZ7L4LOKTLZCLJASG4DSESQZEC@prod.status.nodes.status.im"]
+   :status.test
+   ["enrtree://AIO6LUM3IVWCU2KCPBBI6FEH2W42IGK3ASCZHZGG5TIXUR56OGQUO@test.status.nodes.status.im"]
    :wakuv2.prod
-   ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.waku.nodes.status.im"]
+   ["enrtree://ANEDLO25QVUGJOUTQFRYKWX6P4Z4GKVESBMHML7DZ6YK4LGS5FC5O@prod.wakuv2.nodes.status.im"]
    :wakuv2.test
-   ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.waku.nodes.status.im"]})
+   ["enrtree://AO47IDOLBKH72HIZZOXQP6NMRESAN7CHYWIBNXDXWRJRZWLODKII6@test.wakuv2.nodes.status.im"]})
 
 (def default-kdf-iterations 3200)
 

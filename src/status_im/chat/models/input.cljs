@@ -1,18 +1,19 @@
 (ns status-im.chat.models.input
-  (:require ["emojilib" :as emojis]
-            [clojure.string :as string]
-            [goog.object :as object]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.mentions :as mentions]
-            [status-im.chat.models.message :as chat.message]
-            [status-im.chat.models.message-content :as message-content]
-            [status-im.utils.utils :as utils]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.string :as utils.string]))
+  (:require
+    ["emojilib" :as emojis]
+    [clojure.string :as string]
+    [goog.object :as object]
+    [re-frame.core :as re-frame]
+    [status-im.chat.models.mentions :as mentions]
+    [status-im.chat.models.message :as chat.message]
+    [status-im.chat.models.message-content :as message-content]
+    [status-im.data-store.messages :as data-store-messages]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.string :as utils.string]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -25,12 +26,6 @@
                                  original))))
 
 ;; effects
-(re-frame/reg-fx
- :show-cooldown-warning
- (fn [_]
-   (utils/show-popup nil
-                     (i18n/label :cooldown/warning-message)
-                     #())))
 
 (rf/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
@@ -112,14 +107,15 @@
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)
         text            (get-in message [:content :text])]
-    {:db       (-> db
-                   (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
-                             message)
-                   (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
-                   (update-in [:chat/inputs current-chat-id :metadata]
-                              dissoc
-                              :sending-image))
-     :dispatch [:mention/to-input-field text current-chat-id]}))
+    {:db         (-> db
+                     (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
+                               message)
+                     (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil)
+                     (update-in [:chat/inputs current-chat-id :metadata]
+                                dissoc
+                                :sending-image))
+     :dispatch-n [[:chat.ui/set-chat-input-text nil current-chat-id]
+                  [:mention/to-input-field text current-chat-id]]}))
 
 (rf/defn show-contact-request-input
   "Sets reference to previous chat message and focuses on input"
@@ -239,16 +235,23 @@
                                 :text         (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
 (rf/defn send-edited-message
-  [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
+  [{:keys [db]
+    :as   cofx} text {:keys [message-id quoted-message chat-id]}]
   (rf/merge
    cofx
    {:json-rpc/call [{:method      "wakuext_editMessage"
                      :params      [{:id           message-id
                                     :text         text
                                     :content-type (if (message-content/emoji-only-content?
-                                                       {:text text :response-to quoted-message})
+                                                       {:text        text
+                                                        :response-to quoted-message})
                                                     constants/content-type-emoji
-                                                    constants/content-type-text)}]
+                                                    constants/content-type-text)
+                                    :linkPreviews (map #(-> %
+                                                            (select-keys [:url :title :description
+                                                                          :thumbnail])
+                                                            data-store-messages/->link-preview-rpc)
+                                                       (get-in db [:chat/link-previews :unfurled]))}]
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)
                      :on-success  (fn [result]

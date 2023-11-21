@@ -1,14 +1,16 @@
 (ns status-im.ui.screens.wallet.accounts.common
-  (:require [quo.core :as quo]
-            [quo.react-native :as rn]
-            [quo2.components.markdown.text :as quo2.text]
-            [quo2.foundations.colors :as quo2.colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.utils.utils :as utils.utils]
-            [status-im.wallet.utils :as wallet.utils]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.core :as components]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [status-im.utils.utils :as utils.utils]
+    [status-im.wallet.utils :as wallet.utils]))
 
 ;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
 ;; too fast. By updating this atom in 1s we ensure that `refreshing?` property
@@ -20,14 +22,14 @@
   (utils.utils/set-timeout
    (fn []
      (swap! updates-counter inc)
-     (when @(re-frame/subscribe [:wallet/refreshing-history?])
+     (when @(re-frame/subscribe [:wallet-legacy/refreshing-history?])
        (schedule-counter-reset)))
    1000))
 
 (defn refresh-action
   []
   (schedule-counter-reset)
-  (re-frame/dispatch [:wallet.ui/pull-to-refresh-history]))
+  (re-frame/dispatch [:wallet-legacy.ui/pull-to-refresh-history]))
 
 (defn refresh-control
   [refreshing?]
@@ -38,14 +40,14 @@
 
 (defn render-asset
   [{:keys [icon decimals amount color value] :as token} _ _ currency]
-  [quo/list-item
-   {:title               [quo/text {:weight :medium}
-                          [quo/text {:weight :inherit}
+  [list.item/list-item
+   {:title               [components/text {:weight :medium}
+                          [components/text {:weight :inherit}
                            (str (if amount
                                   (wallet.utils/format-amount amount decimals)
                                   "...")
                                 " ")]
-                          [quo/text
+                          [components/text
                            {:color  :secondary
                             :weight :inherit}
                            (wallet.utils/display-symbol token)]]
@@ -64,32 +66,16 @@
       [chat-icon/custom-icon-view-list (:name token) color])]
    [rn/view {:position :absolute :left 52 :top 8 :right 12}
     [rn/view {:flex-direction :row :justify-content :space-between :align-items :center}
-     [quo2.text/text {:weight :semi-bold :style {:height 22}}
+     [quo/text {:weight :semi-bold :style {:height 22}}
       name]
-     [quo2.text/text {:size :paragraph-2 :weight :medium}
+     [quo/text {:size :paragraph-2 :weight :medium}
       (str (if value value "...") " " currency)]]
-    [quo2.text/text
+    [quo/text
      {:size   :paragraph-2
       :weight :medium
-      :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
+      :style  {:color (quo.colors/theme-colors quo.colors/neutral-50 quo.colors/neutral-40)}}
      (str (if amount
             (wallet.utils/format-amount amount decimals)
             "...")
           " "
-          (wallet.utils/display-symbol token))]]]
-  #_[quo/list-item
-     {:title               [quo/text {:weight :medium}
-                            [quo/text {:weight :inherit}
-                             (str (if amount
-                                    (wallet.utils/format-amount amount decimals)
-                                    "...")
-                                  " ")]
-                            [quo/text
-                             {:color  :secondary
-                              :weight :inherit}
-                             (wallet.utils/display-symbol token)]]
-      :subtitle            (str (if value value "...") " " currency)
-      :accessibility-label (str (:symbol token) "-asset-value")
-      :icon                (if icon
-                             [wallet.components/token-icon icon]
-                             [chat-icon/custom-icon-view-list (:name token) color])}])
+          (wallet.utils/display-symbol token))]]])

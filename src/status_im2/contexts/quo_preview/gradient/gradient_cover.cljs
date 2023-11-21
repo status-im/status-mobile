@@ -1,26 +1,26 @@
 (ns status-im2.contexts.quo-preview.gradient.gradient-cover
-  (:require [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (defn render-action-sheet
-  []
+  [customization-color]
   [:<>
-   [rn/view {:style {:align-items :center}}
-    [quo/summary-info
-     {:type          :status-account
-      :networks?     false
-      :account-props {:customization-color :purple
-                      :size                32
-                      :emoji               "🍑"
-                      :type                :default
-                      :name                "Collectibles vault"
-                      :address             "0x0ah...78b"}}]]
+   [quo/drawer-top
+    {:type                 :account
+     :blur?                false
+     :title                "Collectibles vault"
+     :networks             [{:name :ethereum :short-name "eth"}
+                            {:name :optimism :short-name "opt"}]
+     :description          "0x0ah...78b"
+     :account-avatar-emoji "🍿"
+     :customization-color  (or customization-color :blue)}]
    [quo/action-drawer
     [[{:icon     :i/edit
        :label    "Edit account"
@@ -31,10 +31,11 @@
       {:icon     :i/share
        :label    "Share account"
        :on-press #(js/alert "Share account")}
-      {:icon     :i/delete
-       :label    "Remove account"
-       :danger?  true
-       :on-press #(js/alert "Remove account")}]]]])
+      {:icon         :i/delete
+       :label        "Remove account"
+       :danger?      true
+       :on-press     #(js/alert "Remove account")
+       :add-divider? true}]]]])
 
 (def descriptor
   [(preview/customization-color-option)
@@ -76,7 +77,9 @@
         [quo/button
          {:container-style {:margin-horizontal 40}
           :on-press        #(rf/dispatch [:show-bottom-sheet
-                                          {:content             (fn [] [render-action-sheet])
+                                          {:content             (fn []
+                                                                  [render-action-sheet
+                                                                   @customization-color])
                                            :gradient-cover?     true
                                            :customization-color @customization-color}])}
          "See in bottom sheet"]])]))

@@ -1,10 +1,10 @@
 (ns status-im2.subs.communities
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :communities/fetching-community
@@ -51,20 +51,16 @@
 (re-frame/reg-sub
  :communities/sorted-community-members
  (fn [[_ community-id]]
-   (let [contacts     (re-frame/subscribe [:contacts/contacts])
-         multiaccount (re-frame/subscribe [:profile/profile])
-         members      (re-frame/subscribe [:communities/community-members community-id])]
-     [contacts multiaccount members]))
- (fn [[contacts multiaccount members] _]
+   (let [profile (re-frame/subscribe [:profile/profile])
+         members (re-frame/subscribe [:communities/community-members community-id])]
+     [profile members]))
+ (fn [[profile members] _]
    (let [names (reduce (fn [acc contact-identity]
-                         (let [me?     (= (:public-key multiaccount) contact-identity)
-                               contact (when-not me?
-                                         (multiaccounts/contact-by-identity contacts contact-identity))
-                               name    (first (multiaccounts/contact-two-names-by-identity
-                                               contact
-                                               multiaccount
-                                               contact-identity))]
-                           (assoc acc contact-identity name)))
+                         (assoc acc
+                                contact-identity
+                                (when (= (:public-key profile) contact-identity)
+                                  (:primary-name profile)
+                                  contact-identity)))
                        {}
                        (keys members))]
      (->> members
@@ -208,14 +204,42 @@
         (sort-by :position)
         (into []))))
 
-(defn reduce-over-categories
+(defn- get-chat-lock-state
+  "Returns the chat lock state.
+
+  - Nil:   no lock  (there are no permissions for the chat)
+  - True:  locked   (there are permissions and can-post? is false)
+  - False: unlocked (there are permissions and can-post? is true)"
+  [community-id channels-permissions {chat-id :id}]
+  (let [composite-key                            (keyword (str community-id chat-id))
+        permissions                              (get channels-permissions composite-key)
+        {view-only-satisfied?  :satisfied?
+         view-only-permissions :permissions}     (:view-only permissions)
+        {view-and-post-satisfied?  :satisfied?
+         view-and-post-permissions :permissions} (:view-and-post permissions)
+        can-access?                              (or (and (seq view-only-permissions)
+                                                          view-only-satisfied?)
+                                                     (and (seq view-and-post-permissions)
+                                                          view-and-post-satisfied?))]
+    (if (and (empty? view-only-permissions)
+             (empty? view-and-post-permissions))
+      nil
+      (not can-access?))))
+
+(re-frame/reg-sub
+ :communities/community-channels-permissions
+ :<- [:communities/channels-permissions]
+ (fn [channel-permissions [_ community-id]]
+   (get channel-permissions community-id)))
+
+(defn- reduce-over-categories
   [community-id
-   joined
    categories
    collapsed-categories
-   full-chats-data]
+   full-chats-data
+   channels-permissions]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji can-post?]}]]
+       [_ {:keys [name categoryID position id emoji] :as chat}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -231,40 +255,40 @@
                                       :collapsed? (get collapsed-categories
                                                        category-id)
                                       :chats      [])))
-          chat              {:name             name
+          categorized-chat  {:name             name
                              :emoji            emoji
                              :muted?           muted
                              :unread-messages? (pos? unviewed-messages-count)
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
-                             :locked?          (or (not joined)
-                                                   (not can-post?))
+                             :locked?          (get-chat-lock-state community-id
+                                                                    channels-permissions
+                                                                    chat)
                              :id               id}]
-      (update-in acc-with-category [category-id :chats] conj chat))))
+      (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
 (re-frame/reg-sub
  :communities/categorized-channels
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:chats/chats])
-    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])])
- (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories] [_ community-id]]
+    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])
+    (re-frame/subscribe [:communities/community-channels-permissions community-id])])
+ (fn [[{:keys [categories chats]} full-chats-data collapsed-categories
+       channels-permissions]
+      [_ community-id]]
    (let [reduce-fn (reduce-over-categories
                     community-id
-                    joined
                     categories
                     collapsed-categories
-                    full-chats-data)
+                    full-chats-data
+                    channels-permissions)
          categories-and-chats
-         (->>
-           chats
-           (reduce
-            reduce-fn
-            {})
-           (sort-by (comp :position second))
-           (map (fn [[k v]]
-                  [k (update v :chats #(sort-by :position %))])))]
-
+         (->> chats
+              (reduce reduce-fn {})
+              (sort-by (comp :position second))
+              (map (fn [[k v]]
+                     [k (update v :chats #(sort-by :position %))])))]
      categories-and-chats)))
 
 (re-frame/reg-sub
@@ -284,16 +308,24 @@
                               (reduce #(+ %1 (if %2 1 0)) acc criteria))
                             0
                             (:permissions token-permissions-check))
-    :tokens                (map (fn [[perm-key {:keys [token_criteria]}]]
-                                  (let [check-criteria (get-in token-permissions-check
-                                                               [:permissions perm-key :criteria])]
-                                    (map
-                                     (fn [{sym :symbol amount :amount} sufficient?]
-                                       {:symbol      sym
-                                        :sufficient? (when (seq check-criteria) sufficient?)
-                                        :loading?    checking-permissions?
-                                        :amount      amount
-                                        :img-src     (get token-images sym)})
-                                     token_criteria
-                                     (or check-criteria token_criteria))))
-                                token-permissions)}))
+    :tokens                (->> token-permissions
+                                (filter (fn [[_ {:keys [type]}]]
+                                          (= type constants/community-token-permission-become-member)))
+                                (map (fn [[perm-key {:keys [token_criteria]}]]
+                                       (let [check-criteria (get-in token-permissions-check
+                                                                    [:permissions perm-key :criteria])]
+                                         (map
+                                          (fn [{sym :symbol amount :amount} sufficient?]
+                                            {:symbol      sym
+                                             :sufficient? (when (seq check-criteria) sufficient?)
+                                             :loading?    checking-permissions?
+                                             :amount      amount
+                                             :img-src     (get token-images sym)})
+                                          token_criteria
+                                          (or check-criteria token_criteria))))))}))
+
+(re-frame/reg-sub
+ :community/images
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get-in communities [id :images])))

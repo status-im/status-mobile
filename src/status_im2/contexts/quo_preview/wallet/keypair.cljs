@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.wallet.keypair
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -12,7 +12,8 @@
                     :type                :default
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
-    :networks      [:ethereum :optimism]
+    :networks      [{:name :ethereum :short-name "eth"}
+                    {:name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :purple
@@ -21,7 +22,8 @@
                     :type                :default
                     :name                "My savings"
                     :address             "0x0ah...72b"}
-    :networks      [:ethereum :optimism]
+    :networks      [{:name :ethereum :short-name "eth"}
+                    {:name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :army
@@ -30,7 +32,8 @@
                     :type                :default
                     :name                "Coin vault"
                     :address             "0x0ah...73c"}
-    :networks      [:ethereum :optimism]
+    :networks      [{:name :ethereum :short-name "eth"}
+                    {:name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :orange
@@ -39,7 +42,8 @@
                     :type                :default
                     :name                "Crypto fortress"
                     :address             "0x0ah...74e"}
-    :networks      [:ethereum :optimism]
+    :networks      [{:name :ethereum :short-name "eth"}
+                    {:name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :yellow
@@ -48,33 +52,30 @@
                     :type                :default
                     :name                "Block treasure"
                     :address             "0x0ah...75f"}
-    :networks      [:ethereum :optimism]
+    :networks      [{:name :ethereum :short-name "eth"}
+                    {:name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}])
 
+(defn get-accounts
+  [blur?]
+  (map (fn [account] (assoc account :blur? blur?)) accounts))
+
 (def descriptor
-  [{:label   "Stored:"
-    :key     :stored
+  [{:key     :stored
     :type    :select
-    :options [{:key   :on-device
-               :value "On device"}
-              {:key   :on-keycard
-               :value "On Keycard"}]}
-   {:label   "Action:"
-    :key     :action
+    :options [{:key :on-device}
+              {:key :on-keycard}]}
+   {:key     :action
     :type    :select
-    :options [{:key   :selector
-               :value "Selector"}
-              {:key   :options
-               :value "Options"}]}
-   {:label   "Type:"
-    :key     :type
+    :options [{:key :selector}
+              {:key :options}]}
+   {:key     :type
     :type    :select
-    :options [{:key   :default-keypair
-               :value "Default keypair"}
-              {:key   :other
-               :value "Other"}]}
-   (preview/customization-color-option)])
+    :options [{:key :default-keypair}
+              {:key :other}]}
+   (preview/customization-color-option)
+   {:key :blur? :type :boolean}])
 
 (def default-details
   {:full-name "John Doe"
@@ -82,34 +83,28 @@
 
 (def other-details {:full-name "Metamask"})
 
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom {:accounts            accounts
-                             :customization-color :blue
+  (let [state (reagent/atom {:customization-color :blue
                              :type                :default-keypair
                              :stored              :on-device
                              :on-options-press    #(js/alert "Options pressed")
-                             :action              :selector})]
+                             :action              :selector
+                             :blur?               false})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:style {:padding-vertical 30
-                  :flex-direction   :row
-                  :justify-content  :center}}
-         [quo/keypair
-          (merge
-           @state
-           {:details (if (= (:type @state) :default-keypair) default-details other-details)})]]]])))
-
-(defn preview
-  []
-  [rn/view
-   {:style {:flex 1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container
+       {:state                     state
+        :descriptor                descriptor
+        :blur?                     (:blur? @state)
+        :show-blur-background?     true
+        :blur-dark-only?           true
+        :blur-height               400
+        :component-container-style {:padding-vertical 30
+                                    :flex-direction   :row
+                                    :justify-content  :center}}
+       [rn/view {:style {:flex 1}}
+        [quo/keypair
+         (merge
+          @state
+          {:details  (if (= (:type @state) :default-keypair) default-details other-details)
+           :accounts (get-accounts (:blur? @state))})]]])))

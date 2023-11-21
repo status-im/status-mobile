@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.counter.step
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :type
@@ -25,4 +26,4 @@
         :descriptor            descriptor
         :blur?                 (:in-blur-view? @state)
         :show-blur-background? (:in-blur-view? @state)}
-       [quo/step @state (:value @state)]])))
+       [quo/step (dissoc @state :value) (:value @state)]])))

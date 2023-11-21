@@ -1,7 +1,8 @@
 (ns status-im.backup.core
-  (:require [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn handle-backup-failed
   {:events [::backup-failed]}

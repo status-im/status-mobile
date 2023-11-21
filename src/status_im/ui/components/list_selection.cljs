@@ -1,11 +1,12 @@
 (ns status-im.ui.components.list-selection
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.action-sheet :as action-sheet]
-            [status-im.ui.components.dialog :as dialog]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.http :as http]
-            [status-im.utils.platform :as platform]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.ui.components.action-sheet :as action-sheet]
+    [status-im.ui.components.dialog :as dialog]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]
+    [utils.url :as url]))
 
 (defn open-share
   [content]
@@ -29,12 +30,12 @@
          :options     [{:label  (i18n/label :t/browsing-open-in-status)
                         :action #(re-frame/dispatch [:browser.ui/open-url link])}
                        {:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL ^js react/linking (http/normalize-url link))}]
+                        :action #(.openURL ^js react/linking (url/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
 
 (defn browse-in-web-browser
   [link]
   (show {:title       (i18n/label :t/browsing-title)
          :options     [{:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL ^js react/linking (http/normalize-url link))}]
+                        :action #(.openURL ^js react/linking (url/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))

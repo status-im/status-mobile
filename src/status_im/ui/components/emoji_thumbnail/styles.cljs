@@ -1,7 +1,8 @@
 (ns status-im.ui.components.emoji-thumbnail.styles
-  (:require [quo.design-system.colors :as colors]
-            [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]
-            [status-im.utils.platform :as platform]))
+  (:require
+    [react-native.platform :as platform]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
 
 (defn emoji-thumbnail-icon
   [color size]

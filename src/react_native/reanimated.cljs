@@ -1,28 +1,29 @@
 (ns react-native.reanimated
-  (:require ["react-native" :as rn]
-            ["react-native-linear-gradient" :default LinearGradient]
-            ["react-native-fast-image" :as FastImage]
-            ["@react-native-community/blur" :as blur]
-            ["react-native-reanimated" :default reanimated :refer
-             (useSharedValue useAnimatedStyle
-                             withTiming
-                             withDelay
-                             withSpring
-                             withRepeat
-                             withSequence
-                             withDecay
-                             Easing
-                             Keyframe
-                             cancelAnimation
-                             SlideInUp
-                             SlideOutUp
-                             LinearTransition
-                             enableLayoutAnimations
-                             runOnJS)]
-            [reagent.core :as reagent]
-            ["react-native-redash" :refer (withPause)]
-            [react-native.flat-list :as rn-flat-list]
-            [utils.worklets.core :as worklets.core]))
+  (:require
+    ["@react-native-community/blur" :as blur]
+    ["react-native" :as rn]
+    ["react-native-fast-image" :as FastImage]
+    ["react-native-linear-gradient" :default LinearGradient]
+    ["react-native-reanimated" :default reanimated :refer
+     (useSharedValue useAnimatedStyle
+                     withTiming
+                     withDelay
+                     withSpring
+                     withRepeat
+                     withSequence
+                     withDecay
+                     Easing
+                     Keyframe
+                     cancelAnimation
+                     SlideInUp
+                     SlideOutUp
+                     LinearTransition
+                     enableLayoutAnimations
+                     runOnJS)]
+    ["react-native-redash" :refer (withPause)]
+    [react-native.flat-list :as rn-flat-list]
+    [reagent.core :as reagent]
+    [utils.worklets.core :as worklets.core]))
 
 (def enable-layout-animations enableLayoutAnimations)
 
@@ -122,19 +123,19 @@
                                          "easing"   (get easings easing)))))
 
 (defn animate-shared-value-with-delay
-  [anim v duration easing delay]
+  [anim v duration easing delay-ms]
   (set-shared-value anim
-                    (with-delay delay
+                    (with-delay delay-ms
                                 (with-timing v
                                              (js-obj "duration" duration
                                                      "easing"   (get easings easing))))))
 
 (defn animate-delay
-  ([animation v delay]
-   (animate-delay animation v delay default-duration))
-  ([animation v delay duration]
+  ([animation v delay-ms]
+   (animate-delay animation v delay-ms default-duration))
+  ([animation v delay-ms duration]
    (set-shared-value animation
-                     (with-delay delay
+                     (with-delay delay-ms
                                  (with-timing v
                                               (clj->js {:duration duration
                                                         :easing   (default-easing)}))))))
@@ -149,11 +150,11 @@
                                  reverse?)))
 
 (defn animate-shared-value-with-delay-repeat
-  ([anim v duration easing delay number-of-repetitions]
-   (animate-shared-value-with-delay-repeat anim v duration easing delay number-of-repetitions false))
-  ([anim v duration easing delay number-of-repetitions reverse?]
+  ([anim v duration easing delay-ms number-of-repetitions]
+   (animate-shared-value-with-delay-repeat anim v duration easing delay-ms number-of-repetitions false))
+  ([anim v duration easing delay-ms number-of-repetitions reverse?]
    (set-shared-value anim
-                     (with-delay delay
+                     (with-delay delay-ms
                                  (with-repeat
                                   (with-timing v
                                                #js

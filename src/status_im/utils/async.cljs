@@ -1,8 +1,9 @@
 (ns status-im.utils.async
   "Utility namespace containing `core.async` helper constructs"
-  (:require [cljs.core.async :as async]
-            [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+  (:require
+    [cljs.core.async :as async]
+    [status-im.utils.utils :as utils]
+    [taoensso.timbre :as log]))
 
 (defn timeout
   [ms]
@@ -47,11 +48,11 @@
   channel constructor.
   Returns task-queue where tasks represented by 0 arg task functions can be put for processing."
   [& args]
-  (let [task-queue (apply async/chan args)]
-    (async/go-loop [task-fn (async/<! task-queue)]
+  (let [queue (apply async/chan args)]
+    (async/go-loop [task-fn (async/<! queue)]
       (run-task task-fn)
-      (recur (async/<! task-queue)))
-    task-queue))
+      (recur (async/<! queue)))
+    queue))
 
 ;; ---------------------------------------------------------------------------
 ;; Periodic background job

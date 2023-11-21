@@ -1,14 +1,15 @@
 (ns status-im.mobile-sync-settings.core
-  (:require [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.contexts.add-new-contact.events :as add-new-contact]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [utils.re-frame :as rf]
-            [status-im.utils.mobile-sync :as utils]
-            [status-im.wallet.core :as wallet]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.mailserver.core :as mailserver]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.utils.mobile-sync :as utils]
+    [status-im.wallet.core :as wallet]
+    [status-im2.contexts.add-new-contact.events :as add-new-contact]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn sheet-defaults
   [{:keys [db]}]
@@ -28,15 +29,6 @@
      cofx
      {:db (assoc db :network-status/initialized? true)}
      (cond
-       (and logged-in?
-            (utils/cellular? (:network/type db))
-            (not remember-syncing-choice?)
-            (not= :create-multiaccount (:view-id db)))
-
-       [(bottom-sheet/show-bottom-sheet-old
-         {:view :mobile-network})
-        (sheet-defaults)]
-
        ;; NOTE(rasom): When we log into account on-network-status-change is
        ;; dispatched, but that doesn't mean there was a status change, thus
        ;; no reason to restart wallet.

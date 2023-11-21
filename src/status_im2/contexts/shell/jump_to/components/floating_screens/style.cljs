@@ -1,11 +1,12 @@
 (ns status-im2.contexts.shell.jump-to.components.floating-screens.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (defn screen
   [{:keys [screen-left screen-top screen-width screen-height screen-border-radius screen-z-index]}
-   screen-id]
+   {:keys [screen-id theme]}]
   (reanimated/apply-animations-to-style
    {:left          screen-left
     :top           screen-top
@@ -13,7 +14,7 @@
     :height        screen-height
     :border-radius screen-border-radius
     :z-index       screen-z-index}
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
+   {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
     :overflow         :hidden
     ;; KeyboardAvoidingView which is used for chat screen composer,
     ;; not working when we use :absolute layout. One fix is to add

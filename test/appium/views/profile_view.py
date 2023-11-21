@@ -1,4 +1,6 @@
 import time
+
+from tests import common_password
 from tests.base_test_case import AbstractTestCase
 from views.base_element import Text, Button, EditBox, SilentButton
 from views.base_view import BaseView
@@ -243,7 +245,8 @@ class ProfileView(BaseView):
 
         # Notifications
         self.profile_notifications_button = Button(self.driver, accessibility_id="notifications-settings-button")
-        self.profile_notifications_toggle_button = Button(self.driver, accessibility_id="local-notifications-settings-button")
+        self.profile_notifications_toggle_button = Button(self.driver,
+                                                          accessibility_id="local-notifications-settings-button")
         self.push_notification_toggle = Button(self.driver,
                                                xpath="//*[@content-desc='notifications-button']//*[@content-desc='switch']")
         self.wallet_push_notifications = Button(self.driver, accessibility_id="notifications-button")
@@ -282,6 +285,10 @@ class ProfileView(BaseView):
                                                     uppercase=True)
         self.advertise_device_button = Button(self.driver, accessibility_id="advertise-device")
         self.sync_all_button = Button(self.driver, translation_id="sync-all-devices")
+        self.syncing_button = Button(self.driver, accessibility_id="syncing")
+        self.sync_plus_button = Button(self.driver,
+                                       xpath="//*[@text='Syncing']/following-sibling::android.view.ViewGroup[1]")
+        self.slide_button_track = Button(self.driver, xpath="//*[@resource-id='slide-button-track']")
 
         # Keycard
         self.keycard_button = Button(self.driver, accessibility_id="keycard-button")
@@ -379,18 +386,18 @@ class ProfileView(BaseView):
         self.profile_notifications_toggle_button.click()
         self.navigate_back_to_home_view()
 
-    def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id:str):
+    def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id: str):
         self.driver.info("## Add custom network", device=False)
         self.advanced_button.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         self.plus_button.click_until_presence_of_element(self.custom_chain_button)
-        self.custom_network_url_input.set_value(rpc_url)
-        self.specify_name_input.set_value(name)
-        self.custom_network_symbol_input.set_value(symbol)
+        self.custom_network_url_input.send_keys(rpc_url)
+        self.specify_name_input.send_keys(name)
+        self.custom_network_symbol_input.send_keys(symbol)
         self.custom_chain_button.scroll_and_click()
         self.specify_network_id_input.scroll_to_element()
-        self.specify_network_id_input.set_value(netwrok_id)
+        self.specify_network_id_input.send_keys(netwrok_id)
         self.save_button.click()
         self.element_by_text_part(name).scroll_to_element()
         self.element_by_text_part(name).click_until_presence_of_element(self.connect_button)
@@ -409,10 +416,10 @@ class ProfileView(BaseView):
         recovery_phrase = self.get_recovery_phrase()
         self.next_button.click()
         word_number = self.recovery_phrase_word_number.number
-        self.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
+        self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number])
         self.next_button.click()
         word_number_1 = self.recovery_phrase_word_number.number
-        self.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
+        self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number_1])
         self.done_button.click()
         self.yes_button.click()
         self.ok_got_it_button.click()
@@ -480,7 +487,7 @@ class ProfileView(BaseView):
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
-        self.device_name_input.set_value(device_name)
+        self.device_name_input.send_keys(device_name)
         self.continue_button.click_until_presence_of_element(self.advertise_device_button, 2)
         self.advertise_device_button.click()
 
@@ -501,7 +508,7 @@ class ProfileView(BaseView):
         dapp_view.element_by_translation_id("get-started").click()
         if not is_stateofus:
             dapp_view.element_by_translation_id("ens-want-custom-domain").click()
-        dapp_view.ens_name_input.set_value(name)
+        dapp_view.ens_name_input.send_keys(name)
         expected_text = dapp_view.get_translation_by_key("ens-username-connected")
         if not dapp_view.element_by_text_part(expected_text).is_element_displayed():
             dapp_view.click_system_back_button()
@@ -520,3 +527,12 @@ class ProfileView(BaseView):
         self.advanced_button.click()
         self.active_network_name.scroll_to_element(10, 'up')
         return self.active_network_name.text
+
+    def get_sync_code(self):
+        self.syncing_button.scroll_and_click()
+        self.sync_plus_button.click()
+        self.slide_button_track.swipe_right_on_element(width_percentage=1.3)
+        self.password_input.send_keys(common_password)
+        self.login_button.click()
+        self.element_by_translation_id("copy-qr").click()
+        return self.driver.get_clipboard_text()

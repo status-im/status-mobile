@@ -1,11 +1,13 @@
 (ns status-im2.common.log
-  (:require [clojure.string :as string]
-            [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]
-            [status-im2.config :as config]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.pprint :as p]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im2.config :as config]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (def logs-queue (atom #queue []))
 (def max-log-entries 1000)
@@ -21,25 +23,29 @@
 (defn setup
   [level]
   (let [handle-error   (fn [res]
-                         (let [{:keys [error]} (types/json->clj res)]
+                         (let [{:keys [error]} (transforms/json->clj res)]
                            (when-not (string/blank? error)
                              (log/error "init statusgo logging failed" error))))
         logging-params {:enable?        true
                         :mobile-system? false
                         :log-level      level
                         :callback       handle-error}]
-    (log/merge-config! {:ns-whitelist ["*"]})
+    (log/merge-config! {:ns-filter {:allow #{"*"} :deny #{"taoensso.sente"}}})
     (if (string/blank? level)
       (native-module/init-status-go-logging (merge logging-params {:log-level "WARN"}))
       (do
-        (log/set-level! (-> level
-                            string/lower-case
-                            keyword))
+        (log/set-min-level! (-> level
+                                string/lower-case
+                                keyword))
         (log/merge-config!
-         {:output-fn (fn [& data]
-                       (let [res (apply log/default-output-fn data)]
-                         (add-log-entry res)
-                         res))})
+         {:output-fn  (fn [& data]
+                        (let [res (apply log/default-output-fn data)]
+                          (add-log-entry res)
+                          res))
+          :middleware [(fn [data]
+                         (update data
+                                 :vargs
+                                 (partial mapv #(if (string? %) % (with-out-str (p/pprint %))))))]})
         (native-module/init-status-go-logging logging-params)))))
 
 (re-frame/reg-fx

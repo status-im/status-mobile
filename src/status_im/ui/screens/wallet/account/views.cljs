@@ -1,18 +1,15 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require
     [quo.core :as quo]
-    [quo.design-system.colors :as colors]
-    [quo.design-system.spacing :as spacing]
-    [quo2.core :as quo2]
-    [quo2.components.markdown.text :as quo2.text]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im.ethereum.core :as ethereum]
-    [utils.i18n :as i18n]
     [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as components.core]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
+    [status-im.ui.components.spacing :as spacing]
     [status-im.ui.components.tabs :as tabs]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.wallet.account.styles :as styles]
@@ -22,6 +19,8 @@
     [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
     [status-im.ui.screens.wallet.transactions.views :as history]
     [status-im2.config :as config]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -40,7 +39,7 @@
 
 (views/defview account-card
   [{:keys [address color type] :as account}]
-  (views/letsubs [currency        [:wallet/currency]
+  (views/letsubs [currency        [:wallet-legacy/currency]
                   portfolio-value [:account-portfolio-value address]
                   window-width    [:dimensions/window-width]
                   prices-loading? [:prices-loading?]]
@@ -53,7 +52,7 @@
           portfolio-value])
        [react/text {:style {:font-size 32 :color colors/white-transparent-persist :font-weight "600"}}
         (str " " (:code currency))]]
-      [quo/text
+      [components.core/text
        {:number-of-lines 1
         :ellipsize-mode  :middle
         :monospace       true
@@ -61,9 +60,9 @@
         :style           {:width       (/ window-width 3)
                           :line-height 22
                           :color       colors/white-transparent-70-persist}}
-       (ethereum/normalized-hex address)]]
+       (address/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/share-popover address])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet-legacy/share-popover address])}
        [icons/icon :main-icons/share
         {:color               colors/white-persist
          :accessibility-label :share-wallet-address-icon}]]]
@@ -81,17 +80,17 @@
          (i18n/label :t/wallet-send)
          :main-icons/send
          colors/white-persist
-         #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])])
+         #(re-frame/dispatch [:wallet-legacy/prepare-transaction-from-wallet account])])
       [react/view {:style (styles/divider)}]
       [button
        (i18n/label :t/receive)
        :main-icons/receive
        colors/white-persist
-       #(re-frame/dispatch [:wallet/share-popover address])]]]))
+       #(re-frame/dispatch [:wallet-legacy/share-popover address])]]]))
 
 (views/defview transactions
   [address]
-  (views/letsubs [data [:wallet.transactions.history/screen address]]
+  (views/letsubs [data [:wallet-legacy.transactions.history/screen address]]
     [history/history-list data address]))
 
 (defn opensea-link
@@ -115,15 +114,15 @@
 
 (views/defview assets-and-collections-new
   [address]
-  (views/letsubs [{:keys [tokens]}       [:wallet/visible-assets-with-values address]
-                  currency               [:wallet/currency]
+  (views/letsubs [{:keys [tokens]}       [:wallet-legacy/visible-assets-with-values address]
+                  currency               [:wallet-legacy/currency]
                   opensea-enabled?       [:opensea-enabled?]
-                  collectible-collection [:wallet/collectible-collection address]]
+                  collectible-collection [:wallet-legacy/collectible-collection address]]
     ;ethereum-network? [:ethereum-network?]]
     (let [tab @selected-tab]
       [react/view {:flex 1}
        [react/view {:padding-horizontal 20 :padding-bottom 20}
-        [quo2/tabs
+        [quo/tabs
          {:size           24
           :on-change      #(reset! selected-tab %)
           :default-active :tokens
@@ -176,12 +175,12 @@
       (i18n/label :t/wallet-send)
       :main-icons/send
       colors/blue-persist
-      #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])])
+      #(re-frame/dispatch [:wallet-legacy/prepare-transaction-from-wallet account])])
    [button
     (i18n/label :t/receive)
     :main-icons/receive
     colors/blue-persist
-    #(re-frame/dispatch [:wallet/share-popover address])]])
+    #(re-frame/dispatch [:wallet-legacy/share-popover address])]])
 
 (defn anim-listener
   [anim-y scroll-y]
@@ -211,7 +210,7 @@
     {:style    styles/round-action-button
      :on-press on-press}
     (icons/icon icon {:color colors/white})]
-   [quo/text
+   [components.core/text
     {:color :secondary
      :size  :small
      :style {:margin-top (:tiny spacing/spacing)}}
@@ -231,10 +230,10 @@
 
 (views/defview assets-and-collections
   [address]
-  (views/letsubs [{:keys [tokens]}       [:wallet/visible-assets-with-values address]
-                  currency               [:wallet/currency]
+  (views/letsubs [{:keys [tokens]}       [:wallet-legacy/visible-assets-with-values address]
+                  currency               [:wallet-legacy/currency]
                   opensea-enabled?       [:opensea-enabled?]
-                  collectible-collection [:wallet/collectible-collection address]
+                  collectible-collection [:wallet-legacy/collectible-collection address]
                   ethereum-network?      [:ethereum-network?]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
@@ -272,14 +271,14 @@
 (defn account-new
   [selected-account]
   (let [;{:keys [name address] :as account} (rf/sub [:account-by-address selected-account])
-        currency        (rf/sub [:wallet/currency])
+        currency        (rf/sub [:wallet-legacy/currency])
         portfolio-value (rf/sub [:account-portfolio-value selected-account])
         width           (rf/sub [:dimensions/window-width])
         button-width    (/ (- width 40 (* 2 12)) 3)]
-    ;fetching-error (rf/sub [:wallet/fetching-error])]
+    ;fetching-error (rf/sub [:wallet-legacy/fetching-error])]
     [react/view
      {:flex                    1
-      :background-color        (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+      :background-color        (quo.colors/theme-colors quo.colors/white quo.colors/neutral-90)
       :border-top-left-radius  20
       :border-top-right-radius 20
       :elevation               4
@@ -288,25 +287,25 @@
       :shadow-color            (:shadow-01 @colors/theme)
       :shadow-offset           {:width 0 :height 4}}
      [react/view {:padding 20}
-      [quo2.text/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
+      [quo/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
      [react/view
       [react/scroll-view {:horizontal true :margin-bottom 32 :showsHorizontalScrollIndicator false}
        [react/view {:width 20}]
-       [quo2/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
+       [quo/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
        [react/view {:width 12}]
-       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
+       [quo/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
        [react/view {:width 12}]
-       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder}
+       [quo/button {:size 56 :width button-width :type :secondary :above :i/placeholder}
         "Receive"]
        [react/view {:width 12}]
-       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
+       [quo/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
        [react/view {:width 20}]]]
      [assets-and-collections-new selected-account]]))
 
 (views/defview account
   []
-  (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
-                  fetching-error                     [:wallet/fetching-error]]
+  (views/letsubs [{:keys [name address] :as current-account} [:multiaccount/current-account]
+                  fetching-error                             [:wallet-legacy/fetching-error]]
     (let [anim-y   (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
@@ -327,7 +326,7 @@
          :refreshControl        (common/refresh-control
                                  (and
                                   @common/updates-counter
-                                  @(re-frame/subscribe [:wallet/refreshing-history?])))}
+                                  @(re-frame/subscribe [:wallet-legacy/refreshing-history?])))}
         (when fetching-error
           [react/view
            {:style {:flex        1
@@ -348,7 +347,7 @@
                      :margin-top        8
                      :margin-horizontal 67.5
                      :text-align        :center}}
-            [quo/text
+            [components.core/text
              {:color :secondary
               :size  :small
               :style {:text-align :center}}
@@ -356,9 +355,9 @@
         [react/view {:padding-left 16}
          [react/scroll-view {:horizontal true}
           [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
-           [account-card account]]]]
+           [account-card current-account]]]]
         (if config/swap-enabled?
           [top-actions]
           [buy-crypto/banner])
         [assets-and-collections address]]
-       [bottom-send-recv-buttons account anim-y]])))
+       [bottom-send-recv-buttons current-account anim-y]])))

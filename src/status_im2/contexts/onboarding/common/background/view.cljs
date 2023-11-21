@@ -1,17 +1,18 @@
 (ns status-im2.contexts.onboarding.common.background.view
-  (:require [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [oops.core :refer [oget]]
-            [react-native.platform :as platform]
-            [status-im2.common.resources :as resources]
-            [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.jump-to.state :as shell.state]
-            [status-im2.contexts.onboarding.common.carousel.view :as carousel]
-            [status-im2.contexts.onboarding.common.background.style :as style]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]))
+  (:require
+    [oops.core :refer [oget]]
+    [react-native.async-storage :as async-storage]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.onboarding.common.background.style :as style]
+    [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]
+    [status-im2.contexts.onboarding.common.carousel.view :as carousel]
+    [status-im2.contexts.shell.jump-to.state :as shell.state]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def header-text
   [{:text     (i18n/label :t/join-decentralised-communities)
@@ -26,9 +27,10 @@
 (defn background-image
   [content-width]
   [rn/image
-   {:style  {:resize-mode :stretch
-             :margin-top  32
-             :width       content-width}
+   {:style  {:resize-mode   :stretch
+             :resize-method :scale
+             :margin-top    32
+             :width         content-width}
     :source (resources/get-image :onboarding-illustration)}])
 
 (defonce progress (atom nil))

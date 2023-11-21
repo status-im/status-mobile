@@ -1,23 +1,24 @@
 (ns status-im.wallet.db-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [utils.i18n :as i18n]
-            [utils.money :as money]
-            [status-im.wallet.db :as wallet.db]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.wallet.db :as wallet.db]
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (deftest test-too-precise-amount?
   (testing "try both decimal and scientific or hex format"
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "100" 2)))
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "100" 0)))
-    (is (= true (#'status-im.wallet.db/too-precise-amount? "100.1" 0)))
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "100.23" 2)))
-    (is (= true (#'status-im.wallet.db/too-precise-amount? "100.233" 2)))
-    (is (= true (#'status-im.wallet.db/too-precise-amount? "100.0000000000000000001" 18)))
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "100.000000000000000001" 18)))
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "1e-18" 18)))
-    (is (= true (#'status-im.wallet.db/too-precise-amount? "1e-19" 18)))
-    (is (= true (#'status-im.wallet.db/too-precise-amount? "0xa.a" 2))) ;; 0xa.a is 10.625
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "0xa.a" 3)))
-    (is (= false (#'status-im.wallet.db/too-precise-amount? "1000" 3)))))
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "100" 2)))
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "100" 0)))
+    (is (true? (#'status-im.wallet.db/too-precise-amount? "100.1" 0)))
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "100.23" 2)))
+    (is (true? (#'status-im.wallet.db/too-precise-amount? "100.233" 2)))
+    (is (true? (#'status-im.wallet.db/too-precise-amount? "100.0000000000000000001" 18)))
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "100.000000000000000001" 18)))
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "1e-18" 18)))
+    (is (true? (#'status-im.wallet.db/too-precise-amount? "1e-19" 18)))
+    (is (true? (#'status-im.wallet.db/too-precise-amount? "0xa.a" 2))) ;; 0xa.a is 10.625
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "0xa.a" 3)))
+    (is (false? (#'status-im.wallet.db/too-precise-amount? "1000" 3)))))
 
 (defn- equal-results?
   [a b]

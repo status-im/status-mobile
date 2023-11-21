@@ -1,11 +1,13 @@
 (ns status-im2.subs.general
-  (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.utils.build :as build]
-            [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im2.constants :as constants]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.utils.build :as build]
+    [status-im.utils.mobile-sync :as mobile-network-utils]
+    [status-im2.constants :as constants]
+    [utils.ethereum.chain :as chain]))
 
 (re-frame/reg-sub
  :visibility-status-updates/visibility-status-update
@@ -13,7 +15,7 @@
  :<- [:multiaccount/current-user-visibility-status]
  :<- [:visibility-status-updates]
  (fn [[my-public-key my-status-update status-updates] [_ public-key]]
-   (if (= public-key my-public-key)
+   (if (or (string/blank? public-key) (= public-key my-public-key))
      my-status-update
      (get status-updates public-key))))
 
@@ -49,26 +51,26 @@
 (re-frame/reg-sub
  :custom-rpc-node
  :<- [:current-network]
- (fn [network]
-   (ethereum/custom-rpc-node? network)))
+ (fn [{:keys [id]}]
+   (= 45 (count id))))
 
 (re-frame/reg-sub
  :chain-keyword
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-keyword network)))
+   (chain/network->chain-keyword network)))
 
 (re-frame/reg-sub
  :chain-name
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-name network)))
+   (chain/network->chain-name network)))
 
 (re-frame/reg-sub
  :chain-id
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-id network)))
+   (chain/network->chain-id network)))
 
 (re-frame/reg-sub
  :mainnet?
@@ -94,8 +96,7 @@
  :<- [:waku/v2-flag]
  :<- [:waku/v2-peer-stats]
  (fn [[peers-count wakuv2-flag peer-stats]]
-   ;; If wakuv2 is enabled,
-   ;; then fetch connectivity status from
+   ;; If wakuv2 is enabled, then fetch connectivity status from
    ;; peer-stats (populated from "wakuv2.peerstats" status-go signal)
    ;; Otherwise use peers-count fetched from "discovery.summary" signal
    (if wakuv2-flag (not (:isOnline peer-stats)) (zero? peers-count))))
@@ -146,7 +147,7 @@
    (get-in animations [type item-id :delete-swiped])))
 
 (re-frame/reg-sub
- :search/recipient-filter
+ :wallet-legacy/search-recipient-filter
  :<- [:ui/search]
  (fn [search]
    (get search :recipient-filter)))
@@ -156,12 +157,6 @@
  :<- [:ui/search]
  (fn [search]
    (get search :currency-filter)))
-
-(re-frame/reg-sub
- :search/token-filter
- :<- [:ui/search]
- (fn [search]
-   (get search :token-filter)))
 
 (defn- node-version
   [web3-node-version]
@@ -220,7 +215,7 @@
  :ethereum/chain-keyword
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-keyword network)))
+   (chain/network->chain-keyword network)))
 
 (re-frame/reg-sub
  :ethereum/native-currency
@@ -285,3 +280,15 @@
        (and
         (= network-type "cellular")
         syncing-on-mobile-network?))))
+
+(re-frame/reg-sub
+ :toasts/toast
+ :<- [:toasts]
+ (fn [toasts [_ toast-id]]
+   (get-in toasts [:toasts toast-id])))
+
+(re-frame/reg-sub
+ :toasts/toast-cursor
+ :<- [:toasts]
+ (fn [toasts [_ toast-id & cursor]]
+   (get-in toasts (into [:toasts toast-id] cursor))))

@@ -1,15 +1,16 @@
 (ns status-im.wallet-connect.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
-            [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.signing.core :as signing]
-            [status-im2.config :as config]
-            [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.browser.core :as browser]
+    [status-im.signing.core :as signing]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.wallet-connect :as wallet-connect]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.re-frame :as rf]))
 
 (rf/defn proposal-handler
   {:events [:wallet-connect/proposal]}
@@ -149,7 +150,7 @@
         supported-chain-ids (filter (fn [chain-id] #(boolean (some #{chain-id} available-chain-ids)))
                                     proposal-chain-ids)
         address             (:address account)
-        accounts            (map #(str "eip155:" % ":" (ethereum/normalized-hex address))
+        accounts            (map #(str "eip155:" % ":" (address/normalized-hex address))
                                  supported-chain-ids)
         ;; TODO: Check for unsupported
         metadata            (get db :wallet-connect/proposal-metadata)
@@ -179,7 +180,7 @@
         available-chain-ids (map #(get-in % [:config :NetworkId]) (vals (get db :networks/networks)))
         supported-chain-ids (filter (fn [chain-id] #(boolean (some #{chain-id} available-chain-ids)))
                                     proposal-chain-ids)
-        accounts            (map #(str "eip155:" % ":" (ethereum/normalized-hex address))
+        accounts            (map #(str "eip155:" % ":" (address/normalized-hex address))
                                  supported-chain-ids)]
     {:db                                       (assoc db
                                                       :wallet-connect/showing-app-management-sheet?

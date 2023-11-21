@@ -1,15 +1,18 @@
 (ns status-im2.contexts.quo-preview.preview
-  (:require [camel-snake-kebab.core :as camel-snake-kebab]
-            [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.style :as style]
-            utils.number)
+  (:require
+    [camel-snake-kebab.core :as camel-snake-kebab]
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.common :as common]
+    [status-im2.contexts.quo-preview.style :as style]
+    utils.number)
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (defn- label-view
@@ -168,6 +171,87 @@
             :field-value field-value}]
           [customizer-select-button {:open open :selected-option selected-option}]]]))))
 
+(defn- customizer-multi-select-modal
+  [{:keys [open-atom options selected-keys-atom]}]
+  [rn/modal
+   {:visible                @open-atom
+    :on-request-close       #(reset! open-atom false)
+    :status-bar-translucent true
+    :transparent            true
+    :animation              :slide}
+   [rn/view {:style (style/modal-overlay)}
+    [rn/view {:style (style/modal-container)}
+     [rn/scroll-view {:shows-vertical-scroll-indicator false}
+      (doall
+       (for [{k :key v :value} options
+             :let              [v (or v (humanize k))]]
+         ^{:key k}
+
+         (let [checked?   (boolean (some #(= k %) @selected-keys-atom))
+               remove-key (fn [v] (filterv #(not= % k) v))
+               on-press   (fn []
+                            (swap! selected-keys-atom
+                              (if checked? remove-key conj)
+                              k))]
+           [rn/pressable
+            {:style    (style/multi-select-option)
+             :on-press on-press}
+            [rn/text {:style (style/field-text false)} v]
+            [quo/selectors
+             {:type      :checkbox
+              :checked?  checked?
+              :on-change on-press}]])))]
+     [rn/view {:style (style/footer)}
+      [rn/pressable
+       {:style    (style/select-button)
+        :on-press (fn []
+                    (reset! selected-keys-atom nil)
+                    (reset! open-atom false))}
+       [rn/text {:style (style/field-text false)}
+        "Clear"]]
+      [rn/view {:style {:width 16}}]
+      [rn/touchable-opacity
+       {:style    (style/select-button)
+        :on-press #(reset! open-atom false)}
+       [rn/text {:style (style/field-text false)}
+        "Close"]]]]]])
+
+(defn filter-by-keys
+  [items ks]
+  (filter (fn [item]
+            (some #(= (:key item) %) ks))
+          items))
+
+(defn- customizer-multi-select-button
+  [{:keys [open selected-options]}]
+  [rn/pressable
+   {:style    (style/select-container)
+    :on-press #(reset! open true)}
+   [rn/text
+    {:style           (style/field-select)
+     :number-of-lines 1}
+    (if (seq selected-options)
+      (string/join ", " (map :value selected-options))
+      "Select options")]
+   [rn/view
+    [quo/icon :i/chevron-right]]])
+
+(defn- customizer-multi-select
+  []
+  (let [open (reagent/atom nil)]
+    (fn [{:keys [label state options] :as args}]
+      (let [label            (or label (key->text-label (:key args)))
+            selected-keys    (reagent/cursor state [(:key args)])
+            selected-options (filter-by-keys options @selected-keys)]
+        [rn/view {:style style/field-row}
+         [label-view state label]
+         [rn/view {:style style/field-column}
+          [customizer-multi-select-modal
+           {:open-atom          open
+            :selected-keys-atom selected-keys
+            :options            options}]
+          [customizer-multi-select-button {:open open :selected-options selected-options}]]]))))
+
 (defn customizer
   [state descriptors]
   [rn/view
@@ -175,23 +259,28 @@
             :padding-horizontal 20}}
    (doall
     (for [desc descriptors
-          :let [descriptor (merge desc {:state state})]]
+          :let [desc-path  (:path desc)
+                new-state  (if desc-path
+                             (reagent/cursor state desc-path)
+                             state)
+                descriptor (assoc desc :state new-state)]]
       ^{:key (:key desc)}
       [:<>
        (case (:type desc)
-         :boolean [customizer-boolean descriptor]
-         :text    [customizer-text descriptor]
-         :number  [customizer-number descriptor]
-         :select  [customizer-select descriptor]
+         :boolean      [customizer-boolean descriptor]
+         :text         [customizer-text descriptor]
+         :number       [customizer-number descriptor]
+         :select       [customizer-select descriptor]
+         :multi-select [customizer-multi-select descriptor]
          nil)]))])
 
 (defn customization-color-option
   ([]
    (customization-color-option {}))
-  ([opts]
+  ([{:keys [feng-shui?] :as opts}]
    (merge {:key     :customization-color
            :type    :select
-           :options (->> colors/customization
+           :options (->> (merge colors/customization (when feng-shui? {:feng-shui nil}))
                          keys
                          sort
                          (map (fn [k]
@@ -199,7 +288,7 @@
           opts)))
 
 (defn blur-view
-  [{:keys [show-blur-background? image height blur-view-props style]} & children]
+  [{:keys [show-blur-background? image height blur-view-props style theme]} & children]
   [rn/view
    {:style {:flex             1
             :padding-vertical 16}}
@@ -209,7 +298,7 @@
                :border-radius 16
                :overflow      :hidden}}
       [rn/image
-       {:source (or image (resources/get-mock-image :community-cover))
+       {:source (or image (resources/get-mock-image :dark-blur-bg))
         :style  {:height "100%" :width "100%"}}]
       [blur/view
        (merge {:style         {:position :absolute
@@ -218,7 +307,7 @@
                                :left     0
                                :right    0}
                :blur-amount   10
-               :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80)}
+               :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80 theme)}
               blur-view-props)]])
    (into [rn/view
           {:style (merge {:position           :absolute
@@ -227,32 +316,48 @@
                          style)}]
          children)])
 
-(defn preview-container
-  [{:keys [state descriptor blur?
+(defn- f-preview-container
+  [{:keys [title state descriptor blur? blur-dark-only?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
-    :or   {blur-height 200}}
+    :or   {blur-height 200 title "quo component"}}
    & children]
-  [rn/scroll-view
-   {:style                           (style/panel-basic)
-    :shows-vertical-scroll-indicator false}
-   [rn/pressable {:on-press rn/dismiss-keyboard!}
-    (when descriptor
-      [rn/view {:style style/customizer-container}
-       [customizer state descriptor]])
-    (if blur?
-      [rn/view {:style (merge style/component-container component-container-style)}
-       (into [blur-view
-              {:show-blur-background? show-blur-background?
-               :height                blur-height
-               :style                 (merge {:width     "100%"
-                                              :flex-grow 1}
-                                             (when-not show-blur-background?
-                                               {:padding-horizontal 0
-                                                :top                0})
-                                             blur-container-style)
-               :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
-                                             blur-view-props)}]
-             children)]
-      (into [rn/view {:style (merge style/component-container component-container-style)}]
-            children))]])
+  (let [theme (quo.theme/use-theme-value)]
+    (rn/use-effect (fn []
+                     (when blur-dark-only?
+                       (if blur?
+                         (quo.theme/set-theme :dark)
+                         (quo.theme/set-theme :light))))
+                   [blur? blur-dark-only?])
+    [rn/view
+     {:style {:top  (safe-area/get-top)
+              :flex 1}}
+     [common/navigation-bar {:title title}]
+     [rn/scroll-view
+      {:style                           (style/panel-basic)
+       :shows-vertical-scroll-indicator false}
+      [rn/pressable {:on-press rn/dismiss-keyboard!}
+       (when descriptor
+         [rn/view {:style style/customizer-container}
+          [customizer state descriptor]])
+       (if blur?
+         [rn/view {:style (merge style/component-container component-container-style)}
+          (into [blur-view
+                 {:theme                 theme
+                  :show-blur-background? show-blur-background?
+                  :height                blur-height
+                  :style                 (merge {:width     "100%"
+                                                 :flex-grow 1}
+                                                (when-not show-blur-background?
+                                                  {:padding-horizontal 0
+                                                   :top                0})
+                                                blur-container-style)
+                  :blur-view-props       (merge {:blur-type theme}
+                                                blur-view-props)}]
+                children)]
+         (into [rn/view {:style (merge style/component-container component-container-style)}]
+               children))]]]))
+
+(defn preview-container
+  [& args]
+  (into [:f> f-preview-container] args))

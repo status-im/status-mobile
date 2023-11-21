@@ -5,8 +5,11 @@ import string
 import time
 from datetime import datetime
 
+from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 from support.device_apps import start_web_browser
 from tests import common_password, pytest_config_global, transl
@@ -193,7 +196,7 @@ class EnterQRcodeEditBox(EditBox):
         super().__init__(driver, translation_id="type-a-message")
 
     def scan_qr(self, value):
-        self.set_value(value)
+        self.send_keys(value)
         base_view = BaseView(self.driver)
         base_view.ok_button.click()
 
@@ -240,6 +243,9 @@ class BaseView(object):
         self.driver = driver
         self.send_message_button = SendMessageButton(self.driver)
         self.send_contact_request_button = Button(self.driver, translation_id="send-request")
+        self.password_input = EditBox(self.driver, accessibility_id="password-input")
+        from views.sign_in_view import LogInButton
+        self.login_button = LogInButton(self.driver)
 
         # Old UI Tabs
         self.home_button = HomeButton(self.driver)
@@ -258,6 +264,8 @@ class BaseView(object):
         self.chat_floating_screen = BaseElement(self.driver, accessibility_id=":chat-floating-screen")
         self.community_floating_screen = BaseElement(self.driver,
                                                      accessibility_id=":community-overview-floating-screen")
+        self.discover_communities_floating_screen = BaseElement(self.driver,
+                                                                accessibility_id=":discover-communities-floating-screen")
 
         self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
@@ -385,8 +393,9 @@ class BaseView(object):
 
     def navigate_back_to_home_view(self, attempts=3):
         counter = 0
-        while self.chat_floating_screen.is_element_displayed(2) \
-                or self.community_floating_screen.is_element_displayed(2):
+        while not self.chat_floating_screen.is_element_disappeared(1) \
+                or not self.community_floating_screen.is_element_disappeared(1) \
+                or not self.discover_communities_floating_screen.is_element_disappeared(1):
             self.driver.press_keycode(4)
         element = self.chats_tab
         while not element.is_element_displayed(1) and counter <= attempts:
@@ -639,8 +648,13 @@ class BaseView(object):
         self.element_by_text(text).click()
 
     def reopen_app(self, password=common_password, sign_in=True):
-        self.driver.close_app()
-        self.driver.launch_app()
+        app_package = self.driver.current_package
+        self.driver.terminate_app(app_package)
+        for _ in range(3):
+            if self.driver.query_app_state(app_package) == 1:
+                break
+            time.sleep(1)
+        self.driver.activate_app(app_package)
         if sign_in:
             sign_in_view = self.get_sign_in_view()
             sign_in_view.sign_in(password)
@@ -741,7 +755,11 @@ class BaseView(object):
     def upgrade_app(self):
         self.driver.info("Upgrading apk to apk_upgrade")
         self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
-        self.app = self.driver.launch_app()
+        if self.driver.is_app_installed('im.status.ethereum'):
+            app_package = 'im.status.ethereum'
+        else:
+            app_package = 'im.status.ethereum.pr'
+        self.app = self.driver.activate_app(app_package)
 
     def search_by_keyword(self, keyword):
         self.driver.info('Search for `%s`' % keyword)
@@ -812,3 +830,10 @@ class BaseView(object):
                 return
             time.sleep(1)
         raise TimeoutException("Driver current package is '%s' after %s seconds" % (package, timeout))
+
+    def wait_for_staleness_of_element(self, element_instance: WebElement, seconds=10):
+        try:
+            return WebDriverWait(self.driver, seconds).until(expected_conditions.staleness_of(element_instance))
+        except TimeoutException:
+            raise TimeoutException(
+                "Device %s: expected element is not stale after %s seconds" % (self.driver.number, seconds)) from None

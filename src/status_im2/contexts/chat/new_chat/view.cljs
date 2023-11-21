@@ -1,22 +1,24 @@
 (ns status-im2.contexts.chat.new-chat.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [react-native.gesture :as gesture]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [status-im2.common.contact-list.view :as contact-list]
-            [status-im2.common.resources :as resources]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.contexts.chat.new-chat.styles :as style]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [status-im2.common.contact-list-item.view :as contact-list-item]
+    [status-im2.common.contact-list.view :as contact-list]
+    [status-im2.common.resources :as resources]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.new-chat.styles :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- no-contacts-view
-  []
+  [{:keys [theme]}]
   [rn/view
    {:style (style/no-contacts)}
-   [rn/image {:source (resources/get-themed-image :no-contacts-dark :no-contacts-light)}]
+   [rn/image {:source (resources/get-themed-image :no-contacts theme)}]
    [quo/text
     {:weight :semi-bold
      :size   :paragraph-1
@@ -56,8 +58,8 @@
                     :on-check on-toggle}}
        item])))
 
-(defn view
-  [{:keys [scroll-enabled on-scroll close]}]
+(defn- view-internal
+  [{:keys [scroll-enabled on-scroll close theme]}]
   (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
@@ -77,19 +79,19 @@
        [quo/text
         {:weight :semi-bold
          :size   :heading-1
-         :style  {:color (colors/theme-colors colors/neutral-100 colors/white)}}
+         :style  {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
         (i18n/label :t/new-chat)]
        (when (seq contacts)
          [quo/text
           {:size   :paragraph-2
            :weight :regular
            :style  {:margin-bottom 2
-                    :color         (colors/theme-colors colors/neutral-40 colors/neutral-50)}}
+                    :color         (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}}
           (i18n/label :t/selected-count-from-max
                       {:selected selected-contacts-count
                        :max      constants/max-group-chat-participants})])]]
      (if (empty? contacts)
-       [no-contacts-view]
+       [no-contacts-view {:theme theme}]
        [gesture/section-list
         {:key-fn                         :title
          :sticky-section-headers-enabled false
@@ -111,3 +113,5 @@
         (if one-contact-selected?
           (i18n/label :t/chat-with {:selected-user primary-name})
           (i18n/label :t/setup-group-chat))])]))
+
+(def view (quo.theme/with-theme view-internal))

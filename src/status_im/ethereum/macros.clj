@@ -1,6 +1,7 @@
 (ns status-im.ethereum.macros
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]))
+  (:require
+    [clojure.java.io :as io]
+    [clojure.string :as string]))
 
 (defn token-icon-path
   [path]
