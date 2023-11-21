@@ -162,7 +162,7 @@
 
 (rf/defn get-auth-method-success
   {:events [:profile.login/get-auth-method-success]}
-  [{:keys [db] :as cofx} auth-method key-uid]
+  [{:keys [db]} auth-method key-uid]
   (merge {:db (assoc db :auth-method auth-method)}
          (when (= auth-method keychain/auth-method-biometric)
            {:keychain/password-hash-migration
@@ -212,7 +212,7 @@
 
 (rf/defn verify-database-password-success
   {:events [:profile.login/verified-database-password]}
-  [{:keys [db] :as cofx} valid? callback]
+  [{:keys [db]} valid? callback]
   (if valid?
     (do
       (when (fn? callback)

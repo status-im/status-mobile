@@ -12,8 +12,7 @@
     [status-im2.contexts.onboarding.enable-biometrics.style :as style]
     [status-im2.navigation.state :as state]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 
 (defn page-title

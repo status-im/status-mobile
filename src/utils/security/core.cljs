@@ -60,9 +60,7 @@
   [text]
   (not (re-matches rtlo-link-regex text)))
 
-(defn hash-masked-password
-  [masked-password]
-  (-> masked-password
-      safe-unmask-data
-      native-module/sha3
-      mask-data))
+(def hash-masked-password
+  (comp safe-unmask-data
+        native-module/sha3
+        mask-data))

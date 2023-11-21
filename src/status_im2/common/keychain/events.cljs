@@ -81,6 +81,7 @@
          (str key-uid "-auth")
          #(callback (if % (oops/oget % "password") auth-method-none)))
         (callback nil))))))
+
 (defn save-user-password!
   [key-uid password]
   (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
@@ -88,9 +89,10 @@
 (defn get-user-password!
   [key-uid callback]
   (keychain/get-credentials key-uid
-                            #(if %
-                               (callback (security/mask-data (oops/oget % "password")))
-                               (callback nil))))
+                            #(callback (when %
+                                         (-> %
+                                             (oops/oget "password")
+                                             (security/mask-data))))))
 
 (re-frame/reg-fx
  :keychain/get-user-password
@@ -121,7 +123,7 @@
   [key-uid callback]
   (keychain/get-credentials
    (password-migration-key-name key-uid)
-   #(callback (boolean %))))
+   #(comp callback boolean)))
 
 (re-frame/reg-fx
  :keychain/clear-user-password
