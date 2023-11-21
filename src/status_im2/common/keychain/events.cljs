@@ -123,7 +123,7 @@
   [key-uid callback]
   (keychain/get-credentials
    (password-migration-key-name key-uid)
-   #(comp callback boolean)))
+   (comp callback boolean)))
 
 (re-frame/reg-fx
  :keychain/clear-user-password
