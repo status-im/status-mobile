@@ -435,6 +435,7 @@
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [transaction from-address to-address]]
+   (prn transaction)
    (let [best (first (:Best transaction))
          from (:From best)
          to (:To best)
@@ -442,12 +443,12 @@
          to-asset (:nativeCurrencySymbol to)
          bridge-name (:BridgeName best)
          chain-id (:chainId from)
-         multi-transaction-command {:from-address from-address
-                                    :to-address   to-address
-                                    :from-asset   from-asset
-                                    :to-asset     to-asset
-                                    :from-amount  (:AmountOut best)
-                                    :type         0}
+         multi-transaction-command {:fromAddress from-address
+                                    :toAddress   to-address
+                                    :fromAsset   from-asset
+                                    :toAsset     to-asset
+                                    :fromAmount  (:AmountOut best)
+                                    :type        0}
 
          transaction-bridge
          [{:BridgeName bridge-name
@@ -466,7 +467,7 @@
                                                                                                  best))))
                         :Input                ""
                         :Data                 "0x"}}]
-         sha3-pwd (native-module/sha3 (str (security/safe-unmask-data "mmmmmmmmmm")))
+         sha3-pwd (native-module/sha3 (str (security/safe-unmask-data "mmmmmmmmmmm")))
          request-params [multi-transaction-command transaction-bridge sha3-pwd]]
      (prn "=====" request-params)
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
@@ -477,25 +478,3 @@
                                                 {:event  :wallet/send-transaction
                                                  :error  error
                                                  :params request-params}))}]})))
-
-
-[{:from-address "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"
-  :to-address   "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"
-  :from-asset   "ETH"
-  :to-asset     "ETH"
-  :from-amount  "0x11c37937e08000"
-  :type         0}
-
- [{:BridgeName "Transfer"
-   :ChainID    5
-   :TransferTx {:MaxFeePerGas         "0x3b9aca00"
-                :From                 "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"
-                :MaxPriorityFeePerGas "0x5f5e100"
-                :Gas                  "0x5bbf"
-                :Input                ""
-                :Data                 ""
-                :GasPrice             "0x5f5e108"
-                :Nonce                nil
-                :Value                "0x11c37937e08000"
-                :To                   "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"}}]
- "0x46484c15b50121d38bc5811f4b09ae60fc95a7c8b4d913105a3085fcadcb967e"]
