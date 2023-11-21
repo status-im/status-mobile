@@ -43,7 +43,8 @@
    :background-color colors/neutral-80-opa-5})
 
 (def values-container
-  {:align-items :flex-end})
+  {:align-items :flex-end
+   :max-width   "30%"})
 
 (defn fiat-value
   [theme]

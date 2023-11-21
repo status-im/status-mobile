@@ -33,12 +33,14 @@
       :accessibility-label :check-icon}]
     [rn/view {:style style/values-container}
      [text/text
-      {:weight :medium
-       :size   :paragraph-2}
+      {:weight          :medium
+       :size            :paragraph-2
+       :number-of-lines 1}
       token-value]
      [text/text
-      {:style (style/fiat-value theme)
-       :size  :paragraph-2}
+      {:style           (style/fiat-value theme)
+       :size            :paragraph-2
+       :number-of-lines 1}
       fiat-value]]))
 
 (defn- view-internal
