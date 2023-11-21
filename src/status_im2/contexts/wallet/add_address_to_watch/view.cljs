@@ -126,9 +126,11 @@
          [quo/button
           {:customization-color customization-color
            :disabled?           (or (string/blank? @input-value) (some? (validate @input-value)))
-           :on-press            #(rf/dispatch [:navigate-to
-                                               :confirm-address-to-watch
-                                               {:address @input-value}])
+           :on-press            (fn []
+                                  (rf/dispatch [:navigate-to
+                                                :confirm-address-to-watch
+                                                {:address @input-value}])
+                                  (clear-input))
            :container-style     {:z-index 2}}
           (i18n/label :t/continue)]}
         [quo/text-combinations
