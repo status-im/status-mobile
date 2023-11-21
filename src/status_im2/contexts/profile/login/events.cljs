@@ -52,8 +52,12 @@
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password]} (get-in db [:syncing :profile])]
-    {::login [key-uid password]}))
+  (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
+        masked-password            (security/mask-data password)]
+    {:db     (-> db
+                 (assoc-in [:onboarding-2/profile :password] masked-password)
+                 (assoc-in [:onboarding-2/profile :syncing?] true))
+     ::login [key-uid password]}))
 
 (rf/defn redirect-to-root
   [{:keys [db] :as cofx}]
@@ -164,9 +168,7 @@
    [key-uid
     (fn [password]
       (-> password
-          security/safe-unmask-data
-          native-module/sha3
-          security/mask-data
+          security/hash-masked-password
           (->> (keychain/save-user-password! key-uid))
           (.then #(keychain/save-migration-auth-hashed! key-uid))
           (.then #(callback))
@@ -178,7 +180,6 @@
   {:keychain/get-migration-auth-hashed
    [key-uid
     (fn [hashed?]
-      (println "hashed?: " hashed?)
       (if hashed?
         (callback)
         (rf/dispatch [:profile.login/migrate-biometrics-keychain-password key-uid callback])))]})

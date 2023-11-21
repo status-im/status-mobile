@@ -35,15 +35,6 @@
   {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
 
-(rf/defn authenticate-enable-biometrics
-  {:events [:onboarding-2/authenticate-enable-biometrics]}
-  [{:keys [db]} password]
-  {:db                     (-> db
-                               (assoc-in [:onboarding-2/profile :password] password)
-                               (assoc-in [:onboarding-2/profile :syncing?] true))
-   :biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
-                            :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
-
 (rf/defn navigate-to-enable-notifications
   {:events [:onboarding-2/navigate-to-enable-notifications]}
   [{:keys [db]}]
@@ -154,10 +145,9 @@
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         key-uid
-              :masked-password (-> masked-password
-                                   security/safe-unmask-data
-                                   native-module/sha3
-                                   security/mask-data)
+              :masked-password (if syncing?
+                                 masked-password
+                                 (security/hash-masked-password masked-password))
               :on-success      (fn []
                                  (if syncing?
                                    (rf/dispatch [:onboarding-2/navigate-to-enable-notifications])

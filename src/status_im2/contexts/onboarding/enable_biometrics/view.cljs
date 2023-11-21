@@ -34,23 +34,13 @@
         syncing-results?         (= :syncing-results @state/root-id)]
     [rn/view {:style (style/buttons insets)}
      [standard-auth/button
-      (merge
-       {:size                40
-        :accessibility-label :enable-biometrics-button
-        :icon-left           :i/face-id
-        :customization-color profile-color
-        :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}
-       (if syncing-results?
-         {:theme             theme
-          :blur?             true
-          :on-enter-password (fn [entered-password]
-                               (rf/dispatch
-                                [:onboarding-2/authenticate-enable-biometrics
-                                 (security/safe-unmask-data
-                                  entered-password)])
-                               (rf/dispatch [:hide-bottom-sheet]))
-          :auth-button-label (i18n/label :t/confirm)}
-         {:on-press #(rf/dispatch [:onboarding-2/enable-biometrics])}))]
+      {:size                40
+       :accessibility-label :enable-biometrics-button
+       :icon-left           :i/face-id
+       :customization-color profile-color
+       :theme               theme
+       :on-press            #(rf/dispatch [:onboarding-2/enable-biometrics])
+       :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}]
      [quo/button
       {:accessibility-label :maybe-later-button
        :background          :blur

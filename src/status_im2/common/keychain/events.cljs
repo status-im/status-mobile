@@ -82,10 +82,12 @@
          #(callback (if % (oops/oget % "password") auth-method-none)))
         (callback nil))))))
 
+(def ^:const migration-server-suffix "-hashed")
+
 (defn save-migration-auth-hashed!
   [key-uid]
   (keychain/save-credentials
-   (str key-uid "-hashed")
+   (str key-uid migration-server-suffix)
    key-uid
    ;; NOTE: using the key-id as the password, but we don't really care about the
    ;; value, we only care that it's there
@@ -98,7 +100,7 @@
  :keychain/get-migration-auth-hashed
  (fn [[key-uid callback]]
    (keychain/get-credentials
-    (str key-uid "-hashed")
+    (str key-uid migration-server-suffix)
     #(callback (boolean %)))))
 
 (defn save-user-password!
@@ -119,6 +121,7 @@
 (re-frame/reg-fx
  :keychain/clear-user-password
  (fn [key-uid]
+   (keychain/reset-credentials (str key-uid migration-server-suffix))
    (keychain/reset-credentials key-uid)))
 
 (re-frame/reg-fx
