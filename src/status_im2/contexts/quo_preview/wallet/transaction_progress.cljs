@@ -53,7 +53,7 @@
             (and (= state :finalized) (> new-counter-value total-box))
             (and (= state :error) (> new-counter-value 2)))
       (stop-interval)
-      (swap! counter (fn [_] new-counter-value)))))
+      (reset! counter new-counter-value))))
 
 (defn start-interval
   [state]
@@ -75,16 +75,15 @@
                                      :state        :pending
                                      :tag-photo    (resources/get-mock-image :collectible)
                                      :on-press     (fn []
-                                                     (js/alert "Transaction progress item pressed"))})
-        network-state (reagent/cursor state [:state])]
+                                                     (js/alert "Transaction progress item pressed"))})]
     [:f>
      (fn []
        (rn/use-effect
         (fn []
-          (start-interval state)
+          (start-interval (:state @state))
           (clear-counter)
           (fn []
             (stop-interval)))
-        [@network-state])
+        [(:state @state)])
        [preview/preview-container {:state state :descriptor descriptor}
         [quo/transaction-progress @state]])]))

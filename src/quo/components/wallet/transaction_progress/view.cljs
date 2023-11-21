@@ -43,7 +43,7 @@
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state               (calculate-box-state state @counter n)
+               {:state               (calculate-box-state state counter n)
                 :customization-color :blue
                 :key                 n}])))])
 
@@ -119,8 +119,8 @@
   (cond
     (and (= network :mainnet)
          (not= state :finalized)
-         (not= state :error))   (str (if (< @counter 4)
-                                       @counter
+         (not= state :error))   (str (if (< counter 4)
+                                       counter
                                        "4")
                                      "/4")
     (= state :finalized)        (i18n/label :t/epoch-number {:number epoch-number})
@@ -195,7 +195,7 @@
         :size   :paragraph-2
         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
-(defn f-view-internal
+(defn view-internal
   [{:keys [title on-press accessibility-label network state theme tag-photo tag-name tag-number
            epoch-number counter total-box]}]
   [rn/touchable-without-feedback
@@ -206,17 +206,13 @@
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
       :mainnet           [:<>
-                          [status-row theme state :mainnet epoch-number counter]
-                          [progress-boxes state counter total-box]]
+                          [status-row theme state :mainnet epoch-number @counter]
+                          [progress-boxes state @counter total-box]]
       :optimism-arbitrum [:<>
-                          [status-row theme state :arbitrum epoch-number counter]
+                          [status-row theme state :arbitrum epoch-number @counter]
                           [progress-boxes-arbitrum state :arbitrum false]
-                          [status-row theme state :optimism epoch-number counter]
+                          [status-row theme state :optimism epoch-number @counter]
                           [progress-boxes-arbitrum state :optimism true]]
       nil)]])
-
-(defn view-internal
-  [props]
-  [:f> f-view-internal props])
 
 (def view (quo.theme/with-theme view-internal))
