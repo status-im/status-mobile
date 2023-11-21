@@ -65,14 +65,14 @@
        :container-style style/traits-title-container}]
      [rn/flat-list
       {:render-fn               (fn [{:keys [trait-type value]}]
-                                  [rn/view {:style style/traits-item}
-                                   [quo/data-item
-                                    {:description :default
-                                     :card?       true
-                                     :status      :default
-                                     :size        :default
-                                     :title       trait-type
-                                     :subtitle    value}]])
+                                  [quo/data-item
+                                   {:description     :default
+                                    :card?           true
+                                    :status          :default
+                                    :size            :default
+                                    :title           trait-type
+                                    :subtitle        value
+                                    :container-style style/traits-item}])
        :data                    traits
        :key                     :collectibles-list
        :key-fn                  :id
