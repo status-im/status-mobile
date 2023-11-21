@@ -489,7 +489,7 @@
 (defn- main-screen
   []
   [:<>
-   [common/navigation-bar]
+   [common/navigation-bar {:title "Quo components preview"}]
    [rn/scroll-view {:style (style/main)}
     (for [category (sort screens-categories)]
       ^{:key (first category)}

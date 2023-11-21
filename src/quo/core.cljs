@@ -213,7 +213,7 @@
 
 ;;;; Counter
 (def counter quo.components.counter.counter.view/view)
-(def step quo.components.counter.step.view/view)
+(def step #'quo.components.counter.step.view/view)
 
 ;;;; Dividers
 (def divider-label quo.components.dividers.divider-label.view/view)

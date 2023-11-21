@@ -2,6 +2,7 @@
   (:require
     ["bignumber.js" :as BigNumber]
     [clojure.string :as string]
+    [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
@@ -237,3 +238,7 @@
 
       :else
       (str amount))))
+
+(schema/=> format-amount
+  [:=> [:cat [:maybe :int]]
+   [:maybe :string]])

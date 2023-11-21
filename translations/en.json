@@ -1565,7 +1565,8 @@
     "delete-account": "Delete account",
     "delete-keys-keycard": "Delete keys from Keycard",
     "watch-only": "Watch-only",
-    "watch-address": "Watch address",
+    "watched-address": "Watched address",
+    "add-watched-address": "Add watched address",
     "cant-report-bug": "Can't report a bug",
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-block-explorer": "Check on block explorer",
@@ -2391,5 +2392,11 @@
     "failed-on": "Failed on",
     "epoch-number": "Epoch {{number}}",
     "arbitrum": "Arbitrum",
-    "optimism": "Optimism"
+    "optimism": "Optimism",
+    "address-placeholder": "0x123abc... or bob.eth",
+    "invalid-address": "It’s not Ethereum address or ENS name",
+    "address-already-in-use": "Address already being used",
+    "address-copied": "Address copied",
+    "no-dapps-description": "We want dApps!"
 }
+

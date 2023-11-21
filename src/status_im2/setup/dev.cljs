@@ -2,6 +2,7 @@
   (:require
     ["react-native" :refer (DevSettings LogBox)]
     [react-native.platform :as platform]
+    [status-im2.setup.schema :as schema]
     [utils.re-frame :as rf]))
 
 ;; Ignore all logs, because there are lots of temporary warnings when developing and hot reloading
@@ -45,10 +46,11 @@
                            :group-chats/extract-membership-signature
                            :utils/dispatch-later
                            :json-rpc/call})
-
-  (when (and js/goog.DEBUG platform/ios? DevSettings)
-    ;;on Android this method doesn't work
-    (when-let [nm (.-_nativeModule DevSettings)]
-      ;;there is a bug in RN, so we have to enable it first and then disable
-      (.setHotLoadingEnabled ^js nm true)
-      (js/setTimeout #(.setHotLoadingEnabled ^js nm false) 1000))))
+  (when ^:boolean js/goog.DEBUG
+    (schema/setup!)
+    (when (and platform/ios? DevSettings)
+      ;;on Android this method doesn't work
+      (when-let [nm (.-_nativeModule DevSettings)]
+        ;;there is a bug in RN, so we have to enable it first and then disable
+        (.setHotLoadingEnabled ^js nm true)
+        (js/setTimeout #(.setHotLoadingEnabled ^js nm false) 1000)))))
