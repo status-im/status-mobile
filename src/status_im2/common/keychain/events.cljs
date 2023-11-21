@@ -96,23 +96,27 @@
       (log/error
        (str "Error while setting up keychain migration")))))
 
-(re-frame/reg-fx
- :keychain/get-migration-auth-hashed
- (fn [[key-uid callback]]
-   (keychain/get-credentials
-    (str key-uid migration-server-suffix)
-    #(callback (boolean %)))))
+(defn get-migration-auth-hashed!
+  [key-uid callback]
+  (keychain/get-credentials
+   (str key-uid migration-server-suffix)
+   #(callback (boolean %))))
 
 (defn save-user-password!
   [key-uid password]
   (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
 
+(defn get-user-password!
+  [key-uid callback]
+  (keychain/get-credentials key-uid
+                            #(if %
+                               (callback (security/mask-data (oops/oget % "password")))
+                               (callback nil))))
+
 (re-frame/reg-fx
  :keychain/get-user-password
  (fn [[key-uid callback]]
-   (keychain/get-credentials
-    key-uid
-    #(if % (callback (security/mask-data (oops/oget % "password"))) (callback nil)))))
+   (get-user-password! key-uid callback)))
 
 (rf/defn get-user-password
   [_ key-uid callback]
@@ -132,3 +136,21 @@
        (.then #(save-migration-auth-hashed! key-uid))
        (.then #(when on-success (on-success)))
        (.catch #(when on-error (on-error %))))))
+
+;; NOTE: migrating the plaintext password in the keychain
+;; with the hashed one. Added due to the sync onboarding
+;; flow, where the password arrives already hashed.
+(re-frame/reg-fx
+ :keychain/password-hash-migration
+ (fn [{:keys [key-uid callback]}]
+   (-> (get-migration-auth-hashed! key-uid identity)
+       (.then (fn [pw-already-hashed?]
+                (if pw-already-hashed?
+                  (callback)
+                  (-> (get-user-password! key-uid identity)
+                      (.then #(security/hash-masked-password %))
+                      (.then #(save-user-password! key-uid %))
+                      (.then #(save-migration-auth-hashed! key-uid))
+                      (.then #(callback))
+                      (.catch #(log/error "Failed to migrate the keychain password for " key-uid
+                                          "\nError: "                                    %)))))))))
