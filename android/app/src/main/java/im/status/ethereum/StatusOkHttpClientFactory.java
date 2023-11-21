@@ -27,18 +27,23 @@ class StatusOkHttpClientFactory implements OkHttpClientFactory {
       X509Certificate cert = null;
       HandshakeCertificates clientCertificates;
       String certPem = "";
+      // Get TLS PEM certificate from status-go
+      try {
+         // induce half second sleep because sometimes a cert is not immediately available
+         // TODO : remove sleep if App no longer crashes on Android 10 devices with
+         // java.lang.RuntimeException: Could not invoke WebSocketModule.connect
+         Thread.sleep(500);
+         certPem = getCertificatePem();
+      } catch(Exception e) {
+          Log.e(TAG, "Could not getImageTLSCert",e);
+      }
 
-    // Get TLS PEM certificate from status-go
-    try {
-        // induce half second sleep because sometimes a cert is not immediately available
-        // TODO : remove sleep if App no longer crashes on Android 10 devices with
-        // java.lang.RuntimeException: Could not invoke WebSocketModule.connect
-        Thread.sleep(500);
-        certPem = StatusPackage.getImageTLSCert();
-    } catch(Exception e) {
-        Log.e(TAG, "Could not getImageTLSCert",e);
-    }
-    // Convert PEM certificate string to X509Certificate object
+      if (certPem.isEmpty()) {
+          Log.e(TAG, "Certificate is empty, cannot create OkHttpClient without a valid certificate");
+          return null;
+      }
+
+      // Convert PEM certificate string to X509Certificate object
     try {
       // induce half second sleep because sometimes a cert is not immediately available
       // TODO : remove sleep if App no longer crashes on Android 10 devices
@@ -74,4 +79,17 @@ class StatusOkHttpClientFactory implements OkHttpClientFactory {
       return null;
     }
   }
+    private String getCertificatePem() {
+        try {
+            String certPem = StatusPackage.getImageTLSCert();
+            if (certPem == null || certPem.trim().isEmpty()) {
+                Log.e(TAG, "Certificate PEM string is null or empty");
+                return "";
+            }
+            return certPem;
+        } catch (Exception e) {
+            Log.e(TAG, "Could not getImageTLSCert", e);
+            return "";
+        }
+    }
 }
