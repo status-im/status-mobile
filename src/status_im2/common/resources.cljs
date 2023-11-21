@@ -79,7 +79,19 @@
     :dark  (js/require "../resources/images/ui2/no-contacts-to-invite-dark.png")}
    :no-notifications
    {:light (js/require "../resources/images/ui2/no-notifications-light.png")
-    :dark  (js/require "../resources/images/ui2/no-notifications-dark.png")}})
+    :dark  (js/require "../resources/images/ui2/no-notifications-dark.png")}
+   :no-activity
+   {:light (js/require "../resources/images/ui2/no-activity-light.png")
+    :dark  (js/require "../resources/images/ui2/no-activity-dark.png")}
+   :no-collectibles
+   {:light (js/require "../resources/images/ui2/no-collectibles-light.png")
+    :dark  (js/require "../resources/images/ui2/no-collectibles-dark.png")}
+   :no-dapps
+   {:light (js/require "../resources/images/ui2/no-dapps-light.png")
+    :dark  (js/require "../resources/images/ui2/no-dapps-dark.png")}
+   :no-permissions
+   {:light (js/require "../resources/images/ui2/no-permissions-light.png")
+    :dark  (js/require "../resources/images/ui2/no-permissions-dark.png")}})
 
 (def mock-images
   {:bored-ape             (js/require "../resources/images/mock2/bored-ape.png")
