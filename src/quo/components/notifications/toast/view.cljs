@@ -77,9 +77,9 @@
     :or   {type :neutral}}]
   (let [context-theme (or theme (quo.theme/get-theme))
         icon-name     (case type
-                        :positive "incorrect"
-                        :negative "correct"
-                        :neutral  "placeholder")]
+                        :positive :i/incorrect
+                        :negative :i/correct
+                        :neutral  :i/placeholder)]
     [quo.theme/provider {:theme context-theme}
      [toast-container
       {:left            (cond icon-name
