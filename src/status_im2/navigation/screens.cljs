@@ -49,6 +49,7 @@
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
+    [status-im2.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
@@ -286,6 +287,11 @@
 
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
+
+    {:name      :wallet-send-input-amount
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-send-input-amount/view}
 
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}

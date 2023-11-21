@@ -1,0 +1,8 @@
+(ns status-im2.contexts.wallet.send.input-amount.style)
+
+(def screen
+  {:flex 1})
+
+(def input-container
+  {:padding-top    12
+   :padding-bottom 0})
