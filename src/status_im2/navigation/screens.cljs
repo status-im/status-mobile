@@ -293,6 +293,7 @@
      :component wallet-select-address/view}
 
     {:name      :wallet-select-asset
+     :options   {:insets {:top? true}}
      :component wallet-select-asset/view}
 
     {:name      :scan-address
