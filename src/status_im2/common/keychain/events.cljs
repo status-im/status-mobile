@@ -82,6 +82,25 @@
          #(callback (if % (oops/oget % "password") auth-method-none)))
         (callback nil))))))
 
+(defn save-migration-auth-hashed!
+  [key-uid]
+  (keychain/save-credentials
+   (str key-uid "-hashed")
+   key-uid
+   ;; NOTE: using the key-id as the password, but we don't really care about the
+   ;; value, we only care that it's there
+   key-uid
+   #(when-not %
+      (log/error
+       (str "Error while setting up keychain migration")))))
+
+(re-frame/reg-fx
+ :keychain/get-migration-auth-hashed
+ (fn [[key-uid callback]]
+   (keychain/get-credentials
+    (str key-uid "-hashed")
+    #(callback (boolean %)))))
+
 (defn save-user-password!
   [key-uid password]
   (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
@@ -107,5 +126,6 @@
  (fn [{:keys [key-uid masked-password on-success on-error]}]
    (-> (save-user-password! key-uid masked-password)
        (.then #(save-auth-method! key-uid auth-method-biometric))
+       (.then #(save-migration-auth-hashed! key-uid))
        (.then #(when on-success (on-success)))
        (.catch #(when on-error (on-error %))))))

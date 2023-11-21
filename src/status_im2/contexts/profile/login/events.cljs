@@ -42,6 +42,13 @@
     {:db     (assoc-in db [:profile/login :processing] true)
      ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
+(rf/defn biometry-login
+  {:events [:profile.login/biometry-login]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid password]} (:profile/login db)]
+    {:db     (assoc-in db [:profile/login :processing] true)
+     ::login [key-uid (security/safe-unmask-data password)]}))
+
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
@@ -149,14 +156,45 @@
   {:keychain/get-auth-method [key-uid
                               #(rf/dispatch [:profile.login/get-auth-method-success % key-uid])]})
 
+;; NOTE: replacing the plaintext password in the keychain with the hashed one
+(rf/defn migrate-biometrics-keychain-password
+  {:events [:profile.login/migrate-biometrics-keychain-password]}
+  [_ key-uid callback]
+  {:keychain/get-user-password
+   [key-uid
+    (fn [password]
+      (-> password
+          security/safe-unmask-data
+          native-module/sha3
+          security/mask-data
+          (->> (keychain/save-user-password! key-uid))
+          (.then #(keychain/save-migration-auth-hashed! key-uid))
+          (.then #(callback))
+          (.catch #(log/error "Failed to migrate the keychain for " key-uid))))]})
+
+(rf/defn check-biometrics-keychain-migration
+  {:events [:profile.login/check-biometrics-keychain-migration]}
+  [_ key-uid callback]
+  {:keychain/get-migration-auth-hashed
+   [key-uid
+    (fn [hashed?]
+      (println "hashed?: " hashed?)
+      (if hashed?
+        (callback)
+        (rf/dispatch [:profile.login/migrate-biometrics-keychain-password key-uid callback])))]})
+
 (rf/defn get-auth-method-success
   {:events [:profile.login/get-auth-method-success]}
-  [{:keys [db]} auth-method]
-  (merge {:db (assoc db :auth-method auth-method)}
-         (when (= auth-method keychain/auth-method-biometric)
-           {:biometric/authenticate
-            {:on-success #(rf/dispatch [:profile.login/biometric-success])
-             :on-faile   #(rf/dispatch [:profile.login/biometric-auth-fail])}})))
+  [{:keys [db] :as cofx} auth-method key-uid]
+  (rf/merge cofx
+            {:db (assoc db :auth-method auth-method)}
+            (when (= auth-method keychain/auth-method-biometric)
+              (check-biometrics-keychain-migration
+               key-uid
+               (fn []
+                 (rf/dispatch [:biometric/authenticate
+                               {:on-success #(rf/dispatch [:profile.login/biometric-success])
+                                :on-faile   #(rf/dispatch [:profile.login/biometric-auth-fail])}]))))))
 
 (rf/defn biometric-auth-success
   {:events [:profile.login/biometric-success]}
@@ -175,7 +213,7 @@
      cofx
      {:db (assoc-in db [:profile/login :password] password)}
      (navigation/init-root :progress)
-     (login))))
+     (biometry-login))))
 
 (rf/defn biometric-auth-fail
   {:events [:profile.login/biometric-auth-fail]}

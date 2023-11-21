@@ -154,7 +154,10 @@
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         key-uid
-              :masked-password masked-password
+              :masked-password (-> masked-password
+                                   security/safe-unmask-data
+                                   native-module/sha3
+                                   security/mask-data)
               :on-success      (fn []
                                  (if syncing?
                                    (rf/dispatch [:onboarding-2/navigate-to-enable-notifications])
