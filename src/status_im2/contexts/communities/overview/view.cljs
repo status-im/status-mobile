@@ -5,11 +5,13 @@
     [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
     [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.common.home.actions.view :as actions]
     [status-im2.common.password-authentication.view :as password-authentication]
     [status-im2.common.scroll-page.style :as scroll-page.style]
     [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.common.top-bar.view :as top-bar]
     [status-im2.constants :as constants]
     [status-im2.contexts.communities.actions.chat.view :as chat-actions]
     [status-im2.contexts.communities.actions.community-options.view :as options]
@@ -84,20 +86,20 @@
                   (into #{} (map (comp :name second) channels-list)))
     :style     {:margin-top 8 :flex 1}}
    (for [[category-id {:keys [chats name collapsed?]}] channels-list]
-       [rn/view
-        {:key       category-id
-         ;; on-layout fires only when the component re-renders, so
-         ;; in case the category hasn't changed, it will not be fired
-         :on-layout #(on-category-layout name (int (layout-y %)))}
-        (when-not (= constants/empty-category-id category-id)
-          [quo/divider-label
-           {:on-press     #(collapse-category community-id category-id collapsed?)
-            :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
-            :chevron      :left}
-           name])
-        (when-not collapsed?
-          [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}
-                (for [chat chats]
+     [rn/view
+      {:key       category-id
+       ;; on-layout fires only when the component re-renders, so
+       ;; in case the category hasn't changed, it will not be fired
+       :on-layout #(on-category-layout name (int (layout-y %)))}
+      (when-not (= constants/empty-category-id category-id)
+        [quo/divider-label
+         {:on-press     #(collapse-category community-id category-id collapsed?)
+          :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
+          :chevron      :left}
+         name])
+      (when-not collapsed?
+        [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}
+         (for [chat chats]
            ^{:key (:id chat)}
            [channel-chat-item community-id community-color chat])])])])
 
@@ -214,10 +216,10 @@
     chat
     (when (and (not locked?) id)
       {:on-press      (when joined
-                       (fn []
-                        (rf/dispatch [:dismiss-keyboard])
-                        (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)]
-                                                      1000)))
+                        (fn []
+                          (rf/dispatch [:dismiss-keyboard])
+                          (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)]
+                                                       1000)))
        :on-long-press #(rf/dispatch
                          [:show-bottom-sheet
                           {:content (fn []
@@ -336,16 +338,16 @@
           :height           148
           :overlay-shown?   overlay-shown?
           :background-color (colors/theme-colors colors/white colors/neutral-95)
-          :page-nav-props {:type           :community
-                           :right-side     (page-nav-right-section-buttons id)
-                           :community-name name
-                           :community-logo logo}
-          :sticky-header  [sticky-category-header
-                           {:enabled (> @scroll-height @first-channel-height)
-                            :label   (pick-first-category-by-height
-                                       @scroll-height
-                                       @first-channel-height
-                                       @categories-heights)}]}
+          :page-nav-props   {:type           :community
+                             :right-side     (page-nav-right-section-buttons id)
+                             :community-name name
+                             :community-logo logo}
+          :sticky-header    [sticky-category-header
+                             {:enabled (> @scroll-height @first-channel-height)
+                              :label   (pick-first-category-by-height
+                                         @scroll-height
+                                         @first-channel-height
+                                         @categories-heights)}]}
          [community-content
           community
           pending?
@@ -365,7 +367,7 @@
         pending? (rf/sub [:communities/my-pending-request-to-join id])]
     [community-scroll-page community pending?]))
 
-(defn overview-old
+(defn overview
   [id]
   (let [id (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])]
@@ -378,12 +380,31 @@
       {:position :absolute
        :bottom   34}]]))
 
-(defn community-overview-view [{:keys [id community customization-color chats-by-category]}]
+(defn list-header [{:keys [scroll-y theme]}]
+  [top-bar/abstract-list-header
+   {:inverted-y-on-android? false
+    :show?                  true
+    :theme                  theme
+    :cover-bg-color         :red
+    :scroll-y               scroll-y
+    :on-layout              (fn []
+                              )
+    :avatar-component       (fn []
+                              )
+    :title-component        (fn []
+                              )
+    :description            "test"
+    :actions-component      (fn []
+                              )
+    :loading-component      (fn []
+                              )
+    }])
+
+(defn overview-content-view [{:keys [id community customization-color chats-by-category
+                                     scroll-y content-height]}]
   (let [categories-heights (reagent/atom {})
         first-channel-height (reagent/atom 0)]
     [rn/scroll-view
-
-
      [channel-list-component
       {:on-category-layout              (partial add-category-height categories-heights)
        :community-id                    id
@@ -391,16 +412,21 @@
        :on-first-channel-height-changed (fn [height categories]
                                           (swap! categories-heights select-keys categories)
                                           (reset! first-channel-height height))}
-      (add-handlers-to-categorized-chats id chats-by-category)]]))
+      (add-handlers-to-categorized-chats id chats-by-category (:joined community))]]))
 
-(defn overview
+(defn overview-old
   [id]
-  (let [id (or id (rf/sub [:get-screen-params :community-overview]))
+  (let [scroll-y (reanimated/use-shared-value 0)
+        content-height (reanimated/use-shared-value 0)
+        id (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])
         community (rf/sub [:communities/community id])
         chats-by-category (rf/sub [:communities/categorized-channels id])]
     [rn/view {:style style/community-overview-container}
-     [community-overview-view {:id                  id
-                               :customization-color customization-color
-                               :community           community
-                               :chats-by-category   chats-by-category}]]))
+     [overview-content-view
+      {:id                  id
+       :customization-color customization-color
+       :community           community
+       :chats-by-category   chats-by-category
+       :scroll-y            scroll-y
+       :content-height      content-height}]]))
