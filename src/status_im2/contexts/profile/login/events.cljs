@@ -195,7 +195,7 @@
                (fn []
                  (rf/dispatch [:biometric/authenticate
                                {:on-success #(rf/dispatch [:profile.login/biometric-success])
-                                :on-faile   #(rf/dispatch [:profile.login/biometric-auth-fail])}]))))))
+                                :on-fail    #(rf/dispatch [:profile.login/biometric-auth-fail])}]))))))
 
 (rf/defn biometric-auth-success
   {:events [:profile.login/biometric-success]}
