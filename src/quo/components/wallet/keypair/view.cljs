@@ -20,11 +20,6 @@
   (let [first-name (first (string/split full-name #" "))]
     (i18n/label :t/keypair-title {:name first-name})))
 
-(defn details-string
-  [address stored]
-  (str (when address (str address " ∙ "))
-       (if (= stored :on-device) (i18n/label :t/on-device) (i18n/label :t/on-keycard))))
-
 (defn avatar
   [{{:keys [full-name]} :details
     avatar-type         :type
