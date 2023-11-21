@@ -81,27 +81,6 @@
          (str key-uid "-auth")
          #(callback (if % (oops/oget % "password") auth-method-none)))
         (callback nil))))))
-
-(def ^:const migration-server-suffix "-hashed")
-
-(defn save-migration-auth-hashed!
-  [key-uid]
-  (keychain/save-credentials
-   (str key-uid migration-server-suffix)
-   key-uid
-   ;; NOTE: using the key-id as the password, but we don't really care about the
-   ;; value, we only care that it's there
-   key-uid
-   #(when-not %
-      (log/error
-       (str "Error while setting up keychain migration")))))
-
-(defn get-migration-auth-hashed!
-  [key-uid callback]
-  (keychain/get-credentials
-   (str key-uid migration-server-suffix)
-   #(callback (boolean %))))
-
 (defn save-user-password!
   [key-uid password]
   (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
@@ -122,10 +101,32 @@
   [_ key-uid callback]
   {:keychain/get-user-password [key-uid callback]})
 
+(defn- password-migration-key-name
+  [key-uid]
+  (str key-uid "-password-migration"))
+
+(defn save-password-migration!
+  [key-uid]
+  (keychain/save-credentials
+   (password-migration-key-name key-uid)
+   key-uid
+   ;; NOTE: using the key-id as the password, but we don't really care about the
+   ;; value, we only care that it's there
+   key-uid
+   #(when-not %
+      (log/error
+       (str "Error while setting up keychain migration")))))
+
+(defn get-password-migration!
+  [key-uid callback]
+  (keychain/get-credentials
+   (password-migration-key-name key-uid)
+   #(callback (boolean %))))
+
 (re-frame/reg-fx
  :keychain/clear-user-password
  (fn [key-uid]
-   (keychain/reset-credentials (str key-uid migration-server-suffix))
+   (keychain/reset-credentials (password-migration-key-name key-uid))
    (keychain/reset-credentials key-uid)))
 
 (re-frame/reg-fx
@@ -133,7 +134,7 @@
  (fn [{:keys [key-uid masked-password on-success on-error]}]
    (-> (save-user-password! key-uid masked-password)
        (.then #(save-auth-method! key-uid auth-method-biometric))
-       (.then #(save-migration-auth-hashed! key-uid))
+       (.then #(save-password-migration! key-uid))
        (.then #(when on-success (on-success)))
        (.catch #(when on-error (on-error %))))))
 
@@ -143,14 +144,14 @@
 (re-frame/reg-fx
  :keychain/password-hash-migration
  (fn [{:keys [key-uid callback]}]
-   (-> (get-migration-auth-hashed! key-uid identity)
-       (.then (fn [pw-already-hashed?]
-                (if pw-already-hashed?
+   (-> (get-password-migration! key-uid identity)
+       (.then (fn [migrated?]
+                (if migrated?
                   (callback)
                   (-> (get-user-password! key-uid identity)
                       (.then #(security/hash-masked-password %))
                       (.then #(save-user-password! key-uid %))
-                      (.then #(save-migration-auth-hashed! key-uid))
+                      (.then #(save-password-migration! key-uid))
                       (.then #(callback))
                       (.catch #(log/error "Failed to migrate the keychain password for " key-uid
                                           "\nError: "                                    %)))))))))
