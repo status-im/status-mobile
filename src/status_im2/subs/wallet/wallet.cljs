@@ -68,7 +68,7 @@
  (fn [[account networks] [_ query]]
    (let [tokens (map (fn [token]
                        (assoc token
-                              :networks           (utils/network-names token networks)
+                              :networks           (utils/network-list token networks)
                               :total-balance      (utils/total-token-value-in-all-chains token)
                               :total-balance-fiat (utils/calculate-balance token)))
                      (:tokens account))

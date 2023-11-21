@@ -44,8 +44,11 @@
                  (-> token :market-values-per-currency :usd :price))))
        (reduce +)))
 
-(defn network-names
+(defn network-list
   [{:keys [balances-per-chain]} networks]
-  (mapv (fn [chain-id]
-          (first (filter #(= (:chain-id %) chain-id) networks)))
-        (keys balances-per-chain)))
+  (into #{}
+        (mapv (fn [chain-id]
+                (first (filter #(or (= (:chain-id %) chain-id)
+                                    (= (:related-chain-id %) chain-id))
+                               networks)))
+              (keys balances-per-chain))))
