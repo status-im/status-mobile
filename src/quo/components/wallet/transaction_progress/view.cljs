@@ -119,23 +119,21 @@
 
 (defn text-steps
   [network state epoch-number counter]
-  (cond
-    (and (= network :mainnet)
-         (not= state :finalized)
-         (not= state :error))   (str (if (< counter 4)
-                                       counter
-                                       "4")
-                                     "/4")
-    (= state :finalized)        (i18n/label :t/epoch-number {:number epoch-number})
-    (and (= network :mainnet)
-         (= state :error))      "0/4"
-    (and (= network :arbitrum)
-         (= state :confirmed))  "0/1"
-    (and (not= network :mainnet)
-         (= state :finalising)) "1/1"
-    (and (= network :arbitrum)
-         (= state :sending))    "0/1"
-    (not= network :mainnet)     "0/1"))
+  (let [steps  (case network
+                :mainnet {:pending    "0/4"
+                          :sending    (str (if (< counter 4) counter "4") "/4")
+                          :confirmed  (str (if (< counter 4) counter "4") "/4")
+                          :finalising (str (if (< counter 4) counter "4") "/4")
+                          :finalized  (i18n/label :t/epoch-number {:number epoch-number})
+                          :error      "0/4"}
+                (or :optimism :arbitrum :optimism-arbitrum) {:pending    "0/1"
+                                                             :sending    "0/1"
+                                                             :confirmed  "0/1"
+                                                             :finalising "1/1"
+                                                             :finalized  (i18n/label :t/epoch-number {:number epoch-number})
+                                                             :error      "0/1"}
+                 nil)]
+    (get-in steps [state])))
 
 (defn get-status-icon
   [theme network state]
