@@ -1,6 +1,7 @@
 (ns utils.security.core
   (:require
     [native-module.core :as native-module]
+    [schema.core :as schema]
     [utils.security.security-html :as h]))
 
 (defprotocol Unmaskable
@@ -60,7 +61,21 @@
   [text]
   (not (re-matches rtlo-link-regex text)))
 
-(def hash-masked-password
-  (comp mask-data
-        native-module/sha3
-        safe-unmask-data))
+(defn hash-masked-password
+  [masked-password]
+  (-> masked-password
+      safe-unmask-data
+      native-module/sha3
+      mask-data))
+
+(defn masked-data-instance?
+  [value]
+  (instance? MaskedData value))
+
+(schema/=> hash-masked-password
+  [:=>
+   [:cat
+    [:fn {:error/message "argument should be an instance of MaskedData"}
+     masked-data-instance?]]
+   [:fn {:error/message "return value should be an instance of MaskedData"}
+    masked-data-instance?]])

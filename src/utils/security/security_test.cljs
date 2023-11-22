@@ -51,6 +51,5 @@
   (testing "returns an instance of MaskedData with the hashed content"
     (is (= (-> "test" native-module/sha3 security/mask-data)
            (-> "test" security/mask-data security/hash-masked-password))))
-  (testing "returns the hashed content if the argument is not a MaskedData instance"
-    (is (= (native-module/sha3 "test")
-           (-> "test" security/hash-masked-password security/safe-unmask-data)))))
+  (testing "throws a schema exception if the argument is not an instance of MaskedData"
+    (is (thrown? js/Error (security/hash-masked-password "test")))))
