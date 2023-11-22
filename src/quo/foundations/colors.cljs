@@ -285,10 +285,6 @@
       (get-in colors-map [color suffix]))))
 
 (defn- resolve-color*
-  "(resolve-color color theme opacity)
-   color   hex string or keyword (resolves from custom, network and semantic colors)
-   theme  :light/:dark
-   opacity 0-100 (optional) - if set theme is ignored and goes to 50 suffix internally"
   ([color theme]
    (resolve-color* color theme nil))
   ([color theme opacity]
@@ -300,7 +296,12 @@
        suffix  (get-from-colors-map suffix)
        opacity (alpha (/ opacity 100))))))
 
-(def resolve-color (memoize resolve-color*))
+(def resolve-color
+  "(resolve-color color theme opacity)
+   color   hex string or keyword (resolves from custom, network and semantic colors)
+   theme  :light/:dark
+   opacity 0-100 (optional) - if set theme is ignored and goes to 50 suffix internally"
+  (memoize resolve-color*))
 
 (def ^{:deprecated true :superseded-by "resolve-color"}
      custom-color
