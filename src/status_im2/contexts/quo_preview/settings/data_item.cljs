@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.settings.data-item
   (:require
     [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -50,6 +51,7 @@
                              :right-icon          :i/chevron-right
                              :emoji               "🎮"
                              :customization-color :yellow
+                             :network-image       (quo.resources/get-network :ethereum)
                              :communities-list    communities-list})]
     (fn []
       [preview/preview-container
