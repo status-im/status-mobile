@@ -1,6 +1,7 @@
 (ns utils.security.security-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
+    [native-module.core :as native-module]
     [utils.security.core :as security]))
 
 (def rtlo-link "‮http://google.com")
@@ -29,3 +30,27 @@
 (deftest safe-link-text-test-exceptions
   (testing "rtlo links"
     (is (not (security/safe-link-text? rtlo-link-text)))))
+
+(deftest mask-data-test
+  (testing "returns an instance of MaskedData"
+    (is (instance? security/MaskedData (security/mask-data "test"))))
+  (testing "hides the original value"
+    (is (= "******" (str (security/mask-data "test")))))
+  (testing "succeeds the equality check between same MaskedData instances"
+    (is (= (security/mask-data "value") (security/mask-data "value"))))
+  (testing "fails the equality check between different MaskedData instances"
+    (is (not (= (security/mask-data "value-A") (security/mask-data "value-B")))))
+  (testing "fails the equality check with non-MaskedData instances"
+    (is (not (= (security/mask-data "value") "value"))))
+  (testing "counts the masked data correctly"
+    (is (= (count "test") (count (security/mask-data "test")))))
+  (testing "unmasks the data correctly"
+    (is (= "test" (-> "test" security/mask-data security/safe-unmask-data)))))
+
+(deftest hash-masked-password-test
+  (testing "returns an instance of MaskedData with the hashed content"
+    (is (= (-> "test" native-module/sha3 security/mask-data)
+           (-> "test" security/mask-data security/hash-masked-password))))
+  (testing "returns the hashed content if the argument is not a MaskedData instance"
+    (is (= (native-module/sha3 "test")
+           (-> "test" security/hash-masked-password security/safe-unmask-data)))))

@@ -61,6 +61,6 @@
   (not (re-matches rtlo-link-regex text)))
 
 (def hash-masked-password
-  (comp safe-unmask-data
+  (comp mask-data
         native-module/sha3
-        mask-data))
+        safe-unmask-data))
