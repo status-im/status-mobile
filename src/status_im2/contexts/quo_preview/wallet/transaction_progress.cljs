@@ -18,6 +18,8 @@
    {:type    :select
     :key     :network
     :options [{:key :mainnet}
+              {:key :arbitrum}
+              {:key :optimism}
               {:key :optimism-arbitrum}]}
    {:type    :select
     :key     :state

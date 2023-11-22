@@ -213,6 +213,12 @@
                           [progress-boxes-arbitrum state :arbitrum false]
                           [status-row theme state :optimism epoch-number @counter]
                           [progress-boxes-arbitrum state :optimism true]]
+      :arbitrum          [:<>
+                          [status-row theme state :arbitrum epoch-number @counter]
+                          [progress-boxes-arbitrum state :arbitrum false]]
+      :optimism          [:<>
+                          [status-row theme state :optimism epoch-number @counter]
+                          [progress-boxes-arbitrum state :optimism true]]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))
