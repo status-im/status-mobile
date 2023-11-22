@@ -8,6 +8,10 @@
     [utils.re-frame :as rf]
     [utils.url :as url]))
 
+;; these constants are used when there is no width or height defined for a specific image
+(def ^:const fallback-image-width 1000)
+(def ^:const fallback-image-height 1000)
+
 (defn calculate-dimensions
   [width height max-container-width max-container-height]
   (let [max-width  (if (> width height) max-container-width (* 1.5 constants/image-size))
@@ -15,7 +19,12 @@
     {:width (min width max-width) :height (min height max-height)}))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} {:keys [on-long-press]}
+  [index
+   {:keys [content image-width image-height message-id]
+    :as   message
+    :or   {image-width  fallback-image-width
+           image-height fallback-image-height}}
+   {:keys [on-long-press]}
    message-container-data]
   (let [insets                        (safe-area/get-insets)
         {:keys [window-width padding-left padding-right avatar-container-width
