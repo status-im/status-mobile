@@ -23,7 +23,7 @@
   [input-value input-focused?]
   (fn []
     (let [scanned-address       (rf/sub [:wallet/scanned-address])
-          send-address          (rf/sub [:wallet/send-address])
+          send-address          (rf/sub [:wallet/wallet-send-to-address])
           valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])
           chain-id              (rf/sub [:chain-id])
           contacts              (rf/sub [:contacts/active])]
@@ -76,7 +76,10 @@
        _ _]
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
-                                    (when-not ens (rf/dispatch [:wallet/select-send-address address]))))
+                                    (when-not ens
+                                      (rf/dispatch [:wallet/select-send-address
+                                                    {:address  address
+                                                     :stack-id :wallet-select-address}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -151,7 +154,9 @@
                 :type                :primary
                 :disabled?           (not valid-ens-or-address?)
                 :container-style     style/button
-                :on-press            #(js/alert "Not implemented yet")}
+                :on-press            #(rf/dispatch [:wallet/select-send-address
+                                                    {:address  @input-value
+                                                     :stack-id :wallet-select-address}])}
                (i18n/label :t/continue)])]
            [:<>
             [quo/tabs

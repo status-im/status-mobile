@@ -17,7 +17,7 @@
 (deftest clean-scanned-address
   (let [db {:wallet/scanned-address address}]
     (testing "clean-scanned-address"
-      (let [expected-db {}
+      (let [expected-db {:wallet {:ui {:send nil}}}
             effects     (events/clean-scanned-address {:db db})
             result-db   (:db effects)]
         (is (match? result-db expected-db))))))
