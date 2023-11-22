@@ -19,10 +19,13 @@
 (defn- asset-component
   []
   (fn [token _ _ _]
-    (let [on-press                #(js/alert "Not implemented yet")
+    (let [on-press
+          #(if (= (:symbol token) "ETH")
+             (rf/dispatch [:wallet/send-select-token token :wallet-select-asset])
+             (js/alert "Only ETH transfers are allowed."))
           total-balance-formatted (.toFixed (:total-balance token) 2)
-          balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
-          currency-symbol         "$"]
+          balance-fiat-formatted (.toFixed (:total-balance-fiat token) 2)
+          currency-symbol "$"]
       [quo/token-network
        {:token       (quo.resources/get-token (keyword (string/lower-case (:symbol token))))
         :label       (:name token)

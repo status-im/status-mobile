@@ -43,7 +43,7 @@
                      :align-items    :flex-end}}
          [rn/image
           {:style  style/token
-           :source (resources/get-token token)}]
+           :source (resources/get-token (keyword (string/lower-case token)))}]
          [rn/text-input
           (cond-> {:auto-focus               true
                    :ref                      #(reset! input-ref %)

@@ -17,7 +17,13 @@
                              :short-name       "eth"
                              :network-name     :ethereum
                              :chain-id         1
-                             :related-chain-id 5}]})
+                             :related-chain-id 5}]
+   :wallet                 {:ui {:send {:token {:symbol                    "ETH"
+                                                :decimals                  18
+                                                :total-balance             1
+                                                :total-balance-fiat        10
+                                                :loading-suggested-routes? false
+                                                :route                     {}}}}}})
 
 (h/describe "Send > input amount screen"
   (h/test "Default render"
