@@ -377,8 +377,8 @@
 
 ;;;; Text combinations
 (def channel-name quo.components.text-combinations.channel-name.view/view)
-(def text-combinations quo.components.text-combinations.view/view)
 (def standard-title quo.components.text-combinations.standard-title.view/view)
+(def text-combinations quo.components.text-combinations.view/view)
 
 ;;;; Wallet
 (def account-card quo.components.wallet.account-card.view/view)
