@@ -85,7 +85,7 @@
 (defn progress-boxes-arbitrum-optimism
   [state network bottom-large?]
   [rn/view
-   {:accessibility-label :arbitrum-progress-box
+   {:accessibility-label :progress-box
     :style               (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-network-left state network)
@@ -202,7 +202,8 @@
 
 (defn view-internal
   [{:keys [title on-press accessibility-label network state theme tag-photo tag-name tag-number
-           epoch-number counter total-box]}]
+           epoch-number counter total-box]
+    :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
