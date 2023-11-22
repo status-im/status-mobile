@@ -1,7 +1,6 @@
 (ns status-im2.contexts.onboarding.enable-biometrics.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im2.common.biometric.events :as biometric]
@@ -25,7 +24,7 @@
     :description-accessibility-label :enable-biometrics-sub-title}])
 
 (defn enable-biometrics-buttons
-  [insets theme]
+  [insets]
   (let [supported-biometric-type (rf/sub [:biometric/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
         profile-color            (or (:color (rf/sub [:onboarding-2/profile]))
@@ -37,7 +36,6 @@
        :accessibility-label :enable-biometrics-button
        :icon-left           :i/face-id
        :customization-color profile-color
-       :theme               theme
        :on-press            #(rf/dispatch [:onboarding-2/enable-biometrics])
        :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}]
      [quo/button
@@ -67,18 +65,16 @@
       :source      (resources/get-image :biometrics)}]))
 
 (defn f-enable-biometrics
-  [{:keys [theme]}]
+  []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [page-title]
      (if whitelist/whitelisted?
        [enable-biometrics-parallax]
        [enable-biometrics-simple])
-     [enable-biometrics-buttons insets theme]]))
+     [enable-biometrics-buttons insets]]))
 
+(defn view
+  []
+  [:f> f-enable-biometrics])
 
-(defn- internale-enable-biometrics
-  [params]
-  [:f> f-enable-biometrics params])
-
-(def view (quo.theme/with-theme internale-enable-biometrics))
