@@ -72,10 +72,11 @@
   [value]
   (instance? MaskedData value))
 
+(def ?masked-password
+  [:fn {:error/message "should be an instance of utils.security.core/MaskedData"}
+   masked-data-instance?])
+
 (schema/=> hash-masked-password
   [:=>
-   [:cat
-    [:fn {:error/message "argument should be an instance of MaskedData"}
-     masked-data-instance?]]
-   [:fn {:error/message "return value should be an instance of MaskedData"}
-    masked-data-instance?]])
+   [:cat ?masked-password]
+   ?masked-password])
