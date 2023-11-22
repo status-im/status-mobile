@@ -50,7 +50,7 @@
                 :customization-color :blue
                 :key                 n}])))])
 
-(defn calculate-box-state-arbitrum-left
+(defn calculate-box-state-network-left
   [state network]
   (cond
     (= state :error)                                                     :error
@@ -58,7 +58,7 @@
     (or (= state :confirmed) (= state :finalising) (= state :finalized)) :confirmed
     :else                                                                :pending))
 
-(defn calculate-box-state-arbitrum-right
+(defn calculate-box-state-network-right
   [state network]
   (cond
     (= state :error)
@@ -80,16 +80,16 @@
     :finalized  100
     0))
 
-(defn progress-boxes-arbitrum
+(defn progress-boxes-arbitrum-optimism
   [state network bottom-large?]
   [rn/view
    {:accessibility-label :arbitrum-progress-box
     :style               (style/progress-box-container bottom-large?)}
    [progress-box/view
-    {:state               (calculate-box-state-arbitrum-left state network)
+    {:state               (calculate-box-state-network-left state network)
      :customization-color :blue}]
    [progress-box/view
-    {:state               (calculate-box-state-arbitrum-right state network)
+    {:state               (calculate-box-state-network-right state network)
      :full-width?         true
      :progressed-value    (calculate-progressed-value state network)
      :customization-color :blue}]])
@@ -211,15 +211,12 @@
                           [progress-boxes state @counter total-box]]
       :optimism-arbitrum [:<>
                           [status-row theme state :arbitrum epoch-number @counter]
-                          [progress-boxes-arbitrum state :arbitrum false]
+                          [progress-boxes-arbitrum-optimism state :arbitrum false]
                           [status-row theme state :optimism epoch-number @counter]
-                          [progress-boxes-arbitrum state :optimism true]]
-      :arbitrum          [:<>
-                          [status-row theme state :arbitrum epoch-number @counter]
-                          [progress-boxes-arbitrum state :arbitrum false]]
-      :optimism          [:<>
-                          [status-row theme state :optimism epoch-number @counter]
-                          [progress-boxes-arbitrum state :optimism true]]
+                          [progress-boxes-arbitrum-optimism state :optimism true]]
+      (or :arbitrum :optimism) [:<>
+                                [status-row theme state network epoch-number @counter]
+                                [progress-boxes-arbitrum-optimism state network true]]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))
