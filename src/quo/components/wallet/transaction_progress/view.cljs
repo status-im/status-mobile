@@ -119,20 +119,22 @@
 
 (defn text-steps
   [network state epoch-number counter]
-  (let [steps  (case network
-                :mainnet {:pending    "0/4"
-                          :sending    (str (if (< counter 4) counter "4") "/4")
-                          :confirmed  (str (if (< counter 4) counter "4") "/4")
-                          :finalising (str (if (< counter 4) counter "4") "/4")
-                          :finalized  (i18n/label :t/epoch-number {:number epoch-number})
-                          :error      "0/4"}
-                (or :optimism :arbitrum :optimism-arbitrum) {:pending    "0/1"
-                                                             :sending    "0/1"
-                                                             :confirmed  "0/1"
-                                                             :finalising "1/1"
-                                                             :finalized  (i18n/label :t/epoch-number {:number epoch-number})
-                                                             :error      "0/1"}
-                 nil)]
+  (let [steps (case network
+                :mainnet
+                {:pending    "0/4"
+                 :sending    (str (if (< counter 4) counter "4") "/4")
+                 :confirmed  (str (if (< counter 4) counter "4") "/4")
+                 :finalising (str (if (< counter 4) counter "4") "/4")
+                 :finalized  (i18n/label :t/epoch-number {:number epoch-number})
+                 :error      "0/4"}
+                (or :optimism :arbitrum :optimism-arbitrum)
+                {:pending    "0/1"
+                 :sending    "0/1"
+                 :confirmed  "0/1"
+                 :finalising "1/1"
+                 :finalized  (i18n/label :t/epoch-number {:number epoch-number})
+                 :error      "0/1"}
+                nil)]
     (get-in steps [state])))
 
 (defn get-status-icon
@@ -206,14 +208,14 @@
     [title-internal state title theme]
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
-      :mainnet           [:<>
-                          [status-row theme state :mainnet epoch-number @counter]
-                          [progress-boxes state @counter total-box]]
-      :optimism-arbitrum [:<>
-                          [status-row theme state :arbitrum epoch-number @counter]
-                          [progress-boxes-arbitrum-optimism state :arbitrum false]
-                          [status-row theme state :optimism epoch-number @counter]
-                          [progress-boxes-arbitrum-optimism state :optimism true]]
+      :mainnet                 [:<>
+                                [status-row theme state :mainnet epoch-number @counter]
+                                [progress-boxes state @counter total-box]]
+      :optimism-arbitrum       [:<>
+                                [status-row theme state :arbitrum epoch-number @counter]
+                                [progress-boxes-arbitrum-optimism state :arbitrum false]
+                                [status-row theme state :optimism epoch-number @counter]
+                                [progress-boxes-arbitrum-optimism state :optimism true]]
       (or :arbitrum :optimism) [:<>
                                 [status-row theme state network epoch-number @counter]
                                 [progress-boxes-arbitrum-optimism state network true]]

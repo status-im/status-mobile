@@ -11,11 +11,11 @@
     :options [{:key :pending}
               {:key :confirmed}
               {:key :finalized}
-              {:key :error}]} 
-   {:key     :full-width?
-    :type    :boolean}
-   {:key     :progressed-value
-    :type    :text}
+              {:key :error}]}
+   {:key  :full-width?
+    :type :boolean}
+   {:key  :progressed-value
+    :type :text}
    (preview/customization-color-option)])
 
 (defn view
