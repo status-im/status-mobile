@@ -158,6 +158,8 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
+    [status-im2.contexts.quo-preview.text-combinations.channel-name :as
+     channel-name]
     [status-im2.contexts.quo-preview.text-combinations.preview :as
      text-combinations]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
@@ -445,7 +447,9 @@
                        {:name      :token-tag
                         :component token-tag/view}]
    :text-combinations [{:name      :text-combinations
-                        :component text-combinations/view}]
+                        :component text-combinations/view}
+                       {:name      :channel-name
+                        :component channel-name/view}]
    :wallet            [{:name :account-card :component account-card/view}
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
