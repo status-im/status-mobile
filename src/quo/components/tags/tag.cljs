@@ -4,7 +4,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.base-tag :as base-tag]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (def themes
@@ -82,16 +82,15 @@
     - `type`     can be icon or emoji with or without a tag label
     - `labelled` boolean: is true if tag has label else false"
   [{:keys [id on-press disabled? size active accessibility-label label resource type
-           labelled? blurred? icon-color override-theme]
+           labelled? blurred? icon-color theme]
     :or   {size 32}}]
   (let [state                (cond
                                disabled? :disabled
                                active    :active
                                :else     :default)
-        current-theme        (or override-theme (theme/get-theme))
         {:keys [border-color
                 blurred-border-color
-                text-color]} (get-in themes [current-theme state])]
+                text-color]} (get-in themes [theme state])]
     [rn/view {:style {:align-items :center}}
      [base-tag/base-tag
       {:id                  id
@@ -106,4 +105,6 @@
        :type                type
        :labelled?           (if (= type :label) true labelled?)}
       [tag-resources size type resource icon-color label text-color labelled?]]]))
+
+(def tag (quo.theme/with-theme tag))
 
