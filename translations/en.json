@@ -2395,6 +2395,8 @@
     "address-copied": "Address copied",
     "no-dapps-description": "We want dApps!",
     "select-asset": "Select asset",
-    "send-limit": "Max: {{limit}}"
+    "send-limit": "Max: {{limit}}",
+    "searching-for-activity": "Searching for activity...",
+    "this-address-has-no-activity": "This address has no activity",
+    "this-address-has-activity": "This address has activity"   
 }
-
