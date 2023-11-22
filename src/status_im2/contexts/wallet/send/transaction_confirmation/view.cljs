@@ -143,7 +143,7 @@
       :subtitle        "149.99 ETH"}]]])
 
 (defn- f-view-internal
-  [theme]
+  [_]
   (let [reset-slider?        (reagent/atom false)
         margin-top           (safe-area/get-top)
         biometric-auth?      true
@@ -165,12 +165,10 @@
                                                           {:size  16
                                                            :name  "New house"
                                                            :emoji "🍔"})}]
-    (fn []
+    (fn [{:keys [theme]}]
       [rn/view {:style {:flex 1}}
-       [quo/gradient-cover
-        {:customization-color :purple}]
-       [rn/view
-        {:style (style/container margin-top)}
+       [quo/gradient-cover {:customization-color :purple}]
+       [rn/view {:style (style/container margin-top)}
         [quo/page-nav
          {:icon-name           :i/arrow-left
           :on-press            on-close
@@ -182,8 +180,7 @@
         [transaction-from status-account-props theme]
         [transaction-to user-props theme]
         [transaction-details theme]
-        [rn/safe-area-view
-         {:style style/slide-button-container}
+        [rn/view {:style style/slide-button-container}
          [quo/slide-button
           {:size                :size/s-48
            :customization-color :purple
@@ -192,8 +189,8 @@
            :track-icon          (if biometric-auth? :i/face-id :password)
            :track-text          (i18n/label :t/slide-to-send)}]]]])))
 
-(defn- view-internal
-  [{:keys [theme]}]
-  [:f> f-view-internal theme])
+(defn view-internal
+  [props]
+  [:f> f-view-internal props])
 
 (def view (quo.theme/with-theme view-internal))
