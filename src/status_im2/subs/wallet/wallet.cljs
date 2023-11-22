@@ -48,7 +48,7 @@
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
  (fn [[accounts balances tokens-loading?]]
-   (mapv (fn [{:keys [color address type] :as account}]
+   (mapv (fn [{:keys [color address] :as account}]
            (assoc account
                   :customization-color color
                   :type                (if (= type :watch) :watch-only :empty)
@@ -75,7 +75,7 @@
                        (assoc token
                               :networks           (utils/network-list token networks)
                               :total-balance      (utils/total-token-value-in-all-chains token)
-                              :total-balance-fiat (utils/calculate-balance token)))
+                              :total-balance-fiat (utils/calculate-balance-for-token token)))
                      (:tokens account))
 
          sorted-tokens

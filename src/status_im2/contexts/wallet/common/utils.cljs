@@ -44,12 +44,15 @@
     (when balance-in-chain
       (calculate-raw-balance (:raw-balance balance-in-chain) decimals))))
 
+(defn calculate-balance-for-token
+  [token]
+  (* (total-token-value-in-all-chains token)
+     (-> token :market-values-per-currency :usd :price)))
+
 (defn calculate-balance
   [tokens-in-account]
   (->> tokens-in-account
-       (map (fn [token]
-              (* (total-token-value-in-all-chains token)
-                 (-> token :market-values-per-currency :usd :price))))
+       (map #(calculate-balance-for-token %))
        (reduce +)))
 
 (defn network-list

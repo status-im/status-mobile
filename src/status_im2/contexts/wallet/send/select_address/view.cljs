@@ -47,7 +47,7 @@
   [input-value input-focused?]
   (fn []
     (let [scanned-address       (rf/sub [:wallet/scanned-address])
-          send-address          (rf/sub [:wallet/send-address])
+          send-address          (get-in (rf/sub [:wallet]) [:ui :send :to-address])
           valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])
           chain-id              (rf/sub [:chain-id])
           contacts              (rf/sub [:contacts/active])]
