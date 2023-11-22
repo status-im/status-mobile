@@ -42,8 +42,8 @@
     {:db     (assoc-in db [:profile/login :processing] true)
      ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
-(rf/defn biometry-login
-  {:events [:profile.login/biometry-login]}
+(rf/defn biometrics-login
+  {:events [:profile.login/biometrics-login]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
     {:db     (assoc-in db [:profile/login :processing] true)
@@ -190,7 +190,7 @@
      cofx
      {:db (assoc-in db [:profile/login :password] password)}
      (navigation/init-root :progress)
-     (biometry-login))))
+     (biometrics-login))))
 
 (rf/defn biometric-auth-fail
   {:events [:profile.login/biometric-auth-fail]}

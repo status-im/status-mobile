@@ -113,7 +113,7 @@
   (keychain/save-credentials
    (password-migration-key-name key-uid)
    key-uid
-   ;; NOTE: using the key-id as the password, but we don't really care about the
+   ;; NOTE: using the key-uid as the password, but we don't really care about the
    ;; value, we only care that it's there
    key-uid)
   (.catch (fn [error]
