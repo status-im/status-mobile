@@ -28,7 +28,8 @@
               {:key :confirmed}
               {:key :finalising}
               {:key :finalized}
-              {:key :error}]}])
+              {:key :error}]}
+   (preview/customization-color-option)])
 
 (def total-box 85)
 (def counter (reagent/atom 0))
@@ -67,17 +68,18 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:title        "Title"
-                             :counter      counter
-                             :total-box    total-box
-                             :tag-name     "Doodle"
-                             :tag-number   "120"
-                             :epoch-number "181,329"
-                             :network      :mainnet
-                             :state        :pending
-                             :tag-photo    (resources/get-mock-image :collectible)
-                             :on-press     (fn []
-                                             (js/alert "Transaction progress item pressed"))})]
+  (let [state (reagent/atom {:title               "Title"
+                             :counter             counter
+                             :total-box           total-box
+                             :tag-name            "Doodle"
+                             :tag-number          "120"
+                             :epoch-number        "181,329"
+                             :network             :mainnet
+                             :state               :pending
+                             :customization-color :blue
+                             :tag-photo           (resources/get-mock-image :collectible)
+                             :on-press            (fn []
+                                                    (js/alert "Transaction progress item pressed"))})]
     [:f>
      (fn []
        (rn/use-effect

@@ -39,7 +39,7 @@
     :else                                                                   :pending))
 
 (defn progress-boxes
-  [state counter total-box]
+  [state counter total-box customization-color]
   [rn/view
    {:accessibility-label :mainnet-progress-box
     :style               (style/progress-box-container true)}
@@ -47,7 +47,7 @@
      (doall (for [n numbers]
               [progress-box/view
                {:state               (calculate-box-state state counter n)
-                :customization-color :blue
+                :customization-color customization-color
                 :key                 n}])))])
 
 (defn calculate-box-state-network-left
@@ -83,18 +83,18 @@
     0))
 
 (defn progress-boxes-arbitrum-optimism
-  [state network bottom-large?]
+  [state network bottom-large? customization-color]
   [rn/view
    {:accessibility-label :progress-box
     :style               (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-network-left state network)
-     :customization-color :blue}]
+     :customization-color customization-color}]
    [progress-box/view
     {:state               (calculate-box-state-network-right state network)
      :full-width?         true
      :progressed-value    (calculate-progressed-value state network)
-     :customization-color :blue}]])
+     :customization-color customization-color}]])
 
 (defn text-internal
   [title
@@ -202,7 +202,7 @@
 
 (defn view-internal
   [{:keys [title on-press accessibility-label network state theme tag-photo tag-name tag-number
-           epoch-number counter total-box]
+           epoch-number counter total-box customization-color]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
@@ -213,15 +213,18 @@
     (case network
       :mainnet                 [:<>
                                 [status-row theme state :mainnet epoch-number @counter]
-                                [progress-boxes state @counter total-box]]
+                                [progress-boxes state @counter total-box customization-color]]
       :optimism-arbitrum       [:<>
                                 [status-row theme state :arbitrum epoch-number @counter]
-                                [progress-boxes-arbitrum-optimism state :arbitrum false]
+                                [progress-boxes-arbitrum-optimism state :arbitrum false
+                                 customization-color]
                                 [status-row theme state :optimism epoch-number @counter]
-                                [progress-boxes-arbitrum-optimism state :optimism true]]
+                                [progress-boxes-arbitrum-optimism state :optimism true
+                                 customization-color]]
       (or :arbitrum :optimism) [:<>
                                 [status-row theme state network epoch-number @counter]
-                                [progress-boxes-arbitrum-optimism state network true]]
+                                [progress-boxes-arbitrum-optimism state network true
+                                 customization-color]]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))

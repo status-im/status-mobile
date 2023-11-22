@@ -15,6 +15,7 @@
    :tag-number          "120"
    :epoch-number        "181,329"
    :network             network
+   :customization-color :blue
    :state               state})
 
 (h/describe "Transaction Progress"
