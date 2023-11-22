@@ -7,19 +7,19 @@
   {:light {:pending   {:border-color     colors/neutral-80-opa-5
                        :background-color colors/neutral-5}
            :confirmed {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/custom-color :success 50)}
+                       :background-color (colors/resolve-color :success 50)}
            :finalized {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/custom-color customization-color 50)}
+                       :background-color (colors/resolve-color customization-color 50)}
            :error     {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/custom-color :danger 50)}}
+                       :background-color (colors/resolve-color :danger 50)}}
    :dark  {:pending   {:border-color     colors/neutral-70
                        :background-color colors/neutral-80}
            :confirmed {:border-color     colors/white-opa-5
-                       :background-color (colors/custom-color :success 60)}
+                       :background-color (colors/resolve-color :success 60)}
            :finalized {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/custom-color customization-color 60)}
+                       :background-color (colors/resolve-color customization-color 60)}
            :error     {:border-color     colors/white-opa-5
-                       :background-color (colors/custom-color :danger 60)}}})
+                       :background-color (colors/resolve-color :danger 60)}}})
 
 (defn root-container
   [{:keys [customization-color state theme full-width?]}]
@@ -41,6 +41,6 @@
                                            [theme state])]
     {:height           12
      :margin-top       -1
-     :width            (str progressed-value "%")
+     :width            (str (if (> progressed-value 100) 100 progressed-value) "%")
      :border-radius    3
      :background-color background-color}))

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.wallet.progress-bar
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -10,12 +11,18 @@
     :options [{:key :pending}
               {:key :confirmed}
               {:key :finalized}
-              {:key :error}]}
+              {:key :error}]} 
+   {:key     :full-width?
+    :type    :boolean}
+   {:key     :progressed-value
+    :type    :text}
    (preview/customization-color-option)])
 
 (defn view
   []
   (let [state (reagent/atom {:state               :pending
+                             :full-width?         false
+                             :progressed-value    "10"
                              :customization-color :blue})]
     (fn []
       [preview/preview-container
@@ -23,4 +30,5 @@
         :descriptor                descriptor
         :component-container-style {:padding-top 40
                                     :align-items :center}}
-       [quo/progress-bar @state]])))
+       [rn/view {:style {:flex-direction :row}}
+        [quo/progress-bar @state]]])))
