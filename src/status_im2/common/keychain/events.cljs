@@ -49,15 +49,15 @@
 
 (defn save-auth-method!
   [key-uid method]
-  (keychain/save-credentials
-   (str key-uid "-auth")
-   key-uid
-   method)
-  (.catch (fn [err]
-            (log/error "Failed to save auth method in the keychain"
-                       {:error       err
-                        :key-uid     key-uid
-                        :auth-method method}))))
+  (-> (keychain/save-credentials
+       (str key-uid "-auth")
+       key-uid
+       method)
+      (.catch (fn [err]
+                (log/error "Failed to save auth method in the keychain"
+                           {:error       err
+                            :key-uid     key-uid
+                            :auth-method method})))))
 
 (re-frame/reg-fx
  :keychain/save-auth-method
@@ -110,16 +110,16 @@
 
 (defn save-password-migration!
   [key-uid]
-  (keychain/save-credentials
-   (password-migration-key-name key-uid)
-   key-uid
-   ;; NOTE: using the key-uid as the password, but we don't really care about the
-   ;; value, we only care that it's there
-   key-uid)
-  (.catch (fn [error]
-            (log/error "Failed to get the keychain password migration flag"
-                       {:error   error
-                        :key-uid key-uid}))))
+  (-> (keychain/save-credentials
+       (password-migration-key-name key-uid)
+       key-uid
+       ;; NOTE: using the key-uid as the password, but we don't really care about the
+       ;; value, we only care that it's there
+       key-uid)
+      (.catch (fn [error]
+                (log/error "Failed to get the keychain password migration flag"
+                           {:error   error
+                            :key-uid key-uid})))))
 
 (defn get-password-migration!
   [key-uid callback]
