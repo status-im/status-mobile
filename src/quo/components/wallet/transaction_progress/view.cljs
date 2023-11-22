@@ -10,8 +10,8 @@
             [react-native.core :as rn]
             [utils.i18n :as i18n]))
 
-(def arbitrum-progress-percentage 26)
-(def optimism-progress-percentage 16)
+(def arbitrum-finalising-progress-percentage 26)
+(def optimism-finalising-progress-percentage 16)
 
 (defn icon-internal
   ([icon]
@@ -76,7 +76,9 @@
 (defn calculate-progressed-value
   [state network]
   (case state
-    :finalising (if (= network :arbitrum) arbitrum-progress-percentage optimism-progress-percentage)
+    :finalising (if (= network :arbitrum)
+                  arbitrum-finalising-progress-percentage
+                  optimism-finalising-progress-percentage)
     :finalized  100
     0))
 
