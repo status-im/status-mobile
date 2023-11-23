@@ -154,13 +154,24 @@
     (= state :finalized)       [:i/diamond]
     (= state :error)           [:i/negative-state (colors/resolve-color :danger theme)]))
 
+(defn calculate-error-state
+  [{:keys [state-arbitrum state-optimism state-mainnet network]}]
+  (case network
+    :mainnet (= :error state-mainnet)
+    :arbitrum (= :error state-arbitrum)
+    :optimism (= :error state-optimism)
+    :optimism-arbitrum (or (= :error state-arbitrum) (= :error state-optimism))))
+
 (defn title-internal
-  [state title theme]
+  [{:keys [state-arbitrum state-optimism state-mainnet title theme network]}]
   [rn/view {:style style/title-container}
    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
    [rn/view {:style style/title-text-container}
     [text-internal title]]
-   (when (= state :error)
+   (when (calculate-error-state {:state-arbitrum state-arbitrum
+                                 :state-mainnet state-mainnet
+                                 :state-optimism state-optimism
+                                 :network network})
      [button/button
       {:size      24
        :icon-left :i/refresh}
@@ -201,29 +212,38 @@
         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
 (defn view-internal
-  [{:keys [title on-press accessibility-label network state theme tag-photo tag-name tag-number
-           epoch-number counter total-box customization-color]
+  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number
+           epoch-number counter total-box customization-color state-arbitrum state-optimism state-mainnet]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style (style/box-style theme)}
-    [title-internal state title theme]
+    [title-internal {:state-arbitrum state-arbitrum
+                     :state-optimism state-optimism
+                     :state-mainnet state-mainnet
+                     :title title
+                     :theme theme
+                     :network network}]
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
       :mainnet                 [:<>
-                                [status-row theme state :mainnet epoch-number @counter]
-                                [progress-boxes state @counter total-box customization-color]]
-      :optimism-arbitrum       [:<>
-                                [status-row theme state :arbitrum epoch-number @counter]
-                                [progress-boxes-arbitrum-optimism state :arbitrum false
-                                 customization-color]
-                                [status-row theme state :optimism epoch-number @counter]
-                                [progress-boxes-arbitrum-optimism state :optimism true
+                                [status-row theme state-mainnet :mainnet epoch-number @counter]
+                                [progress-boxes state-mainnet @counter total-box customization-color]]
+      :optimism-arbitrum [:<>
+                          [status-row theme state-arbitrum :arbitrum epoch-number @counter]
+                          [progress-boxes-arbitrum-optimism state-arbitrum :arbitrum false
+                           customization-color]
+                          [status-row theme state-optimism :optimism epoch-number @counter]
+                          [progress-boxes-arbitrum-optimism state-optimism :optimism true
+                           customization-color]]
+      :arbitrum                [:<>
+                                [status-row theme state-arbitrum :arbitrum epoch-number @counter]
+                                [progress-boxes-arbitrum-optimism state-arbitrum :arbitrum true
                                  customization-color]]
-      (or :arbitrum :optimism) [:<>
-                                [status-row theme state network epoch-number @counter]
-                                [progress-boxes-arbitrum-optimism state network true
+      :optimism              [:<>
+                                [status-row theme state-optimism :optimism epoch-number @counter]
+                                [progress-boxes-arbitrum-optimism state-optimism :optimism true
                                  customization-color]]
       nil)]])
 

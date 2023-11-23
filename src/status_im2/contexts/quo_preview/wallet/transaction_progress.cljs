@@ -22,7 +22,23 @@
               {:key :optimism}
               {:key :optimism-arbitrum}]}
    {:type    :select
-    :key     :state
+    :key     :state-mainnet
+    :options [{:key :pending}
+              {:key :sending}
+              {:key :confirmed}
+              {:key :finalising}
+              {:key :finalized}
+              {:key :error}]}
+   {:type    :select
+    :key     :state-optimism
+    :options [{:key :pending}
+              {:key :sending}
+              {:key :confirmed}
+              {:key :finalising}
+              {:key :finalized}
+              {:key :error}]}
+   {:type    :select
+    :key     :state-arbitrum
     :options [{:key :pending}
               {:key :sending}
               {:key :confirmed}
@@ -75,7 +91,9 @@
                              :tag-number          "120"
                              :epoch-number        "181,329"
                              :network             :mainnet
-                             :state               :pending
+                             :state-mainnet               :pending
+                             :state-arbitrum               :pending
+                             :state-optimism               :pending
                              :customization-color :blue
                              :tag-photo           (resources/get-mock-image :collectible)
                              :on-press            (fn []
@@ -84,10 +102,10 @@
      (fn []
        (rn/use-effect
         (fn []
-          (start-interval (:state @state))
+          (start-interval (:state-mainnet @state))
           (clear-counter)
           (fn []
             (stop-interval)))
-        [(:state @state)])
+        [(:state-mainnet @state)])
        [preview/preview-container {:state state :descriptor descriptor}
         [quo/transaction-progress @state]])]))
