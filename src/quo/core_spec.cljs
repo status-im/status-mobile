@@ -75,6 +75,7 @@
     [quo.components.tags.status-tags-component-spec]
     [quo.components.tags.summary-tag.component-spec]
     [quo.components.tags.tiny-tag.component-spec]
+    [quo.components.text-combinations.channel-name.component-spec]
     [quo.components.wallet.account-card.component-spec]
     [quo.components.wallet.account-origin.component-spec]
     [quo.components.wallet.account-overview.component-spec]

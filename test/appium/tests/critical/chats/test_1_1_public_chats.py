@@ -155,17 +155,18 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.set_reaction(url_message)
         try:
             self.chat_1.chat_element_by_text(url_message).emojis_below_message().wait_for_element_text(1)
-        except Failed:
+        except (Failed, NoSuchElementException):
             self.errors.append("Link message reaction is not shown for the sender")
 
         self.home_2.just_fyi("Check 'Open in Status' option")
-        url_to_open = 'http://status.app'
+        # url_to_open = 'http://status.app'
+        url_to_open = 'https://github.com/'
         self.chat_1.send_message(url_to_open)
         chat_element = self.chat_2.chat_element_by_text(url_to_open)
         if chat_element.is_element_displayed(120):
             chat_element.click_on_link_inside_message_body()
             web_view = self.chat_2.open_in_status_button.click()
-            if not web_view.element_by_text('Make the jump to web3').is_element_displayed(60):
+            if not web_view.element_by_text("Let’s build from here").is_element_displayed(60):
                 self.errors.append('URL was not opened from 1-1 chat')
         else:
             self.errors.append("Message with URL was not received")
