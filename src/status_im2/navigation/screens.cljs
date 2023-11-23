@@ -277,7 +277,7 @@
      :component wallet-collectible/view}
 
     {:name      :wallet-select-keypair
-     :options   {:insets {:top? true}}
+     :options   {:insets {:top? true :bottom? true}}
      :component wallet-select-keypair/view}
 
     {:name      :wallet-create-account
