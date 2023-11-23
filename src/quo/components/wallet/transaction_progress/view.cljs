@@ -10,7 +10,7 @@
             [react-native.core :as rn]
             [utils.i18n :as i18n]))
 
-(defn icon-internal
+(defn- icon-internal
   ([icon]
    (icon-internal icon nil 20))
   ([icon color]
@@ -23,7 +23,7 @@
       :size     size
       :no-color (when (not color) true)}]]))
 
-(defn calculate-box-state
+(defn- calculate-box-state
   [state counter index]
   (cond
     (and (= state :sending) (>= counter index) (< index 3))                 :confirmed
@@ -35,7 +35,7 @@
     (and (= state :error) (>= counter index) (< index 2))                   :error
     :else                                                                   :pending))
 
-(defn progress-boxes
+(defn- progress-boxes
   [state counter total-box customization-color]
   [rn/view
    {:accessibility-label :mainnet-progress-box
@@ -47,7 +47,7 @@
                 :customization-color customization-color
                 :key                 n}])))])
 
-(defn calculate-box-state-network-left
+(defn- calculate-box-state-network-left
   [state network]
   (cond
     (= state :error)                                                     :error
@@ -55,7 +55,7 @@
     (or (= state :confirmed) (= state :finalising) (= state :finalized)) :confirmed
     :else                                                                :pending))
 
-(defn calculate-box-state-network-right
+(defn- calculate-box-state-network-right
   [state network]
   (cond
     (= state :error)
@@ -70,14 +70,14 @@
     :else
     :pending))
 
-(defn calculate-progressed-value
+(defn- calculate-progressed-value
   [state progress-value]
   (case state
     :finalising progress-value
     :finalized  100
     0))
 
-(defn progress-boxes-arbitrum-optimism
+(defn- progress-boxes-arbitrum-optimism
   [{:keys [state network bottom-large? customization-color progress-value]}]
   [rn/view
    {:accessibility-label :progress-box
@@ -91,7 +91,7 @@
      :progressed-value    (calculate-progressed-value state progress-value)
      :customization-color customization-color}]])
 
-(defn text-internal
+(defn- text-internal
   [title
    {:keys [weight size accessibility-label color]
     :or   {weight :semi-bold
@@ -105,7 +105,7 @@
     :style               {:color color}}
    title])
 
-(defn network-type-text
+(defn- network-type-text
   [network state]
   (cond
     (and (= state :sending) (= network :arbitrum))  (i18n/label :t/confirmed-on)
@@ -114,7 +114,7 @@
     (= state :finalized)                            (i18n/label :t/finalized-on)
     (= state :error)                                (i18n/label :t/failed-on)))
 
-(defn text-steps
+(defn- text-steps
   [network state epoch-number counter]
   (let [steps (case network
                 :mainnet
@@ -134,7 +134,7 @@
                 nil)]
     (get-in steps [state])))
 
-(defn get-status-icon
+(defn- get-status-icon
   [theme network state]
   (cond
     (and (= network :arbitrum)
@@ -149,7 +149,7 @@
     (= state :finalized)       [:i/diamond]
     (= state :error)           [:i/negative-state (colors/resolve-color :danger theme)]))
 
-(defn calculate-error-state
+(defn- calculate-error-state
   [{:keys [state-arbitrum state-optimism state-mainnet network]}]
   (case network
     :mainnet           (= :error state-mainnet)
@@ -158,7 +158,7 @@
     :optimism-arbitrum (or (= :error state-arbitrum) (= :error state-optimism))
     nil))
 
-(defn title-internal
+(defn- title-internal
   [{:keys [state-arbitrum state-optimism state-mainnet title theme network]}]
   [rn/view {:style style/title-container}
    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
@@ -173,7 +173,7 @@
        :icon-left :i/refresh}
       (i18n/label :t/retry)])])
 
-(defn tag-internal
+(defn- tag-internal
   [tag-photo tag-name tag-number theme]
   [rn/view {:style (style/context-tag-container theme)}
    [context-tag/view
@@ -183,14 +183,14 @@
      :collectible-number tag-number
      :type               :collectible}]])
 
-(defn get-network-text
+(defn- get-network-text
   [network]
   (case network
     :arbitrum (i18n/label :t/arbitrum)
     :mainnet  (i18n/label :t/mainnet)
     :optimism (i18n/label :t/optimism)))
 
-(defn status-row
+(defn- status-row
   [{:keys [theme state network epoch-number counter]}]
   (let [[status-icon color] (get-status-icon theme network state)]
     [rn/view {:style style/status-row-container}
@@ -207,11 +207,49 @@
         :size   :paragraph-2
         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
-(defn view-internal
-  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number
-           epoch-number-mainnet epoch-number-arbitrum epoch-number-optimism counter total-box
-           customization-color state-arbitrum state-optimism state-mainnet optimism-progress-percentage
-           arbitrum-progress-percentage]
+(defn- view-mainnet
+  [{:keys [theme state-mainnet epoch-number-mainnet counter total-box customization-color]}]
+  [:<>
+   [status-row
+    {:theme        theme
+     :state        state-mainnet
+     :network      :mainnet
+     :epoch-number epoch-number-mainnet
+     :counter      @counter}]
+   [progress-boxes state-mainnet @counter total-box customization-color]])
+
+(defn- view-arbitrum
+  [{:keys [theme state-arbitrum epoch-number-arbitrum customization-color arbitrum-progress-percentage]}]
+  [:<>
+   [status-row
+    {:theme        theme
+     :state        state-arbitrum
+     :network      :arbitrum
+     :epoch-number epoch-number-arbitrum}]
+   [progress-boxes-arbitrum-optimism
+    {:state               state-arbitrum
+     :network             :arbitrum
+     :bottom-large?       false
+     :customization-color customization-color
+     :progress-value      arbitrum-progress-percentage}]])
+
+(defn- view-optimism
+  [{:keys [theme state-optimism epoch-number-optimism customization-color optimism-progress-percentage]}]
+  [:<>
+   [status-row
+    {:theme        theme
+     :state        state-optimism
+     :network      :optimism
+     :epoch-number epoch-number-optimism}]
+   [progress-boxes-arbitrum-optimism
+    {:state               state-optimism
+     :network             :optimism
+     :bottom-large?       true
+     :customization-color customization-color
+     :progress-value      optimism-progress-percentage}]])
+
+(defn- view-internal
+  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number state-arbitrum state-optimism state-mainnet] :as props
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
@@ -226,61 +264,12 @@
       :network        network}]
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
-      :mainnet           [:<>
-                          [status-row
-                           {:theme        theme
-                            :state        state-mainnet
-                            :network      :mainnet
-                            :epoch-number epoch-number-mainnet
-                            :counter      @counter}]
-                          [progress-boxes state-mainnet @counter total-box customization-color]]
+      :mainnet           [view-mainnet props]
       :optimism-arbitrum [:<>
-                          [status-row
-                           {:theme        theme
-                            :state        state-arbitrum
-                            :network      :arbitrum
-                            :epoch-number epoch-number-arbitrum}]
-                          [progress-boxes-arbitrum-optimism
-                           {:state               state-arbitrum
-                            :network             :arbitrum
-                            :bottom-large?       false
-                            :customization-color customization-color
-                            :progress-value      arbitrum-progress-percentage}]
-                          [status-row
-                           {:theme        theme
-                            :state        state-optimism
-                            :network      :optimism
-                            :epoch-number epoch-number-optimism}]
-                          [progress-boxes-arbitrum-optimism
-                           {:state               state-optimism
-                            :network             :optimism
-                            :bottom-large?       true
-                            :customization-color customization-color
-                            :progress-value      optimism-progress-percentage}]]
-      :arbitrum          [:<>
-                          [status-row
-                           {:theme        theme
-                            :state        state-arbitrum
-                            :network      :arbitrum
-                            :epoch-number epoch-number-arbitrum}]
-                          [progress-boxes-arbitrum-optimism
-                           {:state               state-arbitrum
-                            :network             :arbitrum
-                            :bottom-large?       false
-                            :customization-color customization-color
-                            :progress-value      arbitrum-progress-percentage}]]
-      :optimism          [:<>
-                          [status-row
-                           {:theme        theme
-                            :state        state-optimism
-                            :network      :optimism
-                            :epoch-number epoch-number-optimism}]
-                          [progress-boxes-arbitrum-optimism
-                           {:state               state-optimism
-                            :network             :optimism
-                            :bottom-large?       true
-                            :customization-color customization-color
-                            :progress-value      optimism-progress-percentage}]]
+                          [view-arbitrum props]
+                          [view-optimism props]]
+      :arbitrum          [view-arbitrum props]
+      :optimism          [view-optimism props]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))
