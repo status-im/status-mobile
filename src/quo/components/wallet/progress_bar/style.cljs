@@ -38,9 +38,10 @@
 (defn progressed-bar
   [{:keys [customization-color state theme progressed-value]}]
   (let [{:keys [background-color]} (get-in (border-and-background-color customization-color)
-                                           [theme state])]
+                                           [theme state])
+        progress                   (if (> progressed-value 100) 100 progressed-value)]
     {:height           12
      :margin-top       -1
-     :width            (str (if (> progressed-value 100) 100 progressed-value) "%")
+     :width            (str progress "%")
      :border-radius    3
      :background-color background-color}))
