@@ -1,6 +1,7 @@
 (ns quo.components.settings.data-item.component-spec
   (:require
     [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [test-helpers.component :as h]))
 
 (h/describe
@@ -161,7 +162,8 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow}])
+                :customization-color :yellow
+                :network-image       (quo.resources/get-network :ethereum)}])
     (h/is-truthy (h/query-by-label-text :description-image)))
 
   (h/test "description emoji is visible when description is account"
