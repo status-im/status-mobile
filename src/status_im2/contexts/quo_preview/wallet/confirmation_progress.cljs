@@ -7,32 +7,14 @@
   
   (def descriptor
     [{:type :text
-      :key  :optimism-progress-percentage}
-     {:type :text
-      :key  :arbitrum-progress-percentage}
+      :key  :progress-value}
      {:type    :select
       :key     :network
       :options [{:key :mainnet}
                 {:key :optimism}
                 {:key :arbitrum}]}
      {:type    :select
-      :key     :state-mainnet
-      :options [{:key :pending}
-                {:key :sending}
-                {:key :confirmed}
-                {:key :finalising}
-                {:key :finalized}
-                {:key :error}]}
-     {:type    :select
-      :key     :state-optimism
-      :options [{:key :pending}
-                {:key :sending}
-                {:key :confirmed}
-                {:key :finalising}
-                {:key :finalized}
-                {:key :error}]}
-     {:type    :select
-      :key     :state-arbitrum
+      :key     :state
       :options [{:key :pending}
                 {:key :sending}
                 {:key :confirmed}
@@ -81,21 +63,18 @@
     (let [state (reagent/atom
                  {:counter                      counter
                   :total-box                    total-box
-                  :optimism-progress-percentage "10"
-                  :arbitrum-progress-percentage "10"
+                  :progress-value               "10"
                   :network                      :mainnet
-                  :state-mainnet                :pending
-                  :state-arbitrum               :pending
-                  :state-optimism               :pending
+                  :state                        :pending
                   :customization-color          :blue})]
       [:f>
        (fn []
          (rn/use-effect
           (fn []
-            (start-interval (:state-mainnet @state))
+            (start-interval (:state @state))
             (clear-counter)
             (fn []
               (stop-interval)))
-          [(:state-mainnet @state)])
+          [(:state @state)])
          [preview/preview-container {:state state :descriptor descriptor}
           [quo/confirmation-propgress @state]])]))

@@ -150,7 +150,7 @@
      :counter      @counter}]
    [confirmation-progress/view {:state state-mainnet 
                                 :network :mainnet
-                                :counter @counter 
+                                :counter counter 
                                 :total-box total-box 
                                 :customization-color customization-color}]])
 

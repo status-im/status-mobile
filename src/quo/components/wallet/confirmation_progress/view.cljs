@@ -54,7 +54,7 @@
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state               (calculate-box-state state counter n)
+               {:state               (calculate-box-state state @counter n)
                 :customization-color customization-color
                 :key                 n}])))])
 
