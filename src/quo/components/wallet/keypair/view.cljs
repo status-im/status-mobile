@@ -63,8 +63,9 @@
   [{:keys [details stored blur? theme]}]
   (let [{:keys [address]} details]
     [rn/view
-     {:style {:flex-direction :row
-              :align-items    :center}}
+     {:style               {:flex-direction :row
+                            :align-items    :center}
+      :accessibility-label :details}
      [text/text
       {:size  :paragraph-2
        :style (style/subtitle blur? theme)}
