@@ -1,4 +1,4 @@
-(ns quo.components.wallet.confirmation-progress.view 
+(ns quo.components.wallet.confirmation-progress.view
   (:require [quo.components.wallet.confirmation-progress.style :as style]
             [quo.components.wallet.progress-bar.view :as progress-box]
             [quo.theme :as quo.theme]
@@ -60,22 +60,22 @@
 
 (defn- progress-boxes-arbitrum-optimism
   [{:keys [state network bottom-large? customization-color progress-value]}]
-    [rn/view
-     {:accessibility-label :progress-box
-      :style               (style/progress-box-container bottom-large?)}
-     [progress-box/view
-      {:state               (calculate-box-state-network-left state network)
-       :customization-color customization-color}]
-     [progress-box/view
-      {:state               (calculate-box-state-network-right state network)
-       :full-width?         true
-       :progressed-value    (calculate-progressed-value state progress-value)
-       :customization-color customization-color}]])
+  [rn/view
+   {:accessibility-label :progress-box
+    :style               (style/progress-box-container bottom-large?)}
+   [progress-box/view
+    {:state               (calculate-box-state-network-left state network)
+     :customization-color customization-color}]
+   [progress-box/view
+    {:state               (calculate-box-state-network-right state network)
+     :full-width?         true
+     :progressed-value    (calculate-progressed-value state progress-value)
+     :customization-color customization-color}]])
 
 (defn- view-internal
   [{:keys [network] :as props}]
   (case network
-    :mainnet [progress-boxes props]
+    :mainnet                 [progress-boxes props]
     (or :arbitrum :optimism) [progress-boxes-arbitrum-optimism props]
     nil))
 

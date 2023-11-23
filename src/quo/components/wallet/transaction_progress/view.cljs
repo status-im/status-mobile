@@ -1,6 +1,6 @@
 (ns quo.components.wallet.transaction-progress.view
   (:require [quo.components.buttons.button.view :as button]
-            [quo.components.icon :as icons] 
+            [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
             [quo.components.tags.context-tag.view :as context-tag]
             [quo.components.wallet.confirmation-progress.view :as confirmation-progress]
@@ -148,11 +148,12 @@
      :network      :mainnet
      :epoch-number epoch-number-mainnet
      :counter      @counter}]
-   [confirmation-progress/view {:state state-mainnet 
-                                :network :mainnet
-                                :counter counter 
-                                :total-box total-box 
-                                :customization-color customization-color}]])
+   [confirmation-progress/view
+    {:state               state-mainnet
+     :network             :mainnet
+     :counter             counter
+     :total-box           total-box
+     :customization-color customization-color}]])
 
 (defn- view-arbitrum
   [{:keys [theme state-arbitrum epoch-number-arbitrum customization-color arbitrum-progress-percentage]}]
