@@ -155,7 +155,8 @@
     :mainnet (= :error state-mainnet)
     :arbitrum (= :error state-arbitrum)
     :optimism (= :error state-optimism)
-    :optimism-arbitrum (or (= :error state-arbitrum) (= :error state-optimism))))
+    :optimism-arbitrum (or (= :error state-arbitrum) (= :error state-optimism))
+    nil))
 
 (defn title-internal
   [{:keys [state-arbitrum state-optimism state-mainnet title theme network]}]

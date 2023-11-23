@@ -5,18 +5,24 @@
 
 (defn- get-test-data
   [{:keys [state network]
-    :or
-    {state :pending network :mainnet}}]
+    :or {state :pending network :mainnet}}]
   {:title               "Title"
    :counter             (reagent/atom 0)
    :total-box           85
-   :accessibility-label :transaction-progress
    :tag-name            "Doodle"
    :tag-number          "120"
-   :epoch-number        "181,329"
+   :epoch-number-mainnet        "181,329"
+   :epoch-number-optimism        "181,329"
+   :epoch-number-arbitrum        "181,329"
+   :optimism-progress-percentage "10"
+   :arbitrum-progress-percentage "10"
    :network             network
+   :state-mainnet               state
+   :state-arbitrum               state
+   :state-optimism               state
    :customization-color :blue
-   :state               state})
+   :on-press            (fn []
+                          (js/alert "Transaction progress item pressed"))})
 
 (h/describe "Transaction Progress"
   (h/test "component renders without props"
