@@ -30,9 +30,10 @@
 (defn- no-color-icon
   [icon-name theme color]
   [icon/icon icon-name
-   {:no-color true
-    :size     20
-    :color    (colors/resolve-color color theme)}])
+   {:accessibility-label :username-status-icon
+    :no-color            true
+    :size                20
+    :color               (colors/resolve-color color theme)}])
 
 (defn status-icon
   [{:keys [theme name-type status]
@@ -46,8 +47,9 @@
                              [no-color-icon :i/untrustworthy theme :danger]
                              [no-color-icon :i/contact theme :blue]]
      :blocked               [icon/icon :i/block
-                             {:size  20
-                              :color (colors/resolve-color :danger theme)}]
+                             {:accessibility-label :username-status-icon
+                              :size                20
+                              :color               (colors/resolve-color :danger theme)}]
      nil)])
 
 (defn view-internal
