@@ -152,9 +152,9 @@
 (defn calculate-error-state
   [{:keys [state-arbitrum state-optimism state-mainnet network]}]
   (case network
-    :mainnet (= :error state-mainnet)
-    :arbitrum (= :error state-arbitrum)
-    :optimism (= :error state-optimism)
+    :mainnet           (= :error state-mainnet)
+    :arbitrum          (= :error state-arbitrum)
+    :optimism          (= :error state-optimism)
     :optimism-arbitrum (or (= :error state-arbitrum) (= :error state-optimism))
     nil))
 
@@ -165,9 +165,9 @@
    [rn/view {:style style/title-text-container}
     [text-internal title]]
    (when (calculate-error-state {:state-arbitrum state-arbitrum
-                                 :state-mainnet state-mainnet
+                                 :state-mainnet  state-mainnet
                                  :state-optimism state-optimism
-                                 :network network})
+                                 :network        network})
      [button/button
       {:size      24
        :icon-left :i/refresh}
@@ -209,67 +209,78 @@
 
 (defn view-internal
   [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number
-           epoch-number-mainnet epoch-number-arbitrum epoch-number-optimism counter total-box customization-color state-arbitrum state-optimism state-mainnet optimism-progress-percentage arbitrum-progress-percentage]
+           epoch-number-mainnet epoch-number-arbitrum epoch-number-optimism counter total-box
+           customization-color state-arbitrum state-optimism state-mainnet optimism-progress-percentage
+           arbitrum-progress-percentage]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style (style/box-style theme)}
-    [title-internal {:state-arbitrum state-arbitrum
-                     :state-optimism state-optimism
-                     :state-mainnet state-mainnet
-                     :title title
-                     :theme theme
-                     :network network}]
+    [title-internal
+     {:state-arbitrum state-arbitrum
+      :state-optimism state-optimism
+      :state-mainnet  state-mainnet
+      :title          title
+      :theme          theme
+      :network        network}]
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
-      :mainnet                 [:<>
-                                [status-row
-                                 {:theme theme
-                                  :state state-mainnet
-                                  :network :mainnet
-                                  :epoch-number epoch-number-mainnet
-                                  :counter @counter}]
-                                [progress-boxes state-mainnet @counter total-box customization-color]]
+      :mainnet           [:<>
+                          [status-row
+                           {:theme        theme
+                            :state        state-mainnet
+                            :network      :mainnet
+                            :epoch-number epoch-number-mainnet
+                            :counter      @counter}]
+                          [progress-boxes state-mainnet @counter total-box customization-color]]
       :optimism-arbitrum [:<>
-                          [status-row {:theme theme
-                                       :state state-arbitrum
-                                       :network :arbitrum
-                                       :epoch-number epoch-number-arbitrum}]
-                          [progress-boxes-arbitrum-optimism {:state state-arbitrum
-                                                             :network :arbitrum
-                                                             :bottom-large? false
-                                                             :customization-color customization-color
-                                                             :progress-value arbitrum-progress-percentage}]
-                          [status-row {:theme theme
-                                       :state state-optimism
-                                       :network :optimism
-                                       :epoch-number epoch-number-optimism}]
-                          [progress-boxes-arbitrum-optimism {:state state-optimism
-                                                             :network :optimism
-                                                             :bottom-large? true
-                                                             :customization-color customization-color
-                                                             :progress-value optimism-progress-percentage}]]
-      :arbitrum                [:<>
-                                [status-row {:theme theme
-                                             :state state-arbitrum
-                                             :network :arbitrum
-                                             :epoch-number epoch-number-arbitrum}]
-                                [progress-boxes-arbitrum-optimism {:state state-arbitrum
-                                                                   :network :arbitrum
-                                                                   :bottom-large? false
-                                                                   :customization-color customization-color
-                                                                   :progress-value arbitrum-progress-percentage}]]
-      :optimism              [:<>
-                                [status-row {:theme theme
-                                       :state state-optimism
-                                       :network :optimism
-                                       :epoch-number epoch-number-optimism}]
-                                [progress-boxes-arbitrum-optimism {:state state-optimism
-                                                                   :network :optimism
-                                                                   :bottom-large? true
-                                                                   :customization-color customization-color
-                                                                   :progress-value optimism-progress-percentage}]]
+                          [status-row
+                           {:theme        theme
+                            :state        state-arbitrum
+                            :network      :arbitrum
+                            :epoch-number epoch-number-arbitrum}]
+                          [progress-boxes-arbitrum-optimism
+                           {:state               state-arbitrum
+                            :network             :arbitrum
+                            :bottom-large?       false
+                            :customization-color customization-color
+                            :progress-value      arbitrum-progress-percentage}]
+                          [status-row
+                           {:theme        theme
+                            :state        state-optimism
+                            :network      :optimism
+                            :epoch-number epoch-number-optimism}]
+                          [progress-boxes-arbitrum-optimism
+                           {:state               state-optimism
+                            :network             :optimism
+                            :bottom-large?       true
+                            :customization-color customization-color
+                            :progress-value      optimism-progress-percentage}]]
+      :arbitrum          [:<>
+                          [status-row
+                           {:theme        theme
+                            :state        state-arbitrum
+                            :network      :arbitrum
+                            :epoch-number epoch-number-arbitrum}]
+                          [progress-boxes-arbitrum-optimism
+                           {:state               state-arbitrum
+                            :network             :arbitrum
+                            :bottom-large?       false
+                            :customization-color customization-color
+                            :progress-value      arbitrum-progress-percentage}]]
+      :optimism          [:<>
+                          [status-row
+                           {:theme        theme
+                            :state        state-optimism
+                            :network      :optimism
+                            :epoch-number epoch-number-optimism}]
+                          [progress-boxes-arbitrum-optimism
+                           {:state               state-optimism
+                            :network             :optimism
+                            :bottom-large?       true
+                            :customization-color customization-color
+                            :progress-value      optimism-progress-percentage}]]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))

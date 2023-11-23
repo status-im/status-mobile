@@ -92,24 +92,25 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:title               "Title"
-                             :counter             counter
-                             :total-box           total-box
-                             :tag-name            "Doodle"
-                             :tag-number          "120"
-                             :epoch-number-mainnet        "181,329"
-                             :epoch-number-optimism        "181,329"
-                             :epoch-number-arbitrum        "181,329"
-                             :optimism-progress-percentage "10"
-                             :arbitrum-progress-percentage "10"
-                             :network             :mainnet
-                             :state-mainnet               :pending
-                             :state-arbitrum               :pending
-                             :state-optimism               :pending
-                             :customization-color :blue
-                             :tag-photo           (resources/get-mock-image :collectible)
-                             :on-press            (fn []
-                                                    (js/alert "Transaction progress item pressed"))})]
+  (let [state (reagent/atom
+               {:title                        "Title"
+                :counter                      counter
+                :total-box                    total-box
+                :tag-name                     "Doodle"
+                :tag-number                   "120"
+                :epoch-number-mainnet         "181,329"
+                :epoch-number-optimism        "181,329"
+                :epoch-number-arbitrum        "181,329"
+                :optimism-progress-percentage "10"
+                :arbitrum-progress-percentage "10"
+                :network                      :mainnet
+                :state-mainnet                :pending
+                :state-arbitrum               :pending
+                :state-optimism               :pending
+                :customization-color          :blue
+                :tag-photo                    (resources/get-mock-image :collectible)
+                :on-press                     (fn []
+                                                (js/alert "Transaction progress item pressed"))})]
     [:f>
      (fn []
        (rn/use-effect
