@@ -15,11 +15,15 @@
     :key  :epoch-number}
    {:type :text
     :key  :tag-number}
+   {:type :text
+    :key  :optimism-progress-percentage}
+   {:type :text
+    :key  :arbitrum-progress-percentage}
    {:type    :select
     :key     :network
     :options [{:key :mainnet}
-              {:key :arbitrum}
               {:key :optimism}
+              {:key :arbitrum}
               {:key :optimism-arbitrum}]}
    {:type    :select
     :key     :state-mainnet
@@ -90,6 +94,8 @@
                              :tag-name            "Doodle"
                              :tag-number          "120"
                              :epoch-number        "181,329"
+                             :optimism-progress-percentage "10"
+                             :arbitrum-progress-percentage "10"
                              :network             :mainnet
                              :state-mainnet               :pending
                              :state-arbitrum               :pending
