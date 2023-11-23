@@ -47,21 +47,19 @@
     0))
 
 (defn- progress-boxes
-  [{:keys [state-mainnet counter total-box customization-color]}]
+  [{:keys [state counter total-box customization-color]}]
   [rn/view
    {:accessibility-label :mainnet-progress-box
     :style               (style/progress-box-container true)}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state               (calculate-box-state state-mainnet @counter n)
+               {:state               (calculate-box-state state counter n)
                 :customization-color customization-color
                 :key                 n}])))])
 
 (defn- progress-boxes-arbitrum-optimism
-  [{:keys [state-arbitrum state-optimism network bottom-large? customization-color optimism-progress-percentage arbitrum-progress-percentage]}]
-  (let [progress-value (if (= :optimism network) optimism-progress-percentage arbitrum-progress-percentage)
-        state (if (= :optimism network) state-optimism state-arbitrum)]
+  [{:keys [state network bottom-large? customization-color progress-value]}]
     [rn/view
      {:accessibility-label :progress-box
       :style               (style/progress-box-container bottom-large?)}
@@ -72,7 +70,7 @@
       {:state               (calculate-box-state-network-right state network)
        :full-width?         true
        :progressed-value    (calculate-progressed-value state progress-value)
-       :customization-color customization-color}]]))
+       :customization-color customization-color}]])
 
 (defn- view-internal
   [{:keys [network] :as props}]

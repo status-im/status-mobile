@@ -21,15 +21,6 @@
    :padding-right  8
    :padding-bottom 4})
 
-(defn progress-box-container
-  [bottom-large?]
-  {:flex-direction     :row
-   :align-items        :center
-   :padding-horizontal 12
-   :padding-bottom     (if bottom-large? 12 8)
-   :padding-top        4
-   :flex-wrap          :wrap})
-
 (def status-row-container
   {:flex-direction     :row
    :align-items        :center
