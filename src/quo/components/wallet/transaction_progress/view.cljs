@@ -249,7 +249,9 @@
      :progress-value      optimism-progress-percentage}]])
 
 (defn- view-internal
-  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number state-arbitrum state-optimism state-mainnet] :as props
+  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number state-arbitrum
+           state-optimism state-mainnet]
+    :as   props
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
