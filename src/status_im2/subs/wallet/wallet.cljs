@@ -86,5 +86,4 @@
                       (string/starts-with? (string/lower-case (:symbol %))
                                            (string/lower-case query)))
                  sorted-tokens)]
-     (println filtered-tokens "3421342342432")
      filtered-tokens)))

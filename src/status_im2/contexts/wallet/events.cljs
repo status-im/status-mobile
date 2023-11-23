@@ -11,15 +11,11 @@
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
-    [utils.money]
+    [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.transforms :as types]
-    [status-im.ui.screens.network.views :as network]
-    [status-im2.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
-    [status-im2.contexts.quo-preview.wallet.transaction-summary :as transaction-summary]
-    [utils.money :as money]))
+    [utils.transforms :as types]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
@@ -30,25 +26,7 @@
              {:id         :new-wallet-account-created
               :icon       :i/correct
               :icon-color colors/success-50
-              :text       (i18n/label :t/account-created {:name (:name account)})}]]]})))
-
-(rf/reg-event-fx :wallet/navigate-to-account
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}))
-
-(rf/reg-event-fx :wallet/navigate-to-new-account
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch-later
-          [{:dispatch [:navigate-back]
-            :ms       100}
-           {:dispatch [:navigate-back]
-            :ms       100}
-           {:dispatch [:navigate-to :wallet-accounts address]
-            :ms       300}]]
-         [:dispatch [:wallet/show-account-created-toast address]]]}))
+              :text       (i18n/label :t/account-created {:name name})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
@@ -409,14 +387,14 @@
          value_              0.005
          network-preferences [5]
          gas-rates           0 ;low
-         amount-in           (utils.money/mul (utils.money/bignumber value_)
-                                              (utils.money/from-decimal token-decimal))
+         amount-in           (money/mul (money/bignumber value_)
+                                        (money/from-decimal token-decimal))
          from-address        wallet-address
          to-address          wallet-address
          request-params      [0
                               from-address
                               to-address
-                              (utils.money/to-hex amount-in)
+                              (money/to-hex amount-in)
                               token-id
                               []
                               []
