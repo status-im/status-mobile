@@ -208,7 +208,7 @@
 
 (defn view-internal
   [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number
-           epoch-number counter total-box customization-color state-arbitrum state-optimism state-mainnet optimism-progress-percentage arbitrum-progress-percentage]
+           epoch-number-mainnet epoch-number-arbitrum epoch-number-optimism counter total-box customization-color state-arbitrum state-optimism state-mainnet optimism-progress-percentage arbitrum-progress-percentage]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
@@ -227,14 +227,14 @@
                                  {:theme theme
                                   :state state-mainnet
                                   :network :mainnet
-                                  :epoch-number epoch-number
+                                  :epoch-number epoch-number-mainnet
                                   :counter @counter}]
                                 [progress-boxes state-mainnet @counter total-box customization-color]]
       :optimism-arbitrum [:<>
                           [status-row {:theme theme
                                        :state state-arbitrum
                                        :network :arbitrum
-                                       :epoch-number epoch-number}]
+                                       :epoch-number epoch-number-arbitrum}]
                           [progress-boxes-arbitrum-optimism {:state state-arbitrum
                                                              :network :arbitrum
                                                              :bottom-large? false
@@ -243,7 +243,7 @@
                           [status-row {:theme theme
                                        :state state-optimism
                                        :network :optimism
-                                       :epoch-number epoch-number}]
+                                       :epoch-number epoch-number-optimism}]
                           [progress-boxes-arbitrum-optimism {:state state-optimism
                                                              :network :optimism
                                                              :bottom-large? true
@@ -253,7 +253,7 @@
                                 [status-row {:theme theme
                                              :state state-arbitrum
                                              :network :arbitrum
-                                             :epoch-number epoch-number}]
+                                             :epoch-number epoch-number-arbitrum}]
                                 [progress-boxes-arbitrum-optimism {:state state-arbitrum
                                                                    :network :arbitrum
                                                                    :bottom-large? false
@@ -263,7 +263,7 @@
                                 [status-row {:theme theme
                                        :state state-optimism
                                        :network :optimism
-                                       :epoch-number epoch-number}]
+                                       :epoch-number epoch-number-optimism}]
                                 [progress-boxes-arbitrum-optimism {:state state-optimism
                                                                    :network :optimism
                                                                    :bottom-large? true
