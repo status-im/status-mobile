@@ -1,14 +1,13 @@
 (ns status-im2.contexts.wallet.collectible.view
   (:require
-    [utils.ethereum.chain :as chain]
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.scroll-page.view :as scroll-page]
     [status-im2.contexts.wallet.collectible.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [clojure.string :as str]))
+    [utils.re-frame :as rf]))
 
 (defn header
   [{:keys [name description collection-image-url]}]
@@ -87,7 +86,7 @@
   (let [network         (rf/sub [:wallet/network-details-by-chain-id
                                  chain-id])
         network-keyword (get network :network-name)
-        network-name    (str/capitalize (name network-keyword))]
+        network-name    (string/capitalize (name network-keyword))]
     [rn/view
      {:style style/info-container}
      [rn/view {:style style/account}
