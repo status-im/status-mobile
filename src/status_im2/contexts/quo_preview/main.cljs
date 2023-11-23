@@ -166,6 +166,7 @@
     [status-im2.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im2.contexts.quo-preview.wallet.account-overview :as
      account-overview]
+    [status-im2.contexts.quo-preview.wallet.confirmation-progress :as confirmation-progress]
     [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
@@ -455,6 +456,7 @@
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/view}
+                       {:name :confirmation-progress :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
                        {:name :network-amount :component network-amount/view}
                        {:name :network-bridge :component network-bridge/view}
