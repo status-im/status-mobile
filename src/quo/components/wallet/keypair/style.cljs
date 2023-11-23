@@ -28,3 +28,9 @@
   {:flex-direction  :row
    :align-items     :center
    :justify-content :space-between})
+
+(defn subtitle
+  [blur? theme]
+  {:color (if blur?
+            colors/white-opa-40
+            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
