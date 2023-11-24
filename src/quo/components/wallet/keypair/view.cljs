@@ -11,6 +11,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
@@ -18,11 +19,6 @@
   [full-name]
   (let [first-name (first (string/split full-name #" "))]
     (i18n/label :t/keypair-title {:name first-name})))
-
-(defn details-string
-  [address stored]
-  (str (when address (str address " ∙ "))
-       (if (= stored :on-device) (i18n/label :t/on-device) (i18n/label :t/on-keycard))))
 
 (defn avatar
   [{{:keys [full-name]} :details
@@ -67,15 +63,21 @@
   [{:keys [details stored blur? theme]}]
   (let [{:keys [address]} details]
     [rn/view
-     {:style {:flex-direction :row
-              :align-items    :center}}
+     {:style               {:flex-direction :row
+                            :align-items    :center}
+      :accessibility-label :details}
      [text/text
-      {:size                :paragraph-2
-       :accessibility-label :details
-       :style               {:color (if blur?
-                                      colors/white-opa-40
-                                      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-      (details-string address stored)]
+      {:size  :paragraph-2
+       :style (style/subtitle blur? theme)}
+      address]
+     [text/text
+      {:size  :paragraph-2
+       :style (merge (style/subtitle blur? theme) {:bottom (if platform/ios? 2 -2)})}
+      " ∙ "]
+     [text/text
+      {:size  :paragraph-2
+       :style (style/subtitle blur? theme)}
+      (if (= stored :on-device) (i18n/label :t/on-device) (i18n/label :t/on-keycard))]
      (when (= stored :on-keycard)
        [rn/view {:style {:margin-left 4}}
         [icon/icon :i/keycard-card
