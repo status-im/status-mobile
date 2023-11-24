@@ -27,6 +27,7 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.profile.settings.view :as settings]
     [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.activity-center.view :as activity-center]
@@ -117,6 +118,10 @@
 
     {:name      :community-overview
      :component communities.overview/overview}
+
+    {:name      :settings
+     :options   options/transparent-screen-options
+     :component settings/view}
 
     {:name      :settings-syncing
      :options   (merge options/dark-screen {:insets {:top? true}})

@@ -101,6 +101,7 @@
     quo.components.numbered-keyboard.keyboard-key.view
     quo.components.numbered-keyboard.numbered-keyboard.view
     quo.components.onboarding.small-option-card.view
+    quo.components.overlay.view
     quo.components.password.tips.view
     quo.components.profile.collectible.view
     quo.components.profile.profile-card.view
@@ -315,6 +316,9 @@
 (def count-down-circle quo.components.notifications.count-down-circle/circle-timer)
 (def notification quo.components.notifications.notification.view/notification)
 (def toast quo.components.notifications.toast.view/toast)
+
+;;;; Overlay
+(def overlay quo.components.overlay.view/view)
 
 ;;;; Password
 (def tips quo.components.password.tips.view/view)

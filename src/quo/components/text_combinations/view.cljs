@@ -27,7 +27,8 @@
            description-accessibility-label
            button-icon
            button-on-press
-           customization-color]}]
+           customization-color
+           emoji-hash]}]
   [rn/view {:style container-style}
    [rn/view
     {:style {:flex-direction  :row
@@ -55,6 +56,11 @@
        :weight              :regular
        :size                :paragraph-1
        :style               style/description-description-text}
-      description])])
+      description])
+   (when emoji-hash
+     [text/text
+      {:number-of-lines 1
+       :style           style/emoji-hash}
+      emoji-hash])])
 
 (def view (theme/with-theme view-internal))
