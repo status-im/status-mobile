@@ -2,11 +2,8 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.utils.deprecated-types :as types]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [status-im.config :as config]
-    [utils.re-frame :as rf]))
+    [status-im.config :as config]))
 
 (defn- add-custom-bootnodes
   [config network all-bootnodes]
@@ -196,32 +193,4 @@
       :always
       (add-log-level log-level))))
 
-(defn get-new-config
-  [db]
-  (types/clj->json (get-multiaccount-node-config db)))
 
-(rf/defn save-new-config
-  "Saves a new status-go config for the current account
-   This RPC method is the only way to change the node config of an account.
-   NOTE: it is better used indirectly through `prepare-new-config`,
-    which will take care of building up the proper config based on settings in
-app-db"
-  {:events [::save-new-config]}
-  [_ config {:keys [on-success]}]
-  {:json-rpc/call [{:method     "settings_saveSetting"
-                    :params     [:node-config config]
-                    :on-success on-success}]})
-
-(rf/defn prepare-new-config
-  "Use this function to apply settings to the current account node config"
-  [{:keys [db]} {:keys [on-success]}]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {::prepare-new-config [key-uid
-                           (get-new-config db)
-                           #(re-frame/dispatch
-                             [::save-new-config % {:on-success on-success}])]}))
-
-(re-frame/reg-fx
- ::prepare-new-config
- (fn [[key-uid config callback]]
-   (native-module/prepare-dir-and-update-config key-uid config callback)))

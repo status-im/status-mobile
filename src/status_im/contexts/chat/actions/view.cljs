@@ -4,6 +4,16 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn fetch-messages
+  [chat-id]
+  {:icon                :i/download
+   :right-icon          :i/chevron-right
+   :accessibility-label :chat-fetch-messages
+   :on-press            (fn []
+                          (rf/dispatch [:hide-bottom-sheet])
+                          (rf/dispatch [:chat/fetch-messages chat-id]))
+   :label               (i18n/label :t/fetch-messages)})
+
 (defn new-chat
   []
   [quo/action-drawer

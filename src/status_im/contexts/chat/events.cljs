@@ -442,3 +442,11 @@
     (when (and id
                (not= (:current-chat-id db) (str community-id id)))
       (navigate-to-chat cofx (str community-id id) nil))))
+
+(rf/defn fetch-messages
+  {:events [:chat/fetch-messages]}
+  [_ chat-id]
+  {:json-rpc/call [{:method     "wakuext_fetchMessages"
+                    :params     [{:id chat-id}]
+                    :on-success #()
+                    :on-error   #(log/error "failed to fetch messages for chat" chat-id %)}]})

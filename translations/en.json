@@ -2383,6 +2383,7 @@
     "edit-derivation-path": "Edit derivation path",
     "path-format": "Path format",
     "reset": "Reset",
+    "light-client-enabled": "Light client",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
     "sign transactions": "sign transactions",
