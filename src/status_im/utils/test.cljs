@@ -117,6 +117,9 @@
     :isAddress
     (fn [address] (.isAddress native-status address))
 
+    :fleets
+    (fn [] (.fleets native-status))
+
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
 

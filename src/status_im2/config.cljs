@@ -170,3 +170,5 @@
 (def default-kdf-iterations 3200)
 
 (def shell-navigation-disabled? false)
+(def community-accounts-selection-enabled? false)
+(def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))

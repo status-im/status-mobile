@@ -523,8 +523,7 @@
         (error-object->map response)]))}))
 
 (defn save-multiaccount-and-login
-  [args]
-  (keycard/save-multiaccount-and-login card args))
+  [_])
 
 (defn login
   [args]

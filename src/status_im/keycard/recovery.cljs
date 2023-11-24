@@ -17,7 +17,6 @@
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.datetime :as datetime]
-    [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -152,6 +151,7 @@
              :keycard/check-nfc-enabled nil}
             (intro-wizard)))
 
+;; NOTE: currently non functional, keycard needs to be reimplemented
 (rf/defn create-keycard-multiaccount
   {:events       [::create-keycard-multiaccount]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
@@ -182,27 +182,7 @@
     (rf/merge cofx
               {:db (-> db
                        (assoc-in [:keycard :setup-step] nil)
-                       (dissoc :intro-wizard))}
-              (multiaccounts.create/on-multiaccount-created
-               {:recovered            (or recovered (get-in db [:intro-wizard :recovering?]))
-                :derived              {constants/path-wallet-root-keyword
-                                       {:public-key wallet-root-public-key
-                                        :address    (eip55/address->checksum wallet-root-address)}
-                                       constants/path-whisper-keyword
-                                       {:public-key whisper-public-key
-                                        :address    (eip55/address->checksum whisper-address)}
-                                       constants/path-default-wallet-keyword
-                                       {:public-key wallet-public-key
-                                        :address    (eip55/address->checksum wallet-address)}}
-                :address              address
-                :public-key           public-key
-                :keycard-instance-uid instance-uid
-                :key-uid              (address/normalized-hex key-uid)
-                :keycard-pairing      pairing
-                :keycard-paired-on    paired-on
-                :chat-key             whisper-private-key}
-               encryption-public-key
-               {}))))
+                       (dissoc :intro-wizard))})))
 
 (rf/defn return-to-keycard-login
   [{:keys [db] :as cofx}]

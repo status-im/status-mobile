@@ -40,23 +40,6 @@
                               config
                               #(callback (types/json->clj %))))
 
-(defn save-account-and-login
-  "NOTE: beware, the password has to be sha3 hashed"
-  [key-uid multiaccount-data hashed-password settings config accounts-data]
-  (log/debug "[native-module] save-account-and-login"
-             "multiaccount-data"
-             multiaccount-data)
-  (clear-web-data)
-  (init-keystore
-   key-uid
-   #(.saveAccountAndLogin
-     ^js (status)
-     multiaccount-data
-     hashed-password
-     settings
-     config
-     accounts-data)))
-
 (defn save-multiaccount-and-login-with-keycard
   "NOTE: chat-key is a whisper private key sent from keycard"
   [key-uid multiaccount-data password settings config accounts-data chat-key]
@@ -535,6 +518,10 @@
 (defn backup-disabled-data-dir
   []
   (.backupDisabledDataDir ^js (status)))
+
+(defn fleets
+  []
+  (.fleets ^js (status)))
 
 (defn keystore-dir
   []

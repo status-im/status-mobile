@@ -64,6 +64,25 @@
    public-key))
 
 (re-frame/reg-sub
+ :profile/webview-debug
+ :<- [:profile/profile]
+ (fn [{:keys [webview-debug]}]
+   webview-debug))
+
+(re-frame/reg-sub
+ :profile/light-client-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (get-in profile [:wakuv2-config :LightClient])))
+
+(re-frame/reg-sub
+ :profile/test-networks-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (:test-networks-enabled? profile)))
+
+
+(re-frame/reg-sub
  :multiaccount/contact
  :<- [:profile/profile]
  (fn [current-account]
@@ -111,12 +130,6 @@
  :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :log-level)))
-
-(re-frame/reg-sub
- :waku/bloom-filter-mode
- :<- [:profile/profile]
- (fn [multiaccount]
-   (boolean (get multiaccount :waku-bloom-filter-mode))))
 
 (re-frame/reg-sub
  :waku/v2-flag
