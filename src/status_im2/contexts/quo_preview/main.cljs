@@ -456,7 +456,8 @@
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/view}
-                       {:name :confirmation-progress :component confirmation-progress/view}
+                       {:name      :confirmation-progress 
+                        :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
                        {:name :network-amount :component network-amount/view}
                        {:name :network-bridge :component network-bridge/view}
