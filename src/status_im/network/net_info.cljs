@@ -31,8 +31,8 @@
   (let [old-network-status  (:network-status db)
         old-network-type    (:network/type db)
         connectivity-status (if isConnected :online :offline)
-        status-changed?     (= connectivity-status old-network-status)
-        type-changed?       (= type old-network-type)]
+        status-changed?     (not= connectivity-status old-network-status)
+        type-changed?       (not= type old-network-type)]
     (log/debug "[net-info]"
                "old-network-status"  old-network-status
                "old-network-type"    old-network-type
@@ -40,9 +40,9 @@
                "type"                type
                "details"             details)
     (rf/merge cofx
-              (when-not status-changed?
+              (when status-changed?
                 (change-network-status isConnected))
-              (when-not type-changed?
+              (when type-changed?
                 (change-network-type old-network-type type (:is-connection-expensive details))))))
 
 (defn add-net-info-listener
