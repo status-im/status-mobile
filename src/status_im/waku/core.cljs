@@ -2,22 +2,11 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [status-im.node.core :as node]
     [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(rf/defn switch-waku-bloom-filter-mode
-  {:events [:multiaccounts.ui/waku-bloom-filter-mode-switched]}
-  [cofx enabled?]
-  (rf/merge cofx
-            (multiaccounts.update/multiaccount-update
-             :waku-bloom-filter-mode
-             enabled?
-             {})
-            (node/prepare-new-config
-             {:on-success #(re-frame/dispatch [:logout])})))
 
 (def address-regex #"/ip4/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/tcp/\d{1,5}/p2p/[a-zA-Z0-9]+")
 
@@ -108,13 +97,16 @@
                        vals
                        (map #(vector (:name %1) (:address %1)))
                        (into {}))]
-    (rf/merge cofx
-              {:db       (-> db
-                             (assoc-in [:profile/profile :wakuv2-config :CustomNodes] new-nodes)
-                             (dissoc :wakuv2-nodes/manage :wakuv2-nodes/list))
-               :dispatch [:navigate-back]}
-              (node/prepare-new-config
-               {:on-success #(re-frame/dispatch [:logout])}))))
+    {:db            (-> db
+                        (assoc-in [:profile/profile :wakuv2-config :CustomNodes] new-nodes)
+                        (dissoc :wakuv2-nodes/manage :wakuv2-nodes/list))
+     :json-rpc/call [{:method     "wakuext_setCustomNodes"
+                      :params     [{:customNodes new-nodes}]
+                      :on-success #(log/info "updated custom nodes")
+                      :on-error   #(log/error "failed to set custom nodes"
+                                              {:error        %
+                                               :custom-nodes new-nodes})}]
+     :dispatch      [:navigate-back]}))
 
 (rf/defn show-delete-node-confirmation
   {:events [:wakuv2.ui/delete-pressed]}
@@ -131,3 +123,17 @@
   (rf/merge cofx
             (delete id)
             (navigation/navigate-back)))
+
+(rf/defn toggle-light-client
+  {:events [:wakuv2.ui/toggle-light-client]}
+  [{:keys [db]} enabled?]
+  {:db            (assoc-in db [:profile/profile :wakuv2-config :LightClient] enabled?)
+
+   :json-rpc/call [{:method     "wakuext_setLightClient"
+                    :params     [{:enabled enabled?}]
+                    :on-success (fn []
+                                  (log/info "light client set successfully" enabled?)
+                                  (re-frame/dispatch [:logout]))
+                    :on-error   #(log/error "failed to set light client"
+                                            {:error    %
+                                             :enabled? enabled?})}]})

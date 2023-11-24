@@ -489,14 +489,15 @@
   (log/warn "sign-typed-data not implemented" args))
 
 (defn save-multiaccount-and-login
-  [{:keys [key-uid multiaccount-data password settings node-config accounts-data]}]
-  (native-module/save-account-and-login
-   key-uid
-   (types/clj->json multiaccount-data)
-   password
-   (types/clj->json settings)
-   node-config
-   (types/clj->json accounts-data)))
+  [_]
+  ;; NOTE: disabling as we don't support keycard for now and it's using an outdated endpoint
+  #_(native-module/save-account-and-login
+     key-uid
+     (types/clj->json multiaccount-data)
+     password
+     (types/clj->json settings)
+     node-config
+     (types/clj->json accounts-data)))
 
 (defn login
   [{:keys [key-uid multiaccount-data password]}]

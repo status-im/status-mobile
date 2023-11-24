@@ -64,6 +64,18 @@
    public-key))
 
 (re-frame/reg-sub
+ :profile/webview-debug
+ :<- [:profile/profile]
+ (fn [{:keys [webview-debug]}]
+   webview-debug))
+
+(re-frame/reg-sub
+ :profile/light-client-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (get-in profile [:wakuv2-config :LightClient])))
+
+(re-frame/reg-sub
  :multiaccount/contact
  :<- [:profile/profile]
  (fn [current-account]

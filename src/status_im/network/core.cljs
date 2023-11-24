@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.node.core :as node]
     [status-im2.navigation.events :as navigation]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
@@ -117,12 +116,10 @@
 (rf/defn save-network-settings
   {:events [::save-network-settings-pressed]}
   [{:keys [db] :as cofx} network]
-  (rf/merge cofx
-            {:db            (assoc db :networks/current-network network)
-             :json-rpc/call [{:method     "settings_saveSetting"
-                              :params     [:networks/current-network network]
-                              :on-success #()}]}
-            (node/prepare-new-config {:on-success #(re-frame/dispatch [:logout])})))
+  {:db            (assoc db :networks/current-network network)
+   :json-rpc/call [{:method     "settings_saveSetting"
+                    :params     [:networks/current-network network]
+                    :on-success #(re-frame/dispatch [:logout])}]})
 
 (rf/defn remove-network
   {:events [::remove-network-confirmed]}

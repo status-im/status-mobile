@@ -3,7 +3,6 @@
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im.node.core :as node]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -78,10 +77,9 @@
   [{:keys [db now] :as cofx} fleet]
   (let [old-fleet (get-in db [:profile/profile :fleet])]
     (when (not= fleet old-fleet)
-      (rf/merge
+      (multiaccounts.update/multiaccount-update
        cofx
-       (multiaccounts.update/multiaccount-update :fleet fleet {})
-       (node/prepare-new-config
-        {:on-success
-         #(re-frame/dispatch
-           [:multiaccounts.update.callback/save-settings-success])})))))
+       :fleet
+       fleet
+       {:on-success
+        #(re-frame/dispatch [:logout])}))))

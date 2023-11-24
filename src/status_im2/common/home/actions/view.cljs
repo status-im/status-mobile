@@ -6,8 +6,10 @@
     [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im2.common.mute-drawer.view :as mute-drawer]
     [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.config :as config]
     [status-im2.constants :as constants]
-    [status-im2.contexts.communities.actions.chat.view :as chat-actions]
+    [status-im2.contexts.chat.actions.view :as chat-actions]
+    [status-im2.contexts.communities.actions.chat.view :as communities-chat-actions]
     [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -253,16 +255,6 @@
           :chevron?            true
           :add-divider?        add-divider?}))
 
-;; TODO(OmarBasem): Requires design input.
-(defn fetch-messages-entry
-  []
-  (entry {:icon                :i/save
-          :label               (i18n/label :t/fetch-messages)
-          :on-press            #(js/alert "TODO: to be implemented, requires design input")
-          :danger?             false
-          :accessibility-label :fetch-messages
-          :sub-label           nil
-          :chevron?            true}))
 
 (defn remove-from-contacts-entry
   [contact]
@@ -419,8 +411,8 @@
   [(mark-as-read-entry chat-id needs-divider?)
    (mute-chat-entry chat-id chat-type muted-till)
    (notifications-entry false)
-   (when inside-chat?
-     (fetch-messages-entry))
+   (when (and config/fetch-messages-enabled? inside-chat?)
+     (chat-actions/fetch-messages chat-id))
    (when (or (not group-chat) public?)
      (show-qr-entry))
    (when-not group-chat
@@ -481,7 +473,7 @@
     constants/private-group-chat-type
     [private-group-chat-actions chat inside-chat?]
     constants/community-chat-type
-    [chat-actions/actions chat inside-chat?]
+    [communities-chat-actions/actions chat inside-chat?]
     nil))
 
 (defn group-details-actions

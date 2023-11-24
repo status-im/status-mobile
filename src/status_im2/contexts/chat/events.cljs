@@ -434,3 +434,11 @@
   {:events [:chat/check-last-chat]}
   [{:keys [db]}]
   {:effects.chat/open-last-chat (get-in db [:profile/profile :key-uid])})
+
+(rf/defn fetch-messages
+  {:events [:chat/fetch-messages]}
+  [_ chat-id]
+  {:json-rpc/call [{:method     "wakuext_fetchMessages"
+                    :params     [{:id chat-id}]
+                    :on-success #()
+                    :on-error   #(log/error "failed to fetch messages for chat" chat-id %)}]})
