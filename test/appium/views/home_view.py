@@ -427,8 +427,11 @@ class HomeView(BaseView):
         chat = self.get_chat_view()
         self.start_a_new_chat_bottom_sheet_button.click()
         for user_name in user_names_to_add:
-            chat.get_username_checkbox(user_name).click_until_presence_of_element(
-                chat.get_username_checkbox(user_name, state_on=True))
+            check_box = chat.get_username_checkbox(user_name)
+            if not check_box.is_element_displayed():
+                raise NoSuchElementException(
+                    "User with the name '%s' is not in contacts list so can't create a group chat" % user_name)
+            check_box.click_until_presence_of_element(chat.get_username_checkbox(user_name, state_on=True))
         self.setup_chat_button.click()
         chat.chat_name_editbox.send_keys(group_chat_name)
         chat.create_button.click()

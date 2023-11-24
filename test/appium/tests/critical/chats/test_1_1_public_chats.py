@@ -161,13 +161,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Check 'Open in Status' option")
         # url_to_open = 'http://status.app'
-        url_to_open = 'https://github.com/'
+        url_to_open = 'https://www.ethereum.org/en/run-a-node/'
         self.chat_1.send_message(url_to_open)
         chat_element = self.chat_2.chat_element_by_text(url_to_open)
         if chat_element.is_element_displayed(120):
             chat_element.click_on_link_inside_message_body()
             web_view = self.chat_2.open_in_status_button.click()
-            if not web_view.element_by_text("Let’s build from here").is_element_displayed(60):
+            if not web_view.element_by_text("Take full control. Run your own node.").is_element_displayed(60):
                 self.errors.append('URL was not opened from 1-1 chat')
         else:
             self.errors.append("Message with URL was not received")
@@ -517,7 +517,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="new_seven_2")
+@pytest.mark.xdist_group(name="new_six_2")
 @marks.new_ui_critical
 class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase):
 
