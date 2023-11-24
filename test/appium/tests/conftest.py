@@ -1,15 +1,15 @@
 import os
 import re
 import signal
-import requests
+import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from http.client import RemoteDisconnected
 from os import environ
-import time
 
 import pytest
+import requests
 from _pytest.runner import runtestprotocol
 from requests.exceptions import ConnectionError as c_er
 
@@ -182,13 +182,12 @@ class UploadApkException(Exception):
 
 def _upload_and_check_response(apk_file_path):
     with _upload_time_limit(1000):
-        with open(apk_file_path, 'rb') as f:
-            resp = sauce.storage._session.request('post', '/v1/storage/upload', files={'payload': f})
+        resp = sauce.storage.upload(apk_file_path)
 
     try:
-        if resp['item']['name'] != test_suite_data.apk_name:
+        if resp.name != test_suite_data.apk_name:
             raise UploadApkException("Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
-    except KeyError:
+    except AttributeError:
         raise UploadApkException("Error when uploading apk to Sauce storage, response:\n%s" % resp)
 
 
