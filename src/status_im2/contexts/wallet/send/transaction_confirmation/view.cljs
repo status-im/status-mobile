@@ -9,7 +9,8 @@
     [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im2.common.standard-authentication.core :as standard-auth]))
 
 (defn- transaction-title
   []
@@ -166,6 +167,7 @@
                                                            :name  "New house"
                                                            :emoji "🍔"})}]
     (fn [{:keys [theme]}]
+      (rn/use-effect #(rf/dispatch [:wallet/get-suggested-routes]) [])
       [rn/view {:style {:flex 1}}
        [quo/gradient-cover {:customization-color :purple}]
        [rn/view {:style (style/container margin-top)}
@@ -181,13 +183,13 @@
         [transaction-to user-props theme]
         [transaction-details theme]
         [rn/view {:style style/slide-button-container}
-         [quo/slide-button
-          {:size                :size/s-48
+         [standard-auth/slide-button
+          {:size                :size-40
+           :track-text          (i18n/label :t/slide-to-send)
            :customization-color :purple
-           :on-reset            (when @reset-slider? #(reset! reset-slider? false))
-           :on-complete         #(js/alert "Not implemented yet")
-           :track-icon          (if biometric-auth? :i/face-id :password)
-           :track-text          (i18n/label :t/slide-to-send)}]]]])))
+           :on-enter-password   #(rf/dispatch [:wallet/send-transaction])
+           :biometric-auth?     biometric-auth?
+           :auth-button-label   (i18n/label :t/confirm)}]]]])))
 
 (defn view-internal
   [props]

@@ -14,6 +14,7 @@
 (defn authorize
   [{:keys [on-enter-password biometric-auth? on-auth-success on-auth-fail on-close
            auth-button-label theme blur? auth-button-icon-left]}]
+  (println auth-button-label "dasasdasdadsdas")
   (biometric/get-supported-type
    (fn [biometric-type]
      (if (and biometric-auth? biometric-type)
@@ -30,7 +31,8 @@
                                       :shell?  blur?
                                       :content (fn []
                                                  [enter-password/view
-                                                  {:on-enter-password on-enter-password}])}]))})
+                                                  {:button-label      auth-button-label
+                                                   :on-enter-password on-enter-password}])}]))})
        (do
          (reset-password)
          (rf/dispatch [:show-bottom-sheet

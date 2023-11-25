@@ -376,14 +376,23 @@
             :on-error   #(log/info "failed to get address details"
                                    {:error %
                                     :event :wallet/get-address-details})}]]]}))
+(rf/reg-event-fx :wallet/send-select-token
+ (fn [{:keys [db]} [token stack-id]]
+   {:db (assoc-in db [:wallet :ui :send :token] token)
+    :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+
+(rf/reg-event-fx :wallet/suggested-routes-success
+ (fn [{:keys [db]} [transaction]]
+   {:db (assoc-in db [:wallet :ui :send :transaction] transaction)}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
- (fn [{:keys [db]} {:keys []}]
+ (fn [{:keys [db]}]
    (let [wallet-address      (get-in db [:wallet :current-viewing-account-address])
          tokens              (get-in db [:wallet :accounts])
          account             (get-in db [:wallet :accounts wallet-address])
+         token               (get-in db [:wallet :ui :send :token])
          token-decimal       18
-         token-id            "ETH"
+         token-id            (:symbol token)
          value_              0.005
          network-preferences [5]
          gas-rates           0 ;low
@@ -401,10 +410,12 @@
                               network-preferences
                               gas-rates
                               {}]]
-
+     (println token "fdsfsdfsfdfs")
      {:json-rpc/call [{:method     "wallet_getSuggestedRoutes"
                        :params     request-params
-                       :on-success #(rf/dispatch [:wallet/send-transaction % from-address to-address])
+                       :on-success (fn [transaction]
+                                     (println transaction "suggested routes success")
+                                     (rf/dispatch [:wallet/suggested-routes-success transaction]))
                        :on-error   (fn [error]
                                      (log/error "failed to get suggested routes"
                                                 {:event  :wallet/get-suggested-routes
@@ -412,9 +423,11 @@
                                                  :params request-params}))}]})))
 
 (rf/reg-event-fx :wallet/send-transaction
- (fn [{:keys [db]} [transaction from-address to-address]]
-   (prn transaction)
-   (let [best (first (:Best transaction))
+ (fn [{:keys [db]}]
+   (let [transaction (get-in db [:wallet :ui :send :transaction])
+         from-address (get-in db [:wallet :current-viewing-account-address])
+         to-address (get db :wallet/send-address)
+         best (first (:Best transaction))
          from (:From best)
          to (:To best)
          from-asset (:nativeCurrencySymbol from)
