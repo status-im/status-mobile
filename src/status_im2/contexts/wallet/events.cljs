@@ -223,6 +223,14 @@
 
 (rf/reg-event-fx :wallet/clear-stored-collectibles clear-stored-collectibles)
 
+(defn store-last-collectible-details
+  [{:keys [db]} [collectible]]
+  {:db (assoc-in db
+        [:wallet :last-collectible-details]
+        collectible)})
+
+(rf/reg-event-fx :wallet/store-last-collectible-details store-last-collectible-details)
+
 (rf/reg-event-fx
  :wallet/request-collectibles
  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
@@ -258,6 +266,32 @@
          [:dispatch
           [:wallet/request-collectibles
            {:start-at-index start-at-index}]])]})))
+
+(rf/reg-event-fx :wallet/get-collectible-details
+ (fn [_ [collectible-id]]
+   (let [request-id               0
+         collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
+         request-params           [request-id [collectible-id-converted]]]
+     {:json-rpc/call [{:method   "wallet_getCollectiblesDetailsAsync"
+                       :params   request-params
+                       :on-error (fn [error]
+                                   (log/error "failed to request collectible"
+                                              {:event  :wallet/get-collectible-details
+                                               :error  error
+                                               :params request-params}))}]})))
+
+(rf/reg-event-fx :wallet/get-collectible-details-done
+ (fn [_ [{:keys [message]}]]
+   (let [response               (cske/transform-keys csk/->kebab-case-keyword
+                                                     (types/json->clj message))
+         {:keys [collectibles]} response
+         collectible            (first collectibles)]
+     (if collectible
+       {:fx
+        [[:dispatch [:wallet/store-last-collectible-details collectible]]]}
+       (log/error "failed to get collectible details"
+                  {:event    :wallet/get-collectible-details-done
+                   :response response})))))
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [address]]

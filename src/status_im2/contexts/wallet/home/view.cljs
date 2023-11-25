@@ -53,10 +53,7 @@
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
           [quo/wallet-overview (temp/wallet-overview-state networks)]]
-         [rn/pressable
-          {:on-long-press #(rf/dispatch [:show-bottom-sheet
-                                         {:content temp/wallet-temporary-navigation}])}
-          [quo/wallet-graph {:time-frame :empty}]]
+         [quo/wallet-graph {:time-frame :empty}]
          [rn/flat-list
           {:style                             style/accounts-list
            :content-container-style           style/accounts-list-container

@@ -82,4 +82,7 @@
     "wallet-owned-collectibles-filtering-done" {:fx [[:dispatch
                                                       [:wallet/owned-collectibles-filtering-done
                                                        event]]]}
+    "wallet-get-collectibles-details-done"     {:fx [[:dispatch
+                                                      [:wallet/get-collectible-details-done
+                                                       event]]]}
     (log/warn ::unknown-wallet-event :type type :event event)))
