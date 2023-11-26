@@ -21,11 +21,13 @@
         :style                   {:flex 1}
         :content-container-style {:align-items :center}
         :num-columns             2
-        :render-fn               (fn [{:keys [preview-url]}]
+        :render-fn               (fn [{:keys [preview-url id]}]
                                    [quo/collectible
                                     {:images   [preview-url]
-                                     :on-press #(rf/dispatch
-                                                 [:navigate-to
-                                                  :wallet-collectible])}])}])))
+                                     :on-press (fn []
+                                                 (rf/dispatch [:wallet/get-collectible-details id])
+                                                 (rf/dispatch
+                                                  [:navigate-to
+                                                   :wallet-collectible]))}])}])))
 
 (def view (quo.theme/with-theme view-internal))

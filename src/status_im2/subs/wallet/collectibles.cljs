@@ -18,3 +18,9 @@
           (assoc collectible :preview-url (preview-url collectible)))
         (:collectibles wallet))))
 
+(re-frame/reg-sub
+ :wallet/last-collectible-details
+ :<- [:wallet]
+ (fn [wallet]
+   (let [last-collectible (:last-collectible-details wallet)]
+     (assoc last-collectible :preview-url (preview-url last-collectible)))))

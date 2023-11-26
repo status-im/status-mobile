@@ -4,17 +4,18 @@
     [react-native.core :as rn]
     [status-im2.common.scroll-page.view :as scroll-page]
     [status-im2.contexts.wallet.collectible.style :as style]
-    [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn header
-  [{:keys [name description collection-image]}]
+  [{:keys [name description collection-image-url]}]
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
      :size   :heading-1} name]
-   [rn/view style/collection-container
-    [quo/collection-avatar {:image collection-image}]
+   [rn/view {:style style/collection-container}
+    [rn/view {:style style/collection-avatar-container}
+     [quo/collection-avatar {:image collection-image-url}]]
     [quo/text
      {:weight :semi-bold
       :size   :paragraph-1}
@@ -57,25 +58,26 @@
 
 (defn traits-section
   [traits]
-  [rn/view {:style style/traits-section}
-   [quo/section-label
-    {:section (i18n/label :t/traits)}]]
-
-  [rn/flat-list
-   {:render-fn               (fn [{:keys [title subtitle]}]
-                               [rn/view {:style style/traits-item}
-                                [quo/data-item
-                                 {:description :default
-                                  :card?       true
-                                  :status      :default
-                                  :size        :default
-                                  :title       title
-                                  :subtitle    subtitle}]])
-    :data                    traits
-    :key                     :collectibles-list
-    :key-fn                  :id
-    :num-columns             2
-    :content-container-style style/traits-container}])
+  (when (pos? (count traits))
+    [rn/view
+     [quo/section-label
+      {:section         (i18n/label :t/traits)
+       :container-style style/traits-title-container}]
+     [rn/flat-list
+      {:render-fn               (fn [{:keys [trait-type value]}]
+                                  [quo/data-item
+                                   {:description     :default
+                                    :card?           true
+                                    :status          :default
+                                    :size            :default
+                                    :title           trait-type
+                                    :subtitle        value
+                                    :container-style style/traits-item}])
+       :data                    traits
+       :key                     :collectibles-list
+       :key-fn                  :id
+       :num-columns             2
+       :content-container-style style/traits-container}]]))
 
 (defn info
   []
@@ -103,7 +105,8 @@
 
 (defn view
   []
-  (let [{:keys [name description image traits] :as props} temp/collectible-details]
+  (let [collectible-details                           (rf/sub [:wallet/last-collectible-details])
+        {:keys [name description preview-url traits]} collectible-details]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
@@ -112,12 +115,13 @@
                        :description description
                        :right-side  [{:icon-name :i/options
                                       :on-press  #(js/alert "pressed")}]
-                       :picture     image}}
+                       :picture     preview-url}}
      [rn/view {:style style/container}
-      [rn/image
-       {:source image
-        :style  style/preview}]
-      [header props]
+      [rn/view {:style style/preview-container}
+       [rn/image
+        {:source preview-url
+         :style  style/preview}]]
+      [header collectible-details]
       [cta-buttons]
       [tabs]
       [info]

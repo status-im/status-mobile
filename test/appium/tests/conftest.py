@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from http.client import RemoteDisconnected
 from os import environ
-from time import sleep
+import time
 
 import pytest
 from _pytest.runner import runtestprotocol
@@ -169,15 +169,19 @@ def _upload_time_limit(seconds):
     signal.signal(signal.SIGALRM, signal_handler)
     signal.alarm(seconds)
     try:
+        start_time = time.time()
         yield
+        print("Apk upload took %s seconds" % round(time.time() - start_time))
     finally:
         signal.alarm(0)
+
 
 class UploadApkException(Exception):
     pass
 
+
 def _upload_and_check_response(apk_file_path):
-    with _upload_time_limit(600):
+    with _upload_time_limit(1000):
         with open(apk_file_path, 'rb') as f:
             resp = sauce.storage._session.request('post', '/v1/storage/upload', files={'payload': f})
 
@@ -187,13 +191,15 @@ def _upload_and_check_response(apk_file_path):
     except KeyError:
         raise UploadApkException("Error when uploading apk to Sauce storage, response:\n%s" % resp)
 
+
 def _upload_and_check_response_with_retries(apk_file_path, retries=3):
     for _ in range(retries):
         try:
             _upload_and_check_response(apk_file_path)
             break
         except (ConnectionError, RemoteDisconnected):
-            sleep(10)
+            time.sleep(10)
+
 
 def _download_apk(url):
     # Absolute path adde to handle CI runs.
@@ -211,6 +217,7 @@ def _download_apk(url):
         f.write(resp.content)
 
     return apk_path
+
 
 def pytest_configure(config):
     global option
