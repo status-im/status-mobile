@@ -16,14 +16,6 @@
   {:external "https://status.app"
    :internal "status-app:/"})
 
-(def links
-  {:private-chat       "%s/p/%s"
-   :community-requests "%s/cr/%s"
-   :community          "%s/c#%s"
-   :group-chat         "%s/g/%s"
-   :user               "%s/u#%s"
-   :browse             "%s/b/%s"})
-
 (rf/defn handle-browse
   [_ {:keys [url]}]
   (log/info "universal-links: handling browse" url)
