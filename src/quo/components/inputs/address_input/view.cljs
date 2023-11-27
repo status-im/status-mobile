@@ -76,9 +76,9 @@
                                          (reset! value text)
                                          (when on-change-text
                                            (on-change-text text))
-                                         (when on-detect-ens
+                                         (when (and on-detect-ens (> (count text) 0))
                                            (reset! status :loading)
-                                           (on-detect-ens text))
+                                           (on-detect-ens text #(reset! status :typing)))
                                          (when (and address? on-detect-address)
                                            (reset! status :loading)
                                            (on-detect-address text)))))

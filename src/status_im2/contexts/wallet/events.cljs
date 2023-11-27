@@ -535,8 +535,6 @@
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
 
-(defn dispatcher [event input] (fn [arg] (rf/dispatch [event input arg])))
-
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [address]]
    {:db (assoc db
@@ -556,28 +554,29 @@
                false)}))
 
 (rf/reg-event-fx :wallet/find-ens
- (fn [{:keys [db]} [input]]
+ (fn [{:keys [db]} [input cb]]
    (let [contacts (rf/sub [:contacts/active])
-         user     (merge (first contacts) {:ens-name "pedro.stateofus.eth"})
-         contacts (conj contacts user)
          result   (if (empty? input)
                     []
                     (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
-       (rf/dispatch [:wallet/search-ens input])
+       (rf/dispatch [:wallet/search-ens input cb])
        {:db (assoc db
                    :wallet/local-suggestions
-                   (map #(assoc % :type item-types/saved-address) result))}))))
+                   (map #(assoc % :type item-types/saved-address) result)
+                   :wallet/valid-ens-or-address? (not-empty result))}))))
 
 (rf/reg-event-fx :wallet/search-ens
- (fn [_ [input]]
+ (fn [_ [input cb]]
    (let [chain-id (rf/sub [:chain-id])
          ens      (if (string/includes? input ".") input (str input ".stateofus.eth"))]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]
               :on-success #(rf/dispatch [:wallet/set-ens-address %])
-              :on-error   #(rf/dispatch [:wallet/set-ens-address nil])}]]]})))
+              :on-error   (fn []
+                            (rf/dispatch [:wallet/set-ens-address nil])
+                            (cb))}]]]})))
 
 (rf/reg-event-fx :wallet/set-ens-address
  (fn [{:keys [db]} [result]]

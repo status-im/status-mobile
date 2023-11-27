@@ -61,13 +61,15 @@
         :ens-regex             constants/regx-ens
         :address-regex         constants/regx-address
         :scanned-value         (or send-address scanned-address)
-        :on-detect-ens         #(debounce/debounce-and-dispatch
-                                 [:wallet/find-ens %]
-                                 300)
         :on-detect-address     #(debounce/debounce-and-dispatch
                                  [:wallet/validate-address %]
                                  300)
+        :on-detect-ens         (fn [text cb]
+                                 (debounce/debounce-and-dispatch
+                                  [:wallet/find-ens text cb]
+                                  300))
         :on-change-text        (fn [text]
+<<<<<<< HEAD
                                  (let [starts-like-eth-address (re-matches
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -87,6 +89,13 @@
                                      (rf/dispatch [:wallet/fetch-address-suggestions text])
                                      (rf/dispatch [:wallet/clean-local-suggestions]))
                                    (reset! input-value text)))
+=======
+                                 (when-not (= scanned-address text)
+                                   (rf/dispatch [:wallet/clean-scanned-address]))
+                                 (when (empty? text)
+                                   (rf/dispatch [:wallet/clean-local-suggestions]))
+                                 (reset! input-value text))
+>>>>>>> 5e6b52646 (lint)
         :valid-ens-or-address? valid-ens-or-address?}])))
 
 (defn- ens-linked-address
@@ -198,8 +207,7 @@
             [rn/view
              {:style {:flex    1
                       :padding 8}}
-             [local-suggestions-list]
-            ]
+             [local-suggestions-list]]
             (when (> (count @input-value) 0)
               [quo/button
                {:accessibility-label :continue-button
