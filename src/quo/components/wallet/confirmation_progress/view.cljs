@@ -17,21 +17,17 @@
     :else                                                                   :pending))
 
 (defn- calculate-box-state-network-left
-  [state network]
+  [state]
   (cond
     (= state :error)                                                     :error
-    (and (= network :arbitrum) (= state :sending))                       :confirmed
     (or (= state :confirmed) (= state :finalising) (= state :finalized)) :confirmed
     :else                                                                :pending))
 
 (defn- calculate-box-state-network-right
-  [state network]
+  [state]
   (cond
     (= state :error)
     :error
-    (and (= network :arbitrum)
-         (= state :sending))
-    :confirmed
     (or (= state :confirmed)
         (= state :finalising)
         (= state :finalized))
@@ -59,15 +55,15 @@
                 :key                 n}])))])
 
 (defn- progress-boxes-arbitrum-optimism
-  [{:keys [state network bottom-large? customization-color progress-value]}]
+  [{:keys [state bottom-large? customization-color progress-value]}]
   [rn/view
    {:accessibility-label :progress-box
     :style               (style/progress-box-container bottom-large?)}
    [progress-box/view
-    {:state               (calculate-box-state-network-left state network)
+    {:state               (calculate-box-state-network-left state)
      :customization-color customization-color}]
    [progress-box/view
-    {:state               (calculate-box-state-network-right state network)
+    {:state               (calculate-box-state-network-right state)
      :full-width?         true
      :progressed-value    (calculate-progressed-value state progress-value)
      :customization-color customization-color}]])

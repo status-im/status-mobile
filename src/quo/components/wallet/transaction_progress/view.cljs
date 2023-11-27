@@ -38,9 +38,8 @@
    title])
 
 (defn- network-type-text
-  [network state]
+  [state]
   (cond
-    (and (= state :sending) (= network :arbitrum))  (i18n/label :t/confirmed-on)
     (or (= state :sending) (= state :pending))      (i18n/label :t/pending-on)
     (or (= state :confirmed) (= state :finalising)) (i18n/label :t/confirmed-on)
     (= state :finalized)                            (i18n/label :t/finalized-on)
@@ -67,10 +66,8 @@
     (get-in steps [state])))
 
 (defn- get-status-icon
-  [theme network state]
-  (cond
-    (and (= network :arbitrum)
-         (= state :sending))   [:i/positive-state (colors/resolve-color :success theme)]
+  [theme state]
+  (cond 
     (or (= state :pending)
         (= state :sending))    [:i/pending-state
                                 (colors/theme-colors colors/neutral-50
@@ -126,12 +123,12 @@
 
 (defn- status-row
   [{:keys [theme state network epoch-number counter]}]
-  (let [[status-icon color] (get-status-icon theme network state)]
+  (let [[status-icon color] (get-status-icon theme state)]
     [rn/view {:style style/status-row-container}
      [icon-internal status-icon color 16]
      [rn/view {:style style/title-text-container}
       [text-internal
-       (str (network-type-text network state) " " (get-network-text network))
+       (str (network-type-text state) " " (get-network-text network))
        {:weight :regular
         :size   :paragraph-2}]]
      [rn/view
