@@ -72,24 +72,21 @@
 
 (defn activity-indicator
   []
-  (let [activity-state                                  (rf/sub [:wallet/watch-address-activity-state])
-        {:keys [accessibility-label icon type message]} (case activity-state
-                                                          :has-activity {:accessibility-label
-                                                                         :account-has-activity
-                                                                         :icon :i/done
-                                                                         :type :success
-                                                                         :message
-                                                                         :t/this-address-has-activity}
-                                                          :no-activity  {:accessibility-label
-                                                                         :account-has-no-activity
-                                                                         :icon :i/info
-                                                                         :type :warning
-                                                                         :message
-                                                                         :t/this-address-has-no-activity}
-                                                          {:accessibility-label :searching-for-activity
-                                                           :icon :i/pending-state
-                                                           :type :default
-                                                           :message :t/searching-for-activity})]
+  (let [activity-state (rf/sub [:wallet/watch-address-activity-state])
+        {:keys [accessibility-label icon type message]}
+        (case activity-state
+          :has-activity {:accessibility-label :account-has-activity
+                         :icon                :i/done
+                         :type                :success
+                         :message             :t/this-address-has-activity}
+          :no-activity  {:accessibility-label :account-has-no-activity
+                         :icon                :i/info
+                         :type                :warning
+                         :message             :t/this-address-has-no-activity}
+          {:accessibility-label :searching-for-activity
+           :icon                :i/pending-state
+           :type                :default
+           :message             :t/searching-for-activity})]
     (when activity-state
       [quo/info-message
        {:accessibility-label accessibility-label
