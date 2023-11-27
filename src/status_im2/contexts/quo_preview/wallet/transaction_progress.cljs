@@ -121,18 +121,20 @@
             (stop-interval)))
         [(:state-mainnet @state)])
        [preview/preview-container {:state state :descriptor descriptor}
-        [quo/transaction-progress (assoc @state
-                                         :networks [{:network :mainnet
-                                                     :state   (:state-mainnet @state)
-                                                     :counter counter
-                                                     :total-box total-box
-                                                     :progress 30
-                                                     :epoch-number (:epoch-number-mainnet @state)}
-                                                    {:network :optimism
-                                                     :state   (:state-optimism @state)
-                                                     :progress (:optimism-progress-percentage @state)
-                                                     :epoch-number (:epoch-number-optimism @state)}
-                                                    {:network :arbitrum
-                                                     :state   (:state-arbitrum @state)
-                                                     :progress (:arbitrum-progress-percentage @state)
-                                                     :epoch-number (:epoch-number-arbitrum @state)}])]])]))
+        [quo/transaction-progress
+         (assoc @state
+                :networks
+                [{:network      :mainnet
+                  :state        (:state-mainnet @state)
+                  :counter      counter
+                  :total-box    total-box
+                  :progress     30
+                  :epoch-number (:epoch-number-mainnet @state)}
+                 {:network      :optimism
+                  :state        (:state-optimism @state)
+                  :progress     (:optimism-progress-percentage @state)
+                  :epoch-number (:epoch-number-optimism @state)}
+                 {:network      :arbitrum
+                  :state        (:state-arbitrum @state)
+                  :progress     (:arbitrum-progress-percentage @state)
+                  :epoch-number (:epoch-number-arbitrum @state)}])]])]))

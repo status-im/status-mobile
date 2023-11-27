@@ -67,7 +67,7 @@
 
 (defn- get-status-icon
   [theme state]
-  (cond 
+  (cond
     (or (= state :pending)
         (= state :sending))    [:i/pending-state
                                 (colors/theme-colors colors/neutral-50
@@ -88,7 +88,8 @@
     :mainnet           (= :error (:state (get-network networks :mainnet)))
     :arbitrum          (= :error (:state (get-network networks :arbitrum)))
     :optimism          (= :error (:state (get-network networks :optimism)))
-    :optimism-arbitrum (or (= :error (:state (get-network networks :arbitrum))) (= :error (:state (get-network networks :optimism))))
+    :optimism-arbitrum (or (= :error (:state (get-network networks :arbitrum)))
+                           (= :error (:state (get-network networks :optimism))))
     nil))
 
 (defn- title-internal
@@ -97,8 +98,8 @@
    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
    [rn/view {:style style/title-text-container}
     [text-internal title]]
-   (when (calculate-error-state {:networks       networks
-                                 :network        network})
+   (when (calculate-error-state {:networks networks
+                                 :network  network})
      [button/button
       {:size      24
        :icon-left :i/refresh}
@@ -170,30 +171,41 @@
      :progress-value      progress}]])
 
 (defn- view-internal
-  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number networks customization-color]
+  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number networks
+           customization-color]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style (style/box-style theme)}
     [title-internal
-     {:title          title
-      :theme          theme
-      :networks       networks
-      :network        network}]
+     {:title    title
+      :theme    theme
+      :networks networks
+      :network  network}]
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
-      :mainnet           [view-network-mainnet (assoc (get-network networks :mainnet)
-                                                      :customization-color customization-color)]
+      :mainnet           [view-network-mainnet
+                          (assoc (get-network networks :mainnet)
+                                 :customization-color
+                                 customization-color)]
       :optimism-arbitrum [:<>
-                          [view-network (assoc (get-network networks :arbitrum)
-                                               :customization-color customization-color)]
-                          [view-network (assoc (get-network networks :optimism)
-                                               :customization-color customization-color)]]
-      :arbitrum          [view-network (assoc (get-network networks :arbitrum)
-                                              :customization-color customization-color)]
-      :optimism          [view-network (assoc (get-network networks :optimism)
-                                              :customization-color customization-color)]
+                          [view-network
+                           (assoc (get-network networks :arbitrum)
+                                  :customization-color
+                                  customization-color)]
+                          [view-network
+                           (assoc (get-network networks :optimism)
+                                  :customization-color
+                                  customization-color)]]
+      :arbitrum          [view-network
+                          (assoc (get-network networks :arbitrum)
+                                 :customization-color
+                                 customization-color)]
+      :optimism          [view-network
+                          (assoc (get-network networks :optimism)
+                                 :customization-color
+                                 customization-color)]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))

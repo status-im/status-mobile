@@ -6,27 +6,27 @@
 (defn- get-test-data
   [{:keys [state network]
     :or   {state :pending network :mainnet}}]
-  {:title                        "Title"
-   :tag-name                     "Doodle"
-   :tag-number                   "120"
-   :network                      network 
-   :customization-color          :blue
-   :networks                     [{:network :mainnet
-                                   :state   state
-                                   :counter (reagent/atom 0)
-                                   :total-box 85
-                                   :progress 30
-                                   :epoch-number "123"}
-                                  {:network :optimism
-                                   :state   state
-                                   :progress "50"
-                                   :epoch-number "123"}
-                                  {:network :arbitrum
-                                   :state   state
-                                   :progress "30"
-                                   :epoch-number "123"}]
-   :on-press                     (fn []
-                                   (js/alert "Transaction progress item pressed"))})
+  {:title               "Title"
+   :tag-name            "Doodle"
+   :tag-number          "120"
+   :network             network
+   :customization-color :blue
+   :networks            [{:network      :mainnet
+                          :state        state
+                          :counter      (reagent/atom 0)
+                          :total-box    85
+                          :progress     30
+                          :epoch-number "123"}
+                         {:network      :optimism
+                          :state        state
+                          :progress     "50"
+                          :epoch-number "123"}
+                         {:network      :arbitrum
+                          :state        state
+                          :progress     "30"
+                          :epoch-number "123"}]
+   :on-press            (fn []
+                          (js/alert "Transaction progress item pressed"))})
 
 (h/describe "Transaction Progress"
   (h/test "component renders without props"
