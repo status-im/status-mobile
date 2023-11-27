@@ -2397,6 +2397,7 @@
     "invalid-address": "It’s not Ethereum address or ENS name",
     "address-already-in-use": "Address already being used",
     "address-copied": "Address copied",
-    "no-dapps-description": "We want dApps!"
+    "no-dapps-description": "We want dApps!",
+    "select-asset": "Select asset"
 }
 

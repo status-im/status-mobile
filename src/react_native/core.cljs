@@ -17,6 +17,7 @@
 
 (def view (reagent/adapt-react-class (.-View ^js react-native)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js react-native)))
+(def safe-area-view (reagent/adapt-react-class (.-SafeAreaView ^js react-native)))
 
 (def ^:private image-native
   (reagent/adapt-react-class (.-Image ^js react-native)))
