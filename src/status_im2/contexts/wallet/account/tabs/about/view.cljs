@@ -2,8 +2,8 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.contexts.wallet.account.tabs.about.style :as style]
-    [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -34,9 +34,10 @@
 
 (defn view
   []
-  (let [{:keys [type address]} (rf/sub [:wallet/current-viewing-account])
-        networks               (rf/sub [:wallet/network-details])
-        watch-only?            (= type :watch)]
+  (let [profile                     (rf/sub [:profile/profile-with-image])
+        {:keys [type address path]} (rf/sub [:wallet/current-viewing-account])
+        networks                    (rf/sub [:wallet/network-details])
+        watch-only?                 (= type :watch)]
     [rn/view {:style style/about-tab}
      [quo/data-item
       {:description     :default
@@ -53,4 +54,11 @@
                                  :format   :long}])
        :container-style {:margin-bottom 12}
        :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])}]
-     (when (not watch-only?) [quo/account-origin temp/account-origin-state])]))
+     (when (not watch-only?)
+       [quo/account-origin
+        {:type            :default-keypair
+         :stored          :on-device
+         :profile-picture (profile.utils/photo profile)
+         :derivation-path path
+         :user-name       (profile.utils/displayed-name profile)
+         :on-press        #(js/alert "pressed")}])]))

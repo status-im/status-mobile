@@ -25,6 +25,7 @@
     quo.components.code.snippet.view
     quo.components.colors.color-picker.view
     quo.components.colors.color.view
+    quo.components.common.drawer-bar.view
     quo.components.common.notification-dot.view
     quo.components.common.separator.view
     quo.components.community.banner.view
@@ -199,6 +200,9 @@
 ;;;; Colors
 (def color-picker quo.components.colors.color-picker.view/view)
 (def color quo.components.colors.color.view/view)
+
+;;;; Common
+(def drawer-bar quo.components.common.drawer-bar.view/view)
 
 ;;;; Community
 (def community-card-view-item quo.components.community.community-card-view/view)

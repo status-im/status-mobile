@@ -86,5 +86,16 @@
                       (string/starts-with? (string/lower-case (:symbol %))
                                            (string/lower-case query)))
                  sorted-tokens)]
-     (println filtered-tokens "3421342342432")
      filtered-tokens)))
+
+(rf/reg-sub
+ :wallet/current-viewing-account-address
+ :<- [:wallet]
+ :-> :current-viewing-account-address)
+
+(rf/reg-sub
+ :wallet/accounts-without-current-viewing-account
+ :<- [:wallet/accounts]
+ :<- [:wallet/current-viewing-account-address]
+ (fn [[accounts current-viewing-account-address]]
+   (filter #(not= (:address %) current-viewing-account-address) accounts)))

@@ -1,18 +1,46 @@
 (ns status-im2.contexts.wallet.common.sheets.account-options.view
-  (:require [quo.core :as quo]
+  (:require [oops.core :as oops]
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
             quo.theme
+            [react-native.blur :as blur]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
+            [react-native.gesture :as gesture]
+            [react-native.platform :as platform]
+            [reagent.core :as reagent]
             [status-im2.contexts.wallet.common.sheets.account-options.style :as style]
-            [status-im2.contexts.wallet.common.temp :as temp]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- view-internal
-  [{:keys [theme]}]
+(defn- render-account-item
+  [{:keys [color address] :as account}]
+  [quo/account-item
+   {:account-props (assoc account :customization-color color)
+    :on-press      (fn []
+                     (rf/dispatch [:wallet/switch-current-viewing-account address])
+                     (rf/dispatch [:hide-bottom-sheet]))}])
+
+(defn- options
+  [{:keys [theme show-account-selector? options-height]}]
   (let [{:keys [name color emoji address]} (rf/sub [:wallet/current-viewing-account])]
-    [:<>
+    [rn/view
+     {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
+      :style     (when show-account-selector? style/options-container)}
+     (when show-account-selector?
+       [blur/view
+        {:style         (style/blur-container @options-height)
+         :blur-radius   (if platform/android? 20 10)
+         :blur-amount   (if platform/ios? 20 10)
+         :blur-type     (quo.theme/theme-value (if platform/ios? :light :xlight) :dark theme)
+         :overlay-color (quo.theme/theme-value colors/white-70-blur
+                                               colors/neutral-95-opa-70-blur
+                                               theme)}])
+     [rn/view {:style style/gradient-container}
+      [quo/gradient-cover
+       {:customization-color color
+        :opacity             0.4}]]
+     [quo/drawer-bar]
      [quo/drawer-top
       {:title                name
        :type                 :account
@@ -39,17 +67,34 @@
         {:icon                :i/share
          :accessibility-label :share-account
          :label               (i18n/label :t/share-account)}
-        {:icon                :i/delete
+        {:add-divider?        (not show-account-selector?)
+         :icon                :i/delete
          :accessibility-label :remove-account
          :label               (i18n/label :t/remove-account)
          :danger?             true}]]]
-     [quo/divider-line {:container-style {:margin-top 8}}]
-     [quo/section-label
-      {:section         (i18n/label :t/select-another-account)
-       :container-style style/drawer-section-label}]
-     [rn/flat-list
-      {:data      temp/other-accounts
-       :render-fn (fn [account] [quo/account-item {:account-props account}])
-       :style     {:margin-horizontal 8}}]]))
+     (when show-account-selector?
+       [:<>
+        [quo/divider-line {:container-style style/divider-label}]
+        [quo/section-label
+         {:section         (i18n/label :t/select-another-account)
+          :container-style style/drawer-section-label}]])]))
+
+(defn- view-internal
+  [{:keys [theme]}]
+  (let [options-height (reagent/atom 0)]
+    (fn []
+      (let [accounts               (rf/sub [:wallet/accounts-without-current-viewing-account])
+            show-account-selector? (pos? (count accounts))]
+        [:<>
+         (when show-account-selector?
+           [gesture/flat-list
+            {:data                            accounts
+             :render-fn                       render-account-item
+             :content-container-style         (style/list-container @options-height)
+             :shows-vertical-scroll-indicator false}])
+         [options
+          {:show-account-selector? show-account-selector?
+           :theme                  theme
+           :options-height         options-height}]]))))
 
 (def view (quo.theme/with-theme view-internal))
