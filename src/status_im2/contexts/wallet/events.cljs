@@ -573,17 +573,17 @@
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]
-              :on-success #(rf/dispatch [:wallet/set-ens-address %])
+              :on-success #(rf/dispatch [:wallet/set-ens-address % ens])
               :on-error   (fn []
-                            (rf/dispatch [:wallet/set-ens-address nil])
+                            (rf/dispatch [:wallet/set-ens-address nil ens])
                             (cb))}]]]})))
 
 (rf/reg-event-fx :wallet/set-ens-address
- (fn [{:keys [db]} [result]]
+ (fn [{:keys [db]} [result ens]]
    {:db (assoc db
                :wallet/local-suggestions     (if result
                                                [{:type     item-types/address
-                                                 :ens      ""
+                                                 :ens      ens
                                                  :address  result
                                                  :networks [:ethereum :optimism]}]
                                                [])
