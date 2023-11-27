@@ -12,6 +12,7 @@
 
 (defn- left-container
   [{:keys [blur? theme name ens address customization-color]}]
+<<<<<<< HEAD
   [rn/view {:style style/left-container}
    [wallet-user-avatar/wallet-user-avatar
     {:size                :size-32
@@ -29,6 +30,25 @@
        :weight :monospace
        :style  (style/account-address blur? theme)}
       (or ens (address/get-shortened-key address))]]]])
+=======
+    [rn/view {:style style/left-container}
+     [wallet-user-avatar/wallet-user-avatar
+      {:size                :size-32
+       :full-name name
+       :customization-color customization-color}]
+     [rn/view {:style style/account-container}
+      [text/text
+       {:weight :semi-bold
+        :size   :paragraph-1
+        :style  style/name-text}
+       name]
+      [text/text {:size :paragraph-2}
+       [text/text
+        {:size   :paragraph-2
+         :weight :monospace
+         :style  (style/account-address blur? theme)}
+        (or ens (address/get-shortened-key address))]]]])
+>>>>>>> 46cf4ae0f (u)
 
 (defn- internal-view
   []

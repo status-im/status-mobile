@@ -1,9 +1,7 @@
 (ns status-im2.contexts.wallet.send.select-address.style)
 
-(defn container
-  [margin-top]
-  {:flex       1
-   :margin-top margin-top})
+(def container
+  {:flex       1})
 
 (def title-container
   {:margin-horizontal 20

@@ -10,7 +10,7 @@
   (json-rpc/call {:method     "ens_addressOf"
                   :params     [chain-id ens-name]
                   :on-success cb
-                  :on-error   #(cb "0x")}))
+                  :on-error   #(cb nil)}))
 
 (defn pubkey
   ([chain-id ens-name on-success on-error]
