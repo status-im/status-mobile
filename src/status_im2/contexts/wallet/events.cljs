@@ -6,16 +6,13 @@
     [native-module.core :as native-module]
     [quo.foundations.colors :as colors]
     [react-native.background-timer :as background-timer]
-    [status-im.ethereum.ens :as ens]
     [status-im2.common.data-store.wallet :as data-store]
     [status-im2.contexts.wallet.item-types :as item-types]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
-    [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.number]
-    [utils.re-frame :as re-frame]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.transforms :as types]))
@@ -461,6 +458,16 @@
                           false)}))
 
 (rf/reg-event-fx :wallet/find-ens
+                 (fn [{:keys [db]} [input]]
+                   (let [contacts              (rf/sub [:contacts/active])
+                         user (merge (first contacts) {:ens-name "pedro.stateofus.eth"})
+                         contacts (conj contacts user)
+                         result (if (empty? input) [] (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
+                     (if (and input (empty? result))
+                       (rf/dispatch [:wallet/search-ens input])
+                       {:db (assoc db :wallet/local-suggestions (map #(assoc % :type item-types/saved-address) result))}))))
+
+(rf/reg-event-fx :wallet/search-ens
                  (fn [_ [input]]
                    (let [chain-id   (rf/sub [:chain-id])
                          ens        (if (string/includes? input ".") input (str input ".stateofus.eth"))]
@@ -472,10 +479,11 @@
 
 (rf/reg-event-fx :wallet/set-ens-address
                  (fn [{:keys [db]} [result]]
-                     {:db (assoc db :wallet/local-suggestions [{:type     item-types/address
-                                                                :ens      ""
-                                                                :address  result
-                                                                :networks [:ethereum :optimism]}]
+                     {:db (assoc db :wallet/local-suggestions (if result [{:type     item-types/address
+                                                                           :ens      ""
+                                                                           :address  result
+                                                                           :networks [:ethereum :optimism]}]
+                                                                         [])
                                     :wallet/valid-ens-or-address? (if result true false))}))
 
 (rf/reg-event-fx :wallet/ens-validation-success

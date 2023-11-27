@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.send.select-address.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -44,24 +43,12 @@
                        :placeholder?    true
                        :container-style style/empty-container-style}]))
 
-(defn filter-items-by-ens-name [input items]
-  []
-  (if (not-empty input)
-    (let [result (filter #(string/starts-with? (or (:ens-name %) "") input) items)]
-      (if (not-empty result)
-        result
-        (rf/dispatch [:wallet/find-ens input])))
-    []))
-
-
 (defn- address-input
-  [input-value input-focused? suggestions]
+  [input-value input-focused?]
   (fn []
     (let [scanned-address       (rf/sub [:wallet/scanned-address])
           send-address          (rf/sub [:wallet/send-address])
-          valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])
-          contacts              (rf/sub [:contacts/active])
-          user                  (merge (first contacts) {:ens-name "pedro.stateofus.eth"})]
+          valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])]
       [quo/address-input
        {:on-focus              (fn []
                                  (when (empty? @input-value)
@@ -94,7 +81,6 @@
                                    (if starts-like-eth-address
                                      (rf/dispatch [:wallet/fetch-address-suggestions text])
                                      (rf/dispatch [:wallet/clean-local-suggestions]))
-                                   (reset! suggestions (filter-items-by-ens-name text (conj contacts user)))
                                    (reset! input-value text)))
         :valid-ens-or-address? valid-ens-or-address?}])))
 
@@ -119,14 +105,17 @@
 
 (defn- suggestion-component
   []
-  (fn [{:keys [type ens address accounts] :as local-suggestion} _ _ _]
+  (fn [{:keys [type ens address accounts primary-name public-key ens-name color] :as local-suggestion} _ _ _]
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens (rf/dispatch [:wallet/select-send-address address]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
-        [quo/saved-address (merge props {:user-props local-suggestion})]
+        [quo/saved-address (merge props {:user-props {:name                primary-name
+                                                      :address             public-key
+                                                      :ens                 ens-name
+                                                      :customization-color color}})]
         (= type types/saved-contact-address)
         [quo/saved-contact-address (merge props local-suggestion)]
         (and (not ens) (= type types/address))
@@ -167,12 +156,9 @@
         on-close        #(rf/dispatch [:navigate-back])
         on-change-tab   #(reset! selected-tab %)
         input-value     (reagent/atom "")
-        input-focused?  (reagent/atom false)
-        suggestions     (reagent/atom [])
-        current-account (rf/sub [:wallet/current-viewing-account])]
+        input-focused?  (reagent/atom false)]
     (fn []
-      (let [valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
-            send-address    (rf/sub [:wallet/send-ens-address])]
+      (let [valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         (rn/use-effect (fn []
                          (fn []
                            (rf/dispatch [:wallet/clean-scanned-address])
@@ -187,29 +173,8 @@
           {:title                     (i18n/label :t/send-to)
            :container-style           style/title-container
            :title-accessibility-label :title-label}]
-         [address-input input-value input-focused? suggestions]
+         [address-input input-value input-focused?]
          [quo/divider-line]
-         (when (not-empty @suggestions)
-           [rn/flat-list
-            {:data                         @suggestions
-             :content-container-style      {:margin-top        8
-                                            :margin-horizontal 8}
-             :keyboard-should-persist-taps :handled
-             :keyboard-dismiss-mode        :on-drag
-             :render-fn                    (fn [{:keys [primary-name public-key ens-name color]}]
-                                             [quo/saved-address {:customization-color (:color current-account)
-                                                                 :user-props          {:name                primary-name
-                                                                                       :address             public-key
-                                                                                       :ens                 ens-name
-                                                                                       :customization-color color}}])}])
-         ;(when send-address
-         ;  [rn/view {:style {:padding-horizontal 20
-         ;                    :padding-top        12}}
-         ;   [quo/address-text
-         ;    {:networks [{:network-name :ethereum :short-name "eth"}
-         ;                {:network-name :optimism :short-name "opt"}]
-         ;     :address  send-address
-         ;     :format   :long}]])
          (if (or @input-focused? (> (count @input-value) 0))
            [rn/keyboard-avoiding-view
             {:style                    {:flex 1}
