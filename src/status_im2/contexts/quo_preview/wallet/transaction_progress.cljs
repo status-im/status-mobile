@@ -128,7 +128,6 @@
                   :state        (:state-mainnet @state)
                   :counter      counter
                   :total-box    total-box
-                  :progress     30
                   :epoch-number (:epoch-number-mainnet @state)}
                  {:network      :optimism
                   :state        (:state-optimism @state)
