@@ -18,10 +18,6 @@
    :percentage-change "0.00%"
    :networks          networks})
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> b12d19602 (lint)
 (def tokens
   [{:token               :snt
     :state               :default
@@ -47,11 +43,7 @@
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}])
-<<<<<<< HEAD
-=======
-=======
 
->>>>>>> b12d19602 (lint)
 (def collectibles
   [{:image (status.resources/get-mock-image :collectible1)
     :id    1}
@@ -101,7 +93,6 @@
   [{:network-name :ethereum :short-name "eth"}
    {:network-name :optimism :short-name "opt"}
    {:network-name :arbitrum :short-name "arb1"}])
->>>>>>> 882153523 (wallet: account real data)
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
