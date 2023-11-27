@@ -21,15 +21,16 @@
     [status-im2.config :as config]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.ens.stateofus :as stateofus]
-    [utils.i18n :as i18n]
-    [utils.universal-links :as universal-links])
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key
   []
-  (views/letsubs [{:keys [address ens-name]} [:popover/popover]
-                  width                      (reagent/atom nil)]
-    (let [link (universal-links/generate-link :user :external (or ens-name address))]
+  (views/letsubs [{:keys [address ens-name]}      [:popover/popover]
+                  {:keys [universal-profile-url]} [:profile/profile]
+                  width                           (reagent/atom nil)]
+    (do
+      (re-frame/dispatch [:universal-links/generate-profile-url])
       [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
@@ -66,7 +67,7 @@
          {:on-press            (fn []
                                  (re-frame/dispatch [:hide-popover])
                                  (js/setTimeout
-                                  #(list-selection/open-share {:message link})
+                                  #(list-selection/open-share {:message universal-profile-url})
                                   250))
           :accessibility-label :share-my-contact-code-button}
          (i18n/label :t/share-link)]]])))

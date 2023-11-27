@@ -175,6 +175,34 @@
               {:db (dissoc db :universal-links/url)}
               (handle-url url))))
 
+(rf/reg-event-fx
+ :universal-links/generate-profile-url
+ (fn [{:keys [db]} [{:keys [public-key cb]}]]
+   (let [profile?   (not public-key)
+         ens-name?  (if profile?
+                      (get-in db [:profile/profile :ens-name?])
+                      (get-in db [:contacts/contacts public-key :ens-name]))
+         public-key (if profile? (get-in db [:profile/profile :public-key]) public-key)]
+     {:json-rpc/call
+      [{:method     (if ens-name? "wakuext_shareUserURLWithENS" "wakuext_shareUserURLWithData")
+        :params     [public-key]
+        :on-success #(do (rf/dispatch [:universal-links/save-profile-url public-key %])
+                         (when (fn? cb) (cb)))
+        :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
+                                {:error      %
+                                 :public-key public-key})}]})))
+
+(rf/reg-event-fx
+ :universal-links/save-profile-url
+ (fn [{:keys [db]} [public-key url]]
+   (when url
+     {:db
+      (cond-> db
+        (get-in db [:contacts/contacts public-key])
+        (assoc-in [:contacts/contacts public-key :universal-profile-url] url)
+        (= public-key (get-in db [:profile/profile :public-key]))
+        (assoc-in [:profile/profile :universal-profile-url] url))})))
+
 (defn unwrap-js-url
   [e]
   (-> e
