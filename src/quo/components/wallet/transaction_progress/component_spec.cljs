@@ -7,20 +7,24 @@
   [{:keys [state network]
     :or   {state :pending network :mainnet}}]
   {:title                        "Title"
-   :counter                      (reagent/atom 0)
-   :total-box                    85
    :tag-name                     "Doodle"
    :tag-number                   "120"
-   :epoch-number-mainnet         "181,329"
-   :epoch-number-optimism        "181,329"
-   :epoch-number-arbitrum        "181,329"
-   :optimism-progress-percentage "10"
-   :arbitrum-progress-percentage "10"
-   :network                      network
-   :state-mainnet                state
-   :state-arbitrum               state
-   :state-optimism               state
+   :network                      network 
    :customization-color          :blue
+   :networks                     [{:network :mainnet
+                                   :state   state
+                                   :counter (reagent/atom 0)
+                                   :total-box 85
+                                   :progress 30
+                                   :epoch-number "123"}
+                                  {:network :optimism
+                                   :state   state
+                                   :progress "50"
+                                   :epoch-number "123"}
+                                  {:network :arbitrum
+                                   :state   state
+                                   :progress "30"
+                                   :epoch-number "123"}]
    :on-press                     (fn []
                                    (js/alert "Transaction progress item pressed"))})
 
