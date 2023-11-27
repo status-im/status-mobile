@@ -7,7 +7,6 @@
     [quo.components.markdown.text :as text]
     [quo.components.settings.data-item.style :as style]
     [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
@@ -17,7 +16,8 @@
   [rn/view {:style (style/loading-container size blur? theme)}])
 
 (defn- left-subtitle
-  [{:keys [theme size description icon icon-color blur? subtitle customization-color emoji]}]
+  [{:keys [theme size description icon icon-color blur? subtitle customization-color emoji
+           network-image]}]
   [rn/view {:style style/subtitle-container}
    (when (not= :small size)
      [rn/view {:style (style/subtitle-icon-container description)}
@@ -33,7 +33,7 @@
                    :type                :default}]
         :network [rn/image
                   {:accessibility-label :description-image
-                   :source              (quo.resources/tokens :eth)
+                   :source              network-image
                    :style               style/image}]
         nil)])
    [text/text
@@ -60,7 +60,7 @@
 (defn- left-side
   "The description can either be given as a string `description` or a component `custom-subtitle`"
   [{:keys [theme title status size blur? description custom-subtitle icon subtitle label icon-color
-           customization-color
+           customization-color network-image
            emoji]
     :as   props}]
   [rn/view {:style style/left-side}
@@ -85,7 +85,8 @@
          :blur?               blur?
          :subtitle            subtitle
          :customization-color customization-color
-         :emoji               emoji}]))])
+         :emoji               emoji
+         :network-image       network-image}]))])
 
 (defn- right-side
   [{:keys [label icon-right? right-icon icon-color communities-list]}]
