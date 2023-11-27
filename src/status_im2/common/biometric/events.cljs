@@ -42,11 +42,12 @@
 
 (rf/defn show-message
   [_ code]
-  (let [content (if (#{"NOT_AVAILABLE" "NOT_ENROLLED"} code)
-                  (i18n/label :t/grant-face-id-permissions)
-                  (when-not (or (= code "USER_CANCELED") (= code "USER_FALLBACK"))
-                    (i18n/label :t/biometric-auth-error {:code code})))]
-    (when content
+  (let [handle-error? (and code
+                           (not (contains? #{"USER_CANCELED" "USER_FALLBACK"} code)))
+        content       (if (#{"NOT_AVAILABLE" "NOT_ENROLLED"} code)
+                        (i18n/label :t/grant-face-id-permissions)
+                        (i18n/label :t/biometric-auth-error {:code code}))]
+    (when handle-error?
       {:utils/show-popup
        {:title   (i18n/label :t/biometric-auth-login-error-title)
         :content content}})))
