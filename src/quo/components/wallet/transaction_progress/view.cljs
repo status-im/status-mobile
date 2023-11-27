@@ -81,24 +81,26 @@
     (= state :finalized)       [:i/diamond]
     (= state :error)           [:i/negative-state (colors/resolve-color :danger theme)]))
 
+(defn- get-network
+  [networks network]
+  (first (filter #(= (:network %) network) networks)))
+
 (defn- calculate-error-state
-  [{:keys [state-arbitrum state-optimism state-mainnet network]}]
+  [{:keys [network networks]}]
   (case network
-    :mainnet           (= :error state-mainnet)
-    :arbitrum          (= :error state-arbitrum)
-    :optimism          (= :error state-optimism)
-    :optimism-arbitrum (or (= :error state-arbitrum) (= :error state-optimism))
+    :mainnet           (= :error (:state (get-network networks :mainnet)))
+    :arbitrum          (= :error (:state (get-network networks :arbitrum)))
+    :optimism          (= :error (:state (get-network networks :optimism)))
+    :optimism-arbitrum (or (= :error (:state (get-network networks :arbitrum))) (= :error (:state (get-network networks :optimism))))
     nil))
 
 (defn- title-internal
-  [{:keys [state-arbitrum state-optimism state-mainnet title theme network]}]
+  [{:keys [title theme network networks]}]
   [rn/view {:style style/title-container}
    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
    [rn/view {:style style/title-text-container}
     [text-internal title]]
-   (when (calculate-error-state {:state-arbitrum state-arbitrum
-                                 :state-mainnet  state-mainnet
-                                 :state-optimism state-optimism
+   (when (calculate-error-state {:networks       networks
                                  :network        network})
      [button/button
       {:size      24
@@ -139,76 +141,62 @@
         :size   :paragraph-2
         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
-(defn- view-mainnet
-  [{:keys [theme state-mainnet epoch-number-mainnet counter total-box customization-color]}]
+(defn- view-network-mainnet
+  [{:keys [theme state epoch-number counter total-box customization-color]}]
   [:<>
    [status-row
     {:theme        theme
-     :state        state-mainnet
+     :state        state
      :network      :mainnet
-     :epoch-number epoch-number-mainnet
+     :epoch-number epoch-number
      :counter      @counter}]
    [confirmation-progress/view
-    {:state               state-mainnet
+    {:state               state
      :network             :mainnet
      :counter             counter
      :total-box           total-box
      :customization-color customization-color}]])
 
-(defn- view-arbitrum
-  [{:keys [theme state-arbitrum epoch-number-arbitrum customization-color arbitrum-progress-percentage]}]
+(defn- view-network
+  [{:keys [theme state epoch-number customization-color progress bottom-large? network]}]
   [:<>
    [status-row
     {:theme        theme
-     :state        state-arbitrum
-     :network      :arbitrum
-     :epoch-number epoch-number-arbitrum}]
+     :state        state
+     :network      network
+     :epoch-number epoch-number}]
    [confirmation-progress/view
-    {:state               state-arbitrum
-     :network             :arbitrum
-     :bottom-large?       false
+    {:state               state
+     :network             network
+     :bottom-large?       bottom-large?
      :customization-color customization-color
-     :progress-value      arbitrum-progress-percentage}]])
-
-(defn- view-optimism
-  [{:keys [theme state-optimism epoch-number-optimism customization-color optimism-progress-percentage]}]
-  [:<>
-   [status-row
-    {:theme        theme
-     :state        state-optimism
-     :network      :optimism
-     :epoch-number epoch-number-optimism}]
-   [confirmation-progress/view
-    {:state               state-optimism
-     :network             :optimism
-     :bottom-large?       true
-     :customization-color customization-color
-     :progress-value      optimism-progress-percentage}]])
+     :progress-value      progress}]])
 
 (defn- view-internal
-  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number state-arbitrum
-           state-optimism state-mainnet]
-    :as   props
+  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number networks customization-color]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style (style/box-style theme)}
     [title-internal
-     {:state-arbitrum state-arbitrum
-      :state-optimism state-optimism
-      :state-mainnet  state-mainnet
-      :title          title
+     {:title          title
       :theme          theme
+      :networks       networks
       :network        network}]
     [tag-internal tag-photo tag-name tag-number theme]
     (case network
-      :mainnet           [view-mainnet props]
+      :mainnet           [view-network-mainnet (assoc (get-network networks :mainnet)
+                                                      :customization-color customization-color)]
       :optimism-arbitrum [:<>
-                          [view-arbitrum props]
-                          [view-optimism props]]
-      :arbitrum          [view-arbitrum props]
-      :optimism          [view-optimism props]
+                          [view-network (assoc (get-network networks :arbitrum)
+                                               :customization-color customization-color)]
+                          [view-network (assoc (get-network networks :optimism)
+                                               :customization-color customization-color)]]
+      :arbitrum          [view-network (assoc (get-network networks :arbitrum)
+                                              :customization-color customization-color)]
+      :optimism          [view-network (assoc (get-network networks :optimism)
+                                              :customization-color customization-color)]
       nil)]])
 
 (def view (quo.theme/with-theme view-internal))
