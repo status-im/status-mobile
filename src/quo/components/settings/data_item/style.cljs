@@ -37,8 +37,8 @@
    :align-items    :center})
 
 (defn subtitle-icon-container
-  [description]
-  {:margin-right    (when (not= :default description) 4)
+  [subtitle-type]
+  {:margin-right    (when (not= :default subtitle-type) 4)
    :justify-content :center})
 
 (defn title
