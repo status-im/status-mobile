@@ -134,5 +134,4 @@
                                 (rf/dispatch [:chat.ui/show-profile public-key ens])
                                 (js/setTimeout #(rf/dispatch [:contacts/clear-new-identity])
                                                600))}
-        (i18n/label :t/view-profile)]
-       ]]]))
+        (i18n/label :t/view-profile)]]]]))

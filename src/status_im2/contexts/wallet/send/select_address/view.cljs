@@ -22,21 +22,21 @@
 (defn- tab-view
   [selected-tab]
   (case selected-tab
-    :tab/recent [quo/empty-state
-                 {:title           (i18n/label :t/no-recent-transactions)
-                  :description     (i18n/label :t/make-one-it-is-easy-we-promise)
-                  :placeholder?    true
-                  :container-style style/empty-container-style}]
-    :tab/saved [quo/empty-state
-                {:title           (i18n/label :t/no-saved-addresses)
-                 :description     (i18n/label :t/you-like-to-type-43-characters)
-                 :placeholder?    true
-                 :container-style style/empty-container-style}]
-    :tab/contacts [quo/empty-state
-                   {:title           (i18n/label :t/no-contacts)
-                    :description     (i18n/label :t/no-contacts-description)
-                    :placeholder?    true
-                    :container-style style/empty-container-style}]
+    :tab/recent      [quo/empty-state
+                      {:title           (i18n/label :t/no-recent-transactions)
+                       :description     (i18n/label :t/make-one-it-is-easy-we-promise)
+                       :placeholder?    true
+                       :container-style style/empty-container-style}]
+    :tab/saved       [quo/empty-state
+                      {:title           (i18n/label :t/no-saved-addresses)
+                       :description     (i18n/label :t/you-like-to-type-43-characters)
+                       :placeholder?    true
+                       :container-style style/empty-container-style}]
+    :tab/contacts    [quo/empty-state
+                      {:title           (i18n/label :t/no-contacts)
+                       :description     (i18n/label :t/no-contacts-description)
+                       :placeholder?    true
+                       :container-style style/empty-container-style}]
     :tab/my-accounts [quo/empty-state
                       {:title           (i18n/label :t/no-other-accounts)
                        :description     (i18n/label :t/here-is-a-cat-in-a-box-instead)
@@ -62,13 +62,14 @@
         :address-regex         constants/regx-address
         :scanned-value         (or send-address scanned-address)
         :on-detect-ens         #(debounce/debounce-and-dispatch
-                                  [:wallet/find-ens %]
-                                  300)
+                                 [:wallet/find-ens %]
+                                 300)
         :on-detect-address     #(debounce/debounce-and-dispatch
-                                  [:wallet/validate-address %]
-                                  300)
+                                 [:wallet/validate-address %]
+                                 300)
         :on-change-text        (fn [text]
                                  (let [starts-like-eth-address (re-matches
+<<<<<<< HEAD
 <<<<<<< HEAD
                                                                 constants/regx-full-or-partial-address
                                                                 text)]
@@ -76,6 +77,10 @@
                                                                  constants/regx-address-fragment
                                                                  text)]
 >>>>>>> 46cf4ae0f (u)
+=======
+                                                                constants/regx-address-fragment
+                                                                text)]
+>>>>>>> 928f50e10 (lint)
                                    (when-not (= scanned-address text)
                                      (rf/dispatch [:wallet/clean-scanned-address]))
                                    (if starts-like-eth-address
@@ -105,17 +110,20 @@
 
 (defn- suggestion-component
   []
-  (fn [{:keys [type ens address accounts primary-name public-key ens-name color] :as local-suggestion} _ _ _]
+  (fn [{:keys [type ens address accounts primary-name public-key ens-name color] :as local-suggestion} _
+       _ _]
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens (rf/dispatch [:wallet/select-send-address address]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
-        [quo/saved-address (merge props {:user-props {:name                primary-name
-                                                      :address             public-key
-                                                      :ens                 ens-name
-                                                      :customization-color color}})]
+        [quo/saved-address
+         (merge props
+                {:user-props {:name                primary-name
+                              :address             public-key
+                              :ens                 ens-name
+                              :customization-color color}})]
         (= type types/saved-contact-address)
         [quo/saved-contact-address (merge props local-suggestion)]
         (and (not ens) (= type types/address))
@@ -140,6 +148,7 @@
 (defn- f-view-internal
   []
 <<<<<<< HEAD
+<<<<<<< HEAD
   (let [margin-top     (safe-area/get-top)
         selected-tab   (reagent/atom (:id (first tabs-data)))
         on-close       (fn []
@@ -157,6 +166,13 @@
         on-change-tab   #(reset! selected-tab %)
         input-value     (reagent/atom "")
         input-focused?  (reagent/atom false)]
+=======
+  (let [selected-tab   (reagent/atom (:id (first tabs-data)))
+        on-close       #(rf/dispatch [:navigate-back])
+        on-change-tab  #(reset! selected-tab %)
+        input-value    (reagent/atom "")
+        input-focused? (reagent/atom false)]
+>>>>>>> 928f50e10 (lint)
     (fn []
       (let [valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         (rn/use-effect (fn []
@@ -183,7 +199,7 @@
              {:style {:flex    1
                       :padding 8}}
              [local-suggestions-list]
-             ]
+            ]
             (when (> (count @input-value) 0)
               [quo/button
                {:accessibility-label :continue-button
