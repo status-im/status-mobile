@@ -4,17 +4,24 @@
             [status-im2.contexts.wallet.item-types :as types]))
 
 (def ens-local-suggestion-saved-address-mock
-  {:type     types/saved-address
-   :name     "Pedro"
-   :ens      "pedro.eth"
-   :address  "0x4732894732894738294783294723894723984"
-   :networks [:ethereum :optimism]})
+  {:type                types/saved-address
+   :name                "Pedro"
+   :ens                 "pedro.eth"
+   :address             "0x4732894732894738294783294723894723984"
+   :customization-color :purple
+   :networks            [{:network-name :ethereum
+                          :short-name   "eth"}
+                         {:network-name :optimism
+                          :short-name   "opt"}]})
 
 (def ens-local-suggestion-mock
   {:type     types/address
    :ens      "pedro.eth"
    :address  "0x4732894732894738294783294723894723984"
-   :networks [:ethereum :optimism]})
+   :networks [{:network-name :ethereum
+               :short-name   "eth"}
+              {:network-name :optimism
+               :short-name   "opt"}]})
 
 (def address-local-suggestion-saved-contact-address-mock
   {:type                types/saved-contact-address
@@ -32,12 +39,18 @@
    :name                "Peter Lamborginski"
    :address             "0x12FaBc34De56Ef78A9B0Cd12Ef3456AbC7D8E9F0"
    :customization-color :magenta
-   :networks            [:ethereum :optimism]})
+   :networks            [{:network-name :ethereum
+                          :short-name   "eth"}
+                         {:network-name :optimism
+                          :short-name   "opt"}]})
 
 (def address-local-suggestion-mock
   {:type     types/address
    :address  "0x1233cD34De56Ef78A9B0Cd12Ef3456AbC7123dee"
-   :networks [:ethereum :optimism]})
+   :networks [{:network-name :ethereum
+               :short-name   "eth"}
+              {:network-name :optimism
+               :short-name   "opt"}]})
 
 (defn find-matching-addresses
   [substring]

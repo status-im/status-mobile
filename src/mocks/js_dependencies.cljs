@@ -49,6 +49,7 @@
     :Text                     {}
     :StatusBar                {}
     :ScrollView               {}
+    :SafeAreaView             {}
     :KeyboardAvoidingView     {}
     :TextInput                {}
     :Image                    {}
