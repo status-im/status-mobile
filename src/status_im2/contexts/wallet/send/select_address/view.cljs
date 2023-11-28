@@ -27,12 +27,7 @@
                       {:title           (i18n/label :t/no-recent-transactions)
                        :description     (i18n/label :t/make-one-it-is-easy-we-promise)
                        :placeholder?    true
-                       :container-style style/empty-container-style
-                       ;; TODO(rende11) Temporal navigation:
-                       ;; https://github.com/status-im/status-mobile/issues/17872
-                       :upper-button    {:text     "TEMP: Input amount"
-                                         :on-press #(rf/dispatch [:navigate-to
-                                                                  :wallet-send-input-amount])}}]
+                       :container-style style/empty-container-style}]
     :tab/saved       [quo/empty-state
                       {:title           (i18n/label :t/no-saved-addresses)
                        :description     (i18n/label :t/you-like-to-type-43-characters)

@@ -1,30 +1,11 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require
     [clojure.string :as string]
-    [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as status.resources]
     [status-im2.constants :as constants]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
-
-
-(defn wallet-temporary-navigation
-  []
-  [rn/view
-   {:style {:flex            1
-            :align-items     :center
-            :justify-content :center}}
-   [quo/text {} "TEMPORARY NAVIGATION"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-accounts])}
-    "Navigate to Account"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-create-account])}
-    "Create Account"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-addresses])}
-    "Saved Addresses"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-send-input-amount])}
-    "Send: input amount"]])
+    [utils.i18n :as i18n]))
 
 (defn wallet-overview-state
   [networks]
