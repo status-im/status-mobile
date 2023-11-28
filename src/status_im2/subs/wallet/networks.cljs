@@ -41,3 +41,9 @@
                :chain-id         chain-id
                :related-chain-id related-chain-id)))
     networks)))
+
+(re-frame/reg-sub
+ :wallet/network-details-by-chain-id
+ :<- [:wallet/network-details]
+ (fn [networks [_ chain-id]]
+   (some #(when (= chain-id (:chain-id %)) %) networks)))

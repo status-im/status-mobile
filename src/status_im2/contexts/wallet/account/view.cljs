@@ -5,7 +5,7 @@
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.account.tabs.view :as tabs]
-    [status-im2.contexts.wallet.common.sheets.account-options.view :as account-options]
+    [status-im2.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im2.contexts.wallet.common.temp :as temp]
     [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
@@ -32,23 +32,10 @@
   []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
-            networks                           (rf/sub [:wallet/network-details])]
+      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
+           ]
         [rn/view {:style {:flex 1}}
-         [quo/page-nav
-          {:type              :wallet-networks
-           :background        :blur
-           :icon-name         :i/close
-           :on-press          #(rf/dispatch [:wallet/close-account-page])
-           :networks          networks
-           :networks-on-press #(js/alert "Pressed Networks")
-           :right-side        :account-switcher
-           :account-switcher  {:customization-color color
-                               :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content account-options/view
-                                                                    :gradient-cover? true
-                                                                    :customization-color color}])
-                               :emoji               emoji}}]
+         [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
           {:current-value       (utils/prettify-balance balance)
            :account-name        name
