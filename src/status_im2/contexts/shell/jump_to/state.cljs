@@ -19,4 +19,4 @@
 (def load-browser-stack? (reagent/atom false))
 
 ;NOTE temporary while we support old wallet
-(def load-new-wallet? (reagent/atom true))
+(def load-new-wallet? (reagent/atom false))
