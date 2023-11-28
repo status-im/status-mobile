@@ -58,12 +58,12 @@
         :address-regex         constants/regx-address
         :scanned-value         (or send-address scanned-address)
         :on-detect-address     #(debounce/debounce-and-dispatch
-                                  [:wallet/validate-address %]
-                                  300)
+                                 [:wallet/validate-address %]
+                                 300)
         :on-detect-ens         (fn [text cb]
                                  (debounce/debounce-and-dispatch
-                                   [:wallet/find-ens text cb]
-                                   300))
+                                  [:wallet/find-ens text cb]
+                                  300))
         :on-change-text        (fn [text]
                                  (when-not (= scanned-address text)
                                    (rf/dispatch [:wallet/clean-scanned-address]))
@@ -131,7 +131,10 @@
 (defn- f-view-internal
   []
   (let [selected-tab   (reagent/atom (:id (first tabs-data)))
-        on-close       #(rf/dispatch [:navigate-back])
+        on-close       (fn []
+                         (rf/dispatch [:wallet/clean-scanned-address])
+                         (rf/dispatch [:wallet/clean-local-suggestions])
+                         (rf/dispatch [:navigate-back]))
         on-change-tab  #(reset! selected-tab %)
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]

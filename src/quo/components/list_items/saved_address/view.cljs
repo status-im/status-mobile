@@ -52,7 +52,7 @@
                              (reset! state new-state)))]
         [rn/pressable
          {:style               (style/container
-                                 {:state @state :blur? blur? :customization-color customization-color})
+                                {:state @state :blur? blur? :customization-color customization-color})
           :on-press-in         on-press-in
           :on-press-out        on-press-out
           :on-press            on-press
