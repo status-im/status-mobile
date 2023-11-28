@@ -14,10 +14,14 @@
 (rf/defn create-profile-and-login
   {:events [:profile.create/create-and-login]}
 <<<<<<< HEAD
+<<<<<<< HEAD
   [_ {:keys [display-name password image-path color]}]
   {:effects.profile/create-and-login
 =======
   [_ {:keys [display-name password image-path color emoji]}]
+=======
+  [_ {:keys [display-name password image-path color]}]
+>>>>>>> d46724bcf (qa)
   {::create-profile-and-login
 >>>>>>> c1d06ad1d (wallet: add color and emoji)
    (assoc (profile.config/create)
