@@ -7,6 +7,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.constants :as constants]
+    [status-im2.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im2.contexts.wallet.item-types :as types]
     [status-im2.contexts.wallet.send.select-address.style :as style]
     [utils.debounce :as debounce]
@@ -146,15 +147,7 @@
          {:content-container-style      (style/container margin-top)
           :keyboard-should-persist-taps :handled
           :scroll-enabled               false}
-         [quo/page-nav
-          {:icon-name           :i/close
-           :on-press            on-close
-           :accessibility-label :top-bar
-           :right-side          :account-switcher
-           :account-switcher    {:customization-color :purple
-                                 :on-press            #(js/alert "Not implemented yet")
-                                 :state               :default
-                                 :emoji               "🍑"}}]
+         [account-switcher/view {:on-press on-close}]
          [quo/text-combinations
           {:title                     (i18n/label :t/send-to)
            :container-style           style/title-container
