@@ -188,28 +188,16 @@
       :networks networks
       :network  network}]
     [tag-internal tag-photo tag-name tag-number theme]
-    (case network
-      :mainnet           [view-network-mainnet
-                          (assoc (get-network networks :mainnet)
-                                 :customization-color
-                                 customization-color)]
-      :optimism-arbitrum [:<>
-                          [view-network
-                           (assoc (get-network networks :arbitrum)
-                                  :customization-color
-                                  customization-color)]
-                          [view-network
-                           (assoc (get-network networks :optimism)
-                                  :customization-color
-                                  customization-color)]]
-      :arbitrum          [view-network
-                          (assoc (get-network networks :arbitrum)
-                                 :customization-color
-                                 customization-color)]
-      :optimism          [view-network
-                          (assoc (get-network networks :optimism)
-                                 :customization-color
-                                 customization-color)]
-      nil)]])
+    (let [assoc-props #(assoc (get-network networks %)
+                              :customization-color
+                              customization-color)]
+      (case network
+        :mainnet           [view-network-mainnet (assoc-props :mainnet)]
+        :optimism-arbitrum [:<>
+                            [view-network (assoc-props :arbitrum)]
+                            [view-network (assoc-props :optimism)]]
+        :arbitrum          [view-network (assoc-props :arbitrum)]
+        :optimism          [view-network (assoc-props :optimism)]
+        nil))]])
 
 (def view (quo.theme/with-theme view-internal))
