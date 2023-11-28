@@ -45,14 +45,18 @@
     (= state :finalized)                            (i18n/label :t/finalized-on)
     (= state :error)                                (i18n/label :t/failed-on)))
 
+(defn- calculate-counter
+  [counter]
+  (if (< counter 4) counter "4"))
+
 (defn- text-steps
   [network state epoch-number counter]
   (let [steps (case network
                 :mainnet
                 {:pending    "0/4"
-                 :sending    (str (if (< counter 4) counter "4") "/4")
-                 :confirmed  (str (if (< counter 4) counter "4") "/4")
-                 :finalising (str (if (< counter 4) counter "4") "/4")
+                 :sending    (str (calculate-counter counter) "/4")
+                 :confirmed  (str (calculate-counter counter) "/4")
+                 :finalising (str (calculate-counter counter) "/4")
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
                  :error      "0/4"}
                 (or :optimism :arbitrum :optimism-arbitrum)
