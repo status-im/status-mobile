@@ -36,6 +36,7 @@
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
 <<<<<<< HEAD
+<<<<<<< HEAD
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
             watch-only?                       (= type :watch)]
 =======
@@ -58,6 +59,10 @@
             networks                           (rf/sub [:wallet/network-details])]
 >>>>>>> aa35edaf6 (lint)
 >>>>>>> 9c3ec27ba (lint)
+=======
+      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
+            ]
+>>>>>>> 0ae3804f1 (rebase)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
