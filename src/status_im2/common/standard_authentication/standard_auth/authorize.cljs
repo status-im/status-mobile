@@ -17,6 +17,8 @@
   (println auth-button-label "dasasdasdadsdas")
   (biometric/get-supported-type
    (fn [biometric-type]
+     (println biometric-type "biometric-type")
+
      (if (and biometric-auth? biometric-type)
        (biometric/authenticate
         {:reason     (i18n/label :t/biometric-auth-confirm-message)
@@ -34,6 +36,7 @@
                                                   {:button-label      auth-button-label
                                                    :on-enter-password on-enter-password}])}]))})
        (do
+         (println "222222")
          (reset-password)
          (rf/dispatch [:show-bottom-sheet
                        {:on-close on-close

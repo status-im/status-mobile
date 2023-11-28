@@ -354,7 +354,7 @@
 
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
-   {:db (assoc db :wallet/send-address address)}))
+   {:db (assoc-in db [:wallet :ui :send :to-address] address)}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
@@ -383,7 +383,7 @@
 
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [transaction]]
-   {:db (assoc-in db [:wallet :ui :send :transaction] transaction)}))
+   {:db (assoc-in db [:wallet :ui :send :suggested-routes] transaction)}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db]}]
@@ -391,15 +391,15 @@
          tokens              (get-in db [:wallet :accounts])
          account             (get-in db [:wallet :accounts wallet-address])
          token               (get-in db [:wallet :ui :send :token])
+         to-address          (get-in db [:wallet :ui :send :to-address])
          token-decimal       18
          token-id            (:symbol token)
-         value_              0.005
-         network-preferences [5]
+         value_              0.0005
+         network-preferences [1]
          gas-rates           0 ;low
          amount-in           (money/mul (money/bignumber value_)
                                         (money/from-decimal token-decimal))
          from-address        wallet-address
-         to-address          wallet-address
          request-params      [0
                               from-address
                               to-address
@@ -413,9 +413,9 @@
      (println token "fdsfsdfsfdfs")
      {:json-rpc/call [{:method     "wallet_getSuggestedRoutes"
                        :params     request-params
-                       :on-success (fn [transaction]
-                                     (println transaction "suggested routes success")
-                                     (rf/dispatch [:wallet/suggested-routes-success transaction]))
+                       :on-success (fn [suggested-routes]
+                                     (println suggested-routes "suggested routes success")
+                                     (rf/dispatch [:wallet/suggested-routes-success suggested-routes]))
                        :on-error   (fn [error]
                                      (log/error "failed to get suggested routes"
                                                 {:event  :wallet/get-suggested-routes
@@ -423,15 +423,17 @@
                                                  :params request-params}))}]})))
 
 (rf/reg-event-fx :wallet/send-transaction
- (fn [{:keys [db]}]
-   (let [transaction (get-in db [:wallet :ui :send :transaction])
+ (fn [{:keys [db]} [password]]
+   (let [suggested-routes (get-in db [:wallet :ui :send :suggested-routes])
          from-address (get-in db [:wallet :current-viewing-account-address])
-         to-address (get db :wallet/send-address)
-         best (first (:Best transaction))
+         to-address (get-in db [:wallet :ui :send :to-address])
+         best (first (:Best suggested-routes))
          from (:From best)
          to (:To best)
-         from-asset (:nativeCurrencySymbol from)
-         to-asset (:nativeCurrencySymbol to)
+         token (get-in db [:wallet :ui :send :token])
+         token-id (:symbol token)
+         from-asset token-id
+         to-asset token-id
          bridge-name (:BridgeName best)
          chain-id (:chainId from)
          multi-transaction-command {:fromAddress from-address
@@ -458,8 +460,9 @@
                                                                                                  best))))
                         :Input                ""
                         :Data                 "0x"}}]
-         sha3-pwd (native-module/sha3 (str (security/safe-unmask-data "mmmmmmmmmmm")))
+         sha3-pwd (native-module/sha3 (str (security/safe-unmask-data password)))
          request-params [multi-transaction-command transaction-bridge sha3-pwd]]
+     (prn from "++++BESTSTT")
      (prn "=====" request-params)
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params

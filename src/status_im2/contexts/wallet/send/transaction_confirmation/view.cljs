@@ -147,7 +147,7 @@
   [_]
   (let [reset-slider?        (reagent/atom false)
         margin-top           (safe-area/get-top)
-        biometric-auth?      true
+        biometric-auth?      false
         on-close             #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])
         status-account-props {:customization-color :purple
                               :size                32
@@ -187,7 +187,7 @@
           {:size                :size-40
            :track-text          (i18n/label :t/slide-to-send)
            :customization-color :purple
-           :on-enter-password   #(rf/dispatch [:wallet/send-transaction])
+           :on-enter-password   #(rf/dispatch [:wallet/send-transaction %])
            :biometric-auth?     biometric-auth?
            :auth-button-label   (i18n/label :t/confirm)}]]]])))
 
