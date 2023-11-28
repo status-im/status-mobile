@@ -48,6 +48,7 @@
     quo.components.drawers.drawer-buttons.view
     quo.components.drawers.drawer-top.view
     quo.components.drawers.permission-context.view
+    quo.components.dropdowns.dropdown-input.view
     quo.components.dropdowns.dropdown.view
     quo.components.dropdowns.network-dropdown.view
     quo.components.empty-state.empty-state.view
@@ -232,6 +233,7 @@
 
 ;;;; Dropdowns
 (def dropdown quo.components.dropdowns.dropdown.view/view)
+(def dropdown-input quo.components.dropdowns.dropdown-input.view/view)
 (def network-dropdown quo.components.dropdowns.network-dropdown.view/view)
 
 ;;;; Empty State
