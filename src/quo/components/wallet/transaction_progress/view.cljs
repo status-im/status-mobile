@@ -24,10 +24,10 @@
       :no-color (when (not color) true)}]]))
 
 (defn- text-internal
-  [title
-   {:keys [weight size accessibility-label color]
+  [{:keys [weight size accessibility-label color]
     :or   {weight :semi-bold
-           size   :paragraph-1}}]
+           size   :paragraph-1}}
+   title]
   [text/text
    {:accessibility-label accessibility-label
     :ellipsize-mode      :tail
@@ -101,7 +101,7 @@
   [rn/view {:style style/title-container}
    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
    [rn/view {:style style/title-text-container}
-    [text-internal title]]
+    [text-internal nil title]]
    (when (calculate-error-state {:networks networks
                                  :network  network})
      [button/button
@@ -132,16 +132,16 @@
     [rn/view {:style style/status-row-container}
      [icon-internal status-icon color 16]
      [rn/view {:style style/title-text-container}
-      [text-internal
-       (str (network-type-text state) " " (get-network-text network))
+      [text-internal 
        {:weight :regular
-        :size   :paragraph-2}]]
+        :size   :paragraph-2}
+       (str (network-type-text state) " " (get-network-text network))]]
      [rn/view
-      [text-internal
-       (text-steps network state epoch-number counter)
+      [text-internal 
        {:weight :regular
         :size   :paragraph-2
-        :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
+        :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}
+       (text-steps network state epoch-number counter)]]]))
 
 (defn- view-network-mainnet
   [{:keys [theme state epoch-number counter total-box customization-color]}]
