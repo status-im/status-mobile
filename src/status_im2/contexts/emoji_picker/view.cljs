@@ -151,6 +151,34 @@
   (reset! filtered-data nil)
   (reset! search-text ""))
 
+(defn f-view
+  [{:keys [render-emojis? search-text on-change-text clear-states active-category scroll-ref theme]
+    :as   sheet-opts}]
+  (let [search-active? (pos? (count @search-text))]
+    ;; rendering emojis is heavy on the UI thread, we need to delay rendering until the navigation
+    ;; animation completes. 250 is based on the default 300ms navigation duration.
+    (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis? true)) 250))
+    [rn/keyboard-avoiding-view
+     {:style                    style/flex-spacer
+      :keyboard-vertical-offset 8}
+     [rn/view {:style style/flex-spacer}
+      [rn/view {:style style/search-input-container}
+       [quo/input
+        {:small?         true
+         :placeholder    (i18n/label :t/emoji-search-placeholder)
+         :icon-name      :i/search
+         :value          @search-text
+         :on-change-text on-change-text
+         :clearable?     search-active?
+         :on-clear       clear-states}]]
+      (when @render-emojis?
+        [render-list sheet-opts])
+      (when-not search-active?
+        [footer
+         {:theme           theme
+          :active-category active-category
+          :scroll-ref      scroll-ref}])]]))
+
 (defn- view-internal
   [_]
   (let [{:keys [on-select]}       (rf/sub [:get-screen-params])
@@ -158,6 +186,7 @@
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")
         filtered-data             (reagent/atom nil)
+        render-emojis?            (reagent/atom false)
         active-category           (reagent/atom constants/default-category)
         clear-states              #(clear {:active-category active-category
                                            :filtered-data   filtered-data
@@ -179,31 +208,19 @@
                                      {:event                          event
                                       :active-category                active-category
                                       :should-update-active-category? (nil? @filtered-data)}))]
-    (fn [{:keys [theme] :as sheet-opts}]
-      (let [search-active? (pos? (count @search-text))]
-        [rn/keyboard-avoiding-view
-         {:style                    style/flex-spacer
-          :keyboard-vertical-offset 8}
-         [rn/view {:style style/flex-spacer}
-          [rn/view {:style style/search-input-container}
-           [quo/input
-            {:small?         true
-             :placeholder    (i18n/label :t/emoji-search-placeholder)
-             :icon-name      :i/search
-             :value          @search-text
-             :on-change-text on-change-text
-             :clearable?     search-active?
-             :on-clear       clear-states}]]
-          [render-list
-           (merge {:filtered-data             @filtered-data
-                   :set-scroll-ref            set-scroll-ref
-                   :on-select                 on-select
-                   :on-viewable-items-changed on-viewable-items-changed}
-                  sheet-opts)]
-          (when-not search-active?
-            [footer
-             {:theme           theme
-              :active-category active-category
-              :scroll-ref      scroll-ref}])]]))))
+    (fn [sheet-opts]
+      [:f> f-view
+       (merge sheet-opts
+              {:render-emojis?            render-emojis?
+               :search-text               search-text
+               :on-change-text            on-change-text
+               :clear-states              clear-states
+               :filtered-data             @filtered-data
+               :set-scroll-ref            set-scroll-ref
+               :on-select                 on-select
+               :on-viewable-items-changed on-viewable-items-changed
+               :active-category           active-category
+               :scroll-ref                scroll-ref})])))
 
 (def view (quo.theme/with-theme view-internal))
+

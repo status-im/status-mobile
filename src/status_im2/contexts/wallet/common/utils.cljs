@@ -29,7 +29,7 @@
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
     0))
 
-(defn- total-token-value-in-all-chains
+(defn total-token-value-in-all-chains
   [{:keys [balances-per-chain decimals]}]
   (->> balances-per-chain
        (vals)
@@ -43,3 +43,12 @@
               (* (total-token-value-in-all-chains token)
                  (-> token :market-values-per-currency :usd :price))))
        (reduce +)))
+
+(defn network-list
+  [{:keys [balances-per-chain]} networks]
+  (into #{}
+        (mapv (fn [chain-id]
+                (first (filter #(or (= (:chain-id %) chain-id)
+                                    (= (:related-chain-id %) chain-id))
+                               networks)))
+              (keys balances-per-chain))))

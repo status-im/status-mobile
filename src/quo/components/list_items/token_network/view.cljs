@@ -15,11 +15,14 @@
     {:source (or (:source token) token)
      :style  style/token-image}]
    [rn/view {:style style/token-info}
-    [text/text {:weight :semi-bold} label]
+    [text/text
+     {:weight          :semi-bold
+      :number-of-lines 1}
+     (if-not (empty? label) label "-")]
     [preview-list/view
      {:type   :network
       :size   :size-14
-      :number 3}
+      :number (count networks)}
      networks]]])
 
 (defn- values
@@ -30,12 +33,14 @@
       :accessibility-label :check-icon}]
     [rn/view {:style style/values-container}
      [text/text
-      {:weight :medium
-       :size   :paragraph-2}
+      {:weight          :medium
+       :size            :paragraph-2
+       :number-of-lines 1}
       token-value]
      [text/text
-      {:style (style/fiat-value theme)
-       :size  :paragraph-2}
+      {:style           (style/fiat-value theme)
+       :size            :paragraph-2
+       :number-of-lines 1}
       fiat-value]]))
 
 (defn- view-internal

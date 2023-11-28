@@ -1,6 +1,8 @@
 (ns status-im2.contexts.wallet.collectible.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.scroll-page.view :as scroll-page]
     [status-im2.contexts.wallet.collectible.style :as style]
@@ -80,33 +82,39 @@
        :content-container-style style/traits-container}]]))
 
 (defn info
-  []
-  [rn/view
-   {:style style/info-container}
-   [rn/view {:style style/account}
-    [quo/data-item
-     {:description         :account
-      :card?               true
-      :status              :default
-      :size                :default
-      :title               (i18n/label :t/account-title)
-      :subtitle            "Collectibles vault"
-      :emoji               "🎮"
-      :customization-color :yellow}]]
+  [chain-id]
+  (let [network         (rf/sub [:wallet/network-details-by-chain-id
+                                 chain-id])
+        network-keyword (get network :network-name)
+        network-name    (string/capitalize (name network-keyword))]
+    [rn/view
+     {:style style/info-container}
+     [rn/view {:style style/account}
+      [quo/data-item
+       {:description         :account
+        :card?               true
+        :status              :default
+        :size                :default
+        :title               (i18n/label :t/account-title)
+        :subtitle            "Collectibles vault"
+        :emoji               "🎮"
+        :customization-color :yellow}]]
 
-   [rn/view {:style style/network}
-    [quo/data-item
-     {:description :network
-      :card?       true
-      :status      :default
-      :size        :default
-      :title       (i18n/label :t/network)
-      :subtitle    (i18n/label :t/mainnet)}]]])
+     [rn/view {:style style/network}
+      [quo/data-item
+       {:description   :network
+        :card?         true
+        :status        :default
+        :size          :default
+        :title         (i18n/label :t/network)
+        :network-image (quo.resources/get-network network-keyword)
+        :subtitle      network-name}]]]))
 
 (defn view
   []
-  (let [collectible-details                           (rf/sub [:wallet/last-collectible-details])
-        {:keys [name description preview-url traits]} collectible-details]
+  (let [collectible-details                              (rf/sub [:wallet/last-collectible-details])
+        {:keys [name description preview-url traits id]} collectible-details
+        chain-id                                         (get-in id [:contract-id :chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
@@ -124,5 +132,5 @@
       [header collectible-details]
       [cta-buttons]
       [tabs]
-      [info]
+      [info chain-id]
       [traits-section traits]]]))
