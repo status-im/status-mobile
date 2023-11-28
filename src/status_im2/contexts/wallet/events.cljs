@@ -396,7 +396,7 @@
          token-decimal       18
          token-id            (:symbol token)
          value_              0.0005
-         network-preferences [1]
+         network-preferences [5]
          gas-rates           0 ;low
          amount-in           (money/mul (money/bignumber value_)
                                         (money/from-decimal token-decimal))
