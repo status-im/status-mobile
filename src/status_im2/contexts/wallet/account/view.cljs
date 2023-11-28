@@ -37,6 +37,7 @@
     (fn []
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
             watch-only?                       (= type :watch)]
 =======
@@ -46,30 +47,11 @@
       (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
            ]
 >>>>>>> bb9b6daa9 (updates)
+=======
+      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])]
+>>>>>>> 14fc5af12 (qa)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
-=======
-<<<<<<< HEAD
-=======
->>>>>>> af0e5cc43 (review)
-      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
-            networks                           (rf/sub [:wallet/network-details])]
-        [rn/view {:style {:flex 1}}
-         [quo/page-nav
-          {:type              :wallet-networks
-           :background        :blur
-           :icon-name         :i/close
-           :on-press          #(rf/dispatch [:wallet/close-account-page])
-           :networks          networks
-           :networks-on-press #(js/alert "Pressed Networks")
-           :right-side        :account-switcher
-           :account-switcher  {:customization-color color
-                               :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content account-options/view
-                                                                    :gradient-cover? true
-                                                                    :customization-color color}])
-                               :emoji               emoji}}]
->>>>>>> f327a7f0e (updates)
          [quo/account-overview
           {:current-value       (utils/prettify-balance balance)
            :account-name        name

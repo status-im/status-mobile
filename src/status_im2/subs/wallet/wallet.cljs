@@ -1,22 +1,8 @@
 (ns status-im2.subs.wallet.wallet
-<<<<<<< HEAD
-<<<<<<< HEAD
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
-=======
-<<<<<<< HEAD
-  (:require [re-frame.core :as rf]
->>>>>>> af0e5cc43 (review)
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
-=======
-=======
->>>>>>> 6acd5d275 (rebase)
-  (:require
-    [clojure.string :as string]
-    [re-frame.core :as rf]
-    [status-im2.contexts.wallet.common.utils :as utils]
-    [utils.number]))
 
 (rf/reg-sub
  :wallet/ui
@@ -29,6 +15,7 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -68,6 +55,8 @@
 (re-frame/reg-sub
 >>>>>>> c8bb0a581 (updates)
 >>>>>>> 302c755ce (updates)
+=======
+>>>>>>> 14fc5af12 (qa)
  :wallet/accounts
  :<- [:wallet]
  :-> #(->> %
@@ -76,6 +65,7 @@
            (sort-by :position)))
 
 (rf/reg-sub
+<<<<<<< HEAD
 =======
 >>>>>>> 97b751fe9 (rebase)
 =======
@@ -84,6 +74,8 @@
 >>>>>>> 2cd7438de (review)
 =======
 >>>>>>> 411271469 (lint)
+=======
+>>>>>>> 14fc5af12 (qa)
  :wallet/addresses
  :<- [:wallet]
  :-> #(->> %
@@ -97,7 +89,6 @@
  (fn [accounts]
    (zipmap (map :address accounts)
            (map #(-> % :tokens utils/calculate-balance) accounts))))
-<<<<<<< HEAD
 
 (rf/reg-sub
  :wallet/account-cards-data
@@ -121,9 +112,7 @@
  (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
    (-> wallet
        (get-in [:accounts current-viewing-account-address])
-<<<<<<< HEAD
        (assoc :balance (get balances current-viewing-account-address)))))
-<<<<<<< HEAD
 
 (rf/reg-sub
  :wallet/tokens-filtered
@@ -146,6 +135,7 @@
                                            (string/lower-case query)))
                  sorted-tokens)]
      filtered-tokens)))
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 (rf/reg-sub
@@ -180,64 +170,31 @@
            vals
            (sort-by :position)))
 >>>>>>> aed578b59 (lint)
+=======
+>>>>>>> 2d40168d5 (qa)
 
-(rf/reg-sub
- :wallet/addresses
- :<- [:wallet]
- :-> #(->> %
-           :accounts
-           keys
-           set))
-
-(rf/reg-sub
- :wallet/balances
- :<- [:wallet/accounts]
- (fn [accounts]
-   (zipmap (map :address accounts)
-           (map #(-> % :tokens utils/calculate-balance) accounts))))
-
-(rf/reg-sub
- :wallet/account-cards-data
- :<- [:wallet/accounts]
- :<- [:wallet/balances]
- :<- [:wallet/tokens-loading?]
- (fn [[accounts balances tokens-loading?]]
-   (mapv (fn [{:keys [color address] :as account}]
-           (assoc account
-                  :customization-color color
-                  :type                :empty
-                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            tokens-loading?
-                  :balance             (utils/prettify-balance (get balances address))))
-         accounts)))
-
-(rf/reg-sub
- :wallet/current-viewing-account
- :<- [:wallet]
- :<- [:wallet/balances]
- (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
-   (-> wallet
-       (get-in [:accounts current-viewing-account-address])
-       (assoc :balance (get balances current-viewing-account-address)))))
 
 (defn- calc-token-value
   [{:keys [symbol market-values-per-currency] :as item} chain-id]
-  (let [fiat-value                        (utils/token-value-in-chain item chain-id)
+
+  (let [crypto-value                      (utils/token-value-in-chain item chain-id)
         market-values                     (:usd market-values-per-currency)
         {:keys [price change-pct-24hour]} market-values
-        fiat-change                       (utils/calculate-fiat-change fiat-value change-pct-24hour)]
-    {:token               (keyword (string/lower-case symbol))
-     :state               :default
-     :status              (cond
-                            (pos? change-pct-24hour) :positive
-                            (neg? change-pct-24hour) :negative
-                            :else                    :empty)
-     :customization-color :blue
-     :values              {:crypto-value      (.toFixed (* fiat-value price) 2)
-                           :fiat-value        (utils/prettify-balance fiat-value)
-                           :percentage-change (.toFixed change-pct-24hour 2)
-                           :fiat-change       (utils/prettify-balance fiat-change)}}))
+        fiat-change                       (utils/calculate-fiat-change crypto-value change-pct-24hour)]
+    (when crypto-value
+      {:token               (keyword (string/lower-case symbol))
+       :state               :default
+       :status              (cond
+                              (pos? change-pct-24hour) :positive
+                              (neg? change-pct-24hour) :negative
+                              :else                    :empty)
+       :customization-color :blue
+       :values              {:crypto-value      (utils/prettify-balance crypto-value)
+                             :fiat-value        (.toFixed (* crypto-value price) 2)
+                             :percentage-change (.toFixed change-pct-24hour 2)
+                             :fiat-change       (utils/prettify-balance fiat-change)}})))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 (re-frame/reg-sub
  :wallet/account-token-values
@@ -309,9 +266,16 @@
 >>>>>>> 2a4f6150e (fix)
 =======
 =======
+=======
+(rf/reg-sub
+ :wallet/account-token-values
+>>>>>>> 2d40168d5 (qa)
  :<- [:wallet/current-viewing-account]
  :<- [:chain-id]
  (fn [[current-account chain-id]]
    (mapv #(calc-token-value % chain-id) (:tokens current-account))))
+<<<<<<< HEAD
 >>>>>>> f4f0deecf (review)
 >>>>>>> a544469d8 (review)
+=======
+>>>>>>> 2d40168d5 (qa)

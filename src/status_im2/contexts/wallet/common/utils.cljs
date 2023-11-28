@@ -30,31 +30,19 @@
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
     0))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 (defn total-token-value-in-all-chains
-=======
-=======
->>>>>>> e41fe5426 (review)
-=======
->>>>>>> af0e5cc43 (review)
-<<<<<<< HEAD
-=======
->>>>>>> 6acd5d275 (rebase)
-(defn- total-token-value-in-all-chains
->>>>>>> 70e4a2a12 (updates)
   [{:keys [balances-per-chain decimals]}]
   (->> balances-per-chain
        (vals)
        (map #(calculate-raw-balance (:raw-balance %) decimals))
        (reduce +)))
 
+
 (defn- token-value-in-chain
   [{:keys [balances-per-chain decimals]} chain-id]
   (let [balance-in-chain (get balances-per-chain chain-id)]
-    (calculate-raw-balance (:raw-balance balance-in-chain) decimals)))
+    (when balance-in-chain
+      (calculate-raw-balance (:raw-balance balance-in-chain) decimals))))
 
 (defn calculate-balance
   [tokens-in-account]
@@ -63,8 +51,6 @@
               (* (total-token-value-in-all-chains token)
                  (-> token :market-values-per-currency :usd :price))))
        (reduce +)))
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]
@@ -74,41 +60,7 @@
                                     (= (:related-chain-id %) chain-id))
                                networks)))
               (keys balances-per-chain))))
-=======
-=======
-(defn total-per-token
-=======
-=======
-=======
 
->>>>>>> 6acd5d275 (rebase)
 (defn calculate-fiat-change
   [fiat-value change-pct-24hour]
-<<<<<<< HEAD
-  (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour))))
-
-<<<<<<< HEAD
->>>>>>> aeda1e4a7 (review)
-(defn sum-token-chains
->>>>>>> 25ec47428 (review)
-  [item]
-  (reduce (fn [acc balances]
-            (+ (calculate-raw-balance (:rawBalance balances)
-                                      (:decimals item))
-               acc))
-          0
-          (vals (:balancesPerChain item))))
->>>>>>> c8bb0a581 (updates)
->>>>>>> 70e4a2a12 (updates)
-=======
-(defn get-balance-by-address
-  [balances address]
-  (->> balances
-       (filter #(= (:address %) address))
-       first
-       :balance))
-
->>>>>>> 6acd5d275 (rebase)
-=======
   (money/bignumber (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour)))))
->>>>>>> f4f0deecf (review)
