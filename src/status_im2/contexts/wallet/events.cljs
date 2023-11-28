@@ -587,7 +587,7 @@
                                                  :address  result
                                                  :networks [:ethereum :optimism]}]
                                                [])
-               :wallet/valid-ens-or-address? (if result true false))}))
+               :wallet/valid-ens-or-address? (boolean result))}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
  (fn [{:keys [db]} [ens]]
