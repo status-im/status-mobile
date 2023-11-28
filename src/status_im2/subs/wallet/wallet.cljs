@@ -47,8 +47,8 @@
  :<- [:wallet/accounts]
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
- (fn [[accounts balances tokens-loading?]]
-   (mapv (fn [{:keys [color address type] :as account}]
+ (fn [[accounts balances _]]
+   (mapv (fn [{:keys [color address] :as account}]
            (assoc account
                   :customization-color color
                   :type                (if (= type :watch) :watch-only :empty)

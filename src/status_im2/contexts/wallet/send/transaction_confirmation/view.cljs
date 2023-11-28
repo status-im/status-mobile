@@ -7,10 +7,10 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
+    [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.common.standard-authentication.core :as standard-auth]))
+    [utils.re-frame :as rf]))
 
 (defn- transaction-title
   []
@@ -145,8 +145,7 @@
 
 (defn- f-view-internal
   [_]
-  (let [reset-slider?        (reagent/atom false)
-        margin-top           (safe-area/get-top)
+  (let [margin-top           (safe-area/get-top)
         biometric-auth?      false
         on-close             #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])
         status-account-props {:customization-color :purple

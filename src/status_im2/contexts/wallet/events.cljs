@@ -126,7 +126,7 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
+  {:db (update-in db [:wallet :ui :send] dissoc :to-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [password {:keys [path]} on-success]]
@@ -354,6 +354,7 @@
 
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
+   (println address "dsadass")
    {:db (assoc-in db [:wallet :ui :send :to-address] address)}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
@@ -388,8 +389,8 @@
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db]}]
    (let [wallet-address      (get-in db [:wallet :current-viewing-account-address])
-         tokens              (get-in db [:wallet :accounts])
-         account             (get-in db [:wallet :accounts wallet-address])
+         ;tokens              (get-in db [:wallet :accounts])
+         ;account             (get-in db [:wallet :accounts wallet-address])
          token               (get-in db [:wallet :ui :send :token])
          to-address          (get-in db [:wallet :ui :send :to-address])
          token-decimal       18
@@ -410,7 +411,7 @@
                               network-preferences
                               gas-rates
                               {}]]
-     (println token "fdsfsdfsfdfs")
+     (prn "=====" request-params)
      {:json-rpc/call [{:method     "wallet_getSuggestedRoutes"
                        :params     request-params
                        :on-success (fn [suggested-routes]
@@ -429,7 +430,7 @@
          to-address (get-in db [:wallet :ui :send :to-address])
          best (first (:Best suggested-routes))
          from (:From best)
-         to (:To best)
+         ;to (:To best)
          token (get-in db [:wallet :ui :send :token])
          token-id (:symbol token)
          from-asset token-id
@@ -462,7 +463,6 @@
                         :Data                 "0x"}}]
          sha3-pwd (native-module/sha3 (str (security/safe-unmask-data password)))
          request-params [multi-transaction-command transaction-bridge sha3-pwd]]
-     (prn from "++++BESTSTT")
      (prn "=====" request-params)
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
