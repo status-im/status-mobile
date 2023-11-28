@@ -6,7 +6,6 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.constants :as constants]
-    [status-im2.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im2.contexts.wallet.item-types :as types]
     [status-im2.contexts.wallet.send.select-address.style :as style]
     [utils.debounce :as debounce]
@@ -50,10 +49,7 @@
           send-address          (rf/sub [:wallet/send-address])
           valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])]
       [quo/address-input
-       {:on-focus              (fn []
-                                 (when (empty? @input-value)
-                                   (rf/dispatch [:wallet/clean-local-suggestions]))
-                                 (reset! input-focused? true))
+       {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
         :on-scan               (fn []
                                  (rn/dismiss-keyboard!)
@@ -62,40 +58,18 @@
         :address-regex         constants/regx-address
         :scanned-value         (or send-address scanned-address)
         :on-detect-address     #(debounce/debounce-and-dispatch
-                                 [:wallet/validate-address %]
-                                 300)
+                                  [:wallet/validate-address %]
+                                  300)
         :on-detect-ens         (fn [text cb]
                                  (debounce/debounce-and-dispatch
-                                  [:wallet/find-ens text cb]
-                                  300))
+                                   [:wallet/find-ens text cb]
+                                   300))
         :on-change-text        (fn [text]
-<<<<<<< HEAD
-                                 (let [starts-like-eth-address (re-matches
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                                                constants/regx-full-or-partial-address
-                                                                text)]
-=======
-                                                                 constants/regx-address-fragment
-                                                                 text)]
->>>>>>> 46cf4ae0f (u)
-=======
-                                                                constants/regx-address-fragment
-                                                                text)]
->>>>>>> 928f50e10 (lint)
-                                   (when-not (= scanned-address text)
-                                     (rf/dispatch [:wallet/clean-scanned-address]))
-                                   (if starts-like-eth-address
-                                     (rf/dispatch [:wallet/fetch-address-suggestions text])
-                                     (rf/dispatch [:wallet/clean-local-suggestions]))
-                                   (reset! input-value text)))
-=======
                                  (when-not (= scanned-address text)
                                    (rf/dispatch [:wallet/clean-scanned-address]))
                                  (when (empty? text)
                                    (rf/dispatch [:wallet/clean-local-suggestions]))
                                  (reset! input-value text))
->>>>>>> 5e6b52646 (lint)
         :valid-ens-or-address? valid-ens-or-address?}])))
 
 (defn- ens-linked-address
@@ -108,8 +82,8 @@
           ^{:key (str network)}
           [quo/text
            {:size  :paragraph-2
-            :style {:color (colors/resolve-color (:network-name network) theme)}}
-           (str (:short-name network) ":")])
+            :style {:color (colors/resolve-color network theme)}}
+           (str (subs (name network) 0 3) ":")])
         networks)
    [quo/text
     {:size   :paragraph-2
@@ -156,44 +130,30 @@
 
 (defn- f-view-internal
   []
-<<<<<<< HEAD
-<<<<<<< HEAD
-  (let [margin-top     (safe-area/get-top)
-        selected-tab   (reagent/atom (:id (first tabs-data)))
-        on-close       (fn []
-                         (rf/dispatch [:wallet/clean-scanned-address])
-                         (rf/dispatch [:wallet/clean-local-suggestions])
-                         (rf/dispatch [:navigate-back]))
-        on-change-tab  #(reset! selected-tab %)
-        input-value    (reagent/atom "")
-        input-focused? (reagent/atom false)]
-    (fn []
-      (let [valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
-=======
-  (let [selected-tab    (reagent/atom (:id (first tabs-data)))
-        on-close        #(rf/dispatch [:navigate-back])
-        on-change-tab   #(reset! selected-tab %)
-        input-value     (reagent/atom "")
-        input-focused?  (reagent/atom false)]
-=======
   (let [selected-tab   (reagent/atom (:id (first tabs-data)))
         on-close       #(rf/dispatch [:navigate-back])
         on-change-tab  #(reset! selected-tab %)
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
->>>>>>> 928f50e10 (lint)
     (fn []
       (let [valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         (rn/use-effect (fn []
                          (fn []
                            (rf/dispatch [:wallet/clean-scanned-address])
                            (rf/dispatch [:wallet/clean-local-suggestions]))))
->>>>>>> 46cf4ae0f (u)
         [rn/scroll-view
          {:content-container-style      style/container
           :keyboard-should-persist-taps :handled
           :scroll-enabled               false}
-         [account-switcher/view {:on-press on-close}]
+         [quo/page-nav
+          {:icon-name           :i/close
+           :on-press            on-close
+           :accessibility-label :top-bar
+           :right-side          :account-switcher
+           :account-switcher    {:customization-color :purple
+                                 :on-press            #(js/alert "Not implemented yet")
+                                 :state               :default
+                                 :emoji               "🍑"}}]
          [quo/text-combinations
           {:title                     (i18n/label :t/send-to)
            :container-style           style/title-container
@@ -214,10 +174,7 @@
                 :type                :primary
                 :disabled?           (not valid-ens-or-address?)
                 :container-style     style/button
-                :on-press            (fn []
-                                       (rf/dispatch [:wallet/select-send-address @input-value])
-                                       (rf/dispatch [:navigate-to-within-stack
-                                                     [:wallet-select-asset :wallet-select-address]]))}
+                :on-press            #(js/alert "Not implemented yet")}
                (i18n/label :t/continue)])]
            [:<>
             [quo/tabs
