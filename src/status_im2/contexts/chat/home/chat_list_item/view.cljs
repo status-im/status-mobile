@@ -134,9 +134,7 @@
             :dont-show    (i18n/label :t/sent-a-gif)
             (i18n/label :t/sent-a-gif))
 
-          (or
-           (= content-type constants/content-type-community-invitation)
-           (= content-type constants/content-type-community))
+          (= content-type constants/content-type-community)
           (case author
             :you          (i18n/label :t/you-shared-a-community)
             :other-person (i18n/label :t/user-shared-a-community {:user primary-name})

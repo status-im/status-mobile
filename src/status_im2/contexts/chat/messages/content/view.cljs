@@ -200,9 +200,6 @@
                constants/content-type-album
                [album/album-message message-data context on-long-press message-container-data]
 
-               constants/content-type-community-invitation
-               [content.text/text-content message-data context]
-
                [not-implemented/not-implemented
                 [content.unknown/unknown-content message-data]])
 
