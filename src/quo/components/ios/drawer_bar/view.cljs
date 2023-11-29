@@ -1,6 +1,6 @@
-(ns quo.components.common.drawer-bar.view
+(ns quo.components.ios.drawer-bar.view
   (:require
-    [quo.components.common.drawer-bar.style :as style]
+    [quo.components.ios.drawer-bar.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 

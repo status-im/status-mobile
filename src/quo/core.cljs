@@ -25,7 +25,6 @@
     quo.components.code.snippet.view
     quo.components.colors.color-picker.view
     quo.components.colors.color.view
-    quo.components.common.drawer-bar.view
     quo.components.common.notification-dot.view
     quo.components.common.separator.view
     quo.components.community.banner.view
@@ -67,6 +66,7 @@
     quo.components.inputs.recovery-phrase.view
     quo.components.inputs.search-input.view
     quo.components.inputs.title-input.view
+    quo.components.ios.drawer-bar.view
     quo.components.keycard.view
     quo.components.links.link-preview.view
     quo.components.links.url-preview-list.view
@@ -201,9 +201,6 @@
 (def color-picker quo.components.colors.color-picker.view/view)
 (def color quo.components.colors.color.view/view)
 
-;;;; Common
-(def drawer-bar quo.components.common.drawer-bar.view/view)
-
 ;;;; Community
 (def community-card-view-item quo.components.community.community-card-view/view)
 (def communities-membership-list-item
@@ -271,6 +268,9 @@
 (def recovery-phrase-input quo.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo.components.inputs.search-input.view/search-input)
 (def title-input quo.components.inputs.title-input.view/view)
+
+;;;; iOS
+(def drawer-bar quo.components.ios.drawer-bar.view/view)
 
 ;;;; Numbered Keyboard
 (def keyboard-key quo.components.numbered-keyboard.keyboard-key.view/view)

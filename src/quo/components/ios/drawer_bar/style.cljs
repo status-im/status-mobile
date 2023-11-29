@@ -1,4 +1,4 @@
-(ns quo.components.common.drawer-bar.style
+(ns quo.components.ios.drawer-bar.style
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]))
