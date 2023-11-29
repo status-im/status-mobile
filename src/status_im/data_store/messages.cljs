@@ -5,16 +5,23 @@
     [utils.re-frame :as rf]))
 
 (defn ->rpc
-  [{:keys [content] :as message}]
+  [{:keys [content]
+    :as   message}]
   (cond-> message
     content
     (assoc :text    (:text content)
            :sticker (:sticker content))
     :always
-    (set/rename-keys {:chat-id           :chat_id
-                      :whisper-timestamp :whisperTimestamp
-                      :community-id      :communityId
-                      :clock-value       :clock})))
+    (set/rename-keys {:chat-id            :chat_id
+                      :whisper-timestamp  :whisperTimestamp
+                      :community-id       :communityId
+                      :clock-value        :clock})))
+
+(defn- <-status-link-previews-rpc
+  [preview]
+  (update preview :community set/rename-keys {:communityId  :community-id
+                                              :displayName  :display-name
+                                              :membersCount :members-count}))
 
 (defn- <-link-preview-rpc
   [preview]
@@ -53,8 +60,10 @@
         :new                      :new?
         :albumImagesCount         :album-images-count
         :displayName              :display-name
-        :linkPreviews             :link-previews})
+        :linkPreviews             :link-previews
+        :statusLinkPreviews       :status-link-previews})
       (update :link-previews #(map <-link-preview-rpc %))
+      (update :status-link-previews #(map <-status-link-previews-rpc %))
       (update :quoted-message
               set/rename-keys
               {:parsedText       :parsed-text

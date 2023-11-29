@@ -13,10 +13,12 @@
 
 (defn view
   [{:keys [chat-id message-id]}]
-  (let [previews (rf/sub [:chats/message-link-previews chat-id message-id])]
-    (when (seq previews)
+  (let [previews             (rf/sub [:chats/message-link-previews chat-id message-id])
+        status-link-previews (rf/sub [:chats/message-status-link-previews chat-id message-id])]
+    (when (or (seq status-link-previews)
+              (seq previews))
       [:<>
-       (for [{:keys [url title description thumbnail hostname]} previews]
+       (for [{:keys [url title description thumbnail hostname]} (merge status-link-previews previews)]
          ^{:key url}
          [quo/link-preview
           {:title           title
