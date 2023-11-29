@@ -61,4 +61,4 @@
          :profile-picture (profile.utils/photo profile)
          :derivation-path path
          :user-name       (profile.utils/displayed-name profile)
-         :on-press        #(js/alert "pressed")}])]))
+         :on-press        #(js/alert "To be implemented")}])]))
