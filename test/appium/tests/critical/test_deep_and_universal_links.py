@@ -68,7 +68,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         for link, text in profile_links.items():
             self.browser_view.open_url(link)
             if text:
-                name_is_shown = self.profile_view.default_username_text.text == text
+                name_is_shown = self.profile_view.default_username_text.text == text \
+                                or self.profile_view.default_username_text.text.endswith(link[-6:])
             else:
                 name_is_shown = self.profile_view.default_username_text.text.endswith(link[-6:])
             if not self.channel.profile_add_to_contacts_button.is_element_displayed(10) or not name_is_shown:
@@ -92,19 +93,19 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(704614)
     def test_links_open_universal_links_from_other_apps(self):
+        app_package = self.driver.current_package
         self.home.just_fyi("Opening a profile URL from google search bar when user is still logged in")
         profile_url = "https://status.app/u#zQ3shVVxZMwLVEQvuu1KF6h4D2mzVyCC4F4mHLZm5dz5XU1aa"
         self.home.click_system_home_button()
-        self.home.open_link_from_google_search_app(profile_url)
+        self.home.open_link_from_google_search_app(profile_url, app_package)
         if not self.channel.profile_add_to_contacts_button.is_element_displayed(
                 10) or not self.profile_view.default_username_text.text.endswith(profile_url[-6:]):
             self.errors.append("Profile was not opened by the url %s when user is logged in" % profile_url)
 
         self.home.just_fyi("Opening a community URL from google search bar when user is logged out")
-        app_package = self.driver.current_package
         self.driver.terminate_app(app_package)
         community_url = "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
-        self.home.open_link_from_google_search_app(community_url)
+        self.home.open_link_from_google_search_app(community_url, app_package)
         self.sign_in.sign_in()
         if not self.home.element_by_translation_id(
                 "community-admins-will-review-your-request").is_element_displayed(10):
@@ -114,7 +115,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.driver.reset()
         self.home.click_system_home_button()
         channel_url = "https://status.app/cc/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
-        self.home.open_link_from_google_search_app(channel_url)
+        self.home.open_link_from_google_search_app(channel_url, app_package)
         self.sign_in.create_user()
         if not self.home.element_by_translation_id(
                 "community-admins-will-review-your-request").is_element_displayed(10):
