@@ -37,7 +37,6 @@
        (map #(calculate-raw-balance (:raw-balance %) decimals))
        (reduce +)))
 
-
 (defn- token-value-in-chain
   [{:keys [balances-per-chain decimals]} chain-id]
   (let [balance-in-chain (get balances-per-chain chain-id)]
