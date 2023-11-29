@@ -395,6 +395,8 @@
                                                             on-end-reached?
                                                             animate-topbar-name?)
                                             (on-scroll event show-floating-scroll-down-button?))
+       :content-container-style           {:justify-content :flex-end
+                                           :min-height      @messages-view-height}
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
                                                                 (colors/theme-colors
