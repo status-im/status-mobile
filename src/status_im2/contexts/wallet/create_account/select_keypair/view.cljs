@@ -8,6 +8,24 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn keypair-options
+  []
+  [quo/action-drawer
+   [[{:icon                :i/add
+      :accessibility-label :generate-new-keypair
+      :label               (i18n/label :t/generate-new-keypair)
+      :on-press            #(rf/dispatch [:navigate-to :wallet-backup-recovery-phrase])}
+     {:icon                :i/seed
+      :accessibility-label :import-using-phrase
+      :label               (i18n/label :t/import-using-phrase)
+      :add-divider?        true}
+     {:icon                :i/keycard-card
+      :accessibility-label :import-from-keycard
+      :label               (i18n/label :t/import-from-keycard)}
+     {:icon                :i/key
+      :accessibility-label :import-private-key
+      :label               (i18n/label :t/import-private-key)}]]])
+
 (def accounts
   [{:account-props {:customization-color :turquoise
                     :size                32
@@ -38,7 +56,8 @@
        :title               (i18n/label :t/keypairs)
        :description         (i18n/label :t/keypairs-description)
        :button-icon         :i/add
-       :button-on-press     #(js/alert "not implemented")
+       :button-on-press     #(rf/dispatch [:show-bottom-sheet
+                                            {:content keypair-options}])
        :customization-color customization-color}]
      [quo/keypair
       (merge

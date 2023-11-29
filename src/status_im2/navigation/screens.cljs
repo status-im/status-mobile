@@ -49,6 +49,7 @@
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
+    [status-im2.contexts.wallet.create-account.backup-recovery-phrase.view :as wallet-backup-recovery-phrase]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
@@ -296,6 +297,10 @@
     {:name      :wallet-create-account
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
+
+    {:name      :wallet-backup-recovery-phrase
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-backup-recovery-phrase/view}
 
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}

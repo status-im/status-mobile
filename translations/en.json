@@ -63,7 +63,6 @@
     "back": "Back",
     "back-up-seed-phrase": "Back up seed phrase",
     "back-up-your-seed-phrase": "Back up your seed phrase",
-    "backup-recovery-phrase": "Back up seed phrase",
     "balance": "Balance",
     "begin-set-up": "Begin setup",
     "biometric-auth-android-sensor-desc": "Touch sensor",
@@ -2403,12 +2402,25 @@
     "address-copied": "Address copied",
     "no-dapps-description": "We want dApps!",
     "select-asset": "Select asset",
+<<<<<<< HEAD
     "send-limit": "Max: {{limit}}",
     "searching-for-activity": "Searching for activity...",
     "this-address-has-no-activity": "This address has no activity",
+<<<<<<< HEAD
     "this-address-has-activity": "This address has activity",
     "details": "Details",
     "est-time": "Est. time",
     "user-gets": "{{name}} gets",
     "slide-to-send": "Slide to send"
+=======
+    "this-address-has-activity": "This address has activity"   
+=======
+    "generate-new-keypair": "Generate new keypair",
+    "import-using-phrase": "Import using recovery phrase",
+    "import-from-keycard": "Import from Keycard",
+    "import-private-key": "Import private key",
+    "backup-recovery-phrase": "Backup recovery phrase",
+    "backup-recovery-phrase-description": "Save in a secure place that only you control, these 12 words give access to all of your funds."
+>>>>>>> 81ead525f (u)
+>>>>>>> 6407d390d3 (u)
 }
