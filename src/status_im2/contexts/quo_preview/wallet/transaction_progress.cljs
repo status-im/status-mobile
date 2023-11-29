@@ -93,19 +93,19 @@
 (defn- get-networks
   [state]
   (case (:network state)
-    :mainnet [{:network      :mainnet
-               :state        (:state-mainnet state)
-               :counter      counter
-               :total-box    total-box
-               :epoch-number (:epoch-number-mainnet state)}]
-    :optimism [{:network      :optimism
-                :state        (:state-optimism state)
-                :progress     (:optimism-progress-percentage state)
-                :epoch-number (:epoch-number-optimism state)}]
-    :arbitrum [{:network      :arbitrum
-                :state        (:state-arbitrum state)
-                :progress     (:arbitrum-progress-percentage state)
-                :epoch-number (:epoch-number-arbitrum state)}]
+    :mainnet           [{:network      :mainnet
+                         :state        (:state-mainnet state)
+                         :counter      counter
+                         :total-box    total-box
+                         :epoch-number (:epoch-number-mainnet state)}]
+    :optimism          [{:network      :optimism
+                         :state        (:state-optimism state)
+                         :progress     (:optimism-progress-percentage state)
+                         :epoch-number (:epoch-number-optimism state)}]
+    :arbitrum          [{:network      :arbitrum
+                         :state        (:state-arbitrum state)
+                         :progress     (:arbitrum-progress-percentage state)
+                         :epoch-number (:epoch-number-arbitrum state)}]
     :optimism-arbitrum [{:network      :optimism
                          :state        (:state-optimism state)
                          :progress     (:optimism-progress-percentage state)
@@ -128,7 +128,8 @@
     [preview/preview-container {:state state :descriptor descriptor}
      [quo/transaction-progress
       (assoc @state
-             :networks (get-networks @state))]]))
+             :networks
+             (get-networks @state))]]))
 
 (defn view
   []
