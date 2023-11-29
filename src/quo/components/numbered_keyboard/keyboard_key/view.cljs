@@ -7,6 +7,11 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]))
 
+(defn- label->accessibility-label
+  [label]
+  (let [label-name (if (keyword? label) (name label) label)]
+    (keyword (str "keyboard-key-" label-name))))
+
 (defn- view-internal
   []
   (let [pressed? (reagent/atom false)]
@@ -14,9 +19,11 @@
       (let [label-color      (style/get-label-color disabled? theme blur?)
             background-color (style/toggle-background-color @pressed? blur? theme)]
         [rn/pressable
-         {:accessibility-label :keyboard-key
+         {:accessibility-label (label->accessibility-label label)
           :disabled            (or disabled? (not label))
-          :on-press            (fn [] (on-press label))
+          :on-press            (fn []
+                                 (when on-press
+                                   (on-press label)))
           :on-press-in         #(reset! pressed? true)
           :on-press-out        #(reset! pressed? false)
           :style               (style/container background-color)}
