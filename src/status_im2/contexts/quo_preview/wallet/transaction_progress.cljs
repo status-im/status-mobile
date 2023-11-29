@@ -95,7 +95,7 @@
   (case (:network state)
     :mainnet           [{:network      :mainnet
                          :state        (:state-mainnet state)
-                         :counter      counter
+                         :counter      @counter
                          :total-box    total-box
                          :epoch-number (:epoch-number-mainnet state)}]
     :optimism          [{:network      :optimism
@@ -135,7 +135,7 @@
   []
   (let [state (reagent/atom
                {:title                        "Title"
-                :counter                      counter
+                :counter                      40
                 :total-box                    total-box
                 :tag-name                     "Doodle"
                 :tag-number                   "120"

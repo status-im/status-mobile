@@ -50,7 +50,7 @@
 
 (defn- calculate-counter
   [counter]
-  (if (< @counter 4) @counter max-mainnet-verifications))
+  (if (< counter 4) counter max-mainnet-verifications))
 
 (defn mainnet-label 
   [counter]
