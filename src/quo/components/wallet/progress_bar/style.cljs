@@ -21,6 +21,8 @@
            :error     {:border-color     colors/white-opa-5
                        :background-color (colors/resolve-color :danger theme 60)}}})
 
+(def max-value 100)
+
 (defn root-container
   [{:keys [customization-color state theme full-width?]}]
   (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color theme)
@@ -39,7 +41,7 @@
   [{:keys [customization-color state theme progressed-value]}]
   (let [{:keys [background-color]} (get-in (border-and-background-color customization-color theme)
                                            [theme state])
-        progress                   (if (> progressed-value 100) 100 progressed-value)]
+        progress                   (if (> progressed-value max-value) max-value progressed-value)]
     {:height           12
      :margin-top       -1
      :width            (str progress "%")
