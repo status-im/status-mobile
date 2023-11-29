@@ -115,7 +115,7 @@
                              :ens             ens-stateofus-eth
                              :public-key      nil ; not yet...
                              :state           :resolve-ens}))
-                :contacts/resolve-public-key-from-ens
+                :effects.contacts/resolve-public-key-from-ens
                 {:chain-id   1
                  :ens        ens-stateofus-eth
                  :on-success [:contacts/set-new-identity-success ens]
@@ -131,7 +131,7 @@
                              :type            :compressed-key
                              :public-key      nil ; not yet...
                              :state           :decompress-key}))
-                :contacts/decompress-public-key
+                :effects.contacts/decompress-public-key
                 {:compressed-key user-ckey
                  :on-success     [:contacts/set-new-identity-success user-ckey]
                  :on-error       [:contacts/set-new-identity-error user-ckey]}})))

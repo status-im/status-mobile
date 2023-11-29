@@ -221,12 +221,12 @@
 (rf/defn on-backup-success
   [{:keys [db] :as cofx} backup-type]
   (rf/merge cofx
-            {:utils/show-popup {:title   (i18n/label (if (= backup-type :recovery-card)
-                                                       :t/keycard-access-reset
-                                                       :t/keycard-backup-success-title))
-                                :content (i18n/label (if (= backup-type :recovery-card)
-                                                       :t/keycard-can-use-with-new-passcode
-                                                       :t/keycard-backup-success-body))}}
+            {:effects.utils/show-popup {:title   (i18n/label (if (= backup-type :recovery-card)
+                                                               :t/keycard-access-reset
+                                                               :t/keycard-backup-success-title))
+                                        :content (i18n/label (if (= backup-type :recovery-card)
+                                                               :t/keycard-can-use-with-new-passcode
+                                                               :t/keycard-backup-success-body))}}
             (cond
               (multiaccounts.model/logged-in? db)
               (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])
@@ -373,4 +373,3 @@
    cofx
    {:on-card-connected :keycard/load-recovering-key-screen
     :handler           (common/dispatch-event :keycard/import-multiaccount)}))
-

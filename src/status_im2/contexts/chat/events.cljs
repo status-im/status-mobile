@@ -3,7 +3,6 @@
     [clojure.set :as set]
     [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
-    [react-native.async-storage :as async-storage]
     [reagent.core :as reagent]
     [status-im.chat.models.loading :as loading]
     [status-im.data-store.chats :as chats-store]
@@ -11,11 +10,11 @@
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
+    status-im2.contexts.chat.effects
     [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.state :as chat.state]
     [status-im2.contexts.contacts.events :as contacts-store]
-    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -172,11 +171,11 @@
     (chat.state/reset-visible-item)
     (rf/merge cofx
               (merge
-               {:db                (-> db
-                                       (dissoc :current-chat-id)
-                                       (assoc-in [:chat/inputs chat-id :focused?] false))
-                :async-storage-set {:chat-id nil
-                                    :key-uid nil}}
+               {:db                        (-> db
+                                               (dissoc :current-chat-id)
+                                               (assoc-in [:chat/inputs chat-id :focused?] false))
+                :effects.async-storage/set {:chat-id nil
+                                            :key-uid nil}}
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
                  ;; A close chat event is also called while opening any chat.
@@ -431,21 +430,7 @@
   [{:keys [db]} value]
   {:db (assoc db :lightbox/scale value)})
 
-(re-frame/reg-fx
- :chat/open-last-chat
- (fn [key-uid]
-   (async-storage/get-item
-    :chat-id
-    (fn [chat-id]
-      (when chat-id
-        (async-storage/get-item
-         :key-uid
-         (fn [stored-key-uid]
-           (when (= stored-key-uid key-uid)
-             (re-frame/dispatch [:chat/navigate-to-chat chat-id
-                                 shell.constants/open-screen-without-animation])))))))))
-
 (rf/defn check-last-chat
   {:events [:chat/check-last-chat]}
   [{:keys [db]}]
-  {:chat/open-last-chat (get-in db [:profile/profile :key-uid])})
+  {:effects.chat/open-last-chat (get-in db [:profile/profile :key-uid])})

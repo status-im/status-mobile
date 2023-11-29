@@ -194,7 +194,7 @@
   {:events [:mailserver.ui/request-error-pressed]}
   [{:keys [db]}]
   (let [mailserver-error (:mailserver/request-error db)]
-    {:utils/show-confirmation
+    {:effects.utils/show-confirmation
      {:title               (i18n/label :t/mailserver-request-error-title)
       :content             (i18n/label :t/mailserver-request-error-content
                                        {:error mailserver-error})
@@ -290,8 +290,7 @@
          [{:method     "mailservers_addMailserver"
            :params     [(mailserver->rpc mailserver current-fleet)]
            :on-success (fn []
-                         ;; we naively logout if the user is connected to
-                         ;; the edited mailserver
+                         ;; we naively logout if the user is connected to the edited mailserver
                          (when current
                            (re-frame/dispatch
                             [:multiaccounts.logout.ui/logout-confirmed]))
