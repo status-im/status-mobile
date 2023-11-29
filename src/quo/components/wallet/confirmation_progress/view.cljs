@@ -4,6 +4,9 @@
             [quo.theme :as quo.theme]
             [react-native.core :as rn]))
 
+(def ^:private max-progress 100)
+(def ^:private min-progress 0)
+
 (defn- calculate-box-state
   [state counter index]
   (cond
@@ -39,8 +42,8 @@
   [state progress-value]
   (case state
     :finalising progress-value
-    :finalized  100
-    0))
+    :finalized  max-progress
+    min-progress))
 
 (defn- progress-boxes
   [{:keys [state counter total-box customization-color]}]
