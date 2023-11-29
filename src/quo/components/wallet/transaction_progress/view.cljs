@@ -47,7 +47,7 @@
 
 (defn- calculate-counter
   [counter]
-  (if (< counter 4) counter "4"))
+  (if (< @counter 4) @counter "4"))
 
 (defn- text-steps
   [network state epoch-number counter]
@@ -87,23 +87,16 @@
   (first (filter #(= (:network %) network) networks)))
 
 (defn- calculate-error-state
-  [{:keys [network networks]}]
-  (case network
-    :mainnet           (= :error (:state (get-network networks :mainnet)))
-    :arbitrum          (= :error (:state (get-network networks :arbitrum)))
-    :optimism          (= :error (:state (get-network networks :optimism)))
-    :optimism-arbitrum (or (= :error (:state (get-network networks :arbitrum)))
-                           (= :error (:state (get-network networks :optimism))))
-    nil))
+  [networks]
+  (some #(= (:state %) :error) networks))
 
 (defn- title-internal
-  [{:keys [title theme network networks]}]
+  [{:keys [title theme networks]}]
   [rn/view {:style style/title-container}
    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
    [rn/view {:style style/title-text-container}
     [text-internal nil title]]
-   (when (calculate-error-state {:networks networks
-                                 :network  network})
+   (when (calculate-error-state networks)
      [button/button
       {:size      24
        :icon-left :i/refresh}
@@ -143,39 +136,26 @@
         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}
        (text-steps network state epoch-number counter)]]]))
 
-(defn- view-network-mainnet
-  [{:keys [theme state epoch-number counter total-box customization-color]}]
-  [:<>
-   [status-row
-    {:theme        theme
-     :state        state
-     :network      :mainnet
-     :epoch-number epoch-number
-     :counter      @counter}]
-   [confirmation-progress/view
-    {:state               state
-     :network             :mainnet
-     :counter             counter
-     :total-box           total-box
-     :customization-color customization-color}]])
-
 (defn- view-network
-  [{:keys [theme state epoch-number customization-color progress bottom-large? network]}]
+  [{:keys [theme state epoch-number counter total-box customization-color progress bottom-large? network]}]
   [:<>
    [status-row
     {:theme        theme
      :state        state
      :network      network
-     :epoch-number epoch-number}]
+     :epoch-number epoch-number
+     :counter      counter}]
    [confirmation-progress/view
     {:state               state
      :network             network
+     :counter             counter
+     :total-box           total-box
+     :progress-value      progress
      :bottom-large?       bottom-large?
-     :customization-color customization-color
-     :progress-value      progress}]])
+     :customization-color customization-color}]])
 
 (defn- view-internal
-  [{:keys [title on-press accessibility-label network theme tag-photo tag-name tag-number networks
+  [{:keys [title on-press accessibility-label theme tag-photo tag-name tag-number networks
            customization-color]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
@@ -185,19 +165,13 @@
     [title-internal
      {:title    title
       :theme    theme
-      :networks networks
-      :network  network}]
+      :networks networks}]
     [tag-internal tag-photo tag-name tag-number theme]
-    (let [assoc-props #(assoc (get-network networks %)
-                              :customization-color
-                              customization-color)]
-      (case network
-        :mainnet           [view-network-mainnet (assoc-props :mainnet)]
-        :optimism-arbitrum [:<>
-                            [view-network (assoc-props :arbitrum)]
-                            [view-network (assoc-props :optimism)]]
-        :arbitrum          [view-network (assoc-props :arbitrum)]
-        :optimism          [view-network (assoc-props :optimism)]
-        nil))]])
+    (for [network networks]
+      ^{:key (:network network)}
+      (let [assoc-props #(assoc (get-network networks %)
+                                :customization-color
+                                customization-color)] 
+        [view-network (assoc-props (:network network))]))]])
 
 (def view (quo.theme/with-theme view-internal))
