@@ -6,8 +6,7 @@
    :margin-bottom     20})
 
 (def scan
-  {:align-self
-   :flex-end})
+  {:margin-top 26})
 
 (def input
   {:flex         1

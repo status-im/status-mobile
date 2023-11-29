@@ -1,30 +1,11 @@
 (ns status-im2.contexts.wallet.account.tabs.about.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.tabs.about.style :as style]
     [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-(defn description
-  [{:keys [address theme]}]
-  (let [networks-list (rf/sub [:wallet/network-details])]
-    [quo/text {:size :paragraph-2}
-     (map (fn [{:keys [chain-id short-name network-name]}]
-            ^{:key (str chain-id short-name)}
-            [quo/text
-             {:size   :paragraph-2
-              :weight :medium
-              :style  {:color (colors/resolve-color network-name theme)}}
-             (str short-name ":")])
-          networks-list)
-     [quo/text
-      {:size   :paragraph-2
-       :weight :monospace}
-      address]]))
 
 (defn about-options
   []
@@ -51,19 +32,25 @@
       :accessibility-label :share-address
       :label               (i18n/label :t/share-address)}]]])
 
-(defn- view-internal
+(defn view
   []
-  [rn/view {:style style/about-tab}
-   [quo/data-item
-    (merge temp/data-item-state
-           {:custom-subtitle (fn [] [quo/address-text
-                                     {:networks [{:network-name :ethereum :short-name "eth"}
-                                                 {:network-name :optimism :short-name "opt"}
-                                                 {:network-name :arbitrum :short-name "arb1"}]
-                                      :address  temp/address
-                                      :format   :long}])
-            :container-style {:margin-bottom 12}
-            :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])})]
-   [quo/account-origin temp/account-origin-state]])
-
-(def view (quo.theme/with-theme view-internal))
+  (let [{:keys [type address]} (rf/sub [:wallet/current-viewing-account])
+        networks               (rf/sub [:wallet/network-details])
+        watch-only?            (= type :watch)]
+    [rn/view {:style style/about-tab}
+     [quo/data-item
+      {:description     :default
+       :icon-right?     true
+       :right-icon      :i/options
+       :card?           true
+       :label           :none
+       :status          :default
+       :size            :default
+       :title           (if watch-only? (i18n/label :t/watched-address) (i18n/label :t/address))
+       :custom-subtitle (fn [] [quo/address-text
+                                {:networks networks
+                                 :address  address
+                                 :format   :long}])
+       :container-style {:margin-bottom 12}
+       :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])}]
+     (when (not watch-only?) [quo/account-origin temp/account-origin-state])]))

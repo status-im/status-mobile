@@ -18,14 +18,15 @@
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
-   (let [{:keys [name]} (get-in db [:wallet :accounts address])]
+   (let [account (get-in db [:wallet :accounts address])]
      {:db (update db :wallet dissoc :navigate-to-account :new-account?)
-      :fx [[:dispatch
-            [:toasts/upsert
-             {:id         :new-wallet-account-created
-              :icon       :i/correct
-              :icon-color colors/success-50
-              :text       (i18n/label :t/account-created {:name name})}]]]})))
+      :fx [(when account
+             [:dispatch
+              [:toasts/upsert
+               {:id         :new-wallet-account-created
+                :icon       :i/correct
+                :icon-color colors/success-50
+                :text       (i18n/label :t/account-created {:name (:name account)})}]])]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
@@ -144,29 +145,34 @@
               :on-success on-success
               :on-error   #(log/info "failed to derive address " %)}]]]})))
 
-(rf/reg-event-fx
- :wallet/add-account
- (fn [{:keys [db]} [password {:keys [emoji account-name color]} {:keys [public-key address path]}]]
+(rf/reg-event-fx :wallet/add-account-success
+ (fn [{:keys [db]} [address]]
+   {:db (update db
+                :wallet              assoc
+                :navigate-to-account address
+                :new-account?        true)
+    :fx [[:dispatch [:wallet/get-accounts]]]}))
+
+(rf/reg-event-fx :wallet/add-account
+ (fn [{:keys [db]}
+      [password {:keys [emoji account-name color type] :or {type :generated}}
+       {:keys [public-key address path]}]]
    (let [key-uid        (get-in db [:profile/profile :key-uid])
          sha3-pwd       (native-module/sha3 (security/safe-unmask-data password))
-         account-config {:key-uid    key-uid
+         account-config {:key-uid    (when (= type :generated) key-uid)
                          :wallet     false
                          :chat       false
-                         :type       :generated
+                         :type       type
                          :name       account-name
                          :emoji      emoji
                          :path       path
                          :address    address
                          :public-key public-key
                          :colorID    color}]
-     {:db (update db
-                  :wallet              assoc
-                  :navigate-to-account address
-                  :new-account?        true)
-      :fx [[:json-rpc/call
+     {:fx [[:json-rpc/call
             [{:method     "accounts_addAccount"
-              :params     [sha3-pwd account-config]
-              :on-success [:wallet/get-accounts]
+              :params     [(when (= type :generated) sha3-pwd) account-config]
+              :on-success [:wallet/add-account-success address]
               :on-error   #(log/info "failed to create account " %)}]]]})))
 
 (rf/reg-event-fx
