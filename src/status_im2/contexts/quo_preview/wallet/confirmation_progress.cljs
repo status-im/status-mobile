@@ -69,13 +69,13 @@
          (stop-interval)))
      [(:state @state)])
     [preview/preview-container {:state state :descriptor descriptor}
-     [quo/confirmation-propgress @state]]))
+     [quo/confirmation-propgress (assoc @state
+                                        :counter @counter)]]))
 
 (defn view
   []
   (let [state (reagent/atom
-               {:counter             counter
-                :total-box           total-box
+               {:total-box           total-box
                 :progress-value      "10"
                 :network             :mainnet
                 :state               :pending
