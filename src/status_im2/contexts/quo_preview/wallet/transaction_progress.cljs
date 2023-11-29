@@ -60,17 +60,17 @@
 (def interval-id (reagent/atom nil))
 (def interval-ms 50)
 
-(defn stop-interval
+(defn- stop-interval
   []
   (when @interval-id
     (js/clearInterval @interval-id)
     (reset! interval-id nil)))
 
-(defn clear-counter
+(defn- clear-counter
   []
   (reset! counter 0))
 
-(defn update-counter
+(defn- update-counter
   [state]
   (let [new-counter-value (inc @counter)]
     (if (or (and (= state :pending) (> new-counter-value 0))
@@ -82,7 +82,7 @@
       (stop-interval)
       (reset! counter new-counter-value))))
 
-(defn start-interval
+(defn- start-interval
   [state]
   (reset! interval-id
     (js/setInterval
@@ -115,6 +115,21 @@
                          :progress     (:arbitrum-progress-percentage state)
                          :epoch-number (:epoch-number-arbitrum state)}]))
 
+(defn- f-view
+  [state]
+  (fn []
+    (rn/use-effect
+     (fn []
+       (start-interval (:state-mainnet @state))
+       (clear-counter)
+       (fn []
+         (stop-interval)))
+     [(:state-mainnet @state)])
+    [preview/preview-container {:state state :descriptor descriptor}
+     [quo/transaction-progress
+      (assoc @state
+             :networks (get-networks @state))]]))
+
 (defn view
   []
   (let [state (reagent/atom
@@ -136,16 +151,4 @@
                 :tag-photo                    (resources/get-mock-image :collectible)
                 :on-press                     (fn []
                                                 (js/alert "Transaction progress item pressed"))})]
-    [:f>
-     (fn []
-       (rn/use-effect
-        (fn []
-          (start-interval (:state-mainnet @state))
-          (clear-counter)
-          (fn []
-            (stop-interval)))
-        [(:state-mainnet @state)])
-       [preview/preview-container {:state state :descriptor descriptor}
-        [quo/transaction-progress
-         (assoc @state
-                :networks (get-networks @state))]])]))
+    [:f> f-view state]))

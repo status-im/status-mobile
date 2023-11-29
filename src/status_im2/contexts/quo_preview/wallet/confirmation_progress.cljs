@@ -28,17 +28,17 @@
 (def interval-id (reagent/atom nil))
 (def interval-ms 50)
 
-(defn stop-interval
+(defn- stop-interval
   []
   (when @interval-id
     (js/clearInterval @interval-id)
     (reset! interval-id nil)))
 
-(defn clear-counter
+(defn- clear-counter
   []
   (reset! counter 0))
 
-(defn update-counter
+(defn- update-counter
   [state]
   (let [new-counter-value (inc @counter)]
     (if (or (and (= state :pending) (> new-counter-value 0))
@@ -50,13 +50,26 @@
       (stop-interval)
       (reset! counter new-counter-value))))
 
-(defn start-interval
+(defn- start-interval
   [state]
   (reset! interval-id
     (js/setInterval
      (fn []
        (update-counter state))
      interval-ms)))
+
+(defn- f-view
+  [state]
+  (fn []
+    (rn/use-effect
+     (fn []
+       (start-interval (:state @state))
+       (clear-counter)
+       (fn []
+         (stop-interval)))
+     [(:state @state)])
+    [preview/preview-container {:state state :descriptor descriptor}
+     [quo/confirmation-propgress @state]]))
 
 (defn view
   []
@@ -67,14 +80,4 @@
                 :network             :mainnet
                 :state               :pending
                 :customization-color :blue})]
-    [:f>
-     (fn []
-       (rn/use-effect
-        (fn []
-          (start-interval (:state @state))
-          (clear-counter)
-          (fn []
-            (stop-interval)))
-        [(:state @state)])
-       [preview/preview-container {:state state :descriptor descriptor}
-        [quo/confirmation-propgress @state]])]))
+    [:f> f-view state]))
