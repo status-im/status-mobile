@@ -25,7 +25,8 @@
 
 (defn root-container
   [{:keys [customization-color state theme full-width?]}]
-  (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color theme)
+  (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color
+                                                                                     theme)
                                                         [theme (if full-width? :pending state)])]
     {:height            12
      :flex              (when full-width? 1)

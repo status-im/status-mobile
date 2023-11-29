@@ -59,7 +59,7 @@
                  :finalising (str (calculate-counter counter) "/4")
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
                  :error      "0/4"}
-                (or :optimism :arbitrum :optimism-arbitrum)
+                (or :optimism :arbitrum)
                 {:pending    "0/1"
                  :sending    "0/1"
                  :confirmed  "0/1"
@@ -125,19 +125,20 @@
     [rn/view {:style style/status-row-container}
      [icon-internal status-icon color 16]
      [rn/view {:style style/title-text-container}
-      [text-internal 
+      [text-internal
        {:weight :regular
         :size   :paragraph-2}
        (str (network-type-text state) " " (get-network-text network))]]
      [rn/view
-      [text-internal 
+      [text-internal
        {:weight :regular
         :size   :paragraph-2
         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}
        (text-steps network state epoch-number counter)]]]))
 
 (defn- view-network
-  [{:keys [theme state epoch-number counter total-box customization-color progress bottom-large? network]}]
+  [{:keys [theme state epoch-number counter total-box customization-color progress bottom-large?
+           network]}]
   [:<>
    [status-row
     {:theme        theme
@@ -171,7 +172,7 @@
       ^{:key (:network network)}
       (let [assoc-props #(assoc (get-network networks %)
                                 :customization-color
-                                customization-color)] 
+                                customization-color)]
         [view-network (assoc-props (:network network))]))]])
 
 (def view (quo.theme/with-theme view-internal))
