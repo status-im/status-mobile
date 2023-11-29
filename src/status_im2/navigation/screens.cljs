@@ -27,6 +27,7 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.profile.settings.view :as settings]
     [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.activity-center.view :as activity-center]
@@ -49,6 +50,7 @@
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
+    [status-im2.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im2.navigation.options :as options]
@@ -116,6 +118,10 @@
 
     {:name      :community-overview
      :component communities.overview/overview}
+
+    {:name      :settings
+     :options   options/transparent-screen-options
+     :component settings/view}
 
     {:name      :settings-syncing
      :options   (merge options/dark-screen {:insets {:top? true}})
@@ -287,6 +293,11 @@
 
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
+
+    {:name      :wallet-send-input-amount
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-send-input-amount/view}
 
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
