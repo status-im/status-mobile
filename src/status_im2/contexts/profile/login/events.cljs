@@ -119,7 +119,6 @@
               (cond-> {:wallet-legacy/initialize-transactions-management-enabled nil
                        :wallet-legacy/initialize-wallet
                        [network-id
-                        current-network-config
                         (fn [accounts tokens custom-tokens favourites]
                           (re-frame/dispatch [:wallet-legacy/initialize-wallet
                                               accounts tokens custom-tokens favourites]))]

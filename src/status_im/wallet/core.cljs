@@ -246,8 +246,8 @@
         assets                                  (get visible-tokens chain)
         tokens                                  (->> (vals all-tokens)
                                                      (remove #(or (:hidden? %)
-                                                                  ;;if not scan-all-tokens? remove not
-                                                                  ;;visible tokens
+                                                                  ;;if not scan-all-tokens? remove
+                                                                  ;;not visible tokens
                                                                   (and (not scan-all-tokens?)
                                                                        (not (get assets (:symbol %))))))
                                                      (reduce (fn [acc {:keys [address symbol]}]
@@ -1075,7 +1075,7 @@
 (re-frame/reg-fx
  ;;TODO: this could be replaced by a single API call on status-go side
  :wallet-legacy/initialize-wallet
- (fn [[network-id network callback]]
+ (fn [[network-id callback]]
    (-> (js/Promise.all
         (clj->js
          [(js/Promise.
@@ -1083,24 +1083,6 @@
              (json-rpc/call {:method     "accounts_getAccounts"
                              :on-success resolve-fn
                              :on-error   reject})))
-          (js/Promise.
-           (fn [resolve-fn _]
-             (json-rpc/call
-              {:method "wallet_addEthereumChain"
-               :params
-               [{:isTest                 false
-                 :tokenOverrides         []
-                 :rpcUrl                 (get-in network [:config :UpstreamConfig :URL])
-                 :chainColor             "green"
-                 :chainName              (:name network)
-                 :nativeCurrencyDecimals 10
-                 :shortName              "erc20"
-                 :layer                  1
-                 :chainId                (int network-id)
-                 :enabled                false
-                 :fallbackURL            (get-in network [:config :UpstreamConfig :URL])}]
-               :on-success resolve-fn
-               :on-error (fn [_] (resolve-fn nil))})))
           (js/Promise.
            (fn [resolve-fn _]
              (json-rpc/call {:method     "wallet_getTokens"

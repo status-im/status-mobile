@@ -103,6 +103,7 @@
 (rf/reg-event-fx
  :wallet/store-wallet-token
  (fn [{:keys [db]} [raw-tokens-data]]
+   (println raw-tokens-data "dsdsadasdsasdadsadsa")
    (let [tokens     (-> raw-tokens-data
                         (update-keys name)
                         (update-vals #(cske/transform-keys csk/->kebab-case %))
@@ -396,7 +397,7 @@
          token-decimal       18
          token-id            (:symbol token)
          value_              0.0005
-         network-preferences [5]
+         network-preferences [1]
          gas-rates           0 ;low
          amount-in           (money/mul (money/bignumber value_)
                                         (money/from-decimal token-decimal))

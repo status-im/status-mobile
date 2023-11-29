@@ -86,6 +86,7 @@
 (re-frame/reg-fx
  ::save-account-and-login
  (fn [[key-uid multiaccount-data hashed-password settings config accounts-data]]
+   (println "DSADASDASDAS")
    (native-module/save-account-and-login
     key-uid
     multiaccount-data
@@ -172,8 +173,7 @@
             :use-mailservers? true
             :recovered recovered}
            config/default-multiaccount)
-          ;; The address from which we derive any chat
-          ;; account/encryption keys
+          ;; The address from which we derive any chat account/encryption keys
           eip1581-address
           (assoc :eip1581-address eip1581-address)
           save-mnemonic?

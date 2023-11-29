@@ -74,7 +74,7 @@
 
 (def default-multiaccount
   {:preview-privacy?                   blank-preview?
-   :wallet-legacy/visible-tokens       {:mainnet #{:SNT}}
+   :wallet-legacy/visible-tokens       {:mainnet #{:SNT :ETH :DAI}}
    :currency                           :usd
    :appearance                         0
    :profile-pictures-show-to           2

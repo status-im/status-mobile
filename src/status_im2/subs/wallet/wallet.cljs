@@ -75,7 +75,7 @@
                        (assoc token
                               :networks           (utils/network-list token networks)
                               :total-balance      (utils/total-token-value-in-all-chains token)
-                              :total-balance-fiat (utils/calculate-balance token)))
+                              :total-balance-fiat (utils/calculate-balance-for-token token)))
                      (:tokens account))
 
          sorted-tokens
