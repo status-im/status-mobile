@@ -189,8 +189,8 @@
                               (neg? change-pct-24hour) :negative
                               :else                    :empty)
        :customization-color :blue
-       :values              {:crypto-value      (utils/prettify-balance crypto-value)
-                             :fiat-value        (.toFixed (* crypto-value price) 2)
+       :values              {:crypto-value      crypto-value
+                             :fiat-value        (utils/prettify-balance (* crypto-value price))
                              :percentage-change (.toFixed change-pct-24hour 2)
                              :fiat-change       (utils/prettify-balance fiat-change)}})))
 

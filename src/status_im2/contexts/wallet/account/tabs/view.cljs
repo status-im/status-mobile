@@ -12,7 +12,7 @@
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [tokens (rf/sub [:wallet/account-token-values])]
+  (let [tokens (filter identity (rf/sub [:wallet/account-token-values]))]
     (case selected-tab
       :assets       [rn/flat-list
                      {:render-fn               token-value/view
