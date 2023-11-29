@@ -10,6 +10,9 @@
             [react-native.core :as rn]
             [utils.i18n :as i18n]))
 
+(def ^:private max-mainnet-verifications 4)
+(def ^:private max-sidenet-verifications 1)
+
 (defn- icon-internal
   ([icon]
    (icon-internal icon nil 20))
@@ -47,25 +50,33 @@
 
 (defn- calculate-counter
   [counter]
-  (if (< @counter 4) @counter "4"))
+  (if (< @counter 4) @counter max-mainnet-verifications))
+
+(defn mainnet-label 
+  [counter]
+  (str counter "/" max-mainnet-verifications))
+
+(defn subnet-label 
+  [counter]
+  (str counter "/" max-sidenet-verifications))
 
 (defn- text-steps
   [network state epoch-number counter]
   (let [steps (case network
                 :mainnet
-                {:pending    "0/4"
-                 :sending    (str (calculate-counter counter) "/4")
-                 :confirmed  (str (calculate-counter counter) "/4")
-                 :finalising (str (calculate-counter counter) "/4")
+                {:pending    (mainnet-label 0)
+                 :sending    (mainnet-label (calculate-counter counter))
+                 :confirmed  (mainnet-label (calculate-counter counter))
+                 :finalising (mainnet-label (calculate-counter counter))
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
-                 :error      "0/4"}
+                 :error      (mainnet-label 0)}
                 (or :optimism :arbitrum)
-                {:pending    "0/1"
-                 :sending    "0/1"
-                 :confirmed  "0/1"
-                 :finalising "1/1"
+                {:pending    (subnet-label 0)
+                 :sending    (subnet-label 0)
+                 :confirmed  (subnet-label 0)
+                 :finalising (subnet-label 1)
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
-                 :error      "0/1"}
+                 :error      (subnet-label 0)}
                 nil)]
     (get-in steps [state])))
 
