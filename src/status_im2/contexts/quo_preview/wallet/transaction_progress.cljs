@@ -72,7 +72,7 @@
 
 (defn update-counter
   [state]
-  (let [new-counter-value (-> @counter inc)]
+  (let [new-counter-value (inc @counter)]
     (if (or (and (= state :pending) (> new-counter-value 0))
             (and (= state :sending) (> new-counter-value 2))
             (and (= state :confirmed) (> new-counter-value 4))
