@@ -86,21 +86,21 @@
 
 (defn bridge-token-list
   [networks-list]
-  [{:token               (quo.resources/get-token :snt)
+  [{:token               :snt
     :label               "Status"
     :token-value         "0.00 SNT"
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
     :customization-color :blue}
-   {:token               (quo.resources/get-token :eth)
+   {:token               :eth
     :label               "Ethereum"
     :token-value         "0.00 ETH"
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
     :customization-color :blue}
-   {:token               (quo.resources/get-token :dai)
+   {:token               :dai
     :label               "Dai"
     :token-value         "0.00 DAI"
     :fiat-value          "€0.00"

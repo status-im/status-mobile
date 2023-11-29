@@ -34,9 +34,7 @@
    :flex   1})
 
 (def token-image
-  {:width            32
-   :height           32
-   :border-width     1
+  {:border-width     1
    :border-radius    16
    :border-color     colors/neutral-80-opa-5
    :margin-right     8

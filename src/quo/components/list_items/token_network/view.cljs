@@ -4,6 +4,7 @@
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.list-items.token-network.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.components.utilities.token.view :as token]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]))
@@ -11,9 +12,10 @@
 (defn- info
   [{:keys [token label networks]}]
   [rn/view {:style style/info}
-   [rn/image
-    {:source (or (:source token) token)
-     :style  style/token-image}]
+   [token/view
+    {:style style/token-image
+     :size  :size-32
+     :token token}]
    [rn/view {:style style/token-info}
     [text/text
      {:weight          :semi-bold

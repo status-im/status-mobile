@@ -13,7 +13,7 @@
     :token
     {:customization-color "#9999991A"
      :label               "150 ETH"
-     :image-source        (quo.resources/get-token :eth)}
+     :token               :eth}
     :address
     {:label "0x39c...Bd2"}
     :user

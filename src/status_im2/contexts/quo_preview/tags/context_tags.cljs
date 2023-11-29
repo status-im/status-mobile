@@ -97,8 +97,11 @@
   [size-descriptor
    {:key  :amount
     :type :text}
-   {:key  :token-name
-    :type :text}])
+   {:key     :token
+    :type    :select
+    :options [{:key "ETH"}
+              {:key "SNT"}
+              {:key "DAI"}]}])
 
 (def network-descriptor
   [size-descriptor
@@ -202,8 +205,7 @@
           :community-logo      (resources/mock-images :coinbase)
           :community-name      "Community"
           :channel-name        "my channel"
-          :token-logo          (resources/mock-images :diamond)
-          :token-name          "ETH"
+          :token               "ETH"
           :amount              "10"
           :network-logo        (resources/mock-images :monkey)
           :network-name        "Network"

@@ -2,17 +2,15 @@
   (:require
     [clojure.string :as string]
     [quo.components.markdown.text :as text]
+    [quo.components.utilities.token.view :as token]
     [quo.components.wallet.network-amount.style :as style]
-    [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [amount token theme]}]
   [rn/view {:style style/container}
-   [rn/image
-    {:source (resources/get-token token)
-     :style  {:width 12 :height 12}}]
+   [token/view {:token token :size :size-12}]
    [text/text
     {:weight :medium
      :size   :paragraph-2
