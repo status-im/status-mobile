@@ -26,6 +26,7 @@
     [quo.components.drawers.drawer-buttons.component-spec]
     [quo.components.drawers.drawer-top.component-spec]
     [quo.components.drawers.permission-context.component-spec]
+    [quo.components.dropdowns.dropdown-input.component-spec]
     [quo.components.dropdowns.dropdown.component-spec]
     [quo.components.dropdowns.network-dropdown.component-spec]
     [quo.components.gradient.gradient-cover.component-spec]
