@@ -82,7 +82,7 @@
    {:on-layout #(on-first-channel-height-changed
                  (+ 38 (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
-    :style     {:margin-top 8 :flex 1}}
+    :style     (style/channel-list-component)}
    (for [[category-id {:keys [chats name collapsed?]}] channels-list]
      [rn/view
       {:key       category-id
@@ -91,12 +91,13 @@
        :on-layout #(on-category-layout name (int (layout-y %)))}
       (when-not (= constants/empty-category-id category-id)
         [quo/divider-label
-         {:on-press     #(collapse-category community-id category-id collapsed?)
-          :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
-          :chevron      :left}
+         {:on-press        #(collapse-category community-id category-id collapsed?)
+          :chevron-icon    (if collapsed? :i/chevron-right :i/chevron-down)
+          :container-style {:margin-top 8}
+          :chevron         :left}
          name])
       (when-not collapsed?
-        [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}
+        [rn/view {:style {:padding-horizontal 8}}
          (for [chat chats]
            ^{:key (:id chat)}
            [channel-chat-item community-id community-color chat])])])])
@@ -375,5 +376,4 @@
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
-      {:position :absolute
-       :bottom   34}]]))
+      style/floating-shell-button]]))
