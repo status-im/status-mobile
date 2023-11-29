@@ -687,17 +687,6 @@ actually subscribing to them, so reframe's signal graph gets validated too.
     (is (= expected (rf/sub [sub-name])))))
 ```
 
-#### Component tests
-
-When writing tests for the component that has props, please add one test that covers situation when props aren't passed. Because even if component not showing anything meaningful without props, it shouldn't crash.
-
-```clojure
-(h/describe "Transaction Progress"
-  (h/test "component renders without props"
-    (h/render [quo/transaction-progress {}])
-    (h/is-truthy (h/get-by-label-text :transaction-progress)))
-```
-
 ## Project Structure
 
 First, the bird's-eye view with some example ClojureScript files:
