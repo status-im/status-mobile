@@ -396,7 +396,7 @@
          to-address          (get-in db [:wallet :ui :send :to-address])
          token-decimal       18
          token-id            (:symbol token)
-         value_              0.0005
+         value_              0.00005
          network-preferences [1]
          gas-rates           0 ;low
          amount-in           (money/mul (money/bignumber value_)
