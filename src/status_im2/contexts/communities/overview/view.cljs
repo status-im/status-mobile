@@ -10,6 +10,7 @@
     [status-im2.common.password-authentication.view :as password-authentication]
     [status-im2.common.scroll-page.style :as scroll-page.style]
     [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.communities.actions.chat.view :as chat-actions]
     [status-im2.contexts.communities.actions.community-options.view :as options]
@@ -182,10 +183,14 @@
        (if (seq token-permissions)
          [token-gates community]
          [quo/button
-          {:on-press            #(rf/dispatch [:open-modal :community-requests-to-join community])
+          {:on-press
+           (if config/community-accounts-selection-enabled?
+             #(rf/dispatch [:open-modal :community-account-selection community])
+             #(rf/dispatch [:open-modal :community-requests-to-join community]))
+
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
-           :icon-left           :i/communities}
+           :icon-left :i/communities}
           (i18n/label :t/request-to-join-community)]))
 
      (when (not (or joined pending? token-permissions))
