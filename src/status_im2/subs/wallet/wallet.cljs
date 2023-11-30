@@ -98,4 +98,4 @@
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
  (fn [[accounts current-viewing-account-address]]
-   (filter #(not= (:address %) current-viewing-account-address) accounts)))
+   (remove #(= (:address %) current-viewing-account-address) accounts)))

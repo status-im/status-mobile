@@ -80,9 +80,9 @@
           :container-style style/drawer-section-label}]])]))
 
 (defn- view-internal
-  [{:keys [theme]}]
+  []
   (let [options-height (reagent/atom 0)]
-    (fn []
+    (fn [{:keys [theme]}]
       (let [accounts               (rf/sub [:wallet/accounts-without-current-viewing-account])
             show-account-selector? (pos? (count accounts))]
         [:<>
