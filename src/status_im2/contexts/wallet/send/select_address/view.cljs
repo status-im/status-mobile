@@ -47,7 +47,9 @@
   (fn []
     (let [scanned-address       (rf/sub [:wallet/scanned-address])
           send-address          (rf/sub [:wallet/send-address])
-          valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])]
+          valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])
+          chain-id              (rf/sub [:chain-id])
+          contacts              (rf/sub [:contacts/active])]
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
@@ -62,7 +64,7 @@
                                  300)
         :on-detect-ens         (fn [text cb]
                                  (debounce/debounce-and-dispatch
-                                  [:wallet/find-ens text cb]
+                                  [:wallet/find-ens text contacts chain-id cb]
                                   300))
         :on-change-text        (fn [text]
                                  (when-not (= scanned-address text)

@@ -554,29 +554,30 @@
                false)}))
 
 (rf/reg-event-fx :wallet/find-ens
- (fn [{:keys [db]} [input cb]]
-   (let [contacts (rf/sub [:contacts/active])
-         result   (if (empty? input)
-                    []
-                    (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
+ (fn [{:keys [db]} [input contacts chain-id cb]]
+   (let [result (if (empty? input)
+                  []
+                  (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
-       (rf/dispatch [:wallet/search-ens input cb])
+       (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
        {:db (assoc db
                    :wallet/local-suggestions
                    (map #(assoc % :type item-types/saved-address) result)
                    :wallet/valid-ens-or-address? (not-empty result))}))))
 
 (rf/reg-event-fx :wallet/search-ens
- (fn [_ [input cb]]
-   (let [chain-id (rf/sub [:chain-id])
-         ens      (if (string/includes? input ".") input (str input ".stateofus.eth"))]
+ (fn [_ [input chain-id cb domain]]
+   (let [ens (if (string/includes? input ".") input (str input domain))]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]
               :on-success #(rf/dispatch [:wallet/set-ens-address % ens])
               :on-error   (fn []
-                            (rf/dispatch [:wallet/set-ens-address nil ens])
-                            (cb))}]]]})))
+                            (if (= domain ".stateofus.eth")
+                              (rf/dispatch [:wallet/search-ens input chain-id cb ".eth"])
+                              (do
+                                (rf/dispatch [:wallet/set-ens-address nil ens])
+                                (cb))))}]]]})))
 
 (rf/reg-event-fx :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
