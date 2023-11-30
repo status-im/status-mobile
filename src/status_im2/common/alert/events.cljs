@@ -22,7 +22,7 @@
         (vector
          action-button
          dismiss-button)
-        dismiss-button)
+        (vector dismiss-button))
       (when on-dismiss
         {:cancelable false})))))
 
