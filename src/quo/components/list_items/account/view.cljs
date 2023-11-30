@@ -119,16 +119,17 @@
         :accessibility-label :container}
        [account-view props]
        [rn/view {:style (when (= type :tag) style/token-tag-container)}
-        (when (or (= type :balance-neutral)
-                  (= type :balance-negative)
-                  (= type :balance-positive))
-          [balance-view props])
-        (when (= type :tag)
-          [token-tag props])
-        (when (= type :action)
-          [options-button props])
-        (when (and (= type :default)
-                   (= state :selected))
+        (cond
+          (#{:balance-neutral :balance-negative :balance-positive} type)
+          [balance-view props]
+
+          (= type :tag)
+          [token-tag props]
+
+          (= type :action)
+          [options-button props]
+
+          (and (= type :default) (= state :selected))
           [check-icon props])]])))
 
 (def view (quo.theme/with-theme internal-view))
