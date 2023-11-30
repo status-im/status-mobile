@@ -58,14 +58,16 @@
 
 (defn save-credentials
   "Stores the credentials for the address to the Keychain"
-  [server username password callback]
-  (-> (.setInternetCredentials ^js react-native-keychain
-                               (string/lower-case server)
-                               username
-                               password
-                               keychain-secure-hardware
-                               keychain-restricted-availability)
-      (.then callback)))
+  ([server username password]
+   (save-credentials server username password identity))
+  ([server username password callback]
+   (-> (.setInternetCredentials ^js react-native-keychain
+                                (string/lower-case server)
+                                username
+                                password
+                                keychain-secure-hardware
+                                keychain-restricted-availability)
+       (.then callback))))
 
 (defn get-credentials
   "Gets the credentials for a specified server from the Keychain"
