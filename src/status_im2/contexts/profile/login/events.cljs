@@ -11,7 +11,6 @@
     [status-im.group-chats.core :as group-chats]
     [status-im.mobile-sync-settings.core :as mobile-network]
     [status-im.transport.core :as transport]
-    [status-im2.common.biometric.events :as biometric]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.common.log :as logging]
     [status-im2.config :as config]
