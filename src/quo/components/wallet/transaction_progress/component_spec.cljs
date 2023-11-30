@@ -161,11 +161,11 @@
 
   (h/test "arbitrum progress box is visible network is arbitrum"
     (h/render [quo/transaction-progress (get-test-data {:network :arbitrum})])
-    (h/is-truthy (h/get-by-label-text :progress-box)))
+    (h/is-truthy (h/get-all-by-label-text :progress-box)))
 
   (h/test "optimism progress box is visible network is optimism"
     (h/render [quo/transaction-progress (get-test-data {:network :optimism})])
-    (h/is-truthy (h/get-by-label-text :progress-box)))
+    (h/is-truthy (h/get-all-by-label-text :progress-box)))
 
   (h/test "title is visible network is optimism-arbitrum"
     (h/render [quo/transaction-progress (get-test-data {:network :optimism-arbitrum})])
