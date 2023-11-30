@@ -12,6 +12,8 @@
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
+    [status-im2.common.home.actions.view :as home.actions]
+    [status-im2.common.muting.helpers :as muting.helpers]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
@@ -181,8 +183,10 @@
 
 (defn actions
   [chat-id cover-bg-color]
-  (let [latest-pin-text (rf/sub [:chats/last-pinned-message-text chat-id])
-        pins-count      (rf/sub [:chats/pin-messages-count chat-id])]
+  (let [latest-pin-text                      (rf/sub [:chats/last-pinned-message-text chat-id])
+        pins-count                           (rf/sub [:chats/pin-messages-count chat-id])
+        {:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])
+        muted?                               (and muted (some? muted-till))]
     [quo/channel-actions
      {:style   {:margin-top 16}
       :actions [{:accessibility-label :action-button-pinned
@@ -194,7 +198,19 @@
                  :on-press            (fn []
                                         (rf/dispatch [:dismiss-keyboard])
                                         (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                                      chat-id]))}]}]))
+                                                      chat-id]))}
+                {:accessibility-label :action-button-mute
+                 :label               (i18n/label (if muted
+                                                    :t/unmute-chat
+                                                    :t/mute-chat))
+                 :color               cover-bg-color
+                 :icon                (if muted? :i/muted :i/activity-center)
+                 :on-press            (fn []
+                                        (if muted?
+                                          (home.actions/unmute-chat-action chat-id)
+                                          (home.actions/mute-chat-action chat-id
+                                                                         chat-type
+                                                                         muted?)))}]}]))
 
 (defn f-list-footer
   [{:keys [chat scroll-y cover-bg-color on-layout theme messages-view-height
