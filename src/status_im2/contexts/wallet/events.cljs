@@ -20,22 +20,30 @@
  (fn [{:keys [db]} [address]]
    (let [account (get-in db [:wallet :accounts address])]
      {:db (update db :wallet dissoc :navigate-to-account :new-account?)
-      :fx [(when account
-             [:dispatch
-              [:toasts/upsert
-               {:id         :new-wallet-account-created
-                :icon       :i/correct
-                :icon-color colors/success-50
-                :text       (i18n/label :t/account-created {:name (:name account)})}]])]})))
+      :fx [[:dispatch
+            [:toasts/upsert
+             {:id         :new-wallet-account-created
+              :icon       :i/correct
+              :icon-color colors/success-50
+              :text       (i18n/label :t/account-created {:name (:name account)})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
-   (let [new-account? (get-in db [:wallet :new-account?])]
-     (cond-> {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-              :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}))
 
-       new-account?
-       (update :fx conj [:dispatch [:wallet/show-account-created-toast address]])))))
+(rf/reg-event-fx :wallet/navigate-to-new-account
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch-later
+          [{:dispatch [:navigate-back]
+            :ms       100}
+           {:dispatch [:navigate-back]
+            :ms       100}
+           {:dispatch [:navigate-to :wallet-accounts address]
+            :ms       300}]]
+         [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
@@ -45,24 +53,17 @@
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
-   (let [wallet-db           (get db :wallet)
+   (let [wallet-accounts     (filter #(not (:chat %)) accounts)
+         wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
-     (cond-> {:db (reduce (fn [db {:keys [address] :as account}]
-                            (assoc-in db [:wallet :accounts address] account))
-                          db
-                          (data-store/rpc->accounts accounts))
-              :fx [[:dispatch [:wallet/get-wallet-token]]]}
-
-       new-account?
-       (update :fx
-               conj
-               [:dispatch [:hide-bottom-sheet]]
-               [:dispatch-later
-                [{:dispatch [:navigate-back]
-                  :ms       100}
-                 {:dispatch [:wallet/navigate-to-account navigate-to-account]
-                  :ms       300}]])))))
+     {:db (reduce (fn [db {:keys [address] :as account}]
+                    (assoc-in db [:wallet :accounts address] account))
+                  db
+                  (data-store/rpc->accounts wallet-accounts))
+      :fx [[:dispatch [:wallet/get-wallet-token]]
+           (when new-account?
+             [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
 (rf/reg-event-fx
  :wallet/get-accounts
@@ -157,22 +158,23 @@
  (fn [{:keys [db]}
       [password {:keys [emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
-   (let [key-uid        (get-in db [:profile/profile :key-uid])
-         sha3-pwd       (native-module/sha3 (security/safe-unmask-data password))
-         account-config {:key-uid    (when (= type :generated) key-uid)
-                         :wallet     false
-                         :chat       false
-                         :type       type
-                         :name       account-name
-                         :emoji      emoji
-                         :path       path
-                         :address    address
-                         :public-key public-key
-                         :colorID    color}]
+   (let [lowercase-address (if address (string/lower-case address) address)
+         key-uid           (get-in db [:profile/profile :key-uid])
+         sha3-pwd          (native-module/sha3 (security/safe-unmask-data password))
+         account-config    {:key-uid    (when (= type :generated) key-uid)
+                            :wallet     false
+                            :chat       false
+                            :type       type
+                            :name       account-name
+                            :emoji      emoji
+                            :path       path
+                            :address    lowercase-address
+                            :public-key public-key
+                            :colorID    color}]
      {:fx [[:json-rpc/call
             [{:method     "accounts_addAccount"
               :params     [(when (= type :generated) sha3-pwd) account-config]
-              :on-success [:wallet/add-account-success address]
+              :on-success [:wallet/add-account-success lowercase-address]
               :on-error   #(log/info "failed to create account " %)}]]]})))
 
 (rf/reg-event-fx
