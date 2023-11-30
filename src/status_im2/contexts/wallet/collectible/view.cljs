@@ -10,7 +10,7 @@
     [utils.re-frame :as rf]))
 
 (defn header
-  [{:keys [name description collection-image-url]}]
+  [{:keys [name description] :as _collectible-details} collection-image-url]
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
@@ -112,9 +112,11 @@
 
 (defn view
   []
-  (let [collectible-details                              (rf/sub [:wallet/last-collectible-details])
-        {:keys [name description preview-url traits id]} collectible-details
-        chain-id                                         (get-in id [:contract-id :chain-id])]
+  (let [collectible                                               (rf/sub
+                                                                   [:wallet/last-collectible-details])
+        {:keys [id collectible-data preview-url collection-data]} collectible
+        {:keys [traits description]}                              collectible-data
+        chain-id                                                  (get-in id [:contract-id :chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
@@ -129,7 +131,7 @@
        [rn/image
         {:source preview-url
          :style  style/preview}]]
-      [header collectible-details]
+      [header collectible-data (:image-url collection-data)]
       [cta-buttons]
       [tabs]
       [info chain-id]
