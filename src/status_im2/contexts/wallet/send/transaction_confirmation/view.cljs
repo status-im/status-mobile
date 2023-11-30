@@ -5,6 +5,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.utils.utils :as utils]
     [status-im2.common.resources :as resources]
     [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.contexts.wallet.send.transaction-confirmation.style :as style]
@@ -12,7 +13,7 @@
     [utils.re-frame :as rf]))
 
 (defn- transaction-title
-  []
+  [token amount account to-address]
   [rn/view {:style style/content-container}
    [rn/view {:style {:flex-direction :row}}
     [quo/text
@@ -22,7 +23,7 @@
       :accessibility-label :send-label}
      (i18n/label :t/send)]
     [quo/summary-tag
-     {:label        "150 ETH"
+     {:label        (str amount " " (:symbol token))
       :type         :token
       :image-source (quo.resources/get-token :eth)}]]
    [rn/view
@@ -35,10 +36,10 @@
       :accessibility-label :send-label}
      (i18n/label :t/from)]
     [quo/summary-tag
-     {:label               "Collectibles vault"
+     {:label               (:name account)
       :type                :account
-      :emoji               "🍑"
-      :customization-color :purple}]]
+      :emoji               (:emoji account)
+      :customization-color (:color account)}]]
    [rn/view
     {:style {:flex-direction :row
              :margin-top     4}}
@@ -49,13 +50,11 @@
       :accessibility-label :send-label}
      (i18n/label :t/to)]
     [quo/summary-tag
-     {:label               "Mark Libot"
-      :type                :user
-      :image-source        (resources/get-mock-image :user-picture-male4)
-      :customization-color :magenta}]]])
+     {:type  :address
+      :label (utils/get-shortened-address to-address)}]]])
 
 (defn- transaction-from
-  [status-account-props theme]
+  [amount account-props theme]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
@@ -68,13 +67,13 @@
    [quo/summary-info
     {:type          :status-account
      :networks?     true
-     :values        {:ethereum 150
-                     :optimism 50
-                     :arbitrum 25}
-     :account-props status-account-props}]])
+     :values        {:ethereum amount
+                     :optimism 0
+                     :arbitrum 0}
+     :account-props account-props}]])
 
 (defn- transaction-to
-  [user-props theme]
+  [amount user-props theme]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
@@ -87,13 +86,13 @@
    [quo/summary-info
     {:type          :user
      :networks?     true
-     :values        {:ethereum 150
-                     :optimism 50
-                     :arbitrum 25}
+     :values        {:ethereum amount
+                     :optimism 0
+                     :arbitrum 0}
      :account-props user-props}]])
 
 (defn- transaction-details
-  [theme]
+  [token amount to-address theme]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
@@ -139,35 +138,41 @@
       :label           :none
       :status          :default
       :size            :small
-      :title           (i18n/label :t/user-gets {:name "Mark"})
-      :subtitle        "149.99 ETH"}]]])
+      :title           (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)})
+      :subtitle        (str amount " " (:symbol token))}]]])
 
 (defn- f-view-internal
   [_]
-  (let [margin-top           (safe-area/get-top)
-        biometric-auth?      false
-        on-close             #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])
-        status-account-props {:customization-color :purple
-                              :size                32
-                              :emoji               "🍑"
-                              :type                :default
-                              :name                "Collectibles vault"
-                              :address             "0x0ah...78b"}
-        user-props           {:full-name           "M L"
-                              :status-indicator?   false
-                              :size                :small
-                              :ring-background     (resources/get-mock-image :ring)
-                              :customization-color :blue
-                              :name                "Mark Libot"
-                              :address             "0x0ah...78b"
-                              :status-account      (merge status-account-props
-                                                          {:size  16
-                                                           :name  "New house"
-                                                           :emoji "🍔"})}]
+  (let [margin-top            (safe-area/get-top)
+        biometric-auth?       false
+        on-close              #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])
+        send-transaction-data (get-in (rf/sub [:wallet]) [:ui :send])
+        token                 (:token send-transaction-data)
+        amount                (:amount send-transaction-data)
+        routes                (:routes send-transaction-data)
+        to-address            (:to-address send-transaction-data)
+        account               (rf/sub [:wallet/current-viewing-account])
+        account-props         {:customization-color (:color account)
+                               :size                32
+                               :emoji               (:emoji account)
+                               :type                :default
+                               :name                (:name account)
+                               :address             (utils/get-shortened-address (:address account))}
+        user-props            {:full-name           "M L"
+                               :status-indicator?   false
+                               :size                :small
+                               :ring-background     (resources/get-mock-image :ring)
+                               :customization-color :blue
+                               :name                "Mark Libot"
+                               :address             "0x0ah...78b"
+                               :status-account      (merge account-props
+                                                           {:size  16
+                                                            :name  "New house"
+                                                            :emoji "🍔"})}]
     (fn [{:keys [theme]}]
       (rn/use-effect #(rf/dispatch [:wallet/get-suggested-routes]) [])
       [rn/view {:style {:flex 1}}
-       [quo/gradient-cover {:customization-color :purple}]
+       [quo/gradient-cover {:customization-color (:color account)}]
        [rn/view {:style (style/container margin-top)}
         [quo/page-nav
          {:icon-name           :i/arrow-left
@@ -176,15 +181,15 @@
           :right-side          [{:icon-name           :i/advanced
                                  :on-press            (fn callback [] nil)
                                  :accessibility-label "Advanced"}]}]
-        [transaction-title]
-        [transaction-from status-account-props theme]
-        [transaction-to user-props theme]
-        [transaction-details theme]
+        [transaction-title token amount account to-address]
+        [transaction-from amount account-props theme]
+        [transaction-to amount user-props theme]
+        [transaction-details token amount to-address theme]
         [rn/view {:style style/slide-button-container}
          [standard-auth/slide-button
           {:size                :size-40
            :track-text          (i18n/label :t/slide-to-send)
-           :customization-color :purple
+           :customization-color (:color account)
            :on-enter-password   #(rf/dispatch [:wallet/send-transaction %])
            :biometric-auth?     biometric-auth?
            :auth-button-label   (i18n/label :t/confirm)}]]]])))

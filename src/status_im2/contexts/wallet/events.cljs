@@ -355,8 +355,9 @@
 
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
-   (println address "dsadass")
-   {:db (assoc-in db [:wallet :ui :send :to-address] address)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :to-address] address)
+            (assoc-in [:wallet :ui :send :amount] "0.00005"))}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
@@ -384,8 +385,10 @@
     :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/suggested-routes-success
- (fn [{:keys [db]} [transaction]]
-   {:db (assoc-in db [:wallet :ui :send :suggested-routes] transaction)}))
+ (fn [{:keys [db]} [suggested-routes]]
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes)
+            (assoc-in [:wallet :ui :send :route] (first (:Best suggested-routes))))}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db]}]
@@ -426,40 +429,40 @@
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [password]]
-   (let [suggested-routes (get-in db [:wallet :ui :send :suggested-routes])
+   (let [route (get-in db [:wallet :ui :send :route])
          from-address (get-in db [:wallet :current-viewing-account-address])
          to-address (get-in db [:wallet :ui :send :to-address])
-         best (first (:Best suggested-routes))
-         from (:From best)
+         from (:From route)
          ;to (:To best)
          token (get-in db [:wallet :ui :send :token])
          token-id (:symbol token)
          from-asset token-id
          to-asset token-id
-         bridge-name (:BridgeName best)
+         bridge-name (:BridgeName route)
          chain-id (:chainId from)
          multi-transaction-command {:fromAddress from-address
                                     :toAddress   to-address
                                     :fromAsset   from-asset
                                     :toAsset     to-asset
-                                    :fromAmount  (:AmountOut best)
+                                    :fromAmount  (:AmountOut route)
                                     :type        0}
-
          transaction-bridge
          [{:BridgeName bridge-name
            :ChainID    chain-id
            :TransferTx {:From                 from-address
                         :To                   to-address
-                        :Gas                  (money/to-hex (:GasAmount best))
+                        :Gas                  (money/to-hex (:GasAmount route))
                         :GasPrice             (money/to-hex (money/->wei :gwei
-                                                                         (:gasPrice (:GasFees best))))
-                        :Value                (:AmountOut best)
+                                                                         (:gasPrice (:GasFees route))))
+                        :Value                (:AmountOut route)
                         :Nonce                nil
                         :MaxFeePerGas         (money/to-hex
-                                               (money/->wei :gwei (:maxFeePerGasMedium (:GasFees best))))
+                                               (money/->wei :gwei
+                                                            (:maxFeePerGasMedium (:GasFees route))))
                         :MaxPriorityFeePerGas (money/to-hex (money/->wei :gwei
-                                                                         (:maxPriorityFeePerGas (:GasFees
-                                                                                                 best))))
+                                                                         (:maxPriorityFeePerGas
+                                                                          (:GasFees
+                                                                           route))))
                         :Input                ""
                         :Data                 "0x"}}]
          sha3-pwd (native-module/sha3 (str (security/safe-unmask-data password)))
