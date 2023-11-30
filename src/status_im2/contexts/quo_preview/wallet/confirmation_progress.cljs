@@ -69,8 +69,10 @@
          (stop-interval)))
      [(:state @state)])
     [preview/preview-container {:state state :descriptor descriptor}
-     [quo/confirmation-propgress (assoc @state
-                                        :counter @counter)]]))
+     [quo/confirmation-propgress
+      (assoc @state
+             :counter
+             @counter)]]))
 
 (defn view
   []

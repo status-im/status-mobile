@@ -52,11 +52,11 @@
   [counter]
   (if (< counter 4) counter max-mainnet-verifications))
 
-(defn mainnet-label 
+(defn mainnet-label
   [counter]
   (str counter "/" max-mainnet-verifications))
 
-(defn subnet-label 
+(defn subnet-label
   [counter]
   (str counter "/" max-sidenet-verifications))
 
