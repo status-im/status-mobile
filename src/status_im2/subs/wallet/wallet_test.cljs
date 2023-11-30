@@ -181,3 +181,15 @@
      (= (set ["0x1" "0x2"])
         (rf/sub [sub-name])))))
 
+(h/deftest-sub :wallet/watch-address-activity-state
+  [sub-name]
+  (testing "watch address activity state with nil value"
+    (is (= nil (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with no-activity value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :no-activity))
+    (is (= :no-activity (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with has-activity value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :has-activity))
+    (is (= :has-activity (rf/sub [sub-name])))))
