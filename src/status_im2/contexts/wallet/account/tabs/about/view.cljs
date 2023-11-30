@@ -34,10 +34,10 @@
 
 (defn view
   []
-  (let [profile                     (rf/sub [:profile/profile-with-image])
-        {:keys [type address path]} (rf/sub [:wallet/current-viewing-account])
-        networks                    (rf/sub [:wallet/network-details])
-        watch-only?                 (= type :watch)]
+  (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
+        {:keys [type address path]}               (rf/sub [:wallet/current-viewing-account])
+        networks                                  (rf/sub [:wallet/network-details])
+        watch-only?                               (= type :watch)]
     [rn/view {:style style/about-tab}
      [quo/data-item
       {:description     :default
@@ -56,9 +56,10 @@
        :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])}]
      (when (not watch-only?)
        [quo/account-origin
-        {:type            :default-keypair
-         :stored          :on-device
-         :profile-picture (profile.utils/photo profile)
-         :derivation-path path
-         :user-name       (profile.utils/displayed-name profile)
-         :on-press        #(js/alert "To be implemented")}])]))
+        {:type                :default-keypair
+         :stored              :on-device
+         :profile-picture     (profile.utils/photo profile)
+         :customization-color customization-color
+         :derivation-path     path
+         :user-name           (profile.utils/displayed-name profile)
+         :on-press            #(js/alert "To be implemented")}])]))
