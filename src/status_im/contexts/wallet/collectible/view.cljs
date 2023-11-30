@@ -1,14 +1,13 @@
 (ns status-im.contexts.wallet.collectible.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.temp :as temp]
+    [status-im2.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -42,7 +41,7 @@
      :icon-left       :i/opensea}
     (i18n/label :t/opensea)]])
 
-(def activity-tabs-data
+(def tabs-data
   [{:id                  :overview
     :label               (i18n/label :t/overview)
     :accessibility-label :overview-tab}
@@ -55,29 +54,6 @@
    {:id                  :about
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
-
-(defn traits-section
-  [traits]
-  (when (pos? (count traits))
-    [rn/view
-     [quo/section-label
-      {:section         (i18n/label :t/traits)
-       :container-style style/traits-title-container}]
-     [rn/flat-list
-      {:render-fn               (fn [{:keys [trait-type value]}]
-                                  [quo/data-item
-                                   {:card?           true
-                                    :status          :default
-                                    :size            :default
-                                    :title           trait-type
-                                    :subtitle        value
-                                    :subtitle-type   :default
-                                    :container-style style/traits-item}])
-       :data                    traits
-       :key                     :collectibles-list
-       :key-fn                  :id
-       :num-columns             2
-       :content-container-style style/traits-container}]]))
 
 (defn activity-item
   [item]
@@ -92,73 +68,24 @@
     :style     {:flex 1}
     :render-fn activity-item}])
 
-(defn info
-  [chain-id]
-  (let [network         (rf/sub [:wallet/network-details-by-chain-id
-                                 chain-id])
-        network-keyword (get network :network-name)
-        network-name    (when network-keyword
-                          (string/capitalize (name network-keyword)))]
-    [rn/view
-     {:style style/info-container}
-     [rn/view {:style style/account}
-      [quo/data-item
-       {:card?               true
-        :status              :default
-        :size                :default
-        :title               (i18n/label :t/account-title)
-        :subtitle            "Collectibles vault"
-        :subtitle-type       :account
-        :emoji               "🎮"
-        :customization-color :yellow}]]
-
-     [rn/view {:style style/network}
-      [quo/data-item
-       {:card?         true
-        :status        :default
-        :size          :default
-        :title         (i18n/label :t/network)
-        :network-image (quo.resources/get-network network-keyword)
-        :subtitle      network-name
-        :subtitle-type :network}]]]))
-
-(defn tabs
-  [_]
-  (let [selected-tab (reagent/atom (:id (first activity-tabs-data)))]
-    (fn [{:keys [traits chain-id] :as _props}]
-      [:<>
-       [quo/tabs
-        {:size           32
-         :style          style/tabs
-         :scrollable?    true
-         :default-active @selected-tab
-         :data           activity-tabs-data
-         :on-change      #(reset! selected-tab %)}]
-       (condp = @selected-tab
-         :overview [:<>
-                    [info chain-id]
-                    [traits-section traits]]
-         :activity [activity-section]
-         nil)])))
-
 (defn collectible-actions-sheet
   []
   [quo/action-drawer
-   [[{:icon                :i/messages
-      :accessibility-label :share-opensea-link
-      :label               (i18n/label :t/share-opensea-link)}
-     {:icon                :i/link
-      :accessibility-label :view-on-eth
-      :label               (i18n/label :t/view-on-eth)}
-     {:icon                :i/download
-      :accessibility-label :save-image-to-photos
-      :label               (i18n/label :t/save-image-to-photos)}
-     {:icon                :i/copy
-      :accessibility-label :copy-all-details
-      :label               (i18n/label :t/copy-all-details)}
-     {:icon                :i/share
-      :accessibility-label :share-details
-      :label               (i18n/label :t/share-details)}]]])
+    [[{:icon                :i/messages
+       :accessibility-label :share-opensea-link
+       :label               (i18n/label :t/share-opensea-link)}
+      {:icon                :i/link
+       :accessibility-label :view-on-eth
+       :label               (i18n/label :t/view-on-eth)}
+      {:icon                :i/download
+       :accessibility-label :save-image-to-photos
+       :label               (i18n/label :t/save-image-to-photos)}
+      {:icon                :i/copy
+       :accessibility-label :copy-all-details
+       :label               (i18n/label :t/copy-all-details)}
+      {:icon                :i/share
+       :accessibility-label :share-details
+       :label               (i18n/label :t/share-details)}]]])
 
 (defn view-internal
   [{:keys [theme] :as _props}]
@@ -169,7 +96,10 @@
          collectible-name :name}  collectible-data
         {collection-image :image-url
          collection-name  :name}  collection-data
-        chain-id                  (rf/sub [:wallet/last-collectible-chain-id])]
+        chain-id                  (rf/sub [:wallet/last-collectible-chain-id])
+        {collectible-name :name
+         description      :description} collectible-data
+        selected-tab                    (reagent/atom :overview)]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
@@ -189,8 +119,13 @@
          :style  style/preview}]]
       [header collectible-name collection-name collection-image]
       [cta-buttons]
-      [tabs
-       {:traits   traits
-        :chain-id chain-id}]]]))
+      [quo/tabs
+       {:size        32
+        :style       style/tabs
+        :scrollable? true
+        :default-active   @selected-tab
+        :on-change        #(reset! selected-tab %)
+        :data        tabs-data}]
+      [tabs/view {:selected-tab @selected-tab}]]]))
 
 (def view (quo.theme/with-theme view-internal))
