@@ -15,6 +15,11 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
+ :wallet/watch-address-activity-state
+ :<- [:wallet/ui]
+ :-> :watch-address-activity-state)
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :-> #(->> %

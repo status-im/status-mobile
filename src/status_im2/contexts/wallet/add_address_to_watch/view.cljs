@@ -27,11 +27,14 @@
   (let [scanned-address (rf/sub [:wallet/scanned-address])
         empty-input?    (and (string/blank? @input-value)
                              (string/blank? scanned-address))
-
         on-change-text  (fn [new-text]
                           (reset! validation-msg (validate new-text))
                           (reset! input-value new-text)
+                          (if (and (not-empty new-text) (nil? (validate new-text)))
+                            (rf/dispatch [:wallet/get-address-details new-text])
+                            (rf/dispatch [:wallet/clear-address-activity-check]))
                           (when (and scanned-address (not= scanned-address new-text))
+                            (rf/dispatch [:wallet/clear-address-activity-check])
                             (rf/dispatch [:wallet/clean-scanned-address])))
         paste-on-input  #(clipboard/get-string
                           (fn [clipboard-text]
@@ -67,6 +70,32 @@
        :icon-only?      true}
       :i/scan]]))
 
+(defn activity-indicator
+  []
+  (let [activity-state (rf/sub [:wallet/watch-address-activity-state])
+        {:keys [accessibility-label icon type message]}
+        (case activity-state
+          :has-activity {:accessibility-label :account-has-activity
+                         :icon                :i/done
+                         :type                :success
+                         :message             :t/this-address-has-activity}
+          :no-activity  {:accessibility-label :account-has-no-activity
+                         :icon                :i/info
+                         :type                :warning
+                         :message             :t/this-address-has-no-activity}
+          {:accessibility-label :searching-for-activity
+           :icon                :i/pending-state
+           :type                :default
+           :message             :t/searching-for-activity})]
+    (when activity-state
+      [quo/info-message
+       {:accessibility-label accessibility-label
+        :size                :default
+        :icon                icon
+        :type                type
+        :style               style/info-message}
+       (i18n/label message)])))
+
 (defn view
   []
   (let [addresses           (rf/sub [:wallet/addresses])
@@ -77,9 +106,11 @@
         clear-input         (fn []
                               (reset! input-value nil)
                               (reset! validation-msg nil)
+                              (rf/dispatch [:wallet/clear-address-activity-check])
                               (rf/dispatch [:wallet/clean-scanned-address]))
         customization-color (rf/sub [:profile/customization-color])]
     (rf/dispatch [:wallet/clean-scanned-address])
+    (rf/dispatch [:wallet/clear-address-activity-check])
     (fn []
       [rn/view
        {:style {:flex 1}}
@@ -89,11 +120,12 @@
                    :icon-name :i/close
                    :on-press  (fn []
                                 (rf/dispatch [:wallet/clean-scanned-address])
+                                (rf/dispatch [:wallet/clear-address-activity-check])
                                 (rf/dispatch [:navigate-back]))}]
          :footer
          [quo/button
           {:customization-color customization-color
-           :disabled?           (string/blank? @input-value)
+           :disabled?           (or (string/blank? @input-value) (some? (validate @input-value)))
            :on-press            #(rf/dispatch [:navigate-to
                                                :confirm-address-to-watch
                                                {:address @input-value}])
@@ -115,4 +147,5 @@
             :icon                :i/info
             :type                :error
             :style               style/info-message}
-           @validation-msg])]])))
+           @validation-msg])
+        [activity-indicator]]])))
