@@ -414,19 +414,10 @@
        :content-container-style           {:justify-content :flex-end
                                            :min-height      @messages-view-height}
        :style                             (add-inverted-y-android
-                                           {:background-color (if all-loaded?
-                                                                (colors/theme-colors
-                                                                 (colors/custom-color cover-bg-color
-                                                                                      50
-                                                                                      20)
-                                                                 (colors/custom-color cover-bg-color
-                                                                                      50
-                                                                                      40)
-                                                                 theme)
-                                                                (colors/theme-colors
-                                                                 colors/white
-                                                                 colors/neutral-95
-                                                                 theme))})
+                                           {:background-color (colors/theme-colors
+                                                               colors/white
+                                                               colors/neutral-95
+                                                               theme)})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                          (when platform/ios? true)
        :on-layout                         (fn [e]
