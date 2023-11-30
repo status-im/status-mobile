@@ -69,11 +69,11 @@
 (deftest add-contact-test
   (h/log-headline :add-contact-test)
   (let
-    [compressed-key "zQ3shWj4WaBdf2zYKCkXe6PHxDxNTzZyid1i75879Ue9cX9gA"
-     public-key     (str "0x048a6773339d11ccf5fd81677b7e54daeec544a1287"
-                         "bd92b725047ad6faa9a9b9f8ea86ed5a226d2a994f5f4"
-                         "6d0b43321fd8de7b7997a166e67905c8c73cd37cea")
-     primary-name   "zQ3...9cX9gA"]
+    [compressed-key "zQ3shMwgSMKHVznoowceZMxWde9HUnkQEVSGvvex8UFpFNErL"
+     public-key     (str "0x0407e9dc435fe366cb0b4c4f35cbd925438c0f46fe0"
+                         "ed2a86050325bc8856e26898c17e31dee2602b9429c91"
+                         "ecf65a41d62ac1f2f0823c0710dcb536e79af2763c")
+     primary-name   "zQ3...pFNErL"]
     (rf-test/run-test-async
      (h/with-app-initialized
       (h/with-account

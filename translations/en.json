@@ -480,7 +480,7 @@
     "done": "Done",
     "edit": "Edit",
     "edit-group": "Edit group",
-    "edit-profile": "Edit profile",
+    "edit-profile": "Edit Profile",
     "emojihash": "Emojihash",
     "emojihash-description": "A visual representation of your chat key. It will help other users recognize your profile.",
     "emojis": "Emojis",
@@ -1005,6 +1005,8 @@
     "buy-crypto": "Buy crypto",
     "buy-crypto-choose-a-service": "Choose a service you'd like to use to buy crypto",
     "buy-crypto-leaving": "You are leaving Status and entering a third party website to complete your purchase",
+    "data-usage": "Data usage",
+    "language-and-currency": "Language and currency",
     "opening-buy-crypto": "Opening {{site}}...",
     "network": "Network",
     "network-chain": "Network chain",
@@ -1313,6 +1315,7 @@
     "status-pending": "Pending",
     "status-tx-not-found": "TX not found",
     "status-sent": "Sent",
+    "status-help": "Status Help",
     "status-not-sent-tap": "Not confirmed. Tap for options",
     "status-not-sent-click": "Not confirmed. Click for options",
     "step-i-of-n": "Step {{step}} of {{number}}",
@@ -2391,6 +2394,7 @@
     "address-already-in-use": "Address already being used",
     "address-copied": "Address copied",
     "no-dapps-description": "We want dApps!",
-    "select-asset": "Select asset"
+    "select-asset": "Select asset",
+    "send-limit": "Max: {{limit}}"
 }
 

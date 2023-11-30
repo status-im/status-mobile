@@ -8,8 +8,8 @@
 (def descriptor
   [{:key :title :type :text}
    {:key :avatar :type :boolean}
-   {:key  :description
-    :type :text}])
+   {:key :description :type :text}
+   {:key :emoji-hash :type :text}])
 
 (defn state->text-combinations-props
   [state]
@@ -22,7 +22,8 @@
   (let [state (reagent/atom {:title                           "Title"
                              :title-accessibility-label       :title
                              :description                     ""
-                             :description-accessibility-label :subtitle})]
+                             :description-accessibility-label :subtitle
+                             :emoji-hash                      "🐲🍀🎭🌟🚀🐠🌈🏰🔮🦉🐼🍉🎨🚲🌙🍔🌵"})]
     (fn []
       [preview/preview-container
        {:state                     state

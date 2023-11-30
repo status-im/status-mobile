@@ -48,6 +48,7 @@
     quo.components.drawers.drawer-buttons.view
     quo.components.drawers.drawer-top.view
     quo.components.drawers.permission-context.view
+    quo.components.dropdowns.dropdown-input.view
     quo.components.dropdowns.dropdown.view
     quo.components.dropdowns.network-dropdown.view
     quo.components.empty-state.empty-state.view
@@ -100,6 +101,7 @@
     quo.components.numbered-keyboard.keyboard-key.view
     quo.components.numbered-keyboard.numbered-keyboard.view
     quo.components.onboarding.small-option-card.view
+    quo.components.overlay.view
     quo.components.password.tips.view
     quo.components.profile.collectible.view
     quo.components.profile.profile-card.view
@@ -232,6 +234,7 @@
 
 ;;;; Dropdowns
 (def dropdown quo.components.dropdowns.dropdown.view/view)
+(def dropdown-input quo.components.dropdowns.dropdown-input.view/view)
 (def network-dropdown quo.components.dropdowns.network-dropdown.view/view)
 
 ;;;; Empty State
@@ -313,6 +316,9 @@
 (def count-down-circle quo.components.notifications.count-down-circle/circle-timer)
 (def notification quo.components.notifications.notification.view/notification)
 (def toast quo.components.notifications.toast.view/toast)
+
+;;;; Overlay
+(def overlay quo.components.overlay.view/view)
 
 ;;;; Password
 (def tips quo.components.password.tips.view/view)

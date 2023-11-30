@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.overview.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]))
 
 (def screen-horizontal-padding 20)
 
@@ -40,6 +41,16 @@
    :left     0
    :right    0
    :bottom   0})
+
+(def floating-shell-button
+  {:position :absolute
+   :bottom   21})
+
+(defn channel-list-component
+  []
+  {:margin-top    8
+   :margin-bottom (+ 21 jump-to.constants/floating-shell-button-height)
+   :flex          1})
 
 (defn token-gated-container
   []
