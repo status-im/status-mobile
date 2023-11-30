@@ -39,7 +39,7 @@
                     :width           8
                     :borderRadius    3
                     :borderColor     colors/neutral-80-opa-5
-                    :backgroundColor (colors/resolve-color (:customization-color props) theme 50)})))
+                    :backgroundColor (colors/resolve-color (:customization-color props) theme)})))
 
   (h/test "finalized state with customtization-color blue in dark mode"
     (let [theme :dark
@@ -51,7 +51,7 @@
                     :width           8
                     :borderRadius    3
                     :borderColor     colors/neutral-80-opa-5
-                    :backgroundColor (colors/resolve-color (:customization-color props) theme 60)})))
+                    :backgroundColor (colors/resolve-color (:customization-color props) theme)})))
 
   (h/test "finalized state with customtization-color army in light mode"
     (let [theme :light
@@ -63,7 +63,7 @@
                     :width           8
                     :borderRadius    3
                     :borderColor     colors/neutral-80-opa-5
-                    :backgroundColor (colors/resolve-color (:customization-color props) theme 50)})))
+                    :backgroundColor (colors/resolve-color (:customization-color props) theme)})))
 
   (h/test "confirmed state in light mode"
     (let [theme :light
@@ -75,7 +75,7 @@
                     :width           8
                     :borderRadius    3
                     :borderColor     colors/neutral-80-opa-5
-                    :backgroundColor (colors/resolve-color :success theme 50)})))
+                    :backgroundColor (colors/resolve-color :success theme)})))
 
   (h/test "confirmed state in dark mode"
     (let [theme :dark
@@ -99,7 +99,7 @@
                     :width           8
                     :borderRadius    3
                     :borderColor     colors/neutral-80-opa-5
-                    :backgroundColor (colors/resolve-color :danger theme 50)})))
+                    :backgroundColor (colors/resolve-color :danger theme)})))
 
   (h/test "error state in dark mode"
     (let [theme :dark
@@ -111,4 +111,4 @@
                     :width           8
                     :borderRadius    3
                     :borderColor     colors/white-opa-5
-                    :backgroundColor (colors/resolve-color :danger theme 60)}))))
+                    :backgroundColor (colors/resolve-color :danger theme)}))))

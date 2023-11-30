@@ -7,19 +7,19 @@
   {:light {:pending   {:border-color     colors/neutral-80-opa-5
                        :background-color colors/neutral-5}
            :confirmed {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/resolve-color :success theme 50)}
+                       :background-color (colors/resolve-color :success theme)}
            :finalized {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/resolve-color customization-color theme 50)}
+                       :background-color (colors/resolve-color customization-color theme)}
            :error     {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/resolve-color :danger theme 50)}}
+                       :background-color (colors/resolve-color :danger theme)}}
    :dark  {:pending   {:border-color     colors/neutral-70
                        :background-color colors/neutral-80}
            :confirmed {:border-color     colors/white-opa-5
-                       :background-color (colors/resolve-color :success theme 60)}
+                       :background-color (colors/resolve-color :success theme)}
            :finalized {:border-color     colors/neutral-80-opa-5
-                       :background-color (colors/resolve-color customization-color theme 60)}
+                       :background-color (colors/resolve-color customization-color theme)}
            :error     {:border-color     colors/white-opa-5
-                       :background-color (colors/resolve-color :danger theme 60)}}})
+                       :background-color (colors/resolve-color :danger theme)}}})
 
 (def max-value 100)
 
