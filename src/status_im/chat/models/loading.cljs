@@ -76,7 +76,7 @@
 
 (rf/defn handle-mark-all-read-in-community-successful
   {:events [::mark-all-read-in-community-successful]}
-  [{:keys [db] :as cofx} {:keys [chats] :as messenger-response}]
+  [{:keys [db] :as cofx} {:keys [chats] :as _messenger-response}]
   (rf/merge cofx
             {:db       (reduce mark-chat-all-read db (map :id chats))
              :dispatch [:activity-center.notifications/fetch-unread-count]}))
