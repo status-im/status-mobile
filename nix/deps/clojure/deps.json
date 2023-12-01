@@ -603,6 +603,15 @@
   },
 
   {
+    "path": "nubank/matcher-combinators/3.8.8/matcher-combinators-3.8.8",
+    "host": "https://repo.clojars.org",
+    "jar": {
+      "sha1": "4c94bd510f0c18a20191e46dd6becedebc640bbd",
+      "sha256": "0wpla2hx0s4mda58ndyd8938zmnz1gyhgfr6pzfphy27xfbvsssl"
+    }
+  },
+
+  {
     "path": "org/apache/ant/ant/1.10.11/ant-1.10.11",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
@@ -743,6 +752,15 @@
     "jar": {
       "sha1": "f5ea82eb1309b81ada6a14371bb848323c65e38b",
       "sha256": "0jk9v4bfrxvz6wq1s86msry2mf47nwcjfplnn41yabqc44g82hva"
+    }
+  },
+
+  {
+    "path": "org/clojure/math.combinatorics/0.2.0/math.combinatorics-0.2.0",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "aa95d25ea98bfe1152ea540f6e58a303c8cacc86",
+      "sha256": "0qvdsr5ryjmrpz622ivpyq5aayn42y4bk531vbasyj2yj7gcg35h"
     }
   },
 
