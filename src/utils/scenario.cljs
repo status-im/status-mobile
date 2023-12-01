@@ -1,5 +1,5 @@
-(ns status-im2.util
-  (:require-macros [status-im2.util :as um])
+(ns utils.scenario
+  (:require-macros [utils.scenario :as usm])
   (:require [re-frame.core :as rf]
             [react-native.platform :as platform]
             [status-im.utils.utils :as utils]
@@ -27,7 +27,7 @@
     :ok))
 
 (defn run-init-scenario! []
-  (um/run-scenario
+  (usm/run-scenario
     (when-let [blur-show-fn @status-im2.contexts.onboarding.common.overlay.view/blur-show-fn-atom]
       (blur-show-fn))
     (rf/dispatch [:open-modal :new-to-status])
@@ -59,25 +59,25 @@
   (do (when-let [blur-show-fn @status-im2.contexts.onboarding.common.overlay.view/blur-show-fn-atom]
         (blur-show-fn))
       (rf/dispatch [:open-modal :new-to-status])
-      (um/wait 1000
+      (usm/wait 1000
         (rf/dispatch [:onboarding-2/navigate-to-create-profile])
-        (um/wait 1000
+        (usm/wait 1000
           (rf/dispatch [:onboarding-2/profile-data-set
                         {:image-path nil, :display-name "lambdam", :color :blue}])
-          (um/wait 1000
+          (usm/wait 1000
             (rf/dispatch [:onboarding-2/password-set (security/mask-data "qwertyuiop")])
-            (um/do-on-event [:navigate-to-within-stack [:identifiers :new-to-status]]
-              (um/wait 1000
+            (usm/do-on-event [:navigate-to-within-stack [:identifiers :new-to-status]]
+              (usm/wait 1000
                 (rf/dispatch [:navigate-to-within-stack [:enable-notifications :new-to-status]])
-                (um/wait 1000
+                (usm/wait 1000
                   (shell.utils/change-selected-stack-id :communities-stack true nil)
                   (rf/dispatch [:push-notifications/switch true platform/ios?])
                   (rf/dispatch [:navigate-to-within-stack
                                 [:welcome :enable-notifications]])
-                  (um/wait 1000
+                  (usm/wait 1000
                     (rf/dispatch [:init-root :shell-stack])
                     (rf/dispatch [:universal-links/process-stored-event])
-                    (um/wait 2000
+                    (usm/wait 2000
                       (utils/show-popup "Scenarios" "Profile creation scenario finished"))))))))))
 
   ;; "Aligned" example (which expands to the same code than the previous example)

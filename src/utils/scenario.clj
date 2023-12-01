@@ -1,11 +1,11 @@
-(ns status-im2.util
+(ns utils.scenario
   (:require [clojure.set :as set]))
 
 (defmacro do-on-event [event & body]
-  `(status-im2.util/do-on-event* ~event (fn [] ~@body)))
+  `(utils.scenario/do-on-event* ~event (fn [] ~@body)))
 
 (defmacro do-on-event-name [event-name & body]
-  `(status-im2.util/do-on-event-name* ~event-name (fn [] ~@body)))
+  `(utils.scenario/do-on-event-name* ~event-name (fn [] ~@body)))
 
 (defmacro wait [ms & body]
   `(js/setTimeout (fn [] ~@body) ~ms))
@@ -31,7 +31,7 @@
                (-> (count item) (= 1))
                (contains? item ::on-event)
                )
-          `(do ~@(conj output `(status-im2.util/do-on-event*
+          `(do ~@(conj output `(utils.scenario/do-on-event*
                                  ~(get item ::on-event)
                                  (fn [] ~(run-scenario* [] rest)))))
           ;; ---
@@ -39,7 +39,7 @@
                not-latest-step?
                (-> (count item) (= 1))
                (contains? item ::on-event-name))
-          `(do ~@(conj output `(status-im2.util/do-on-event-name*
+          `(do ~@(conj output `(utils.scenario/do-on-event-name*
                                  ~(get item ::on-event-name)
                                  (fn [] ~(run-scenario* [] rest)))))
           ;; ---
