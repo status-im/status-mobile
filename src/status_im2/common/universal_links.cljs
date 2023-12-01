@@ -180,7 +180,7 @@
  :universal-links/generate-profile-url
  (schema/instrument
   ::generate-profile-url
-  (fn [{:keys [db] :as _cofx} [{:keys [public-key cb]}]]
+  (fn [{:keys [db]} [{:keys [public-key cb]}]]
     (let [profile?   (not public-key)
           ens-name?  (if profile?
                        (get-in db [:profile/profile :ens-name?])
@@ -189,8 +189,9 @@
       {:json-rpc/call
        [{:method     (if ens-name? "wakuext_shareUserURLWithENS" "wakuext_shareUserURLWithData")
          :params     [public-key]
-         :on-success #(do (rf/dispatch [:universal-links/save-profile-url public-key %])
-                          (when (fn? cb) (cb)))
+         :on-success (fn [url]
+                       (rf/dispatch [:universal-links/save-profile-url public-key url])
+                       (when (fn? cb) (cb)))
          :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
                                  {:error      %
                                   :public-key public-key})}]}))
@@ -204,7 +205,7 @@
         [:public-key {:optional true} :schema.common/public-key]
         [:cb {:optional true} fn?]]]]]]
    [:map
-    [:json-rpc/call :schema.common/general-rpc-call]]]))
+    [:json-rpc/call :schema.common/rpc-call]]]))
 
 (rf/reg-event-fx
  :universal-links/save-profile-url
@@ -222,7 +223,7 @@
    [:catn
     [:cofx :schema.re-frame/cofx]
     [:args
-     [:cat :schema.common/public-key :string]]]
+     [:schema [:cat :schema.common/public-key :string]]]]
    [:maybe :map]]))
 
 (defn unwrap-js-url
