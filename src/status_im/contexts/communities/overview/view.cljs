@@ -212,18 +212,16 @@
 
 (defn add-handlers
   [community-id
-   joined
    {:keys [id locked?]
     :or   {locked? false}
     :as   chat}]
   (merge
    chat
    (when (and (not locked?) id)
-     {:on-press      (when joined
-                       (fn []
-                         (rf/dispatch [:dismiss-keyboard])
-                         (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)]
-                                                      1000)))
+     {:on-press      (fn []
+                       (rf/dispatch [:dismiss-keyboard])
+                       (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)]
+                                                    1000))
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content (fn []
@@ -231,12 +229,12 @@
       :community-id  community-id})))
 
 (defn add-handlers-to-chats
-  [community-id joined chats]
-  (mapv (partial add-handlers community-id joined) chats))
+  [community-id chats]
+  (mapv (partial add-handlers community-id) chats))
 
 (defn add-handlers-to-categorized-chats
-  [community-id categorized-chats joined]
-  (let [add-on-press (partial add-handlers-to-chats community-id joined)]
+  [community-id categorized-chats]
+  (let [add-on-press (partial add-handlers-to-chats community-id)]
     (map (fn [[category v]]
            [category (update v :chats add-on-press)])
          categorized-chats)))
@@ -286,7 +284,7 @@
            :community-id                    id
            :community-color                 color
            :on-first-channel-height-changed on-first-channel-height-changed}
-          (add-handlers-to-categorized-chats id chats-by-category joined)])])))
+          (add-handlers-to-categorized-chats id chats-by-category)])])))
 
 (defn sticky-category-header
   [_]
