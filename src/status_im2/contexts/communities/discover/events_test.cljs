@@ -13,7 +13,7 @@
    :3f9e77b8-97c7               "3f9e77b8-97c7"))
 
 (deftest rename-contract-community-keys-test
-  (are [i e] (= (events/rename-contract-community-keys i) e)
+  (are [i e] (match? (events/rename-contract-community-keys i) e)
 
    {:contractCommunities
     ["0x032aa2439b14eb2caaf724223951da89de1530fbfa5d5a639b93b82cd5341713fd"

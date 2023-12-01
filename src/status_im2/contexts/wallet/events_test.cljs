@@ -11,7 +11,7 @@
       (let [expected-db {:wallet/scanned-address address}
             effects     (events/scan-address-success {:db db} address)
             result-db   (:db effects)]
-        (is (= result-db expected-db))))))
+        (is (match? result-db expected-db))))))
 
 (deftest clean-scanned-address
   (let [db {:wallet/scanned-address address}]
@@ -19,7 +19,7 @@
       (let [expected-db {}
             effects     (events/clean-scanned-address {:db db})
             result-db   (:db effects)]
-        (is (= result-db expected-db))))))
+        (is (match? result-db expected-db))))))
 
 (deftest store-collectibles
   (testing "(displayable-collectible?) helper function"
@@ -34,7 +34,8 @@
                             [false {:collectible-data {:image-url nil :animation-url ""}}]
                             [false {:collectible-data {:image-url "" :animation-url ""}}]]]
       (doseq [[result collection] expected-results]
-        (is (= result (events/displayable-collectible? collection))))))
+        (is (match? result (events/displayable-collectible? collection))))))
+
   (testing "save-collectibles-request-details"
     (let [db           {:wallet {}}
           collectibles [{:collectible-data {:image-url "https://..." :animation-url "https://..."}}
@@ -46,7 +47,7 @@
                                                  {:image-url "" :animation-url "https://..."}}]}}
           effects      (events/store-collectibles {:db db} [collectibles])
           result-db    (:db effects)]
-      (is (= result-db expected-db)))))
+      (is (match? result-db expected-db)))))
 
 (deftest clear-stored-collectibles
   (let [db {:wallet {:collectibles [{:id 1} {:id 2}]}}]
@@ -54,7 +55,7 @@
       (let [expected-db {:wallet {}}
             effects     (events/clear-stored-collectibles {:db db})
             result-db   (:db effects)]
-        (is (= result-db expected-db))))))
+        (is (match? result-db expected-db))))))
 
 (deftest store-last-collectible-details
   (testing "store-last-collectible-details"
@@ -65,4 +66,4 @@
                                                                 :image-url   "https://..."}}}
           effects          (events/store-last-collectible-details {:db db} [last-collectible])
           result-db        (:db effects)]
-      (is (= result-db expected-db)))))
+      (is (match? result-db expected-db)))))
