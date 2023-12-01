@@ -133,7 +133,7 @@
      | key          | description |
   | -------------|-------------|
   | `:account-name`      | A value representing the account name (default `nil`)
-  | `:account`           | A value that represents if the account is a `:watched-account` or a `:default` account. (default `nil`)
+  | `:account`           | A value that represents if the account is a `:watched-address` or a `:default` account. (default `nil`)
   | `:time-frame`        | A value that represents the type of the timeframe, Can be from a preset of time frames. `[:1-week :1-month :3-months :1-year :custom]` (default `nil`) if custom is set, We expect a start time and if there's a space between two times that are in `time-frame-string` we'll split them with an arrow to the right icon
   | `:loading?`          | A value that indicates that component is loading data. (default `nil`)
   | `:metrics`           | A value that indicates if the account value have increased can be `:positive` or `:negative` (default `nil`)
