@@ -8,8 +8,8 @@
   [:=>
    [:cat
     [:map {:closed true}
-     [:size {:optional true :default 32} pos-int?]
-     [:token {:optional true :default :snt} [:or keyword? string?]]
+     [:size {:optional true :default 32} [:or keyword? pos-int?]]
+     [:token {:optional true} [:or keyword? string?]]
      [:style {:optional true} map?]
      ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
      [:image-source {:optional true} [:or string? map?]]
@@ -46,8 +46,7 @@
                       passed as `image-source`.
   "
   [{:keys [token size style image-source add-b64-prefix?]
-    :or   {size  32
-           token :snt}}]
+    :or   {size 32}}]
   (let [b64-string (if (and image-source add-b64-prefix?)
                      (str b64-png-image-prefix image-source)
                      image-source)
@@ -56,4 +55,4 @@
      {:style  (token-style style size)
       :source source}]))
 
-(defn view (schema/instrument #'view-internal ?schema))
+(def view (schema/instrument #'view-internal ?schema))
