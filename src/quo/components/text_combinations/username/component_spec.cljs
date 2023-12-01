@@ -2,7 +2,6 @@
   (:require [quo.components.text-combinations.username.view :as username]
             [test-helpers.component :as h]))
 
-
 (defn test-all-status
   [component-to-render component-props]
   (h/test "Verified status"
