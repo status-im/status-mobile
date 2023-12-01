@@ -6,7 +6,9 @@
             [status-im2.contexts.shell.jump-to.utils :as shell.utils]
             [utils.security.core :as security]))
 
-(defn do-on-event* [target-event callback]
+(defn do-on-event*
+  "Implementation function. Prefer using the do-on-event macro."
+  [target-event callback]
   (let [cb-id (gensym "do-on-cb-fn")]
     (rf/add-post-event-callback
       cb-id
@@ -16,7 +18,9 @@
           (callback))))
     :ok))
 
-(defn do-on-event-name* [target-event-name callback]
+(defn do-on-event-name*
+  "Implementation function. Prefer using the do-on-event-name macro."
+  [target-event-name callback]
   (let [cb-id (gensym "do-on-cb-fn")]
     (rf/add-post-event-callback
       cb-id
@@ -26,7 +30,10 @@
           (callback))))
     :ok))
 
-(defn run-init-scenario! []
+(defn run-init-scenario!
+  "Example of scenario. From a fresh app without account and from the initial
+  screen, run the function to create an account."
+  []
   (usm/run-scenario
     (when-let [blur-show-fn @status-im2.contexts.onboarding.common.overlay.view/blur-show-fn-atom]
       (blur-show-fn))
