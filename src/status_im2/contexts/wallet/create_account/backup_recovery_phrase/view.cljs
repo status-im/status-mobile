@@ -6,11 +6,8 @@
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.create-account.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
-
-;; Temporary words
-(def words ["witch" "collapse" "practice" "feed" "shame" "open" "lion"
-            "collapse" "umbrella" "fabric" "sadness" "obligue"])
+    [utils.re-frame :as rf]
+    [status-im2.contexts.wallet.common.temp :as temp]))
 
 (defn word-item
   [item index _ increment]
@@ -54,9 +51,9 @@
          :title           (i18n/label :t/backup-recovery-phrase)
          :description     (i18n/label :t/backup-recovery-phrase-description)}]
        [rn/view {:style (style/seed-phrase-container theme)}
-        [words-column words true]
+        [words-column temp/secret-phrase true]
         [rn/view {:style (style/separator theme)}]
-        [words-column words false]
+        [words-column temp/secret-phrase false]
         (when-not @revealed?
           [rn/view {:style style/blur-container}
            [blur/view (style/blur theme)]])]
