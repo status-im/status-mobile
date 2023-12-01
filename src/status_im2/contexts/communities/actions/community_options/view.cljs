@@ -52,7 +52,7 @@
   [id muted? muted-till]
   (let [time-string (fn [mute-title mute-duration]
                       (i18n/label mute-title {:duration mute-duration}))]
-    {:icon                (if muted? :i/muted :i/activity-center)
+    {:icon                (if muted? :i/activity-center :i/muted)
      :accessibility-label (if muted? :unmute-community :mute-community)
      :label               (i18n/label (if muted? :t/unmute-community :t/mute-community))
      :sub-label           (when (and muted? (some? muted-till))
