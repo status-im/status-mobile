@@ -46,10 +46,11 @@
     [status-im2.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
     [status-im2.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
+    [status-im2.contexts.wallet.create-account.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
-    [status-im2.contexts.wallet.create-account.backup-recovery-phrase.view :as wallet-backup-recovery-phrase]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]

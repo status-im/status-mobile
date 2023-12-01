@@ -57,7 +57,7 @@
        :description         (i18n/label :t/keypairs-description)
        :button-icon         :i/add
        :button-on-press     #(rf/dispatch [:show-bottom-sheet
-                                            {:content keypair-options}])
+                                           {:content keypair-options}])
        :customization-color customization-color}]
      [quo/keypair
       (merge
