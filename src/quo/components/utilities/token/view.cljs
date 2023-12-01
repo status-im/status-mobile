@@ -1,7 +1,21 @@
 (ns quo.components.utilities.token.view
   (:require [quo.components.utilities.token.loader :as token-loader]
             [react-native.core :as rn]
+            [schema.core :as schema]
             [utils.number]))
+
+(def ?schema
+  [:=>
+   [:cat
+    [:map {:closed true}
+     [:size {:optional true :default 32} pos-int?]
+     [:token {:optional true :default :snt} [:or keyword? string?]]
+     [:style {:optional true} map?]
+     ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
+     [:image-source {:optional true} [:or string? map?]]
+     ;; If true, adds `data:image/png;base64,` as prefix to the string passed as `image-source`
+     [:add-b64-prefix? {:optional true} boolean?]]]
+   :any])
 
 (defn- size->number
   "Remove `size-` prefix in size keywords and returns a number useful for styling."
@@ -19,7 +33,7 @@
 
 (def ^:private b64-png-image-prefix "data:image/png;base64,")
 
-(defn view
+(defn view-internal
   "Render a token image.
    Props:
    - style:           extra styles to apply to the `rn/image` component.
@@ -41,3 +55,5 @@
     [rn/image
      {:style  (token-style style size)
       :source source}]))
+
+(defn view (schema/instrument #'view-internal ?schema))
