@@ -36,9 +36,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch-later
-          [{:dispatch [:navigate-to :wallet-accounts address]
-            :ms       300}]]
+         [:dispatch [:navigate-to :wallet-accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/close-account-page
