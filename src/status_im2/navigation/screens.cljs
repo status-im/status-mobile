@@ -270,8 +270,7 @@
      :component wallet-edit-account/view}
 
     {:name      :add-address-to-watch
-     :options   {:insets {:top?    true
-                          :bottom? true}}
+     :options   {:insets {:top? true}}
      :component add-address-to-watch/view}
 
     {:name      :confirm-address-to-watch
