@@ -2402,10 +2402,10 @@
     "address-copied": "Address copied",
     "no-dapps-description": "We want dApps!",
     "select-asset": "Select asset",
-<<<<<<< HEAD
     "send-limit": "Max: {{limit}}",
     "searching-for-activity": "Searching for activity...",
     "this-address-has-no-activity": "This address has no activity",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "this-address-has-activity": "This address has activity",
     "details": "Details",
@@ -2415,11 +2415,15 @@
 =======
     "this-address-has-activity": "This address has activity"   
 =======
+=======
+    "this-address-has-activity": "This address has activity",
+>>>>>>> 6ce3575fd2 (lint)
     "generate-new-keypair": "Generate new keypair",
     "import-using-phrase": "Import using recovery phrase",
     "import-from-keycard": "Import from Keycard",
     "import-private-key": "Import private key",
     "backup-recovery-phrase": "Backup recovery phrase",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "backup-recovery-phrase-description": "Save in a secure place that only you control, these 12 words give access to all of your funds."
 >>>>>>> 81ead525f (u)
@@ -2427,6 +2431,8 @@
 >>>>>>> 6407d390d3 (u)
 =======
 =======
+=======
+>>>>>>> 6ce3575fd2 (lint)
     "backup-recovery-phrase-description": "Save in a secure place that only you control, these 12 words give access to all of your funds.",
     "how-to-backup": "How to backup your recovery phrase",
     "backup-step-1": "Find pen and paper",
@@ -2436,6 +2442,9 @@
     "reveal-phrase": "Reveal phrase",
     "i-have-written": "I have written it down on paper",
     "next-you-will": "Next, you will be asked to confirm the position of certain words in your recovery phrase"
+<<<<<<< HEAD
 >>>>>>> ca47ad7d5 (feat: new keypair flow ui)
 >>>>>>> dba2650b52 (feat: new keypair flow ui)
+=======
+>>>>>>> 6ce3575fd2 (lint)
 }
