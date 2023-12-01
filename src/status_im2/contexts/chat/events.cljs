@@ -289,7 +289,7 @@
   (rf/merge cofx
             {:effects/push-notifications-clear-message-notifications [chat-id]
              :dispatch                                               [:shell/close-switcher-card
-                                                                      chat-id]} 
+                                                                      chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 
