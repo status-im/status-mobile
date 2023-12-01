@@ -7,6 +7,10 @@
   layer."
   (:require-macros test-helpers.unit)
   (:require
+    ;; We must require `matcher-combinators.test` at least once, and not in file
+    ;; `status-im.test.runner`, otherwise make test will generate lots of
+    ;; warnings about undeclared var `match?` and tests will fail.
+    matcher-combinators.test
     [re-frame.core :as rf]
     [re-frame.db :as rf-db]
     [re-frame.events :as rf-events]

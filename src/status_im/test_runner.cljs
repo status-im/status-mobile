@@ -3,7 +3,6 @@
   (:require
     [cljs.test :as ct]
     [clojure.string :as string]
-    matcher-combinators.test
     [shadow.test :as st]
     [shadow.test.env :as env]
     status-im.subs.root
