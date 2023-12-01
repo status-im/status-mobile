@@ -133,7 +133,7 @@
             :max-font-size-multiplier 1
             :multiline true
             :placeholder (i18n/label :t/type-something)
-            :placeholder-text-color (colors/theme-colors colors/neutral-30 colors/neutral-50)
+            :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50)
             :style (style/input-text props
                                      state
                                      {:max-height max-height

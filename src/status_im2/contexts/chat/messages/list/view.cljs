@@ -328,7 +328,6 @@
         context                               (rf/sub [:chats/current-chat-message-list-view-context])
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
         recording?                            (rf/sub [:chats/recording?])
-        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
