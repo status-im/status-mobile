@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.events-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
+    matcher-combinators.test
     [status-im2.contexts.wallet.events :as events]))
 
 (def address "0x2f88d65f3cb52605a54a833ae118fb1363acccd2")

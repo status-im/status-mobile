@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.events-test
   (:require
     [cljs.test :refer [deftest is testing]]
+    matcher-combinators.test
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.events :as events]
     [status-im2.contexts.shell.activity-center.notification-types :as types]

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.add-new-contact.events-test
   (:require
     [cljs.test :refer-macros [deftest are]]
+    matcher-combinators.test
     [status-im2.contexts.add-new-contact.events :as events]))
 
 (def user-ukey

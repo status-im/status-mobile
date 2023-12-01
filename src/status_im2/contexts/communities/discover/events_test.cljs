@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.discover.events-test
   (:require
     [cljs.test :refer-macros [deftest are]]
+    matcher-combinators.test
     [status-im2.contexts.communities.discover.events :as events]))
 
 (deftest rename-contract-community-key-test

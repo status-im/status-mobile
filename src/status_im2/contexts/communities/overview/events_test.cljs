@@ -1,5 +1,6 @@
 (ns status-im2.contexts.communities.overview.events-test
   (:require [cljs.test :refer [deftest is]]
+            matcher-combinators.test
             [native-module.core :as native-module]
             [status-im2.contexts.communities.overview.events :as sut]))
 
