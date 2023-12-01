@@ -60,7 +60,7 @@
   (let [params   (or params [])
         on-error (or on-error
                      (on-error-retry call arg)
-                     #(log/warn :json-rpc/error method :error % :params params))]
+                     #(log/warn :json-rpc/error {:method method :params params :error %}))]
     (native-module/call-private-rpc
      (transforms/clj->json {:jsonrpc "2.0"
                             :id      1

@@ -172,7 +172,7 @@
    [{:method     "wakuext_toggleUseMailservers"
      :params     [value]
      :on-success #(log/info "successfully toggled use-mailservers" value)
-     :on-failure #(log/error "failed to toggle use-mailserver" value %)}]})
+     :on-error   #(log/error "failed to toggle use-mailserver" value %)}]})
 
 (rf/defn update-use-mailservers
   {:events [:mailserver.ui/use-history-switch-pressed]}
@@ -290,13 +290,12 @@
          [{:method     "mailservers_addMailserver"
            :params     [(mailserver->rpc mailserver current-fleet)]
            :on-success (fn []
-                         ;; we naively logout if the user is connected to
-                         ;; the edited mailserver
+                         ;; we naively logout if the user is connected to the edited mailserver
                          (when current
                            (re-frame/dispatch
                             [:multiaccounts.logout.ui/logout-confirmed]))
                          (log/debug "saved mailserver" id "successfuly"))
-           :on-failure #(log/error "failed to save mailserver" id %)}]
+           :on-error   #(log/error "failed to save mailserver" id %)}]
          :dispatch [:navigate-back]}))))
 
 (defn can-delete?
@@ -318,7 +317,7 @@
      [{:method     "mailservers_deleteMailserver"
        :params     [(name id)]
        :on-success #(log/debug "deleted mailserver" id)
-       :on-failure #(log/error "failed to delete mailserver" id %)}]
+       :on-error   #(log/error "failed to delete mailserver" id %)}]
      :dispatch [:navigate-back]}
     {:dispatch [:navigate-back]}))
 
