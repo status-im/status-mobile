@@ -54,5 +54,12 @@
           :subtitle        address
           :status          :default
           :size            :default
+          :subtitle-type   :default
+          :custom-subtitle (fn [] [quo/text
+                                   {:size   :paragraph-2
+                                    ;; TODO: monospace font
+                                    ;; https://github.com/status-im/status-mobile/issues/17009
+                                    :weight :monospace}
+                                   address])
           :container-style style/data-item
           :on-press        #(js/alert "To be implemented")}]]])))
