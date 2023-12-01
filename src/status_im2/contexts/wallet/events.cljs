@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.foundations.colors :as colors]
+    [status-im2.contexts.wallet.item-types :as item-types]
     [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
     [status-im2.contexts.wallet.temp :as temp]
