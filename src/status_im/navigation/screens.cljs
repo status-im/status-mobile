@@ -280,7 +280,10 @@
      :component emoji-picker/view}
 
     {:name      :wallet-accounts
-     :options   {:insets {:top? true}}
+     :options   {:insets             {:top? true}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
      :component wallet-accounts/view}
 
     {:name      :wallet-edit-account
