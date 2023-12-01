@@ -390,3 +390,6 @@
 (def ^:const account-default-customization-color :blue)
 
 (def ^:const wallet-account-name-max-length 20)
+
+(def ^:const status-address-domain ".stateofus.eth")
+(def ^:const eth-address-domain ".eth")

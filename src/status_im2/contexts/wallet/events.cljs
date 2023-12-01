@@ -15,7 +15,8 @@
     [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.transforms :as types]))
+    [utils.transforms :as types]
+    [status-im2.constants :as constants]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
 <<<<<<< HEAD
@@ -559,7 +560,7 @@
                   []
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
-       (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
+       (rf/dispatch [:wallet/search-ens input chain-id cb constants/status-address-domain])
        {:db (assoc db
                    :wallet/local-suggestions
                    (map #(assoc % :type item-types/saved-address) result)
@@ -573,8 +574,8 @@
               :params     [chain-id ens]
               :on-success #(rf/dispatch [:wallet/set-ens-address % ens])
               :on-error   (fn []
-                            (if (= domain ".stateofus.eth")
-                              (rf/dispatch [:wallet/search-ens input chain-id cb ".eth"])
+                            (if (= domain constants/status-address-domain)
+                              (rf/dispatch [:wallet/search-ens input chain-id cb constants/eth-address-domain])
                               (do
                                 (rf/dispatch [:wallet/set-ens-address nil ens])
                                 (cb))))}]]]})))
