@@ -1,26 +1,58 @@
-(ns status-im2.util)
+(ns status-im2.util
+  (:require [clojure.set :as set]))
 
-(defmacro do-on [event-type & body]
-  `(status-im2.util/do-on* ~event-type (fn [] ~@body)))
+(defmacro do-on-event [event & body]
+  `(status-im2.util/do-on-event* ~event (fn [] ~@body)))
+
+(defmacro do-on-event-name [event-name & body]
+  `(status-im2.util/do-on-event-name* ~event-name (fn [] ~@body)))
+
+(defmacro wait [ms & body]
+  `(js/setTimeout (fn [] ~@body) ~ms))
 
 (defn- run-scenario* [output items]
-  (if (empty? items)
-    `(do ~@output)
-    (let [item (peek items)
-          rest (pop items)
-          waiting-step? (and (vector? item)
-                             (= :on (first item)))]
-      (cond
-        (not waiting-step?)
-        (recur (conj output item) rest)
-        ;; ---
-        (and waiting-step?
-             (seq output)) ;; not empty
-        `(do ~@(conj output `(status-im2.util/do-on*
-                               ~(second item)
-                               (fn [] ~(run-scenario* [] rest)))))
-        ;; ---
-        :else (throw (Exception. "Illegal state in scenario"))))))
+  (let [stepping-keys #{::on-event ::on-event-name ::wait}]
+    (if (empty? items)
+      `(do ~@output)
+      (let [item (peek items)
+            rest (pop items)
+            waiting-step? (and (map? item)
+                               (-> (keys item)
+                                   set
+                                   (set/intersection stepping-keys)
+                                   not-empty))
+            not-latest-step? (not-empty rest)]
+        (cond
+          (not waiting-step?)
+          (recur (conj output item) rest)
+          ;; ---
+          (and waiting-step?
+               not-latest-step?
+               (-> (count item) (= 1))
+               (contains? item ::on-event)
+               )
+          `(do ~@(conj output `(status-im2.util/do-on-event*
+                                 ~(get item ::on-event)
+                                 (fn [] ~(run-scenario* [] rest)))))
+          ;; ---
+          (and waiting-step?
+               not-latest-step?
+               (-> (count item) (= 1))
+               (contains? item ::on-event-name))
+          `(do ~@(conj output `(status-im2.util/do-on-event-name*
+                                 ~(get item ::on-event-name)
+                                 (fn [] ~(run-scenario* [] rest)))))
+          ;; ---
+          (and waiting-step?
+               not-latest-step?
+               (-> (count item) (= 1))
+               (contains? item ::wait))
+          `(do ~@(conj output `(js/setTimeout
+                                 (fn [] ~(run-scenario* [] rest))
+                                 ~(get item ::wait))))
+          ;; ---
+          :else (throw (Exception. "Illegal state in scenario")))))))
 
 (defmacro run-scenario [& body]
-  (run-scenario* [] (apply list body)))
+  `(do ~(run-scenario* [] (apply list body))
+       :scenario-started))

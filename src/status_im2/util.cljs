@@ -1,8 +1,12 @@
 (ns status-im2.util
   (:require-macros [status-im2.util :as um])
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [react-native.platform :as platform]
+            [status-im.utils.utils :as utils]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+            [utils.security.core :as security]))
 
-(defn do-on* [target-event callback]
+(defn do-on-event* [target-event callback]
   (let [cb-id (gensym "do-on-cb-fn")]
     (rf/add-post-event-callback
       cb-id
@@ -12,35 +16,71 @@
           (callback))))
     :ok))
 
-(comment
+(defn do-on-event-name* [target-event-name callback]
+  (let [cb-id (gensym "do-on-cb-fn")]
+    (rf/add-post-event-callback
+      cb-id
+      (fn [[event-name] _]
+        (when (= event-name target-event-name)
+          (rf/remove-post-event-callback cb-id)
+          (callback))))
+    :ok))
 
-  ;; Note: those examples do not work for the time being since stepping events
-  ;; :hide-bottom-sheet and :navigate-to-within-stack seem to be sent synchronously
-  ;; with the parent event through an fx effect.
-  ;; A better scenario with trully asynchronous steps should work.
-  ;; The following examples are here to expose the syntax of the um/do-on and
-  ;; um/run-scenario macros.
-
-  ;; Nested example
-  (do
-    (when-let [blur-show-fn @status-im2.contexts.onboarding.common.overlay.view/blur-show-fn-atom]
-      (blur-show-fn))
-    (rf/dispatch [:open-modal :new-to-status])
-    (um/do-on :hide-bottom-sheet
-      (rf/dispatch [:onboarding-2/navigate-to-create-profile])
-      (um/do-on :navigate-to-within-stack
-        (rf/dispatch [:onboarding-2/profile-data-set
-                      {:image-path nil, :display-name "lambdam", :color :blue}]))))
-
-  ;; "Aligned" example (which expands to the same code than the previous example)
+(defn run-init-scenario! []
   (um/run-scenario
     (when-let [blur-show-fn @status-im2.contexts.onboarding.common.overlay.view/blur-show-fn-atom]
       (blur-show-fn))
     (rf/dispatch [:open-modal :new-to-status])
-    [:on :hide-bottom-sheet]
+    {::wait 1000}
     (rf/dispatch [:onboarding-2/navigate-to-create-profile])
-    [:on :navigate-to-within-stack]
+    {::wait 1000}
     (rf/dispatch [:onboarding-2/profile-data-set
-                  {:image-path nil, :display-name "lambdam", :color :blue}]))
+                  {:image-path nil, :display-name "lambdam", :color :blue}])
+    {::wait 1000}
+    (rf/dispatch [:onboarding-2/password-set (security/mask-data "qwertyuiop")])
+    ;; {::on-event-name :onboarding-2/navigate-to-identifiers}
+    {::on-event [:navigate-to-within-stack [:identifiers :new-to-status]]}
+    {::wait 1000}
+    (rf/dispatch [:navigate-to-within-stack [:enable-notifications :new-to-status]])
+    {::wait 1000}
+    (shell.utils/change-selected-stack-id :communities-stack true nil)
+    (rf/dispatch [:push-notifications/switch true platform/ios?])
+    (rf/dispatch [:navigate-to-within-stack
+                  [:welcome :enable-notifications]])
+    {::wait 1000}
+    (rf/dispatch [:init-root :shell-stack])
+    (rf/dispatch [:universal-links/process-stored-event])
+    {::wait 2000}
+    (utils/show-popup "Scenarios" "Profile creation scenario finished")))
+
+(comment
+
+  ;; Nested example
+  (do (when-let [blur-show-fn @status-im2.contexts.onboarding.common.overlay.view/blur-show-fn-atom]
+        (blur-show-fn))
+      (rf/dispatch [:open-modal :new-to-status])
+      (um/wait 1000
+        (rf/dispatch [:onboarding-2/navigate-to-create-profile])
+        (um/wait 1000
+          (rf/dispatch [:onboarding-2/profile-data-set
+                        {:image-path nil, :display-name "lambdam", :color :blue}])
+          (um/wait 1000
+            (rf/dispatch [:onboarding-2/password-set (security/mask-data "qwertyuiop")])
+            (um/do-on-event [:navigate-to-within-stack [:identifiers :new-to-status]]
+              (um/wait 1000
+                (rf/dispatch [:navigate-to-within-stack [:enable-notifications :new-to-status]])
+                (um/wait 1000
+                  (shell.utils/change-selected-stack-id :communities-stack true nil)
+                  (rf/dispatch [:push-notifications/switch true platform/ios?])
+                  (rf/dispatch [:navigate-to-within-stack
+                                [:welcome :enable-notifications]])
+                  (um/wait 1000
+                    (rf/dispatch [:init-root :shell-stack])
+                    (rf/dispatch [:universal-links/process-stored-event])
+                    (um/wait 2000
+                      (utils/show-popup "Scenarios" "Profile creation scenario finished"))))))))))
+
+  ;; "Aligned" example (which expands to the same code than the previous example)
+  (run-init-scenario!)
 
   )
