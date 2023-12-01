@@ -1,5 +1,5 @@
 (ns status-im2.contexts.wallet.common.utils-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
+  (:require [cljs.test :refer-macros [deftest is]]
             [status-im2.contexts.wallet.common.utils :as utils]))
 
 (deftest test-calculate-raw-balance

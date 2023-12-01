@@ -15,48 +15,11 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-(rf/reg-sub
- :wallet/ui
- :<- [:wallet]
- :-> :ui)
-
-(rf/reg-sub
- :wallet/tokens-loading?
- :<- [:wallet/ui]
- :-> :tokens-loading?)
-
-(rf/reg-sub
-<<<<<<< HEAD
  :wallet/watch-address-activity-state
  :<- [:wallet/ui]
  :-> :watch-address-activity-state)
 
 (rf/reg-sub
-=======
-=======
-(defn- calculate-balance
-  [address tokens]
-  (let [token  (get tokens (keyword address))
-        result (reduce
-                (fn [acc item]
-                  (let [total-values (* (utils/sum-token-chains item)
-                                        (get-in item [:market-values-per-currency :USD :price]))]
-                    (+ acc total-values)))
-                0
-                token)]
-    result))
-
-(re-frame/reg-sub
->>>>>>> c8bb0a581 (updates)
->>>>>>> 302c755ce (updates)
-=======
->>>>>>> 14fc5af12 (qa)
  :wallet/accounts
  :<- [:wallet]
  :-> #(->> %
@@ -65,17 +28,6 @@
            (sort-by :position)))
 
 (rf/reg-sub
-<<<<<<< HEAD
-=======
->>>>>>> 97b751fe9 (rebase)
-=======
->>>>>>> a209a1368 (lint)
-=======
->>>>>>> 2cd7438de (review)
-=======
->>>>>>> 411271469 (lint)
-=======
->>>>>>> 14fc5af12 (qa)
  :wallet/addresses
  :<- [:wallet]
  :-> #(->> %
@@ -173,16 +125,14 @@
 =======
 >>>>>>> 2d40168d5 (qa)
 
-
 (defn- calc-token-value
-  [{:keys [symbol market-values-per-currency] :as item} chain-id]
-
+  [{:keys [market-values-per-currency] :as item} chain-id]
   (let [crypto-value                      (utils/token-value-in-chain item chain-id)
         market-values                     (:usd market-values-per-currency)
         {:keys [price change-pct-24hour]} market-values
         fiat-change                       (utils/calculate-fiat-change crypto-value change-pct-24hour)]
     (when crypto-value
-      {:token               (keyword (string/lower-case symbol))
+      {:token               (keyword (string/lower-case (:symbol item)))
        :state               :default
        :status              (cond
                               (pos? change-pct-24hour) :positive

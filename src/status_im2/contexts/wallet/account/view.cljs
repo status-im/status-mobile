@@ -35,21 +35,8 @@
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
             watch-only?                       (= type :watch)]
-=======
-=======
->>>>>>> c868bc3b7 (review)
-<<<<<<< HEAD
-      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
-           ]
->>>>>>> bb9b6daa9 (updates)
-=======
-      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])]
->>>>>>> 14fc5af12 (qa)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview

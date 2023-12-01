@@ -24,7 +24,7 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-(defn- calculate-raw-balance
+(defn calculate-raw-balance
   [raw-balance decimals]
   (if-let [n (utils.number/parse-int raw-balance nil)]
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
@@ -37,7 +37,7 @@
        (map #(calculate-raw-balance (:raw-balance %) decimals))
        (reduce +)))
 
-(defn- token-value-in-chain
+(defn token-value-in-chain
   [{:keys [balances-per-chain decimals]} chain-id]
   (let [balance-in-chain (get balances-per-chain chain-id)]
     (when balance-in-chain
