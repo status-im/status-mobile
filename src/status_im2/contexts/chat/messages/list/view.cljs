@@ -157,7 +157,7 @@
                                                        header-extrapolation-option)
         image-side-animation   (reanimated/interpolate scroll-y
                                                        scroll-animation-input-range
-                                                       [0 -10]
+                                                       [0 -40]
                                                        header-extrapolation-option)]
     [reanimated/view
      {:style (style/header-image image-scale-animation image-side-animation image-bottom-animation)}
