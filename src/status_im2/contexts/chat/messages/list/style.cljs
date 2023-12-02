@@ -44,28 +44,18 @@
     :padding-bottom   24
     :background-color (colors/theme-colors colors/white colors/neutral-95 theme)}))
 
-(defn header-bottom-fill
-  [border-radius-animation top-fill-animation top-fill-height theme]
-  (reanimated/apply-animations-to-style
-   {:border-top-right-radius border-radius-animation
-    :border-top-left-radius  border-radius-animation
-    :top                     top-fill-animation}
-   {:width            "100%"
-    :height           (+ top-fill-height 10)
-    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)}))
-
 (def header-avatar
   {:top               header-avatar-top-offset
    :margin-horizontal 20
    :margin-bottom     header-avatar-top-offset})
 
 (defn header-image
-  [scale-animation side-animation]
+  [scale-animation side-animation bottom-animation]
   (reanimated/apply-animations-to-style
    {:transform [{:scale scale-animation}
-                {:translate-x side-animation}]}
-   {:align-items :flex-start
-    :margin-top  -40}))
+                {:translate-x side-animation}
+                {:translate-y bottom-animation}]}
+   {:align-items :flex-start}))
 
 (def bio
   {:margin-top 8})

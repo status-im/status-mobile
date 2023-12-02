@@ -100,7 +100,6 @@
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
-
      [reanimated/view {:style (style/animated-blur-view all-loaded? opacity-animation)}
       [blur/view
        {:blur-amount   20
