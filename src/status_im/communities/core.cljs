@@ -326,7 +326,7 @@
                        (conj contacts user-pk)
                        contacts)]
     (when (seq pks)
-      {:json-rpc/call [{:method      "wakuext_shareCommunity"
+      {:json-rpc/call [{:method      "wakuext_shareCommunityV2"
                         :params      [{:communityId community-id
                                        :users       pks}]
                         :js-response true
