@@ -340,120 +340,120 @@
                                                 content-height})]
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
-      {:root-margin                       root-margin-for-big-name-visibility-detector
-       :key-fn                            list-key-fn
-       :ref                               list-ref
-       :bounces                           false
-       :header                            [:<>
-                                           [list-header insets (:able-to-send-message? context) theme]
-                                           (when (= (:chat-type chat) constants/private-group-chat-type)
-                                             [list-group-chat-header chat])]
-       :footer                            [list-footer
-                                           {:theme                       theme
-                                            :chat                        chat
-                                            :scroll-y                    scroll-y
-                                            :cover-bg-color              cover-bg-color
-                                            :on-layout                   #(footer-on-layout
-                                                                           %
-                                                                           messages-view-header-height)
-                                            :messages-view-header-height messages-view-header-height
-                                            :messages-view-height        messages-view-height
-                                            :big-name-visible?           big-name-visible?}]
-       :data                              messages
-       :render-data                       {:theme           theme
-                                           :context         context
-                                           :keyboard-shown? keyboard-shown?
-                                           :insets          insets}
-       :render-fn                         render-fn
-       :on-viewable-items-changed         on-viewable-items-changed
-       :on-content-size-change            (fn [_ y]
-                                            (if (or
-                                                 (< minimum-scroll-y-topbar-overlaying-avatar
-                                                    (reanimated/get-shared-value scroll-y))
-                                                 (< topbar-visible-scroll-y-value
-                                                    (reanimated/get-shared-value scroll-y)))
-                                              (reset! animate-topbar-opacity? true)
-                                              (reset! animate-topbar-opacity? false))
-                                            (when-not (or
-                                                       (not @big-name-visible?)
-                                                       (= :initial-render @big-name-visible?)
-                                                       (pos? (reanimated/get-shared-value
-                                                              scroll-y)))
-                                              (reset! on-end-reached? false))
-                                            ;; NOTE(alwx): here we set the initial value of
-                                            ;; `scroll-y` which is needed because by default the
-                                            ;; chat is scrolled to the bottom and no initial
-                                            ;; `on-scroll` event is getting triggered
-                                            (let [scroll-y-shared (if
-                                                                    @messages-scroll-y-value-initialized?
-                                                                    (reanimated/get-shared-value
-                                                                     scroll-y)
-                                                                    window-height)
-                                                  content-size-shared (reanimated/get-shared-value
-                                                                       content-height)
-                                                  content-size (- y window-height)
-                                                  current-y (max (- content-size-shared
-                                                                    scroll-y-shared)
-                                                                 0)
-                                                  new-scroll-value (- content-size
-                                                                      current-y
-                                                                      ;; TODO fix the keyboard
-                                                                      ;; behaviour
-                                                                      (comment
-                                                                        (- (when keyboard-shown?
-                                                                             keyboard-height))))]
-                                              (when (and (>= new-scroll-value 0)
-                                                         (or (= scroll-y-shared 0)
-                                                             (> (Math/abs (- content-size-shared y))
-                                                                min-message-height)))
-                                                (reset! messages-scroll-y-value-initialized? true)
-                                                (scroll-handler new-scroll-value content-size))))
-       :on-end-reached                    #(list-on-end-reached scroll-y on-end-reached?)
-       :on-scroll-to-index-failed         identity
-       :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
-                                                  (- composer.constants/composer-default-height 16)
-                                                  0)}
-       :keyboard-dismiss-mode             :interactive
-       :keyboard-should-persist-taps      :always
-       :on-scroll-begin-drag              #(do
-                                             (rf/dispatch [:chat.ui/set-input-focused false])
-                                             (rn/dismiss-keyboard!))
-       :on-momentum-scroll-begin          state/start-scrolling
-       :on-momentum-scroll-end            state/stop-scrolling
-       :scroll-event-throttle             16
-       :on-scroll                         (fn [event]
-                                            (let [content-size-y
-                                                  (- (oops/oget event "nativeEvent.contentSize.height")
-                                                     (oops/oget event
-                                                                "nativeEvent.layoutMeasurement.height"))
-                                                  current-y (oops/oget event
-                                                                       "nativeEvent.contentOffset.y")
-                                                  scroll-distance (- content-size-y current-y)]
-                                              (scroll-handler scroll-distance content-size-y))
-                                            (on-scroll event show-floating-scroll-down-button?))
-       :content-container-style           {:justify-content :flex-end
-                                           :min-height      @messages-view-height}
-       :style                             (add-inverted-y-android
-                                           {:background-color (colors/theme-colors
-                                                               colors/white
-                                                               colors/neutral-95
-                                                               theme)})
+      {:root-margin root-margin-for-big-name-visibility-detector
+       :key-fn list-key-fn
+       :ref list-ref
+       :bounces false
+       :header [:<>
+                [list-header insets (:able-to-send-message? context) theme]
+                (when (= (:chat-type chat) constants/private-group-chat-type)
+                  [list-group-chat-header chat])]
+       :footer [list-footer
+                {:theme                       theme
+                 :chat                        chat
+                 :scroll-y                    scroll-y
+                 :cover-bg-color              cover-bg-color
+                 :on-layout                   #(footer-on-layout
+                                                %
+                                                messages-view-header-height)
+                 :messages-view-header-height messages-view-header-height
+                 :messages-view-height        messages-view-height
+                 :big-name-visible?           big-name-visible?}]
+       :data messages
+       :render-data {:theme           theme
+                     :context         context
+                     :keyboard-shown? keyboard-shown?
+                     :insets          insets}
+       :render-fn render-fn
+       :on-viewable-items-changed on-viewable-items-changed
+       :on-content-size-change
+       (fn [_ y]
+         (if (or
+              (< minimum-scroll-y-topbar-overlaying-avatar
+                 (reanimated/get-shared-value scroll-y))
+              (< topbar-visible-scroll-y-value
+                 (reanimated/get-shared-value scroll-y)))
+           (reset! animate-topbar-opacity? true)
+           (reset! animate-topbar-opacity? false))
+         (when-not (or
+                    (not @big-name-visible?)
+                    (= :initial-render @big-name-visible?)
+                    (pos? (reanimated/get-shared-value
+                           scroll-y)))
+           (reset! on-end-reached? false))
+         ;; NOTE(alwx): here we set the initial value of
+         ;; `scroll-y` which is needed because by default the
+         ;; chat is scrolled to the bottom and no initial
+         ;; `on-scroll` event is getting triggered
+         (let [scroll-y-shared     (if
+                                     @messages-scroll-y-value-initialized?
+                                     (reanimated/get-shared-value
+                                      scroll-y)
+                                     window-height)
+               content-size-shared (reanimated/get-shared-value
+                                    content-height)
+               content-size        (- y window-height (when platform/android? (:top insets)))
+               current-y           (max (- content-size-shared
+                                           scroll-y-shared)
+                                        0)
+               new-scroll-value    (- content-size
+                                      current-y
+                                      ;; TODO fix the keyboard behaviour
+                                      (comment
+                                        (- (when keyboard-shown?
+                                             keyboard-height))))]
+           (when (and (>= new-scroll-value 0)
+                      (or (= scroll-y-shared 0)
+                          (> (Math/abs (- content-size-shared y))
+                             min-message-height)))
+             (reset! messages-scroll-y-value-initialized? true)
+             (scroll-handler new-scroll-value content-size))))
+       :on-end-reached #(list-on-end-reached scroll-y on-end-reached?)
+       :on-scroll-to-index-failed identity
+       :scroll-indicator-insets {:top (if (:able-to-send-message? context)
+                                        (- composer.constants/composer-default-height 16)
+                                        0)}
+       :keyboard-dismiss-mode :interactive
+       :keyboard-should-persist-taps :always
+       :on-scroll-begin-drag #(do
+                                (rf/dispatch [:chat.ui/set-input-focused false])
+                                (rn/dismiss-keyboard!))
+       :on-momentum-scroll-begin state/start-scrolling
+       :on-momentum-scroll-end state/stop-scrolling
+       :scroll-event-throttle 16
+       :on-scroll (fn [event]
+                    (let [content-size-y
+                          (- (oops/oget event "nativeEvent.contentSize.height")
+                             (oops/oget event
+                                        "nativeEvent.layoutMeasurement.height"))
+                          current-y (oops/oget event
+                                               "nativeEvent.contentOffset.y")
+                          scroll-distance (- content-size-y current-y)]
+                      (scroll-handler scroll-distance content-size-y))
+                    (on-scroll event show-floating-scroll-down-button?))
+       :content-container-style {:justify-content :flex-end
+                                 :min-height      @messages-view-height}
+       :style (add-inverted-y-android
+               {:background-color (colors/theme-colors
+                                   colors/white
+                                   colors/neutral-95
+                                   theme)})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
-       :inverted                          (when platform/ios? true)
-       :on-layout                         (fn [e]
-                                            ;; FIXME: the 1s timeout is to assure all effects with
-                                            ;; timeouts that depend on the value are considered.
-                                            ;; Hacky, but we're heavily relying on timeouts in the
-                                            ;; composer and need to react to differently (e.g.
-                                            ;; inside effects/use-edit) when the chat has just
-                                            ;; opened and the subsequent times.
-                                            (js/setTimeout #(reset! messages-list-on-layout-finished?
-                                                              true)
-                                                           1000)
-                                            (let [layout-height (oops/oget e
-                                                                           "nativeEvent.layout.height")]
-                                              (reset! messages-view-height layout-height)))
-       :scroll-enabled                    (not recording?)
+       :inverted (when platform/ios? true)
+       :on-layout (fn [e]
+                    ;; FIXME: the 1s timeout is to assure all effects with
+                    ;; timeouts that depend on the value are considered.
+                    ;; Hacky, but we're heavily relying on timeouts in the
+                    ;; composer and need to react to differently (e.g.
+                    ;; inside effects/use-edit) when the chat has just
+                    ;; opened and the subsequent times.
+                    (js/setTimeout #(reset! messages-list-on-layout-finished?
+                                      true)
+                                   1000)
+                    (let [layout-height (oops/oget e
+                                                   "nativeEvent.layout.height")]
+                      (reset! messages-view-height layout-height)))
+       :scroll-enabled (not recording?)
        :content-inset-adjustment-behavior :never}]]))
 
 (defn message-list-content-view
