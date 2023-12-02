@@ -13,7 +13,6 @@
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.common.home.actions.view :as home.actions]
-    [status-im2.common.muting.helpers :as muting.helpers]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
@@ -148,22 +147,16 @@
 
 (defn f-list-footer-avatar
   [{:keys [scroll-y display-name online? profile-picture]}]
-  (let [image-scale-animation       (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [1 0.5]
-                                                            header-extrapolation-option)
-        image-top-margin-animation  (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [0 40]
-                                                            header-extrapolation-option)
-        image-side-margin-animation (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [0 -20]
-                                                            header-extrapolation-option)]
+  (let [image-scale-animation (reanimated/interpolate scroll-y
+                                                      scroll-animation-input-range
+                                                      [1 0.5]
+                                                      header-extrapolation-option)
+        image-side-animation  (reanimated/interpolate scroll-y
+                                                      scroll-animation-input-range
+                                                      [0 -10]
+                                                      header-extrapolation-option)]
     [reanimated/view
-     {:style (style/header-image image-scale-animation
-                                 image-top-margin-animation
-                                 image-side-margin-animation)}
+     {:style (style/header-image image-scale-animation image-side-animation)}
      [quo/user-avatar
       {:full-name       display-name
        :online?         online?
@@ -229,6 +222,11 @@
         contact              (when-not group-chat
                                (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path           (rf/sub [:chats/photo-path chat-id])
+        top-fill-height      32
+        top-fill-animation   (reanimated/interpolate scroll-y
+                                                     scroll-animation-input-range
+                                                     [0 (- top-fill-height)]
+                                                     header-extrapolation-option)
         border-animation     (reanimated/interpolate scroll-y
                                                      [30 125]
                                                      [14 0]
@@ -239,6 +237,8 @@
        :on-layout on-layout}
       [rn/view {:style (style/header-cover cover-bg-color theme)}]
       [reanimated/view {:style (style/header-bottom-part border-animation theme)}
+       [reanimated/view
+        {:style (style/header-bottom-fill border-animation top-fill-animation top-fill-height theme)}]
        [rn/view {:style style/header-avatar}
         [rn/view {:style {:align-items :flex-start}}
          (when-not group-chat
@@ -323,7 +323,6 @@
                      (reset! animate-topbar-opacity? false)))
                  [composer-active? @on-end-reached? @animate-topbar-opacity?])
   (let [theme                                 (quo.theme/use-theme-value)
-        {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
         context                               (rf/sub [:chats/current-chat-message-list-view-context])
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
@@ -390,12 +389,10 @@
                                                         :y                    y
                                                         :keyboard-height      keyboard-height
                                                         :new-scroll-value     new-scroll-value})
-                                              (when (and (> @messages-view-height 0)
-                                                         (>= new-scroll-value 0)
+                                              (when (and (>= new-scroll-value 0)
                                                          (or (= scroll-y-shared 0)
                                                              (> (Math/abs (- content-height-shared y))
                                                                 min-message-height)))
-                                                (println "setting scroll-y: " new-scroll-value)
                                                 (reanimated/set-shared-value content-height y)
                                                 (reanimated/set-shared-value scroll-y
                                                                              new-scroll-value))))
