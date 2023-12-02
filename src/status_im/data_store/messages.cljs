@@ -12,16 +12,20 @@
     (assoc :text    (:text content)
            :sticker (:sticker content))
     :always
-    (set/rename-keys {:chat-id            :chat_id
-                      :whisper-timestamp  :whisperTimestamp
-                      :community-id       :communityId
-                      :clock-value        :clock})))
+    (set/rename-keys {:chat-id           :chat_id
+                      :whisper-timestamp :whisperTimestamp
+                      :community-id      :communityId
+                      :clock-value       :clock})))
 
 (defn- <-status-link-previews-rpc
   [preview]
-  (update preview :community set/rename-keys {:communityId  :community-id
-                                              :displayName  :display-name
-                                              :membersCount :members-count}))
+  (update preview
+          :community
+          set/rename-keys
+          {:communityId        :community-id
+           :displayName        :display-name
+           :membersCount       :members-count
+           :activeMembersCount :active-members-count}))
 
 (defn- <-link-preview-rpc
   [preview]

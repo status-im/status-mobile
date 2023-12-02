@@ -18,12 +18,26 @@
     (when (or (seq status-link-previews)
               (seq previews))
       [:<>
-       (for [{:keys [url title description thumbnail hostname]} (merge status-link-previews previews)]
+       (for [{:keys [url title description thumbnail hostname community]}
+             (concat status-link-previews previews)]
          ^{:key url}
-         [quo/link-preview
-          {:title           title
-           :description     description
-           :link            hostname
-           :thumbnail       (:url thumbnail)
-           :thumbnail-size  (when (nearly-square? thumbnail) :large)
-           :container-style {:margin-top 8}}])])))
+         (if community
+           (let [{community-description :description
+                  community-icon        :icon
+                  community-banner      :banner
+                  community-name        :display-name
+                  members-count         :members-count} community]
+             [quo/status-link-preview-community
+              {:description   community-description
+               :members-count members-count
+               :title         community-name
+               :banner        (:url community-banner)
+               :icon          (:url community-icon)
+               :link          url}])
+           [quo/link-preview
+            {:title           title
+             :description     description
+             :link            hostname
+             :thumbnail       (:url thumbnail)
+             :thumbnail-size  (when (nearly-square? thumbnail) :large)
+             :container-style {:margin-top 8}}]))])))

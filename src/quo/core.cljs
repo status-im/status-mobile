@@ -122,6 +122,7 @@
     quo.components.settings.settings-item.view
     quo.components.share.qr-code.view
     quo.components.share.share-qr-code.view
+    quo.components.status-link-previews.community.view
     quo.components.switchers.group-messaging-card.view
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
@@ -272,6 +273,9 @@
 (def link-preview quo.components.links.link-preview.view/view)
 (def url-preview quo.components.links.url-preview.view/view)
 (def url-preview-list quo.components.links.url-preview-list.view/view)
+
+;;;; Status links
+(def status-link-preview-community quo.components.status-link-previews.community.view/view)
 
 ;;;; List items
 (def account-item quo.components.list-items.account.view/view)

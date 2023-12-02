@@ -142,6 +142,7 @@
     [status-im2.contexts.quo-preview.settings.settings-item :as settings-item]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
+    [status-im2.contexts.quo-preview.status-link-preview.community :as status-preview-community]
     [status-im2.contexts.quo-preview.style :as style]
     [status-im2.contexts.quo-preview.switcher.group-messaging-card :as group-messaging-card]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -316,7 +317,10 @@
                         :component url-preview-list/view}
                        {:name      :link-preview
                         :options   {:insets {:top? true}}
-                        :component link-preview/view}]
+                        :component link-preview/view}
+                       {:name      :status-preview-community
+                        :options   {:insets {:top true}}
+                        :component status-preview-community/view}]
    :list-items        [{:name      :account
                         :component account-item/view}
                        {:name      :account-list-card
