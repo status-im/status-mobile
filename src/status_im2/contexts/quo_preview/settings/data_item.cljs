@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.settings.data-item
   (:require
     [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -15,7 +16,7 @@
               {:key :graph}
               {:key :preview}]}
    {:type    :select
-    :key     :description
+    :key     :subtitle-type
     :options [{:key :default}
               {:key :icon}
               {:key :network}
@@ -38,18 +39,19 @@
   []
   (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
                              :blur?               false
-                             :description         :account
+                             :subtitle-type       :account
                              :icon-right?         false
                              :card?               true
                              :label               :none
                              :status              :default
                              :size                :default
                              :title               "Label"
-                             :subtitle            "Description"
+                             :subtitle            "Subtitle"
                              :icon                :i/placeholder
                              :right-icon          :i/chevron-right
                              :emoji               "🎮"
                              :customization-color :yellow
+                             :network-image       (quo.resources/get-network :ethereum)
                              :communities-list    communities-list})]
     (fn []
       [preview/preview-container

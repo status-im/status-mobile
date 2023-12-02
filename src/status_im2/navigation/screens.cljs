@@ -9,6 +9,7 @@
     [status-im2.contexts.chat.messages.view :as chat]
     [status-im2.contexts.chat.new-chat.view :as new-chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im2.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
@@ -27,6 +28,7 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.profile.settings.view :as settings]
     [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.activity-center.view :as activity-center]
@@ -49,7 +51,9 @@
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
+    [status-im2.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
+    [status-im2.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
 
@@ -86,6 +90,10 @@
      :options   {:sheet? true}
      :component join-menu/request-to-join}
 
+    {:name      :community-account-selection
+     :options   {:sheet? true}
+     :component communities.accounts-selection/view}
+
     {:name      :lightbox
      :options   options/lightbox
      :component lightbox/lightbox}
@@ -115,6 +123,10 @@
 
     {:name      :community-overview
      :component communities.overview/overview}
+
+    {:name      :settings
+     :options   options/transparent-screen-options
+     :component settings/view}
 
     {:name      :settings-syncing
      :options   (merge options/dark-screen {:insets {:top? true}})
@@ -258,8 +270,7 @@
      :component wallet-edit-account/view}
 
     {:name      :add-address-to-watch
-     :options   {:insets {:top?    true
-                          :bottom? true}}
+     :options   {:insets {:top? true}}
      :component add-address-to-watch/view}
 
     {:name      :confirm-address-to-watch
@@ -287,9 +298,18 @@
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
 
+    {:name      :wallet-send-input-amount
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-send-input-amount/view}
+
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
      :component wallet-select-address/view}
+
+    {:name      :wallet-select-asset
+     :options   {:insets {:top? true}}
+     :component wallet-select-asset/view}
 
     {:name      :scan-address
      :options   (merge

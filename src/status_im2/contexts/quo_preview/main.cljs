@@ -58,6 +58,8 @@
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as
      permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
+    [status-im2.contexts.quo-preview.dropdowns.dropdown-input :as
+     dropdown-input]
     [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as
      network-dropdown]
     [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
@@ -163,6 +165,7 @@
      channel-name]
     [status-im2.contexts.quo-preview.text-combinations.preview :as
      text-combinations]
+    [status-im2.contexts.quo-preview.text-combinations.standard-title :as standard-title]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im2.contexts.quo-preview.wallet.account-overview :as
@@ -276,7 +279,9 @@
    :dropdowns         [{:name      :dropdown
                         :component dropdown/view}
                        {:name      :network-dropdown
-                        :component network-dropdown/view}]
+                        :component network-dropdown/view}
+                       {:name      :dropdown-input
+                        :component dropdown-input/view}]
    :empty-state       [{:name      :empty-state
                         :component empty-state/view}]
    :gradient          [{:name      :gradient-cover
@@ -453,7 +458,9 @@
    :text-combinations [{:name      :text-combinations
                         :component text-combinations/view}
                        {:name      :channel-name
-                        :component channel-name/view}]
+                        :component channel-name/view}
+                       {:name      :standard-title
+                        :component standard-title/view}]
    :wallet            [{:name :account-card :component account-card/view}
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview

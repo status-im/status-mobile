@@ -49,16 +49,15 @@
 
 (defn save-auth-method!
   [key-uid method]
-  (keychain/save-credentials
-   (str key-uid "-auth")
-   key-uid
-   method
-   #(when-not %
-      (log/error
-       (str "Error while saving auth method."
-            " "
-            "The app will continue to work normally, "
-            "but you will have to login again next time you launch it.")))))
+  (-> (keychain/save-credentials
+       (str key-uid "-auth")
+       key-uid
+       method)
+      (.catch (fn [err]
+                (log/error "Failed to save auth method in the keychain"
+                           {:error       err
+                            :key-uid     key-uid
+                            :auth-method method})))))
 
 (re-frame/reg-fx
  :keychain/save-auth-method
@@ -79,27 +78,59 @@
       (if can-save?
         (keychain/get-credentials
          (str key-uid "-auth")
-         #(callback (if % (oops/oget % "password") auth-method-none)))
+         (fn [value]
+           (callback (if value (oops/oget value "password") auth-method-none))))
         (callback nil))))))
 
 (defn save-user-password!
   [key-uid password]
   (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
 
+(defn get-user-password!
+  [key-uid callback]
+  (keychain/get-credentials key-uid
+                            (fn [value]
+                              (callback (when value
+                                          (-> value
+                                              (oops/oget "password")
+                                              (security/mask-data)))))))
+
 (re-frame/reg-fx
  :keychain/get-user-password
  (fn [[key-uid callback]]
-   (keychain/get-credentials
-    key-uid
-    #(if % (callback (security/mask-data (oops/oget % "password"))) (callback nil)))))
+   (get-user-password! key-uid callback)))
 
 (rf/defn get-user-password
   [_ key-uid callback]
   {:keychain/get-user-password [key-uid callback]})
 
+(defn- password-migration-key-name
+  [key-uid]
+  (str key-uid "-password-migration"))
+
+(defn save-password-migration!
+  [key-uid]
+  (-> (keychain/save-credentials
+       (password-migration-key-name key-uid)
+       key-uid
+       ;; NOTE: using the key-uid as the password, but we don't really care about the
+       ;; value, we only care that it's there
+       key-uid)
+      (.catch (fn [error]
+                (log/error "Failed to get the keychain password migration flag"
+                           {:error   error
+                            :key-uid key-uid})))))
+
+(defn get-password-migration!
+  [key-uid callback]
+  (keychain/get-credentials
+   (password-migration-key-name key-uid)
+   (comp callback boolean)))
+
 (re-frame/reg-fx
  :keychain/clear-user-password
  (fn [key-uid]
+   (keychain/reset-credentials (password-migration-key-name key-uid))
    (keychain/reset-credentials key-uid)))
 
 (re-frame/reg-fx
@@ -107,5 +138,28 @@
  (fn [{:keys [key-uid masked-password on-success on-error]}]
    (-> (save-user-password! key-uid masked-password)
        (.then #(save-auth-method! key-uid auth-method-biometric))
+       (.then #(save-password-migration! key-uid))
        (.then #(when on-success (on-success)))
        (.catch #(when on-error (on-error %))))))
+
+;; NOTE: migrating the plaintext password in the keychain
+;; with the hashed one. Added due to the sync onboarding
+;; flow, where the password arrives already hashed.
+(re-frame/reg-fx
+ :keychain/password-hash-migration
+ (fn [{:keys [key-uid callback]
+       :or   {callback identity}}]
+   (-> (get-password-migration! key-uid identity)
+       (.then (fn [migrated?]
+                (if migrated?
+                  (callback)
+                  (-> (get-user-password! key-uid identity)
+                      (.then security/hash-masked-password)
+                      (.then #(save-user-password! key-uid %))
+                      (.then #(save-password-migration! key-uid))
+                      (.then callback)))))
+       (.catch (fn [err]
+                 (log/error "Failed to migrate the keychain password"
+                            {:error   err
+                             :key-uid key-uid
+                             :event   :keychain/password-hash-migration}))))))

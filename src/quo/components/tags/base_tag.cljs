@@ -17,30 +17,21 @@
            {:width size})))
 
 (defn base-tag
-  [_]
-  (fn
-    [{:keys [id
-             size
-             disabled?
-             border-color
-             border-width
-             background-color
-             on-press
-             accessibility-label
-             type
-             labelled?]
-      :or   {size 32}} children]
-    [rn/touchable-without-feedback
-     (merge {:disabled            disabled?
-             :accessibility-label accessibility-label}
-            (when on-press
-              {:on-press #(on-press id)}))
-     [rn/view
-      {:style (merge (style-container size
-                                      disabled?
-                                      border-color
-                                      border-width
-                                      background-color
-                                      labelled?
-                                      type))}
-      children]]))
+  [{:keys [id size disabled? border-color border-width background-color on-press
+           accessibility-label type labelled?]
+    :or   {size 32}}
+   children]
+  [rn/touchable-without-feedback
+   (merge {:disabled            disabled?
+           :accessibility-label accessibility-label}
+          (when on-press
+            {:on-press #(on-press id)}))
+   [rn/view
+    {:style (merge (style-container size
+                                    disabled?
+                                    border-color
+                                    border-width
+                                    background-color
+                                    labelled?
+                                    type))}
+    children]])

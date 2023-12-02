@@ -11,6 +11,7 @@
   (case k
     :success (colors/resolve-color :success theme)
     :error   (colors/resolve-color :danger theme)
+    :warning (colors/resolve-color :warning theme)
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
 (defn view-internal

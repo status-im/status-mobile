@@ -116,6 +116,17 @@ rendered. We use [React Native Testing Library](https://callstack.github.io/reac
 There are dozens of examples in the repository, so use them as a reference. A
 good and complete example is [quo.components.avatars.user-avatar.component-spec](/src/quo/components/avatars/user_avatar/component_spec.cljs)
 
+### No-props test
+
+When writing tests for the component that has props, please add one test that covers situation when props aren't passed. Because even if component not showing anything meaningful without props, it shouldn't crash.
+
+```clojure
+(h/describe "Transaction Progress"
+  (h/test "component renders without props"
+    (h/render [quo/transaction-progress {}])
+    (h/is-truthy (h/get-by-label-text :transaction-progress)))
+```
+
 ## Do not couple the library with re-frame
 
 Don't use re-frame inside this library (e.g. dispatch & subscribe). If a

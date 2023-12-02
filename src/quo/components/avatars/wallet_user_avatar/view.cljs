@@ -1,5 +1,6 @@
 (ns quo.components.avatars.wallet-user-avatar.view
-  (:require [quo.components.avatars.wallet-user-avatar.style :as style]
+  (:require [clojure.string :as string]
+            [quo.components.avatars.wallet-user-avatar.style :as style]
             [quo.components.markdown.text :as text]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
@@ -40,18 +41,21 @@
   :customization-color  - keyword (default: nil) - color of the avatar
   :size   - keyword (default: last element of properties object) - size of the
   avatar
-  :monospace? - boolean (default: false) - use monospace font"
-  [{:keys [full-name customization-color size theme monospace?]
+  :monospace? - boolean (default: false) - use monospace font
+  :lowercase? - boolean (default: false) - lowercase text
+  :neutral? - boolean (default: false) - use neutral colors variant"
+  [{:keys [full-name customization-color size theme monospace? lowercase? neutral?]
     :or   {size biggest-possible}}]
   (let [circle-size (:size (size properties))
-        small?      (check-if-size-small size)]
+        small?      (check-if-size-small size)
+        initials    (utils.string/get-initials full-name (if small? 1 2))]
     [rn/view
-     {:style (style/container circle-size customization-color)}
+     {:style (style/container circle-size customization-color neutral? theme)}
      [text/text
       {:accessibility-label :wallet-user-avatar
        :size                (:font-size (size properties))
        :weight              (if monospace? :monospace (:font-weight (size properties)))
-       :style               (style/text customization-color theme)}
-      (utils.string/get-initials full-name (if small? 1 2))]]))
+       :style               (style/text customization-color neutral? theme)}
+      (if (and initials lowercase?) (string/lower-case initials) initials)]]))
 
 (def wallet-user-avatar (quo.theme/with-theme view-internal))

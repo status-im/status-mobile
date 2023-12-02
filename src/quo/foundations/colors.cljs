@@ -148,7 +148,9 @@
 (def black-opa-30 (alpha black 0.3))
 (def black-opa-60 (alpha black 0.6))
 (def onboarding-header-black "#000716")
-
+(def border-avatar-light
+  "Simulates a blurred, transparent border for avatars in light mode"
+  "#475060")
 ;;;;Primary
 
 ;;Solid
@@ -201,6 +203,16 @@
 (def danger-50-opa-30 (alpha danger-50 0.3))
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
+;;;;Warning
+(def warning-50 "#FF7D46")
+(def warning-60 "#CC6438")
+
+;;50 with transparency
+(def warning-50-opa-5 (alpha warning-50 0.05))
+(def warning-50-opa-10 (alpha warning-50 0.1))
+(def warning-50-opa-20 (alpha warning-50 0.2))
+(def warning-50-opa-30 (alpha warning-50 0.3))
+(def warning-50-opa-40 (alpha warning-50 0.4))
 
 ;; Colors for customizing users account
 (def customization
@@ -254,7 +266,9 @@
           :danger  {50 danger-50
                     60 danger-60}
           :success {50 success-50
-                    60 success-60}}
+                    60 success-60}
+          :warning {50 warning-50
+                    60 warning-60}}
          customization
          networks))
 
