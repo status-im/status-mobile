@@ -380,16 +380,25 @@
                                             (let [scroll-y-shared       (reanimated/get-shared-value
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
-                                                                         content-height)]
-                                              (when (or (= scroll-y-shared 0)
-                                                        (> (Math/abs (- content-height-shared y))
-                                                           min-message-height))
+                                                                         content-height)
+                                                  new-scroll-value      (- y
+                                                                           @messages-view-height
+                                                                           (comment
+                                                                             (- (when keyboard-shown?
+                                                                                  keyboard-height))))]
+                                              (println {:messages-view-height @messages-view-height
+                                                        :y                    y
+                                                        :keyboard-height      keyboard-height
+                                                        :new-scroll-value     new-scroll-value})
+                                              (when (and (> @messages-view-height 0)
+                                                         (>= new-scroll-value 0)
+                                                         (or (= scroll-y-shared 0)
+                                                             (> (Math/abs (- content-height-shared y))
+                                                                min-message-height)))
+                                                (println "setting scroll-y: " new-scroll-value)
+                                                (reanimated/set-shared-value content-height y)
                                                 (reanimated/set-shared-value scroll-y
-                                                                             (- y
-                                                                                window-height
-                                                                                (- (when keyboard-shown?
-                                                                                     keyboard-height))))
-                                                (reanimated/set-shared-value content-height y))))
+                                                                             new-scroll-value))))
        :on-end-reached                    #(list-on-end-reached scroll-y on-end-reached?)
        :on-scroll-to-index-failed         identity
        :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
