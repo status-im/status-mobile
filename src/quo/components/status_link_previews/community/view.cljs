@@ -76,7 +76,7 @@
 (defn f-internal-view
   [{:keys [title description link loading? thumbnail-size icon banner members-count active-members-count
            theme]
-    :or   {loading? true}}]
+    :or   {loading? false}}]
   [rn/touchable-opacity
    {:style               (merge (style/container (not loading?))
                                 {:width  295
