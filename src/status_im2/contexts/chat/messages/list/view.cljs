@@ -133,17 +133,21 @@
        ;; https://github.com/status-im/status-mobile/issues/17426
        [quo/skeleton-list (skeleton-list-props :messages parent-height platform/ios?)]])))
 
+(defn calc-list-header-height
+  [insets able-to-send-message? images]
+  (if able-to-send-message?
+    (+ composer.constants/composer-default-height
+       jump-to.constants/floating-shell-button-height
+       (if (seq images) composer.constants/images-container-height 0)
+       (:bottom insets))
+    (- 70 (:bottom insets))))
+
 (defn list-header
-  [insets able-to-send-message? theme]
-  (let [images (rf/sub [:chats/sending-image])]
+  [insets able-to-send-message? images theme]
+  (let [height (calc-list-header-height insets able-to-send-message? images)]
     [rn/view
      {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-      :height           (if able-to-send-message?
-                          (+ composer.constants/composer-default-height
-                             jump-to.constants/floating-shell-button-height
-                             (if (seq images) composer.constants/images-container-height 0)
-                             (:bottom insets))
-                          (- 70 (:bottom insets)))}]))
+      :height           height}]))
 
 (defn f-list-footer-avatar
   [{:keys [scroll-y display-name online? profile-picture]}]
@@ -326,6 +330,7 @@
         {window-height :height}               (rn/get-window)
         context                               (rf/sub [:chats/current-chat-message-list-view-context])
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        images                                (rf/sub [:chats/sending-image])
         recording?                            (rf/sub [:chats/recording?])
         {:keys [show-floating-scroll-down-button?
                 messages-scroll-y-value-initialized?
@@ -345,7 +350,7 @@
        :ref list-ref
        :bounces false
        :header [:<>
-                [list-header insets (:able-to-send-message? context) theme]
+                [list-header insets (:able-to-send-message? context) images theme]
                 (when (= (:chat-type chat) constants/private-group-chat-type)
                   [list-group-chat-header chat])]
        :footer [list-footer
@@ -385,23 +390,27 @@
          ;; `scroll-y` which is needed because by default the
          ;; chat is scrolled to the bottom and no initial
          ;; `on-scroll` event is getting triggered
-         (let [scroll-y-shared     (if
-                                     @messages-scroll-y-value-initialized?
-                                     (reanimated/get-shared-value
-                                      scroll-y)
-                                     window-height)
-               content-size-shared (reanimated/get-shared-value
-                                    content-height)
-               content-size        (- y window-height (when platform/android? (:top insets)))
-               current-y           (max (- content-size-shared
-                                           scroll-y-shared)
-                                        0)
-               new-scroll-value    (- content-size
-                                      current-y
-                                      ;; TODO fix the keyboard behaviour
-                                      (comment
-                                        (- (when keyboard-shown?
-                                             keyboard-height))))]
+         (let [scroll-y-shared       (if
+                                       @messages-scroll-y-value-initialized?
+                                       (reanimated/get-shared-value
+                                        scroll-y)
+                                       window-height)
+               ;;TODO make this make sense :)
+               keyboard-extra-space  (->> (- window-height y)
+                                          (- y))
+               keyboard-scroll-value (- keyboard-extra-space
+                                        (- window-height y))
+
+               content-size-shared   (reanimated/get-shared-value
+                                      content-height)
+               content-size          (- y window-height (when platform/android? (:top insets)))
+               current-y             (max (- content-size-shared
+                                             scroll-y-shared)
+                                          0)
+               new-scroll-value      (if (< y window-height)
+                                       keyboard-scroll-value
+                                       (- content-size
+                                          current-y))]
            (when (and (>= new-scroll-value 0)
                       (or (= scroll-y-shared 0)
                           (> (Math/abs (- content-size-shared y))
