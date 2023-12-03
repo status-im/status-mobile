@@ -19,13 +19,15 @@
 
 (defn- <-status-link-previews-rpc
   [preview]
-  (update preview
-          :community
-          set/rename-keys
-          {:communityId        :community-id
-           :displayName        :display-name
-           :membersCount       :members-count
-           :activeMembersCount :active-members-count}))
+  (-> preview
+      (update :community
+              set/rename-keys
+              {:communityId        :community-id
+               :displayName        :display-name
+               :membersCount       :members-count
+               :activeMembersCount :active-members-count})
+      (update-in [:community :banner] set/rename-keys {:dataUri :data-uri})
+      (update-in [:community :icon] set/rename-keys {:dataUri :data-uri})))
 
 (defn- <-link-preview-rpc
   [preview]

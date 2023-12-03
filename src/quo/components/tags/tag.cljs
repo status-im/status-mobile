@@ -66,7 +66,7 @@
              text-color)
       label])])
 
-(defn tag
+(defn internal-tag
   "opts
    {:type         :icon/:emoji/:label
     :label        string
@@ -106,5 +106,5 @@
        :labelled?           (if (= type :label) true labelled?)}
       [tag-resources size type resource icon-color label text-color labelled?]]]))
 
-(def tag (quo.theme/with-theme tag))
+(def tag (quo.theme/with-theme internal-tag))
 

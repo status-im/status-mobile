@@ -147,15 +147,48 @@
           preferred-name (get-in db [:profile/profile :preferred-name])
           emoji? (message-content/emoji-only-content? {:text        input-text
                                                        :response-to message-id})]
-      {:chat-id       current-chat-id
-       :content-type  (if emoji?
-                        constants/content-type-emoji
-                        constants/content-type-text)
-       :text          input-text
-       :response-to   message-id
-       :ens-name      preferred-name
-       :link-previews (map #(select-keys % [:url :title :description :thumbnail])
-                           (get-in db [:chat/link-previews :unfurled]))})))
+      {:chat-id              current-chat-id
+       :content-type         (if emoji?
+                               constants/content-type-emoji
+                               constants/content-type-text)
+       :text                 input-text
+       :response-to          message-id
+       :ens-name             preferred-name
+       :link-previews        (map #(select-keys % [:url :title :description :thumbnail])
+                                  (get-in db [:chat/link-previews :unfurled]))
+       :status-link-previews (map (fn [item]
+                                    {:url (:url item)
+                                     :community
+                                     {:community-id         (get-in item [:community :community-id])
+                                      :color                (get-in item
+                                                                    [:community :color])
+                                      :description          (get-in item
+                                                                    [:community :description])
+                                      :display-name         (get-in item
+                                                                    [:community :display-name])
+                                      :members-count        (get-in item
+                                                                    [:community :members-count])
+                                      :active-members-count (get-in item
+                                                                    [:community :active-members-count])
+                                      :icon                 {:data-uri (get-in item
+                                                                               [:community :icon
+                                                                                :data-uri])
+                                                             :width    (get-in item
+                                                                               [:community :icon
+                                                                                :width])
+                                                             :height   (get-in item
+                                                                               [:community :icon
+                                                                                :height])}
+                                      :banner               {:data-uri (get-in item
+                                                                               [:community :banner
+                                                                                :data-uri])
+                                                             :width    (get-in item
+                                                                               [:community :banner
+                                                                                :width])
+                                                             :height   (get-in item
+                                                                               [:community :banner
+                                                                                :height])}}})
+                                  (get-in db [:chat/status-link-previews :unfurled]))})))
 
 (defn build-image-messages
   [{db :db} chat-id input-text]
@@ -193,6 +226,7 @@
     (rf/merge cofx
               (clean-input current-chat-id)
               (link-preview/reset-unfurled)
+              (link-preview/clear-status-link-previews)
               (mentions/clear-mentions))))
 
 (rf/defn send-messages
@@ -205,6 +239,7 @@
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
                 (link-preview/reset-unfurled)
+                (link-preview/clear-status-link-previews)
                 (chat.message/send-messages messages)))))
 
 (rf/defn send-audio-message
@@ -239,25 +274,30 @@
     :as   cofx} text {:keys [message-id quoted-message chat-id]}]
   (rf/merge
    cofx
-   {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id           message-id
-                                    :text         text
-                                    :content-type (if (message-content/emoji-only-content?
-                                                       {:text        text
-                                                        :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)
-                                    :linkPreviews (map #(-> %
-                                                            (select-keys [:url :title :description
-                                                                          :thumbnail])
-                                                            data-store-messages/->link-preview-rpc)
-                                                       (get-in db [:chat/link-previews :unfurled]))}]
-                     :js-response true
-                     :on-error    #(log/error "failed to edit message " %)
-                     :on-success  (fn [result]
-                                    (re-frame/dispatch [:sanitize-messages-and-process-response
-                                                        result]))}]}
+   {:json-rpc/call
+    [{:method      "wakuext_editMessage"
+      :params      [{:id                 message-id
+                     :text               text
+                     :content-type       (if (message-content/emoji-only-content?
+                                              {:text        text
+                                               :response-to quoted-message})
+                                           constants/content-type-emoji
+                                           constants/content-type-text)
+                     :linkPreviews       (map #(-> %
+                                                   (select-keys [:url :title :description
+                                                                 :thumbnail])
+                                                   data-store-messages/->link-preview-rpc)
+                                              (get-in db [:chat/link-previews :unfurled]))
+                     :statusLinkPreviews (map
+                                          data-store-messages/<-status-link-previews-rpc
+                                          (get-in db [:chat/status-link-previews :unfurled]))}]
+      :js-response true
+      :on-error    #(log/error "failed to edit message " %)
+      :on-success  (fn [result]
+                     (re-frame/dispatch [:sanitize-messages-and-process-response
+                                         result]))}]}
    (link-preview/reset-unfurled)
+   (link-preview/clear-status-link-previews)
    (cancel-message-edit)))
 
 (rf/defn send-current-message
