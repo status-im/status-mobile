@@ -141,8 +141,6 @@
              (assoc-in [:chat/link-previews :cleared] unfurled-urls))}))
 
 (rf/defn clear-status-link-previews
-  "Mark current unfurled URLs as `cleared`, meaning the user won't see previews
-  until they insert/remove non-cleared URL(s)."
   {:events [:status-link-preview/clear]}
   [{:keys [db]}]
   (let [unfurled-urls (set (map :url (get-in db [:chat/status-link-previews :unfurled])))]
