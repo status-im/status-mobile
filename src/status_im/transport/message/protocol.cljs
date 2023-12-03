@@ -31,7 +31,9 @@
   [msg]
   (-> msg
       (update :link-previews #(map link-preview->rpc %))
-      (update :status-link-previews #(map status-link-preview->rpc %))
+      (update :status-link-previews #(-> status-link-preview->rpc
+                                          (map %)
+                                          set))
       (set/rename-keys
        {:album-id             :albumId
         :audio-duration-ms    :audioDurationMs

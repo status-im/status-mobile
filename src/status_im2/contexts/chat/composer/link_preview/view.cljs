@@ -50,7 +50,7 @@
                                        :loading?  loading?
                                        :thumbnail (:data-uri thumbnail)
                                        :url       url}))
-                                  (concat previews status-link-previews))}]]))
+                                  (set (concat previews status-link-previews)))}]]))
 
 (defn view
   []
