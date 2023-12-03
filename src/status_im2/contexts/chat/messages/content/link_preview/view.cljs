@@ -33,7 +33,8 @@
                :title         community-name
                :banner        (:url community-banner)
                :icon          (:url community-icon)
-               :link          url}])
+               :link          url
+               :on-press      #(rf/dispatch [:universal-links/handle-url url])}])
            [quo/link-preview
             {:title           title
              :description     description

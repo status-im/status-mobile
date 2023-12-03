@@ -5,8 +5,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.status-link-previews.community.style :as status-link-previews-style]
     [quo.theme :as theme]
-    [react-native.core :as rn]
-    [utils.re-frame :as rf]))
+    [react-native.core :as rn]))
 
 (defn- description-comp
   [description members-count active-members-count]
@@ -74,15 +73,15 @@
    [rn/view {:style (status-link-previews-style/loading-thumbnail-box theme)}]])
 
 (defn f-internal-view
-  [{:keys [title description link loading? thumbnail-size icon banner members-count active-members-count
-           theme]
-    :or   {loading? false}}]
+  [{:keys [title description loading? thumbnail-size icon banner members-count active-members-count
+           theme on-press]
+    :or   {loading? true}}]
   [rn/touchable-opacity
    {:style               (merge (style/container (not loading?))
                                 {:width  295
                                  :height 245})
     :accessibility-label :link-preview
-    :on-press            #(rf/dispatch [:universal-links/handle-url link])}
+    :on-press            on-press}
    (if loading?
      [loading-view theme]
      [:<>

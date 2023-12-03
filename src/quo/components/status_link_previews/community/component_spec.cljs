@@ -12,7 +12,7 @@
    :member-count         20
    :active-members-count 20})
 
-(h/describe "Links - Link Preview"
+(h/describe "Status link previews - Community"
   (h/test "default render"
     (h/render [view/view])
     (h/is-truthy (h/query-by-label-text :link-preview))
@@ -24,7 +24,6 @@
     (h/is-truthy (h/query-by-text (:description props)))
     (h/is-truthy (h/query-by-text (:link props)))
     (h/is-truthy (h/query-by-label-text :logo))
-    (h/is-truthy (h/query-by-label-text :thumbnail))
     (h/is-truthy (h/query-by-label-text :thumbnail)))
 
   (h/test "does not render thumbnail if prop is not present"
@@ -33,21 +32,4 @@
 
   (h/test "does not render logo if prop is not present"
     (h/render [view/view (dissoc props :logo)])
-    (h/is-null (h/query-by-label-text :logo)))
-
-  (h/test "shows button to enable preview when preview is disabled"
-    (h/render [view/view
-               (assoc props
-                      :enabled?      false
-                      :disabled-text "I'm disabled")])
-    (h/is-truthy (h/query-by-label-text :button-enable-preview))
-    (h/is-truthy (h/query-by-text "I'm disabled")))
-
-  (h/test "on-enable event"
-    (let [on-enable (h/mock-fn)]
-      (h/render [view/view
-                 (assoc props
-                        :enabled?  false
-                        :on-enable on-enable)])
-      (h/fire-event :press (h/get-by-label-text :button-enable-preview))
-      (h/was-called on-enable))))
+    (h/is-null (h/query-by-label-text :logo))))
