@@ -1,5 +1,8 @@
 (ns status-im2.core
   (:require
+    ;; NOTE: Do NOT sort i18n-resources because it MUST be loaded first.
+    [status-im2.setup.i18n-resources :as i18n-resources]
+    #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [re-frame.interop :as interop]
