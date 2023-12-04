@@ -1,0 +1,130 @@
+(ns quo.components.code.common.view
+  (:require
+    [cljs-bean.core :as bean]
+    [clojure.string :as string]
+    [quo.components.buttons.button.view :as button]
+    [quo.components.code.common.style :as style]
+    [quo.components.markdown.text :as text]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.syntax-highlighter :as highlighter]
+    [reagent.core :as reagent]))
+
+(defn- render-nodes
+  [nodes theme preview?]
+  (map (fn [{:keys [children value last-line?] :as node}]
+         (let [classname (get-in node [:properties :className])]
+           (if children
+             (into [text/text
+                    (cond-> {:weight :code
+                             :size   :paragraph-2
+                             :style  (style/text-style classname preview? theme)}
+                      last-line? (assoc :number-of-lines 1))]
+                   (render-nodes children theme preview?))
+             ;; Remove newlines as we already render each line separately.
+             (string/trim-newline value))))
+       nodes))
+
+(defn- line
+  [{:keys [line-number line-number-width preview? theme]} children]
+  [rn/view {:style style/line}
+   [rn/view {:style (style/line-number line-number-width preview?)}
+    [text/text
+     {:style  (style/text-style ["line-number"] preview? theme)
+      :weight :code
+      :size   :paragraph-2}
+     line-number]]
+   (cond->> children
+     preview? (conj [rn/view {:style style/line-content}]))])
+
+(defn- code-block
+  [{:keys [rows line-number-width preview? theme]}]
+  [rn/view
+   (->> preview?
+        (render-nodes rows theme)
+        (map-indexed (fn [idx row-content]
+                       [line
+                        {:line-number       (inc idx)
+                         :line-number-width line-number-width
+                         :preview?          preview?
+                         :theme             theme}
+                        row-content]))
+        (into [:<>]))])
+
+(defn- mask-view
+  [{:keys [apply-mask? theme]} child]
+  (if apply-mask?
+    [:<>
+     [rn/view {:style style/gradient-container}
+      [linear-gradient/linear-gradient
+       {:style  style/gradient
+        :colors [:transparent (style/gradient-color theme)]}
+       [rn/view {:style style/gradient}]]]
+     child]
+    child))
+
+(defn- calc-line-number-width
+  [font-scale rows-to-show]
+  (let [max-line-digits (-> rows-to-show str count)]
+    (if (= 1 max-line-digits)
+      18 ;; ~ 9 is char width, 18 is width used in Figma.
+      (* 9 max-line-digits font-scale))))
+
+(defn- f-native-renderer
+  [{:keys [rows max-lines on-copy-press preview? theme]
+    :or   {max-lines ##Inf}}]
+  (let [font-scale          (:font-scale (rn/get-window))
+        total-rows          (count rows)
+        number-rows-to-show (if preview?
+                              0
+                              (min (count rows) max-lines))
+        line-number-width   (if preview? 20 (calc-line-number-width font-scale number-rows-to-show))
+        truncated?          (< number-rows-to-show total-rows)
+        rows-to-show-coll   (if truncated?
+                              (as-> rows $
+                                (update $ number-rows-to-show assoc :last-line? true)
+                                (take (inc number-rows-to-show) $))
+                              rows)]
+    [rn/view {:style (style/container preview? theme)}
+     [rn/view {:style (style/line-number-container line-number-width preview? theme)}]
+     (if preview?
+       [code-block
+        {:rows              rows-to-show-coll
+         :line-number-width line-number-width
+         :preview?          preview?
+         :theme             theme}]
+       [:<>
+        [rn/view {:style (style/divider line-number-width theme)}]
+        [mask-view
+         {:apply-mask? truncated?
+          :theme       theme}
+         [code-block
+          {:rows              rows-to-show-coll
+           :line-number-width line-number-width
+           :theme             theme}]]
+        [rn/view {:style style/copy-button}
+         [button/button
+          {:icon-only? true
+           :type       :grey
+           :background :blur
+           :size       24
+           :on-press   on-copy-press}
+          :main-icons/copy]]])]))
+
+(defn view
+  [{:keys [language max-lines on-copy-press preview? theme]} children]
+  [highlighter/highlighter
+   {:language          language
+    :renderer          (fn [^js/Object props]
+                         (reagent/as-element
+                          [:f> f-native-renderer
+                           {:rows          (-> props .-rows bean/->clj)
+                            :on-copy-press #(when on-copy-press (on-copy-press children))
+                            :max-lines     max-lines
+                            :preview?      preview?
+                            :theme         theme}]))
+    :show-line-numbers false
+    :style             {}
+    :custom-style      {:background-color nil}}
+   children])
+
