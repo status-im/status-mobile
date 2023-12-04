@@ -14,7 +14,7 @@
 
 (defn page-title
   []
-  (let [new-account? (rf/sub [:onboarding-2/new-account?])]
+  (let [new-account? (rf/sub [:onboarding/new-account?])]
     [quo/text-combinations
      {:container-style                 {:margin-top 12 :margin-horizontal 20}
       :title                           (i18n/label (if new-account?
@@ -31,7 +31,7 @@
 
 (defn view
   []
-  (let [profile-color         (rf/sub [:onboarding-2/customization-color])
+  (let [profile-color         (rf/sub [:onboarding/customization-color])
         {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
         window                (rf/sub [:dimensions/window])
         insets                (safe-area/get-insets)]

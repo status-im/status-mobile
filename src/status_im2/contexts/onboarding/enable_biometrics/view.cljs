@@ -27,7 +27,7 @@
   [insets]
   (let [supported-biometric-type (rf/sub [:biometric/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
-        profile-color            (or (:color (rf/sub [:onboarding-2/profile]))
+        profile-color            (or (:color (rf/sub [:onboarding/profile]))
                                      (rf/sub [:profile/customization-color]))
         syncing-results?         (= :syncing-results @state/root-id)]
     [rn/view {:style (style/buttons insets)}
@@ -36,7 +36,7 @@
        :accessibility-label :enable-biometrics-button
        :icon-left           :i/face-id
        :customization-color profile-color
-       :on-press            #(rf/dispatch [:onboarding-2/enable-biometrics])
+       :on-press            #(rf/dispatch [:onboarding/enable-biometrics])
        :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}]
      [quo/button
       {:accessibility-label :maybe-later-button
@@ -45,7 +45,7 @@
        :on-press            #(rf/dispatch (if syncing-results?
                                             [:navigate-to-within-stack
                                              [:enable-notifications :enable-biometrics]]
-                                            [:onboarding-2/create-account-and-login]))
+                                            [:onboarding/create-account-and-login]))
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 

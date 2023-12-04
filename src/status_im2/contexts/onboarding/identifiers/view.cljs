@@ -28,7 +28,7 @@
         drag-amount          (atom nil)
         {:keys [emoji-hash display-name compressed-key
                 public-key]} (rf/sub [:profile/profile])
-        {:keys [color]}      (rf/sub [:onboarding-2/profile])
+        {:keys [color]}      (rf/sub [:onboarding/profile])
         photo-path           (rf/sub [:chats/photo-path public-key])
         emoji-string         (string/join emoji-hash)]
     (carousel.animation/use-initialize-animation progress paused? true is-dragging? drag-amount)
