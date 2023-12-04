@@ -366,9 +366,11 @@
 
 (defn community-card-page-view
   [id]
-  (let [{:keys [id]
+  (let [{:keys [id joined]
          :as   community} (rf/sub [:communities/community id])
         pending?          (rf/sub [:communities/my-pending-request-to-join id])]
+    (when joined
+      (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
     [community-scroll-page community pending?]))
 
 (defn overview
