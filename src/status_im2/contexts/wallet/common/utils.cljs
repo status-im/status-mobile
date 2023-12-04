@@ -31,13 +31,17 @@
        (map (comp :raw-balance val))
        (reduce money/add)))
 
-(defn- total-token-fiat-value
+(defn total-token-units-in-all-chains
+  [{:keys [balances-per-chain decimals] :as _token}]
+  (-> balances-per-chain
+      (total-raw-balance-in-all-chains)
+      (money/token->unit decimals)))
+
+(defn total-token-fiat-value
   "Returns the total token fiat value taking into account all token's chains."
-  [{:keys [balances-per-chain decimals market-values-per-currency]}]
+  [{:keys [market-values-per-currency] :as token}]
   (let [usd-price                 (-> market-values-per-currency :usd :price)
-        total-units-in-all-chains (-> balances-per-chain
-                                      (total-raw-balance-in-all-chains)
-                                      (money/token->unit decimals))]
+        total-units-in-all-chains (total-token-units-in-all-chains token)]
     (money/crypto->fiat total-units-in-all-chains usd-price)))
 
 (defn calculate-balance-for-account
