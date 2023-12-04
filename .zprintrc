@@ -32,6 +32,7 @@
   "letsubs"         :binding
   "with-let"        "let"
   "reg-event-fx"    :arg1-pair
+  "reg-fx"          :arg1-pair
   "testing"         :arg1-body
   "deftest-sub"     :arg1-body
   "wait-for"        :arg1-body

@@ -4,7 +4,7 @@
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [reagent.core :as reagent]
-    [status-im2.common.alert.events :as alert]
+    [status-im2.common.alert.effects :as alert.effects]
     [status-im2.constants :as constants]
     [status-im2.contexts.quo-preview.preview :as preview]
     [utils.i18n :as i18n]
@@ -35,7 +35,7 @@
                                                 :on-denied
                                                 #(js/setTimeout
                                                   (fn []
-                                                    (alert/show-popup
+                                                    (alert.effects/show-popup
                                                      (i18n/label :t/audio-recorder-error)
                                                      (i18n/label
                                                       :t/audio-recorder-permissions-error)))

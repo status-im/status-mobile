@@ -35,8 +35,8 @@
       (do
         (log/debug (str "Cannot start keycard installation from state: " card-state))
         (rf/merge cofx
-                  {:utils/show-popup {:title   (i18n/label :t/error)
-                                      :content (i18n/label :t/something-went-wrong)}}
+                  {:effects.utils/show-popup {:title   (i18n/label :t/error)
+                                              :content (i18n/label :t/something-went-wrong)}}
                   (navigation/navigate-to :keycard-authentication-method nil))))))
 
 (rf/defn load-preparing-screen

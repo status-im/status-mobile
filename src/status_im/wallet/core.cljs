@@ -246,8 +246,8 @@
         assets                                  (get visible-tokens chain)
         tokens                                  (->> (vals all-tokens)
                                                      (remove #(or (:hidden? %)
-                                                                  ;;if not scan-all-tokens? remove not
-                                                                  ;;visible tokens
+                                                                  ;;if not scan-all-tokens? remove
+                                                                  ;;not visible tokens
                                                                   (and (not scan-all-tokens?)
                                                                        (not (get assets (:symbol %))))))
                                                      (reduce (fn [acc {:keys [address symbol]}]
@@ -822,8 +822,8 @@
 (rf/defn get-buy-crypto-preference
   {:events [::get-buy-crypto]}
   [_]
-  {:async-storage-get {:keys [:buy-crypto-hidden]
-                       :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
+  {:effects.async-storage/get {:keys [:buy-crypto-hidden]
+                               :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
 
 (rf/defn wallet-will-focus
   {:events [::wallet-stack]}
@@ -844,8 +844,8 @@
 (rf/defn hide-buy-crypto
   {:events [::hide-buy-crypto]}
   [{:keys [db]}]
-  {:db                (assoc db :wallet-legacy/buy-crypto-hidden true)
-   :async-storage-set {:buy-crypto-hidden true}})
+  {:db                        (assoc db :wallet-legacy/buy-crypto-hidden true)
+   :effects.async-storage/set {:buy-crypto-hidden true}})
 
 (rf/defn store-buy-crypto
   {:events [::store-buy-crypto-preference]}
@@ -1023,8 +1023,8 @@
 (rf/defn switch-transactions-management-enabled
   {:events [:multiaccounts.ui/switch-transactions-management-enabled]}
   [{:keys [db]} enabled?]
-  {:async-storage-set {:transactions-management-enabled? enabled?}
-   :db                (assoc db :wallet-legacy/transactions-management-enabled? enabled?)})
+  {:effects.async-storage/set {:transactions-management-enabled? enabled?}
+   :db                        (assoc db :wallet-legacy/transactions-management-enabled? enabled?)})
 
 (re-frame/reg-fx
  :wallet-legacy/initialize-transactions-management-enabled
@@ -1072,9 +1072,8 @@
                                                        true])}))
     2000)))
 
-(re-frame/reg-fx
- ;;TODO: this could be replaced by a single API call on status-go side
- :wallet-legacy/initialize-wallet
+;;TODO: this could be replaced by a single API call on status-go side
+(re-frame/reg-fx :wallet-legacy/initialize-wallet
  (fn [[network-id network callback]]
    (-> (js/Promise.all
         (clj->js
