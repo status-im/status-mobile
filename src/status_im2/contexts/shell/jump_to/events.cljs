@@ -1,47 +1,14 @@
 (ns status-im2.contexts.shell.jump-to.events
   (:require
-    [re-frame.core :as re-frame]
     [status-im.data-store.switcher-cards :as switcher-cards-store]
     [status-im.utils.core :as utils]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
-    [status-im2.contexts.shell.jump-to.animation :as animation]
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-    [status-im2.contexts.shell.jump-to.state :as state]
+    status-im2.contexts.shell.jump-to.effects
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
     [status-im2.navigation.state :as navigation.state]
     [utils.re-frame :as rf]))
-
-;;;; Effects
-
-;; Navigation
-(re-frame/reg-fx
- :shell/change-tab-fx
- (fn [stack-id]
-   (when (some #(= stack-id %) shell.constants/stacks-ids)
-     (animation/bottom-tab-on-press stack-id false))))
-
-(re-frame/reg-fx
- :shell/navigate-to-jump-to-fx
- (fn []
-   (animation/close-home-stack false)
-   (when-not config/shell-navigation-disabled?
-     (some-> ^js @state/jump-to-list-ref
-             (.scrollToOffset #js {:y 0 :animated false})))))
-
-;; Note - pop-to-root resets currently opened screens to `close-screen-without-animation`.
-;; This might take some time. So don't directly merge the effect of `pop-to-root` and
-;; `navigate-to` for the floating screen. Because it might close even the currently opened screen.
-;; https://github.com/status-im/status-mobile/pull/16438#issuecomment-1623954774
-(re-frame/reg-fx
- :shell/pop-to-root-fx
- (fn []
-   (shell.utils/reset-floating-screens)))
-
-(re-frame/reg-fx
- :shell/reset-state
- (fn []
-   (reset! state/floating-screens-state {})))
 
 ;;;; Events
 
@@ -105,13 +72,13 @@
               [:shell/switcher-cards (:card-id card-data)]
               switcher-card)}
         (when config/shell-navigation-disabled?
-          {:shell/change-tab-fx (cond
-                                  (#{shell.constants/one-to-one-chat-card
-                                     shell.constants/private-group-chat-card}
-                                   card-type)
-                                  :chats-stack
+          {:effects.shell/change-tab (cond
+                                       (#{shell.constants/one-to-one-chat-card
+                                          shell.constants/private-group-chat-card}
+                                        card-type)
+                                       :chats-stack
 
-                                  :else :communities-stack)}))
+                                       :else :communities-stack)}))
        (switcher-cards-store/upsert-switcher-card-rpc switcher-card)))))
 
 (rf/defn close-switcher-card
@@ -152,7 +119,7 @@
            shell.constants/close-screen-without-animation))
 
         :dispatch [:set-view-id :shell]})
-     {:shell/navigate-to-jump-to-fx nil})))
+     {:effects.shell/navigate-to-jump-to nil})))
 
 (rf/defn change-shell-status-bar-style
   {:events [:change-shell-status-bar-style]}
@@ -246,10 +213,10 @@
       (conj {:ms       (* 2 shell.constants/shell-animation-time)
              :dispatch [:shell/add-switcher-card screen-id id]}))}
    (when (and id (not hidden-screen?))
-     {:shell/change-tab-fx (if (or (= screen-id shell.constants/community-screen)
-                                   community-id)
-                             :communities-stack
-                             :chats-stack)})))
+     {:effects.shell/change-tab (if (or (= screen-id shell.constants/community-screen)
+                                        community-id)
+                                  :communities-stack
+                                  :chats-stack)})))
 
 (rf/defn floating-screen-closed
   {:events [:shell/floating-screen-closed]}

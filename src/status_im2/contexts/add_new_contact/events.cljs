@@ -1,17 +1,13 @@
 (ns status-im2.contexts.add-new-contact.events
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [status-im.ethereum.ens :as ens]
-    [status-im2.constants :as constants]
+    status-im2.contexts.add-new-contact.effects
     [status-im2.contexts.contacts.events :as data-store.contacts]
     [status-im2.navigation.events :as navigation]
     [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]
     [utils.string :as utils.string]
-    [utils.transforms :as transforms]
     [utils.validators :as validators]))
 
 (defn init-contact
@@ -108,14 +104,14 @@
       :empty            {:db (dissoc db :contacts/new-identity)}
       (:valid :invalid) {:db (assoc db :contacts/new-identity contact)}
       :decompress-key   {:db (assoc db :contacts/new-identity contact)
-                         :contacts/decompress-public-key
+                         :effects.contacts/decompress-public-key
                          {:compressed-key id
                           :on-success
                           (dispatcher :contacts/set-new-identity-success input)
                           :on-error
                           (dispatcher :contacts/set-new-identity-error input)}}
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
-                         :contacts/resolve-public-key-from-ens
+                         :effects.contacts/resolve-public-key-from-ens
                          {:chain-id (chain/chain-id db)
                           :ens ens
                           :on-success
@@ -123,22 +119,7 @@
                           :on-error
                           (dispatcher :contacts/set-new-identity-error input)}})))
 
-(re-frame/reg-fx
- :contacts/decompress-public-key
- (fn [{:keys [compressed-key on-success on-error]}]
-   (native-module/compressed-key->public-key
-    compressed-key
-    constants/deserialization-key
-    (fn [resp]
-      (let [{:keys [error]} (transforms/json->clj resp)]
-        (if error
-          (on-error error)
-          (on-success (str "0x" (subs resp 5)))))))))
 
-(re-frame/reg-fx
- :contacts/resolve-public-key-from-ens
- (fn [{:keys [chain-id ens on-success on-error]}]
-   (ens/pubkey chain-id ens on-success on-error)))
 
 (rf/defn build-contact
   {:events [:contacts/build-contact]}

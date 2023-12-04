@@ -114,7 +114,7 @@
   {:events [:onboarding/seed-phrase-validated]}
   [{:keys [db]} seed-phrase key-uid]
   (if (contains? (:profile/profiles-overview db) key-uid)
-    {:utils/show-confirmation
+    {:effects.utils/show-confirmation
      {:title               (i18n/label :t/multiaccount-exists-title)
       :content             (i18n/label :t/multiaccount-exists-content)
       :confirm-button-text (i18n/label :t/unlock)

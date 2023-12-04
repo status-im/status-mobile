@@ -49,8 +49,8 @@
   [{:keys [db] :as cofx} {:keys [chat-id]}]
   (if-not (own-public-key? db chat-id)
     {:dispatch [:chat.ui/start-chat chat-id]}
-    {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
-                        :content (i18n/label :t/can-not-add-yourself)}}))
+    {:effects.utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
+                                :content (i18n/label :t/can-not-add-yourself)}}))
 
 (rf/defn handle-group-chat
   [cofx params]
@@ -71,9 +71,9 @@
                 (navigation/navigate-back))
 
       :else
-      {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                          :content    (i18n/label :t/ens-name-not-found)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
+      {:effects.utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+                                  :content    (i18n/label :t/ens-name-not-found)
+                                  :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn handle-eip681
   [cofx data]
@@ -103,9 +103,9 @@
       (log/info "Unable to find matcher for scanned value"
                 {:type  type
                  :event ::match-scanned-value})
-      {:dispatch         [:navigate-back]
-       :utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                          :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
+      {:dispatch                 [:navigate-back]
+       :effects.utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+                                  :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
 
 (rf/defn on-scan
   {:events [::on-scan-success]}
