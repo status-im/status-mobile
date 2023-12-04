@@ -37,11 +37,13 @@
         (is (= result (events/displayable-collectible? collection))))))
   (testing "save-collectibles-request-details"
     (let [db           {:wallet {}}
-          collectibles [{:image-url "https://..." :animation-url "https://..."}
-                        {:image-url "" :animation-url "https://..."}
-                        {:image-url "" :animation-url nil}]
-          expected-db  {:wallet {:collectibles [{:image-url "https://..." :animation-url "https://..."}
-                                                {:image-url "" :animation-url "https://..."}]}}
+          collectibles [{:collectible-data {:image-url "https://..." :animation-url "https://..."}}
+                        {:collectible-data {:image-url "" :animation-url "https://..."}}
+                        {:collectible-data {:image-url "" :animation-url nil}}]
+          expected-db  {:wallet {:collectibles [{:collectible-data
+                                                 {:image-url "https://..." :animation-url "https://..."}}
+                                                {:collectible-data
+                                                 {:image-url "" :animation-url "https://..."}}]}}
           effects      (events/store-collectibles {:db db} [collectibles])
           result-db    (:db effects)]
       (is (= result-db expected-db)))))
