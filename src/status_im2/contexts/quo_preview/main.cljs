@@ -78,6 +78,7 @@
      recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
+    [status-im2.contexts.quo-preview.ios.drawer-bar :as drawer-bar]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
@@ -310,6 +311,8 @@
                         :component search-input/view}
                        {:name      :title-input
                         :component title-input/view}]
+   :ios               [{:name      :drawer-bar
+                        :component drawer-bar/view}]
    :numbered-keyboard [{:name      :keyboard-key
                         :component keyboard-key/view}
                        {:name      :numbered-keyboard
