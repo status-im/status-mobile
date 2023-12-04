@@ -35,13 +35,14 @@
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
-     :style  style/header-text}
+     :style  (style/header-text (when subtitle true))}
     title]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :regular
-     :style  style/header-sub-text}
-    subtitle]])
+   (when subtitle
+     [quo/text
+      {:size   :paragraph-1
+       :weight :regular
+       :style  style/header-sub-text}
+      subtitle])])
 
 (defn get-labels-and-on-press-method
   []
@@ -109,21 +110,22 @@
     [white-border :bottom-right]]])
 
 (defn- viewfinder
-  [qr-view-finder]
+  [qr-view-finder helper-text?]
   (let [layout-size (+ (:width qr-view-finder) 2)]
     [rn/view {:style (style/viewfinder-container qr-view-finder)}
      [white-square layout-size]
-     [quo/text
-      {:size   :paragraph-2
-       :weight :regular
-       :style  style/viewfinder-text}
-      (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]))
+     (when helper-text?
+       [quo/text
+        {:size   :paragraph-2
+         :weight :regular
+         :style  style/viewfinder-text}
+        (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)])]))
 
 (defn- scan-qr-code-tab
-  [qr-view-finder]
+  [qr-view-finder helper-text?]
   (if (and @camera-permission-granted?
            (boolean (not-empty qr-view-finder)))
-    [viewfinder qr-view-finder]
+    [viewfinder qr-view-finder helper-text?]
     [camera-permission-view]))
 
 (defn- check-qr-code-and-navigate
@@ -223,7 +225,7 @@
             [:<>
              [rn/view {:style style/scan-qr-code-container}]
              [qr-scan-hole-area qr-view-finder]])
-          [scan-qr-code-tab @qr-view-finder]
+          [scan-qr-code-tab @qr-view-finder (when subtitle true)]
           [rn/view {:style style/flex-spacer}]
           (when show-camera?
             [quo.theme/provider {:theme :light}
