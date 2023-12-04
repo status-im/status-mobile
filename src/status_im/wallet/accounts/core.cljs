@@ -359,8 +359,8 @@
   (let [deleted-address (:address account)
         dapps-address   (get-in cofx [:db :profile/profile :dapps-address])]
     (if (= (string/lower-case dapps-address) (string/lower-case deleted-address))
-      {:utils/show-popup {:title   (i18n/label :t/warning)
-                          :content (i18n/label :t/account-is-used)}}
+      {:effects.utils/show-popup {:title   (i18n/label :t/warning)
+                                  :content (i18n/label :t/account-is-used)}}
       {:key-storage/delete-imported-key
        {:key-uid    (get-in db [:profile/profile :key-uid])
         :address    (:address account)
@@ -379,8 +379,8 @@
                               (assoc-in [:add-account :scanned-address] address)
                               (assoc-in [:add-account :address] address))}
                      (when-not address
-                       {:utils/show-popup {:title   (i18n/label :t/error)
-                                           :content (i18n/label :t/invalid-address-qr-code)}}))
+                       {:effects.utils/show-popup {:title   (i18n/label :t/error)
+                                                   :content (i18n/label :t/invalid-address-qr-code)}}))
               (navigation/navigate-back))))
 
 (re-frame/reg-fx
@@ -392,4 +392,3 @@
   {:events [:wallet-legacy.accounts/share]}
   [_ address]
   {:list.selection/open-share {:message (eip55/address->checksum address)}})
-

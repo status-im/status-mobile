@@ -51,7 +51,7 @@
                         (i18n/label :t/grant-face-id-permissions)
                         (i18n/label :t/biometric-auth-error {:code code}))]
     (when handle-error?
-      {:utils/show-popup
+      {:effects.utils/show-popup
        {:title   (i18n/label :t/biometric-auth-login-error-title)
         :content content}})))
 

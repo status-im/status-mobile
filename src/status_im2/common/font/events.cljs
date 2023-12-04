@@ -1,14 +1,8 @@
-(ns status-im2.common.font
+(ns status-im2.common.font.events
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    utils.image-server
+    status-im2.common.font.effects
     [utils.re-frame :as rf]))
-
-(re-frame/reg-fx
- :font/get-font-file-for-initials-avatar
- (fn [callback]
-   (utils.image-server/get-font-file-ready callback)))
 
 (rf/defn init-abs-root-path
   {:events [:font/init-font-file-for-initials-avatar]}

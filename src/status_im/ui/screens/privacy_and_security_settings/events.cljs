@@ -56,7 +56,7 @@
   {:events [::on-delete-profile-success]}
   [cofx]
   (log/info "[delete-profile] on-success")
-  {:utils/show-popup
+  {:effects.utils/show-popup
    {:title      (i18n/label :t/profile-deleted-title)
     :content    (i18n/label :t/profile-deleted-content)
     :on-dismiss #(re-frame/dispatch [:logout])}})

@@ -151,15 +151,15 @@
 (rf/defn show-client-error
   {:events [:show-client-error]}
   [_]
-  {:utils/show-popup {:title   (i18n/label :t/cant-report-bug)
-                      :content (i18n/label :t/mail-should-be-configured)}})
+  {:effects.utils/show-popup {:title   (i18n/label :t/cant-report-bug)
+                              :content (i18n/label :t/mail-should-be-configured)}})
 
 (rf/defn show-logs-dialog
   {:events [:shake-event]}
   [{:keys [db]}]
   (when-not (:logging/dialog-shown? db)
     {:db (assoc db :logging/dialog-shown? true)
-     :utils/show-confirmation
+     :effects.utils/show-confirmation
      (cond-> {:title               (i18n/label :t/send-logs)
               :content             (i18n/label :t/send-logs-to
                                                {:email report-email})

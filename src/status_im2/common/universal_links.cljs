@@ -44,8 +44,8 @@
   (when chat-id
     (if-not (own-public-key? db chat-id)
       {:dispatch [:chat.ui/start-chat chat-id]}
-      {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
-                          :content (i18n/label :t/can-not-add-yourself)}})))
+      {:effects.utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
+                                  :content (i18n/label :t/can-not-add-yourself)}})))
 
 (rf/defn handle-community-requests
   [cofx {:keys [community-id]}]

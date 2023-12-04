@@ -194,9 +194,9 @@
   (rf/merge cofx
             (cond
               (= :chat view-id)
-              {:async-storage-set {:chat-id (get-in cofx [:db :current-chat-id])
-                                   :key-uid (get-in cofx [:db :profile/profile :key-uid])}
-               :db                (assoc db :screens/was-focused-once? true)}
+              {:effects.async-storage/set {:chat-id (get-in cofx [:db :current-chat-id])
+                                           :key-uid (get-in cofx [:db :profile/profile :key-uid])}
+               :db                        (assoc db :screens/was-focused-once? true)}
 
               (not (get db :screens/was-focused-once?))
               {:db (assoc db :screens/was-focused-once? true)})

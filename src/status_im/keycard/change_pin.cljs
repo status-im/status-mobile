@@ -141,14 +141,14 @@
   (let [pin          (get-in db [:keycard :pin :original])
         puk-restore? (get-in db [:keycard :pin :puk-restore?])]
     (rf/merge cofx
-              {:db               (assoc-in db
-                                  [:keycard :pin]
-                                  {:status       nil
-                                   :login        pin
-                                   :confirmation []
-                                   :error-label  nil})
-               :utils/show-popup {:title   ""
-                                  :content (i18n/label :t/pin-changed)}}
+              {:db                       (assoc-in db
+                                          [:keycard :pin]
+                                          {:status       nil
+                                           :login        pin
+                                           :confirmation []
+                                           :error-label  nil})
+               :effects.utils/show-popup {:title   ""
+                                          :content (i18n/label :t/pin-changed)}}
               (common/hide-connection-sheet)
               (if puk-restore?
                 (navigation/navigate-to :multiaccounts nil)
@@ -160,14 +160,14 @@
   {:events [:keycard.callback/on-change-puk-success]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
-            {:db               (assoc-in db
-                                [:keycard :pin]
-                                {:status           nil
-                                 :puk-original     []
-                                 :puk-confirmation []
-                                 :error-label      nil})
-             :utils/show-popup {:title   ""
-                                :content (i18n/label :t/puk-changed)}}
+            {:db                       (assoc-in db
+                                        [:keycard :pin]
+                                        {:status           nil
+                                         :puk-original     []
+                                         :puk-confirmation []
+                                         :error-label      nil})
+             :effects.utils/show-popup {:title   ""
+                                        :content (i18n/label :t/puk-changed)}}
             (common/hide-connection-sheet)
             (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 
@@ -175,13 +175,13 @@
   {:events [:keycard.callback/on-change-pairing-success]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
-            {:db               (assoc-in db
-                                [:keycard :pin]
-                                {:status       nil
-                                 :pairing-code nil
-                                 :error-label  nil})
-             :utils/show-popup {:title   ""
-                                :content (i18n/label :t/pairing-changed)}}
+            {:db                       (assoc-in db
+                                        [:keycard :pin]
+                                        {:status       nil
+                                         :pairing-code nil
+                                         :error-label  nil})
+             :effects.utils/show-popup {:title   ""
+                                        :content (i18n/label :t/pairing-changed)}}
             (common/hide-connection-sheet)
             (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 

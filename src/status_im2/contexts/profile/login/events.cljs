@@ -17,6 +17,7 @@
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.contexts.profile.config :as profile.config]
+    status-im2.contexts.profile.login.effects
     [status-im2.contexts.profile.rpc :as profile.rpc]
     [status-im2.contexts.profile.settings.events :as profile.settings.events]
     [status-im2.contexts.push-notifications.events :as notifications]
@@ -27,36 +28,29 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(re-frame/reg-fx
- ::login
- (fn [[key-uid hashed-password]]
-   ;;"node.login" signal will be triggered as a callback
-   (native-module/login-account
-    (assoc (profile.config/login) :keyUid key-uid :password hashed-password))))
-
 (rf/defn login
   {:events [:profile.login/login]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
-    {:db     (assoc-in db [:profile/login :processing] true)
-     ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
+    {:db                    (assoc-in db [:profile/login :processing] true)
+     :effects.profile/login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn biometrics-login
   {:events [:profile.login/biometrics-login]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
-    {:db     (assoc-in db [:profile/login :processing] true)
-     ::login [key-uid (security/safe-unmask-data password)]}))
+    {:db                    (assoc-in db [:profile/login :processing] true)
+     :effects.profile/login [key-uid (security/safe-unmask-data password)]}))
 
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
         masked-password            (security/mask-data password)]
-    {:db     (-> db
-                 (assoc-in [:onboarding/profile :password] masked-password)
-                 (assoc-in [:onboarding/profile :syncing?] true))
-     ::login [key-uid password]}))
+    {:db                    (-> db
+                                (assoc-in [:onboarding/profile :password] masked-password)
+                                (assoc-in [:onboarding/profile :syncing?] true))
+     :effects.profile/login [key-uid password]}))
 
 (rf/defn redirect-to-root
   [{:keys [db] :as cofx}]

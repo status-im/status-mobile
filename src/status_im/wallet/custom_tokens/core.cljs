@@ -65,8 +65,8 @@
 (rf/defn not-supported
   {:events [:wallet-legacy.custom-token/not-supported]}
   [{:keys [db]}]
-  {:db               (assoc-in db [:wallet-legacy/custom-token-screen :in-progress?] nil)
-   :utils/show-popup {:content (i18n/label :t/contract-isnt-supported)}})
+  {:db                       (assoc-in db [:wallet-legacy/custom-token-screen :in-progress?] nil)
+   :effects.utils/show-popup {:content (i18n/label :t/contract-isnt-supported)}})
 
 (rf/defn add-custom-token
   {:events [:wallet-legacy.custom-token.ui/add-pressed]}
