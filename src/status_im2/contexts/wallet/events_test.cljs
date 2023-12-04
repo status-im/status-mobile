@@ -23,15 +23,16 @@
 
 (deftest store-collectibles
   (testing "(displayable-collectible?) helper function"
-    (let [expected-results [[true {:image-url "https://..." :animation-url "https://..."}]
-                            [true {:image-url "" :animation-url "https://..."}]
-                            [true {:image-url nil :animation-url "https://..."}]
-                            [true {:image-url "https://..." :animation-url ""}]
-                            [true {:image-url "https://..." :animation-url nil}]
-                            [false {:image-url "" :animation-url nil}]
-                            [false {:image-url nil :animation-url nil}]
-                            [false {:image-url nil :animation-url ""}]
-                            [false {:image-url "" :animation-url ""}]]]
+    (let [expected-results [[true
+                             {:collectible-data {:image-url "https://..." :animation-url "https://..."}}]
+                            [true {:collectible-data {:image-url "" :animation-url "https://..."}}]
+                            [true {:collectible-data {:image-url nil :animation-url "https://..."}}]
+                            [true {:collectible-data {:image-url "https://..." :animation-url ""}}]
+                            [true {:collectible-data {:image-url "https://..." :animation-url nil}}]
+                            [false {:collectible-data {:image-url "" :animation-url nil}}]
+                            [false {:collectible-data {:image-url nil :animation-url nil}}]
+                            [false {:collectible-data {:image-url nil :animation-url ""}}]
+                            [false {:collectible-data {:image-url "" :animation-url ""}}]]]
       (doseq [[result collection] expected-results]
         (is (= result (events/displayable-collectible? collection))))))
   (testing "save-collectibles-request-details"
