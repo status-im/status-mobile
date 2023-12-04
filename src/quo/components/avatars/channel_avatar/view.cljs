@@ -67,7 +67,7 @@
      [rn/text
       {:style               (style/emoji-size size)
        :accessibility-label :emoji}
-      (string/trim emoji)])
+      (when emoji (string/trim emoji))])
    [lock locked? size theme]])
 
 (def view (quo.theme/with-theme view-internal))

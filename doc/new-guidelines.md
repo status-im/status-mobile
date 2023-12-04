@@ -716,7 +716,7 @@ src
 
 - `src/js`: Raw Javascript files, e.g. React Native Reanimated worklets.
 - `src/mocks`: Plumbing configuration to be able to run tests.
-- `src/quo/`: The component library for Status Mobile.
+- `src/quo/`: The component library for Status Mobile. [Read more...](../src/quo/README.md)
 - `src/react_native/`: Contains only low-level constructs to help React Native
   work in tandem with Clojure(Script).
 - `src/status_im2/`: Directory where we try to be as strict as possible about

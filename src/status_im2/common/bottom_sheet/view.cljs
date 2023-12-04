@@ -117,7 +117,7 @@
            [rn/view
             {:style     (style/sheet-content theme padding-bottom-override insets shell? bottom-margin)
              :on-layout #(reset! sheet-height (.-nativeEvent.layout.height ^js %))}
-            (when gradient-cover?
+            (when (and gradient-cover? customization-color)
               [rn/view {:style style/gradient-bg}
                [quo/gradient-cover
                 {:customization-color customization-color

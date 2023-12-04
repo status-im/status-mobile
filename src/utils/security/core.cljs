@@ -1,5 +1,7 @@
 (ns utils.security.core
   (:require
+    [native-module.core :as native-module]
+    [schema.core :as schema]
     [utils.security.security-html :as h]))
 
 (defprotocol Unmaskable
@@ -58,3 +60,23 @@
   and does not contain an rtlo character, which might mean that the url is spoofed"
   [text]
   (not (re-matches rtlo-link-regex text)))
+
+(defn hash-masked-password
+  [masked-password]
+  (-> masked-password
+      safe-unmask-data
+      native-module/sha3
+      mask-data))
+
+(defn masked-data-instance?
+  [value]
+  (instance? MaskedData value))
+
+(def ?masked-password
+  [:fn {:error/message "should be an instance of utils.security.core/MaskedData"}
+   masked-data-instance?])
+
+(schema/=> hash-masked-password
+  [:=>
+   [:cat ?masked-password]
+   ?masked-password])

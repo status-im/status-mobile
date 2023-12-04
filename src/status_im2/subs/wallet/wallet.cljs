@@ -15,6 +15,11 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
+ :wallet/watch-address-activity-state
+ :<- [:wallet/ui]
+ :-> :watch-address-activity-state)
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :-> #(->> %
@@ -43,10 +48,10 @@
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
  (fn [[accounts balances tokens-loading?]]
-   (mapv (fn [{:keys [color address] :as account}]
+   (mapv (fn [{:keys [color address type] :as account}]
            (assoc account
                   :customization-color color
-                  :type                :empty
+                  :type                (if (= type :watch) :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
                   :loading?            tokens-loading?
                   :balance             (utils/prettify-balance (get balances address))))

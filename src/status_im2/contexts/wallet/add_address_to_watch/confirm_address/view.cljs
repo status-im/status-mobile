@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
@@ -43,8 +42,14 @@
          :bottom-action-label :t/add-watched-address
          :bottom-action-props {:customization-color @account-color
                                :disabled?           (string/blank? @account-name)
-                               :on-press            #(re-frame/dispatch [:navigate-to
-                                                                         :wallet-account])}}
+                               :on-press            #(rf/dispatch [:wallet/add-account
+                                                                   nil
+                                                                   {:type         :watch
+                                                                    :account-name @account-name
+                                                                    :emoji        @account-emoji
+                                                                    :color        @account-color}
+                                                                   {:address    address
+                                                                    :public-key ""}])}}
         [quo/data-item
          {:card?           true
           :right-icon      :i/advanced
@@ -54,5 +59,12 @@
           :subtitle        address
           :status          :default
           :size            :default
+          :subtitle-type   :default
+          :custom-subtitle (fn [] [quo/text
+                                   {:size   :paragraph-2
+                                    ;; TODO: monospace font
+                                    ;; https://github.com/status-im/status-mobile/issues/17009
+                                    :weight :monospace}
+                                   address])
           :container-style style/data-item
           :on-press        #(js/alert "To be implemented")}]]])))

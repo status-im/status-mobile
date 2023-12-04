@@ -10,14 +10,14 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         false
                 :card?               true
                 :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
@@ -27,14 +27,14 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         false
                 :card?               false
                 :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
@@ -45,14 +45,14 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         false
                 :card?               true
                 :label               :none
                 :status              :default
                 :size                :small
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
@@ -63,14 +63,14 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         false
                 :card?               true
                 :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
@@ -81,31 +81,31 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         false
                 :card?               true
                 :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
-    (h/is-truthy (h/get-by-text "Description")))
+    (h/is-truthy (h/get-by-text "Subtitle")))
 
   (h/test "right icon is not visible when icon-right? is false"
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         false
                 :card?               true
                 :label               :none
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
@@ -115,7 +115,6 @@
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         true
                 :right-icon          :i/chevron-right
                 :card?               true
@@ -123,17 +122,17 @@
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
     (h/is-truthy (h/query-by-label-text :icon-right)))
 
-  (h/test "description icon is visible when description is icon"
+  (h/test "icon is visible when subtitle type is icon"
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :icon
                 :icon-right?         true
                 :right-icon          :i/chevron-right
                 :card?               true
@@ -141,17 +140,17 @@
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :icon
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
-    (h/is-truthy (h/query-by-label-text :description-icon)))
+    (h/is-truthy (h/query-by-label-text :subtitle-type-icon)))
 
-  (h/test "description image is visible when description is network"
+  (h/test "image is visible when subtitle type is network"
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :network
                 :icon-right?         true
                 :right-icon          :i/chevron-right
                 :card?               true
@@ -159,18 +158,18 @@
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :network
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow
                 :network-image       (quo.resources/get-network :ethereum)}])
-    (h/is-truthy (h/query-by-label-text :description-image)))
+    (h/is-truthy (h/query-by-label-text :subtitle-type-image)))
 
-  (h/test "description emoji is visible when description is account"
+  (h/test "emoji is visible when subtitle type is account"
     (h/render [quo/data-item
                {:on-press            (h/mock-fn)
                 :blur?               false
-                :description         :account
                 :icon-right?         true
                 :right-icon          :i/chevron-right
                 :card?               true
@@ -178,7 +177,8 @@
                 :status              :default
                 :size                :default
                 :title               "Label"
-                :subtitle            "Description"
+                :subtitle            "Subtitle"
+                :subtitle-type       :account
                 :icon                :i/placeholder
                 :emoji               "🎮"
                 :customization-color :yellow}])
