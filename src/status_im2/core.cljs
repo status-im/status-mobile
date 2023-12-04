@@ -24,7 +24,6 @@
     status-im2.navigation.core
     [status-im2.setup.dev :as dev]
     [status-im2.setup.global-error :as global-error]
-    [status-im2.setup.i18n-resources :as i18n-resources]
     [status-im2.setup.interceptors :as interceptors]
     status-im2.subs.root
     [utils.i18n :as i18n]))
