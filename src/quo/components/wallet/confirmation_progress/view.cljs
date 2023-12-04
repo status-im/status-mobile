@@ -19,23 +19,11 @@
     (and (= state :error) (>= counter index) (< index 2))                   :error
     :else                                                                   :pending))
 
-(defn- calculate-box-state-network-left
+(defn- calculate-box-state-sidenet
   [state]
-  (cond
-    (= state :error)                                                     :error
-    (or (= state :confirmed) (= state :finalising) (= state :finalized)) :confirmed
-    :else                                                                :pending))
-
-(defn- calculate-box-state-network-right
-  [state]
-  (cond
-    (= state :error)
-    :error
-    (or (= state :confirmed)
-        (= state :finalising)
-        (= state :finalized))
-    :finalized
-    :else
+  (case state
+    :error                              :error
+    (:confirmed :finalising :finalized) :finalized
     :pending))
 
 (defn- calculate-progressed-value
@@ -45,7 +33,7 @@
     :finalized  max-progress
     min-progress))
 
-(defn- progress-boxes
+(defn- progress-boxes-mainnet
   [{:keys [state counter total-box customization-color]}]
   [rn/view
    {:accessibility-label :mainnet-progress-box
@@ -57,16 +45,16 @@
                 :customization-color customization-color
                 :key                 n}])))])
 
-(defn- progress-boxes-arbitrum-optimism
+(defn- progress-boxes-sidenet
   [{:keys [state bottom-large? customization-color progress-value]}]
   [rn/view
    {:accessibility-label :progress-box
     :style               (style/progress-box-container bottom-large?)}
    [progress-box/view
-    {:state               (calculate-box-state-network-left state)
+    {:state               (calculate-box-state-sidenet state)
      :customization-color customization-color}]
    [progress-box/view
-    {:state               (calculate-box-state-network-right state)
+    {:state               (calculate-box-state-sidenet state)
      :full-width?         true
      :progressed-value    (calculate-progressed-value state progress-value)
      :customization-color customization-color}]])
@@ -74,8 +62,8 @@
 (defn- view-internal
   [{:keys [network] :as props}]
   (case network
-    :mainnet                 [progress-boxes props]
-    (or :arbitrum :optimism) [progress-boxes-arbitrum-optimism props]
+    :mainnet              [progress-boxes-mainnet props]
+    (:arbitrum :optimism) [progress-boxes-sidenet props]
     nil))
 
 (def view (quo.theme/with-theme view-internal))

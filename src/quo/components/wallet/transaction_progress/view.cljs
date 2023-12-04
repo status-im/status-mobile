@@ -42,11 +42,12 @@
 
 (defn- network-type-text
   [state]
-  (cond
-    (or (= state :sending) (= state :pending))      (i18n/label :t/pending-on)
-    (or (= state :confirmed) (= state :finalising)) (i18n/label :t/confirmed-on)
-    (= state :finalized)                            (i18n/label :t/finalized-on)
-    (= state :error)                                (i18n/label :t/failed-on)))
+  (case state
+    (:sending :pending)      (i18n/label :t/pending-on)
+    (:confirmed :finalising) (i18n/label :t/confirmed-on)
+    :finalized               (i18n/label :t/finalized-on)
+    :error                   (i18n/label :t/failed-on)
+    nil))
 
 (defn- calculate-counter
   [counter]
@@ -78,24 +79,26 @@
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
                  :error      (subnet-label 0)}
                 nil)]
-    (get-in steps [state])))
+    (get steps state)))
 
 (defn- get-status-icon
   [theme state]
-  (cond
-    (or (= state :pending)
-        (= state :sending))    [:i/pending-state
-                                (colors/theme-colors colors/neutral-50
-                                                     colors/neutral-40
-                                                     theme)]
-    (or (= state :confirmed)
-        (= state :finalising)) [:i/positive-state (colors/resolve-color :success theme)]
-    (= state :finalized)       [:i/diamond]
-    (= state :error)           [:i/negative-state (colors/resolve-color :danger theme)]))
+  (case state
+    (:pending :sending)      {:icon  :i/pending-state
+                              :color (colors/theme-colors colors/neutral-50
+                                                          colors/neutral-40
+                                                          theme)}
+    (:confirmed :finalising) {:icon  :i/positive-state
+                              :color (colors/resolve-color :success theme)}
+    :finalized               {:icon :i/diamond}
+    :error                   {:icon  :i/negative-state
+                              :color (colors/resolve-color :danger theme)}
+    nil))
 
 (defn- get-network
   [networks network]
-  (first (filter #(= (:network %) network) networks)))
+  (some #(when (= (:network %) network) %)
+        networks))
 
 (defn- calculate-error-state
   [networks]
@@ -128,13 +131,14 @@
   (case network
     :arbitrum (i18n/label :t/arbitrum)
     :mainnet  (i18n/label :t/mainnet)
-    :optimism (i18n/label :t/optimism)))
+    :optimism (i18n/label :t/optimism)
+    nil))
 
 (defn- status-row
   [{:keys [theme state network epoch-number counter]}]
-  (let [[status-icon color] (get-status-icon theme state)]
+  (let [{:keys [icon color]} (get-status-icon theme state)]
     [rn/view {:style style/status-row-container}
-     [icon-internal status-icon color 16]
+     [icon-internal icon color 16]
      [rn/view {:style style/title-text-container}
       [text-internal
        {:weight :regular
