@@ -202,6 +202,12 @@
      :utils/dispatch-later [{:dispatch [:activity-center.notifications/mark-all-as-read]
                              :ms       undo-time-limit-ms}]}))
 
+(re-frame/reg-event-fx :activity-center.notifications/dismiss-community-overview
+ (fn [_ [community-id]]
+   {:json-rpc/call [{:method     "wakuext_dismissActivityCenterNotificationsByCommunity"
+                     :params     [{:communityId community-id}]
+                     :on-success [:activity-center.notifications/fetch-unread-count]}]}))
+
 (rf/defn accept-notification
   {:events [:activity-center.notifications/accept]}
   [{:keys [db]} notification-id]
