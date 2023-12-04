@@ -112,11 +112,11 @@
 
 (defn view
   []
-  (let [collectible                                               (rf/sub
-                                                                   [:wallet/last-collectible-details])
-        {:keys [id collectible-data preview-url collection-data]} collectible
-        {:keys [traits description]}                              collectible-data
-        chain-id                                                  (get-in id [:contract-id :chain-id])]
+  (let [collectible                  (rf/sub [:wallet/last-collectible-details])
+        {:keys [collectible-data preview-url
+                collection-data]}    collectible
+        {:keys [traits description]} collectible-data
+        chain-id                     (rf/sub [:wallet/last-collectible-chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148

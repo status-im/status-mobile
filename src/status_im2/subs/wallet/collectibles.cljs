@@ -24,3 +24,9 @@
  (fn [wallet]
    (let [last-collectible (:last-collectible-details wallet)]
      (assoc last-collectible :preview-url (preview-url (:collectible-data last-collectible))))))
+
+(re-frame/reg-sub
+ :wallet/last-collectible-chain-id
+ :<- [:wallet/last-collectible-details]
+ (fn [collectible]
+   (get-in collectible [:id :contract-id :chain-id])))

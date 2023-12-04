@@ -274,17 +274,17 @@
                               collectibles-request-batch-size
                               data-type
                               fetch-criteria]]
-     {:json-rpc/call [{:method     "wallet_getOwnedCollectiblesAsync"
-                       :params     request-params
-                       :on-success #()
-                       :on-error   (fn [error]
-                                     (log/error "failed to request collectibles"
-                                                {:event  :wallet/request-collectibles
-                                                 :error  error
-                                                 :params request-params}))}]
-      :fx            (if new-request?
-                       [[:dispatch [:wallet/clear-stored-collectibles]]]
-                       [])})))
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getOwnedCollectiblesAsync"
+              :params     request-params
+              :on-success #()
+              :on-error   (fn [error]
+                            (log/error "failed to request collectibles"
+                                       {:event  :wallet/request-collectibles
+                                        :error  error
+                                        :params request-params}))}]]
+           (when new-request?
+             [:dispatch [:wallet/clear-stored-collectibles]])]})))
 
 (rf/reg-event-fx :wallet/owned-collectibles-filtering-done
  (fn [_ [{:keys [message]}]]
@@ -305,13 +305,14 @@
          collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
          data-type                (collectible-data-types :details)
          request-params           [request-id [collectible-id-converted] data-type]]
-     {:json-rpc/call [{:method   "wallet_getCollectiblesByUniqueIDAsync"
-                       :params   request-params
-                       :on-error (fn [error]
-                                   (log/error "failed to request collectible"
-                                              {:event  :wallet/get-collectible-details
-                                               :error  error
-                                               :params request-params}))}]})))
+     {:fx [[:json-rpc/call
+            [{:method   "wallet_getCollectiblesByUniqueIDAsync"
+              :params   request-params
+              :on-error (fn [error]
+                          (log/error "failed to request collectible"
+                                     {:event  :wallet/get-collectible-details
+                                      :error  error
+                                      :params request-params}))}]]]})))
 
 (rf/reg-event-fx :wallet/get-collectible-details-done
  (fn [_ [{:keys [message]}]]
