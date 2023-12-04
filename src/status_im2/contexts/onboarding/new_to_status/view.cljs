@@ -30,7 +30,7 @@
                         (* 2 56) ;; two other list items
                         (* 2 16) ;; spacing between items
                         220)     ;; extra spacing (top bar)
-       :on-press     #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
+       :on-press     #(rf/dispatch [:onboarding/navigate-to-create-profile])}]
      [rn/view {:style style/subtitle-container}
       [quo/text
        {:style  style/subtitle
