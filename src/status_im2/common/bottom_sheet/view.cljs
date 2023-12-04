@@ -63,7 +63,7 @@
         item-height  (reagent/atom 0)]
     (fn [{:keys [hide? insets theme]}
          {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-                 gradient-cover? customization-color]
+                 gradient-cover? customization-color hide-handle?]
           :or   {border-radius 12}}]
       (let [{window-height :height}           (rn/get-window)
             bg-opacity                        (reanimated/use-shared-value 0)
@@ -122,7 +122,8 @@
                [quo/gradient-cover
                 {:customization-color customization-color
                  :opacity             0.4}]])
-            [rn/view {:style (style/handle theme)}]
+            (when-not hide-handle?
+              [quo/drawer-bar])
             [content]]]]]))))
 
 (defn- internal-view

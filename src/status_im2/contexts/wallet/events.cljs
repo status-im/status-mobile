@@ -45,6 +45,10 @@
             :ms       300}]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
+(rf/reg-event-fx :wallet/switch-current-viewing-account
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
+
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
    {:db (update db :wallet dissoc :current-viewing-account-address)
