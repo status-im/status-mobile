@@ -20,7 +20,7 @@
 
 (defn enable-notification-buttons
   [{:keys [insets]}]
-  (let [profile-color (rf/sub [:onboarding-2/customization-color])]
+  (let [profile-color (rf/sub [:onboarding/customization-color])]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:on-press            (fn []

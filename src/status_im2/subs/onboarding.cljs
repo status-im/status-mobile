@@ -3,10 +3,10 @@
     [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
- :onboarding-2/customization-color
- :<- [:onboarding-2/profile]
+ :onboarding/customization-color
+ :<- [:onboarding/profile]
  :<- [:profile/customization-color]
- :<- [:onboarding-2/new-account?]
+ :<- [:onboarding/new-account?]
  (fn [[{:keys [color]} customization-color new-account?]]
    (if new-account?
      color

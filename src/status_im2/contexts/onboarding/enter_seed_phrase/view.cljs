@@ -103,7 +103,7 @@
                                                (reset! seed-phrase new-phrase))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
-                                               (rf/dispatch [:onboarding-2/seed-phrase-entered
+                                               (rf/dispatch [:onboarding/seed-phrase-entered
                                                              (security/mask-data @seed-phrase)
                                                              set-invalid-seed-phrase]))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
