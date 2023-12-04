@@ -24,7 +24,7 @@
     (let [{:keys [name
                   id
                   images]} (rf/sub [:get-screen-params])]
-      [rn/view {:flex 1}
+      [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style {:flex 1}}
         [rn/view style/page-container
          [rn/view {:style style/title-container}
@@ -45,21 +45,21 @@
            :weight              :semi-bold
            :size                :paragraph-1}
           (i18n/label :t/community-rules)]
-         [community-rules/view community-rules/standard-rules]
-         [rn/view {:style (style/bottom-container)}
-          [quo/button
-           {:accessibility-label :cancel
-            :on-press            #(rf/dispatch [:navigate-back])
-            :type                :grey
-            :container-style     style/cancel-button}
-           (i18n/label :t/cancel)]
-          [quo/button
-           {:accessibility-label :join-community-button
-            :on-press            #(join-community-and-navigate-back id)
-            :container-style     {:flex 1}}
-           (i18n/label :t/request-to-join)]]
-         [rn/view {:style style/final-disclaimer-container}
-          [quo/text
-           {:size  :paragraph-2
-            :style style/final-disclaimer-text}
-           (i18n/label :t/request-to-join-disclaimer)]]]]])))
+         [community-rules/view community-rules/standard-rules]]]
+       [rn/view {:style (style/bottom-container)}
+        [quo/button
+         {:accessibility-label :cancel
+          :on-press            #(rf/dispatch [:navigate-back])
+          :type                :grey
+          :container-style     style/cancel-button}
+         (i18n/label :t/cancel)]
+        [quo/button
+         {:accessibility-label :join-community-button
+          :on-press            #(join-community-and-navigate-back id)
+          :container-style     {:flex 1}}
+         (i18n/label :t/request-to-join)]]
+       [rn/view {:style style/final-disclaimer-container}
+        [quo/text
+         {:size  :paragraph-2
+          :style style/final-disclaimer-text}
+         (i18n/label :t/request-to-join-disclaimer)]]])))
