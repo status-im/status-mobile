@@ -9,6 +9,7 @@
         networks              (rf/sub [:wallet/network-details])]
     [quo/page-nav
      {:icon-name           :i/close
+      :background          :blur
       :on-press            on-press
       :accessibility-label accessibility-label
       :networks            networks
@@ -16,7 +17,6 @@
       :right-side          :account-switcher
       :account-switcher    {:customization-color color
                             :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                {:content account-options/view
-                                                                 :gradient-cover? true
-                                                                 :customization-color color}])
+                                                                {:content      account-options/view
+                                                                 :hide-handle? true}])
                             :emoji               emoji}}]))

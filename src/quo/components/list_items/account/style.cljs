@@ -3,12 +3,12 @@
     [quo.foundations.colors :as colors]))
 
 (defn- background-color
-  [{:keys [state blur? customization-color]}]
-  (cond (or (= state :pressed) (= state :selected))
-        (if blur? colors/white-opa-5 (colors/custom-color customization-color 50 5))
+  [{:keys [state pressed? blur? customization-color]}]
+  (cond (or pressed? (= state :selected))
+        (if blur? colors/white-opa-5 (colors/resolve-color customization-color :light 5))
         (= state :active)
-        (if blur? colors/white-opa-10 (colors/custom-color customization-color 50 10))
-        (and (= state :pressed) blur?) colors/white-opa-10
+        (if blur? colors/white-opa-10 (colors/resolve-color customization-color :light 10))
+        (and pressed? blur?) colors/white-opa-10
         :else :transparent))
 
 (defn container
