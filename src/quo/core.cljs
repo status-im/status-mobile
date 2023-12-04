@@ -389,7 +389,7 @@
 (def text-combinations quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)
 
-;;;; Utilities
+;;;; Utilities - Outside of design system
 (def token quo.components.utilities.token.view/view)
 
 ;;;; Wallet
