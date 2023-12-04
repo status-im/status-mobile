@@ -6,7 +6,6 @@
     [quo.theme :as quo.theme]
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
-    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.react-native-intersection-observer :as rnio]
     [react-native.reanimated :as reanimated]
@@ -23,6 +22,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defonce ^:const card-border-radius 16)
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
@@ -232,7 +232,7 @@
         photo-path           (rf/sub [:chats/photo-path chat-id])
         border-animation     (reanimated/interpolate scroll-y
                                                      [30 50]
-                                                     [14 0]
+                                                     [card-border-radius 0]
                                                      header-extrapolation-option)]
     [rn/view (add-inverted-y-android {:flex 1})
      [rn/view
@@ -326,7 +326,6 @@
                      (reset! animate-topbar-opacity? false)))
                  [composer-active? @on-end-reached? @animate-topbar-opacity?])
   (let [theme                                 (quo.theme/use-theme-value)
-        {:keys [keyboard-height]}             (hooks/use-keyboard)
         {window-height :height}               (rn/get-window)
         context                               (rf/sub [:chats/current-chat-message-list-view-context])
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
@@ -386,31 +385,40 @@
                     (pos? (reanimated/get-shared-value
                            scroll-y)))
            (reset! on-end-reached? false))
-         ;; NOTE(alwx): here we set the initial value of
-         ;; `scroll-y` which is needed because by default the
-         ;; chat is scrolled to the bottom and no initial
-         ;; `on-scroll` event is getting triggered
-         (let [scroll-y-shared       (if
-                                       @messages-scroll-y-value-initialized?
-                                       (reanimated/get-shared-value
-                                        scroll-y)
-                                       window-height)
-               ;;TODO make this make sense :)
-               keyboard-extra-space  (->> (- window-height y)
-                                          (- y))
-               keyboard-scroll-value (- keyboard-extra-space
-                                        (- window-height y))
-
-               content-size-shared   (reanimated/get-shared-value
-                                      content-height)
-               content-size          (- y window-height (when platform/android? (:top insets)))
-               current-y             (max (- content-size-shared
-                                             scroll-y-shared)
-                                          0)
-               new-scroll-value      (if (< y window-height)
-                                       keyboard-scroll-value
-                                       (- content-size
-                                          current-y))]
+         ;; NOTE(alwx): here we set the initial value of `scroll-y` which is needed because by
+         ;; default the chat is scrolled to the bottom and no initial `on-scroll` event is getting
+         ;; triggered. Also makes sure changes in the content size are reflected in `scroll-y` e.g.
+         ;; incoming messages scrolling the content up, which should affect the header
+         ;; animations/interpolations.
+         (let [content-size-shared                (reanimated/get-shared-value
+                                                   content-height)
+               scroll-y-shared                    (if
+                                                    @messages-scroll-y-value-initialized?
+                                                    (reanimated/get-shared-value
+                                                     scroll-y)
+                                                    y)
+               ;; NOTE: when the keyboard is shown and the message list
+               ;; doesn't fill the screen, we use a different value for
+               ;; scroll-y, which would make sure the avatar is minimized
+               ;; appropriately and the header is shown.
+               keyboard-shown-with-unfilled-list? (< y window-height)
+               keyboard-space                     (- window-height y)
+               keyboard-scroll-value              (- y keyboard-space keyboard-space)
+               ;; NOTE: doing the calculations as we would in `on-scroll`, so the animations
+               ;; and interpolations are triggered properly.
+               content-size                       (- y
+                                                     window-height
+                                                     ;; NOTE: for some reason android insets are
+                                                     ;; included in the content size `y`, while iOS
+                                                     ;; are not.
+                                                     (when platform/android? (:top insets)))
+               current-y                          (max (- content-size-shared
+                                                          scroll-y-shared)
+                                                       0)
+               new-scroll-value                   (if keyboard-shown-with-unfilled-list?
+                                                    keyboard-scroll-value
+                                                    (- content-size
+                                                       current-y))]
            (when (and (>= new-scroll-value 0)
                       (or (= scroll-y-shared 0)
                           (> (Math/abs (- content-size-shared y))
