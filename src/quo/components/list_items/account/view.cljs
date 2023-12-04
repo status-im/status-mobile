@@ -94,62 +94,42 @@
    [icon/icon :i/check
     {:color (if blur?
               colors/white
-              (colors/theme-colors (colors/custom-color customization-color 50)
-                                   (colors/custom-color customization-color 60)
-                                   theme))}]])
-
-(defn- f-internal-view
-  []
-  (let [state               (reagent/atom :default)
-        active-or-selected? (atom false)
-        timer               (atom nil)
-        on-press-in         (fn []
-                              (when-not (= @state :selected)
-                                (reset! timer (js/setTimeout #(reset! state :pressed) 100))))]
-    (fn [{:keys [type selectable? blur? customization-color on-press]
-          :or   {customization-color :blue
-                 type                :default
-                 blur?               false}
-          :as   props}]
-      (let [on-press-out (fn []
-                           (let [new-state (if @active-or-selected?
-                                             :default
-                                             (if (and (= type :default) selectable?)
-                                               :selected
-                                               :active))]
-                             (when @timer (js/clearTimeout @timer))
-                             (reset! timer nil)
-                             (reset! active-or-selected? (or (= new-state :active)
-                                                             (= new-state :selected)))
-                             (reset! state new-state)
-                             (when on-press
-                               (on-press))))]
-        (rn/use-effect
-         #(cond (and selectable? (= type :default) (= @state :active))         (reset! state :selected)
-                (and (not selectable?) (= type :default) (= @state :selected)) (reset! state :active))
-         [selectable?])
-        [rn/pressable
-         {:style               (style/container
-                                {:state @state :blur? blur? :customization-color customization-color})
-          :on-press-in         on-press-in
-          :on-press-out        on-press-out
-          :accessibility-label :container}
-         [account-view props]
-         [rn/view {:style (when (= type :tag) style/token-tag-container)}
-          (when (or (= type :balance-neutral)
-                    (= type :balance-negative)
-                    (= type :balance-positive))
-            [balance-view props])
-          (when (= type :tag)
-            [token-tag props])
-          (when (= type :action)
-            [options-button props])
-          (when (and (= type :default)
-                     (= @state :selected))
-            [check-icon props])]]))))
+              (colors/resolve-color customization-color theme))}]])
 
 (defn- internal-view
-  [props]
-  [:f> f-internal-view props])
+  [_]
+  (let [pressed?     (reagent/atom false)
+        on-press-in  #(reset! pressed? true)
+        on-press-out #(reset! pressed? false)]
+    (fn [{:keys [type state blur? customization-color on-press]
+          :or   {customization-color :blue
+                 type                :default
+                 state               :default
+                 blur?               false}
+          :as   props}]
+      [rn/pressable
+       {:style               (style/container
+                              {:state               state
+                               :blur?               blur?
+                               :customization-color customization-color
+                               :pressed?            @pressed?})
+        :on-press-in         on-press-in
+        :on-press            on-press
+        :on-press-out        on-press-out
+        :accessibility-label :container}
+       [account-view props]
+       [rn/view {:style (when (= type :tag) style/token-tag-container)}
+        (cond
+          (#{:balance-neutral :balance-negative :balance-positive} type)
+          [balance-view props]
+
+          (= type :tag)
+          [token-tag props]
+
+          (= type :action)
+          [options-button props]
+
+          (and (= type :default) (= state :selected))
+          [check-icon props])]])))
 
 (def view (quo.theme/with-theme internal-view))

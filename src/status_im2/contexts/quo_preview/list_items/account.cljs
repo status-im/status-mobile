@@ -9,8 +9,10 @@
     :type    :select
     :options [{:key :default} {:key :balance-positive} {:key :balance-neutral} {:key :balance-negative}
               {:key :tag} {:key :action}]}
-   {:key :selectable? :type :boolean}
    {:key :title-icon? :type :boolean}
+   {:key     :state
+    :type    :select
+    :options [{:key :active} {:key :selected}]}
    {:key  :emoji
     :type :text}
    (preview/customization-color-option {:key :account-color})
@@ -20,8 +22,8 @@
 (defn view
   []
   (let [state (reagent/atom {:type                :default
-                             :selectable?         false
                              :title-icon?         false
+                             :state               :default
                              :customization-color :blue
                              :account-color       :purple
                              :emoji               "🍑"
