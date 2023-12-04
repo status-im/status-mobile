@@ -20,12 +20,13 @@
      (i18n/label :t/trip-accounts))])
 
 (defn- row-icon
-  [profile-picture type secondary-color]
+  [customization-color profile-picture type secondary-color]
   (case type
     :default-keypair [user-avatar/user-avatar
-                      {:size            :xxs
-                       :ring?           false
-                       :profile-picture profile-picture}]
+                      {:size                :xxs
+                       :ring?               false
+                       :customization-color customization-color
+                       :profile-picture     profile-picture}]
     :recovery-phrase [icons/icon
                       :i/seed
                       {:accessibility-label :recovery-phrase-icon
@@ -41,10 +42,11 @@
     nil))
 
 (defn- row-view
-  [{:keys [type theme secondary-color profile-picture title stored subtitle on-press]}]
+  [{:keys [type theme secondary-color customization-color profile-picture title stored subtitle
+           on-press]}]
   [rn/view {:style (style/row-container type theme)}
    [rn/view {:style style/icon-container}
-    [row-icon profile-picture type secondary-color]]
+    [row-icon customization-color profile-picture type secondary-color]]
    [rn/view
     {:style style/row-content-container}
     [row-title type title]
@@ -68,18 +70,19 @@
        {:color secondary-color}]])])
 
 (defn- list-view
-  [{:keys [type stored profile-picture user-name theme secondary-color]}]
+  [{:keys [type stored customization-color profile-picture user-name theme secondary-color]}]
   (let [stored-name (if (= :on-device stored)
                       (i18n/label :t/on-device)
                       (i18n/label :t/on-keycard))]
     [row-view
-     {:type            type
-      :stored          stored
-      :profile-picture profile-picture
-      :title           user-name
-      :subtitle        stored-name
-      :theme           theme
-      :secondary-color secondary-color}]))
+     {:type                type
+      :stored              stored
+      :customization-color customization-color
+      :profile-picture     profile-picture
+      :title               user-name
+      :subtitle            stored-name
+      :theme               theme
+      :secondary-color     secondary-color}]))
 
 (defn- card-view
   [theme derivation-path secondary-color on-press]
@@ -105,12 +108,13 @@
 
 (def view
   "Create an account-origin UI component.
-  | key               | values                                         |
-  | ------------------|------------------------------------------------|
-  | :type             | :default-keypair :recovery-phrase :private-key 
-  | :stored           | :on-device :on-keycard
-  | :profile-picture  | image source
-  | :derivation-path  | string
-  | :user-name        | string
-  | :on-press         | function"
+  | key                   | values                                         |
+  | ----------------------|------------------------------------------------|
+  | :type                 | :default-keypair :recovery-phrase :private-key 
+  | :stored               | :on-device :on-keycard
+  | :profile-picture      | image source
+  | :customization-color  | profile color
+  | :derivation-path      | string
+  | :user-name            | string
+  | :on-press             | function"
   (quo.theme/with-theme view-internal))
