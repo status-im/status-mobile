@@ -207,7 +207,7 @@
                   key-uid]
            :as   profile}
           @(re-frame/subscribe [:profile/profile-with-image])
-          customization-color (or (:color @(re-frame/subscribe [:onboarding-2/profile]))
+          customization-color (or (:color @(re-frame/subscribe [:onboarding/profile]))
                                   @(re-frame/subscribe [:profile/customization-color key-uid]))
           on-share #(re-frame/dispatch [:show-popover
                                         {:view     :share-chat-key

@@ -128,7 +128,7 @@
         same-password-length?     #(and (seq @password)
                                         (= (count @password) (count @repeat-password)))]
     (fn []
-      (let [{user-color :color} (rf/sub [:onboarding-2/profile])
+      (let [{user-color :color} (rf/sub [:onboarding/profile])
             {:keys [long-enough?]
              :as   validations} (password-validations @password)
             password-strength   (calc-password-strength validations)
@@ -177,7 +177,7 @@
             {:disabled?           (not meet-requirements?)
              :customization-color user-color
              :on-press            #(rf/dispatch
-                                    [:onboarding-2/password-set
+                                    [:onboarding/password-set
                                      (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
