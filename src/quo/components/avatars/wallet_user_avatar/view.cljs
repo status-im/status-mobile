@@ -56,6 +56,6 @@
        :size                (:font-size (size properties))
        :weight              (if monospace? :monospace (:font-weight (size properties)))
        :style               (style/text customization-color neutral? theme)}
-      (if lowercase? (string/lower-case initials) initials)]]))
+      (if (and initials lowercase?) (string/lower-case initials) initials)]]))
 
 (def wallet-user-avatar (quo.theme/with-theme view-internal))

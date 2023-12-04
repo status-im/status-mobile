@@ -30,6 +30,6 @@
       {:accessibility-label      :account-emoji
        :adjusts-font-size-to-fit true
        :style                    {:font-size emoji-size}}
-      (string/trim emoji)]]))
+      (when emoji (string/trim emoji))]]))
 
 (def view (quo.theme/with-theme view-internal))

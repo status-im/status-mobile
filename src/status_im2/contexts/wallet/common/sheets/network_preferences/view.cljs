@@ -44,12 +44,12 @@
      [quo/data-item
       {:status          :default
        :size            :default
-       :description     :default
        :label           :none
        :blur?           false
        :card?           true
        :title           (i18n/label :t/address)
        :subtitle        address
+       :subtitle-type   :default
        :container-style (merge style/data-item
                                {:background-color (colors/theme-colors colors/neutral-2_5
                                                                        colors/neutral-90

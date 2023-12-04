@@ -16,7 +16,7 @@
               {:key :graph}
               {:key :preview}]}
    {:type    :select
-    :key     :description
+    :key     :subtitle-type
     :options [{:key :default}
               {:key :icon}
               {:key :network}
@@ -39,14 +39,14 @@
   []
   (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
                              :blur?               false
-                             :description         :account
+                             :subtitle-type       :account
                              :icon-right?         false
                              :card?               true
                              :label               :none
                              :status              :default
                              :size                :default
                              :title               "Label"
-                             :subtitle            "Description"
+                             :subtitle            "Subtitle"
                              :icon                :i/placeholder
                              :right-icon          :i/chevron-right
                              :emoji               "🎮"

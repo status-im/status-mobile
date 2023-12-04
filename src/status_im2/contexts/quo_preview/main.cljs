@@ -164,6 +164,7 @@
      channel-name]
     [status-im2.contexts.quo-preview.text-combinations.preview :as
      text-combinations]
+    [status-im2.contexts.quo-preview.text-combinations.standard-title :as standard-title]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im2.contexts.quo-preview.wallet.account-overview :as
@@ -455,7 +456,9 @@
    :text-combinations [{:name      :text-combinations
                         :component text-combinations/view}
                        {:name      :channel-name
-                        :component channel-name/view}]
+                        :component channel-name/view}
+                       {:name      :standard-title
+                        :component standard-title/view}]
    :wallet            [{:name :account-card :component account-card/view}
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
