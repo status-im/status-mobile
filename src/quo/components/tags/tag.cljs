@@ -66,17 +66,17 @@
              text-color)
       label])])
 
-(defn tag
+(defn tag-internal
   "opts
    {:type         :icon/:emoji/:label
     :label        string
     :size         32/24
     :on-press     fn
-    :blurred?     true/false 
+    :blurred?     true/false
     :resource     icon/image
     :labelled?    true/false
     :disabled?    true/false}
-  
+
    opts
     - `blurred`  boolean: use to determine border color if the background is blurred
     - `type`     can be icon or emoji with or without a tag label
@@ -106,5 +106,5 @@
        :labelled?           (if (= type :label) true labelled?)}
       [tag-resources size type resource icon-color label text-color labelled?]]]))
 
-(def tag (quo.theme/with-theme tag))
+(def tag (quo.theme/with-theme tag-internal))
 

@@ -66,6 +66,7 @@
     quo.components.inputs.recovery-phrase.view
     quo.components.inputs.search-input.view
     quo.components.inputs.title-input.view
+    quo.components.ios.drawer-bar.view
     quo.components.keycard.view
     quo.components.links.link-preview.view
     quo.components.links.url-preview-list.view
@@ -267,6 +268,9 @@
 (def recovery-phrase-input quo.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo.components.inputs.search-input.view/search-input)
 (def title-input quo.components.inputs.title-input.view/view)
+
+;;;; iOS
+(def drawer-bar quo.components.ios.drawer-bar.view/view)
 
 ;;;; Numbered Keyboard
 (def keyboard-key quo.components.numbered-keyboard.keyboard-key.view/view)

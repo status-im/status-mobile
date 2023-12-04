@@ -61,9 +61,9 @@
 (reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
 
 ;;onboarding
-(reg-root-key-sub :onboarding-2/generated-keys? :onboarding-2/generated-keys?)
-(reg-root-key-sub :onboarding-2/new-account? :onboarding-2/new-account?)
-(reg-root-key-sub :onboarding-2/profile :onboarding-2/profile)
+(reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)
+(reg-root-key-sub :onboarding/new-account? :onboarding/new-account?)
+(reg-root-key-sub :onboarding/profile :onboarding/profile)
 
 ;;shell
 (reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)

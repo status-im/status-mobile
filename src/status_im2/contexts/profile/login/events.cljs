@@ -54,8 +54,8 @@
   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
         masked-password            (security/mask-data password)]
     {:db     (-> db
-                 (assoc-in [:onboarding-2/profile :password] masked-password)
-                 (assoc-in [:onboarding-2/profile :syncing?] true))
+                 (assoc-in [:onboarding/profile :password] masked-password)
+                 (assoc-in [:onboarding/profile :syncing?] true))
      ::login [key-uid password]}))
 
 (rf/defn redirect-to-root
@@ -66,8 +66,8 @@
       {:db       (dissoc db :syncing)
        :dispatch [:init-root :syncing-results]}
 
-      (get db :onboarding-2/new-account?)
-      {:dispatch [:onboarding-2/finalize-setup]}
+      (get db :onboarding/new-account?)
+      {:dispatch [:onboarding/finalize-setup]}
 
       :else
       (rf/merge
@@ -140,7 +140,7 @@
               (switcher-cards-store/fetch-switcher-cards-rpc))))
 
 (rf/defn login-node-signal
-  [{{:onboarding-2/keys [recovered-account? new-account?] :as db} :db :as cofx}
+  [{{:onboarding/keys [recovered-account? new-account?] :as db} :db :as cofx}
    {:keys [settings account ensUsernames error]}]
   (log/debug "[signals] node.login" "error" error)
   (if error

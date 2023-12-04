@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.notification.community-request.view
   (:require
     [quo.core :as quo]
+    [react-native.gesture :as gesture]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
     [status-im2.contexts.shell.activity-center.notification.common.view :as common]
@@ -67,11 +68,15 @@
         {:keys [header-text context]} (get-header-text-and-context community
                                                                    membership-status)]
     [swipeable props
-     [quo/activity-log
-      {:title               header-text
-       :customization-color customization-color
-       :icon                :i/communities
-       :on-layout           set-swipeable-height
-       :timestamp           (datetime/timestamp->relative timestamp)
-       :unread?             (not read)
-       :context             context}]]))
+     [gesture/touchable-without-feedback
+      {:on-press (fn []
+                   (rf/dispatch [:navigate-back])
+                   (rf/dispatch [:navigate-to :community-overview community-id]))}
+      [quo/activity-log
+       {:title               header-text
+        :customization-color customization-color
+        :icon                :i/communities
+        :on-layout           set-swipeable-height
+        :timestamp           (datetime/timestamp->relative timestamp)
+        :unread?             (not read)
+        :context             context}]]]))

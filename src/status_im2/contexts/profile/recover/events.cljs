@@ -16,7 +16,7 @@
   {:events [:profile.recover/recover-and-login]}
   [{:keys [db]} {:keys [display-name password image-path color seed-phrase]}]
   {:db
-   (assoc db :onboarding-2/recovered-account? true)
+   (assoc db :onboarding/recovered-account? true)
 
    ::restore-profile-and-login
    (merge (profile.config/create)
