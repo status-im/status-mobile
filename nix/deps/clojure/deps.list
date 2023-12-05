@@ -65,6 +65,7 @@ net/cgrand/macrovich/0.2.1/macrovich-0.2.1.jar
 net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar
 nrepl/bencode/1.1.0/bencode-1.1.0.jar
 nrepl/nrepl/1.0.0/nrepl-1.0.0.jar
+nubank/matcher-combinators/3.8.8/matcher-combinators-3.8.8.jar
 org/apache/ant/ant/1.10.11/ant-1.10.11.jar
 org/apache/ant/ant-launcher/1.10.11/ant-launcher-1.10.11.jar
 org/babashka/sci/0.7.38/sci-0.7.38.jar
@@ -81,6 +82,7 @@ org/clojure/data.json/2.4.0/data.json-2.4.0.jar
 org/clojure/data.priority-map/1.1.0/data.priority-map-1.1.0.jar
 org/clojure/google-closure-library/0.0-20230227-c7c0a541/google-closure-library-0.0-20230227-c7c0a541.jar
 org/clojure/google-closure-library-third-party/0.0-20230227-c7c0a541/google-closure-library-third-party-0.0-20230227-c7c0a541.jar
+org/clojure/math.combinatorics/0.2.0/math.combinatorics-0.2.0.jar
 org/clojure/spec.alpha/0.3.218/spec.alpha-0.3.218.jar
 org/clojure/test.check/1.1.1/test.check-1.1.1.jar
 org/clojure/tools.analyzer/1.1.0/tools.analyzer-1.1.0.jar
