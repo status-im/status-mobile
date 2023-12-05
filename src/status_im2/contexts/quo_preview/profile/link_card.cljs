@@ -29,7 +29,8 @@
 (defn view
   []
   (let [state (reagent/atom {:link :link
-                             :address "address"})]
+                             :address "address"
+                             :on-press #(js/alert "pressed")})]
     (fn []
       [preview/preview-container
        {:state                     state
