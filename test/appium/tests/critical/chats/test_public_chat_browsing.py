@@ -73,6 +73,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702846)
+    @marks.xfail(reason="Issue #18075", run=False)
     def test_community_navigate_to_channel_when_relaunch(self):
         text_message = 'some_text'
         if not self.channel.chat_message_input.is_element_displayed():
