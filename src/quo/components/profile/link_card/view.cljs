@@ -14,11 +14,11 @@
 (defn title
   [link]
   (case link
-    :link "Website"
-    :github "GitHub"
-    :linkedin "LinkedIn"
+    :link      "Website"
+    :github    "GitHub"
+    :linkedin  "LinkedIn"
     :superrare "SuperRare"
-    :youtube "YouTube"
+    :youtube   "YouTube"
     (string/capitalize (core/name link))))
 
 (defn website-icon
@@ -33,27 +33,29 @@
 
 (defn- view-internal
   [{:keys [address link theme on-press]
-    :or {link :link}}]
-  [rn/pressable {:accessibility-label :link-card
-                 :on-press on-press}
+    :or   {link :link}}]
+  [rn/pressable
+   {:accessibility-label :link-card
+    :on-press            on-press}
    [linear-gradient/linear-gradient
-    {:colors   [(properties/gradient-start-color theme (if (= :link link) :army link))
-                (properties/gradient-end-color theme (if (= :link link) :army link))]
-     :start    {:x 0 :y 1}
-     :end      {:x 1 :y 1}
-     :style (style/container theme)}
+    {:colors [(properties/gradient-start-color theme (if (= :link link) :army link))
+              (properties/gradient-end-color theme (if (= :link link) :army link))]
+     :start  {:x 0 :y 1}
+     :end    {:x 1 :y 1}
+     :style  (style/container theme)}
     [rn/view {:style style/icon-container}
      (if (= link :link)
        [website-icon]
-       [social/view {:accessibility-label :social-icon
-                     :social link}])]
+       [social/view
+        {:accessibility-label :social-icon
+         :social              link}])]
     [text/text
      {:accessibility-label :title
-      :weight :semi-bold}
+      :weight              :semi-bold}
      (title link)]
     [text/text
      {:accessibility-label :address
-      :size :paragraph-2}
+      :size                :paragraph-2}
      address]]])
 
 (def view (quo.theme/with-theme view-internal))

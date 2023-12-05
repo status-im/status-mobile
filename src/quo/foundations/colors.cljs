@@ -251,22 +251,22 @@
    :unknown  "#EEF2F5"})
 
 (def ^:private socials
-  {:facebook "#1877F2"
-   :github   "#000000"
+  {:facebook  "#1877F2"
+   :github    "#000000"
    :instagram "#D8408E0F"
-   :lens     "#00501E"
-   :linkedin "#0B86CA"
-   :mirror   "#3E7EF7"
-   :opensea  "#2081E2"
+   :lens      "#00501E"
+   :linkedin  "#0B86CA"
+   :mirror    "#3E7EF7"
+   :opensea   "#2081E2"
    :pinterest "#CB2027"
    :rarible   "#FEDA03"
    :snapchat  "#FFFC00"
-   :spotify "#00DA5A"
+   :spotify   "#00DA5A"
    :superrare "#000000"
-   :tumblr "#37474F"
-   :twitch "#673AB7"
-   :twitter "#262E35"
-   :youtube "#FF3000"})
+   :tumblr    "#37474F"
+   :twitch    "#673AB7"
+   :twitter   "#262E35"
+   :youtube   "#FF3000"})
 
 (def ^:private colors-map
   (merge {:primary {50 primary-50

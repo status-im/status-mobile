@@ -7,8 +7,8 @@
 (defn- get-social-image*
   [social]
   (let [social-symbol (cond-> social
-                       (keyword? social) name
-                       :always          string/lower-case)]
+                        (keyword? social) name
+                        :always           string/lower-case)]
     (get socials social-symbol)))
 
 (def get-social-image (memoize get-social-image*))

@@ -1,5 +1,5 @@
-(ns quo.components.profile.link-card.properties 
-  (:require    [quo.foundations.colors :as colors]))
+(ns quo.components.profile.link-card.properties
+  (:require [quo.foundations.colors :as colors]))
 
 (defn gradient-start-color
   [theme customization-color]

@@ -1,11 +1,11 @@
 (ns status-im2.contexts.quo-preview.profile.link-card
   (:require [quo.core :as quo]
-            [reagent.core :as reagent] 
+            [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:key :link 
-    :type :select
+  [{:key     :link
+    :type    :select
     :options [{:key :link}
               {:key :faceook}
               {:key :github}
@@ -23,13 +23,13 @@
               {:key :twitch}
               {:key :twitter}
               {:key :youtube}]}
-   {:key :address
+   {:key  :address
     :type :text}])
 
 (defn view
   []
-  (let [state (reagent/atom {:link :link
-                             :address "address"
+  (let [state (reagent/atom {:link     :link
+                             :address  "address"
                              :on-press #(js/alert "pressed")})]
     (fn []
       [preview/preview-container

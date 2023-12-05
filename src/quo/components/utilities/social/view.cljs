@@ -55,7 +55,7 @@
         source     (or b64-string (social-loader/get-social-image social))]
     [rn/image
      {:accessibility-label accessibility-label
-      :style  (social-style style size)
-      :source source}]))
+      :style               (social-style style size)
+      :source              source}]))
 
 (def view (schema/instrument #'view-internal ?schema))
