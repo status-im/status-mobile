@@ -1,15 +1,17 @@
 (ns status-im2.contexts.wallet.send.select-asset.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [status-im2.contexts.wallet.send.select-asset.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.foundations.resources :as quo.resources]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [status-im2.common.resources :as resources]
+   [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
+   [status-im2.contexts.wallet.send.select-asset.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (def tabs-data
   [{:id :tab/assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
@@ -42,15 +44,41 @@
       :on-scroll-to-index-failed    identity
       :render-fn                    asset-component}]))
 
+(defn- test-example
+  [{:keys [theme]}]
+  (let [collectible-list (rf/sub [:wallet/collectibles])]
+    (def --cl collectible-list)
+    (if true #_(empty? collectible-list)
+      [empty-tab/view
+       {:title       (i18n/label :t/no-collectibles)
+        :description (i18n/label :t/no-collectibles-description)
+        :image       (resources/get-themed-image :no-collectibles :light ;theme
+                                                 )}]
+      [rn/flat-list
+       {:data                    collectible-list
+        :style                   {:flex 1}
+        :content-container-style {:align-items :center}
+        :num-columns             2
+        :render-fn               (fn [{:keys [preview-url id]}]
+                                   [quo/collectible
+                                    {:images   [preview-url]
+                                     :on-press (fn []
+                                                 (rf/dispatch [:wallet/get-collectible-details id])
+                                                 (rf/dispatch
+                                                  [:navigate-to
+                                                   :wallet-collectible]))}])}])))
+
 (defn- tab-view
   [search-text selected-tab]
   (case selected-tab
     :tab/assets       [asset-list search-text]
-    :tab/collectibles [quo/empty-state
-                       {:title           (i18n/label :t/no-collectibles)
-                        :description     (i18n/label :t/no-collectibles-description)
-                        :placeholder?    true
-                        :container-style (style/empty-container-style (safe-area/get-top))}]))
+    :tab/collectibles [test-example]
+    #_[quo/empty-state
+       {:title           (i18n/label :t/no-collectibles)
+        :description     (i18n/label :t/no-collectibles-description)
+        :placeholder?    true
+        :container-style (style/empty-container-style (safe-area/get-top))}]
+    nil))
 
 (defn- search-input
   [search-text]
