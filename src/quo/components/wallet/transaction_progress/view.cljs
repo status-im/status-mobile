@@ -152,7 +152,7 @@
        (text-steps network state epoch-number counter)]]]))
 
 (defn- view-network
-  [{:keys [theme state epoch-number counter total-box customization-color progress bottom-large?
+  [{:keys [theme state epoch-number counter total-box progress bottom-large?
            network]}]
   [:<>
    [status-row
@@ -167,12 +167,10 @@
      :counter             counter
      :total-box           total-box
      :progress-value      progress
-     :bottom-large?       bottom-large?
-     :customization-color customization-color}]])
+     :bottom-large?       bottom-large?}]])
 
 (defn- view-internal
-  [{:keys [title on-press accessibility-label theme tag-photo tag-name tag-number networks
-           customization-color]
+  [{:keys [title on-press accessibility-label theme tag-photo tag-name tag-number networks]
     :or   {accessibility-label :transaction-progress}}]
   [rn/touchable-without-feedback
    {:on-press            on-press
@@ -185,9 +183,7 @@
     [tag-internal tag-photo tag-name tag-number theme]
     (for [network networks]
       ^{:key (:network network)}
-      (let [assoc-props #(assoc (get-network networks %)
-                                :customization-color
-                                customization-color)]
+      (let [assoc-props #(get-network networks %)]
         [view-network (assoc-props (:network network))]))]])
 
 (def view (quo.theme/with-theme view-internal))

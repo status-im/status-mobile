@@ -34,7 +34,7 @@
     min-progress))
 
 (defn- progress-boxes-mainnet
-  [{:keys [state counter total-box customization-color]}]
+  [{:keys [state counter total-box]}]
   [rn/view
    {:accessibility-label :mainnet-progress-box
     :style               (style/progress-box-container true)}
@@ -42,22 +42,22 @@
      (doall (for [n numbers]
               [progress-box/view
                {:state               (calculate-box-state state counter n)
-                :customization-color customization-color
+                :customization-color :blue
                 :key                 n}])))])
 
 (defn- progress-boxes-sidenet
-  [{:keys [state bottom-large? customization-color progress-value]}]
+  [{:keys [state bottom-large? progress-value]}]
   [rn/view
    {:accessibility-label :progress-box
     :style               (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-sidenet state)
-     :customization-color customization-color}]
+     :customization-color :success}]
    [progress-box/view
     {:state               (calculate-box-state-sidenet state)
      :full-width?         true
      :progressed-value    (calculate-progressed-value state progress-value)
-     :customization-color customization-color}]])
+     :customization-color :blue}]])
 
 (defn- view-internal
   [{:keys [network] :as props}]
