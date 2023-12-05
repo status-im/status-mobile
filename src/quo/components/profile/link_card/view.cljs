@@ -32,7 +32,8 @@
     :size                20}])
 
 (defn- view-internal
-  [{:keys [address link theme on-press]}]
+  [{:keys [address link theme on-press]
+    :or {link :link}}]
   [rn/pressable {:accessibility-label :link-card
                  :on-press on-press}
    [linear-gradient/linear-gradient
@@ -44,12 +45,15 @@
     [rn/view {:style style/icon-container}
      (if (= link :link)
        [website-icon]
-       [social/view {:social link}])]
+       [social/view {:accessibility-label :social-icon
+                     :social link}])]
     [text/text
-     {:weight :semi-bold}
+     {:accessibility-label :title
+      :weight :semi-bold}
      (title link)]
     [text/text
-     {:size :paragraph-2}
+     {:accessibility-label :address
+      :size :paragraph-2}
      address]]])
 
 (def view (quo.theme/with-theme view-internal))
