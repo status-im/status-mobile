@@ -7,6 +7,7 @@
     status-im2.common.font.events
     [status-im2.common.json-rpc.events]
     status-im2.common.password-authentication.events
+    status-im2.common.signals.events
     status-im2.common.theme.events
     [status-im2.common.toasts.events]
     [status-im2.contexts.add-new-contact.events]

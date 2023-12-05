@@ -32,9 +32,7 @@
     status-im.pairing.core
     status-im.profile.core
     status-im.search.core
-    status-im.signals.core
     status-im.stickers.core
-    status-im.transport.core
     status-im.ui.components.invite.events
     [status-im.ui.components.react :as react]
     status-im.ui.screens.notifications-settings.events

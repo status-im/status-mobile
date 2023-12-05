@@ -5,11 +5,11 @@
     [goog.object :as object]
     [re-frame.core :as re-frame]
     [status-im.chat.models.mentions :as mentions]
-    [status-im.chat.models.message :as chat.message]
     [status-im.chat.models.message-content :as message-content]
     [status-im.data-store.messages :as data-store-messages]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
+    [status-im2.contexts.chat.messages.transport.events :as messages.transport]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -205,7 +205,7 @@
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
                 (link-preview/reset-unfurled)
-                (chat.message/send-messages messages)))))
+                (messages.transport/send-chat-messages messages)))))
 
 (rf/defn send-audio-message
   [{:keys [db] :as cofx} audio-path duration current-chat-id]
@@ -214,25 +214,26 @@
     (when-not (string/blank? audio-path)
       (rf/merge
        {:db (assoc-in db [:chat/inputs current-chat-id :metadata :responding-to-message] nil)}
-       (chat.message/send-message
-        (merge
-         {:chat-id           current-chat-id
-          :content-type      constants/content-type-audio
-          :audio-path        audio-path
-          :audio-duration-ms duration
-          :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})}
-         (when message-id
-           {:response-to message-id})))))))
+       (messages.transport/send-chat-messages
+        [(merge
+          {:chat-id           current-chat-id
+           :content-type      constants/content-type-audio
+           :audio-path        audio-path
+           :audio-duration-ms duration
+           :text              (i18n/label :t/update-to-listen-audio {"locale" "en"})}
+          (when message-id
+            {:response-to message-id}))])))))
 
 (rf/defn send-sticker-message
   [cofx {:keys [hash packID pack]} current-chat-id]
   (when-not (or (string/blank? hash) (and (string/blank? packID) (string/blank? pack)))
-    (chat.message/send-message cofx
-                               {:chat-id      current-chat-id
-                                :content-type constants/content-type-sticker
-                                :sticker      {:hash hash
-                                               :pack (int (if (string/blank? packID) pack packID))}
-                                :text         (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
+    (messages.transport/send-chat-messages
+     cofx
+     [{:chat-id      current-chat-id
+       :content-type constants/content-type-sticker
+       :sticker      {:hash hash
+                      :pack (int (if (string/blank? packID) pack packID))}
+       :text         (i18n/label :t/update-to-see-sticker {"locale" "en"})}])))
 
 (rf/defn send-edited-message
   [{:keys [db]
