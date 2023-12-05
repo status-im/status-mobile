@@ -37,7 +37,7 @@
   [{:keys [state counter total-box]}]
   [rn/view
    {:accessibility-label :mainnet-progress-box
-    :style               (style/progress-box-container true)}
+    :style               style/progress-box-container}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
@@ -46,10 +46,10 @@
                 :key                 n}])))])
 
 (defn- progress-boxes-sidenet
-  [{:keys [state bottom-large? progress-value]}]
+  [{:keys [state progress-value]}]
   [rn/view
    {:accessibility-label :progress-box
-    :style               (style/progress-box-container bottom-large?)}
+    :style               style/progress-box-container}
    [progress-box/view
     {:state               (calculate-box-state-sidenet state)
      :customization-color :success}]

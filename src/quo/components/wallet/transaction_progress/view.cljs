@@ -152,8 +152,7 @@
        (text-steps network state epoch-number counter)]]]))
 
 (defn- view-network
-  [{:keys [theme state epoch-number counter total-box progress bottom-large?
-           network]}]
+  [{:keys [theme state epoch-number counter total-box progress network]}]
   [:<>
    [status-row
     {:theme        theme
@@ -166,8 +165,7 @@
      :network             network
      :counter             counter
      :total-box           total-box
-     :progress-value      progress
-     :bottom-large?       bottom-large?}]])
+     :progress-value      progress}]])
 
 (defn- view-internal
   [{:keys [title on-press accessibility-label theme tag-photo tag-name tag-number networks]
