@@ -1,8 +1,8 @@
-(ns status-im2.common.alert.events
+(ns status-im2.common.alert.effects
   (:require
-    [re-frame.core :as re-frame]
     [react-native.core :as rn]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn show-popup
   ([title content]
@@ -26,8 +26,7 @@
       (when on-dismiss
         {:cancelable false})))))
 
-(re-frame/reg-fx
- :utils/show-popup
+(rf/reg-fx :effects.utils/show-popup
  (fn [{:keys [title content on-dismiss]}]
    (show-popup title content on-dismiss)))
 
@@ -50,8 +49,7 @@
     (or extra-options nil))
    {:cancelable false}))
 
-(re-frame/reg-fx
- :utils/show-confirmation
+(rf/reg-fx :effects.utils/show-confirmation
  (fn [{:keys [title content confirm-button-text on-accept on-cancel cancel-button-text extra-options]}]
    (show-confirmation {:title               title
                        :content             content
@@ -60,18 +58,3 @@
                        :on-accept           on-accept
                        :on-cancel           on-cancel
                        :extra-options       extra-options})))
-
-(defn show-question
-  ([title content on-accept]
-   (show-question title content on-accept nil))
-  ([title content on-accept on-cancel]
-   (rn/alert
-    title
-    content
-    (vector (merge {:text                (i18n/label :t/no)
-                    :accessibility-label :no-button}
-                   (when on-cancel {:onPress on-cancel}))
-            {:text                (i18n/label :t/yes)
-             :onPress             on-accept
-             :accessibility-label :yes-button})
-    nil)))

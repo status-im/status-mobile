@@ -15,7 +15,7 @@
  :<- [:wallet]
  (fn [wallet]
    (map (fn [collectible]
-          (assoc collectible :preview-url (preview-url collectible)))
+          (assoc collectible :preview-url (preview-url (:collectible-data collectible))))
         (:collectibles wallet))))
 
 (re-frame/reg-sub
@@ -23,4 +23,10 @@
  :<- [:wallet]
  (fn [wallet]
    (let [last-collectible (:last-collectible-details wallet)]
-     (assoc last-collectible :preview-url (preview-url last-collectible)))))
+     (assoc last-collectible :preview-url (preview-url (:collectible-data last-collectible))))))
+
+(re-frame/reg-sub
+ :wallet/last-collectible-chain-id
+ :<- [:wallet/last-collectible-details]
+ (fn [collectible]
+   (get-in collectible [:id :contract-id :chain-id])))

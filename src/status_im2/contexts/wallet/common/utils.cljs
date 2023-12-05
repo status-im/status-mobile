@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.common.utils
   (:require [clojure.string :as string]
             [status-im2.constants :as constants]
+            [utils.money :as money]
             [utils.number]))
 
 (defn get-first-name
@@ -23,7 +24,7 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-(defn- calculate-raw-balance
+(defn calculate-raw-balance
   [raw-balance decimals]
   (if-let [n (utils.number/parse-int raw-balance nil)]
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
@@ -35,6 +36,12 @@
        (vals)
        (map #(calculate-raw-balance (:raw-balance %) decimals))
        (reduce +)))
+
+(defn token-value-in-chain
+  [{:keys [balances-per-chain decimals]} chain-id]
+  (let [balance-in-chain (get balances-per-chain chain-id)]
+    (when balance-in-chain
+      (calculate-raw-balance (:raw-balance balance-in-chain) decimals))))
 
 (defn calculate-balance
   [tokens-in-account]
@@ -52,3 +59,7 @@
                                     (= (:related-chain-id %) chain-id))
                                networks)))
               (keys balances-per-chain))))
+
+(defn calculate-fiat-change
+  [fiat-value change-pct-24hour]
+  (money/bignumber (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour)))))

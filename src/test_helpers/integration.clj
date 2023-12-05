@@ -19,6 +19,6 @@
      (do ~@body)
      (do
        (test-helpers.integration/create-multiaccount!)
-       (rf-test/wait-for [:status-im.transport.core/messenger-started]
+       (rf-test/wait-for [:messenger-started]
          (test-helpers.integration/assert-messenger-started)
          ~@body))))

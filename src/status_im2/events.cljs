@@ -2,10 +2,12 @@
   (:require
     [status-im.bottom-sheet.events]
     [status-im.keycard.core :as keycard]
-    status-im2.common.async-storage
-    status-im2.common.font
+    status-im2.common.alert.effects
+    status-im2.common.async-storage.effects
+    status-im2.common.font.events
     [status-im2.common.json-rpc.events]
     status-im2.common.password-authentication.events
+    status-im2.common.signals.events
     status-im2.common.theme.events
     [status-im2.common.toasts.events]
     [status-im2.contexts.add-new-contact.events]
@@ -26,14 +28,14 @@
 (rf/defn start-app
   {:events [:app-started]}
   [cofx]
-  (rf/merge cofx
-            {:db                                     db/app-db
-             :theme/init-theme                       nil
-             :network/listen-to-network-info         nil
-             :biometric/get-supported-biometric-type nil
-             ;;app starting flow continues in get-profiles-overview
-             :profile/get-profiles-overview          #(rf/dispatch
-                                                       [:profile/get-profiles-overview-success %])
-             :font/get-font-file-for-initials-avatar #(rf/dispatch
-                                                       [:font/init-font-file-for-initials-avatar %])}
-            (keycard/init)))
+  (rf/merge
+   cofx
+   {:db db/app-db
+    :theme/init-theme nil
+    :network/listen-to-network-info nil
+    :biometric/get-supported-biometric-type nil
+    ;;app starting flow continues in get-profiles-overview
+    :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
+    :effects.font/get-font-file-for-initials-avatar
+    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])}
+   (keycard/init)))
