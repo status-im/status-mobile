@@ -22,6 +22,7 @@
     status-im2.contexts.shell.share.events
     status-im2.contexts.syncing.events
     status-im2.contexts.wallet.events
+    status-im2.contexts.wallet.send.events
     [status-im2.db :as db]
     [utils.re-frame :as rf]))
 

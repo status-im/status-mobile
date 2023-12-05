@@ -13,6 +13,7 @@
     status-im2.subs.shell
     status-im2.subs.wallet.collectibles
     status-im2.subs.wallet.networks
+    status-im2.subs.wallet.send
     status-im2.subs.wallet.wallet))
 
 (defn reg-root-key-sub

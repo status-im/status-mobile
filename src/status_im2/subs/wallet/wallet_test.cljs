@@ -220,7 +220,6 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")))
-
     (is
      (= (set ["0x1" "0x2"])
         (rf/sub [sub-name])))))
