@@ -28,41 +28,15 @@
   (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
            {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
            {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-    true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+          (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
+          true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn view
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-<<<<<<< HEAD
-<<<<<<< HEAD
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
             watch-only?                       (= type :watch)]
-=======
-<<<<<<< HEAD
-      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
-           ]
-=======
-      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
-<<<<<<< HEAD
-            networks                           (rf/sub [:wallet/network-details])
-            profile1                           (rf/sub [:profile/wallet-accounts])
-            profile2                           (rf/sub [:wallet/accounts])]
-        ;(println "profile1: " profile1)
-        ;(println "profile2: " profile2)
->>>>>>> 8bcb90b41 (wallet: add color and emoji)
-<<<<<<< HEAD
->>>>>>> c1d06ad1d (wallet: add color and emoji)
-=======
-=======
-            networks                           (rf/sub [:wallet/network-details])]
->>>>>>> aa35edaf6 (lint)
->>>>>>> 9c3ec27ba (lint)
-=======
-      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
-            ]
->>>>>>> 0ae3804f1 (rebase)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
