@@ -28,8 +28,8 @@
   (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
            {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
            {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-          (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-          true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
+    true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn view
   []
