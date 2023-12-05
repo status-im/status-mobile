@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.171.28",
-    "commit-sha1": "d7e7792b51f79e8cbebc9f59de79e64b6f6e684a",
-    "src-sha256": "0y0di4jfmk93pqc4i9fsgasrhqgvwh46ly5h04m87pm611faa2ay"
+    "version": "fix-channel-loading-issue-in-open-community",
+    "commit-sha1": "3626875d90258e343f28b5602dc1c3d1ee742932",
+    "src-sha256": "17m2gxwm72iidzyddrppqhdi5sw7zj0dbjwxmahm0jwgl8a45jm4"
 }
