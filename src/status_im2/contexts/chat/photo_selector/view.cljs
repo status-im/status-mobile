@@ -35,7 +35,7 @@
   (close))
 
 (defn confirm-button
-  [selected-images sending-image close]
+  [selected-images sending-image close customization-color]
   (when (not= selected-images sending-image)
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
@@ -43,7 +43,8 @@
       :end    {:x 0 :y 0}
       :style  (style/gradient-container (safe-area/get-bottom))}
      [quo/button
-      {:container-style     {:align-self        :stretch
+      {:customization-color customization-color
+       :container-style     {:align-self        :stretch
                              :margin-horizontal 20
                              :margin-top        12}
        :on-press            #(on-press-confirm-selection selected-images close)
@@ -94,10 +95,11 @@
   [{:keys [scroll-enabled on-scroll current-scroll close] :as sheet}]
   (rf/dispatch [:photo-selector/get-photos-for-selected-album])
   (rf/dispatch [:photo-selector/camera-roll-get-albums])
-  (let [album?          (reagent/atom false)
-        sending-image   (into [] (vals (rf/sub [:chats/sending-image])))
-        selected-images (reagent/atom sending-image)
-        window-width    (:width (rn/get-window))]
+  (let [album?              (reagent/atom false)
+        customization-color (rf/sub [:profile/customization-color])
+        sending-image       (into [] (vals (rf/sub [:chats/sending-image])))
+        selected-images     (reagent/atom sending-image)
+        window-width        (:width (rn/get-window))]
     [:f>
      (fn []
        (let [camera-roll-photos  (rf/sub [:camera-roll/photos])
@@ -140,7 +142,7 @@
                                           (rf/dispatch [:photo-selector/camera-roll-loading-more true])
                                           (rf/dispatch [:photo-selector/get-photos-for-selected-album
                                                         end-cursor])))}]
-           [confirm-button @selected-images sending-image close]]
+           [confirm-button @selected-images sending-image close customization-color]]
           [rn/view {:style style/buttons-container}
            [quo/dropdown
             {:type       dropdown-type
