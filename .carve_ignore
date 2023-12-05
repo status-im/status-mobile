@@ -95,7 +95,6 @@ react-native.fs/unlink
 react-native.fs/file-exists?
 status-im.ui.components.colors/white
 status-im.ui.components.colors/black
-status-im.transport.core-test/messages
 status-im.ui.components.core/animated-header
 status-im.ui.components.core/safe-area-provider
 status-im.ui.components.core/safe-area-consumer

@@ -1,5 +1,6 @@
-(ns ^{:doc "Definition of the StatusMessage protocol"} status-im.transport.message.core
+(ns status-im2.contexts.chat.messages.transport.events
   (:require
+    [clojure.set :as set]
     [clojure.string :as string]
     [status-im.browser.core :as browser]
     [status-im.chat.models.message :as models.message]
@@ -20,6 +21,7 @@
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
     [status-im2.contexts.contacts.events :as models.contact]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
 (rf/defn process-next
@@ -347,3 +349,58 @@
            cofx
            (conj set-hash-fxs
                  #(sanitize-messages-and-process-response % response-js false)))))
+
+(defn- link-preview->rpc
+  [preview]
+  (update preview
+          :thumbnail
+          (fn [thumbnail]
+            (set/rename-keys thumbnail {:data-uri :dataUri}))))
+
+(defn build-message
+  [msg]
+  (-> msg
+      (update :link-previews #(map link-preview->rpc %))
+      (set/rename-keys
+       {:album-id          :albumId
+        :audio-duration-ms :audioDurationMs
+        :audio-path        :audioPath
+        :chat-id           :chatId
+        :community-id      :communityId
+        :content-type      :contentType
+        :ens-name          :ensName
+        :image-height      :imageHeight
+        :image-path        :imagePath
+        :image-width       :imageWidth
+        :link-previews     :linkPreviews
+        :response-to       :responseTo
+        :sticker           :sticker
+        :text              :text})))
+
+(rf/defn send-chat-messages
+  [_ messages]
+  {:json-rpc/call [{:method      "wakuext_sendChatMessages"
+                    :params      [(mapv build-message messages)]
+                    :js-response true
+                    :on-success  #(rf/dispatch [:transport/message-sent %])
+                    :on-error    #(do
+                                    (log/warn "failed to send a message" %)
+                                    (js/alert (str "failed to send a message: " %)))}]})
+
+(rf/defn send-emoji-reaction
+  {:events [:reactions/send-emoji-reaction]}
+  [{{:keys [current-chat-id]} :db} {:keys [message-id emoji-id]}]
+  {:json-rpc/call [{:method      "wakuext_sendEmojiReaction"
+                    :params      [current-chat-id message-id emoji-id]
+                    :js-response true
+                    :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to send a reaction" %)}]})
+
+(rf/defn send-retract-emoji-reaction
+  {:events [:reactions/send-emoji-reaction-retraction]}
+  [_ emoji-reaction-id]
+  {:json-rpc/call [{:method      "wakuext_sendEmojiReactionRetraction"
+                    :params      [emoji-reaction-id]
+                    :js-response true
+                    :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to send a reaction retraction" %)}]})

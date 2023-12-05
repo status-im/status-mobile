@@ -412,3 +412,17 @@
   (rf/merge cofx
             {:db (dissoc db :mailserver.edit/mailserver)}
             (navigation/navigate-to :edit-mailserver nil)))
+
+(defn add-mailservers
+  [db mailservers]
+  (reduce (fn [db {:keys [fleet id name] :as mailserver}]
+            (let [updated-mailserver
+                  (-> mailserver
+                      (update :id keyword)
+                      (assoc :name (if (seq name) name id))
+                      (dissoc :fleet))]
+              (assoc-in db
+               [:mailserver/mailservers (keyword fleet) (keyword id)]
+               updated-mailserver)))
+          db
+          mailservers))
