@@ -85,7 +85,6 @@
 
 (defn- get-login-node-config
   [config]
-  (println config "Ddssadasddsa23321321312")
   (merge config login-node-config))
 
 (defn- pick-nodes

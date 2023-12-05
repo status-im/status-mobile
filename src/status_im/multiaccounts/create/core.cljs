@@ -86,7 +86,6 @@
 (re-frame/reg-fx
  ::save-account-and-login
  (fn [[key-uid multiaccount-data hashed-password settings config accounts-data]]
-   (println "DSADASDASDAS")
    (native-module/save-account-and-login
     key-uid
     multiaccount-data

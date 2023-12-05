@@ -47,13 +47,13 @@
  :<- [:wallet/accounts]
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
- (fn [[accounts balances _]]
+ (fn [[accounts balances tokens-loading?]]
    (mapv (fn [{:keys [color address] :as account}]
            (assoc account
                   :customization-color color
                   :type                (if (= type :watch) :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            false
+                  :loading?            tokens-loading?
                   :balance             (utils/prettify-balance (get balances address))))
          accounts)))
 

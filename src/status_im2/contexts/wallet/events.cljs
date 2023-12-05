@@ -104,7 +104,6 @@
 (rf/reg-event-fx
  :wallet/store-wallet-token
  (fn [{:keys [db]} [raw-tokens-data]]
-   (println raw-tokens-data "dsdsadasdsasdadsadsa")
    (let [tokens     (-> raw-tokens-data
                         (update-keys name)
                         (update-vals #(cske/transform-keys csk/->kebab-case %))

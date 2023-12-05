@@ -246,8 +246,3 @@
 (schema/=> format-amount
   [:=> [:cat [:maybe :int]]
    [:maybe :string]])
-
-(defn to-uint64
-  [value]
-  (let [shifted-value (-> (BigNumber. value) (.shift 0))]
-    (.toNumber shifted-value)))
