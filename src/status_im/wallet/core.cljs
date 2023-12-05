@@ -1074,7 +1074,7 @@
 
 ;;TODO: this could be replaced by a single API call on status-go side
 (re-frame/reg-fx :wallet-legacy/initialize-wallet
- (fn [[network-id network callback]]
+ (fn [[network-id _network callback]]
    (-> (js/Promise.all
         (clj->js
          [(js/Promise.
@@ -1082,24 +1082,6 @@
              (json-rpc/call {:method     "accounts_getAccounts"
                              :on-success resolve-fn
                              :on-error   reject})))
-          (js/Promise.
-           (fn [resolve-fn _]
-             (json-rpc/call
-              {:method "wallet_addEthereumChain"
-               :params
-               [{:isTest                 false
-                 :tokenOverrides         []
-                 :rpcUrl                 (get-in network [:config :UpstreamConfig :URL])
-                 :chainColor             "green"
-                 :chainName              (:name network)
-                 :nativeCurrencyDecimals 10
-                 :shortName              "erc20"
-                 :layer                  1
-                 :chainId                (int network-id)
-                 :enabled                false
-                 :fallbackURL            (get-in network [:config :UpstreamConfig :URL])}]
-               :on-success resolve-fn
-               :on-error (fn [_] (resolve-fn nil))})))
           (js/Promise.
            (fn [resolve-fn _]
              (json-rpc/call {:method     "wallet_getTokens"
