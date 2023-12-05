@@ -1902,6 +1902,7 @@
     "swap": "Swap",
     "select-token-to-swap": "Select token to Swap",
     "select-token-to-receive": "Select token to receive",
+    "slide-to-request-to-join": "Slide to request to join",
     "slide-to-reveal-code": "Slide to reveal code",
     "slide-to-create-account": "Slide to create account",
     "minimum-received": "Minimum received",
@@ -2405,5 +2406,5 @@
     "send-limit": "Max: {{limit}}",
     "searching-for-activity": "Searching for activity...",
     "this-address-has-no-activity": "This address has no activity",
-    "this-address-has-activity": "This address has activity"   
+    "this-address-has-activity": "This address has activity"
 }
