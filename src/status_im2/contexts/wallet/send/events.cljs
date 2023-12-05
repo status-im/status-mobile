@@ -76,3 +76,11 @@
                                                 {:event  :wallet/get-suggested-routes
                                                  :error  error
                                                  :params request-params}))}]})))
+
+(rf/reg-event-fx :wallet/select-address-tab
+                 (fn [{:keys [db]} [tab]]
+                   {:db (assoc-in db [:wallet :ui :send :select-address-tab] tab)}))
+
+(rf/reg-event-fx :wallet/select-send-account-address
+                 (fn [{:keys [db]} [address]]
+                   {:db (assoc db [:wallet :ui :send :send-account-address] address)}))
