@@ -161,11 +161,11 @@
      :epoch-number epoch-number
      :counter      counter}]
    [confirmation-progress/view
-    {:state               state
-     :network             network
-     :counter             counter
-     :total-box           total-box
-     :progress-value      progress}]])
+    {:state          state
+     :network        network
+     :counter        counter
+     :total-box      total-box
+     :progress-value progress}]])
 
 (defn- view-internal
   [{:keys [title on-press accessibility-label theme tag-photo tag-name tag-number networks]
