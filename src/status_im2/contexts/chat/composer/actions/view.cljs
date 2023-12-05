@@ -7,7 +7,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
-    [status-im2.common.alert.events :as alert]
+    [status-im2.common.alert.effects :as alert.effects]
     [status-im2.common.device-permissions :as device-permissions]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.actions.style :as style]
@@ -146,7 +146,7 @@
                                                 :on-denied
                                                 #(js/setTimeout
                                                   (fn []
-                                                    (alert/show-popup
+                                                    (alert.effects/show-popup
                                                      (i18n/label :t/audio-recorder-error)
                                                      (i18n/label
                                                       :t/audio-recorder-permissions-error)
@@ -198,9 +198,9 @@
                                  (reanimated/get-shared-value height)])
                    (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
     :on-denied   (fn []
-                   (alert/show-popup (i18n/label :t/error)
-                                     (i18n/label
-                                      :t/external-storage-denied)))}))
+                   (alert.effects/show-popup (i18n/label :t/error)
+                                             (i18n/label
+                                              :t/external-storage-denied)))}))
 
 (defn image-button
   [props animations insets edit]
@@ -246,6 +246,6 @@
      [:f> send-button props state animations window-height images edit send-btn-opacity
       scroll-to-bottom-fn]
      (when (and (not edit) (not images))
-       ;; TODO(alwx): needs to be replaced with an `audio-button` later.
-       ;; See https://github.com/status-im/status-mobile/issues/16084 for more details.
+       ;; TODO(alwx): needs to be replaced with an `audio-button` later. See
+       ;; https://github.com/status-im/status-mobile/issues/16084 for more details.
        [:f> disabled-audio-button audio-btn-opacity])]))

@@ -293,14 +293,14 @@
 (rf/defn show-wrong-keycard-alert
   [_]
   (log/debug "show-wrong-keycard-alert")
-  {:utils/show-popup {:title   (i18n/label :t/wrong-card)
-                      :content (i18n/label :t/wrong-card-text)}})
+  {:effects.utils/show-popup {:title   (i18n/label :t/wrong-card)
+                              :content (i18n/label :t/wrong-card-text)}})
 
 (rf/defn unauthorized-operation
   [cofx]
   (rf/merge cofx
-            {:utils/show-popup {:title   ""
-                                :content (i18n/label :t/keycard-unauthorized-operation)}}
+            {:effects.utils/show-popup {:title   ""
+                                        :content (i18n/label :t/keycard-unauthorized-operation)}}
             (clear-on-card-connected)
             (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])))
 

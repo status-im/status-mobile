@@ -39,7 +39,7 @@
 (defn view
   [in-onboarding?]
   (let [pairing-status (rf/sub [:pairing/pairing-status])
-        profile-color  (:color (rf/sub [:onboarding-2/profile]))]
+        profile-color  (:color (rf/sub [:onboarding/profile]))]
     [rn/view {:style (style/page-container in-onboarding?)}
      (when-not in-onboarding? [background/view true])
      [quo/page-nav {:type :no-title :background :blur}]

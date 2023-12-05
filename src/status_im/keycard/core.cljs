@@ -24,12 +24,12 @@
 (rf/defn show-keycard-has-multiaccount-alert
   [{:keys [db] :as cofx}]
   (rf/merge cofx
-            {:db                      (assoc-in db [:keycard :setup-step] nil)
-             :utils/show-confirmation {:title               nil
-                                       :content             (i18n/label
-                                                             :t/keycard-has-multiaccount-on-it)
-                                       :cancel-button-text  ""
-                                       :confirm-button-text :t/okay}}))
+            {:db                              (assoc-in db [:keycard :setup-step] nil)
+             :effects.utils/show-confirmation {:title               nil
+                                               :content             (i18n/label
+                                                                     :t/keycard-has-multiaccount-on-it)
+                                               :cancel-button-text  ""
+                                               :confirm-button-text :t/okay}}))
 
 (rf/defn load-pin-screen
   [{:keys [db] :as cofx}]
@@ -548,10 +548,11 @@
 
 (rf/defn show-no-keycard-applet-alert
   [_]
-  {:utils/show-confirmation {:title               (i18n/label :t/no-keycard-applet-on-card)
-                             :content             (i18n/label :t/keycard-applet-install-instructions)
-                             :cancel-button-text  ""
-                             :confirm-button-text :t/okay}})
+  {:effects.utils/show-confirmation {:title               (i18n/label :t/no-keycard-applet-on-card)
+                                     :content             (i18n/label
+                                                           :t/keycard-applet-install-instructions)
+                                     :cancel-button-text  ""
+                                     :confirm-button-text :t/okay}})
 
 ;; NOTE: Maybe replaced by multiple events based on on flow to make it easier to maintain.
 ;; Because there are many execution paths it is harder to follow all possible states.

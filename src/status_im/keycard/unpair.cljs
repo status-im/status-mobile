@@ -83,7 +83,7 @@
                                                :error-label nil
                                                :on-verified nil}))
       :keycard/persist-pairings (dissoc pairings (keyword instance-uid))
-      :utils/show-popup         {:title   ""
+      :effects.utils/show-popup {:title   ""
                                  :content (i18n/label :t/card-unpaired)}}
      (common/clear-on-card-connected)
      (remove-pairing-from-multiaccount nil)
@@ -100,7 +100,7 @@
                                              :error-label nil
                                              :on-verified nil})
              :keycard/get-application-info nil
-             :utils/show-popup             {:title   ""
+             :effects.utils/show-popup     {:title   ""
                                             :content (i18n/label :t/something-went-wrong)}}
             (common/clear-on-card-connected)
             (navigation/navigate-to :keycard-settings nil)))
@@ -139,15 +139,14 @@
                                                :error-label nil
                                                :on-verified nil}))
       :keycard/persist-pairings (dissoc pairings (keyword instance-uid))
-      :utils/show-popup         {:title      (i18n/label (if keys-removed-from-card?
+      :effects.utils/show-popup {:title      (i18n/label (if keys-removed-from-card?
                                                            :t/profile-deleted-title
                                                            :t/database-reset-title))
                                  :content    (i18n/label (if keys-removed-from-card?
                                                            :t/profile-deleted-keycard
                                                            :t/database-reset-content))
                                  :on-dismiss #(re-frame/dispatch [:logout])}}
-     ;;should be reimplemented
-     ;;:key-storage/delete-profile {:key-uid    key-uid
+     ;;should be reimplemented :key-storage/delete-profile {:key-uid    key-uid
      ;;:on-success #(log/debug "[keycard] remove account ok")
      ;;                                  :on-error   #(log/warn "[keycard] remove account: " %)}
      (common/clear-on-card-connected)

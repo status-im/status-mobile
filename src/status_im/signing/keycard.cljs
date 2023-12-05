@@ -78,9 +78,9 @@
   [{:keys [db]} data typed? result]
   (let [{:keys [result error]} (types/json->clj result)]
     (if error
-      {:dispatch         [:signing.ui/cancel-is-pressed]
-       :utils/show-popup {:title   (i18n/label :t/sign-request-failed)
-                          :content (:message error)}}
+      {:dispatch                 [:signing.ui/cancel-is-pressed]
+       :effects.utils/show-popup {:title   (i18n/label :t/sign-request-failed)
+                                  :content (:message error)}}
       {:db (update db
                    :keycard assoc
                    :hash    result
