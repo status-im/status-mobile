@@ -10,8 +10,7 @@
     [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.money :as money]))
+    [utils.re-frame :as rf]))
 
 (defn- transaction-title
   [token amount account to-address]

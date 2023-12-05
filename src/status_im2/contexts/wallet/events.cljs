@@ -9,14 +9,14 @@
     [status-im2.common.data-store.wallet :as data-store]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
+    [utils.datetime :as datetime]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.transforms :as types]
-    [utils.datetime :as datetime]))
+    [utils.transforms :as types]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
@@ -27,7 +27,7 @@
              {:id         :new-wallet-account-created
               :icon       :i/correct
               :icon-color colors/success-50
-              :text       (i18n/label :t/account-created {:name name})}]]]})))
+              :text       (i18n/label :t/account-created {:name (:name account)})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
@@ -390,13 +390,11 @@
 
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes timestamp]]
-   (if (= (get-in db [:wallet :ui :send :suggested-routes-call-timestamp]) timestamp)
+   (when (= (get-in db [:wallet :ui :send :suggested-routes-call-timestamp]) timestamp)
      {:db (-> db
               (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes)
               (assoc-in [:wallet :ui :send :route] (first (:Best suggested-routes)))
-              (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))}
-     (println "suggested routes dismiss")
-   )))
+              (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))})))
 
 (rf/reg-event-fx :wallet/suggested-routes-error
  (fn [{:keys [db]} [_error]]

@@ -7,9 +7,9 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.send.input-amount.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.debounce :as debounce]))
+    [utils.re-frame :as rf]))
 
 (defn- make-limit-label
   [{:keys [amount currency]}]
