@@ -7,8 +7,8 @@
    :margin-top     16})
 
 (def community-rule-index
-  {:margin-left 5})
+  {:margin-left 4})
 
 (def community-rule-text
-  {:margin-left 6
+  {:margin-left 0
    :flex        1})

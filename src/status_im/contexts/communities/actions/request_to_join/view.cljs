@@ -33,7 +33,7 @@
             :weight              :semi-bold
             :size                :heading-2}
            (i18n/label :t/request-to-join)]]
-         [rn/view {:style {:margin-right :auto :margin-top 8}}
+         [rn/view {:style {:margin-right :auto :margin-top 4}}
           [quo/context-tag
            {:type           :community
             :size           24

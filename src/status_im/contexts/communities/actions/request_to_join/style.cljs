@@ -35,7 +35,8 @@
    :justify-content   :space-evenly})
 
 (def final-disclaimer-container
-  {:margin-top         12
+  {:margin-bottom      7
+   :margin-top         12
    :padding-horizontal 40})
 
 (def final-disclaimer-text
