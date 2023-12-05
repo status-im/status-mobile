@@ -10,7 +10,8 @@
     [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.money :as money]))
 
 (defn- transaction-title
   [token amount account to-address]
@@ -92,7 +93,7 @@
      :account-props user-props}]])
 
 (defn- transaction-details
-  [token amount to-address theme]
+  [estimated-time-min max-fees-eth token amount to-address theme]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
@@ -115,7 +116,7 @@
       :status          :default
       :size            :small
       :title           (i18n/label :t/est-time)
-      :subtitle        "3-5 min"}]
+      :subtitle        (str estimated-time-min " min")}]
     [quo/data-item
      {:container-style {:flex   1
                         :height 36}
@@ -127,7 +128,7 @@
       :status          :default
       :size            :small
       :title           (i18n/label :t/max-fees)
-      :subtitle        "€188,70"}]
+      :subtitle        (str "$" max-fees-eth)}]
     [quo/data-item
      {:container-style {:flex   1
                         :height 36}
@@ -149,7 +150,9 @@
         send-transaction-data (get-in (rf/sub [:wallet]) [:ui :send])
         token                 (:token send-transaction-data)
         amount                (:amount send-transaction-data)
-        routes                (:routes send-transaction-data)
+        route                 (:route send-transaction-data)
+        estimated-time-min    (:EstimatedTime route)
+        max-fees-eth          5.28 ; calculate gas price in fiat
         to-address            (:to-address send-transaction-data)
         account               (rf/sub [:wallet/current-viewing-account])
         account-props         {:customization-color (:color account)
@@ -183,7 +186,7 @@
         [transaction-title token amount account to-address]
         [transaction-from amount account-props theme]
         [transaction-to amount user-props theme]
-        [transaction-details token amount to-address theme]
+        [transaction-details estimated-time-min max-fees-eth token amount to-address theme]
         [rn/view {:style style/slide-button-container}
          [standard-auth/slide-button
           {:size                :size-40
