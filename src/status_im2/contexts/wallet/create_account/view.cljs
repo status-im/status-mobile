@@ -118,14 +118,13 @@
         {:size                :size-48
          :track-text          (i18n/label :t/slide-to-create-account)
          :customization-color @account-color
-         :on-enter-password   (fn [entered-password]
+         :on-auth-success     (fn [entered-password]
                                 (rf/dispatch [:wallet/derive-address-and-add-account
-                                              entered-password
-                                              {:emoji        @emoji
+                                              {:sha3-pwd     entered-password
+                                               :emoji        @emoji
                                                :color        @account-color
                                                :path         @derivation-path
                                                :account-name @account-name}]))
-         :biometric-auth?     false
          :auth-button-label   (i18n/label :t/confirm)
          :container-style     (style/slide-button-container bottom)}]])))
 

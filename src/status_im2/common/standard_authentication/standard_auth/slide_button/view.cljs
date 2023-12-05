@@ -4,17 +4,18 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im2.common.standard-authentication.standard-auth.authorize :as authorize]))
+    [status-im2.common.standard-authentication.standard-auth.authorize :as authorize]
+    [utils.re-frame :as rf]))
 
 (defn- view-internal
   [_]
-  (let [reset-slider? (reagent/atom false)
-        on-close      #(reset! reset-slider? true)]
-    (fn [{:keys [biometric-auth?
-                 track-text
+  (let [reset-slider?   (reagent/atom false)
+        on-close        #(reset! reset-slider? true)
+        auth-method     (rf/sub [:auth-method])
+        biometric-auth? (= auth-method "biometric")]
+    (fn [{:keys [track-text
                  customization-color
                  auth-button-label
-                 on-enter-password
                  on-auth-success
                  on-auth-fail
                  auth-button-icon-left
@@ -32,7 +33,6 @@
                                                      :auth-button-icon-left auth-button-icon-left
                                                      :theme                 theme
                                                      :blur?                 blur?
-                                                     :on-enter-password     on-enter-password
                                                      :biometric-auth?       biometric-auth?
                                                      :on-auth-success       on-auth-success
                                                      :on-auth-fail          on-auth-fail
