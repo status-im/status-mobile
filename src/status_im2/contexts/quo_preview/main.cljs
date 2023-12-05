@@ -126,6 +126,7 @@
      small-option-card]
     [status-im2.contexts.quo-preview.password.tips :as tips]
     [status-im2.contexts.quo-preview.profile.collectible :as collectible]
+    [status-im2.contexts.quo-preview.profile.link-card :as link-card]
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
     [status-im2.contexts.quo-preview.profile.select-profile :as select-profile]
     [status-im2.contexts.quo-preview.profile.showcase-nav :as showcase-nav]
@@ -384,10 +385,12 @@
                         :component small-option-card/view}]
    :password          [{:name      :tips
                         :component tips/view}]
-   :profile           [{:name      :profile-card
-                        :component profile-card/view}
-                       {:name      :collectible
+   :profile           [{:name      :collectible
                         :component collectible/view}
+                       {:name      :link-card
+                        :component link-card/view}
+                       {:name      :profile-card
+                        :component profile-card/view}
                        {:name      :select-profile
                         :component select-profile/view}
                        {:name      :showcase-nav
