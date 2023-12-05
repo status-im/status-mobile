@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messages.link-preview.events
   (:require
     [camel-snake-kebab.core :as csk]
-    [status-im.contexts.communities.events :as communities]
+    [legacy.status-im.mailserver.core :as mailserver]
     [status-im.contexts.profile.settings.events :as profile.settings.events]
     [taoensso.timbre :as log]
     [utils.collection]
@@ -41,32 +41,69 @@
    (boolean enabled?)
    {}))
 
-(rf/defn handle-community-resolved
-  {:events [:chat.ui/community-resolved]}
-  [{:keys [db] :as cofx} community-id community]
-  (rf/merge cofx
-            (cond-> {:db (update db :communities/resolve-community-info dissoc community-id)}
+(rf/reg-event-fx
+ :chat.ui/community-resolved
+ (fn [{:keys [db]} [community-id {token-permissions :tokenPermissions :keys [joined] :as community}]]
+   (when community
+     (cond-> {:db (update db :communities/resolve-community-info dissoc community-id)
+              :fx [[:dispatch [:communities/handle-community community]]
+                   [:dispatch
+                    [:chat.ui/cache-link-preview-data (community-link community-id) community]]]}
+       (and (not joined) (not (seq token-permissions)))
+       (update :fx conj [:dispatch [:chat.ui/spectate-community community-id]])))))
 
-              (some? community)
-              (assoc :dispatch
-                     [:chat.ui/cache-link-preview-data (community-link community-id) community]))
-            (communities/handle-community community)))
+(rf/reg-event-fx
+ :chat.ui/community-failed-to-resolve
+ (fn [{:keys [db]} [community-id]]
+   {:db (update db :communities/resolve-community-info dissoc community-id)}))
 
-(rf/defn handle-community-failed-to-resolve
-  {:events [:chat.ui/community-failed-to-resolve]}
-  [{:keys [db]} community-id]
-  {:db (update db :communities/resolve-community-info dissoc community-id)})
-
-(rf/defn resolve-community-info
-  {:events [:chat.ui/resolve-community-info]}
-  [{:keys [db]} community-id]
-  {:db            (assoc-in db [:communities/resolve-community-info community-id] true)
-   :json-rpc/call [{:method     "wakuext_requestCommunityInfoFromMailserver"
-                    :params     [community-id]
-                    :on-success #(rf/dispatch [:chat.ui/community-resolved community-id %])
-                    :on-error   #(do
+(rf/reg-event-fx
+ :chat.ui/fetch-community
+ (fn [{:keys [db]} [community-id]]
+   {:db            (assoc-in db [:communities/resolve-community-info community-id] true)
+    :json-rpc/call [{:method     "wakuext_fetchCommunity"
+                     :params     [{:CommunityKey    community-id
+                                   :TryDatabase     true
+                                   :WaitForResponse true}]
+                     :on-success (fn [community]
+                                   (rf/dispatch [:chat.ui/community-resolved community-id community]))
+                     :on-error   (fn [err]
                                    (rf/dispatch [:chat.ui/community-failed-to-resolve community-id])
-                                   (log/error "Failed to request community info from mailserver"))}]})
+                                   (log/error {:message
+                                               "Failed to request community info from mailserver"
+                                               :error err}))}]}))
+
+(rf/reg-event-fx
+ :chat.ui/spectate-community-successed
+ (fn [{:keys [db]} [{:keys [communities]}]]
+   (when-let [community (first communities)]
+     {:db (-> db
+              (assoc-in [:communities (:id community) :spectated] true)
+              (assoc-in [:communities (:id community) :spectating] false))
+      :fx [[:dispatch [:communities/handle-community community]]
+           [:dispatch [::mailserver/request-messages]]]})))
+
+(rf/reg-event-fx
+ :chat.ui/spectate-community-failed
+ (fn [{:keys [db]} [community-id]]
+   {:db (assoc-in db [:communities community-id :spectating] false)}))
+
+(rf/reg-event-fx
+ :chat.ui/spectate-community
+ (fn [{:keys [db]} [community-id]]
+   (let [{:keys [spectated spectating joined]} (get-in db [:communities community-id])]
+     (when (and (not joined) (not spectated) (not spectating))
+       {:db            (assoc-in db [:communities community-id :spectating] true)
+        :json-rpc/call [{:method     "wakuext_spectateCommunity"
+                         :params     [community-id]
+                         :on-success (fn [res]
+                                       (rf/dispatch [:chat.ui/spectate-community-successed res]))
+                         :on-error   (fn [err]
+                                       (log/error {:message
+                                                   "Failed to spectate community"
+                                                   :error err})
+                                       (rf/dispatch [:chat.ui/spectate-community-failed
+                                                     community-id]))}]}))))
 
 (rf/defn save-link-preview-whitelist
   {:events [:chat.ui/link-preview-whitelist-received]}

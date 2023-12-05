@@ -63,10 +63,11 @@
                      {}
                      (:communityTokensMetadata c)))))
 
-(rf/defn handle-community
-  [{:keys [db]} {:keys [id] :as community}]
-  (when id
-    {:db (assoc-in db [:communities id] (<-rpc community))}))
+(rf/reg-event-fx
+ :communities/handle-community
+ (fn [{:keys [db]} [{:keys [id] :as community}]]
+   (when id
+     {:db (assoc-in db [:communities id] (<-rpc community))})))
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
