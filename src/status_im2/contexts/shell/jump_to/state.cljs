@@ -17,6 +17,5 @@
 (def load-chats-stack? (reagent/atom false))
 (def load-wallet-stack? (reagent/atom false))
 (def load-browser-stack? (reagent/atom false))
-
 ;NOTE temporary while we support old wallet
-(def load-new-wallet? (reagent/atom false))
+(def load-new-wallet? (reagent/atom true))
