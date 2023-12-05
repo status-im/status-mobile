@@ -87,8 +87,6 @@
                                            (string/lower-case query)))
                  sorted-tokens)]
      filtered-tokens)))
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 (rf/reg-sub
  :wallet/current-viewing-account-address
@@ -101,29 +99,6 @@
  :<- [:wallet/current-viewing-account-address]
  (fn [[accounts current-viewing-account-address]]
    (remove #(= (:address %) current-viewing-account-address) accounts)))
-=======
-=======
-=======
->>>>>>> 6acd5d275 (rebase)
-=======
-=======
->>>>>>> f4f0deecf (review)
-  :wallet/accounts
-  :<- [:wallet]
-  :-> #(->> %
-            :accounts
-            vals
-            (sort-by :position)))
-=======
- :wallet/accounts
- :<- [:wallet]
- :-> #(->> %
-           :accounts
-           vals
-           (sort-by :position)))
->>>>>>> aed578b59 (lint)
-=======
->>>>>>> 2d40168d5 (qa)
 
 (defn- calc-token-value
   [{:keys [market-values-per-currency] :as item} chain-id]
@@ -144,88 +119,9 @@
                              :percentage-change (.toFixed change-pct-24hour 2)
                              :fiat-change       (utils/prettify-balance fiat-change)}})))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-(re-frame/reg-sub
- :wallet/account-token-values
-<<<<<<< HEAD
- :<- [:wallet]
- :<- [:wallet/tokens]
-<<<<<<< HEAD
- (fn [tokens [_ account-address]]
-<<<<<<< HEAD
-   (mapv prepare-token (get tokens (keyword (string/lower-case account-address))))))
->>>>>>> 19c75e91d (review)
-<<<<<<< HEAD
->>>>>>> 25ec47428 (review)
-<<<<<<< HEAD
->>>>>>> e41fe5426 (review)
-<<<<<<< HEAD
->>>>>>> aaf682999 (review)
-=======
-=======
-=======
-=======
-   (mapv calc-token-value (get tokens (keyword (string/lower-case account-address))))))
->>>>>>> 5ec5c0e69 (review)
->>>>>>> af0d365b4 (review)
-<<<<<<< HEAD
->>>>>>> fd4728c35 (review)
-<<<<<<< HEAD
->>>>>>> 3c3a704c6 (review)
-=======
-=======
-=======
- (fn [[{:keys [current-viewing-account-address]} tokens]]
-   (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
->>>>>>> aeda1e4a7 (review)
->>>>>>> af0e5cc43 (review)
-<<<<<<< HEAD
->>>>>>> fa6b6eb69 (review)
-=======
-=======
-(rf/reg-sub
-<<<<<<< HEAD
-  :wallet/account-token-values
-  :<- [:wallet]
-  :<- [:wallet/tokens]
-  (fn [[{:keys [current-viewing-account-address]} tokens]]
-    (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
->>>>>>> 6acd5d275 (rebase)
-<<<<<<< HEAD
->>>>>>> d33622510 (rebase)
-=======
-=======
- :wallet/account-token-values
- :<- [:wallet]
-<<<<<<< HEAD
- :<- [:wallet/tokens]
- (fn [[{:keys [current-viewing-account-address]} tokens]]
-   (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
->>>>>>> a61095482 (lint)
-<<<<<<< HEAD
->>>>>>> c5e853c4e (lint)
-=======
-=======
- :<- [:wallet/accounts]
- (fn [[{:keys [current-viewing-account-address]} accounts]]
-   (let [current-account (first (filter #(= current-viewing-account-address (:address %)) accounts))]
-   (mapv calc-token-value (:tokens current-account)))))
->>>>>>> 30509f66a (fix)
-<<<<<<< HEAD
->>>>>>> 2a4f6150e (fix)
-=======
-=======
-=======
 (rf/reg-sub
  :wallet/account-token-values
->>>>>>> 2d40168d5 (qa)
  :<- [:wallet/current-viewing-account]
  :<- [:chain-id]
  (fn [[current-account chain-id]]
    (mapv #(calc-token-value % chain-id) (:tokens current-account))))
-<<<<<<< HEAD
->>>>>>> f4f0deecf (review)
->>>>>>> a544469d8 (review)
-=======
->>>>>>> 2d40168d5 (qa)
