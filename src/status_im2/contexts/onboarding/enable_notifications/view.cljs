@@ -35,7 +35,7 @@
                               (rf/dispatch [:navigate-to-within-stack
                                             [:welcome :enable-notifications]]))
        :type                :primary
-       :before              :i/notifications
+       :icon-left           :i/notifications
        :accessibility-label :enable-notifications-button
        :customization-color profile-color}
       (i18n/label :t/intro-wizard-title6)]
