@@ -8,7 +8,8 @@
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.send.input-amount.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.debounce :as debounce]))
 
 (defn- make-limit-label
   [{:keys [amount currency]}]
@@ -87,10 +88,13 @@
                                       (reset! input-value v))
                                     (reagent/flush))))]
     (fn [{:keys [on-confirm]
-          :or   {on-confirm #(js/alert "Confirmed")}}]
+          :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount @input-value
+                                           :wallet-send-input-amount])}}]
       (let [limit-label       (make-limit-label @current-limit)
             input-num-value   (parse-double @input-value)
+            route             (get-in (rf/sub [:wallet]) [:ui :send :route])
             confirm-disabled? (or
+                               (nil? route)
                                (empty? @input-value)
                                (<= input-num-value 0)
                                (> input-num-value (:amount @current-limit)))]
@@ -99,12 +103,21 @@
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
+        (rn/use-effect (fn []
+                         (rf/dispatch [:wallet/clean-suggested-routes])
+                         (when-not (or
+                                    (empty? @input-value)
+                                    (<= input-num-value 0)
+                                    (> input-num-value (:amount @current-limit)))
+                           (debounce/debounce-and-dispatch [:wallet/get-suggested-routes @input-value]
+                                                           1000)))
+                       [@input-value])
         [rn/view
          {:style style/screen}
          [quo/page-nav
           {:background       :blur
            :icon-name        :i/arrow-left
-           :on-press         #(rf/dispatch [:navigate-back])
+           :on-press         #(rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount])
            :right-side       :account-switcher
            :account-switcher {:customization-color :yellow
                               :emoji               "🎮"

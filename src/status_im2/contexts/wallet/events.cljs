@@ -355,9 +355,7 @@
 
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :to-address] address)
-            (assoc-in [:wallet :ui :send :amount] "0.00005"))}))
+   {:db (assoc-in db [:wallet :ui :send :to-address] address)}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
@@ -379,9 +377,15 @@
             :on-error   #(log/info "failed to get address details"
                                    {:error %
                                     :event :wallet/get-address-details})}]]]}))
+
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [token stack-id]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
+    :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
+
+(rf/reg-event-fx :wallet/send-select-amount
+ (fn [{:keys [db]} [amount stack-id]]
+   {:db (assoc-in db [:wallet :ui :send :amount] amount)
     :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/suggested-routes-success
@@ -390,8 +394,14 @@
             (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes)
             (assoc-in [:wallet :ui :send :route] (first (:Best suggested-routes))))}))
 
-(rf/reg-event-fx :wallet/get-suggested-routes
+(rf/reg-event-fx :wallet/clean-suggested-routes
  (fn [{:keys [db]}]
+   {:db (-> db
+            (update-in [:wallet :ui :send] dissoc :suggested-routes)
+            (update-in [:wallet :ui :send] dissoc :route))}))
+
+(rf/reg-event-fx :wallet/get-suggested-routes
+ (fn [{:keys [db]} [amount]]
    (let [wallet-address      (get-in db [:wallet :current-viewing-account-address])
          ;tokens              (get-in db [:wallet :accounts])
          ;account             (get-in db [:wallet :accounts wallet-address])
@@ -399,7 +409,7 @@
          to-address          (get-in db [:wallet :ui :send :to-address])
          token-decimal       18
          token-id            (:symbol token)
-         value_              0.00005
+         value_              (js/parseFloat amount)
          network-preferences [1]
          gas-rates           0 ;low
          amount-in           (money/mul (money/bignumber value_)
@@ -433,7 +443,6 @@
          from-address (get-in db [:wallet :current-viewing-account-address])
          to-address (get-in db [:wallet :ui :send :to-address])
          from (:From route)
-         ;to (:To best)
          token (get-in db [:wallet :ui :send :token])
          token-id (:symbol token)
          from-asset token-id

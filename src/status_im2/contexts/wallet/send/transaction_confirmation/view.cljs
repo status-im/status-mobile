@@ -170,7 +170,6 @@
                                                             :name  "New house"
                                                             :emoji "🍔"})}]
     (fn [{:keys [theme]}]
-      (rn/use-effect #(rf/dispatch [:wallet/get-suggested-routes]) [])
       [rn/view {:style {:flex 1}}
        [quo/gradient-cover {:customization-color (:color account)}]
        [rn/view {:style (style/container margin-top)}
