@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im2.common.password-authentication.view :as password-authentication]
+    [status-im2.contexts.communities.actions.community-rules.view :as community-rules]
     [status-im2.contexts.communities.actions.request-to-join.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -26,6 +27,13 @@
       [rn/view {:flex 1}
        [gesture/scroll-view {:style {:flex 1}}
         [rn/view style/page-container
+         [quo/text
+          {:style               {:margin-top 24}
+           :accessibility-label :community-rules-title
+           :weight              :semi-bold
+           :size                :paragraph-1}
+          (i18n/label :t/community-rules)]
+         [community-rules/view id]
          [rn/view {:style (style/bottom-container)}
           [quo/button
            {:accessibility-label :cancel
