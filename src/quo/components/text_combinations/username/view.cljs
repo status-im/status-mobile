@@ -27,11 +27,10 @@
         :weight :medium}
        real-name]])])
 
-(defn- no-color-icon
+(defn- icon-20
   [icon-name theme color]
   [icon/icon icon-name
    {:accessibility-label :username-status-icon
-    :no-color            true
     :size                20
     :color               (colors/resolve-color color theme)}])
 
@@ -40,16 +39,13 @@
     :or   {name-type :default}}]
   [rn/view {:style (style/status-icon-container name-type status)}
    (case status
-     :verified              [no-color-icon :i/verified theme :success]
-     :contact               [no-color-icon :i/contact theme :blue]
-     :untrustworthy         [no-color-icon :i/untrustworthy theme :danger]
+     :verified              [icon-20 :i/verified theme :success]
+     :contact               [icon-20 :i/contact theme :blue]
+     :untrustworthy         [icon-20 :i/untrustworthy theme :danger]
+     :blocked               [icon-20 :i/block theme :danger]
      :untrustworthy-contact [:<>
-                             [no-color-icon :i/untrustworthy theme :danger]
-                             [no-color-icon :i/contact theme :blue]]
-     :blocked               [icon/icon :i/block
-                             {:accessibility-label :username-status-icon
-                              :size                20
-                              :color               (colors/resolve-color :danger theme)}]
+                             [icon-20 :i/untrustworthy theme :danger]
+                             [icon-20 :i/contact theme :blue]]
      nil)])
 
 (defn view-internal
