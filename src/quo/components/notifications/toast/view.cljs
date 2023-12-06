@@ -77,15 +77,16 @@
     :or   {type :neutral}}]
   (let [context-theme (or theme (quo.theme/get-theme))
         icon-name     (case type
-                        :positive :i/incorrect
-                        :negative :i/correct
+                        :positive :i/correct
+                        :negative :i/incorrect
                         :neutral  :i/placeholder)]
     [quo.theme/provider {:theme context-theme}
      [toast-container
-      {:left            (cond icon-name
+      {:left            (cond user
+                              [user-avatar/user-avatar user]
+                              icon-name
                               [icon/icon icon-name (style/icon type context-theme)]
-                              user
-                              [user-avatar/user-avatar user])
+                        )
        :title           title
        :text            text
        :right           (if undo-duration
