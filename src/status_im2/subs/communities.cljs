@@ -329,3 +329,9 @@
  :<- [:communities]
  (fn [communities [_ id]]
    (get-in communities [id :images])))
+
+(re-frame/reg-sub
+ :communities/rules
+ :<- [:communities]
+ (fn [communities [_ community-id]]
+   (get-in communities [community-id :intro-message])))
