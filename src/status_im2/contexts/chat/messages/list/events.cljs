@@ -5,15 +5,13 @@
     [utils.re-frame :as rf]
     [utils.red-black-tree :as red-black-tree]))
 
-(defn- is-system-message?
-  [content-type]
-  (#{constants/content-type-system-text
-     constants/content-type-community
-     constants/content-type-system-message-mutual-event-accepted
-     constants/content-type-system-message-mutual-event-removed
-     constants/content-type-system-message-mutual-event-sent
-     constants/content-type-system-pinned-message}
-   content-type)
+(def is-system-message?
+  #{constants/content-type-system-text
+    constants/content-type-community
+    constants/content-type-system-message-mutual-event-accepted
+    constants/content-type-system-message-mutual-event-removed
+    constants/content-type-system-message-mutual-event-sent
+    constants/content-type-system-pinned-message}
 )
 
 (defn- add-datemark
