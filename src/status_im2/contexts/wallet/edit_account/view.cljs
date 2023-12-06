@@ -79,7 +79,7 @@
          [quo/data-item
           {:status          :default
            :size            :default
-           :description     :default
+           :subtitle-type   :default
            :label           :none
            :blur?           false
            :icon-right?     true

@@ -181,3 +181,52 @@
      (= (set ["0x1" "0x2"])
         (rf/sub [sub-name])))))
 
+(h/deftest-sub :wallet/watch-address-activity-state
+  [sub-name]
+  (testing "watch address activity state with nil value"
+    (is (= nil (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with no-activity value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :no-activity))
+    (is (= :no-activity (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with has-activity value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :has-activity))
+    (is (= :has-activity (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/current-viewing-account-address
+  [sub-name]
+  (testing "returns the address of the current viewing account"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :current-viewing-account-address] "0x1"))
+    (is (= "0x1" (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/accounts-without-current-viewing-account
+  [sub-name]
+  (testing "returns the accounts list without the current viewing account in it"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x2")))
+    (is
+     (= (list
+         {:path                     "m/44'/60'/0'/0/0"
+          :emoji                    "😃"
+          :key-uid                  "0x2f5ea39"
+          :address                  "0x1"
+          :wallet                   false
+          :name                     "Account One"
+          :type                     :generated
+          :chat                     false
+          :test-preferred-chain-ids #{5 420 421613}
+          :color                    :blue
+          :hidden                   false
+          :prod-preferred-chain-ids #{1 10 42161}
+          :position                 0
+          :clock                    1698945829328
+          :created-at               1698928839000
+          :operable                 "fully"
+          :mixedcase-address        "0x7bcDfc75c431"
+          :public-key               "0x04371e2d9d66b82f056bc128064"
+          :removed                  false
+          :tokens                   tokens-0x1})
+        (rf/sub [sub-name])))))

@@ -7,6 +7,11 @@
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
+(defn hide-sheet-and-dispatch
+  [event]
+  (re-frame/dispatch [:bottom-sheet/hide-old])
+  (re-frame/dispatch event))
+
 (defn- normal-mode-settings-data
   [{:keys [network-name
            current-log-level
@@ -103,7 +108,13 @@
      #(re-frame/dispatch
        [:multiaccounts.ui/waku-bloom-filter-mode-switched (not waku-bloom-filter-mode)])
      :accessory :switch
-     :active waku-bloom-filter-mode}]))
+     :active waku-bloom-filter-mode}
+    {:size                :small
+     :title               (i18n/label :t/set-currency)
+     :accessibility-label :wallet-change-currency
+     :on-press            #(hide-sheet-and-dispatch
+                            [:navigate-to :currency-settings])
+     :chevron             true}]))
 
 (defn- flat-list-data
   [options]

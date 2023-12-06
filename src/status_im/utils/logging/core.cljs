@@ -7,7 +7,6 @@
     [react-native.mail :as react-native-mail]
     [react-native.platform :as platform]
     [status-im.bottom-sheet.events :as bottom-sheet]
-    [status-im.transport.utils :as transport.utils]
     [status-im.ui.components.react :as react]
     [status-im.utils.build :as build]
     [status-im.utils.deprecated-types :as types]
@@ -38,6 +37,11 @@
   {:json-rpc/call [{:method     "web3_clientVersion"
                     :on-success #(re-frame/dispatch [:logging/store-web3-client-version %])}]})
 
+(defn extract-url-components
+  [address]
+  (when address
+    (rest (re-matches #"enode://(.*?)@(.*):(.*)" address))))
+
 (defn email-body
   "logs attached"
   [{:keys [:web3-node-version :mailserver/current-id
@@ -46,7 +50,7 @@
         build-version (str build/version " (" build-number ")")
         separator (string/join (take 40 (repeat "-")))
         [enode-id ip-address port]
-        (transport.utils/extract-url-components (:enode node-info))]
+        (extract-url-components (:enode node-info))]
     (string/join
      "\n"
      (concat [(i18n/label :t/report-bug-email-template
@@ -68,7 +72,7 @@
              (mapcat
               (fn [{:keys [enode]}]
                 (let [[enode-id ip-address port]
-                      (transport.utils/extract-url-components enode)]
+                      (extract-url-components enode)]
                   [(str "id: " enode-id)
                    (str "ip: " ip-address)
                    (str "port: " port)
@@ -151,15 +155,15 @@
 (rf/defn show-client-error
   {:events [:show-client-error]}
   [_]
-  {:utils/show-popup {:title   (i18n/label :t/cant-report-bug)
-                      :content (i18n/label :t/mail-should-be-configured)}})
+  {:effects.utils/show-popup {:title   (i18n/label :t/cant-report-bug)
+                              :content (i18n/label :t/mail-should-be-configured)}})
 
 (rf/defn show-logs-dialog
   {:events [:shake-event]}
   [{:keys [db]}]
   (when-not (:logging/dialog-shown? db)
     {:db (assoc db :logging/dialog-shown? true)
-     :utils/show-confirmation
+     :effects.utils/show-confirmation
      (cond-> {:title               (i18n/label :t/send-logs)
               :content             (i18n/label :t/send-logs-to
                                                {:email report-email})

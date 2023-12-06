@@ -32,9 +32,7 @@
     status-im.pairing.core
     status-im.profile.core
     status-im.search.core
-    status-im.signals.core
     status-im.stickers.core
-    status-im.transport.core
     status-im.ui.components.invite.events
     [status-im.ui.components.react :as react]
     status-im.ui.screens.notifications-settings.events
@@ -136,7 +134,7 @@
 
 (rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]
-  (let [new-account?            (get db :onboarding-2/new-account?)
+  (let [new-account?            (get db :onboarding/new-account?)
         app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:profile/profile :signed-up?])
         requires-bio-auth       (and
@@ -194,9 +192,9 @@
   (rf/merge cofx
             (cond
               (= :chat view-id)
-              {:async-storage-set {:chat-id (get-in cofx [:db :current-chat-id])
-                                   :key-uid (get-in cofx [:db :profile/profile :key-uid])}
-               :db                (assoc db :screens/was-focused-once? true)}
+              {:effects.async-storage/set {:chat-id (get-in cofx [:db :current-chat-id])
+                                           :key-uid (get-in cofx [:db :profile/profile :key-uid])}
+               :db                        (assoc db :screens/was-focused-once? true)}
 
               (not (get db :screens/was-focused-once?))
               {:db (assoc db :screens/was-focused-once? true)})

@@ -24,66 +24,57 @@
           (on-success mnemonic keyUID)))))))
 
 (rf/defn profile-data-set
-  {:events [:onboarding-2/profile-data-set]}
+  {:events [:onboarding/profile-data-set]}
   [{:keys [db]} onboarding-data]
-  {:db       (update db :onboarding-2/profile merge onboarding-data)
+  {:db       (update db :onboarding/profile merge onboarding-data)
    :dispatch [:navigate-to-within-stack [:create-profile-password :new-to-status]]})
 
 (rf/defn enable-biometrics
-  {:events [:onboarding-2/enable-biometrics]}
+  {:events [:onboarding/enable-biometrics]}
   [_]
-  {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
-                            :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
-
-(rf/defn authenticate-enable-biometrics
-  {:events [:onboarding-2/authenticate-enable-biometrics]}
-  [{:keys [db]} password]
-  {:db                     (-> db
-                               (assoc-in [:onboarding-2/profile :password] password)
-                               (assoc-in [:onboarding-2/profile :syncing?] true))
-   :biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
-                            :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
+  {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding/biometrics-done])
+                            :on-fail    #(rf/dispatch [:onboarding/biometrics-fail %])}})
 
 (rf/defn navigate-to-enable-notifications
-  {:events [:onboarding-2/navigate-to-enable-notifications]}
+  {:events [:onboarding/navigate-to-enable-notifications]}
   [{:keys [db]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:db       (dissoc db :onboarding-2/profile)
+    {:db       (dissoc db :onboarding/profile)
      :dispatch [:navigate-to-within-stack [:enable-notifications :enable-biometrics]]}))
 
 (rf/defn biometrics-done
-  {:events [:onboarding-2/biometrics-done]}
+  {:events [:onboarding/biometrics-done]}
   [{:keys [db]}]
-  (let [syncing? (get-in db [:onboarding-2/profile :syncing?])]
-    {:db       (assoc-in db [:onboarding-2/profile :auth-method] constants/auth-method-biometric)
+  (let [syncing? (get-in db [:onboarding/profile :syncing?])]
+    {:db       (assoc-in db [:onboarding/profile :auth-method] constants/auth-method-biometric)
      :dispatch (if syncing?
-                 [:onboarding-2/finalize-setup]
-                 [:onboarding-2/create-account-and-login])}))
+                 [:onboarding/finalize-setup]
+                 [:onboarding/create-account-and-login])}))
 
 (rf/defn biometrics-fail
-  {:events [:onboarding-2/biometrics-fail]}
+  {:events [:onboarding/biometrics-fail]}
   [cofx code]
   (biometric/show-message cofx code))
 
 (rf/defn create-account-and-login
-  {:events [:onboarding-2/create-account-and-login]}
+  {:events [:onboarding/create-account-and-login]}
   [{:keys [db] :as cofx}]
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
-        (:onboarding-2/profile db)]
+        (:onboarding/profile db)]
     (rf/merge cofx
               {:dispatch       [:navigate-to-within-stack [:generating-keys :new-to-status]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
-                                 :dispatch [:onboarding-2/navigate-to-identifiers]}]
+                                 :dispatch [:onboarding/navigate-to-identifiers]}]
                :db             (-> db
                                    (dissoc :profile/login)
                                    (dissoc :auth-method)
-                                   (assoc :onboarding-2/new-account? true))}
+                                   (assoc :onboarding/new-account? true))}
               (if seed-phrase
                 (profile.recover/recover-profile-and-login profile)
                 (profile.create/create-profile-and-login profile)))))
 
 (rf/defn on-delete-profile-success
-  {:events [:onboarding-2/on-delete-profile-success]}
+  {:events [:onboarding/on-delete-profile-success]}
   [{:keys [db]} key-uid]
   (let [multiaccounts (dissoc (:profile/profiles-overview db) key-uid)]
     (merge
@@ -92,18 +83,18 @@
        {:set-root :intro}))))
 
 (rf/defn password-set
-  {:events [:onboarding-2/password-set]}
+  {:events [:onboarding/password-set]}
   [{:keys [db]} password]
   (let [supported-type (:biometric/supported-type db)]
     {:db       (-> db
-                   (assoc-in [:onboarding-2/profile :password] password)
-                   (assoc-in [:onboarding-2/profile :auth-method] constants/auth-method-password))
+                   (assoc-in [:onboarding/profile :password] password)
+                   (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
      :dispatch (if supported-type
                  [:navigate-to-within-stack [:enable-biometrics :new-to-status]]
-                 [:onboarding-2/create-account-and-login])}))
+                 [:onboarding/create-account-and-login])}))
 
 (rf/defn navigate-to-enable-biometrics
-  {:events [:onboarding-2/navigate-to-enable-biometrics]}
+  {:events [:onboarding/navigate-to-enable-biometrics]}
   [{:keys [db]}]
   (let [supported-type (:biometric/supported-type db)]
     {:dispatch (if supported-type
@@ -111,19 +102,19 @@
                  [:open-modal :enable-notifications])}))
 
 (rf/defn seed-phrase-entered
-  {:events [:onboarding-2/seed-phrase-entered]}
+  {:events [:onboarding/seed-phrase-entered]}
   [_ seed-phrase on-error]
   {:multiaccount/validate-mnemonic [seed-phrase
                                     (fn [mnemonic key-uid]
-                                      (re-frame/dispatch [:onboarding-2/seed-phrase-validated
+                                      (re-frame/dispatch [:onboarding/seed-phrase-validated
                                                           mnemonic key-uid]))
                                     on-error]})
 
 (rf/defn seed-phrase-validated
-  {:events [:onboarding-2/seed-phrase-validated]}
+  {:events [:onboarding/seed-phrase-validated]}
   [{:keys [db]} seed-phrase key-uid]
   (if (contains? (:profile/profiles-overview db) key-uid)
-    {:utils/show-confirmation
+    {:effects.utils/show-confirmation
      {:title               (i18n/label :t/multiaccount-exists-title)
       :content             (i18n/label :t/multiaccount-exists-content)
       :confirm-button-text (i18n/label :t/unlock)
@@ -132,41 +123,43 @@
                              (re-frame/dispatch
                               [:profile/profile-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
-    {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
+    {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
      :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]}))
 
 (rf/defn navigate-to-create-profile
-  {:events [:onboarding-2/navigate-to-create-profile]}
+  {:events [:onboarding/navigate-to-create-profile]}
   [{:keys [db]}]
   ;; Restart the flow
-  {:db       (dissoc db :onboarding-2/profile)
+  {:db       (dissoc db :onboarding/profile)
    :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]})
 
 (rf/defn onboarding-new-account-finalize-setup
-  {:events [:onboarding-2/finalize-setup]}
+  {:events [:onboarding/finalize-setup]}
   [{:keys [db]}]
-  (let [masked-password    (get-in db [:onboarding-2/profile :password])
+  (let [masked-password    (get-in db [:onboarding/profile :password])
         key-uid            (get-in db [:profile/profile :key-uid])
-        syncing?           (get-in db [:onboarding-2/profile :syncing?])
-        biometric-enabled? (= (get-in db [:onboarding-2/profile :auth-method])
+        syncing?           (get-in db [:onboarding/profile :syncing?])
+        biometric-enabled? (= (get-in db [:onboarding/profile :auth-method])
                               constants/auth-method-biometric)]
-    (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
+    (cond-> {:db (assoc db :onboarding/generated-keys? true)}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         key-uid
-              :masked-password masked-password
+              :masked-password (if syncing?
+                                 masked-password
+                                 (security/hash-masked-password masked-password))
               :on-success      (fn []
                                  (if syncing?
-                                   (rf/dispatch [:onboarding-2/navigate-to-enable-notifications])
+                                   (rf/dispatch [:onboarding/navigate-to-enable-notifications])
                                    (log/error "successfully saved biometrics")))
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))
 
 (rf/defn navigate-to-identifiers
-  {:events [:onboarding-2/navigate-to-identifiers]}
+  {:events [:onboarding/navigate-to-identifiers]}
   [{:keys [db]}]
-  (if (:onboarding-2/generated-keys? db)
+  (if (:onboarding/generated-keys? db)
     {:dispatch [:navigate-to-within-stack [:identifiers :new-to-status]]}
     {:dispatch-later [{:ms       constants/onboarding-generating-keys-navigation-retry-ms
-                       :dispatch [:onboarding-2/navigate-to-identifiers]}]}))
+                       :dispatch [:onboarding/navigate-to-identifiers]}]}))

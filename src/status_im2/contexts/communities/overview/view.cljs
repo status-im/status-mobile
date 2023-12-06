@@ -10,6 +10,7 @@
     [status-im2.common.password-authentication.view :as password-authentication]
     [status-im2.common.scroll-page.style :as scroll-page.style]
     [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.communities.actions.chat.view :as chat-actions]
     [status-im2.contexts.communities.actions.community-options.view :as options]
@@ -82,7 +83,7 @@
    {:on-layout #(on-first-channel-height-changed
                  (+ 38 (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
-    :style     {:margin-top 8 :flex 1}}
+    :style     (style/channel-list-component)}
    (for [[category-id {:keys [chats name collapsed?]}] channels-list]
      [rn/view
       {:key       category-id
@@ -91,12 +92,13 @@
        :on-layout #(on-category-layout name (int (layout-y %)))}
       (when-not (= constants/empty-category-id category-id)
         [quo/divider-label
-         {:on-press     #(collapse-category community-id category-id collapsed?)
-          :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
-          :chevron      :left}
+         {:on-press        #(collapse-category community-id category-id collapsed?)
+          :chevron-icon    (if collapsed? :i/chevron-right :i/chevron-down)
+          :container-style {:margin-top 8}
+          :chevron         :left}
          name])
       (when-not collapsed?
-        [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}
+        [rn/view {:style {:padding-horizontal 8}}
          (for [chat chats]
            ^{:key (:id chat)}
            [channel-chat-item community-id community-color chat])])])])
@@ -181,10 +183,14 @@
        (if (seq token-permissions)
          [token-gates community]
          [quo/button
-          {:on-press            #(rf/dispatch [:open-modal :community-requests-to-join community])
+          {:on-press
+           (if config/community-accounts-selection-enabled?
+             #(rf/dispatch [:open-modal :community-account-selection community])
+             #(rf/dispatch [:open-modal :community-requests-to-join community]))
+
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
-           :icon-left           :i/communities}
+           :icon-left :i/communities}
           (i18n/label :t/request-to-join-community)]))
 
      (when (not (or joined pending? token-permissions))
@@ -360,9 +366,11 @@
 
 (defn community-card-page-view
   [id]
-  (let [{:keys [id]
+  (let [{:keys [id joined]
          :as   community} (rf/sub [:communities/community id])
         pending?          (rf/sub [:communities/my-pending-request-to-join id])]
+    (when joined
+      (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
     [community-scroll-page community pending?]))
 
 (defn overview
@@ -375,5 +383,4 @@
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
-      {:position :absolute
-       :bottom   34}]]))
+      style/floating-shell-button]]))

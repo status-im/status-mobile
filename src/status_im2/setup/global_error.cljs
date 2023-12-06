@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im2.common.alert.events :as alert]
+    [status-im2.common.alert.effects :as alert.effects]
     [utils.i18n :as i18n]))
 
 ;; Error handling code based on https://gist.github.com/pesterhazy/e6846be1b6712a9038537022d131ce46
@@ -62,7 +62,7 @@
          (if js/goog.DEBUG
            (some-> orig-handler
                    (.call nil e isFatal))
-           (alert/show-confirmation
+           (alert.effects/show-confirmation
             {:title               "Error"
              :content             (.-message e)
              :confirm-button-text (i18n/label :t/send-logs)

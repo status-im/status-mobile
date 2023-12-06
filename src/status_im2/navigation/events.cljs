@@ -60,12 +60,15 @@
 (rf/defn pop-to-root
   {:events [:pop-to-root]}
   [{:keys [db]} tab]
-  {:pop-to-root-fx       tab
-   :db                   (-> db
-                             (dissoc :shell/floating-screens)
-                             (dissoc :shell/loaded-screens)
-                             (assoc :view-id (or @shell.state/selected-stack-id :shell)))
-   :shell/pop-to-root-fx nil})
+  (merge
+   {:pop-to-root-fx            tab
+    :db                        (-> db
+                                   (dissoc :shell/floating-screens)
+                                   (dissoc :shell/loaded-screens)
+                                   (assoc :view-id (or @shell.state/selected-stack-id :shell)))
+    :effects.shell/pop-to-root nil}
+   (when (:current-chat-id db)
+     {:dispatch-n [[:chat/close]]})))
 
 (rf/defn init-root
   {:events [:init-root]}
@@ -80,8 +83,8 @@
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
   [{:keys [db]} stack-id]
-  {:db                  (assoc db :view-id stack-id)
-   :shell/change-tab-fx stack-id})
+  {:db                       (assoc db :view-id stack-id)
+   :effects.shell/change-tab stack-id})
 
 (rf/defn navigate-replace
   {:events [:navigate-replace]}

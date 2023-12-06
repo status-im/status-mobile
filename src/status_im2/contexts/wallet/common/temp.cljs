@@ -1,28 +1,9 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as status.resources]
-    [status-im2.constants :as constants]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
-
-
-(defn wallet-temporary-navigation
-  []
-  [rn/view
-   {:style {:flex            1
-            :align-items     :center
-            :justify-content :center}}
-   [quo/text {} "TEMPORARY NAVIGATION"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-accounts])}
-    "Navigate to Account"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-create-account])}
-    "Create Account"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-addresses])}
-    "Saved Addresses"]])
+    [utils.i18n :as i18n]))
 
 (defn wallet-overview-state
   [networks]
@@ -64,112 +45,6 @@
                           :fiat-change       "€0.00"}}])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
-
-(def data-item-state
-  {:description         :default
-   :icon-right?         true
-   :right-icon          :i/options
-   :card?               true
-   :label               :none
-   :status              :default
-   :size                :default
-   :title               "Address"
-   :customization-color :yellow})
-
-(def account-origin-state
-  {:type            :default-keypair
-   :stored          :on-keycard
-   :profile-picture (status.resources/get-mock-image :user-picture-male5)
-   :derivation-path (string/replace constants/path-default-wallet #"/" " / ")
-   :user-name       "Alisher Yakupov"
-   :on-press        #(js/alert "pressed")})
-
-(defn dapps-list
-  [{:keys [on-press-icon]}]
-  [{:dapp          {:avatar (quo.resources/get-dapp :coingecko)
-                    :name   "Coingecko"
-                    :value  "coingecko.com"}
-    :state         :default
-    :action        :icon
-    :on-press-icon on-press-icon}
-   {:dapp          {:avatar (quo.resources/get-dapp :uniswap)
-                    :name   "Uniswap"
-                    :value  "uniswap.org"}
-    :state         :default
-    :action        :icon
-    :on-press-icon on-press-icon}])
-
-(def other-accounts
-  [{:customization-color :flamingo
-    :emoji               "🍿"
-    :name                "New House"
-    :address             "0x21af6E0Ba4C4530735616e1Ee7ff5FbCB726f493"
-    :networks            [{:network-name :ethereum :short-name "eth"}
-                          {:network-name :optimism :short-name "opt"}]}
-   {:customization-color :blue
-    :emoji               "🎮"
-    :name                "My savings"
-    :address             "0x43cf6E0Ba4C4530735616e1Ee7ff5FbCB726f98d"
-    :networks            [{:network-name :ethereum :short-name "eth"}]}])
-
-(def asset-snt
-  {:size       24
-   :type       :token
-   :token-name "SNT"
-   :amount     1500
-   :token-logo (quo.resources/get-token :snt)})
-
-(def piggy-bank
-  {:size         24
-   :type         :account
-   :account-name "Piggy bank"
-   :emoji        "🐷"})
-
-(def aretha-gosling
-  {:size            24
-   :type            :default
-   :full-name       "Aretha Gosling"
-   :profile-picture (status.resources/mock-images :user-picture-female2)})
-
-(def mainnet
-  {:size         24
-   :type         :network
-   :network-logo (quo.resources/get-network :ethereum)
-   :network-name "Mainnet"})
-
-(def activity-list
-  [{:date              "Today"
-    :transaction       :send
-    :timestamp         "Today 22:20"
-    :status            :pending
-    :counter           1
-    :first-tag         asset-snt
-    :second-tag-prefix :t/from
-    :second-tag        piggy-bank
-    :third-tag-prefix  :t/to
-    :third-tag         aretha-gosling
-    :fourth-tag-prefix :t/via
-    :fourth-tag        mainnet
-    :blur?             false}
-   {:date              "Yesterday"
-    :transaction       :receive
-    :timestamp         "Yesterday 22:20"
-    :status            :pending
-    :counter           1
-    :first-tag         asset-snt
-    :second-tag-prefix :t/from
-    :second-tag        piggy-bank
-    :third-tag-prefix  :t/to
-    :third-tag         aretha-gosling
-    :fourth-tag-prefix :t/via
-    :fourth-tag        mainnet
-    :blur?             false}])
-
-(def collectible-list
-  [(status.resources/get-mock-image :collectible1)
-   (status.resources/get-mock-image :collectible2)
-   (status.resources/get-mock-image :collectible3)
-   (status.resources/get-mock-image :collectible4)])
 
 (def buy-tokens-list
   [{:title             "Ramp"

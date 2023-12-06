@@ -5,7 +5,6 @@
     [react-native.platform :as platform]
     [status-im.chat.models.loading :as chat.loading]
     [status-im.data-store.messages :as data-store.messages]
-    [status-im.transport.message.protocol :as protocol]
     [status-im.utils.deprecated-types :as types]
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.events :as message-list]
@@ -20,12 +19,6 @@
 (defn- earlier-than-deleted-at?
   [db chat-id clock-value]
   (>= (get-in db [:chats chat-id :deleted-at-clock-value]) clock-value))
-
-(defn add-timeline-message
-  [acc chat-id message-id message]
-  (-> acc
-      (update-in [:db :messages chat-id] assoc message-id message)
-      (update-in [:db :message-lists chat-id] message-list/add message)))
 
 (defn hide-message
   "Hide chat message, rebuild message-list"
@@ -144,14 +137,6 @@
                               :on-success #(log/debug "re-sent message successfully")
                               :on-error   #(log/error "failed to re-send message" %)}]}
             (update-message-status chat-id message-id :sending)))
-
-(rf/defn send-message
-  [cofx message]
-  (protocol/send-chat-messages cofx [message]))
-
-(rf/defn send-messages
-  [cofx messages]
-  (protocol/send-chat-messages cofx messages))
 
 (rf/defn handle-removed-messages
   {:events [::handle-removed-messages]}

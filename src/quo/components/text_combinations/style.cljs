@@ -9,3 +9,8 @@
 
 (def description-description-text
   {:margin-top 8})
+
+(def emoji-hash
+  {:margin-top     8
+   :letter-spacing 0.5
+   :line-height    20.5})

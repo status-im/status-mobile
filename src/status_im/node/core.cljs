@@ -74,7 +74,8 @@
    :Nameserver     "8.8.8.8"
    :PeerExchange   true
    :Port           0
-   :UDPPort        0})
+   :UDPPort        0
+   :LightClient    true})
 
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}

@@ -63,7 +63,7 @@
         item-height  (reagent/atom 0)]
     (fn [{:keys [hide? insets theme]}
          {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-                 gradient-cover? customization-color]
+                 gradient-cover? customization-color hide-handle?]
           :or   {border-radius 12}}]
       (let [{window-height :height}           (rn/get-window)
             bg-opacity                        (reanimated/use-shared-value 0)
@@ -117,12 +117,13 @@
            [rn/view
             {:style     (style/sheet-content theme padding-bottom-override insets shell? bottom-margin)
              :on-layout #(reset! sheet-height (.-nativeEvent.layout.height ^js %))}
-            (when gradient-cover?
+            (when (and gradient-cover? customization-color)
               [rn/view {:style style/gradient-bg}
                [quo/gradient-cover
                 {:customization-color customization-color
                  :opacity             0.4}]])
-            [rn/view {:style (style/handle theme)}]
+            (when-not hide-handle?
+              [quo/drawer-bar])
             [content]]]]]))))
 
 (defn- internal-view

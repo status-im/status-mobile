@@ -18,23 +18,36 @@
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
-   (let [{:keys [name]} (get-in db [:wallet :accounts address])]
+   (let [account (get-in db [:wallet :accounts address])]
      {:db (update db :wallet dissoc :navigate-to-account :new-account?)
       :fx [[:dispatch
             [:toasts/upsert
              {:id         :new-wallet-account-created
               :icon       :i/correct
               :icon-color colors/success-50
-              :text       (i18n/label :t/account-created {:name name})}]]]})))
+              :text       (i18n/label :t/account-created {:name (:name account)})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
-   (let [new-account? (get-in db [:wallet :new-account?])]
-     (cond-> {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-              :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}))
 
-       new-account?
-       (update :fx conj [:dispatch [:wallet/show-account-created-toast address]])))))
+(rf/reg-event-fx :wallet/navigate-to-new-account
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch-later
+          [{:dispatch [:navigate-back]
+            :ms       100}
+           {:dispatch [:navigate-back]
+            :ms       100}
+           {:dispatch [:navigate-to :wallet-accounts address]
+            :ms       300}]]
+         [:dispatch [:wallet/show-account-created-toast address]]]}))
+
+(rf/reg-event-fx :wallet/switch-current-viewing-account
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
@@ -44,24 +57,17 @@
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
-   (let [wallet-db           (get db :wallet)
+   (let [wallet-accounts     (filter #(not (:chat %)) accounts)
+         wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
-     (cond-> {:db (reduce (fn [db {:keys [address] :as account}]
-                            (assoc-in db [:wallet :accounts address] account))
-                          db
-                          (data-store/rpc->accounts accounts))
-              :fx [[:dispatch [:wallet/get-wallet-token]]]}
-
-       new-account?
-       (update :fx
-               conj
-               [:dispatch [:hide-bottom-sheet]]
-               [:dispatch-later
-                [{:dispatch [:navigate-back]
-                  :ms       100}
-                 {:dispatch [:wallet/navigate-to-account navigate-to-account]
-                  :ms       300}]])))))
+     {:db (reduce (fn [db {:keys [address] :as account}]
+                    (assoc-in db [:wallet :accounts address] account))
+                  db
+                  (data-store/rpc->accounts wallet-accounts))
+      :fx [[:dispatch [:wallet/get-wallet-token]]
+           (when new-account?
+             [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
 (rf/reg-event-fx
  :wallet/get-accounts
@@ -144,29 +150,35 @@
               :on-success on-success
               :on-error   #(log/info "failed to derive address " %)}]]]})))
 
-(rf/reg-event-fx
- :wallet/add-account
- (fn [{:keys [db]} [password {:keys [emoji account-name color]} {:keys [public-key address path]}]]
-   (let [key-uid        (get-in db [:profile/profile :key-uid])
-         sha3-pwd       (native-module/sha3 (security/safe-unmask-data password))
-         account-config {:key-uid    key-uid
-                         :wallet     false
-                         :chat       false
-                         :type       :generated
-                         :name       account-name
-                         :emoji      emoji
-                         :path       path
-                         :address    address
-                         :public-key public-key
-                         :colorID    color}]
-     {:db (update db
-                  :wallet              assoc
-                  :navigate-to-account address
-                  :new-account?        true)
-      :fx [[:json-rpc/call
+(rf/reg-event-fx :wallet/add-account-success
+ (fn [{:keys [db]} [address]]
+   {:db (update db
+                :wallet              assoc
+                :navigate-to-account address
+                :new-account?        true)
+    :fx [[:dispatch [:wallet/get-accounts]]]}))
+
+(rf/reg-event-fx :wallet/add-account
+ (fn [{:keys [db]}
+      [password {:keys [emoji account-name color type] :or {type :generated}}
+       {:keys [public-key address path]}]]
+   (let [lowercase-address (if address (string/lower-case address) address)
+         key-uid           (get-in db [:profile/profile :key-uid])
+         sha3-pwd          (native-module/sha3 (security/safe-unmask-data password))
+         account-config    {:key-uid    (when (= type :generated) key-uid)
+                            :wallet     false
+                            :chat       false
+                            :type       type
+                            :name       account-name
+                            :emoji      emoji
+                            :path       path
+                            :address    lowercase-address
+                            :public-key public-key
+                            :colorID    color}]
+     {:fx [[:json-rpc/call
             [{:method     "accounts_addAccount"
-              :params     [sha3-pwd account-config]
-              :on-success [:wallet/get-accounts]
+              :params     [(when (= type :generated) sha3-pwd) account-config]
+              :on-success [:wallet/add-account-success lowercase-address]
               :on-error   #(log/info "failed to create account " %)}]]]})))
 
 (rf/reg-event-fx
@@ -203,9 +215,10 @@
 (def collectibles-request-batch-size 1000)
 
 (defn displayable-collectible?
-  [{:keys [image-url animation-url]}]
-  (or (not (string/blank? animation-url))
-      (not (string/blank? image-url))))
+  [collectible]
+  (let [{:keys [image-url animation-url]} (:collectible-data collectible)]
+    (or (not (string/blank? animation-url))
+        (not (string/blank? image-url)))))
 
 (defn store-collectibles
   [{:keys [db]} [collectibles]]
@@ -231,28 +244,47 @@
 
 (rf/reg-event-fx :wallet/store-last-collectible-details store-last-collectible-details)
 
+(def collectible-data-types
+  {:unique-id        0
+   :header           1
+   :details          2
+   :community-header 3})
+
+(def fetch-type
+  {:never-fetch         0
+   :always-fetch        1
+   :fetch-if-not-cached 2
+   :fetch-if-cache-old  3})
+
+(def max-cache-age-seconds 3600)
+
 (rf/reg-event-fx
  :wallet/request-collectibles
  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
    (let [request-id          0
          collectibles-filter nil
+         data-type           (collectible-data-types :header)
+         fetch-criteria      {:fetch-type            (fetch-type :fetch-if-not-cached)
+                              :max-cache-age-seconds max-cache-age-seconds}
          request-params      [request-id
                               [(chain/chain-id db)]
                               (map :address (:profile/wallet-accounts db))
                               collectibles-filter
                               start-at-index
-                              collectibles-request-batch-size]]
-     {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
-                       :params     request-params
-                       :on-success #()
-                       :on-error   (fn [error]
-                                     (log/error "failed to request collectibles"
-                                                {:event  :wallet/request-collectibles
-                                                 :error  error
-                                                 :params request-params}))}]
-      :fx            (if new-request?
-                       [[:dispatch [:wallet/clear-stored-collectibles]]]
-                       [])})))
+                              collectibles-request-batch-size
+                              data-type
+                              fetch-criteria]]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getOwnedCollectiblesAsync"
+              :params     request-params
+              :on-success #()
+              :on-error   (fn [error]
+                            (log/error "failed to request collectibles"
+                                       {:event  :wallet/request-collectibles
+                                        :error  error
+                                        :params request-params}))}]]
+           (when new-request?
+             [:dispatch [:wallet/clear-stored-collectibles]])]})))
 
 (rf/reg-event-fx :wallet/owned-collectibles-filtering-done
  (fn [_ [{:keys [message]}]]
@@ -271,14 +303,16 @@
  (fn [_ [collectible-id]]
    (let [request-id               0
          collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
-         request-params           [request-id [collectible-id-converted]]]
-     {:json-rpc/call [{:method   "wallet_getCollectiblesDetailsAsync"
-                       :params   request-params
-                       :on-error (fn [error]
-                                   (log/error "failed to request collectible"
-                                              {:event  :wallet/get-collectible-details
-                                               :error  error
-                                               :params request-params}))}]})))
+         data-type                (collectible-data-types :details)
+         request-params           [request-id [collectible-id-converted] data-type]]
+     {:fx [[:json-rpc/call
+            [{:method   "wallet_getCollectiblesByUniqueIDAsync"
+              :params   request-params
+              :on-error (fn [error]
+                          (log/error "failed to request collectible"
+                                     {:event  :wallet/get-collectible-details
+                                      :error  error
+                                      :params request-params}))}]]]})))
 
 (rf/reg-event-fx :wallet/get-collectible-details-done
  (fn [_ [{:keys [message]}]]
@@ -355,3 +389,24 @@
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
    {:db (assoc db :wallet/send-address address)}))
+
+(rf/reg-event-fx :wallet/get-address-details-success
+ (fn [{:keys [db]} [{:keys [hasActivity]}]]
+   {:db (assoc-in db
+         [:wallet :ui :watch-address-activity-state]
+         (if hasActivity :has-activity :no-activity))}))
+
+(rf/reg-event-fx :wallet/clear-address-activity-check
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui] dissoc :watch-address-activity-state)}))
+
+(rf/reg-event-fx :wallet/get-address-details
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :ui :watch-address-activity-state] :scanning)
+    :fx [[:json-rpc/call
+          [{:method     "wallet_getAddressDetails"
+            :params     [(chain/chain-id db) address]
+            :on-success [:wallet/get-address-details-success]
+            :on-error   #(log/info "failed to get address details"
+                                   {:error %
+                                    :event :wallet/get-address-details})}]]]}))

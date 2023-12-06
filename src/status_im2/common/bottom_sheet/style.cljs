@@ -1,18 +1,7 @@
 (ns status-im2.common.bottom-sheet.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
     [react-native.platform :as platform]))
-
-(defn handle
-  [theme]
-  {:width            32
-   :height           4
-   :background-color (colors/theme-colors colors/neutral-100 colors/white theme)
-   :opacity          (theme/theme-value 0.05 0.1 theme)
-   :border-radius    100
-   :align-self       :center
-   :margin-vertical  8})
 
 (defn sheet
   [{:keys [top]} window-height selected-item]

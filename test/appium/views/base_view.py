@@ -98,6 +98,10 @@ class BrowserTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="browser-stack-tab")
 
+    def navigate(self):
+        from views.dapps_view import DappsView
+        return DappsView(self.driver)
+
 
 class DappTabButton(TabButton):
     def __init__(self, driver):
@@ -837,3 +841,12 @@ class BaseView(object):
         except TimeoutException:
             raise TimeoutException(
                 "Device %s: expected element is not stale after %s seconds" % (self.driver.number, seconds)) from None
+
+    def open_link_from_google_search_app(self, link_text: str, app_package: str):
+        Button(self.driver, xpath="//*[contains(@resource-id,'search_container_all_apps')]").click()
+        EditBox(self.driver, xpath="//android.widget.EditText").send_keys(link_text)
+        self.driver.press_keycode(66)
+        text_to_click = "Status PR" if app_package.endswith(".pr") else "Status"
+        Button(self.driver,
+               xpath="//*[@resource-id='android:id/resolver_list']//*[@text='%s']" % text_to_click).click_if_shown()
+        Button(self.driver, xpath="//*[@resource-id='android:id/button_once']").click()

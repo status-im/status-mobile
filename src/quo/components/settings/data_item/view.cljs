@@ -16,14 +16,15 @@
   [rn/view {:style (style/loading-container size blur? theme)}])
 
 (defn- left-subtitle
-  [{:keys [theme size description icon icon-color blur? subtitle customization-color emoji
-           network-image]}]
+  [{:keys [theme size subtitle-type icon icon-color blur? subtitle customization-color emoji
+           network-image]
+    :or   {subtitle-type :default}}]
   [rn/view {:style style/subtitle-container}
    (when (not= :small size)
-     [rn/view {:style (style/subtitle-icon-container description)}
-      (case description
+     [rn/view {:style (style/subtitle-icon-container subtitle-type)}
+      (case subtitle-type
         :icon    [icons/icon icon
-                  {:accessibility-label :description-icon
+                  {:accessibility-label :subtitle-type-icon
                    :size                16
                    :color               icon-color}]
         :account [account-avatar/view
@@ -32,7 +33,7 @@
                    :emoji               emoji
                    :type                :default}]
         :network [rn/image
-                  {:accessibility-label :description-image
+                  {:accessibility-label :subtitle-type-image
                    :source              network-image
                    :style               style/image}]
         nil)])
@@ -58,10 +59,9 @@
       (i18n/label :t/days)])])
 
 (defn- left-side
-  "The description can either be given as a string `description` or a component `custom-subtitle`"
-  [{:keys [theme title status size blur? description custom-subtitle icon subtitle label icon-color
-           customization-color network-image
-           emoji]
+  "The description can either be given as a string `subtitle-type` or a component `custom-subtitle`"
+  [{:keys [theme title status size blur? custom-subtitle icon subtitle subtitle-type label icon-color
+           customization-color network-image emoji]
     :as   props}]
   [rn/view {:style style/left-side}
    [left-title
@@ -79,7 +79,7 @@
        [left-subtitle
         {:theme               theme
          :size                size
-         :description         description
+         :subtitle-type       subtitle-type
          :icon                icon
          :icon-color          icon-color
          :blur?               blur?

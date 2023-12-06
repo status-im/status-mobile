@@ -194,7 +194,7 @@
   {:events [:mailserver.ui/request-error-pressed]}
   [{:keys [db]}]
   (let [mailserver-error (:mailserver/request-error db)]
-    {:utils/show-confirmation
+    {:effects.utils/show-confirmation
      {:title               (i18n/label :t/mailserver-request-error-title)
       :content             (i18n/label :t/mailserver-request-error-content
                                        {:error mailserver-error})
@@ -290,8 +290,7 @@
          [{:method     "mailservers_addMailserver"
            :params     [(mailserver->rpc mailserver current-fleet)]
            :on-success (fn []
-                         ;; we naively logout if the user is connected to
-                         ;; the edited mailserver
+                         ;; we naively logout if the user is connected to the edited mailserver
                          (when current
                            (re-frame/dispatch
                             [:multiaccounts.logout.ui/logout-confirmed]))
@@ -413,3 +412,17 @@
   (rf/merge cofx
             {:db (dissoc db :mailserver.edit/mailserver)}
             (navigation/navigate-to :edit-mailserver nil)))
+
+(defn add-mailservers
+  [db mailservers]
+  (reduce (fn [db {:keys [fleet id name] :as mailserver}]
+            (let [updated-mailserver
+                  (-> mailserver
+                      (update :id keyword)
+                      (assoc :name (if (seq name) name id))
+                      (dissoc :fleet))]
+              (assoc-in db
+               [:mailserver/mailservers (keyword fleet) (keyword id)]
+               updated-mailserver)))
+          db
+          mailservers))

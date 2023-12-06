@@ -77,7 +77,6 @@ pipeline {
           }
         }
         stage('Upload') {
-          when { expression { !utils.isReleaseBuild() } }
           steps { script {
             env.DIAWI_URL = ios.uploadToDiawi()
             env.PKG_URL = env.DIAWI_URL

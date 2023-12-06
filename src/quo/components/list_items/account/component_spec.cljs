@@ -13,7 +13,7 @@
     (h/render [account/view])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 5)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 5)})))
 
   (h/test "on-press-in changes state to :pressed with blur? enabled"
     (h/render [account/view {:blur? true}])
@@ -21,31 +21,26 @@
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
                               {:backgroundColor colors/white-opa-5})))
 
-  (h/test "on-press-out changes state to :active"
-    (h/render [account/view])
-    (h/fire-event :on-press-in (h/get-by-label-text :container))
-    (h/fire-event :on-press-out (h/get-by-label-text :container))
-    (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 10)})))
+  (h/test "render with state :active"
+    (h/render [account/view {:state :active}])
+    (h/has-style (h/query-by-label-text :container)
+                 {:backgroundColor (colors/resolve-color :blue :light 10)}))
 
-  (h/test "on-press-out changes state to :active with blur? enabled"
-    (h/render [account/view {:blur? true}])
-    (h/fire-event :on-press-in (h/get-by-label-text :container))
-    (h/fire-event :on-press-out (h/get-by-label-text :container))
-    (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor colors/white-opa-10})))
+  (h/test "render with state :active and blur? enabled"
+    (h/render [account/view
+               {:blur? true
+                :state :active}])
+    (h/has-style (h/query-by-label-text :container)
+                 {:backgroundColor colors/white-opa-10}))
 
-  (h/test "on-press-out changes state to :selected"
-    (h/render [account/view {:selectable? true}])
-    (h/fire-event :on-press-in (h/get-by-label-text :container))
-    (h/fire-event :on-press-out (h/get-by-label-text :container))
-    (h/wait-for #(h/is-truthy (h/query-by-label-text :check-icon))))
+  (h/test "render with state :selected"
+    (h/render [account/view {:state :selected}])
+    (h/is-truthy (h/query-by-label-text :check-icon)))
 
-  (h/test "on-press-out calls on-press"
+  (h/test "calls on-press"
     (let [on-press (h/mock-fn)]
       (h/render [account/view {:on-press on-press}])
-      (h/fire-event :on-press-in (h/get-by-label-text :container))
-      (h/fire-event :on-press-out (h/get-by-label-text :container))
+      (h/fire-event :on-press (h/get-by-label-text :container))
       (h/was-called on-press)))
 
   (h/test "renders token props if type :tag"

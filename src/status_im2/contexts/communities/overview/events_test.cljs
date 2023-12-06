@@ -1,5 +1,6 @@
 (ns status-im2.contexts.communities.overview.events-test
   (:require [cljs.test :refer [deftest is]]
+            matcher-combinators.test
             [native-module.core :as native-module]
             [status-im2.contexts.communities.overview.events :as sut]))
 
@@ -14,10 +15,10 @@
                           :params     [account-pub-key community-id []]
                           :on-success [:communities/sign-data community-id password]
                           :on-error   [:communities/requested-to-join-error community-id]}]]]}]
-    (is (= expected
-           (sut/request-to-join cofx
-                                [{:community-id community-id
-                                  :password     password}])))))
+    (is (match? expected
+                (sut/request-to-join cofx
+                                     [{:community-id community-id
+                                       :password     password}])))))
 
 (deftest sign-data-test
   (let [cofx                {:db {}}
@@ -32,8 +33,8 @@
                                  :on-success [:communities/request-to-join-with-signatures
                                               community-id addresses-to-reveal]
                                  :on-error   [:communities/requested-to-join-error community-id]}]]]}]
-    (is (= expected
-           (sut/sign-data cofx [community-id password sign-params])))))
+    (is (match? expected
+                (sut/sign-data cofx [community-id password sign-params])))))
 
 (deftest request-to-join-with-signatures-test
   (let [cofx                {:db {}}
@@ -49,5 +50,6 @@
                                      :on-success  [:communities/requested-to-join]
                                      :on-error    [:communities/requested-to-join-error
                                                    community-id]}]]]}]
-    (is (= expected
-           (sut/request-to-join-with-signatures cofx [community-id addresses-to-reveal signatures])))))
+    (is (match? expected
+                (sut/request-to-join-with-signatures cofx
+                                                     [community-id addresses-to-reveal signatures])))))

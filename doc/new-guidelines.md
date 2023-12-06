@@ -641,6 +641,26 @@ keywords and concatenating them into a single string.
 ```
 
 ### Tests
+#### Prefer `match?` over `=` when comparing data structures
+
+Prefer the `match?` directive over `=` when comparing data structures, otherwise
+when the check fails the output can be too difficult to read. `match?` is
+defined by library https://github.com/nubank/matcher-combinators.
+
+```clojure
+;; bad
+(deftest some-test
+  (let [expected {...}
+        actual {...}]
+    (is (= expected actual))))
+
+;; good
+(deftest some-test
+  (let [expected {...}
+        actual {...}]
+    (is (match? expected actual))))
+```
+
 #### Subscription tests
 
 Test [layer-3 subscriptions](https://day8.github.io/re-frame/subscriptions/) by
@@ -716,7 +736,7 @@ src
 
 - `src/js`: Raw Javascript files, e.g. React Native Reanimated worklets.
 - `src/mocks`: Plumbing configuration to be able to run tests.
-- `src/quo/`: The component library for Status Mobile.
+- `src/quo/`: The component library for Status Mobile. [Read more...](../src/quo/README.md)
 - `src/react_native/`: Contains only low-level constructs to help React Native
   work in tandem with Clojure(Script).
 - `src/status_im2/`: Directory where we try to be as strict as possible about

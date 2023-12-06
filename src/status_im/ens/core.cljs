@@ -91,11 +91,11 @@
                                             {:chainId :chain-id
                                              :removed :removed?})
                           name-details)]
-    {:db (reduce (fn [db {:keys [username removed?] :as name-detail}]
+    {:db (reduce (fn [db {:keys [username removed? chain-id] :as name-detail}]
                    (if removed?
-                     (update-in db [:ens/names] dissoc username)
-                     (let [old (get-in db [:ens/names username])]
-                       (assoc-in db [:ens/names username] (merge old name-detail)))))
+                     (update-in db [:ens/names chain-id] dissoc username)
+                     (let [old (get-in db [:ens/names chain-id username])]
+                       (assoc-in db [:ens/names chain-id username] (merge old name-detail)))))
                  db
                  name-details)}))
 
@@ -103,8 +103,8 @@
   {:events [:ens/save-username]}
   [{:keys [db] :as cofx} custom-domain? username redirect-to-summary? connected?]
   (let [name     (fullname custom-domain? username)
-        names    (get-in db [:ens/names] [])
-        chain-id (chain/chain-id db)]
+        chain-id (chain/chain-id db)
+        names    (get-in db [:ens/names chain-id] [])]
     (rf/merge cofx
               (cond-> {:dispatch-n [[:ens/update-usernames [{:username name :chain-id chain-id}]]]}
                 connected?           (assoc :json-rpc/call
@@ -240,7 +240,8 @@
   {:events [::set-username-candidate]}
   [{:keys [db]} username]
   (let [{:keys [custom-domain?]} (:ens/registration db)
-        usernames                (into #{} (keys (get-in db [:ens/names])))
+        chain-id                 (chain/chain-id db)
+        usernames                (into #{} (keys (get-in db [:ens/names chain-id])))
         state                    (state custom-domain? username usernames)]
     (reset! resolve-last-id (random/id))
     (merge
@@ -310,20 +311,23 @@
 (rf/defn store-name-address
   {:events [::address-resolved]}
   [{:keys [db]} username address]
-  {:db (assoc-in db [:ens/names username :address] address)})
+  (let [chain-id (chain/chain-id db)]
+    {:db (assoc-in db [:ens/names chain-id username :address] address)}))
 
 (rf/defn store-name-public-key
   {:events [::public-key-resolved]}
   [{:keys [db]} username public-key]
-  {:db (assoc-in db [:ens/names username :public-key] public-key)})
+  (let [chain-id (chain/chain-id db)]
+    {:db (assoc-in db [:ens/names chain-id username :public-key] public-key)}))
 
 (rf/defn store-expiration-date
   {:events [::get-expiration-time-success]}
   [{:keys [now db]} username timestamp]
-  {:db (-> db
-           (assoc-in [:ens/names username :expiration-date]
-                     (datetime/timestamp->year-month-day-date timestamp))
-           (assoc-in [:ens/names username :releasable?] (<= timestamp now)))})
+  (let [chain-id (chain/chain-id db)]
+    {:db (-> db
+             (assoc-in [:ens/names chain-id username :expiration-date]
+                       (datetime/timestamp->year-month-day-date timestamp))
+             (assoc-in [:ens/names chain-id username :releasable?] (<= timestamp now)))}))
 
 (rf/defn navigate-to-name
   {:events [::navigate-to-name]}
@@ -352,7 +356,8 @@
 (rf/defn remove-username
   {:events [::remove-username]}
   [{:keys [db] :as cofx} name]
-  (let [names                       (get-in db [:ens/names] [])
+  (let [chain-id                    (chain/chain-id db)
+        names                       (get-in db [:ens/names chain-id] [])
         preferred-name              (get-in db [:profile/profile :preferred-name])
         new-names                   (remove #(= name %) (keys names))
         {:keys [chain-id username]} (get-in names [name])]

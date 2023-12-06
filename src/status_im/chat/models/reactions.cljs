@@ -2,7 +2,6 @@
   (:require
     [re-frame.core :as re-frame]
     [status-im.data-store.reactions :as data-store.reactions]
-    [status-im.transport.message.protocol :as message.protocol]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
@@ -62,23 +61,6 @@
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
     (let [reactions-w-chat-id (map #(assoc % :chat-id chat-id) reactions)]
       {:db (update db :reactions (process-reactions (:chats db)) reactions-w-chat-id)})))
-
-
-;; Send reactions
-
-
-(rf/defn send-emoji-reaction
-  {:events [:models.reactions/send-emoji-reaction]}
-  [{{:keys [current-chat-id]} :db :as cofx} reaction]
-  (message.protocol/send-reaction cofx
-                                  (update reaction :chat-id #(or % current-chat-id))))
-
-(rf/defn send-retract-emoji-reaction
-  {:events [:models.reactions/send-emoji-reaction-retraction]}
-  [{{:keys [current-chat-id]} :db :as cofx} reaction]
-  (message.protocol/send-retract-reaction cofx
-                                          (update reaction :chat-id #(or % current-chat-id))))
-
 
 (defn message-reactions
   [current-public-key reactions]
