@@ -641,6 +641,26 @@ keywords and concatenating them into a single string.
 ```
 
 ### Tests
+#### Prefer `match?` over `=` when comparing data structures
+
+Prefer the `match?` directive over `=` when comparing data structures, otherwise
+when the check fails the output can be too difficult to read. `match?` is
+defined by library https://github.com/nubank/matcher-combinators.
+
+```clojure
+;; bad
+(deftest some-test
+  (let [expected {...}
+        actual {...}]
+    (is (= expected actual))))
+
+;; good
+(deftest some-test
+  (let [expected {...}
+        actual {...}]
+    (is (match? expected actual))))
+```
+
 #### Subscription tests
 
 Test [layer-3 subscriptions](https://day8.github.io/re-frame/subscriptions/) by
