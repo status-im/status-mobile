@@ -154,10 +154,9 @@
                                  masked-password
                                  (security/hash-masked-password masked-password))
               :on-success      (fn []
-                                 (if syncing?
-                                   (rf/dispatch [:onboarding/navigate-to-enable-notifications])
-                                   (rf/dispatch [:onboarding/set-auth-method auth-method])
-                                   (log/error "successfully saved biometrics")))
+                                 (rf/dispatch [:onboarding/set-auth-method auth-method])
+                                 (when syncing?
+                                   (rf/dispatch [:onboarding/navigate-to-enable-notifications])))
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))

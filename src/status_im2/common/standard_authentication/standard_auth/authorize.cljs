@@ -39,14 +39,15 @@
         ; fails biometric auth they will be shown the password bottom sheet with an option
         ; to retrigger biometric auth, so they can endlessly repeat this cycle.
         biometrics-login    (fn [on-press-biometrics]
-                              (on-close)
                               (rf/dispatch [:dismiss-keyboard])
                               (biometric/authenticate
                                {:reason     (i18n/label :t/biometric-auth-confirm-message)
                                 :on-success (fn [_response]
+                                              (on-close)
                                               (rf/dispatch [:standard-auth/on-biometric-success
                                                             (handle-auth-success true)]))
                                 :on-fail    (fn [error]
+                                              (on-close)
                                               (log/error "Authentication Failed. Error:" error)
                                               (when on-auth-fail (on-auth-fail error))
                                               (password-login {:on-press-biometrics
