@@ -11,8 +11,7 @@
     constants/content-type-system-message-mutual-event-accepted
     constants/content-type-system-message-mutual-event-removed
     constants/content-type-system-message-mutual-event-sent
-    constants/content-type-system-pinned-message}
-)
+    constants/content-type-system-pinned-message})
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]
