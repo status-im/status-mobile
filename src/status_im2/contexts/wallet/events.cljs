@@ -5,12 +5,13 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.foundations.colors :as colors]
-    [status-im2.contexts.wallet.item-types :as item-types]
     [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
+    [status-im2.contexts.wallet.item-types :as item-types]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
     [utils.re-frame :as rf]
@@ -260,34 +261,18 @@
 (def max-cache-age-seconds 3600)
 
 (rf/reg-event-fx
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> f7bafad86 (lint)
-=======
->>>>>>> cfa8e2a00 (lint)
  :wallet/request-collectibles
  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
    (let [request-id          0
          collectibles-filter nil
-<<<<<<< HEAD
-<<<<<<< HEAD
          data-type           (collectible-data-types :header)
          fetch-criteria      {:fetch-type            (fetch-type :fetch-if-not-cached)
                               :max-cache-age-seconds max-cache-age-seconds}
-=======
->>>>>>> f7bafad86 (lint)
-=======
->>>>>>> cfa8e2a00 (lint)
          request-params      [request-id
                               [(chain/chain-id db)]
                               (map :address (:profile/wallet-accounts db))
                               collectibles-filter
                               start-at-index
-<<<<<<< HEAD
-<<<<<<< HEAD
                               collectibles-request-batch-size
                               data-type
                               fetch-criteria]]
@@ -302,53 +287,6 @@
                                         :params request-params}))}]]
            (when new-request?
              [:dispatch [:wallet/clear-stored-collectibles]])]})))
-=======
-=======
->>>>>>> c8ab6565c (lint)
-  :wallet/request-collectibles
-  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
-    (let [request-id          0
-          collectibles-filter nil
-          request-params      [request-id
-                               [(chain/chain-id db)]
-                               (map :address (:profile/wallet-accounts db))
-                               collectibles-filter
-                               start-at-index
-                               collectibles-request-batch-size]]
-      {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
-                        :params     request-params
-                        :on-success #()
-                        :on-error   (fn [error]
-                                      (log/error "failed to request collectibles"
-                                                 {:event  :wallet/request-collectibles
-                                                  :error  error
-                                                  :params request-params}))}]
-       :fx            (if new-request?
-                        [[:dispatch [:wallet/clear-stored-collectibles]]]
-                        [])})))
-<<<<<<< HEAD
->>>>>>> bc73a7fe6 (u)
-=======
-=======
->>>>>>> cfa8e2a00 (lint)
-                              collectibles-request-batch-size]]
-     {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
-                       :params     request-params
-                       :on-success #()
-                       :on-error   (fn [error]
-                                     (log/error "failed to request collectibles"
-                                                {:event  :wallet/request-collectibles
-                                                 :error  error
-                                                 :params request-params}))}]
-      :fx            (if new-request?
-                       [[:dispatch [:wallet/clear-stored-collectibles]]]
-                       [])})))
-<<<<<<< HEAD
->>>>>>> f7bafad86 (lint)
-=======
->>>>>>> c8ab6565c (lint)
-=======
->>>>>>> cfa8e2a00 (lint)
 
 (rf/reg-event-fx :wallet/owned-collectibles-filtering-done
  (fn [_ [{:keys [message]}]]
@@ -364,10 +302,6 @@
            {:start-at-index start-at-index}]])]})))
 
 (rf/reg-event-fx :wallet/get-collectible-details
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
  (fn [_ [collectible-id]]
    (let [request-id               0
          collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
@@ -381,42 +315,6 @@
                                      {:event  :wallet/get-collectible-details
                                       :error  error
                                       :params request-params}))}]]]})))
-=======
-=======
->>>>>>> c8ab6565c (lint)
-                 (fn [_ [collectible-id]]
-                   (let [request-id               0
-                         collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
-                         request-params           [request-id [collectible-id-converted]]]
-                     {:json-rpc/call [{:method   "wallet_getCollectiblesDetailsAsync"
-                                       :params   request-params
-                                       :on-error (fn [error]
-                                                   (log/error "failed to request collectible"
-                                                              {:event  :wallet/get-collectible-details
-                                                               :error  error
-                                                               :params request-params}))}]})))
-<<<<<<< HEAD
->>>>>>> bc73a7fe6 (u)
-=======
-=======
->>>>>>> cfa8e2a00 (lint)
- (fn [_ [collectible-id]]
-   (let [request-id               0
-         collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
-         request-params           [request-id [collectible-id-converted]]]
-     {:json-rpc/call [{:method   "wallet_getCollectiblesDetailsAsync"
-                       :params   request-params
-                       :on-error (fn [error]
-                                   (log/error "failed to request collectible"
-                                              {:event  :wallet/get-collectible-details
-                                               :error  error
-                                               :params request-params}))}]})))
-<<<<<<< HEAD
->>>>>>> f7bafad86 (lint)
-=======
->>>>>>> c8ab6565c (lint)
-=======
->>>>>>> cfa8e2a00 (lint)
 
 (rf/reg-event-fx :wallet/get-collectible-details-done
  (fn [_ [{:keys [message]}]]
@@ -430,24 +328,6 @@
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
-
-(rf/reg-event-fx :wallet/fetch-address-suggestions
- (fn [{:keys [db]} [address]]
-   {:db (assoc db
-               :wallet/local-suggestions
-               (cond
-                 (= address
-                    (get-in
-                     temp/address-local-suggestion-saved-contact-address-mock
-                     [:accounts 0 :address]))
-                 [temp/address-local-suggestion-saved-contact-address-mock]
-                 (= address
-                    (get temp/address-local-suggestion-saved-address-mock
-                         :address))
-                 [temp/address-local-suggestion-saved-address-mock]
-                 :else (temp/find-matching-addresses address))
-               :wallet/valid-ens-or-address?
-               false)}))
 
 (rf/reg-event-fx :wallet/find-ens
  (fn [{:keys [db]} [input contacts chain-id cb]]
@@ -481,11 +361,30 @@
                :wallet/local-suggestions     (if result
                                                [{:type     item-types/address
                                                  :ens      ens
-                                                 :address  result
+                                                 :address  (eip55/address->checksum result)
                                                  :networks [:ethereum :optimism]}]
                                                [])
                :wallet/valid-ens-or-address? (boolean result))}))
 
+
+
+(rf/reg-event-fx :wallet/fetch-address-suggestions
+ (fn [{:keys [db]} [address]]
+   {:db (assoc db
+               :wallet/local-suggestions
+               (cond
+                 (= address
+                    (get-in
+                     temp/address-local-suggestion-saved-contact-address-mock
+                     [:accounts 0 :address]))
+                 [temp/address-local-suggestion-saved-contact-address-mock]
+                 (= address
+                    (get temp/address-local-suggestion-saved-address-mock
+                         :address))
+                 [temp/address-local-suggestion-saved-address-mock]
+                 :else (temp/find-matching-addresses address))
+               :wallet/valid-ens-or-address?
+               false)}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
  (fn [{:keys [db]} [ens]]
