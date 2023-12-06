@@ -3,42 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     "version": "v0.171.28",
     "commit-sha1": "d7e7792b51f79e8cbebc9f59de79e64b6f6e684a",
     "src-sha256": "0y0di4jfmk93pqc4i9fsgasrhqgvwh46ly5h04m87pm611faa2ay"
-=======
-=======
->>>>>>> 2838840c8 (update status-go)
-<<<<<<< HEAD
-    "version": "v0.171.27",
-    "commit-sha1": "76b6745666b945f8d6336e2a5fc6e5705985273d",
-    "src-sha256": "1amak99bpsx6j8grzm2kzwd3si34gg4r8kbxqmnkfsrkm2nzvbx1"
-=======
-    "version": "c7278b9322cca78a648b151e53534702ed4b7166",
-    "commit-sha1": "c7278b9322cca78a648b151e53534702ed4b7166",
-    "src-sha256": "13h2wc5gcay196bjvcgcixzvncdw372yrabsx6gnr82phbw9py6l"
->>>>>>> c1d06ad1d (wallet: add color and emoji)
-<<<<<<< HEAD
->>>>>>> 2699d7224 (wallet: add color and emoji)
-=======
-=======
-    "version": "08d32d39c0d7b0550f1110df8cebfd5da5691ac7",
-    "commit-sha1": "08d32d39c0d7b0550f1110df8cebfd5da5691ac7",
-    "src-sha256": "10vzgyq3sspylxyxffig34l8sd8ryvghkkmagjrr06azsqsyp1mf"
->>>>>>> 5c9afe65b (update status-go)
->>>>>>> 2838840c8 (update status-go)
-=======
-    "version": "1174e1e43c0fbffaa21c9401c29e98cbdc37557c",
-    "commit-sha1": "1174e1e43c0fbffaa21c9401c29e98cbdc37557c",
-    "src-sha256": "1q5l9aimdiyryzvbd10djvz5ghg6ccaghwmqp2456skbvflpbyr2"
->>>>>>> c624805bb (rebase)
-=======
-    "version": "v0.171.28",
-    "commit-sha1": "d7e7792b51f79e8cbebc9f59de79e64b6f6e684a",
-    "src-sha256": "0y0di4jfmk93pqc4i9fsgasrhqgvwh46ly5h04m87pm611faa2ay"
->>>>>>> 809b384d1 (rebase)
 }

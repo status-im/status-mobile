@@ -94,16 +94,11 @@
  :-> :current-viewing-account-address)
 
 (rf/reg-sub
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 823fc3666 (lint)
  :wallet/accounts-without-current-viewing-account
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
  (fn [[accounts current-viewing-account-address]]
    (remove #(= (:address %) current-viewing-account-address) accounts)))
-<<<<<<< HEAD
 
 (defn- calc-token-value
   [{:keys [market-values-per-currency] :as item} chain-id]
@@ -130,12 +125,3 @@
  :<- [:chain-id]
  (fn [[current-account chain-id]]
    (mapv #(calc-token-value % chain-id) (:tokens current-account))))
-=======
-  :wallet/accounts-without-current-viewing-account
-  :<- [:wallet/accounts]
-  :<- [:wallet/current-viewing-account-address]
-  (fn [[accounts current-viewing-account-address]]
-    (remove #(= (:address %) current-viewing-account-address) accounts)))
->>>>>>> c624805bb (rebase)
-=======
->>>>>>> 823fc3666 (lint)
