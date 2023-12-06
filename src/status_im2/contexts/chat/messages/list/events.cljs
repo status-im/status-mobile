@@ -5,13 +5,20 @@
     [utils.re-frame :as rf]
     [utils.red-black-tree :as red-black-tree]))
 
-(def is-system-message?
+(def is-system-message-content-type?
   #{constants/content-type-system-text
     constants/content-type-community
     constants/content-type-system-message-mutual-event-accepted
     constants/content-type-system-message-mutual-event-removed
     constants/content-type-system-message-mutual-event-sent
     constants/content-type-system-pinned-message})
+
+(defn is-system-message?
+  [content-type message-type]
+  (or
+   (is-system-message-content-type? content-type)
+   (= constants/message-type-private-group-system-message
+      message-type)))
 
 (defn- add-datemark
   [{:keys [whisper-timestamp] :as msg}]
@@ -37,13 +44,10 @@
   (-> {:whisper-timestamp whisper-timestamp
        :from              from
        :one-to-one?       (= constants/message-type-one-to-one message-type)
-       :system-message?   (boolean
-                           (or
-                            (is-system-message? content-type)
-                            (= constants/message-type-private-group-system-message
-                               message-type)
-                            deleted?
-                            deleted-for-me?))
+       :system-message?   (or
+                           (is-system-message? content-type message-type)
+                           deleted?
+                           deleted-for-me?)
        :clock-value       clock-value
        :type              :message
        :message-id        message-id
