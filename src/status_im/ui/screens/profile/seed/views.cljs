@@ -46,7 +46,8 @@
      :key   :your-data-belongs-to-you-description}]
    [react/view {:style styles/intro-button}
     [quo/button
-     {:on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])}
+     {:on-press #(do (re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
+                     (re-frame/dispatch [:profile.settings/mnemonic-was-shown]))}
      (i18n/label :t/ok-continue)]]])
 
 (defn six-words

@@ -81,6 +81,7 @@
     [quo.components.wallet.account-card.component-spec]
     [quo.components.wallet.account-origin.component-spec]
     [quo.components.wallet.account-overview.component-spec]
+    [quo.components.wallet.confirmation-progress.component-spec]
     [quo.components.wallet.keypair.component-spec]
     [quo.components.wallet.network-amount.component-spec]
     [quo.components.wallet.network-bridge.component-spec]
@@ -88,6 +89,7 @@
     [quo.components.wallet.progress-bar.component-spec]
     [quo.components.wallet.summary-info.component-spec]
     [quo.components.wallet.token-input.component-spec]
+    [quo.components.wallet.transaction-progress.component-spec]
     [quo.components.wallet.transaction-summary.component-spec]
     [quo.components.wallet.wallet-activity.component-spec]
     [quo.components.wallet.wallet-overview.component-spec]))

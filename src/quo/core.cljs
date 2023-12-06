@@ -147,6 +147,7 @@
     quo.components.wallet.account-origin.view
     quo.components.wallet.account-overview.view
     quo.components.wallet.address-text.view
+    quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
     quo.components.wallet.network-amount.view
     quo.components.wallet.network-bridge.view
@@ -155,6 +156,7 @@
     quo.components.wallet.progress-bar.view
     quo.components.wallet.summary-info.view
     quo.components.wallet.token-input.view
+    quo.components.wallet.transaction-progress.view
     quo.components.wallet.transaction-summary.view
     quo.components.wallet.wallet-activity.view
     quo.components.wallet.wallet-overview.view))
@@ -391,6 +393,7 @@
 (def account-origin quo.components.wallet.account-origin.view/view)
 (def account-overview quo.components.wallet.account-overview.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
+(def confirmation-propgress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)
@@ -401,4 +404,5 @@
 (def token-input quo.components.wallet.token-input.view/view)
 (def wallet-overview quo.components.wallet.wallet-overview.view/view)
 (def wallet-activity quo.components.wallet.wallet-activity.view/view)
+(def transaction-progress quo.components.wallet.transaction-progress.view/view)
 (def transaction-summary quo.components.wallet.transaction-summary.view/view)
