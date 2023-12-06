@@ -276,7 +276,7 @@
 (re-frame/reg-sub
  :profile/profile-with-image
  :<- [:profile/profile]
- :<- [:ens/names]
+ :<- [:ens/current-names]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
  (fn [[profile ens-names port font-file] [_ avatar-opts]]
