@@ -250,8 +250,9 @@
    :polygon  "#AD71F3"
    :unknown  "#EEF2F5"})
 
-(def ^:private socials
-  {:facebook  "#1877F2"
+(def socials
+  {:link      "#647084"
+   :facebook  "#1877F2"
    :github    "#000000"
    :instagram "#D8408E0F"
    :lens      "#00501E"

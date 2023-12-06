@@ -277,15 +277,18 @@
 (defn customization-color-option
   ([]
    (customization-color-option {}))
-  ([{:keys [feng-shui?] :as opts}]
+  ([{:keys [feng-shui? set-type] :as opts}]
+   (let [color-set (case set-type
+                     :socials colors/socials
+                     colors/customization)]
    (merge {:key     :customization-color
            :type    :select
-           :options (->> (merge colors/customization (when feng-shui? {:feng-shui nil}))
+           :options (->> (merge color-set (when feng-shui? {:feng-shui nil}))
                          keys
                          sort
                          (map (fn [k]
                                 {:key k :value (string/capitalize (name k))})))}
-          opts)))
+          opts))))
 
 (defn blur-view
   [{:keys [show-blur-background? image height blur-view-props style theme]} & children]

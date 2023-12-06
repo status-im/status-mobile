@@ -32,14 +32,14 @@
     :size                20}])
 
 (defn- view-internal
-  [{:keys [address link theme on-press]
+  [{:keys [address link theme on-press customization-color]
     :or   {link :link}}]
   [rn/pressable
    {:accessibility-label :link-card
     :on-press            on-press}
    [linear-gradient/linear-gradient
-    {:colors [(properties/gradient-start-color theme (if (= :link link) :army link))
-              (properties/gradient-end-color theme (if (= :link link) :army link))]
+    {:colors [(properties/gradient-start-color theme customization-color)
+              (properties/gradient-end-color theme customization-color)]
      :start  {:x 0 :y 1}
      :end    {:x 1 :y 1}
      :style  (style/container theme)}
