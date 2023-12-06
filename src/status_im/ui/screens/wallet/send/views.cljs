@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.send.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [quo.core :as quo]
     [re-frame.core :as re-frame]
