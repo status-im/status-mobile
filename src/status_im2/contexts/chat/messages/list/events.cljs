@@ -19,6 +19,7 @@
            clock-value
            album-id
            message-type
+           content-type
            from
            outgoing
            whisper-timestamp
@@ -30,6 +31,13 @@
        :one-to-one?       (= constants/message-type-one-to-one message-type)
        :system-message?   (boolean
                            (or
+                            (#{constants/content-type-system-text
+                               constants/content-type-community
+                               constants/content-type-system-message-mutual-event-accepted
+                               constants/content-type-system-message-mutual-event-removed
+                               constants/content-type-system-message-mutual-event-sent
+                               constants/content-type-system-pinned-message}
+                             content-type)
                             (= constants/message-type-private-group-system-message
                                message-type)
                             deleted?
