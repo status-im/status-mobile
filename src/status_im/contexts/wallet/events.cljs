@@ -24,7 +24,7 @@
             [:toasts/upsert
              {:id   :new-wallet-account-created
               :type :positive
-              :text (i18n/label :t/account-created {:name name})}]]]})))
+              :text (i18n/label :t/account-created {:name (:name account)})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
