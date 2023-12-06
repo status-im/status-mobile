@@ -24,12 +24,14 @@
               {:key :twitter}
               {:key :youtube}]}
    {:key  :address
-    :type :text}])
+    :type :text}
+   (preview/customization-color-option {:set-type :socials})])
 
 (defn view
   []
   (let [state (reagent/atom {:link     :link
                              :address  "address"
+                             :customization-color :link
                              :on-press #(js/alert "pressed")})]
     (fn []
       [preview/preview-container
