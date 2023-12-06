@@ -119,6 +119,7 @@
          :track-text          (i18n/label :t/slide-to-create-account)
          :customization-color @account-color
          :on-auth-success     (fn [entered-password]
+                                (prn entered-password)
                                 (rf/dispatch [:wallet/derive-address-and-add-account
                                               {:sha3-pwd     entered-password
                                                :emoji        @emoji
