@@ -61,9 +61,16 @@
     :username username}))
 
 (re-frame/reg-sub
+ :ens/current-names
+ :<- [:ens/names]
+ :<- [:chain-id]
+ (fn [[all-names chain-id]]
+   (get all-names chain-id)))
+
+(re-frame/reg-sub
  :ens.name/screen
  :<- [:get-screen-params :ens-name-details]
- :<- [:ens/names]
+ :<- [:ens/current-names]
  (fn [[name ens]]
    (let [{:keys [address public-key expiration-date releasable?]} (get ens name)
          pending?                                                 (nil? address)]
@@ -79,7 +86,7 @@
 
 (re-frame/reg-sub
  :ens.main/screen
- :<- [:ens/names]
+ :<- [:ens/current-names]
  :<- [:profile/profile]
  :<- [:ens/preferred-name]
  :<- [:ens/registrations]
