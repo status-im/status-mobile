@@ -1403,6 +1403,8 @@
     "try-keeping-the-card-still": "Try keeping the card still",
     "turn-nfc-on": "Turn NFC on to continue",
     "turn-nfc-description": "NFC is disabled on yor device. You can enable it in settings",
+    "testnet-mode-prompt-title": "Warning!",
+    "testnet-mode-prompt-content": "You are about to switch the network mode. This will log you out and you will have to login again.",
     "keycard-init-title": "Looking for cards...",
     "keycard-init-description": "Put the card to the back of your phone to continue",
     "keycard-awaiting-title": "Still looking...",
