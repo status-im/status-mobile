@@ -29,48 +29,46 @@
   (views/letsubs [{:keys [address ens-name]}      [:popover/popover]
                   {:keys [universal-profile-url]} [:profile/profile]
                   width                           (reagent/atom nil)]
-    (do
-      (re-frame/dispatch [:universal-links/generate-profile-url])
-      [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
-       [react/view {:style {:padding-top 16 :padding-horizontal 16}}
-        (when @width
-          [qr-codes/qr-code
-           {:url  address
-            :size (- @width 32)}])
-        (when ens-name
-          [react/view
-           [copyable-text/copyable-text-view
-            {:label           :t/ens-username
-             :container-style {:margin-top 12 :margin-bottom 4}
-             :copied-text     ens-name}
-            [quo/text
-             {:monospace           true
-              :accessibility-label :ens-username}
-             ens-name]]
-           [react/view
-            {:height            1
-             :margin-top        12
-             :margin-horizontal -16
-             :background-color  colors/gray-lighter}]])
-        [copyable-text/copyable-text-view
-         {:label           :t/chat-key
-          :container-style {:margin-top 12 :margin-bottom 4}
-          :copied-text     address}
-         [quo/text
-          {:number-of-lines     1
-           :ellipsize-mode      :middle
-           :accessibility-label :chat-key
-           :monospace           true}
-          address]]]
-       [react/view styles/share-link-button
-        [quo/button
-         {:on-press            (fn []
-                                 (re-frame/dispatch [:hide-popover])
-                                 (js/setTimeout
-                                  #(list-selection/open-share {:message universal-profile-url})
-                                  250))
-          :accessibility-label :share-my-contact-code-button}
-         (i18n/label :t/share-link)]]])))
+    [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
+     [react/view {:style {:padding-top 16 :padding-horizontal 16}}
+      (when @width
+        [qr-codes/qr-code
+         {:url  address
+          :size (- @width 32)}])
+      (when ens-name
+        [react/view
+         [copyable-text/copyable-text-view
+          {:label           :t/ens-username
+           :container-style {:margin-top 12 :margin-bottom 4}
+           :copied-text     ens-name}
+          [quo/text
+           {:monospace           true
+            :accessibility-label :ens-username}
+           ens-name]]
+         [react/view
+          {:height            1
+           :margin-top        12
+           :margin-horizontal -16
+           :background-color  colors/gray-lighter}]])
+      [copyable-text/copyable-text-view
+       {:label           :t/chat-key
+        :container-style {:margin-top 12 :margin-bottom 4}
+        :copied-text     address}
+       [quo/text
+        {:number-of-lines     1
+         :ellipsize-mode      :middle
+         :accessibility-label :chat-key
+         :monospace           true}
+        address]]]
+     [react/view styles/share-link-button
+      [quo/button
+       {:on-press            (fn []
+                               (re-frame/dispatch [:hide-popover])
+                               (js/setTimeout
+                                #(list-selection/open-share {:message universal-profile-url})
+                                250))
+        :accessibility-label :share-my-contact-code-button}
+       (i18n/label :t/share-link)]]]))
 
 (defn content
   []

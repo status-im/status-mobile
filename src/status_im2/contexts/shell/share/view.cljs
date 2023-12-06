@@ -48,9 +48,9 @@
   []
   (let [{:keys [emoji-hash
                 compressed-key
-                customization-color]
+                customization-color
+                universal-profile-url]
          :as   profile}   (rf/sub [:profile/profile])
-        profile-url       (str image-server/status-profile-base-url compressed-key)
         abbreviated-url   (address/get-abbreviated-profile-url
                            image-server/status-profile-base-url-without-https
                            compressed-key)
@@ -60,14 +60,14 @@
       [qr-codes/share-qr-code
        {:type                :profile
         :unblur-on-android?  true
-        :qr-data             profile-url
+        :qr-data             universal-profile-url
         :qr-data-label-shown abbreviated-url
-        :on-share-press      #(list-selection/open-share {:message profile-url})
+        :on-share-press      #(list-selection/open-share {:message universal-profile-url})
         :on-text-press       #(rf/dispatch [:share/copy-text-and-show-toast
-                                            {:text-to-copy      profile-url
+                                            {:text-to-copy      universal-profile-url
                                              :post-copy-message (i18n/label :t/link-to-profile-copied)}])
         :on-text-long-press  #(rf/dispatch [:share/copy-text-and-show-toast
-                                            {:text-to-copy      profile-url
+                                            {:text-to-copy      universal-profile-url
                                              :post-copy-message (i18n/label :t/link-to-profile-copied)}])
         :profile-picture     (:uri (profile.utils/photo profile))
         :full-name           (profile.utils/displayed-name profile)

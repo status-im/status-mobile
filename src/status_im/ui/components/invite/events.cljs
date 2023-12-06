@@ -12,12 +12,6 @@
 
 (rf/reg-event-fx
  :invite.events/share-link
- (fn [_]
-   {:dispatch [:universal-links/generate-profile-url
-               {:cb #(rf/dispatch [:invite.events/share-link-after-profile-url-generated])}]}))
-
-(rf/reg-event-fx
- :invite.events/share-link-after-profile-url-generated
  (fn [{:keys [db]}]
    (let [{:keys [universal-profile-url]} (get db :profile/profile)
          message                         (i18n/label :t/join-me {:url universal-profile-url})]
