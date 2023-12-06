@@ -10,7 +10,10 @@
 (defn- view-internal
   [_]
   (let [reset-slider?   (reagent/atom false)
-        on-close        #(reset! reset-slider? true)
+        on-close        (fn []
+                          (js/setTimeout
+                           #(reset! reset-slider? true)
+                           200))
         auth-method     (rf/sub [:auth-method])
         biometric-auth? (= auth-method "biometric")]
     (fn [{:keys [track-text
