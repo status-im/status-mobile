@@ -55,6 +55,7 @@
     [status-im2.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.contexts.wallet.send.select-asset.view :as wallet-select-asset]
+    [status-im2.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
 
@@ -311,6 +312,10 @@
     {:name      :wallet-select-asset
      :options   {:insets {:top? true}}
      :component wallet-select-asset/view}
+
+    {:name      :wallet-transaction-confirmation
+     :options   {:insets {:bottom? true}}
+     :component wallet-transaction-confirmation/view}
 
     {:name      :scan-address
      :options   (merge
