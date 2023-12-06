@@ -1,22 +1,17 @@
-(ns status-im2.contexts.onboarding.enable-notifications.style
-  (:require
-    [quo.foundations.colors :as colors]))
+(ns status-im2.contexts.onboarding.enable-notifications.style)
 
 (def default-margin 20)
 
 (defn page-container
   [insets]
-  {:flex        1
-   :padding-top (:top insets)})
+  {:flex            1
+   :justify-content :space-between
+   :padding-top     (:top insets)})
 
-(def page-illustration
-  {:flex              1
-   :background-color  colors/danger-50
-   :align-items       :center
-   :margin-horizontal default-margin
-   :border-radius     20
-   :margin-top        default-margin
-   :justify-content   :center})
+(defn page-illustration
+  [width]
+  {:flex  1
+   :width width})
 
 (defn buttons
   [insets]
