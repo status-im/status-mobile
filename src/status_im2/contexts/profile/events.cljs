@@ -15,18 +15,24 @@
 (rf/defn profile-selected
   {:events [:profile/profile-selected]}
   [{:keys [db]} key-uid]
-  {:db       (update db
-                     :profile/login
-                     #(-> %
-                          (assoc :key-uid key-uid)
-                          (dissoc :error :password)))
-   :dispatch [:profile.login/login-with-biometric-if-available key-uid]})
+  {:db (update db
+               :profile/login
+               #(-> %
+                    (assoc :key-uid key-uid)
+                    (dissoc :error :password)))})
 
 (rf/defn init-profiles-overview
   [{:keys [db] :as cofx} profiles key-uid]
   (rf/merge cofx
             {:db (assoc db :profile/profiles-overview profiles)}
             (profile-selected key-uid)))
+
+(rf/reg-event-fx
+ :profile/switch-profile
+ (fn [{:keys [db]} [key-uid]]
+   {:db db
+    :fx [[:dispatch [:profile/profile-selected key-uid]]
+         [:dispatch [:profile.login/login-with-biometric-if-available key-uid]]]}))
 
 (defn reduce-profiles
   [profiles]

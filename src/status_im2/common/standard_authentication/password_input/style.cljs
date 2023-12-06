@@ -4,3 +4,11 @@
   {:margin-top     8
    :flex-direction :row
    :align-items    :center})
+
+(def input-container
+  {:flex-direction :row
+   :align-items    :flex-end})
+
+(def input
+  {:flex         1
+   :margin-right 12})

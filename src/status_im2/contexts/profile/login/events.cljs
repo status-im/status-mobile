@@ -180,6 +180,14 @@
   {:keychain/get-auth-method [key-uid
                               #(rf/dispatch [:profile.login/get-auth-method-success % key-uid])]})
 
+(rf/reg-event-fx
+ :profile.login/biometric-auth
+ (fn []
+   {:dispatch [:biometric/authenticate
+               {:on-success #(rf/dispatch [:profile.login/biometric-success])
+                :on-fail    #(rf/dispatch
+                              [:profile.login/biometric-auth-fail %])}]}))
+
 (rf/defn get-auth-method-success
   {:events [:profile.login/get-auth-method-success]}
   [{:keys [db]} auth-method key-uid]
@@ -187,11 +195,7 @@
          (when (= auth-method keychain/auth-method-biometric)
            {:keychain/password-hash-migration
             {:key-uid  key-uid
-             :callback (fn []
-                         (rf/dispatch [:biometric/authenticate
-                                       {:on-success #(rf/dispatch [:profile.login/biometric-success])
-                                        :on-fail    #(rf/dispatch
-                                                      [:profile.login/biometric-auth-fail %])}]))}})))
+             :callback #(rf/dispatch [:profile.login/biometric-auth])}})))
 
 ;; result of :keychain/get-auth-method above
 (rf/defn get-user-password-success
@@ -218,8 +222,7 @@
  (fn [{:keys [db]} [code]]
    (let [key-uid (get-in db [:profile/login :key-uid])]
      {:db db
-      :fx [[:dispatch [:init-root :profiles]]
-           (if (= code "NOT_ENROLLED")
+      :fx [(if (= code "NOT_ENROLLED")
              [:biometric/supress-not-enrolled-error
               [key-uid
                [:biometric/show-message code]]]

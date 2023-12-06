@@ -5,6 +5,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [status-im2.common.keychain.events :as keychain]
     [status-im2.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
     [status-im2.common.standard-authentication.password-input.style :as style]
     [utils.i18n :as i18n]
@@ -29,19 +30,30 @@
 (defn- view-internal
   [{:keys [default-password theme shell?]}]
   (let [{:keys [error processing]} (rf/sub [:profile/login])
+        auth-method                (rf/sub [:auth-method])
         error-message              (get-error-message error)
         error?                     (boolean (seq error-message))]
     [:<>
-     [quo/input
-      {:type           :password
-       :blur?          true
-       :disabled?      processing
-       :placeholder    (i18n/label :t/type-your-password)
-       :auto-focus     true
-       :error?         error?
-       :label          (i18n/label :t/profile-password)
-       :on-change-text on-change-password
-       :default-value  (security/safe-unmask-data default-password)}]
+     [rn/view {:style style/input-container}
+      [quo/input
+       {:type            :password
+        :blur?           true
+        :container-style style/input
+        :disabled?       processing
+        :placeholder     (i18n/label :t/type-your-password)
+        :auto-focus      true
+        :error?          error?
+        :label           (i18n/label :t/profile-password)
+        :on-change-text  on-change-password
+        :default-value   (security/safe-unmask-data default-password)}]
+      (when (= auth-method keychain/auth-method-biometric)
+        [quo/button
+         {:type       :outline
+          :icon-only? true
+          :on-press   #(rf/dispatch [:profile.login/biometric-auth])
+          :background :blur
+          :size       40}
+         :i/face-id])]
      (when error?
        [rn/view {:style style/error-message}
         [quo/info-message

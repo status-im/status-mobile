@@ -123,7 +123,7 @@
                                :profile-picture profile-picture})
       :on-card-press        (fn []
                               (rf/dispatch
-                               [:profile/profile-selected key-uid])
+                               [:profile/switch-profile key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
 (defn- f-profiles-section
