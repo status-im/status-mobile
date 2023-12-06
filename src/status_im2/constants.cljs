@@ -372,7 +372,9 @@
 ;; wallet
 (def ^:const mainnet-chain-id 1)
 (def ^:const optimism-chain-id 10)
+(def ^:const optimism-test-chain-id 420)
 (def ^:const arbitrum-chain-id 42161)
+(def ^:const arbitrum-test-chain-id 421613)
 (def ^:const goerli-chain-id 5)
 
 (def ^:const mainnet-short-name "eth")

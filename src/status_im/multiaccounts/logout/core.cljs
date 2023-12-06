@@ -31,7 +31,7 @@
     (rf/merge cofx
               {:set-root                               :progress
                :chat.ui/clear-inputs                   nil
-               :shell/reset-state                      nil
+               :effects.shell/reset-state              nil
                :hide-popover                           nil
                ::logout                                nil
                :profile.settings/webview-debug-changed false

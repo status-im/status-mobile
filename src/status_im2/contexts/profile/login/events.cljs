@@ -9,14 +9,18 @@
     [status-im.data-store.switcher-cards :as switcher-cards-store]
     [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
     [status-im.group-chats.core :as group-chats]
+    [status-im.mailserver.core :as mailserver]
     [status-im.mobile-sync-settings.core :as mobile-network]
-    [status-im.transport.core :as transport]
+    [status-im.pairing.core :as pairing]
+    [status-im.stickers.core :as stickers]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.common.log :as logging]
+    [status-im2.common.universal-links :as universal-links]
     [status-im2.config :as config]
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.contexts.profile.config :as profile.config]
+    status-im2.contexts.profile.login.effects
     [status-im2.contexts.profile.rpc :as profile.rpc]
     [status-im2.contexts.profile.settings.events :as profile.settings.events]
     [status-im2.contexts.push-notifications.events :as notifications]
@@ -27,36 +31,29 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(re-frame/reg-fx
- ::login
- (fn [[key-uid hashed-password]]
-   ;;"node.login" signal will be triggered as a callback
-   (native-module/login-account
-    (assoc (profile.config/login) :keyUid key-uid :password hashed-password))))
-
 (rf/defn login
   {:events [:profile.login/login]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
-    {:db     (assoc-in db [:profile/login :processing] true)
-     ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
+    {:db                    (assoc-in db [:profile/login :processing] true)
+     :effects.profile/login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn biometrics-login
   {:events [:profile.login/biometrics-login]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
-    {:db     (assoc-in db [:profile/login :processing] true)
-     ::login [key-uid (security/safe-unmask-data password)]}))
+    {:db                    (assoc-in db [:profile/login :processing] true)
+     :effects.profile/login [key-uid (security/safe-unmask-data password)]}))
 
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
         masked-password            (security/mask-data password)]
-    {:db     (-> db
-                 (assoc-in [:onboarding-2/profile :password] masked-password)
-                 (assoc-in [:onboarding-2/profile :syncing?] true))
-     ::login [key-uid password]}))
+    {:db                    (-> db
+                                (assoc-in [:onboarding/profile :password] masked-password)
+                                (assoc-in [:onboarding/profile :syncing?] true))
+     :effects.profile/login [key-uid password]}))
 
 (rf/defn redirect-to-root
   [{:keys [db] :as cofx}]
@@ -66,8 +63,8 @@
       {:db       (dissoc db :syncing)
        :dispatch [:init-root :syncing-results]}
 
-      (get db :onboarding-2/new-account?)
-      {:dispatch [:onboarding-2/finalize-setup]}
+      (get db :onboarding/new-account?)
+      {:dispatch [:onboarding/finalize-setup]}
 
       :else
       (rf/merge
@@ -116,7 +113,10 @@
         network-id                                  (str (get-in networks
                                                                  [current-network :config :NetworkId]))]
     (rf/merge cofx
-              (cond-> {:wallet-legacy/initialize-transactions-management-enabled nil
+              (cond-> {:json-rpc/call [{:method     "wakuext_startMessenger"
+                                        :on-success #(re-frame/dispatch [:messenger-started %])
+                                        :on-error   #(log/error "failed to start messenger")}]
+                       :wallet-legacy/initialize-transactions-management-enabled nil
                        :wallet-legacy/initialize-wallet
                        [network-id
                         current-network-config
@@ -128,7 +128,6 @@
                 (assoc :chat/open-last-chat (get-in db [:profile/profile :key-uid]))
                 notifications-enabled?
                 (assoc :effects/push-notifications-enable nil))
-              (transport/start-messenger)
               (contacts/initialize-contacts)
               (browser/initialize-browser)
               (mobile-network/on-network-status-change)
@@ -139,8 +138,30 @@
               (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
               (switcher-cards-store/fetch-switcher-cards-rpc))))
 
+(rf/defn messenger-started
+  {:events [:messenger-started]}
+  [{:keys [db] :as cofx} {:keys [mailservers] :as response}]
+  (log/info "Messenger started")
+  (let [new-account? (get db :onboarding-2/new-account?)]
+    (rf/merge cofx
+              {:db            (-> db
+                                  (assoc :messenger/started? true)
+                                  (mailserver/add-mailservers mailservers))
+               :json-rpc/call [{:method     "admin_nodeInfo"
+                                :on-success #(re-frame/dispatch [:node-info-fetched %])
+                                :on-error   #(log/error "node-info: failed error" %)}]}
+              (pairing/init)
+              (stickers/load-packs)
+              (when-not new-account?
+                (universal-links/process-stored-event)))))
+
+(rf/defn set-node-info
+  {:events [:node-info-fetched]}
+  [{:keys [db]} node-info]
+  {:db (assoc db :node-info node-info)})
+
 (rf/defn login-node-signal
-  [{{:onboarding-2/keys [recovered-account? new-account?] :as db} :db :as cofx}
+  [{{:onboarding/keys [recovered-account? new-account?] :as db} :db :as cofx}
    {:keys [settings account ensUsernames error]}]
   (log/debug "[signals] node.login" "error" error)
   (if error

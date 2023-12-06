@@ -218,7 +218,7 @@
            :type                :primary
            :customization-color @custom-color
            :on-press            (fn []
-                                  (rf/dispatch [:onboarding-2/profile-data-set
+                                  (rf/dispatch [:onboarding/profile-data-set
                                                 {:image-path   @profile-pic
                                                  :display-name @full-name
                                                  :color        @custom-color}]))
@@ -232,7 +232,7 @@
 (defn create-profile
   []
   (let [{:keys [top]}           (safe-area/get-insets)
-        onboarding-profile-data (rf/sub [:onboarding-2/profile])]
+        onboarding-profile-data (rf/sub [:onboarding/profile])]
     [:<>
      [:f> f-page
       {:navigation-bar-top      top

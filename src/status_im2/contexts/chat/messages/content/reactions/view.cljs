@@ -9,11 +9,8 @@
 (defn- on-press
   [{:keys [own message-id emoji-id emoji-reaction-id]}]
   (if own
-    (rf/dispatch [:models.reactions/send-emoji-reaction-retraction
-                  {:message-id        message-id
-                   :emoji-id          emoji-id
-                   :emoji-reaction-id emoji-reaction-id}])
-    (rf/dispatch [:models.reactions/send-emoji-reaction
+    (rf/dispatch [:reactions/send-emoji-reaction-retraction emoji-reaction-id])
+    (rf/dispatch [:reactions/send-emoji-reaction
                   {:message-id message-id
                    :emoji-id   emoji-id}])))
 

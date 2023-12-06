@@ -1,6 +1,7 @@
 (ns status-im2.contexts.add-new-contact.events-test
   (:require
     [cljs.test :refer-macros [deftest are]]
+    matcher-combinators.test
     [status-im2.contexts.add-new-contact.events :as events]))
 
 (def user-ukey
@@ -18,10 +19,10 @@
 ;;; unit tests (no app-db involved)
 
 (deftest validate-contact-test
-  (are [i e] (= (events/validate-contact (events/init-contact
-                                          {:user-public-key user-ukey
-                                           :input           i}))
-                (events/init-contact e))
+  (are [i e] (match? (events/validate-contact (events/init-contact
+                                               {:user-public-key user-ukey
+                                                :input           i}))
+                     (events/init-contact e))
 
    ""                          {:user-public-key user-ukey
                                 :input           ""
@@ -90,7 +91,7 @@
 
 (deftest set-new-identity-test
   (with-redefs [events/dispatcher (fn [& args] args)]
-    (are [i edb] (= (events/set-new-identity {:db db} i nil) edb)
+    (are [i edb] (match? (events/set-new-identity {:db db} i nil) edb)
 
      ""        {:db db}
 
@@ -115,7 +116,7 @@
                              :ens             ens-stateofus-eth
                              :public-key      nil ; not yet...
                              :state           :resolve-ens}))
-                :contacts/resolve-public-key-from-ens
+                :effects.contacts/resolve-public-key-from-ens
                 {:chain-id   1
                  :ens        ens-stateofus-eth
                  :on-success [:contacts/set-new-identity-success ens]
@@ -131,7 +132,7 @@
                              :type            :compressed-key
                              :public-key      nil ; not yet...
                              :state           :decompress-key}))
-                :contacts/decompress-public-key
+                :effects.contacts/decompress-public-key
                 {:compressed-key user-ckey
                  :on-success     [:contacts/set-new-identity-success user-ckey]
                  :on-error       [:contacts/set-new-identity-error user-ckey]}})))

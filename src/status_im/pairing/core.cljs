@@ -165,9 +165,9 @@
   (if (< (count (filter :enabled? (vals (get-in cofx [:db :pairing/installations]))))
          (inc config/max-installations))
     {:pairing/enable-installation [installation-id]}
-    {:utils/show-popup {:title   (i18n/label :t/pairing-maximum-number-reached-title)
+    {:effects.utils/show-popup {:title   (i18n/label :t/pairing-maximum-number-reached-title)
 
-                        :content (i18n/label :t/pairing-maximum-number-reached-content)}}))
+                                :content (i18n/label :t/pairing-maximum-number-reached-content)}}))
 
 (rf/defn disable-fx
   {:events [:pairing.ui/disable-installation-pressed]}

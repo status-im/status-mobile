@@ -43,10 +43,10 @@
           {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))]
       (rf/merge cofx
                 (navigation/init-root :profiles)
-                (init-profiles-overview profiles key-uid)
+                (when key-uid (init-profiles-overview profiles key-uid))
                 ;;we check if biometric is available, and try to login with it,
                 ;;if succeed "node.login" signal will be triggered
-                (profile.login/login-with-biometric-if-available key-uid)))
+                (when key-uid (profile.login/login-with-biometric-if-available key-uid))))
     (navigation/init-root cofx :intro)))
 
 (rf/defn update-setting-from-backup

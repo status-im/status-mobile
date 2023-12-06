@@ -89,7 +89,7 @@
 (rf/defn connect-failure
   {:events [::connect-failure]}
   [_ reason]
-  {:utils/show-popup
+  {:effects.utils/show-popup
    {:title   (i18n/label :t/error)
     :content (str reason)}})
 
