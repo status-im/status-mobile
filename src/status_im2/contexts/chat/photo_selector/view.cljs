@@ -35,7 +35,7 @@
   (close))
 
 (defn confirm-button
-  [selected-images sending-image close customization-color]
+  [{:keys [selected-images sending-image close customization-color]}]
   (when (not= selected-images sending-image)
     [linear-gradient/linear-gradient
      {:colors [:black :transparent]
@@ -142,7 +142,11 @@
                                           (rf/dispatch [:photo-selector/camera-roll-loading-more true])
                                           (rf/dispatch [:photo-selector/get-photos-for-selected-album
                                                         end-cursor])))}]
-           [confirm-button @selected-images sending-image close customization-color]]
+           [confirm-button
+            {:close               close
+             :customization-color customization-color
+             :selected-images     @selected-images
+             :sending-image       sending-image}]]
           [rn/view {:style style/buttons-container}
            [quo/dropdown
             {:type       dropdown-type
