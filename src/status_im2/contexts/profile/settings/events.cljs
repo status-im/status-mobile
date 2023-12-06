@@ -4,6 +4,7 @@
             [status-im2.constants :as constants]
             status-im2.contexts.profile.settings.effects
             [taoensso.timbre :as log]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (rf/defn send-contact-update
@@ -14,6 +15,7 @@
                       :on-success #(log/debug "sent contact update")}]}))
 
 (rf/defn profile-update
+  {:events [:profile.settings/profile-update]}
   [{:keys [db] :as cofx}
    setting setting-value
    {:keys [dont-sync? on-success] :or {on-success #()}}]
@@ -55,6 +57,18 @@
   (rf/merge cofx
             {:profile.settings/webview-debug-changed value}
             (profile-update :webview-debug (boolean value) {})))
+
+(rf/reg-event-fx :profile.settings/toggle-test-networks
+ (fn [{:keys [db]}]
+   (let [value      (get-in db [:profile/profile :test-networks-enabled?])
+         on-success #(rf/dispatch [:logout])]
+     {:fx [[:ui/show-confirmation
+            {:title     (i18n/label :t/testnet-mode-prompt-title)
+             :content   (i18n/label :t/testnet-mode-prompt-content)
+             :on-accept #(rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
+                                       (not value)
+                                       {:on-success on-success}])
+             :on-cancel nil}]]})))
 
 (rf/defn change-preview-privacy-flag
   {:events [:profile.settings/change-preview-privacy]}
