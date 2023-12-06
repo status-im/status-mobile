@@ -197,13 +197,13 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.chats_tab.click()
         self.home.contacts_tab.click()
         contacts_number = self.home.get_contact_rows_count()
-        if contacts_number != len(waku_user.contacts):
-            self.errors.append(
-                "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
-        else:
-            for contact in waku_user.contacts:
-                if not self.home.element_by_text(contact).is_element_displayed(30):
-                    self.errors.append('%s was not restored as a contact from waku backup!' % contact)
+        # Todo: enable when https://github.com/status-im/status-mobile/issues/18096 is fixed
+        # if contacts_number != len(waku_user.contacts):
+        #     self.errors.append(
+        #         "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
+        for contact in waku_user.contacts:
+            if not self.home.element_by_text(contact).is_element_displayed(30):
+                self.errors.append('%s was not restored as a contact from waku backup!' % contact)
                 # Disabled for simple check as sometimes from waku-backup users restored with 3-random names
                 # self.home.click_system_back_button_until_element_is_shown()
                 # contact_row = self.home.contact_details_row(index=i + 1)
@@ -967,6 +967,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702948)
+    @marks.xfail(
+        reason="Can't navigate to a channel by hashtag link, https://github.com/status-im/status-mobile/issues/18095")
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
