@@ -15,11 +15,12 @@
 (rf/defn profile-selected
   {:events [:profile/profile-selected]}
   [{:keys [db]} key-uid]
-  {:db (update db
-               :profile/login
-               #(-> %
-                    (assoc :key-uid key-uid)
-                    (dissoc :error :password)))})
+  {:db       (update db
+                     :profile/login
+                     #(-> %
+                          (assoc :key-uid key-uid)
+                          (dissoc :error :password)))
+   :dispatch [:profile.login/login-with-biometric-if-available key-uid]})
 
 (rf/defn init-profiles-overview
   [{:keys [db] :as cofx} profiles key-uid]
