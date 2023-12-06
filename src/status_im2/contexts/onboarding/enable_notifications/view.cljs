@@ -60,7 +60,6 @@
      {:layers  (:notifications resources/parallax-video)
       :stretch stretch}]))
 
-
 (defn enable-notifications-simple
   []
   (let [width (:width (rn/get-window))]
@@ -73,7 +72,7 @@
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     [rn/view {:style {:z-index 99}}
+     [rn/view {:style style/page-heading}
       [quo/page-nav
        {:background :blur
         :icon-name  :i/arrow-left

@@ -13,6 +13,8 @@
   {:flex  1
    :width width})
 
+(def page-heading {:z-index 1})
+
 (defn buttons
   [insets]
   {:margin        default-margin
