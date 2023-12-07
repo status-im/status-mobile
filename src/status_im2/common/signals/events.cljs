@@ -57,10 +57,10 @@
       "message.delivered"          (let [{:keys [chatID messageID]} (js->clj event-js
                                                                              :keywordize-keys
                                                                              true)]
-                                     (models.message/update-db-message-status cofx
-                                                                              chatID
-                                                                              messageID
-                                                                              :delivered))
+                                     (models.message/update-message-status cofx
+                                                                           chatID
+                                                                           messageID
+                                                                           :delivered))
       "mailserver.changed"         (mailserver/handle-mailserver-changed cofx (.-id event-js))
       "mailserver.available"       (mailserver/handle-mailserver-available cofx (.-id event-js))
       "mailserver.not.working"     (mailserver/handle-mailserver-not-working cofx)

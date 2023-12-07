@@ -5,7 +5,6 @@
     [goog.object :as object]
     [re-frame.core :as re-frame]
     [status-im.chat.models.mentions :as mentions]
-    [status-im.chat.models.message-content :as message-content]
     [status-im.data-store.messages :as data-store-messages]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
@@ -139,14 +138,21 @@
   (let [current-chat-id (:current-chat-id db)]
     {:db (assoc-in db [:chat/inputs current-chat-id :metadata :responding-to-message] nil)}))
 
+(defn emoji-only-content?
+  "Determines if text is just an emoji"
+  [{:keys [text response-to]}]
+  (and (not response-to)
+       (string? text)
+       (re-matches constants/regx-emoji text)))
+
 (defn build-text-message
   [{:keys [db]} input-text current-chat-id]
   (when-not (string/blank? input-text)
     (let [{:keys [message-id]}
           (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])
           preferred-name (get-in db [:profile/profile :preferred-name])
-          emoji? (message-content/emoji-only-content? {:text        input-text
-                                                       :response-to message-id})]
+          emoji? (emoji-only-content? {:text        input-text
+                                       :response-to message-id})]
       {:chat-id       current-chat-id
        :content-type  (if emoji?
                         constants/content-type-emoji
@@ -243,7 +249,7 @@
    {:json-rpc/call [{:method      "wakuext_editMessage"
                      :params      [{:id           message-id
                                     :text         text
-                                    :content-type (if (message-content/emoji-only-content?
+                                    :content-type (if (emoji-only-content?
                                                        {:text        text
                                                         :response-to quoted-message})
                                                     constants/content-type-emoji

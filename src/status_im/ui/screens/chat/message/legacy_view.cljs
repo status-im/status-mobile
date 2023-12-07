@@ -7,9 +7,7 @@
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.colors :as quo.colors]
     [status-im.ui.components.fast-image :as fast-image]
-    [status-im.ui.screens.chat.message.gap :as message.gap]
-    [status-im.ui.screens.chat.styles.message.message :as style]
-    [status-im.ui.screens.chat.utils :as chat.utils]
+    [status-im.ui.screens.chat.message.legacy-style :as style]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.delete-message-for-me.events]
     [status-im2.contexts.chat.messages.delete-message.events]
@@ -131,16 +129,11 @@
             [:<>]
             (:parsed-text content))))
 
-(defview message-author-name
-  [from opts max-length]
-  (letsubs [contact-with-names [:contacts/contact-by-identity from]]
-    (chat.utils/format-author contact-with-names opts max-length)))
-
 (defmulti ->message :content-type)
 
 (defmethod ->message constants/content-type-gap
-  [message]
-  [message.gap/gap message])
+  [_]
+  [rn/view])
 
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
