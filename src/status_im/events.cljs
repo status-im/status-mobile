@@ -46,6 +46,7 @@
     [status-im.wallet.core :as wallet]
     status-im.wallet.custom-tokens.core
     [status-im2.common.biometric.events :as biometric]
+    status-im2.common.standard-authentication.events
     [status-im2.common.theme.core :as theme]
     [status-im2.common.universal-links :as universal-links]
     [status-im2.constants :as constants]
