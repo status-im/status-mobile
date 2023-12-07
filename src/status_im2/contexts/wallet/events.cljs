@@ -7,9 +7,11 @@
     [quo.foundations.colors :as colors]
     [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
+    [status-im2.contexts.wallet.item-types :as item-types]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
     [utils.re-frame :as rf]
@@ -326,6 +328,45 @@
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
+
+(rf/reg-event-fx :wallet/find-ens
+ (fn [{:keys [db]} [input contacts chain-id cb]]
+   (let [result (if (empty? input)
+                  []
+                  (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
+     (if (and input (empty? result))
+       (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
+       {:db (assoc db
+                   :wallet/local-suggestions
+                   (map #(assoc % :type item-types/saved-address) result)
+                   :wallet/valid-ens-or-address? (not-empty result))}))))
+
+(rf/reg-event-fx :wallet/search-ens
+ (fn [_ [input chain-id cb domain]]
+   (let [ens (if (string/includes? input ".") input (str input domain))]
+     {:fx [[:json-rpc/call
+            [{:method     "ens_addressOf"
+              :params     [chain-id ens]
+              :on-success #(rf/dispatch [:wallet/set-ens-address % ens])
+              :on-error   (fn []
+                            (if (= domain ".stateofus.eth")
+                              (rf/dispatch [:wallet/search-ens input chain-id cb ".eth"])
+                              (do
+                                (rf/dispatch [:wallet/set-ens-address nil ens])
+                                (cb))))}]]]})))
+
+(rf/reg-event-fx :wallet/set-ens-address
+ (fn [{:keys [db]} [result ens]]
+   {:db (assoc db
+               :wallet/local-suggestions     (if result
+                                               [{:type     item-types/address
+                                                 :ens      ens
+                                                 :address  (eip55/address->checksum result)
+                                                 :networks [:ethereum :optimism]}]
+                                               [])
+               :wallet/valid-ens-or-address? (boolean result))}))
+
+
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [address]]
