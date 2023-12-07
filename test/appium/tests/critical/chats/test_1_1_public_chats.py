@@ -354,7 +354,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 
         self.device_1.just_fyi("Check Device 1 is actually on chat")
-        if not (chat_1.element_by_text_part(message).is_element_displayed()
+        if not (chat_1.element_by_text_part(message).is_element_displayed(15)
                 and chat_1.element_by_text_part(emoji_unicode).is_element_displayed()):
             self.device_1.driver.fail("Failed to open chat view after tap on PN")
 

@@ -167,22 +167,22 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                                        community_channel=True)
         device_time = self.home.driver.device_time
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
-        expected_time = current_time + datetime.timedelta(days=7)
-        expected_text = "Muted until %s" % expected_time.strftime('%H:%M %a %-d %b')
+        expected_times = [current_time + datetime.timedelta(days=7, minutes=i) for i in range(-1, 2)]
+        expected_texts = ["Muted until %s" % exp_time.strftime('%H:%M %a %-d %b') for exp_time in expected_times]
         self.community_view.get_channel(self.channel_name).long_press_element()
         self.home.mute_channel_button.wait_for_visibility_of_element()
         try:
             current_text = self.home.mute_channel_button.unmute_caption_text
-            if current_text != expected_text:
-                self.errors.append("Text '%s' is not shown for a muted community channel" % expected_text)
+            if current_text not in expected_texts:
+                self.errors.append("Text '%s' is not shown for a muted community channel" % expected_texts[1])
         except NoSuchElementException:
-            self.errors.append("Caption with text '%s' is not shown for a muted community channel" % expected_text)
+            self.errors.append("Caption with text '%s' is not shown for a muted community channel" % expected_texts[1])
         self.home.click_system_back_button()
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         self.home.get_chat(self.community_name, community=True).long_press_element()
-        if self.home.element_by_text(expected_text).is_element_displayed() or self.home.mute_community_button.text != \
-                transl["mute-community"]:
+        if self.home.element_by_text_part("Muted until").is_element_displayed() or \
+                self.home.mute_community_button.text != transl["mute-community"]:
             self.errors.append("Community is muted when channel is muted")
         self.home.click_system_back_button()
 

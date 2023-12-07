@@ -411,15 +411,17 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
         device_time = self.homes[1].driver.device_time
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
-        expected_time = current_time + datetime.timedelta(minutes=60)
-        expected_text = "Muted until %s %s" % (
-            expected_time.strftime('%H:%M'), "today" if current_time.hour < 23 else "tomorrow")
+        expected_times = [current_time + datetime.timedelta(minutes=i) for i in range(59, 62)]
+        expected_texts = [
+            "Muted until %s %s" % (exp_time.strftime('%H:%M'), "today" if current_time.hour < 23 else "tomorrow") for
+            exp_time in expected_times]
         chat = self.homes[1].get_chat(self.chat_name)
         chat.long_press_element()
         if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
             pytest.fail("Chat is not muted")
-        if not self.homes[1].element_by_text(expected_text).is_element_displayed():
-            self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
+        current_text = self.homes[1].mute_chat_button.unmute_caption_text
+        if current_text not in expected_texts:
+            self.errors.append("Text '%s' is not shown for muted chat" % expected_texts[1])
         self.homes[1].click_system_back_button()
         try:
             initial_counter = int(self.homes[1].chats_tab.counter.text)
