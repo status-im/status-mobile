@@ -37,6 +37,18 @@
       (total-raw-balance-in-all-chains)
       (money/token->unit decimals)))
 
+(defn calculate-raw-balance
+  [raw-balance decimals]
+  (if-let [n (utils.number/parse-int raw-balance nil)]
+    (/ n (Math/pow 10 (utils.number/parse-int decimals)))
+    0))
+
+(defn token-value-in-chain
+  [{:keys [balances-per-chain decimals]} chain-id]
+  (let [balance-in-chain (get balances-per-chain chain-id)]
+    (when balance-in-chain
+      (calculate-raw-balance (:raw-balance balance-in-chain) decimals))))
+
 (defn total-token-fiat-value
   "Returns the total token fiat value taking into account all token's chains."
   [{:keys [market-values-per-currency] :as token}]
