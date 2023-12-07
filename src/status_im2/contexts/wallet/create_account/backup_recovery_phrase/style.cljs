@@ -1,6 +1,8 @@
 (ns status-im2.contexts.wallet.create-account.backup-recovery-phrase.style
-  (:require [quo.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.platform :as platform]))
 
 (def header-container
   {:margin-horizontal 20

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.create-account.backup-recovery-phrase.view
   (:require
     [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
