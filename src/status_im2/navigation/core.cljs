@@ -129,9 +129,4 @@
    (navigation/register-component
     "signing-sheet"
     (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
-    (fn [] views/signing-comp))
-
-   (navigation/register-component
-    "select-acc-sheet"
-    (fn [] (gesture/gesture-handler-root-hoc views/select-acc-comp))
-    (fn [] views/select-acc-comp))])
+    (fn [] views/signing-comp))])

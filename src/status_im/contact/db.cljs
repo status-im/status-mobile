@@ -85,12 +85,3 @@
      (assoc acc public-key (enrich-contact contact profile-pictures-visibility own-public-key)))
    {}
    contacts))
-
-(defn get-blocked-contacts
-  [contacts]
-  (reduce (fn [acc {:keys [public-key] :as contact}]
-            (if (:blocked? contact)
-              (conj acc public-key)
-              acc))
-          #{}
-          contacts))
