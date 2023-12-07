@@ -61,14 +61,10 @@
         value    (reagent/atom "")
         focused? (atom false)]
     (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan on-detect-ens
-                 on-detect-address
-                 ens-regex address-regex
-                 valid-ens-or-address?]}]
+                 on-detect-address address-regex valid-ens-or-address?]}]
       (let [on-change              (fn [text]
                                      (when (not= @value text)
-                                       (let [ens?     (when ens-regex
-                                                        (boolean (re-matches ens-regex text)))
-                                             address? (when address-regex
+                                       (let [address? (when address-regex
                                                         (boolean (re-matches address-regex text)))]
                                          (if (> (count text) 0)
                                            (reset! status :typing)
