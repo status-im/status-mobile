@@ -46,6 +46,8 @@
     [status-im2.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
     [status-im2.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
+    [status-im2.contexts.wallet.create-account.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
@@ -296,6 +298,10 @@
     {:name      :wallet-create-account
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
+
+    {:name      :wallet-backup-recovery-phrase
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-backup-recovery-phrase/view}
 
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
