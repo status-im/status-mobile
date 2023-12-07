@@ -7,7 +7,6 @@
     [status-im2.common.parallax.view :as parallax]
     [status-im2.common.parallax.whitelist :as whitelist]
     [status-im2.common.resources :as resources]
-    [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.contexts.onboarding.enable-biometrics.style :as style]
     [status-im2.navigation.state :as state]
     [utils.i18n :as i18n]
@@ -31,13 +30,13 @@
                                      (rf/sub [:profile/customization-color]))
         syncing-results?         (= :syncing-results @state/root-id)]
     [rn/view {:style (style/buttons insets)}
-     [standard-auth/button
+     [quo/button
       {:size                40
        :accessibility-label :enable-biometrics-button
        :icon-left           :i/face-id
        :customization-color profile-color
-       :on-press            #(rf/dispatch [:onboarding/enable-biometrics])
-       :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}]
+       :on-press            #(rf/dispatch [:onboarding/enable-biometrics])}
+      (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
       {:accessibility-label :maybe-later-button
        :background          :blur

@@ -27,21 +27,30 @@
   (rf/dispatch [:set-in [:profile/login :error] ""]))
 
 (defn- view-internal
-  [{:keys [default-password theme shell?]}]
+  [{:keys [default-password theme shell? on-press-biometrics]}]
   (let [{:keys [error processing]} (rf/sub [:profile/login])
         error-message              (get-error-message error)
         error?                     (boolean (seq error-message))]
     [:<>
-     [quo/input
-      {:type           :password
-       :blur?          true
-       :disabled?      processing
-       :placeholder    (i18n/label :t/type-your-password)
-       :auto-focus     true
-       :error?         error?
-       :label          (i18n/label :t/profile-password)
-       :on-change-text on-change-password
-       :default-value  (security/safe-unmask-data default-password)}]
+     [rn/view {:style {:flex-direction :row}}
+      [quo/input
+       {:container-style {:flex 1}
+        :type            :password
+        :blur?           true
+        :disabled?       processing
+        :placeholder     (i18n/label :t/type-your-password)
+        :auto-focus      true
+        :error?          error?
+        :label           (i18n/label :t/profile-password)
+        :on-change-text  on-change-password
+        :default-value   (security/safe-unmask-data default-password)}]
+      (when on-press-biometrics
+        [quo/button
+         {:container-style style/auth-button
+          :on-press        on-press-biometrics
+          :icon-only?      true
+          :type            :outline}
+         :i/face-id])]
      (when error?
        [rn/view {:style style/error-message}
         [quo/info-message
@@ -60,10 +69,7 @@
                                      :shell?  shell?}]))}
          [rn/text
           {:style                 {:text-decoration-line :underline
-                                   :color                (colors/theme-colors
-                                                          (colors/custom-color :danger 50)
-                                                          (colors/custom-color :danger 60)
-                                                          theme)}
+                                   :color                (colors/resolve-color :danger theme)}
            :size                  :paragraph-2
            :suppress-highlighting true}
           (i18n/label :t/forgot-password)]]])]))
