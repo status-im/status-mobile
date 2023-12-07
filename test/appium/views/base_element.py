@@ -152,6 +152,7 @@ class BaseElement(object):
     def wait_for_rendering_ended_and_click(self, attempts=3):
         for i in range(attempts):
             try:
+                self.wait_for_visibility_of_element(20)
                 self.click()
                 self.driver.info("Attempt %s is successful clicking %s" % (i, self.locator))
                 return
