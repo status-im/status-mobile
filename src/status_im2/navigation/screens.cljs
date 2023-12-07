@@ -306,7 +306,8 @@
      :component wallet-send-input-amount/view}
 
     {:name      :wallet-select-address
-     :options   {:modalPresentationStyle :overCurrentContext}
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
      :component wallet-select-address/view}
 
     {:name      :wallet-select-asset
