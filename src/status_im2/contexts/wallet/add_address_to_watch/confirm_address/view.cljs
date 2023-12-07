@@ -43,8 +43,8 @@
          :bottom-action-props {:customization-color @account-color
                                :disabled?           (string/blank? @account-name)
                                :on-press            #(rf/dispatch [:wallet/add-account
-                                                                   nil
-                                                                   {:type         :watch
+                                                                   {:sha3-pwd     nil
+                                                                    :type         :watch
                                                                     :account-name @account-name
                                                                     :emoji        @account-emoji
                                                                     :color        @account-color}

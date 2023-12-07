@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im2.contexts.wallet.send.select-asset.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -76,15 +77,7 @@
         {:content-container-style      {:flex 1}
          :keyboard-should-persist-taps :handled
          :scroll-enabled               false}
-        [quo/page-nav
-         {:icon-name           :i/arrow-left
-          :on-press            on-close
-          :accessibility-label :top-bar
-          :right-side          :account-switcher
-          :account-switcher    {:customization-color :purple
-                                :on-press            #(js/alert "Not implemented yet")
-                                :state               :default
-                                :emoji               "🍑"}}]
+        [account-switcher/view {:on-press on-close}]
         [quo/text-combinations
          {:title                     (i18n/label :t/select-asset)
           :container-style           style/title-container

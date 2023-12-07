@@ -3,17 +3,17 @@
     [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
-    [native-module.core :as native-module]
     [quo.foundations.colors :as colors]
     [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
+    [status-im2.contexts.wallet.item-types :as item-types]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]
     [utils.transforms :as types]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
@@ -141,9 +141,8 @@
   {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
- (fn [{:keys [db]} [password {:keys [path]} on-success]]
-   (let [{:keys [wallet-root-address]} (:profile/profile db)
-         sha3-pwd                      (native-module/sha3 (str (security/safe-unmask-data password)))]
+ (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
+   (let [{:keys [wallet-root-address]} (:profile/profile db)]
      {:fx [[:json-rpc/call
             [{:method     "wallet_getDerivedAddresses"
               :params     [sha3-pwd wallet-root-address [path]]
@@ -160,11 +159,10 @@
 
 (rf/reg-event-fx :wallet/add-account
  (fn [{:keys [db]}
-      [password {:keys [emoji account-name color type] :or {type :generated}}
+      [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
    (let [lowercase-address (if address (string/lower-case address) address)
          key-uid           (get-in db [:profile/profile :key-uid])
-         sha3-pwd          (native-module/sha3 (security/safe-unmask-data password))
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
                             :chat       false
@@ -183,11 +181,11 @@
 
 (rf/reg-event-fx
  :wallet/derive-address-and-add-account
- (fn [_ [password account-details]]
+ (fn [_ [account-details]]
    (let [on-success (fn [derived-address-details]
-                      (rf/dispatch [:wallet/add-account password account-details
+                      (rf/dispatch [:wallet/add-account account-details
                                     (first derived-address-details)]))]
-     {:fx [[:dispatch [:wallet/create-derived-addresses password account-details on-success]]]})))
+     {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
 (rf/defn get-ethereum-chains
   {:events [:wallet/get-ethereum-chains]}
@@ -326,6 +324,45 @@
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
+
+(rf/reg-event-fx :wallet/find-ens
+ (fn [{:keys [db]} [input contacts chain-id cb]]
+   (let [result (if (empty? input)
+                  []
+                  (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
+     (if (and input (empty? result))
+       (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
+       {:db (assoc db
+                   :wallet/local-suggestions
+                   (map #(assoc % :type item-types/saved-address) result)
+                   :wallet/valid-ens-or-address? (not-empty result))}))))
+
+(rf/reg-event-fx :wallet/search-ens
+ (fn [_ [input chain-id cb domain]]
+   (let [ens (if (string/includes? input ".") input (str input domain))]
+     {:fx [[:json-rpc/call
+            [{:method     "ens_addressOf"
+              :params     [chain-id ens]
+              :on-success #(rf/dispatch [:wallet/set-ens-address % ens])
+              :on-error   (fn []
+                            (if (= domain ".stateofus.eth")
+                              (rf/dispatch [:wallet/search-ens input chain-id cb ".eth"])
+                              (do
+                                (rf/dispatch [:wallet/set-ens-address nil ens])
+                                (cb))))}]]]})))
+
+(rf/reg-event-fx :wallet/set-ens-address
+ (fn [{:keys [db]} [result ens]]
+   {:db (assoc db
+               :wallet/local-suggestions     (if result
+                                               [{:type     item-types/address
+                                                 :ens      ens
+                                                 :address  (eip55/address->checksum result)
+                                                 :networks [:ethereum :optimism]}]
+                                               [])
+               :wallet/valid-ens-or-address? (boolean result))}))
+
+
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [address]]

@@ -4,7 +4,7 @@
 
 (defn container
   [networks? theme]
-  {:width         335
+  {:width         "100%"
    :height        (if networks? 90 56)
    :border-radius 16
    :border-width  1

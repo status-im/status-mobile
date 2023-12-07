@@ -240,9 +240,3 @@
 
 (rf/reg-fx :hide-signing-sheet
  (fn [] (navigation/dissmiss-overlay "signing-sheet")))
-
-(rf/reg-fx :show-select-acc-sheet
- (fn [] (show-overlay "select-acc-sheet")))
-
-(rf/reg-fx :hide-select-acc-sheet
- (fn [] (navigation/dissmiss-overlay "select-acc-sheet")))

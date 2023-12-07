@@ -4,3 +4,7 @@
   {:margin-top     8
    :flex-direction :row
    :align-items    :center})
+
+(def auth-button
+  {:align-self  :flex-end
+   :margin-left 8})

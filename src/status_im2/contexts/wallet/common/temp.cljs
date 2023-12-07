@@ -107,3 +107,7 @@
     :networks            networks-list
     :state               :default
     :customization-color :blue}])
+
+(def secret-phrase
+  ["witch" "collapse" "practice" "feed" "shame" "open" "lion"
+   "collapse" "umbrella" "fabric" "sadness" "obligue"])

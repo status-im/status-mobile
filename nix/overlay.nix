@@ -73,6 +73,7 @@ in {
     allowHigher = true;
   };
   go = super.go_1_19;
+  clang = super.clang_15;
   buildGoPackage = super.buildGo119Package;
   buildGoModule = super.buildGo119Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
