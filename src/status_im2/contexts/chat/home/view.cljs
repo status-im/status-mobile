@@ -35,18 +35,15 @@
   #:tab{:contacts
         {:title       (i18n/label :t/no-contacts)
          :description (i18n/label :t/no-contacts-description)
-         :image       (resources/get-image
-                       (quo.theme/theme-value :no-contacts-light :no-contacts-dark theme))}
+         :image       (resources/get-themed-image :no-contacts theme)}
         :groups
         {:title       (i18n/label :t/no-group-chats)
          :description (i18n/label :t/no-group-chats-description)
-         :image       (resources/get-image
-                       (quo.theme/theme-value :no-group-chats-light :no-group-chats-dark theme))}
+         :image       (resources/get-themed-image :no-group-chats theme)}
         :recent
         {:title       (i18n/label :t/no-messages)
          :description (i18n/label :t/no-messages-description)
-         :image       (resources/get-image
-                       (quo.theme/theme-value :no-messages-light :no-messages-dark theme))}})
+         :image       (resources/get-themed-image :cat-in-box theme)}})
 
 (defn chats
   [{:keys [theme selected-tab set-scroll-ref scroll-shared-value]}]

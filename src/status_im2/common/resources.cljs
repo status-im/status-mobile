@@ -22,44 +22,27 @@
    :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")
    :qr-code                       (js/require "../resources/images/ui2/qr-code.png")
    :keycard-logo                  (js/require "../resources/images/ui2/keycard-logo.png")
-   :keycard-chip-light            (js/require "../resources/images/ui2/keycard-chip-light.png")
-   :keycard-chip-dark             (js/require "../resources/images/ui2/keycard-chip-dark.png")
    :keycard-watermark             (js/require "../resources/images/ui2/keycard-watermark.png")
    :discover                      (js/require "../resources/images/ui2/discover.png")
    :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")
-   :no-messages-light             (js/require "../resources/images/ui2/no-messages-light.png")
-   :no-messages-dark              (js/require "../resources/images/ui2/no-messages-dark.png")
-   :no-group-chats-light          (js/require "../resources/images/ui2/no-group-chats-light.png")
-   :no-group-chats-dark           (js/require "../resources/images/ui2/no-group-chats-dark.png")
-   :no-contacts-light             (js/require "../resources/images/ui2/no-contacts-light.png")
-   :no-contacts-dark              (js/require "../resources/images/ui2/no-contacts-dark.png")
-   :no-sent-requests-light        (js/require "../resources/images/ui2/no-sent-requests-light.png")
-   :no-sent-requests-dark         (js/require "../resources/images/ui2/no-sent-requests-dark.png")
-   :no-received-requests-light    (js/require "../resources/images/ui2/no-received-requests-light.png")
-   :no-received-requests-dark     (js/require "../resources/images/ui2/no-received-requests-dark.png")
-   :no-communities-light          (js/require "../resources/images/ui2/no-communities-light.png")
-   :no-communities-dark           (js/require "../resources/images/ui2/no-communities-dark.png")
-   :no-pending-communities-light  (js/require "../resources/images/ui2/no-pending-communities-light.png")
-   :no-pending-communities-dark   (js/require "../resources/images/ui2/no-pending-communities-dark.png")
-   :no-opened-communities-light   (js/require "../resources/images/ui2/no-opened-communities-light.png")
-   :no-opened-communities-dark    (js/require "../resources/images/ui2/no-opened-communities-dark.png")
-   :no-contacts-to-invite-light   (js/require "../resources/images/ui2/no-contacts-to-invite-light.png")
-   :no-contacts-to-invite-dark    (js/require "../resources/images/ui2/no-contacts-to-invite-dark.png")
-   :no-notifications-light        (js/require "../resources/images/ui2/no-notifications-light.png")
-   :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")
-   :notifications                 (js/require "../resources/images/ui2/notifications.png")
    :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")})
 
 (def ui-themed
-  {:no-messages
-   {:light (js/require "../resources/images/ui2/no-messages-light.png")
-    :dark  (js/require "../resources/images/ui2/no-messages-dark.png")}
-   :no-group-chats
-   {:light (js/require "../resources/images/ui2/no-group-chats-light.png")
-    :dark  (js/require "../resources/images/ui2/no-group-chats-dark.png")}
+  {:angry-man
+   {:light (js/require "../resources/images/ui2/angry-man-light.png")
+    :dark  (js/require "../resources/images/ui2/angry-man-dark.png")}
+   :cat-in-box
+   {:light (js/require "../resources/images/ui2/cat-in-box-light.png")
+    :dark  (js/require "../resources/images/ui2/cat-in-box-dark.png")}
    :no-contacts
    {:light (js/require "../resources/images/ui2/no-contacts-light.png")
     :dark  (js/require "../resources/images/ui2/no-contacts-dark.png")}
+   :keycard-chip
+   {:light (js/require "../resources/images/ui2/keycard-chip-light.png")
+    :dark  (js/require "../resources/images/ui2/keycard-chip-dark.png")}
+   :no-group-chats
+   {:light (js/require "../resources/images/ui2/no-group-chats-light.png")
+    :dark  (js/require "../resources/images/ui2/no-group-chats-dark.png")}
    :no-sent-requests
    {:light (js/require "../resources/images/ui2/no-sent-requests-light.png")
     :dark  (js/require "../resources/images/ui2/no-sent-requests-dark.png")}
@@ -92,7 +75,10 @@
     :dark  (js/require "../resources/images/ui2/no-dapps-dark.png")}
    :no-permissions
    {:light (js/require "../resources/images/ui2/no-permissions-light.png")
-    :dark  (js/require "../resources/images/ui2/no-permissions-dark.png")}})
+    :dark  (js/require "../resources/images/ui2/no-permissions-dark.png")}
+   :sweating-man
+   {:light (js/require "../resources/images/ui2/sweating-man-light.png")
+    :dark  (js/require "../resources/images/ui2/sweating-man-dark.png")}})
 
 (def mock-images
   {:bored-ape             (js/require "../resources/images/mock2/bored-ape.png")
