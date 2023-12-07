@@ -9,6 +9,7 @@
             [status-im.contexts.profile.settings.header.view :as settings.header]
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
+            [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -16,9 +17,10 @@
 (defn- settings-item-view
   [data]
   [quo/category
-   {:list-type :settings
-    :blur?     true
-    :data      data}])
+   {:list-type       :settings
+    :container-style {:padding-bottom 0}
+    :blur?           true
+    :data            data}])
 
 (defn scroll-handler
   [event scroll-y]
@@ -28,11 +30,11 @@
 (defn- footer
   [logout-press]
   [rn/view {:style style/footer-container}
-   [quo/button
-    {:on-press  logout-press
-     :type      :danger
-     :icon-left :i/log-out}
-    (i18n/label :t/logout)]])
+   [quo/logout-button {:on-press logout-press}]])
+
+(defn- get-item-layout
+  [_ index]
+  #js {:length 48 :offset (* 48 index) :index index})
 
 (defn- settings-view
   [theme]
@@ -42,7 +44,8 @@
         logout-press        #(rf/dispatch [:multiaccounts.logout.ui/logout-pressed])]
     [quo/overlay {:type :shell}
      [rn/view
-      {:style (style/navigation-wrapper {:customization-color customization-color
+      {:key   :header
+       :style (style/navigation-wrapper {:customization-color customization-color
                                          :inset               (:top insets)
                                          :theme               theme})}
       [quo/page-nav
@@ -50,19 +53,33 @@
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/multi-profile :on-press #(rf/dispatch [:open-modal :sign-in])}
-                     {:icon-name :i/qr-code :on-press not-implemented/alert}
-                     {:icon-name :i/share
-                      :on-press  #(debounce/dispatch-and-chill [:open-modal :share-shell] 1000)}]}]]
+                     {:icon-name :i/qr-code
+                      :on-press  #(debounce/dispatch-and-chill [:open-modal :share-shell] 1000)}
+                     {:icon-name :i/share :on-press not-implemented/alert}]}]]
      [rn/flat-list
-      {:header                          [settings.header/view {:scroll-y scroll-y}]
+      {:key                             :list
+       :header                          [settings.header/view {:scroll-y scroll-y}]
        :data                            settings.items/items
        :key-fn                          :title
+       :get-item-layout                 get-item-layout
+       :initial-num-to-render           6
+       :max-to-render-per-batch         6
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-item-view
        :footer                          [footer logout-press]
        :scroll-event-throttle           16
        :on-scroll                       #(scroll-handler % scroll-y)
-       :bounces                         false}]]))
+       :bounces                         false}]
+     [quo/floating-shell-button
+      {:key :shell
+       :jump-to
+       {:on-press            (fn []
+                               (rf/dispatch [:navigate-back])
+                               (debounce/dispatch-and-chill [:shell/navigate-to-jump-to] 500))
+        :customization-color customization-color
+        :label               (i18n/label :t/jump-to)}}
+      {:position :absolute
+       :bottom   jump-to.constants/floating-shell-button-height}]]))
 
 (defn- internal-view
   [props]

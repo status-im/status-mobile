@@ -7,5 +7,7 @@
    :background-color (colors/resolve-color customization-color theme 40)})
 
 (def footer-container
-  {:padding-horizontal 20
+  {:margin-top         8
+   :margin-bottom      50
+   :padding-horizontal 20
    :padding-vertical   12})
