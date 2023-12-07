@@ -138,3 +138,10 @@
   {:events [:profile.settings/update-local-picture]}
   [cofx pics]
   (optimistic-profile-update cofx :images pics))
+
+(rf/defn mark-mnemonic-as-shown
+  {:events [:profile.settings/mnemonic-was-shown]}
+  [cofx]
+  {:json-rpc/call [{:method     "settings_mnemonicWasShown"
+                    :on-success #(log/debug "mnemonic was marked as shown")
+                    :on-error   #(log/error "mnemonic was not marked as shown" %)}]})

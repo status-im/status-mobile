@@ -1,6 +1,7 @@
 (ns status-im2.contexts.profile.create.events
   (:require
     [native-module.core :as native-module]
+    [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.profile.config :as profile.config]
     status-im2.contexts.profile.create.effects
     [utils.re-frame :as rf]
@@ -14,4 +15,5 @@
           :displayName        display-name
           :password           (native-module/sha3 (security/safe-unmask-data password))
           :imagePath          (profile.config/strip-file-prefix image-path)
-          :customizationColor color)})
+          :customizationColor color
+          :emoji              (emoji-picker.utils/random-emoji))})

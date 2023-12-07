@@ -62,15 +62,7 @@
                 ;; https://github.com/borkdude/clj-kondo/issues/867
                 :unresolved-symbol             {:exclude [PersistentPriorityMap.EMPTY
                                                           number
-                                                          status-im.test-helpers/restore-app-db
-
-                                                          ;; When the namespace
-                                                          ;; matcher-combinators.test is loaded, it
-                                                          ;; extends cljs.test/is macro with
-                                                          ;; directives `match?` and
-                                                          ;; `thrown-match?`.
-                                                          match?
-                                                          thrown-match?]}
+                                                          status-im.test-helpers/restore-app-db]}
                 :unresolved-var                {:level :error}
                 :unsorted-required-namespaces  {:level :error}
                 :unused-alias                  {:level :warning}

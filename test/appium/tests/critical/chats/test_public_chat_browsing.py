@@ -4,6 +4,7 @@ import random
 import emoji
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, pytest_config_global, transl
@@ -197,13 +198,13 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.chats_tab.click()
         self.home.contacts_tab.click()
         contacts_number = self.home.get_contact_rows_count()
-        if contacts_number != len(waku_user.contacts):
-            self.errors.append(
-                "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
-        else:
-            for contact in waku_user.contacts:
-                if not self.home.element_by_text(contact).is_element_displayed(30):
-                    self.errors.append('%s was not restored as a contact from waku backup!' % contact)
+        # Todo: enable when https://github.com/status-im/status-mobile/issues/18096 is fixed
+        # if contacts_number != len(waku_user.contacts):
+        #     self.errors.append(
+        #         "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
+        for contact in waku_user.contacts:
+            if not self.home.element_by_text(contact).is_element_displayed(30):
+                self.errors.append('%s was not restored as a contact from waku backup!' % contact)
                 # Disabled for simple check as sometimes from waku-backup users restored with 3-random names
                 # self.home.click_system_back_button_until_element_is_shown()
                 # contact_row = self.home.contact_details_row(index=i + 1)
@@ -769,6 +770,36 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 "New messages badge is shown in community channel element while there are no unread messages")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(704615)
+    def test_community_edit_delete_message_when_offline(self):
+        self.channel_2.just_fyi("Sending messages for edit and delete")
+        message_to_edit, message_to_delete = "message to edit", "message to delete"
+        self.channel_2.send_message(message_to_edit)
+        self.channel_2.send_message(message_to_delete)
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.communities_tab.click()
+        self.home_1.get_chat(self.community_name, community=True).click()
+        self.community_1.get_channel(self.channel_name).click()
+        self.channel_1.just_fyi("Receiver is checking if initial messages were delivered")
+        for message in message_to_edit, message_to_delete:
+            if not self.channel_2.chat_element_by_text(message).is_element_displayed(30):
+                self.channel_2.driver.fail("Message '%s' was not received")
+
+        self.channel_2.just_fyi("Turning on airplane mode and editing/deleting messages")
+        self.channel_2.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
+        message_after_edit = "text after edit"
+        self.channel_2.edit_message_in_chat(message_to_edit, message_after_edit)
+        self.channel_2.delete_message_in_chat(message_to_delete)
+        self.channel_2.just_fyi("Turning on network connection")
+        self.channel_2.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
+
+        self.channel_1.just_fyi("Receiver is checking if messages were updated and deleted")
+        if not self.channel_1.chat_element_by_text(message_after_edit).is_element_displayed(30):
+            self.errors.append("Updated message '%s' is not delivered to the receiver" % message_after_edit)
+        if not self.channel_1.chat_element_by_text(message_to_delete).is_element_disappeared():
+            self.errors.append("Message '%s' was not deleted for the receiver" % message_to_delete)
+        self.errors.verify_no_errors()
+
 
 @pytest.mark.xdist_group(name="new_five_2")
 @marks.new_ui_critical
@@ -967,6 +998,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702948)
+    @marks.xfail(
+        reason="Can't navigate to a channel by hashtag link, https://github.com/status-im/status-mobile/issues/18095")
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
