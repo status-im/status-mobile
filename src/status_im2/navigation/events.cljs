@@ -134,31 +134,6 @@
   [_]
   {:hide-signing-sheet nil})
 
-(rf/defn hide-select-acc-sheet
-  {:events [:hide-select-acc-sheet]}
-  [_]
-  {:hide-select-acc-sheet nil})
-
-(rf/defn hide-wallet-connect-sheet
-  {:events [:hide-wallet-connect-sheet]}
-  [_]
-  {:hide-wallet-connect-sheet nil})
-
-(rf/defn hide-wallet-connect-success-sheet
-  {:events [:hide-wallet-connect-success-sheet]}
-  [_]
-  {:hide-wallet-connect-success-sheet nil})
-
-(rf/defn hide-wallet-connect-app-management-sheet
-  {:events [:hide-wallet-connect-app-management-sheet]}
-  [{:keys [db]}]
-  {:db                                       (-> db
-                                                 (assoc db
-                                                        :wallet-connect/showing-app-management-sheet?
-                                                        false)
-                                                 (dissoc :wallet-connect/session-managed))
-   :hide-wallet-connect-app-management-sheet nil})
-
 (rf/defn set-multiaccount-root
   {:events [:set-multiaccount-root]}
   [{:keys [db]}]
@@ -171,16 +146,12 @@
 
 (rf/defn dismiss-all-overlays
   {:events [:dismiss-all-overlays]}
-  [{:keys [db]}]
+  [_]
   {:dispatch-n [[:hide-popover]
                 [:hide-visibility-status-popover]
                 [:hide-bottom-sheet]
                 [:bottom-sheet-hidden]
-                [:hide-wallet-connect-sheet]
-                [:hide-wallet-connect-success-sheet]
-                [:hide-wallet-connect-app-management-sheet]
                 [:hide-signing-sheet]
-                [:hide-select-acc-sheet]
                 [:bottom-sheet/hide-old-navigation-overlay]
                 [:toasts/close-all-toasts]]})
 

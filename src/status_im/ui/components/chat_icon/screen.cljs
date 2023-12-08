@@ -98,17 +98,6 @@
       {:public-key      chat-id
        :photo-container (:default-chat-icon styles)}])])
 
-(defn chat-icon-view-toolbar
-  [chat-id group-chat name color emoji size]
-  [emoji-chat-icon-view chat-id group-chat name emoji
-   {:container              (styles/container-chat-toolbar size)
-    :size                   size
-    :chat-icon              (styles/chat-icon-chat-toolbar size)
-    :default-chat-icon      (styles/default-chat-icon-chat-toolbar color size)
-    :default-chat-icon-text (if (string/blank? emoji)
-                              (styles/default-chat-icon-text size)
-                              (styles/emoji-chat-icon-text size))}])
-
 (defn chat-icon-view-chat-list
   [chat-id group-chat name color]
   [chat-icon-view chat-id group-chat name
@@ -118,19 +107,6 @@
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
     :default-chat-icon-text (styles/default-chat-icon-text 40)}])
 
-(defn chat-icon-view-chat-list-redesign
-  [chat-id group-chat name color size]
-  [chat-icon-view chat-id group-chat name
-   {:container              (if (= size 20)
-                              (styles/token-icon-container-chat-list size)
-                              (styles/community-icon-container-chat-list size))
-    :size                   size
-    :chat-icon              (if (= size 20)
-                              (styles/community-icon-chat-list-redesign size)
-                              (styles/community-icon-chat-list size))
-    :default-chat-icon      (styles/default-list-chat-icon-redesign color size)
-    :default-chat-icon-text (styles/default-chat-icon-text size)}])
-
 (defn chat-icon-view-chat-sheet
   [chat-id group-chat name color]
   [chat-icon-view chat-id group-chat name
@@ -139,17 +115,6 @@
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
     :default-chat-icon-text (styles/default-chat-icon-text 40)}])
-
-(defn emoji-chat-icon-view-chat-sheet
-  [chat-id group-chat name color emoji]
-  [emoji-chat-icon-view chat-id group-chat name emoji
-   {:container              styles/container-chat-list
-    :size                   40
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text (if (string/blank? emoji)
-                              (styles/default-chat-icon-text 40)
-                              (styles/emoji-chat-icon-text 40))}])
 
 (defn custom-icon-view-list
   [name color & [size]]
@@ -180,24 +145,6 @@
     :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text (styles/default-chat-icon-text size)}])
-
-(defn chat-intro-icon-view
-  [icon-text chat-id group-chat styles]
-  (if group-chat
-    [default-chat-icon icon-text styles]
-    (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
-      (when-not (string/blank? photo-path)
-        [photos/photo photo-path styles]))))
-
-(defn emoji-chat-intro-icon-view
-  [icon-text chat-id group-chat emoji styles]
-  (if group-chat
-    (if (string/blank? emoji)
-      [default-chat-icon icon-text styles]
-      [emoji-chat-icon emoji styles])
-    (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
-      (when-not (string/blank? photo-path)
-        [photos/photo photo-path styles]))))
 
 (defn profile-icon-view
   [photo-path name color emoji edit? size override-styles public-key community?]

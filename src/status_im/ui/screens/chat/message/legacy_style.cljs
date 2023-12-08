@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.chat.styles.message.message
+(ns status-im.ui.screens.chat.message.legacy-style
   (:require
     [quo.foundations.colors :as quo.colors]
     [quo.foundations.typography :as typography]
@@ -10,50 +10,6 @@
   []
   {:color colors/text})
 
-(defn system-message-body
-  [_]
-  {:margin-top   4
-   :margin-left  8
-   :margin-right 8
-   :align-self   :center
-   :align-items  :center})
-
-(defn message-body
-  []
-  (let [align     :flex-start
-        direction :row]
-    {:flex-direction direction
-     :margin-top     4
-     :align-self     align
-     :align-items    align}))
-
-(def message-timestamp
-  {:font-size 10})
-
-(defn message-status-placeholder
-  []
-  (merge message-timestamp {:opacity 0 :color "rgba(0,0,0,0)"}))
-
-(defn message-timestamp-text
-  []
-  (merge message-timestamp
-         {:color      colors/gray
-          :text-align :center}))
-
-(defn message-status-text
-  []
-  {:font-size    10
-   :line-height  10
-   :border-color :red
-   :border-width 1
-   :color        :red})
-
-(defn audio-message-timestamp-text
-  []
-  (merge message-timestamp
-         {:line-height 10
-          :color       colors/gray}))
-
 (defn message-wrapper
   [{:keys [in-popover?]}]
   (if (not in-popover?)
@@ -61,77 +17,12 @@
      :padding-right 5}
     {:margin-right 10}))
 
-(defn message-author-wrapper
-  []
-  {:flex-direction :column
-   :flex-shrink    1
-   :align-items    :flex-start
-   :margin-left    4})
-
-(defn pin-indicator
-  []
-  (merge {:flex-direction :row}))
-
-(defn pin-indicator-container
-  []
-  {:margin-top      4
-   :margin-left     54
-   :top             4
-   :justify-content :center
-   :align-self      :flex-start
-   :align-items     :flex-start})
-
-(defn pinned-by-text-icon-container
-  []
-  {:flex-direction :row
-   :align-items    :flex-start
-   :top            5
-   :left           8
-   :position       :absolute})
-
-(defn pin-icon-container
-  []
-  {:flex-direction :row
-   :margin-top     1})
-
-(defn pinned-by-text
-  []
-  {:margin-left 5})
-
-(def message-author-touchable
-  {:margin-left    0
-   :flex-direction :row})
-
-(def delivery-text
-  {:color      colors/gray
-   :margin-top 2
-   :font-size  12})
-
-(def not-sent-view
-  {:flex-direction :row
-   :margin-bottom  2
-   :padding-top    2})
-
-(def not-sent-text
-  (assoc delivery-text
-         :color       colors/red
-         :text-align  :right
-         :padding-top 4))
-
-(def not-sent-icon
-  {:padding-top  3
-   :padding-left 3})
-
 (defn emoji-message
   [{:keys [incoming-group]}]
   {:font-size    28
    :line-height  34 ;TODO: Smaller crops the icon on the top
    :margin-right 0 ;; Margin to display outgoing message status
    :margin-top   (if incoming-group 4 0)})
-
-(def message-view-wrapper
-  {:align-self     :flex-end
-   :flex-direction :row-reverse})
 
 (defn message-view
   [{:keys [content-type]}]
@@ -154,40 +45,6 @@
    :font-size  14
    :color      colors/gray})
 
-(defn message-author-name
-  [chosen?]
-  {:font-size           (if chosen? 13 12)
-   :font-weight         (if chosen? "500" "400")
-   :padding-top         6
-   :padding-left        12
-   :text-align-vertical :center})
-
-(defn quoted-message-container
-  []
-  {:margin-bottom      6
-   :margin-top         5
-   :padding-horizontal 15})
-
-(def quoted-message-author-container
-  {:flex-direction  :row
-   :align-items     :center
-   :justify-content :flex-start})
-
-(defn quoted-message-author
-  [chosen?]
-  (assoc (message-author-name chosen?)
-         :padding-bottom 6
-         :padding-top    0
-         :padding-left   0
-         :line-height    18
-         :font-weight    "500"
-         :color          colors/gray))
-
-(defn quoted-message-text
-  []
-  {:font-size 14
-   :color     colors/gray})
-
 (defn message-default-style
   []
   {:font-family    "Inter-Regular"
@@ -197,18 +54,10 @@
    :letter-spacing -0.135})
 
 ;; Markdown styles
-
 (defn default-text-style
   []
   {:max-font-size-multiplier react/max-font-size-multiplier
    :style                    (message-default-style)})
-
-(defn outgoing-text-style
-  []
-  (update (default-text-style)
-          :style
-          assoc
-          :color colors/white-persist))
 
 (defn system-text-style
   []
@@ -284,20 +133,10 @@
             :line-height 18.2
             :letter-spacing (typography/tracking 13))))
 
-(def code-block-background "#2E386B")
-
-(defn inline-code-style
-  []
-  {:color            colors/white-persist
-   :background-color code-block-background})
-
 (def codeblock-style
   {:padding          10
-   :background-color code-block-background
+   :background-color "#2E386B"
    :border-radius    4})
-
-(def codeblock-text-style
-  {:color colors/white-persist})
 
 (defn default-blockquote-style
   []
@@ -329,24 +168,6 @@
   []
   (outgoing-blockquote-text-style)
   (default-blockquote-text-style))
-
-(defn image-message
-  [{:keys [width height]}]
-  {:overflow      :hidden
-   :border-radius 8
-   :width         width
-   :height        height})
-
-(defn image-message-border
-  [opts]
-  (merge (image-message opts)
-         {:opacity          (:opacity opts)
-          :border-width     1
-          :top              0
-          :left             0
-          :position         :absolute
-          :background-color :transparent
-          :border-color     colors/black-transparent}))
 
 (defn community-verified
   []

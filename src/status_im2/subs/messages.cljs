@@ -5,7 +5,6 @@
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.list.events :as models.message-list]
     [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
-    [utils.datetime :as datetime]
     [utils.i18n :as i18n]))
 
 (defn intersperse-datemark
@@ -49,54 +48,6 @@
       (conj messages-with-datemarks
             {:value (:datemark (peek messages-with-datemarks))
              :type  :datemark}))))
-
-(defn last-gap
-  "last-gap is a special gap that is put last in the message stream"
-  [chat-id synced-from]
-  {:message-id     "0x123"
-   :message-type   constants/message-type-gap
-   :chat-id        chat-id
-   :content-type   constants/content-type-gap
-   :gap-ids        #{:first-gap}
-   :gap-parameters {:from synced-from}})
-
-(defn collapse-gaps
-  "collapse-gaps will take an array of messages and collapse any gap next to
-  each other in a single gap.
-  It will also append one last gap if the last message is a non-gap"
-  [messages chat-id synced-from now chat-type joined loading-messages?]
-  (let [messages-with-gaps (reduce
-                            (fn [acc {:keys [gap-parameters message-id] :as message}]
-                              (let [last-element (peek acc)]
-                                (cond
-                                  ;; If it's a message, just add
-                                  (empty? gap-parameters)
-                                  (conj acc message)
-
-                                  ;; Both are gaps, merge them
-                                  (and
-                                   (seq (:gap-parameters last-element))
-                                   (seq gap-parameters))
-                                  (conj (pop acc) (update last-element :gap-ids conj message-id))
-
-                                  ;; it's a gap
-                                  :else
-                                  (conj acc (assoc message :gap-ids #{message-id})))))
-                            []
-                            messages)]
-    (if (or loading-messages?                          ; it's loading messages from the database
-            (nil? synced-from)                         ; it's still syncing
-            (= constants/timeline-chat-type chat-type) ; it's a timeline chat
-            (= constants/profile-chat-type chat-type)  ; it's a profile chat
-            (and (not (nil? synced-from))              ; it's not more than a month
-                 (<= synced-from (- (quot now 1000) constants/one-month)))
-            (and (= constants/private-group-chat-type chat-type) ; it's a private group chat
-                 (or (not (pos? joined))                   ; we haven't joined
-                     (>= (quot joined 1000) synced-from))) ; the history goes before we joined
-            (:gap-ids (peek messages-with-gaps)))          ; there's already a gap on top of the
-                                                           ; chat history
-      messages-with-gaps                                   ; don't add an extra gap
-      (conj messages-with-gaps (last-gap chat-id synced-from)))))
 
 (defn hydrate-messages
   "Pull data from messages and add it to the sorted list"
@@ -258,7 +209,7 @@
     (re-frame/subscribe [:chats/synced-from chat-id])
     (re-frame/subscribe [:chats/chat-type chat-id])
     (re-frame/subscribe [:chats/joined chat-id])])
- (fn [[message-list messages pin-messages loading-messages? synced-from chat-type joined] [_ chat-id]]
+ (fn [[message-list messages pin-messages loading-messages?] _]
    ;;TODO (perf)
    (let [message-list-seq (models.message-list/->seq message-list)]
      ; Don't show gaps if that's the case as we are still loading messages
@@ -267,12 +218,6 @@
        (-> message-list-seq
            (add-datemarks)
            (hydrate-messages messages pin-messages)
-           (collapse-gaps chat-id
-                          synced-from
-                          (datetime/timestamp)
-                          chat-type
-                          joined
-                          loading-messages?)
            (albumize-messages))))))
 
 (re-frame/reg-sub
