@@ -405,6 +405,15 @@ def get_testrail_case_id(item):
         return testrail_id.args[0]
 
 
+def pytest_collection_modifyitems(config, items):
+    if "pr" in config.getoption("--apk") and config.getoption("--pr_number"):
+        return
+    nightly = pytest.mark.skip(reason="should be run on nightly builds only")
+    for item in items:
+        if "nightly" in item.keywords:
+            item.add_marker(nightly)
+
+
 def pytest_runtest_setup(item):
     try:
         testrail_id = [mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]

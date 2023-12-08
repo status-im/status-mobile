@@ -92,6 +92,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(704614)
+    @marks.nightly
     def test_links_open_universal_links_from_other_apps(self):
         app_package = self.driver.current_package
         self.home.just_fyi("Opening a profile URL from google search bar when user is still logged in")
