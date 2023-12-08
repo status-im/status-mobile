@@ -1,7 +1,7 @@
 (ns status-im2.contexts.communities.actions.addresses-for-permissions.view
-  (:require [react-native.core :as rn]
+  (:require [quo.core :as quo]
+            [react-native.core :as rn]
             [status-im2.contexts.communities.actions.addresses-for-permissions.style :as style]
-            [quo.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
