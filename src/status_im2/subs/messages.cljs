@@ -209,7 +209,7 @@
     (re-frame/subscribe [:chats/synced-from chat-id])
     (re-frame/subscribe [:chats/chat-type chat-id])
     (re-frame/subscribe [:chats/joined chat-id])])
- (fn [[message-list messages pin-messages loading-messages? synced-from chat-type joined] [_ chat-id]]
+ (fn [[message-list messages pin-messages loading-messages?] _]
    ;;TODO (perf)
    (let [message-list-seq (models.message-list/->seq message-list)]
      ; Don't show gaps if that's the case as we are still loading messages
