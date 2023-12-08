@@ -48,6 +48,14 @@
      [gesture/scroll-view
       [rn/view {:style style/content}
        [quo/text
+        {:style               {:padding-top    12
+                               :padding-bottom 8}
+         :accessibility-label :community-rules-title
+         :weight              :semi-bold
+         :size                :paragraph-1}
+        (i18n/label :t/address-to-share)]
+
+       [quo/text
         {:style               {:margin-top 24}
          :accessibility-label :community-rules-title
          :weight              :semi-bold
