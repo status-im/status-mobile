@@ -104,7 +104,8 @@
         {:keys [price change-pct-24hour]} market-values
         fiat-change                       (utils/calculate-fiat-change crypto-value change-pct-24hour)]
     (when crypto-value
-      {:token               (keyword (string/lower-case (:symbol item)))
+      {:token               {:symbol (:symbol item)
+                             :name   (:name item)}
        :state               :default
        :status              (cond
                               (pos? change-pct-24hour) :positive

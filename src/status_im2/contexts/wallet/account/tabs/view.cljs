@@ -16,6 +16,7 @@
     (case selected-tab
       :assets       [rn/flat-list
                      {:render-fn               token-value/view
+                      :style                   {:flex 1}
                       :data                    tokens
                       :content-container-style {:padding-horizontal 8}}]
       :collectibles [collectibles/view]

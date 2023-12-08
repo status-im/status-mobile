@@ -5,11 +5,7 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:key     :token
-    :type    :select
-    :options [{:key :eth}
-              {:key :snt}]}
-   {:key     :status
+  [{:key     :status
     :type    :select
     :options [{:key :empty}
               {:key :positive}
@@ -19,7 +15,8 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:token               :snt
+  (let [state (reagent/atom {:token               {:symbol "SNT"
+                                                   :name   "Status Network Token"}
                              :state               :default
                              :status              :empty
                              :customization-color :blue

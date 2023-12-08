@@ -1,12 +1,10 @@
 (ns quo.components.list-items.token-value.view
   (:require
-    [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.list-items.token-value.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
-    [quo.foundations.common :as common]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]))
@@ -14,7 +12,8 @@
 (defn- internal-view
   []
   (let [state (reagent/atom :default)]
-    (fn [{:keys [theme customization-color status token metrics? values on-press on-long-press]}]
+    (fn [{:keys [theme customization-color status token metrics? values on-press
+                 on-long-press]}]
       (let [bg-opacity                                                      (case @state
                                                                               :active  10
                                                                               :pressed 5
@@ -34,13 +33,13 @@
           {:style {:flex-direction :row
                    :align-items    :center
                    :flex           1}}
-          [token/view {:token token :size :size-32}]
+          [token/view {:token (:symbol token) :size :size-32}]
           [rn/view {:style {:margin-left 8}}
-           [text/text {:weight :semi-bold} (common/token-label token)]
+           [text/text {:weight :semi-bold} (:name token)]
            [text/text
             {:size  :paragraph-2
              :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-            (str crypto-value " " (if token (string/upper-case (clj->js token)) ""))]]]
+            (str crypto-value " " (:symbol token))]]]
          [rn/view
           {:style {:align-items     :flex-end
                    :justify-content :space-between}}
