@@ -10,7 +10,12 @@
 
 (defn prettify-balance
   [balance]
-  (str "$" (.toFixed (if (number? balance) balance 0) 2)))
+  (let [valid-balance? (and balance
+                            (or (number? balance) (.-toFixed balance)))]
+    (as-> balance $
+      (if valid-balance? $ 0)
+      (.toFixed $ 2)
+      (str "$" $))))
 
 (defn get-derivation-path
   [number-of-accounts]
