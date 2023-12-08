@@ -33,7 +33,7 @@
      :community-name  community-name
      :container-style {:margin-top 8}}]])
 
-(def communities-list
+(def accounts
   [{:source (resources/get-mock-image :coinbase)}
    {:source (resources/get-mock-image :decentraland)}
    {:source (resources/get-mock-image :rarible)}])
@@ -68,14 +68,14 @@
                       :action            :arrow
                       :label             :preview
                       :label-props       {:type :accounts
-                                          :data communities-list}
+                                          :data accounts}
                       :description-props {:text (i18n/label :t/all-addresses)}}
                      {:title             (i18n/label :t/for-airdrops)
                       :description       :text
                       :action            :arrow
                       :label             :preview
                       :label-props       {:type :accounts
-                                          :data (subvec communities-list 0 1)}
+                                          :data (subvec accounts 0 1)}
                       :description-props {:text "Trip to Vegas"}}]}]
 
        [quo/text
