@@ -1,18 +1,18 @@
 (ns status-im2.common.signals.events
   (:require
-    [status-im.chat.models.message :as models.message]
-    [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-    [status-im.mailserver.core :as mailserver]
-    [status-im.visibility-status-updates.core :as visibility-status-updates]
-    [status-im2.common.pairing.events :as pairing]
-    [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
-    [status-im2.contexts.chat.messages.transport.events :as messages.transport]
-    [status-im2.contexts.communities.discover.events]
-    [status-im2.contexts.profile.login.events :as profile.login]
-    [status-im2.contexts.push-notifications.local.events :as local-notifications]
-    [taoensso.timbre :as log]
-    [utils.re-frame :as rf]
-    [utils.transforms :as transforms]))
+   [status-im.chat.models.message :as models.message]
+   [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+   [status-im.mailserver.core :as mailserver]
+   [status-im.visibility-status-updates.core :as visibility-status-updates]
+   [status-im2.common.pairing.events :as pairing]
+   [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
+   [status-im2.contexts.chat.messages.transport.events :as messages.transport]
+   [status-im2.contexts.communities.discover.events]
+   [status-im2.contexts.profile.login.events :as profile.login]
+   [status-im2.contexts.push-notifications.local.events :as local-notifications]
+   [taoensso.timbre :as log]
+   [utils.re-frame :as rf]
+   [utils.transforms :as transforms]))
 
 (rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
@@ -40,8 +40,8 @@
     (case type
       "node.login"                 (profile.login/login-node-signal cofx (transforms/js->clj event-js))
       "backup.performed"           {:db (assoc-in db
-                                         [:profile/profile :last-backup]
-                                         (.-lastBackup event-js))}
+                                                  [:profile/profile :last-backup]
+                                                  (.-lastBackup event-js))}
       "envelope.sent"              (messages.transport/update-envelopes-status cofx
                                                                                (:ids
                                                                                 (js->clj event-js
@@ -85,6 +85,10 @@
       "localPairing"               (pairing/handle-local-pairing-signals
                                     cofx
                                     (js->clj event-js :keywordize-keys true))
+      "pending-transaction-update" (js/alert (str (js->clj event-js :keywordize-keys true)
+                                        "=======pending-transaction-update========"))
+      "multi-transaction-update" (js/alert (str (js->clj event-js :keywordize-keys true)
+                                      "=======multi-transaction-update========"))
       "curated.communities.update" (rf/dispatch [:fetched-contract-communities
                                                  (js->clj event-js :keywordize-keys true)])
       "waku.backedup.profile"      (rf/dispatch [:profile/update-profile-from-backup
