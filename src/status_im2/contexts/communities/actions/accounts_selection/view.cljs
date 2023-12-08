@@ -7,7 +7,8 @@
     [status-im2.contexts.communities.actions.accounts-selection.style :as style]
     [status-im2.contexts.communities.actions.community-rules.view :as community-rules]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im2.common.resources :as resources]))
 
 (defn- join-community-and-navigate-back
   [id]
@@ -54,6 +55,17 @@
          :weight              :semi-bold
          :size                :paragraph-1}
         (i18n/label :t/address-to-share)]
+
+       [quo/category
+        {:list-type :settings
+         :data      [{:title             (i18n/label :t/join-as-a-member)
+                      :description       :text
+                      :action            :arrow
+                      :description-props {:text (i18n/label :t/all-addresses)}}
+                     {:title             (i18n/label :t/for-airdrops)
+                      :description       :text
+                      :action            :arrow
+                      :description-props {:text "Trip to Vegas"}}]}]
 
        [quo/text
         {:style               {:margin-top 24}
