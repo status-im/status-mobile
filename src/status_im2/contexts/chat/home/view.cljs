@@ -144,8 +144,7 @@
                                                                     :external
                                                                     (or preferred-name
                                                                         compressed-key
-                                                                        public-key))
-            _ (js/console.log "ALWX" profile-link)]
+                                                                        public-key))]
         [:<>
          (if (= selected-tab :tab/contacts)
            [contacts
