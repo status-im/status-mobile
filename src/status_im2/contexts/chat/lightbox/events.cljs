@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.events
-  (:require [utils.re-frame :as rf]))
+  (:require status-im2.contexts.chat.lightbox.effects
+            [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :chat.ui/clear-sending-images
  (fn [{:keys [db]}]
