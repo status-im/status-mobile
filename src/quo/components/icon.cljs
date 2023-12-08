@@ -9,9 +9,10 @@
 
 (defn- valid-color?
   [color]
-  (or (keyword? color)
-      (and (string? color)
-           (not (string/blank? color)))))
+  (and color
+       (or (keyword? color)
+           (and (string? color)
+                (not (string/blank? color))))))
 
 (defn- image-icon-style
   [{:keys [color no-color size container-style theme]}]
@@ -37,8 +38,8 @@
          (cond-> {:size                size
                   :accessibility-label accessibility-label
                   :style               container-style}
-           (and color (valid-color? color))     (assoc :color color)
-           (and color-2 (valid-color? color-2)) (assoc :color-2 color-2))]
+           (valid-color? color)   (assoc :color color)
+           (valid-color? color-2) (assoc :color-2 color-2))]
         [rn/image
          {:style               (image-icon-style (assoc props :size size))
           :accessibility-label accessibility-label

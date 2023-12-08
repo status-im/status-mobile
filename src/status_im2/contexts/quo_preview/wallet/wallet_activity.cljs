@@ -8,18 +8,16 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def asset-snt
-  {:size       24
-   :type       :token
-   :token-name "SNT"
-   :amount     1500
-   :token-logo (quo.resources/get-token :snt)})
+  {:size   24
+   :type   :token
+   :token  "SNT"
+   :amount 1500})
 
 (def asset-dai
-  {:size       24
-   :type       :token
-   :token-name "DAI"
-   :amount     2400
-   :token-logo (quo.resources/get-token :dai)})
+  {:size   24
+   :type   :token
+   :token  "DAI"
+   :amount 2400})
 
 (def asset-collectible
   {:size               24
