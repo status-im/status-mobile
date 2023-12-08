@@ -33,6 +33,11 @@
      :community-name  community-name
      :container-style {:margin-top 8}}]])
 
+(def communities-list
+  [{:source (resources/get-mock-image :coinbase)}
+   {:source (resources/get-mock-image :decentraland)}
+   {:source (resources/get-mock-image :rarible)}])
+
 (defn view
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
@@ -61,10 +66,16 @@
          :data      [{:title             (i18n/label :t/join-as-a-member)
                       :description       :text
                       :action            :arrow
+                      :label             :preview
+                      :label-props       {:type :accounts
+                                          :data communities-list}
                       :description-props {:text (i18n/label :t/all-addresses)}}
                      {:title             (i18n/label :t/for-airdrops)
                       :description       :text
                       :action            :arrow
+                      :label             :preview
+                      :label-props       {:type :accounts
+                                          :data (subvec communities-list 0 1)}
                       :description-props {:text "Trip to Vegas"}}]}]
 
        [quo/text
