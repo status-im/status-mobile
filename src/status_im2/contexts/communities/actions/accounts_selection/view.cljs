@@ -4,11 +4,11 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im2.common.password-authentication.view :as password-authentication]
+    [status-im2.common.resources :as resources]
     [status-im2.contexts.communities.actions.accounts-selection.style :as style]
     [status-im2.contexts.communities.actions.community-rules.view :as community-rules]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.common.resources :as resources]))
+    [utils.re-frame :as rf]))
 
 (defn- join-community-and-navigate-back
   [id]
