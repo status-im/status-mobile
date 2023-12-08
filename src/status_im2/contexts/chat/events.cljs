@@ -11,10 +11,10 @@
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
     status-im2.contexts.chat.effects
+    status-im2.contexts.chat.lightbox.events
     [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.state :as chat.state]
-    status-im2.contexts.chat.lightbox.events
     [status-im2.contexts.contacts.events :as contacts-store]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
