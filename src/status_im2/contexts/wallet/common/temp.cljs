@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require
-    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as status.resources]
     [utils.i18n :as i18n]))
