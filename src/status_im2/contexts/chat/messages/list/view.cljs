@@ -11,7 +11,6 @@
     [react-native.react-native-intersection-observer :as rnio]
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.chat.group :as chat.group]
-    [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
@@ -273,9 +272,6 @@
      (cond
        (= type :datemark)
        [quo/divider-date value]
-
-       (= content-type constants/content-type-gap)
-       [message.gap/gap message-data]
 
        :else
        [message/message message-data context keyboard-shown?])]))

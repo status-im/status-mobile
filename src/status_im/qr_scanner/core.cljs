@@ -96,8 +96,6 @@
     :contact      (handle-view-profile cofx data)
     :browser      (handle-browse cofx data)
     :eip681       (handle-eip681 cofx data)
-    ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
-    ;;:wallet-connect (handle-wallet-connect cofx data)
     :localpairing (handle-local-pairing cofx data)
     (do
       (log/info "Unable to find matcher for scanned value"

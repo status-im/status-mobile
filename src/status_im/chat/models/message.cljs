@@ -9,7 +9,6 @@
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.events :as message-list]
     [status-im2.contexts.chat.messages.list.state :as view.state]
-    [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
 (defn- message-loaded?
@@ -116,30 +115,12 @@
              (when (and (:current-chat-id db) (= "active" (:app-state db)))
                [{:ms 100 :dispatch [:chat/mark-all-as-read (:current-chat-id db)]}]))}))
 
-(rf/defn update-db-message-status
-  [{:keys [db] :as cofx} chat-id message-id status]
-  (when (get-in db [:messages chat-id message-id])
-    (rf/merge cofx
-              {:db (assoc-in db
-                    [:messages chat-id message-id :outgoing-status]
-                    status)})))
-
 (rf/defn update-message-status
-  [{:keys [db] :as cofx} chat-id message-id status]
-  (rf/merge cofx
-            (update-db-message-status chat-id message-id status)))
-
-(rf/defn resend-message
-  [{:keys [db] :as cofx} chat-id message-id]
-  (rf/merge cofx
-            {:json-rpc/call [{:method     "wakuext_reSendChatMessage"
-                              :params     [message-id]
-                              :on-success #(log/debug "re-sent message successfully")
-                              :on-error   #(log/error "failed to re-send message" %)}]}
-            (update-message-status chat-id message-id :sending)))
+  [{:keys [db]} chat-id message-id status]
+  (when (get-in db [:messages chat-id message-id])
+    {:db (assoc-in db [:messages chat-id message-id :outgoing-status] status)}))
 
 (rf/defn handle-removed-messages
-  {:events [::handle-removed-messages]}
   [{:keys [db] :as cofx} removed-messages]
   (let [mark-as-deleted-fx (->> removed-messages
                                 (map #(assoc %
@@ -166,14 +147,6 @@
                (concat mark-as-seen-fx)
                (conj remove-messages-fx)))))
 
-(comment
-  (handle-removed-messages
-   {:db {:messages {:c1 {:m1 {:chat-id :c1 :message-id :m1}
-                         :m2 {:chat-id :c1 :message-id :m2}}
-                    :c2 {:m3 {:chat-id :c2 :message-id :m3}
-                         :m4 {:chat-id :c2 :message-id :m4}}}}}
-   [:m1 :m3]))
-
 (defn remove-cleared-message
   [messages cleared-at]
   (into {}
@@ -182,7 +155,6 @@
                 messages)))
 
 (rf/defn handle-cleared-histories-messages
-  {:events [::handle-cleared-hisotories-messages]}
   [{:keys [db]} cleared-histories]
   {:db (reduce (fn [acc current]
                  (update-in acc

@@ -200,6 +200,9 @@
                constants/content-type-album
                [album/album-message message-data context on-long-press message-container-data]
 
+               constants/content-type-gap
+               [rn/view]
+
                [not-implemented/not-implemented
                 [content.unknown/unknown-content message-data]])
 

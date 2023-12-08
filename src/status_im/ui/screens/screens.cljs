@@ -67,7 +67,6 @@
     [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
     [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
     [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
-    [status-im.ui.screens.wallet.manage-connections.views :as manage-all-connections]
     [status-im.ui.screens.wallet.recipient.views :as recipient]
     [status-im.ui.screens.wallet.send.views :as wallet.send]
     [status-im.ui.screens.wallet.settings.views :as wallet-settings]
@@ -646,12 +645,6 @@
    {:name      :change-pairing-code
     :insets    {:bottom? true}
     :component keycard.pairing/change-pairing-code}
-
-   {:name      :show-all-connections
-    :options   {:topBar {:title {:text (i18n/label :t/all-connections)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component manage-all-connections/views}
 
    ;; BUG REPORT
    {:name      :bug-report
