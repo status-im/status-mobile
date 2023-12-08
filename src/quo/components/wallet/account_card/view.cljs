@@ -93,7 +93,7 @@
     :end    {:x 1 :y 0}}])
 
 (defn- user-account
-  []
+  [_]
   (let [pressed?     (reagent/atom false)
         on-press-in  #(reset! pressed? true)
         on-press-out #(reset! pressed? false)]
@@ -147,7 +147,7 @@
              [gradient-overview theme customization-color])])))))
 
 (defn- add-account-view
-  []
+  [_]
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [on-press customization-color theme metrics?]}]
       [rn/pressable
