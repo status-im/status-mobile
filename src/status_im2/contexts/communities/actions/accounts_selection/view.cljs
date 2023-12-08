@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
+    [status-im2.common.not-implemented :as not-implemented]
     [status-im2.common.password-authentication.view :as password-authentication]
     [status-im2.contexts.communities.actions.accounts-selection.style :as style]
     [status-im2.contexts.communities.actions.community-rules.view :as community-rules]
@@ -35,7 +36,11 @@
 (defn view
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
-        {:keys [name color images]} (rf/sub [:communities/community id])]
+        {:keys [name color images]} (rf/sub [:communities/community id])
+        accounts                    (->> (rf/sub [:wallet])
+                                         :accounts
+                                         vals
+                                         (map #(assoc % :customization-color (:color %))))]
     [rn/view {:style style/container}
      [quo/page-nav
       {:text-align          :left
@@ -46,9 +51,35 @@
       {:community-name name
        :logo-uri       (get-in images [:thumbnail :uri])}]
      [gesture/scroll-view
-      [rn/view {:style style/content}
+      [:<>
        [quo/text
-        {:style               {:margin-top 24}
+        {:style               style/section-title
+         :accessibility-label :community-rules-title
+         :weight              :semi-bold
+         :size                :paragraph-1}
+        (i18n/label :t/address-to-share)]
+
+       [quo/category
+        {:list-type :settings
+         :data      [{:title             (i18n/label :t/join-as-a-member)
+                      :on-press          not-implemented/alert
+                      :description       :text
+                      :action            :arrow
+                      :label             :preview
+                      :label-props       {:type :accounts
+                                          :data accounts}
+                      :description-props {:text (i18n/label :t/all-addresses)}}
+                     {:title             (i18n/label :t/for-airdrops)
+                      :on-press          not-implemented/alert
+                      :description       :text
+                      :action            :arrow
+                      :label             :preview
+                      :label-props       {:type :accounts
+                                          :data (take 1 accounts)}
+                      :description-props {:text (-> accounts first :name)}}]}]
+
+       [quo/text
+        {:style               style/section-title
          :accessibility-label :community-rules-title
          :weight              :semi-bold
          :size                :paragraph-1}
