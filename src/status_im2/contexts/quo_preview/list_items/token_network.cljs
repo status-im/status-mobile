@@ -20,12 +20,9 @@
               {:key :selected}]}
    {:key     :token
     :type    :select
-    :options [{:value :eth
-               :key   (quo.resources/get-token :eth)}
-              {:value :snt
-               :key   (quo.resources/get-token :snt)}
-              {:value :dai
-               :key   (quo.resources/get-token :dai)}]}
+    :options [{:key :eth}
+              {:key :snt}
+              {:key :dai}]}
    {:key  :label
     :type :text}
    {:key  :token-value
@@ -38,7 +35,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:token               (quo.resources/get-token :snt)
+  (let [state (reagent/atom {:token               :snt
                              :label               "Status"
                              :token-value         "0.00 SNT"
                              :fiat-value          "€0.00"

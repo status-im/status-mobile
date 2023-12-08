@@ -143,6 +143,7 @@
     quo.components.text-combinations.standard-title.view
     quo.components.text-combinations.username.view
     quo.components.text-combinations.view
+    quo.components.utilities.token.view
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
     quo.components.wallet.account-overview.view
@@ -387,6 +388,9 @@
 (def standard-title quo.components.text-combinations.standard-title.view/view)
 (def text-combinations quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)
+
+;;;; Utilities - Outside of design system
+(def token quo.components.utilities.token.view/view)
 
 ;;;; Wallet
 (def account-card quo.components.wallet.account-card.view/view)

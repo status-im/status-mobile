@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.community.token-gating
   (:require
     [quo.core :as quo]
-    [quo.foundations.resources :as resources]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -22,29 +21,24 @@
   [sufficient? many-tokens? loading?]
   (into
    [{:symbol      "KNC"
-     :img-src     (resources/get-token :knc)
      :amount      200
      :sufficient? true
      :loading?    loading?}
     {:symbol       "MANA"
-     :img-src      (resources/get-token :mana)
      :amount       10
      :sufficient?  sufficient?
      :purchasable? true
      :loading?     loading?}
     {:symbol      "RARE"
-     :img-src     (resources/get-token :rare)
      :amount      10
      :sufficient? sufficient?
      :loading?    loading?}]
    (when many-tokens?
      [{:symbol      "FXC"
-       :img-src     (resources/get-token :fxc)
        :amount      20
        :sufficient? true
        :loading?    loading?}
       {:symbol      "SNT"
-       :img-src     (resources/get-token :snt)
        :amount      10000
        :sufficient? sufficient?
        :loading?    loading?}])))
@@ -58,11 +52,9 @@
                                 many-tokens?
                                 loading?)
         [{:symbol      "FXC"
-          :img-src     (resources/get-token :fxc)
           :amount      20
           :sufficient? true}
          {:symbol      "USDT"
-          :img-src     (resources/get-token :usdt)
           :amount      20
           :sufficient? false}]]
        [(join-gate-options-base sufficient?
