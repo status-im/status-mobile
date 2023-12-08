@@ -12,6 +12,7 @@
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
+    [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]
     [utils.transforms :as types]))
@@ -108,9 +109,11 @@
                                       :event  :wallet/get-wallet-token
                                       :params addresses})}]]]})))
 
-(defn- fix-chain-id-keys
+(defn- fix-balances-per-chain
   [token]
-  (update token :balances-per-chain update-keys (comp utils.number/parse-int name)))
+  (-> token
+      (update :balances-per-chain update-vals #(update % :raw-balance money/bignumber))
+      (update :balances-per-chain update-keys (comp utils.number/parse-int name))))
 
 (rf/reg-event-fx
  :wallet/store-wallet-token
@@ -118,7 +121,7 @@
    (let [tokens     (-> raw-tokens-data
                         (update-keys name)
                         (update-vals #(cske/transform-keys csk/->kebab-case %))
-                        (update-vals #(mapv fix-chain-id-keys %)))
+                        (update-vals #(mapv fix-balances-per-chain %)))
          add-tokens (fn [stored-accounts tokens-per-account]
                       (reduce-kv (fn [accounts address tokens-data]
                                    (if (accounts address)
