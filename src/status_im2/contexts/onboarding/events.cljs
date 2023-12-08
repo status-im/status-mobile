@@ -133,13 +133,18 @@
   {:db       (dissoc db :onboarding/profile)
    :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]})
 
+(rf/reg-event-fx :onboarding/set-auth-method
+ (fn [{:keys [db]} [auth-method]]
+   {:db (assoc db :auth-method auth-method)}))
+
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding/finalize-setup]}
   [{:keys [db]}]
   (let [masked-password    (get-in db [:onboarding/profile :password])
         key-uid            (get-in db [:profile/profile :key-uid])
         syncing?           (get-in db [:onboarding/profile :syncing?])
-        biometric-enabled? (= (get-in db [:onboarding/profile :auth-method])
+        auth-method        (get-in db [:onboarding/profile :auth-method])
+        biometric-enabled? (= auth-method
                               constants/auth-method-biometric)]
     (cond-> {:db (assoc db :onboarding/generated-keys? true)}
       biometric-enabled?
@@ -149,9 +154,9 @@
                                  masked-password
                                  (security/hash-masked-password masked-password))
               :on-success      (fn []
-                                 (if syncing?
-                                   (rf/dispatch [:onboarding/navigate-to-enable-notifications])
-                                   (log/error "successfully saved biometrics")))
+                                 (rf/dispatch [:onboarding/set-auth-method auth-method])
+                                 (when syncing?
+                                   (rf/dispatch [:onboarding/navigate-to-enable-notifications])))
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))

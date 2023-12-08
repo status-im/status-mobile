@@ -15,6 +15,7 @@
 (defn get-derivation-path
   [number-of-accounts]
   (str constants/path-wallet-root "/" number-of-accounts))
+
 (defn format-derivation-path
   [path]
   (string/replace path "/" " / "))
