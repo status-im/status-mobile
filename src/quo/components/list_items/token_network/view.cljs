@@ -12,10 +12,11 @@
 (defn- info
   [{:keys [token label networks]}]
   [rn/view {:style style/info}
-   [token/view
-    {:style style/token-image
-     :size  :size-32
-     :token token}]
+   (when token
+     [token/view
+      {:style style/token-image
+       :size  :size-32
+       :token token}])
    [rn/view {:style style/token-info}
     [text/text
      {:weight          :semi-bold
