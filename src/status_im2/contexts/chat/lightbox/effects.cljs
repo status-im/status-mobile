@@ -12,7 +12,6 @@
 
 (rf/reg-fx :effects.chat/share-image
  (fn [uri]
-   (println "URI" uri)
    (blob/fetch uri
                config
                (fn [downloaded-url]
@@ -23,7 +22,6 @@
 
 (rf/reg-fx :effects.chat/save-image-to-gallery
  (fn [[uri on-success]]
-   (println "URI" uri)
    (blob/fetch uri
                config
                (fn [downloaded-url]
