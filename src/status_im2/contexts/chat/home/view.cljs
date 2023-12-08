@@ -5,6 +5,7 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
+    [react-native.share :as share]
     [status-im2.common.contact-list-item.view :as contact-list-item]
     [status-im2.common.contact-list.view :as contact-list]
     [status-im2.common.home.actions.view :as actions]
@@ -17,7 +18,8 @@
     [status-im2.contexts.chat.home.contact-request.view :as contact-request]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.universal-links :as universal-links]))
 
 (defn get-item-layout
   [_ index]
@@ -113,14 +115,16 @@
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
 
-(def ^:private banner-data
+(defn- banner-data
+  [profile-link]
   {:title-props
    {:label               (i18n/label :t/messages)
     :handler             #(rf/dispatch
                            [:show-bottom-sheet {:content chat.actions.view/new-chat}])
     :accessibility-label :new-chat-button}
    :card-props
-   {:banner      (resources/get-image :invite-friends)
+   {:on-press    #(share/open {:url profile-link})
+    :banner      (resources/get-image :invite-friends)
     :title       (i18n/label :t/invite-friends-to-status)
     :description (i18n/label :t/share-invite-link)}})
 
@@ -129,10 +133,19 @@
   (let [scroll-ref     (atom nil)
         set-scroll-ref #(reset! scroll-ref %)]
     (fn []
-      (let [customization-color      (rf/sub [:profile/customization-color])
+      (let [{:keys [public-key
+                    compressed-key
+                    preferred-name]} (rf/sub [:profile/profile-with-image])
+            customization-color      (rf/sub [:profile/customization-color])
             pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
             selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
-            scroll-shared-value      (reanimated/use-shared-value 0)]
+            scroll-shared-value      (reanimated/use-shared-value 0)
+            profile-link             (universal-links/generate-link :user
+                                                                    :external
+                                                                    (or preferred-name
+                                                                        compressed-key
+                                                                        public-key))
+            _ (js/console.log "ALWX" profile-link)]
         [:<>
          (if (= selected-tab :tab/contacts)
            [contacts
@@ -146,7 +159,7 @@
              :scroll-shared-value scroll-shared-value
              :theme               theme}])
          [:f> common.banner/animated-banner
-          {:content             banner-data
+          {:content             (banner-data profile-link)
            :customization-color customization-color
            :scroll-ref          scroll-ref
            :tabs                [{:id                  :tab/recent
