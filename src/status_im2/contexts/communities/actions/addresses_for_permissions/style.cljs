@@ -4,6 +4,6 @@
 
 (def container {:flex 1})
 
-(def page-top
-  {:padding-vertical   12
-   :padding-horizontal screen-horizontal-padding})
+(def header
+  {;;  :padding-bottom 12 :padding-horizontal screen-horizontal-padding
+  })
