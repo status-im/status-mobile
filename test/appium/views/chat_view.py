@@ -222,9 +222,12 @@ class ChatElementByText(Text):
                 break
             else:
                 Text(self.driver, xpath=self.locator).click()
-                if status_element.is_element_displayed(2):
-                    status = status_element.text
-                    break
+                try:
+                    if status_element.is_element_displayed(2):
+                        status = status_element.text
+                        break
+                except StaleElementReferenceException:
+                    pass
                 time.sleep(2)
         return status
 
@@ -1044,7 +1047,8 @@ class ChatView(BaseView):
             delete_button = self.element_by_translation_id("delete-for-everyone")
         else:
             delete_button = self.element_by_translation_id("delete-for-me")
-        self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
+        # self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
+        self.chat_element_by_text(message).message_body.long_press_element()
         delete_button.click()
 
     def copy_message_text(self, message_text):
@@ -1227,6 +1231,7 @@ class ChatView(BaseView):
             indexes = [0]
         self.show_images_button.click()
         self.allow_button.click_if_shown()
+        self.allow_all_button.click_if_shown()
         [self.get_image_by_index(i).click() for i in indexes]
         self.images_confirm_selection_button.click()
         self.chat_message_input.send_keys(description)

@@ -27,11 +27,12 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
     @marks.testrail_id(702850)
     def test_activity_center_contact_request_decline(self):
+        app_package = self.device_1.driver.current_package
         self.device_1.put_app_to_background()
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
-        self.home_2.driver.set_clipboard_text(self.public_key_1)
         self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_2.driver.set_clipboard_text(self.public_key_1)
         self.home_2.element_by_translation_id("paste").click()
         self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
         if self.home_2.user_name_text.is_element_displayed(30):
@@ -52,7 +53,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_1.open_notification_bar()
         if self.home_1.element_by_text_part("Please add me to your contacts").is_element_displayed():
             self.errors.append("Push notification with text was received for new message in activity centre")
-        self.device_1.click_system_back_button(2)
+        self.device_1.click_system_back_button()
+        self.device_1.driver.activate_app(app_package)
 
         self.device_1.just_fyi('Device1 verifies pending contact request')
         self.home_1.contacts_tab.click()
@@ -93,10 +95,10 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_2.create_user(username=new_username, first_user=False)
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
-        self.home_2.driver.set_clipboard_text(self.public_key_1)
         self.home_2.chats_tab.click()
         self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_2.driver.set_clipboard_text(self.public_key_1)
         self.home_2.element_by_translation_id("paste").click()
         self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
         chat = self.home_2.get_chat_view()
@@ -119,7 +121,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
         self.home_1.just_fyi("Check that can accept contact request from read notifications")
         self.home_1.activity_unread_filter_button.click()
-        cr_element.swipe_right_on_element()
+        cr_element.message_body.swipe_right_on_element()
         self.home_1.activity_notification_swipe_button.click_inside_element_by_coordinate(rel_x=0.5, rel_y=0.5)
         self.home_1.close_activity_centre.click()
         self.home_1.contacts_tab.click()
@@ -145,10 +147,10 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_2.create_user(username=new_username_2, first_user=False)
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 using his profile link')
-        self.home_2.driver.set_clipboard_text("https://status.app/u#" + self.public_key_1)
         self.home_2.chats_tab.click()
         self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_2.driver.set_clipboard_text("https://status.app/u#" + self.public_key_1)
         self.home_2.element_by_translation_id("paste").click()
         self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
         if self.home_2.user_name_text.is_element_displayed(30):
@@ -168,9 +170,9 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
         self.home_2.just_fyi("Device 2 checks that can find already added contact using public key")
         self.home_2.navigate_back_to_home_view()
-        self.home_2.driver.set_clipboard_text(self.public_key_1)
         self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_2.driver.set_clipboard_text(self.public_key_1)
         self.home_2.element_by_translation_id("paste").click()
         self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
         if self.home_2.user_name_text.is_element_displayed(30):
@@ -251,17 +253,15 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702936)
     def test_navigation_jump_to(self):
         self.community_1.just_fyi("Check Jump to screen and redirect on tap")
-        self.community_1.jump_to_button.click()
+        self.community_1.click_on_floating_jump_to()
         for card in (self.community_name, self.username_2):
             if not self.community_1.element_by_text_part(card).is_element_displayed(20):
                 self.errors.append("Card %s is not shown on Jump to screen!" % card)
         self.community_1.element_by_translation_id("community-channel").click()
         if not self.channel_1.chat_element_by_text(self.text_message).is_element_displayed(20):
             self.errors.append("User was not redirected to community channel after tapping on community channel card!")
-        element = self.channel_1.jump_to_button.find_element()
         self.channel_1.click_system_back_button()
-        self.channel_1.wait_for_staleness_of_element(element)
-        self.community_1.jump_to_button.click()
+        self.community_1.click_on_floating_jump_to()
         self.community_1.element_by_text_part(self.username_2).click()
         if not self.chat_1.chat_element_by_text(self.one_to_one_message).is_element_displayed(20):
             self.errors.append("User was not redirected to 1-1 chat after tapping card!")
@@ -315,7 +315,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Mark it as read and check filter")
-        reply_element.swipe_right_on_element()
+        reply_element.title.swipe_right_on_element(width_percentage=6)
         self.home_1.activity_notification_swipe_button.click()
         if reply_element.is_element_displayed(2):
             self.errors.append("Message is not marked as read!")
@@ -326,7 +326,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Mark it as unread and check filter via right swipe")
-        reply_element.swipe_right_on_element()
+        reply_element.title.swipe_right_on_element(width_percentage=6)
         self.home_1.activity_notification_swipe_button.click()
         if not reply_element.unread_indicator.is_element_displayed():
             self.errors.append("No unread dot is shown on activity center element after marking it as unread!")
@@ -462,7 +462,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Expected title is not shown, '%s' is instead!" % reply_element.title)
         if not reply_element.unread_indicator.is_element_displayed():
             self.errors.append("No unread dot is shown on activity center element!")
-        reply_element.swipe_right_on_element()
+        reply_element.title.swipe_right_on_element(width_percentage=2.5)
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
 

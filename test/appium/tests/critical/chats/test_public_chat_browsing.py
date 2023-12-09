@@ -458,7 +458,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel_1.just_fyi("Check that image is saved in gallery")
         self.channel_1.show_images_button.click()
-        self.channel_1.allow_button.click_if_shown()
+        self.channel_1.allow_all_button.click_if_shown()
         if not self.channel_1.get_image_by_index(0).is_element_image_similar_to_template(
                 "sauce_dark_image_gallery.png"):
             self.errors.append('Saved image is not shown in Recent')
@@ -467,9 +467,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi('Check share option on opened image')
         self.channel_2.chat_element_by_text(image_description).image_in_message.click()
         self.channel_2.share_image_icon_button.click()
-        self.channel_2.element_starts_with_text("Gmail").click()
+        self.channel_2.element_starts_with_text("Drive").click()
         try:
-            self.channel_2.wait_for_current_package_to_be('com.google.android.gm')
+            self.channel_2.wait_for_current_package_to_be('com.google.android.apps.docs')
         except TimeoutException:
             self.errors.append("Can't share image")
         self.channel_2.navigate_back_to_chat_view()
@@ -661,20 +661,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.chats_tab.click()
         if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
-        self.chat_1.toggle_airplane_mode()
-
-        # workaround for app closed after airplane mode
-        if not self.home_1.chats_tab.is_element_displayed() and \
-                not self.chat_1.chat_floating_screen.is_element_displayed():
-            self.device_1.driver.activate_app(app_package)
-            self.device_1.sign_in()
+        self.chat_1.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')
         message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
         self.channel_2.send_message(message_blocked)
 
         self.chat_1.just_fyi('Check that new messages from blocked user are not delivered')
-        self.chat_1.toggle_airplane_mode()
+        self.chat_1.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
         # self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.home_1.communities_tab.click()
         self.home_1.get_chat(self.community_name, community=True).click()
@@ -1022,7 +1016,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Unread indicator is not shown in notifications on membership request")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
-        reply_element.swipe_right_on_element()
+        reply_element.title.swipe_right_on_element(width_percentage=2.5)
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
 

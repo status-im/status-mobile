@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, transl
@@ -234,9 +235,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].just_fyi("Admin opens the image and shares it")
         self.chats[0].chat_element_by_text(image_description).image_in_message.click()
         self.chats[0].share_image_icon_button.click()
-        self.chats[0].element_starts_with_text("Gmail").click()
+        self.chats[0].element_starts_with_text("Drive").click()
         try:
-            self.chats[0].wait_for_current_package_to_be('com.google.android.gm')
+            self.chats[0].wait_for_current_package_to_be('com.google.android.apps.docs')
         except TimeoutException:
             self.errors.append("Admin can't share an image via Gmail.")
         self.chats[0].navigate_back_to_chat_view()
@@ -249,13 +250,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[2].view_image_options_button.click()
         self.chats[2].save_image_icon_button.click()
         toast_element = self.chats[2].toast_content_element
-        if toast_element.is_element_displayed():
-            toast_element_text = toast_element.text
+        try:
+            toast_element_text = toast_element.wait_for_visibility_of_element().text
             if toast_element_text != self.chats[2].get_translation_by_key("photo-saved"):
                 self.errors.append(
                     "Shown message '%s' doesn't match expected '%s' after saving an image for member_2." % (
                         toast_element_text, self.chats[2].get_translation_by_key("photo-saved")))
-        else:
+        except TimeoutException:
             self.errors.append("Message about saving a photo is not shown for member_2.")
         self.chats[2].navigate_back_to_chat_view()
 
@@ -268,7 +269,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
         self.chats[2].show_images_button.click()
-        self.chats[2].allow_button.click_if_shown()
+        self.chats[2].allow_all_button.click_if_shown()
         if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
             self.errors.append("Image is not saved to gallery for member_2.")
         self.chats[2].navigate_back_to_chat_view()
@@ -294,12 +295,12 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.homes[0].just_fyi("Put admin device to offline and send messages from members")
         app_package = self.drivers[0].current_package
-        self.homes[0].toggle_airplane_mode()
+        self.homes[0].driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
         self.chats[1].send_message(message_1)
         self.chats[2].send_message(message_2)
 
         self.homes[0].just_fyi("Put admin device to online and check that messages and PNs will be fetched")
-        self.homes[0].toggle_airplane_mode()
+        self.homes[0].driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
         self.homes[0].connection_offline_icon.wait_for_invisibility_of_element(60)
         self.homes[0].open_notification_bar()
         for message in (message_1, message_2):
@@ -459,7 +460,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
             self.errors.append("Chat is still muted after timeout")
             self.errors.verify_no_errors()
-        self.homes[1].click_system_back_button()
+        if self.homes[1].mute_chat_button.is_element_displayed():
+            self.homes[1].click_system_back_button()
 
         unmuted_message = "Chat is unmuted now"
         self.homes[2].just_fyi("Member 2 sends a message")

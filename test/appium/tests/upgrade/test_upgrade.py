@@ -500,7 +500,7 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         chat_1.send_message(message)
 
         device_2.just_fyi("Set profile photo")
-        profile_2.edit_profile_picture(file_name='sauce_logo.png')
+        profile_2.edit_profile_picture(image_index=2)
         device_1.just_fyi('Upgrading apps')
         for device in (device_1, device_2):
             device.upgrade_app()

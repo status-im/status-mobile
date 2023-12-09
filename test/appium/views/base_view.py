@@ -277,6 +277,7 @@ class BaseView(object):
         self.no_button = Button(self.driver, translation_id="no")
         self.back_button = BackButton(self.driver)
         self.allow_button = AllowButton(self.driver)
+        self.allow_all_button = Button(self.driver, xpath="//*[@text='Allow all']")
         self.allow_all_the_time = Button(self.driver, xpath="//*[@text='Allow all the time']")
         self.deny_button = Button(self.driver, translation_id="deny", uppercase=True)
         self.continue_button = Button(self.driver, translation_id="continue", uppercase=True)
@@ -843,7 +844,7 @@ class BaseView(object):
                 "Device %s: expected element is not stale after %s seconds" % (self.driver.number, seconds)) from None
 
     def open_link_from_google_search_app(self, link_text: str, app_package: str):
-        Button(self.driver, xpath="//*[contains(@resource-id,'search_container_all_apps')]").click()
+        Button(self.driver, accessibility_id="Search").click()
         EditBox(self.driver, xpath="//android.widget.EditText").send_keys(link_text)
         self.driver.press_keycode(66)
         text_to_click = "Status PR" if app_package.endswith(".pr") else "Status"

@@ -3,6 +3,7 @@ import random
 import emoji
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import marks, run_in_parallel, transl
@@ -268,7 +269,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.jump_to_messages_home()
         self.home_1.profile_button.click()
-        self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.edit_profile_picture(image_index=2)
         self.profile_1.navigate_back_to_home_view()
         self.profile_1.chats_tab.click()
 
@@ -321,6 +322,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.chats_tab.click()
 
         self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
+        app_package = self.device_2.driver.current_package
         self.device_2.put_app_to_background()
         self.device_2.open_notification_bar()
         if not self.chat_1.chat_message_input.is_element_displayed():
@@ -334,7 +336,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Check text push notification and tap it")
         if not self.home_2.get_pn(message):
             self.device_2.click_system_back_button()
-            self.device_2.status_in_background_button.click()
+            self.device_2.driver.activate_app(app_package)
             self.device_2.driver.fail("Push notification with text was not received")
         chat_2 = self.device_2.click_upon_push_notification_by_text(message)
 
@@ -348,7 +350,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_1.just_fyi("Device 1 checks PN with emoji")
         if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(60):
             self.device_1.click_system_back_button()
-            self.device_1.status_in_background_button.click()
+            self.device_2.driver.activate_app(app_package)
             self.device_1.driver.fail("Push notification with emoji was not received")
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 
@@ -416,9 +418,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 chat.hide_keyboard_if_shown()
             chat.chat_element_by_text(image_description).image_in_message.click()
             chat.share_image_icon_button.click()
-            chat.element_starts_with_text("Gmail").click()
+            chat.element_starts_with_text("Drive").click()
             try:
-                chat.wait_for_current_package_to_be('com.google.android.gm')
+                chat.wait_for_current_package_to_be('com.google.android.apps.docs')
             except TimeoutException:
                 self.errors.append(
                     "%s can't share an image via Gmail." % ("Sender" if chat is self.chat_1 else "Receiver"))
@@ -444,7 +446,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         for chat in self.chat_1, self.chat_2:
             chat.just_fyi("Check that image is saved in gallery")
             chat.show_images_button.click()
-            chat.allow_button.click_if_shown()
+            chat.allow_all_button.click_if_shown()
             if not chat.get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
                 self.errors.append(
                     "Image is not saved to gallery for %s." % ("sender" if chat is self.chat_1 else "receiver"))
@@ -458,6 +460,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.chat_2.jump_to_card_by_text(self.username_1)
         if not self.chat_1.chat_message_input.is_element_displayed():
             self.chat_1.jump_to_card_by_text(self.username_2)
+        app_package = self.chat_1.driver.current_package
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         message_after_edit_1_1 = 'smth I should edit'
@@ -504,15 +507,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.chat_element_by_text(message_to_delete).wait_for_sent_state()
         if not self.home_1.get_pn(message_to_delete):
             self.home_1.click_system_back_button()
-            self.home_1.status_in_background_button.click()
+            self.device_2.driver.activate_app(app_package)
             self.errors.append("Push notification doesn't appear")
         self.chat_2.delete_message_in_chat(message_to_delete)
         pn_to_disappear = self.home_1.get_pn(message_to_delete)
         if pn_to_disappear:
             if not pn_to_disappear.is_element_disappeared(90):
                 self.errors.append("Push notification was not removed after initial message deletion")
-        self.device_1.navigate_back_to_home_view()
-        self.device_2.navigate_back_to_home_view()
         self.errors.verify_no_errors()
 
 
@@ -573,12 +574,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         # self.chat_2.jump_to_card_by_text(self.username_1)
         # self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
-        app_package = self.home_1.driver.current_package
         for home in self.homes:
-            home.toggle_airplane_mode()
-            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
-                home.driver.activate_app(app_package)
-                SignInView(home.driver).sign_in()
+            home.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
 
         # Not implemented yet
         # self.home_1.connection_offline_icon.wait_and_click(20)
@@ -600,13 +597,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
             self.errors.append('Message status is not "Sending", it is "%s"!' % status)
 
         self.home_2.just_fyi('Device2 goes back online and checks that status of the message is changed to "delivered"')
-        for i, home in enumerate(self.homes):
-            home.toggle_airplane_mode()
-            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
-                home.driver.activate_app(app_package)
-                SignInView(home.driver).sign_in()
-                home.chats_tab.click()
-                home.get_chat(self.username_2 if i == 0 else self.username_1).click()
+        for home in self.homes:
+            home.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
 
         self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(120):
