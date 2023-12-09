@@ -1,7 +1,6 @@
 (ns status-im2.contexts.wallet.send.transaction-confirmation.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -24,7 +23,7 @@
     [quo/summary-tag
      {:label        "150 ETH"
       :type         :token
-      :image-source (quo.resources/get-token :eth)}]]
+      :image-source :eth}]]
    [rn/view
     {:style {:flex-direction :row
              :margin-top     4}}

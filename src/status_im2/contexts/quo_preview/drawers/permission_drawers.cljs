@@ -2,7 +2,6 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]))
 
@@ -42,10 +41,9 @@
   [:<>
    [quo/text {:style {:margin-right 4}} "Hold"]
    [quo/token-tag
-    {:size          :size-24
-     :token-img-src (quo.resources/get-token :eth)
-     :token-value   5
-     :token-symbol  "ETH"}]
+    {:size         :size-24
+     :token-value  5
+     :token-symbol "ETH"}]
    [quo/text {:style {:margin-left 4}} "To post"]])
 
 (defn example-3

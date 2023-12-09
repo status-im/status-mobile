@@ -4,6 +4,7 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.list-items.preview-list.properties :as properties]
     [quo.components.tags.number-tag.view :as number-tag]
+    [quo.components.utilities.token.view :as token]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -31,7 +32,12 @@
                                               :height        size
                                               :border-radius border-radius}}]
 
-      (:tokens :network :dapps)    [fast-image/fast-image
+      :tokens                      [token/view
+                                    {:token item
+                                     :size  size
+                                     :style {:border-radius border-radius}}]
+
+      (:network :dapps)            [fast-image/fast-image
                                     {:source (or (:source item) item)
                                      :style  {:width         size
                                               :height        size
