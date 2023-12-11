@@ -55,7 +55,7 @@
 (defn- view-internal
   [{:keys [message-id chat-id pinned-by theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
-    [rn/view {:border-color :red :border-width 1}
+    [:<>
      (when (seq reactions)
        [quo/react
         {:container-style {:margin-left 44
