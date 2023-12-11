@@ -4,6 +4,7 @@ import random
 import emoji
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, pytest_config_global, transl
@@ -164,22 +165,22 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                                        community_channel=True)
         device_time = self.home.driver.device_time
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
-        expected_time = current_time + datetime.timedelta(days=7)
-        expected_text = "Muted until %s" % expected_time.strftime('%H:%M %a %-d %b')
+        expected_times = [current_time + datetime.timedelta(days=7, minutes=i) for i in range(-1, 2)]
+        expected_texts = ["Muted until %s" % exp_time.strftime('%H:%M %a %-d %b') for exp_time in expected_times]
         self.community_view.get_channel(self.channel_name).long_press_element()
         self.home.mute_channel_button.wait_for_visibility_of_element()
         try:
             current_text = self.home.mute_channel_button.unmute_caption_text
-            if current_text != expected_text:
-                self.errors.append("Text '%s' is not shown for a muted community channel" % expected_text)
+            if current_text not in expected_texts:
+                self.errors.append("Text '%s' is not shown for a muted community channel" % expected_texts[1])
         except NoSuchElementException:
-            self.errors.append("Caption with text '%s' is not shown for a muted community channel" % expected_text)
+            self.errors.append("Caption with text '%s' is not shown for a muted community channel" % expected_texts[1])
         self.home.click_system_back_button()
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         self.home.get_chat(self.community_name, community=True).long_press_element()
-        if self.home.element_by_text(expected_text).is_element_displayed() or self.home.mute_community_button.text != \
-                transl["mute-community"]:
+        if self.home.element_by_text_part("Muted until").is_element_displayed() or \
+                self.home.mute_community_button.text != transl["mute-community"]:
             self.errors.append("Community is muted when channel is muted")
         self.home.click_system_back_button()
 
@@ -767,6 +768,36 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if channel_1_element.new_messages_grey_dot.is_element_displayed():
             self.errors.append(
                 "New messages badge is shown in community channel element while there are no unread messages")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(704615)
+    def test_community_edit_delete_message_when_offline(self):
+        self.channel_2.just_fyi("Sending messages for edit and delete")
+        message_to_edit, message_to_delete = "message to edit", "message to delete"
+        self.channel_2.send_message(message_to_edit)
+        self.channel_2.send_message(message_to_delete)
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.communities_tab.click()
+        self.home_1.get_chat(self.community_name, community=True).click()
+        self.community_1.get_channel(self.channel_name).click()
+        self.channel_1.just_fyi("Receiver is checking if initial messages were delivered")
+        for message in message_to_edit, message_to_delete:
+            if not self.channel_2.chat_element_by_text(message).is_element_displayed(30):
+                self.channel_2.driver.fail("Message '%s' was not received")
+
+        self.channel_2.just_fyi("Turning on airplane mode and editing/deleting messages")
+        self.channel_2.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
+        message_after_edit = "text after edit"
+        self.channel_2.edit_message_in_chat(message_to_edit, message_after_edit)
+        self.channel_2.delete_message_in_chat(message_to_delete)
+        self.channel_2.just_fyi("Turning on network connection")
+        self.channel_2.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
+
+        self.channel_1.just_fyi("Receiver is checking if messages were updated and deleted")
+        if not self.channel_1.chat_element_by_text(message_after_edit).is_element_displayed(30):
+            self.errors.append("Updated message '%s' is not delivered to the receiver" % message_after_edit)
+        if not self.channel_1.chat_element_by_text(message_to_delete).is_element_disappeared():
+            self.errors.append("Message '%s' was not deleted for the receiver" % message_to_delete)
         self.errors.verify_no_errors()
 
 

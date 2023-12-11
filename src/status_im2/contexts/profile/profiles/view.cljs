@@ -7,7 +7,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
-    [status-im2.common.standard-authentication.password-input.view :as password-input]
+    [status-im2.common.standard-authentication.core :as standard-authentication]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.onboarding.common.background.view :as background]
@@ -207,9 +207,15 @@
         :customization-color (or customization-color :primary)
         :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
-      [password-input/view
-       {:shell?           true
-        :default-password password}]]
+      [standard-authentication/password-input
+       {:shell?              true
+        :on-press-biometrics (fn []
+                               (rf/dispatch [:biometric/authenticate
+                                             {:on-success #(rf/dispatch
+                                                            [:profile.login/biometric-success])
+                                              :on-fail    #(rf/dispatch
+                                                            [:profile.login/biometric-auth-fail %])}]))
+        :default-password    password}]]
      [quo/button
       {:size                40
        :type                :primary

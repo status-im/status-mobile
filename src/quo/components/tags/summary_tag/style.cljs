@@ -24,6 +24,4 @@
    :border-radius 10})
 
 (def token-image
-  {:width         24
-   :height        24
-   :border-radius 12})
+  {:border-radius 12})

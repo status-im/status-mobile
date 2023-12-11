@@ -21,7 +21,10 @@
   [{:key :blur? :type :boolean}
    {:key     :list-type
     :type    :select
-    :options [{:key :settings :value :settings} {:key :reorder :value :reorder}]}])
+    :options [{:key   :settings
+               :value :settings}
+              {:key   :reorder
+               :value :reorder}]}])
 
 (defn view
   []

@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.tags.token-tag
   (:require
     [quo.core :as quo]
-    [quo.foundations.resources :as resources]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -42,9 +41,6 @@
               {:key   "SNT"
                :value "SNT"}]}])
 
-(def eth-token (resources/get-token :eth))
-(def snt-token (resources/get-token :snt))
-
 (defn view
   []
   (let [state (reagent/atom {:size         :size-24
@@ -59,7 +55,4 @@
         :show-blur-background? true
         :descriptor            descriptor}
        [rn/view {:style {:align-items :center}}
-        [quo/token-tag
-         (assoc @state
-                :token-img-src
-                (if (= (get-in @state [:token-symbol]) "ETH") eth-token snt-token))]]])))
+        [quo/token-tag @state]]])))

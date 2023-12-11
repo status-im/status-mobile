@@ -122,10 +122,13 @@
                       :on-error   [:activity-center/process-notification-failure notification-id
                                    :notification/mark-as-read]}]}))
 
-(rf/defn mark-as-read-success
-  {:events [:activity-center.notifications/mark-as-read-success]}
-  [cofx notification]
-  (notifications-reconcile cofx [(assoc notification :read true)]))
+(defn mark-as-read-success
+  [_ [{:keys [chat-id] :as notification}]]
+  {:fx [(when chat-id
+          [:dispatch [:chats-list/load-chat chat-id]])
+        [:dispatch [:activity-center.notifications/reconcile [(assoc notification :read true)]]]]})
+
+(rf/reg-event-fx :activity-center.notifications/mark-as-read-success mark-as-read-success)
 
 (rf/defn mark-as-unread
   {:events [:activity-center.notifications/mark-as-unread]}

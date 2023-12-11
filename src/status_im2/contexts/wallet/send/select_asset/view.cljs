@@ -1,12 +1,11 @@
 (ns status-im2.contexts.wallet.send.select-asset.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im2.contexts.wallet.send.select-asset.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -23,7 +22,7 @@
           balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
           currency-symbol         "$"]
       [quo/token-network
-       {:token       (quo.resources/get-token (keyword (string/lower-case (:symbol token))))
+       {:token       (:symbol token)
         :label       (:name token)
         :token-value (str total-balance-formatted " " (:symbol token))
         :fiat-value  (str currency-symbol balance-fiat-formatted)
@@ -76,15 +75,7 @@
         {:content-container-style      {:flex 1}
          :keyboard-should-persist-taps :handled
          :scroll-enabled               false}
-        [quo/page-nav
-         {:icon-name           :i/arrow-left
-          :on-press            on-close
-          :accessibility-label :top-bar
-          :right-side          :account-switcher
-          :account-switcher    {:customization-color :purple
-                                :on-press            #(js/alert "Not implemented yet")
-                                :state               :default
-                                :emoji               "🍑"}}]
+        [account-switcher/view {:on-press on-close}]
         [quo/text-combinations
          {:title                     (i18n/label :t/select-asset)
           :container-style           style/title-container

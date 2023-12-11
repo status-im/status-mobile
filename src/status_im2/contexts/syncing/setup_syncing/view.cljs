@@ -53,7 +53,7 @@
                                         (reset! code nil)
                                         (reset! timestamp nil)
                                         (reset! valid-for-ms code-valid-for-ms))
-        on-enter-password             (fn [entered-password]
+        on-auth-success               (fn [entered-password]
                                         (rf/dispatch [:syncing/get-connection-string entered-password
                                                       set-code]))]
     (fn []
@@ -124,8 +124,7 @@
                :size                  :size-40
                :track-text            (i18n/label :t/slide-to-reveal-code)
                :customization-color   customization-color
-               :on-enter-password     on-enter-password
-               :biometric-auth?       false
+               :on-auth-success       on-auth-success
                :auth-button-label     (i18n/label :t/reveal-sync-code)
                :auth-button-icon-left :i/reveal}]])]]
         [rn/view {:style style/sync-code}

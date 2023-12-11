@@ -14,6 +14,7 @@ stdenv.mkDerivation {
     "patchJavaPhase"
     "patchReactNativePhase"
     "patchPodPhase"
+    "patchGlogPhase"
     "installPhase"
   ];
 
@@ -96,6 +97,14 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm --replace \
           '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
           '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
+  '';
+
+  # Fix pod issue after upgrading to MacOS Sonoma and Xcode 15
+  # https://github.com/status-im/status-mobile/issues/17682
+  patchGlogPhase = ''
+    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh \
+    --replace 'export CC="' '#export CC="' \
+    --replace 'export CXX="' '#export CXX="'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

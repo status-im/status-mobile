@@ -112,26 +112,6 @@
     (fn [] views/sheet-comp-old))
 
    (navigation/register-component
-    "wallet-connect-sheet"
-    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-comp))
-    (fn [] views/wallet-connect-comp))
-
-   (navigation/register-component
-    "wallet-connect-success-sheet"
-    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-success-comp))
-    (fn [] views/wallet-connect-success-comp))
-
-   (navigation/register-component
-    "wallet-connect-app-management-sheet"
-    (fn [] (gesture/gesture-handler-root-hoc views/wallet-connect-app-management-comp))
-    (fn [] views/wallet-connect-app-management-comp))
-
-   (navigation/register-component
     "signing-sheet"
     (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
-    (fn [] views/signing-comp))
-
-   (navigation/register-component
-    "select-acc-sheet"
-    (fn [] (gesture/gesture-handler-root-hoc views/select-acc-comp))
-    (fn [] views/select-acc-comp))])
+    (fn [] views/signing-comp))])

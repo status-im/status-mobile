@@ -45,6 +45,7 @@
     {:db (update-in db [:chats chat-id] merge chat)}))
 
 (rf/defn load-chat
+  {:events [:chats-list/load-chat]}
   [_ chat-id]
   {:json-rpc/call [{:method     "wakuext_chat"
                     :params     [chat-id]

@@ -66,12 +66,7 @@
     :emoji               "🍓"
     :type                :default}])
 
-(def tokens-list
-  [{:source (quo.resources/get-token :snt)}
-   {:source (quo.resources/get-token :eth)}
-   {:source (quo.resources/get-token :knc)}
-   {:source (quo.resources/get-token :mana)}
-   {:source (quo.resources/get-token :rare)}])
+(def tokens-list [:snt :eth :knc :mana :rare])
 
 (def communities-list
   [{:source (resources/get-mock-image :coinbase)}

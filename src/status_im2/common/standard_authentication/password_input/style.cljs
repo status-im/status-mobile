@@ -5,10 +5,6 @@
    :flex-direction :row
    :align-items    :center})
 
-(def input-container
-  {:flex-direction :row
-   :align-items    :flex-end})
-
-(def input
-  {:flex         1
-   :margin-right 12})
+(def auth-button
+  {:align-self  :flex-end
+   :margin-left 8})
