@@ -24,7 +24,7 @@
     "add-members": "Pievienot biedrus",
     "photos-access-error": "Kļūda, nav atļaujas piekļūt fotogrāfijām. Lūdzu, iestatījumos pārliecinies, ka Status > Photos ir izvēlēts.",
     "done": "Darīts",
-    "delete-chat": "Dzēst čatu",
+    "close-chat": "Dzēst čatu",
     "new-group-chat": "Jauna grupa",
     "sign-in": "Ieiet",
     "datetime-yesterday": "vakar",

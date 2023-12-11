@@ -763,7 +763,7 @@ class ChatView(BaseView):
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)
-        self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
+        self.delete_chat_button = Button(self.driver, translation_id="close-chat")
         self.clear_history_button = Button(self.driver, translation_id="clear-history")
         self.reply_message_button = Button(self.driver, translation_id="message-reply")
         self.share_chat_button = Button(self.driver, accessibility_id="share-chat-button")

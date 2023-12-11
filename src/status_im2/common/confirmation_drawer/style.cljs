@@ -9,12 +9,11 @@
    :border-radius    20
    :align-items      :center
    :align-self       :flex-start
-   :padding          4
-   :margin-top       8
-   :margin-left      -4
+   :padding          2
+   :margin-top       4
    :margin-bottom    16})
 
 (def buttons-container
   {:flex-direction  :row
    :justify-content :space-between
-   :margin-top      20})
+   :margin-top      25})
