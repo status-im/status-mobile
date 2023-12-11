@@ -37,7 +37,7 @@
     "photos-access-error": "要授予所需的照片許可，請轉到系統設置，並確保選中了 “Status” > “照片”。",
     "hash": "哈希",
     "done": "完成",
-    "delete-chat": "刪除聊天",
+    "close-chat": "刪除聊天",
     "new-group-chat": "新的羣聊",
     "wallet": "錢包",
     "wallet-request": "請求",

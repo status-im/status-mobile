@@ -37,7 +37,7 @@
     "photos-access-error": "För att bevilja nödvändinga fotorättigheter,  gå till systeminställiningarna och kontrollera att Status > Foton är vald.",
     "hash": "Hash",
     "done": "Klar",
-    "delete-chat": "Ta bort chatt",
+    "close-chat": "Ta bort chatt",
     "new-group-chat": "Ny gruppchatt",
     "wallet": "Plånbok",
     "wallet-request": "Begär",

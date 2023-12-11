@@ -190,14 +190,14 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
-(rf/defn get-ethereum-chains
-  {:events [:wallet/get-ethereum-chains]}
-  [{:keys [db]}]
-  {:fx [[:json-rpc/call
-         [{:method     "wallet_getEthereumChains"
-           :params     []
-           :on-success [:wallet/get-ethereum-chains-success]
-           :on-error   #(log/info "failed to get networks " %)}]]]})
+(rf/reg-event-fx
+ :wallet/get-ethereum-chains
+ (fn [_]
+   {:json-rpc/call
+    [{:method     "wallet_getEthereumChains"
+      :params     []
+      :on-success [:wallet/get-ethereum-chains-success]
+      :on-error   #(log/info "failed to get networks " %)}]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains-success

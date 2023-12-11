@@ -194,3 +194,4 @@ lefthook.yml
 ## clj-kondo
 /.clj-kondo/taoensso/*
 /.clj-kondo/babashka/*
+/.clj-kondo/rewrite-clj/rewrite-clj/config.edn

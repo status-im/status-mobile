@@ -2,8 +2,7 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(defn container
-  []
+(def container
   {:margin-horizontal  8
    :padding-vertical   8
    :padding-horizontal 12

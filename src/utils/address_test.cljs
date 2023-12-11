@@ -22,22 +22,17 @@
 
 (deftest test-get-abbreviated-profile-url
   (testing "Ensure the function correctly generates an abbreviated profile URL for a valid public key"
-    (is (= "status.app/u#zQ3sh...mrdYpzeFUa"
+    (is (= "status.app/u/abcde...mrdYpzeFUa"
            (utils.address/get-abbreviated-profile-url
-            "status.app/u#"
-            "zQ3shPrnUhhR42JJn3QdhodGest8w8MjiH8hPaimrdYpzeFUa"))))
+            "https://status.app/u/abcdefg#zQ3shPrnUhhR42JJn3QdhodGest8w8MjiH8hPaimrdYpzeFUa"))))
 
   (testing "Ensure the function returns nil when given an empty public key"
-    (is (nil? (utils.address/get-abbreviated-profile-url "status.app/u#" ""))))
-
-  (testing "Ensure the function returns nil when given a nil public key"
-    (is (nil? (utils.address/get-abbreviated-profile-url "status.app/u#" nil))))
+    (is (nil? (utils.address/get-abbreviated-profile-url "status.app/u/abcdefg")))
+    (is (nil? (utils.address/get-abbreviated-profile-url "status.app/u/abcdefg#"))))
 
   (testing "Ensure the function returns nil when given an incorrect base URL"
     (is (nil? (utils.address/get-abbreviated-profile-url
-               "status.app/uwu#"
-               "zQ3shPrnUhhR42JJn3QdhodGest8w8MjiH8hPaimrdYpzeFUa"))))
+               "https://status.app/uwu/abcdefg#zQ3shPrnUhhR42JJn3QdhodGest8w8MjiH8hPaimrdYpzeFUa"))))
 
-  (testing "Ensure the function returns nil when given a public key shorter than 17 characters"
-    (is (nil? (utils.address/get-abbreviated-profile-url "status.app/u#" "abc")))
-    (is (nil? (utils.address/get-abbreviated-profile-url "status.app/u#" "1234")))))
+  (testing "Ensure the function returns nil when given a public key shorter than 10 characters"
+    (is (nil? (utils.address/get-abbreviated-profile-url "https://status.app/u/abcdefg#012345678")))))

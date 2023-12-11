@@ -68,7 +68,7 @@
     (str (name network) ":")))
 
 (def ^:private profile-link
-  "https://status.app/u#zQ34e1zlOdas0pKnvrweeedsasas12adjie8")
+  "https://status.app/u/CwWACgkKB0VlZWVlZWUD#zQ3shUeRSwU6rnUk5JfK2k5HRiM5Hy3wU3UZQrKVzopmAHcQv")
 
 (def ^:private wallet-address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2")
 
