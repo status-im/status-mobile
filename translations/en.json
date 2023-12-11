@@ -177,6 +177,10 @@
         "other": "{{count}} members"
     },
     "community-rules": "Community rules",
+    "address-to-share": "Addresses to share",
+    "join-as-a-member": "Join as a Member",
+    "all-addresses": "All addresses",
+    "for-airdrops": "For airdrops",
     "members-label": "Members",
     "open-membership": "Open membership",
     "member-kick": "Kick member",

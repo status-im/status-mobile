@@ -10,7 +10,6 @@
   (let [rules (rf/sub [:communities/rules id])]
     [rn/view {:style style/community-rule}
      [quo/text
-      {:style  style/community-rule-text
-       :weight :regular
+      {:weight :regular
        :size   :paragraph-2}
       rules]]))
