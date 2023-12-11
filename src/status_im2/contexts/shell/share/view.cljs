@@ -14,7 +14,6 @@
     [status-im2.contexts.shell.share.style :as style]
     [utils.address :as address]
     [utils.i18n :as i18n]
-    [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
 (defn header
@@ -47,13 +46,11 @@
 (defn profile-tab
   []
   (let [{:keys [emoji-hash
-                compressed-key
                 customization-color
                 universal-profile-url]
          :as   profile}   (rf/sub [:profile/profile])
         abbreviated-url   (address/get-abbreviated-profile-url
-                           image-server/status-profile-base-url-without-https
-                           compressed-key)
+                           universal-profile-url)
         emoji-hash-string (string/join emoji-hash)]
     [:<>
      [rn/view {:style style/qr-code-container}

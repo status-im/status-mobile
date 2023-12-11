@@ -182,8 +182,8 @@
    (let [profile-public-key (get-in db [:profile/profile :public-key])
          profile?           (or (not public-key) (= public-key profile-public-key))
          ens-name?          (if profile?
-                      (get-in db [:profile/profile :ens-name?])
-                      (get-in db [:contacts/contacts public-key :ens-name]))
+                              (get-in db [:profile/profile :ens-name?])
+                              (get-in db [:contacts/contacts public-key :ens-name]))
          public-key         (if profile? profile-public-key public-key)]
      (when public-key
        {:json-rpc/call
