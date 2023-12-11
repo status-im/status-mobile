@@ -95,8 +95,9 @@
     accounts-data)))
 
 (rf/defn save-account-and-login
-  [_ key-uid multiaccount-data password settings node-config accounts-data]
-  {::save-account-and-login [key-uid
+  [{:keys [db]} key-uid multiaccount-data password settings node-config accounts-data]
+  {:db                      (assoc-in db [:syncing :login-sha3-password] password)
+   ::save-account-and-login [key-uid
                              (types/clj->json multiaccount-data)
                              password
                              (types/clj->json settings)
