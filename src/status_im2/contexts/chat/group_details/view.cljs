@@ -20,7 +20,9 @@
     :icon-only?          true
     :container-style     {:margin-left 20}
     :accessibility-label :back-button
-    :on-press            #(rf/dispatch [:navigate-back])}
+    :on-press            (fn []
+                           (rf/dispatch [:navigate-back])
+                           (rf/dispatch [:chat/close]))}
    :i/arrow-left])
 
 (defn options-button
