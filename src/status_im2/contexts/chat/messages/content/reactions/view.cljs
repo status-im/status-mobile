@@ -2,7 +2,6 @@
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.drawers.view :as drawers]
     [utils.re-frame :as rf]))
