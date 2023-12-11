@@ -37,7 +37,7 @@
 (def ^:private toast-undo-action (quo.theme/with-theme toast-undo-action-internal))
 
 (defn- toast-container-internal
-  [{:keys [left title text right container-style theme]}]
+  [{:keys [left title text right container-style theme] :as opts}]
   [rn/view {:style (merge (style/box-container theme) container-style)}
    [blur/view
     {:style         style/blur-container
