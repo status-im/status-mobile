@@ -49,6 +49,7 @@
          {:container-style style/auth-button
           :on-press        on-press-biometrics
           :icon-only?      true
+          :background      :blur
           :type            :outline}
          :i/face-id])]
      (when error?
