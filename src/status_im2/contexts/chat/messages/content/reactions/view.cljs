@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
+    [react-native.core :as rn]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.drawers.view :as drawers]
     [utils.re-frame :as rf]))
@@ -17,23 +18,21 @@
 (defn- on-long-press
   [{:keys [message-id emoji-id user-message-content reactions-order theme]}]
   (rf/dispatch
-   [:chat.ui/emoji-reactions-by-message-id
+   [:reactions/get-authors-by-message-id
     {:message-id message-id
      :on-success (fn [response]
-                   (rf/dispatch [:chat/save-emoji-reaction-details
+                   (rf/dispatch [:reactions/save-authors
                                  {:reaction-authors-list response
                                   :selected-reaction     emoji-id}])
                    (rf/dispatch [:dismiss-keyboard])
                    (rf/dispatch [:show-bottom-sheet
-                                 {:on-close (fn []
-                                              (rf/dispatch
-                                               [:chat/clear-emoji-reaction-author-details]))
-                                  :content (fn []
-                                             [drawers/reaction-authors
-                                              {:reactions-order reactions-order
-                                               :theme           theme}])
-                                  :selected-item (fn []
-                                                   user-message-content)
+                                 {:on-close                #(rf/dispatch
+                                                             [:reactions/clear-authors])
+                                  :content                 (fn []
+                                                             [drawers/reaction-authors
+                                                              {:reactions-order reactions-order
+                                                               :theme           theme}])
+                                  :selected-item           (fn [] user-message-content)
                                   :padding-bottom-override 0}]))}]))
 
 (defn- on-press-add
@@ -56,7 +55,7 @@
 (defn- view-internal
   [{:keys [message-id chat-id pinned-by theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
-    [:<>
+    [rn/view {:border-color :red :border-width 1}
      (when (seq reactions)
        [quo/react
         {:container-style {:margin-left 44
