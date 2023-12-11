@@ -7,6 +7,7 @@
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.style :as style]
+    [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
@@ -73,7 +74,7 @@
 
 (defn- view-internal
   [{:keys [theme type size state blur? customization-color profile-picture full-name users
-           group-name token-logo amount token-name network-logo network-name networks
+           group-name amount token network-logo network-name networks
            account-name emoji collectible collectible-name collectible-number duration container-style]
     :or   {customization-color :blue
            type                :default
@@ -123,8 +124,11 @@
      [communities-tag (assoc props :channel? (= type :channel))]
 
      :token
-     [tag-skeleton {:theme theme :size size :text (str amount " " token-name)}
-      [rn/image {:style (style/circle-logo size) :source token-logo}]]
+     [tag-skeleton {:theme theme :size size :text (str amount " " token)}
+      [token/view
+       {:style (style/token-logo size)
+        :token token
+        :size  (if (= size 24) :size-20 :size-28)}]]
 
      :network
      [tag-skeleton {:theme theme :size size :text network-name}
@@ -182,9 +186,8 @@
 
   - `:token`
     - size
-    - token-logo (valid rn/image :source value)
     - amount
-    - token-name
+    - token
 
   - `:network`
     - size

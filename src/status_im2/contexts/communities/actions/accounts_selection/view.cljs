@@ -4,11 +4,12 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im2.common.password-authentication.view :as password-authentication]
-    [status-im2.contexts.communities.actions.request-to-join.style :as style]
+    [status-im2.contexts.communities.actions.accounts-selection.style :as style]
+    [status-im2.contexts.communities.actions.community-rules.view :as community-rules]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn join-community-and-navigate-back
+(defn- join-community-and-navigate-back
   [id]
   (rf/dispatch [:password-authentication/show
                 {:content (fn [] [password-authentication/view])}
@@ -17,24 +18,46 @@
                                           {:community-id id :password %}])}])
   (rf/dispatch [:navigate-back]))
 
+(defn- page-top
+  [{:keys [community-name logo-uri]}]
+  [rn/view {:style style/page-top}
+   [quo/text
+    {:size   :heading-1
+     :weight :semi-bold}
+    (i18n/label :t/request-to-join)]
+   [quo/context-tag
+    {:type            :community
+     :size            24
+     :community-logo  logo-uri
+     :community-name  community-name
+     :container-style {:margin-top 8}}]])
+
 (defn view
   []
-  (fn []
-    (let [{:keys [_name
-                  id
-                  _images]} (rf/sub [:get-screen-params])]
-      [rn/view {:flex 1}
-       [gesture/scroll-view {:style {:flex 1}}
-        [rn/view style/page-container
-         [rn/view {:style (style/bottom-container)}
-          [quo/button
-           {:accessibility-label :cancel
-            :on-press            #(rf/dispatch [:navigate-back])
-            :type                :grey
-            :container-style     style/cancel-button}
-           (i18n/label :t/cancel)]
-          [quo/button
-           {:accessibility-label :join-community-button
-            :on-press            #(join-community-and-navigate-back id)
-            :container-style     {:flex 1}}
-           (i18n/label :t/request-to-join)]]]]])))
+  (let [{id :community-id}          (rf/sub [:get-screen-params])
+        {:keys [name color images]} (rf/sub [:communities/community id])]
+    [rn/view {:style style/container}
+     [quo/page-nav
+      {:text-align          :left
+       :icon-name           :i/close
+       :on-press            #(rf/dispatch [:navigate-back])
+       :accessibility-label :back-button}]
+     [page-top
+      {:community-name name
+       :logo-uri       (get-in images [:thumbnail :uri])}]
+     [gesture/scroll-view
+      [rn/view {:style style/content}
+       [quo/text
+        {:style               {:margin-top 24}
+         :accessibility-label :community-rules-title
+         :weight              :semi-bold
+         :size                :paragraph-1}
+        (i18n/label :t/community-rules)]
+       [community-rules/view id]]]
+     [rn/view {:style (style/bottom-actions)}
+      [quo/slide-button
+       {:size                :size-48
+        :track-text          (i18n/label :t/slide-to-request-to-join)
+        :track-icon          :i/face-id
+        :customization-color color
+        :on-complete         #(join-community-and-navigate-back id)}]]]))

@@ -7,7 +7,6 @@
     [status-im.ethereum.ens :as ens]
     [status-im.ethereum.tokens :as tokens]
     [status-im.qr-scanner.core :as qr-scaner]
-    [status-im.utils.wallet-connect :as wallet-connect]
     [status-im.wallet.utils :as wallet.utils]
     [status-im2.common.router :as router]
     [status-im2.navigation.events :as navigation]
@@ -173,11 +172,7 @@
       (if (links/universal-link? uri)
         {:dispatch [:universal-links/handle-url uri]}
         {:browser/show-browser-selection uri})
-      (if (wallet-connect/url? uri)
-        {:ui/show-error "Wallet Connect not implemented"}
-        ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
-        ;; {:dispatch [::qr-scaner/handle-wallet-connect-uri {:data uri}]}
-        {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})}))))
+      {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})})))
 
 (rf/defn qr-scanner-result
   {:events [:wallet-legacy.send/qr-scanner-result]}

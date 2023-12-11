@@ -11,7 +11,6 @@
     [status-im.ui.components.react :as react]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.chat.photos :as photos]
-    [status-im.ui.screens.chat.sheets :as chat.sheets]
     [status-im.ui.screens.chat.utils :as chat.utils]
     [status-im.ui.screens.profile.components.styles :as profile.components.styles]
     [status-im2.constants :as constants]
@@ -19,6 +18,11 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+
+(defn hide-sheet-and-dispatch
+  [event]
+  (re-frame/dispatch [:bottom-sheet/hide-old])
+  (re-frame/dispatch event))
 
 (defn member-sheet
   [chat-id member us-admin?]
@@ -30,7 +34,7 @@
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
      :chevron             true
-     :on-press            #(chat.sheets/hide-sheet-and-dispatch
+     :on-press            #(hide-sheet-and-dispatch
                             [:chat.ui/show-profile
                              (:public-key member)])}]
    (when (and us-admin? (not (:admin? member)))
@@ -39,15 +43,15 @@
        :title               (i18n/label :t/make-admin)
        :accessibility-label :make-admin
        :icon                :main-icons/make-admin
-       :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed
-                                                                   chat-id (:public-key member)])}])
+       :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed
+                                                       chat-id (:public-key member)])}])
    (when-not (:admin? member)
      [list.item/list-item
       {:theme               :accent
        :title               (i18n/label :t/remove-from-chat)
        :accessibility-label :remove-from-chat
        :icon                :main-icons/remove-contact
-       :on-press            #(chat.sheets/hide-sheet-and-dispatch
+       :on-press            #(hide-sheet-and-dispatch
                               [:group-chats.ui/remove-member-pressed chat-id
                                (:public-key member)])}])])
 
@@ -102,7 +106,7 @@
        :on-press #(re-frame/dispatch [:open-modal :add-participants-toggle-list])}])
    [chat-group-members-view chat-id admin? current-pk]])
 
-(defn hide-sheet-and-dispatch
+(defn hide-sheet-and-dispatch-old
   [event]
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (debounce/dispatch-and-chill event 2000))
@@ -125,14 +129,15 @@
        :subtitle            (when-not allow-adding-members? (i18n/label :t/members-limit-reached))
        :accessibility-label :accept-invitation-button
        :icon                :main-icons/checkmark-circle
-       :on-press            #(hide-sheet-and-dispatch
+       :on-press            #(hide-sheet-and-dispatch-old
                               [:group-chats.ui/add-members-from-invitation id (:public-key contact)])}]
      [list.item/list-item
       {:theme               :negative
        :title               (i18n/label :t/decline)
        :accessibility-label :decline-invitation-button
        :icon                :main-icons/cancel
-       :on-press            #(hide-sheet-and-dispatch [:send-group-chat-membership-rejection id])}]]))
+       :on-press            #(hide-sheet-and-dispatch-old [:send-group-chat-membership-rejection
+                                                           id])}]]))
 
 (defn contacts-list-item
   [{:keys [from] :as invitation}]

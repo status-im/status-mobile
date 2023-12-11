@@ -291,9 +291,6 @@
        (= type :datemark)
        [quo/divider-date value]
 
-       (= content-type constants/content-type-gap)
-       [message.gap/gap message-data]
-
        :else
        [message/message message-data context keyboard-shown?])]))
 

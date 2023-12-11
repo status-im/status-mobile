@@ -173,7 +173,7 @@
         (i18n/label :t/join-open-community)]])))
 
 (defn join-community
-  [{:keys [joined color permissions token-permissions] :as community}
+  [{:keys [joined color permissions token-permissions id] :as community}
    pending?]
   (let [access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
@@ -185,7 +185,7 @@
          [quo/button
           {:on-press
            (if config/community-accounts-selection-enabled?
-             #(rf/dispatch [:open-modal :community-account-selection community])
+             #(rf/dispatch [:open-modal :community-account-selection {:community-id id}])
              #(rf/dispatch [:open-modal :community-requests-to-join community]))
 
            :accessibility-label :show-request-to-join-screen-button

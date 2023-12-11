@@ -30,13 +30,6 @@
                               [:navigate-to :wallet-settings-assets])}]
      [list.item/list-item
       {:theme               :accent
-       :title               (i18n/label :t/wallet-manage-app-connections)
-       :icon                :main-icons/manage-connections
-       :accessibility-label :wallet-manage-app-connections
-       :on-press            #(hide-sheet-and-dispatch
-                              [:navigate-to :show-all-connections])}]
-     [list.item/list-item
-      {:theme               :accent
        :title               (i18n/label :t/scan-tokens)
        :icon                :main-icons/refresh
        :accessibility-label :wallet-scan-token

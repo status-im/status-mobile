@@ -10,8 +10,6 @@
     [status-im.ui.screens.popover.views :as popover]
     [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
     [status-im.ui.screens.signing.views :as signing]
-    [status-im.ui.screens.wallet-connect.session-proposal.views :as wallet-connect]
-    [status-im.ui.screens.wallet.send.views :as wallet.send.views]
     [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [status-im2.common.bottom-sheet.view :as bottom-sheet]
     [status-im2.common.toasts.view :as toasts]
@@ -132,45 +130,5 @@
      [:<>
       [inactive]
       [signing/signing]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])))
-
-(def select-acc-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "select-acc-sheet" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [wallet.send.views/select-account]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])))
-
-(def wallet-connect-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "wallet-connect-sheet" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [wallet-connect/wallet-connect-proposal-sheet]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])))
-
-(def wallet-connect-success-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "wallet-connect-success-sheet" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [wallet-connect/wallet-connect-success-sheet-view]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])))
-
-(def wallet-connect-app-management-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "wallet-connect-app-management-sheet" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [wallet-connect/wallet-connect-app-management-sheet-view]
       (when js/goog.DEBUG
         [reloader/reload-view])])))

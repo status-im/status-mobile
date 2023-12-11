@@ -121,14 +121,6 @@
 (reg-root-key-sub :signing/tx :signing/tx)
 (reg-root-key-sub :signing/edit-fee :signing/edit-fee)
 
-;; wallet connect
-(reg-root-key-sub :wallet-connect/proposal-metadata :wallet-connect/proposal-metadata)
-(reg-root-key-sub :wallet-connect/enabled? :wallet-connect/enabled?)
-(reg-root-key-sub :wallet-connect/session-connected :wallet-connect/session-connected)
-(reg-root-key-sub :wallet-connect/showing-app-management-sheet?
-                  :wallet-connect/showing-app-management-sheet?)
-(reg-root-key-sub :wallet-connect/sessions :wallet-connect/sessions)
-(reg-root-key-sub :wallet-connect/session-managed :wallet-connect/session-managed)
 (reg-root-key-sub :contact-requests/pending :contact-requests/pending)
 
 (reg-root-key-sub :bug-report/description-error :bug-report/description-error)

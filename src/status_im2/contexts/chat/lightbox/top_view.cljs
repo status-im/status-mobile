@@ -6,7 +6,6 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.chat.models.images :as images]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.constants :as c]
     [status-im2.contexts.chat.lightbox.style :as style]
@@ -52,20 +51,21 @@
         :label               (i18n/label :t/save-image-library)
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
-                               (images/save-image-to-gallery
-                                uri
-                                #(rf/dispatch [:toasts/upsert
-                                               {:id              :random-id
-                                                :icon            :i/correct
-                                                :icon-color      colors/success-50
-                                                :container-style {:bottom (when platform/android? 20)}
-                                                :text            (i18n/label :t/photo-saved)}])))}]]]))
+                               (rf/dispatch
+                                [:chat.ui/save-image-to-gallery
+                                 uri
+                                 #(rf/dispatch [:toasts/upsert
+                                                {:id              :random-id
+                                                 :icon            :i/correct
+                                                 :icon-color      colors/success-50
+                                                 :container-style {:bottom (when platform/android? 20)}
+                                                 :text            (i18n/label :t/photo-saved)}])]))}]]]))
 
 (defn share-image
   [messages index]
   (let [{:keys [content]} (nth messages index)
         uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
-    (images/share-image uri)))
+    (rf/dispatch [:chat.ui/share-image uri])))
 
 (defn top-view
   [messages insets index animations derived landscape? screen-width]

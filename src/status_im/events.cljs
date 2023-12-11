@@ -10,13 +10,9 @@
     status-im.bootnodes.core
     status-im.browser.core
     status-im.browser.permissions
-    status-im.chat.models.gaps
-    status-im.chat.models.images
     status-im.chat.models.input
     status-im.chat.models.loading
     status-im.contact.block
-    status-im.contact.chat
-    status-im.contact.core
     status-im.currency.core
     status-im.ethereum.subscriptions
     status-im.fleet.core
@@ -43,12 +39,12 @@
     status-im.visibility-status-popover.core
     status-im.visibility-status-updates.core
     status-im.waku.core
-    status-im.wallet-connect.core
     status-im.wallet.accounts.core
     status-im.wallet.choose-recipient.core
     [status-im.wallet.core :as wallet]
     status-im.wallet.custom-tokens.core
     [status-im2.common.biometric.events :as biometric]
+    status-im2.common.standard-authentication.events
     [status-im2.common.theme.core :as theme]
     [status-im2.common.universal-links :as universal-links]
     [status-im2.constants :as constants]

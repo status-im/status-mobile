@@ -16,10 +16,6 @@
    :flex-direction     :row
    :justify-content    :space-between})
 
-(def token
-  {:width  32
-   :height 32})
-
 (defn text-input
   [theme]
   (merge typography/heading-1

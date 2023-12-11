@@ -5,12 +5,13 @@
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.markdown.text :as text]
     [quo.components.tags.summary-tag.style :as style]
+    [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- left-view
-  [{:keys [label type customization-color emoji image-source]}]
+  [{:keys [label type customization-color emoji image-source token]}]
   (case type
     :account
     [account-avatar/view
@@ -38,9 +39,10 @@
       :profile-picture     image-source
       :customization-color customization-color}]
     :token
-    [rn/image
-     {:source image-source
-      :style  style/token-image}]
+    [token/view
+     {:token token
+      :size  :size-24
+      :style style/token-image}]
     nil))
 
 (defn- view-internal
@@ -50,7 +52,7 @@
       should vary based on a custom color.
     - :type - :token / :user / :collectible / :saved-address / :network / :account
     - :emoji - string - emoji used for displaying account avatar
-    - :image-source - resource - image to display on :network, :collectible :user and :token
+    - :image-source - resource - image to display on :network, :collectible and :user
     - :theme - :light / :dark"
   [{:keys [label customization-color type theme]
     :as   props
@@ -62,6 +64,7 @@
    [text/text
     {:style  (style/label type theme)
      :weight :semi-bold
-     :size   :heading-1} label]])
+     :size   :heading-1}
+    label]])
 
 (def view (quo.theme/with-theme view-internal))

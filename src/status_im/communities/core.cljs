@@ -74,6 +74,7 @@
                         :adminSettings               :admin-settings
                         :tokenPermissions            :token-permissions
                         :communityTokensMetadata     :tokens-metadata
+                        :introMessage                :intro-message
                         :muteTill                    :muted-till})
       (update :admin-settings
               set/rename-keys

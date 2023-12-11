@@ -5,9 +5,11 @@
     [react-native.core :as rn]))
 
 (defn- view-internal
-  [props]
+  [{:keys [full-width?] :as props}]
   [rn/view
    {:accessibility-label :progress-bar
-    :style               (style/root-container props)}])
+    :style               (style/root-container props)}
+   (when full-width?
+     [rn/view {:style (style/progressed-bar props)}])])
 
 (def view (quo.theme/with-theme view-internal))

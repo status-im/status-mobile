@@ -129,9 +129,12 @@
     [camera-permission-view]))
 
 (defn- check-qr-code-and-navigate
-  [{:keys [event error-message validate-fn on-success-scan on-failed-scan]}]
+  [{:keys [event error-message validate-fn on-success-scan on-failed-scan scan-code?]}]
   (let [scanned-value (string/trim (oops/oget event "nativeEvent.codeStringValue"))
         validated?    (if validate-fn (validate-fn scanned-value) true)]
+    ;; Note - camera-kit keeps scanning until the screen is dismissed,
+    ;; so disable scanning to make sure the on-read-code doesn't get executed multiple times
+    (reset! scan-code? false)
     (if validated?
       (on-success-scan scanned-value)
       (do
@@ -155,8 +158,9 @@
       :zoom-mode    :off
       :torch-mode   torch-mode
       :scan-barcode true
-      :on-read-code #(when scan-code?
+      :on-read-code #(when @scan-code?
                        (check-qr-code-and-navigate {:event           %
+                                                    :scan-code?      scan-code?
                                                     :validate-fn     validate-fn
                                                     :error-message   error-message
                                                     :on-success-scan set-qr-code-succeeded
@@ -209,7 +213,7 @@
            [render-camera
             {:torch-mode            torch-mode
              :qr-view-finder        @qr-view-finder
-             :scan-code?            @scan-code?
+             :scan-code?            scan-code?
              :error-message         error-message
              :validate-fn           validate-fn
              :set-qr-code-succeeded (fn [value]
