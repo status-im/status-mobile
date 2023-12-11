@@ -4,7 +4,7 @@
 
 (defn open
   ([options]
-   (open options nil nil))
+   (open options #() #()))
   ([options on-success on-error]
    (-> ^js react-native-share
        (.open (clj->js options))

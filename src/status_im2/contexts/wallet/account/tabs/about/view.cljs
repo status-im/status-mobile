@@ -11,8 +11,8 @@
 
 (defn about-options
   []
-  (let [{:keys [address name]} (rf/sub [:wallet/current-viewing-account])
-        title (str name " address")]
+  (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
+        share-title                   (str (:name account) " " (i18n/label :t/address))]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
@@ -43,10 +43,11 @@
                                     {:activityItemSources [{:placeholderItem {:type    "text"
                                                                               :content address}
                                                             :item            {:default {:type "text"
-                                                                                        :content address}}
-                                                            :linkMetadata    {:title title}}]}
-                                    {:title   title
-                                     :subject title
+                                                                                        :content
+                                                                                        address}}
+                                                            :linkMetadata    {:title share-title}}]}
+                                    {:title   share-title
+                                     :subject share-title
                                      :message address}))
                                 600))}]]]))
 
