@@ -10,12 +10,10 @@ stdenv.mkDerivation {
     "unpackPhase"
     "patchGradlePhase"
     "patchBuildIdPhase"
-    "patchHermesPhase"
-    "patchJavaPhase"
-    "patchReactNativePhase"
-    "patchPodPhase"
+    "patchKeyChainPhase"
     "patchGlogPhase"
-    "installPhase"
+    "patchJestPhase"
+    "installPhase"    
   ];
 
   # First symlink all modules as is
@@ -50,24 +48,19 @@ stdenv.mkDerivation {
       ${patchMavenSources} $modBuildGradle
     done
   '';
+
   # Do not add a BuildId to the generated libraries, for reproducibility
   patchBuildIdPhase = ''
-    substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/Application.mk --replace \
-        '-Wl,--build-id' \
-        '-Wl,--build-id=none'
+    substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt --replace \
+      '-Wl,--build-id' \
+      '-Wl,--build-id=none'
   '';
-  # Fix bugs in Hermes usage:
-  # https://github.com/facebook/react-native/issues/25601#issuecomment-510856047
-  # - Make PR builds also count as release builds
-  # - Fix issue where hermes command is being called with same input/output file
-  patchHermesPhase = ''
-    substituteInPlace ./node_modules/react-native/react.gradle --replace \
-        'targetName.toLowerCase().contains("release")' \
-        '!targetName.toLowerCase().contains("debug")'
-  '';
-  # Patch Java files in modules which are not yet ported to AndroidX
-  patchJavaPhase = ''
-    ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
+
+  # Remove when we upgrade jest to 29
+  patchJestPhase = ''
+    substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
+      'jest.now()' \
+      'Date.now'
   '';
 
   installPhase = ''
@@ -75,28 +68,13 @@ stdenv.mkDerivation {
     cp -R node_modules $out/
   '';
 
-#  Fix glog configuration issue in react-native:
-#  https://github.com/facebook/react-native/issues/33966
-#  TODO: remove this patch when we reach react-native 0.71.4
-  patchReactNativePhase = ''
-    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
-      'sed -i' \
-      'sed -i.bak -e'
-    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
-       'src/glog/logging.h.in' \
-       'src/glog/logging.h.in && rm src/glog/logging.h.in.bak'
-     substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
-        'src/config.h.in' \
-        'src/config.h.in && rm src/config.h.in.bak'
-  '';
-
-#  Fix pod issue in react-native 0.67.5:
-#  https://stackoverflow.com/questions/71248072/no-member-named-cancelbuttontintcolor-in-jsnativeactionsheetmanagerspecsh
-#  TODO: remove this patch when maybe after 0.68.5
-  patchPodPhase = ''
-    substituteInPlace ./node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm --replace \
-          '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
-          '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
+  # Remove gradle-test-logger-plugin:
+  # https://github.com/oblador/react-native-keychain/issues/595
+  # TODO: remove this patch when we this library fixes above issue
+  patchKeyChainPhase = ''
+    sed -i -e '/classpath/d' \
+      -e '/apply plugin: "com\.adarshr\.test-logger"/d' \
+      ./node_modules/react-native-keychain/android/build.gradle
   '';
 
   # Fix pod issue after upgrading to MacOS Sonoma and Xcode 15
