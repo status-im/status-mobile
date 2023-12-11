@@ -13,11 +13,11 @@
     [status-im.mobile-sync-settings.core :as mobile-network]
     [status-im.pairing.core :as pairing]
     [status-im.stickers.core :as stickers]
-    [status-im2.common.biometric.constants :as biometric-constants]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.common.log :as logging]
     [status-im2.common.universal-links :as universal-links]
     [status-im2.config :as config]
+    [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.contexts.profile.config :as profile.config]
@@ -219,7 +219,7 @@
  (fn [{:keys [db]} [code]]
    (let [key-uid (get-in db [:profile/login :key-uid])]
      {:db db
-      :fx [(if (= code biometric-constants/auth-error-not-enrolled)
+      :fx [(if (= code constants/biometric-error-not-enrolled)
              [:biometric/supress-not-enrolled-error
               [key-uid
                [:biometric/show-message code]]]
