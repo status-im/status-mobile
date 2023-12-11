@@ -123,7 +123,9 @@
                                :profile-picture profile-picture})
       :on-card-press        (fn []
                               (rf/dispatch
-                               [:profile/switch-profile key-uid])
+                               [:profile/profile-selected key-uid])
+                              (rf/dispatch
+                               [:profile.login/login-with-biometric-if-available key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
 (defn- f-profiles-section

@@ -27,13 +27,6 @@
             {:db (assoc db :profile/profiles-overview profiles)}
             (profile-selected key-uid)))
 
-(rf/reg-event-fx
- :profile/switch-profile
- (fn [{:keys [db]} [key-uid]]
-   {:db db
-    :fx [[:dispatch [:profile/profile-selected key-uid]]
-         [:dispatch [:profile.login/login-with-biometric-if-available key-uid]]]}))
-
 (defn reduce-profiles
   [profiles]
   (reduce

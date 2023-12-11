@@ -5,6 +5,7 @@
     [react-native.async-storage :as async-storage]
     [react-native.platform :as platform]
     [react-native.touch-id :as touch-id]
+    [status-im2.common.biometric.constants :as biometric-constants]
     [status-im2.common.keychain.events :as keychain]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -46,8 +47,12 @@
   {:events [:biometric/show-message]}
   [_ code]
   (let [handle-error? (and code
-                           (not (contains? #{"USER_CANCELED" "USER_FALLBACK"} code)))
-        content       (if (#{"NOT_AVAILABLE" "NOT_ENROLLED"} code)
+                           (not (contains? #{biometric-constants/auth-error-user-canceled
+                                             biometric-constants/auth-error-user-fallback}
+                                           code)))
+        content       (if (#{biometric-constants/auth-error-not-available
+                             biometric-constants/auth-error-not-enrolled}
+                           code)
                         (i18n/label :t/grant-face-id-permissions)
                         (i18n/label :t/biometric-auth-error {:code code}))]
     (when handle-error?

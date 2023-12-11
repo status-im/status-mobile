@@ -50,7 +50,11 @@
         [quo/button
          {:type       :outline
           :icon-only? true
-          :on-press   #(rf/dispatch [:profile.login/biometric-auth])
+          :on-press   (fn []
+                        (rf/dispatch [:biometric/authenticate
+                                      {:on-success #(rf/dispatch [:profile.login/biometric-success])
+                                       :on-fail    #(rf/dispatch
+                                                     [:profile.login/biometric-auth-fail %])}]))
           :background :blur
           :size       40}
          :i/face-id])]

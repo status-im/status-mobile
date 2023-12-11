@@ -13,6 +13,7 @@
     [status-im.mobile-sync-settings.core :as mobile-network]
     [status-im.pairing.core :as pairing]
     [status-im.stickers.core :as stickers]
+    [status-im2.common.biometric.constants :as biometric-constants]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.common.log :as logging]
     [status-im2.common.universal-links :as universal-links]
@@ -180,14 +181,6 @@
   {:keychain/get-auth-method [key-uid
                               #(rf/dispatch [:profile.login/get-auth-method-success % key-uid])]})
 
-(rf/reg-event-fx
- :profile.login/biometric-auth
- (fn []
-   {:dispatch [:biometric/authenticate
-               {:on-success #(rf/dispatch [:profile.login/biometric-success])
-                :on-fail    #(rf/dispatch
-                              [:profile.login/biometric-auth-fail %])}]}))
-
 (rf/defn get-auth-method-success
   {:events [:profile.login/get-auth-method-success]}
   [{:keys [db]} auth-method key-uid]
@@ -195,7 +188,11 @@
          (when (= auth-method keychain/auth-method-biometric)
            {:keychain/password-hash-migration
             {:key-uid  key-uid
-             :callback #(rf/dispatch [:profile.login/biometric-auth])}})))
+             :callback (fn []
+                         (rf/dispatch [:biometric/authenticate
+                                       {:on-success #(rf/dispatch [:profile.login/biometric-success])
+                                        :on-fail    #(rf/dispatch
+                                                      [:profile.login/biometric-auth-fail %])}]))}})))
 
 ;; result of :keychain/get-auth-method above
 (rf/defn get-user-password-success
@@ -222,7 +219,7 @@
  (fn [{:keys [db]} [code]]
    (let [key-uid (get-in db [:profile/login :key-uid])]
      {:db db
-      :fx [(if (= code "NOT_ENROLLED")
+      :fx [(if (= code biometric-constants/auth-error-not-enrolled)
              [:biometric/supress-not-enrolled-error
               [key-uid
                [:biometric/show-message code]]]
