@@ -52,7 +52,7 @@
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
         login-sha3-password        (get-in db [:syncing :login-sha3-password])
-        password                   (if-not (nil? login-sha3-password) ;; already login
+        password                   (if-not (nil? login-sha3-password) ;; already logged in
                                      login-sha3-password
                                      password)
         masked-password            (security/mask-data password)]
