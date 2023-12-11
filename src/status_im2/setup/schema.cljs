@@ -9,6 +9,7 @@
     malli.util
     schema.common
     [schema.core :as schema]
+    schema.re-frame
     schema.registry
     [taoensso.timbre :as log]))
 
@@ -76,7 +77,8 @@
   `:schema.common/theme`."
   []
   (schema.registry/merge (malli.util/schemas))
-  (schema.common/register-schemas))
+  (schema.common/register-schemas)
+  (schema.re-frame/register-schemas))
 
 (defn setup!
   "Configure Malli and initializes instrumentation.
