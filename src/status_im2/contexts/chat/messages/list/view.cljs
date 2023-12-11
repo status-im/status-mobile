@@ -186,7 +186,10 @@
   (let [latest-pin-text                      (rf/sub [:chats/last-pinned-message-text chat-id])
         pins-count                           (rf/sub [:chats/pin-messages-count chat-id])
         {:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])
-        muted?                               (and muted (some? muted-till))]
+        community-channel?                   (= constants/community-chat-type chat-type)
+        muted?                               (and muted (some? muted-till))
+        mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
+        unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
     [quo/channel-actions
      {:style   {:margin-top 16}
       :actions [{:accessibility-label :action-button-pinned
@@ -201,8 +204,8 @@
                                                       chat-id]))}
                 {:accessibility-label :action-button-mute
                  :label               (i18n/label (if muted
-                                                    :t/unmute-chat
-                                                    :t/mute-chat))
+                                                    unmute-chat-label
+                                                    mute-chat-label))
                  :color               cover-bg-color
                  :icon                (if muted? :i/muted :i/activity-center)
                  :on-press            (fn []
