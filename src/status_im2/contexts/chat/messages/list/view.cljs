@@ -10,7 +10,6 @@
     [react-native.react-native-intersection-observer :as rnio]
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.chat.group :as chat.group]
-    [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.common.home.actions.view :as home.actions]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
