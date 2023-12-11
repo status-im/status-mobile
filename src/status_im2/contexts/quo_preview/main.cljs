@@ -167,10 +167,12 @@
     [status-im2.contexts.quo-preview.text-combinations.preview :as
      text-combinations]
     [status-im2.contexts.quo-preview.text-combinations.standard-title :as standard-title]
+    [status-im2.contexts.quo-preview.text-combinations.username :as username]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im2.contexts.quo-preview.wallet.account-overview :as
      account-overview]
+    [status-im2.contexts.quo-preview.wallet.confirmation-progress :as confirmation-progress]
     [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
@@ -179,6 +181,7 @@
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
+    [status-im2.contexts.quo-preview.wallet.transaction-progress :as transaction-progress]
     [status-im2.contexts.quo-preview.wallet.transaction-summary :as
      transaction-summary]
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
@@ -462,11 +465,15 @@
                        {:name      :channel-name
                         :component channel-name/view}
                        {:name      :standard-title
-                        :component standard-title/view}]
+                        :component standard-title/view}
+                       {:name      :username
+                        :component username/view}]
    :wallet            [{:name :account-card :component account-card/view}
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/view}
+                       {:name      :confirmation-progress
+                        :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
                        {:name :network-amount :component network-amount/view}
                        {:name :network-bridge :component network-bridge/view}
@@ -476,6 +483,7 @@
                        {:name :summary-info :component summary-info/view}
                        {:name :token-input :component token-input/view}
                        {:name :wallet-activity :component wallet-activity/view}
+                       {:name :transaction-progress :component transaction-progress/view}
                        {:name :transaction-summary :component transaction-summary/view}
                        {:name      :wallet-overview
                         :component wallet-overview/view}]

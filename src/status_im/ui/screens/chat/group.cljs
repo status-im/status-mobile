@@ -6,18 +6,8 @@
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.react :as react]
     [status-im2.constants :as constants]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
-(defn decline-chat
-  [chat-id]
-  [quo/button
-   {:type                :secondary
-    :accessibility-label :decline-chat-button
-    :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/leave-chat-confirmed chat-id]
-                                                       2000)}
-   (i18n/label :t/group-chat-decline-invitation)])
 
 (def message-max-length 100)
 

@@ -5,10 +5,10 @@
     [quo.components.dividers.divider-line.view :as divider-line]
     [quo.components.markdown.text :as text]
     [quo.components.tags.network-tags.view :as network-tag]
+    [quo.components.utilities.token.view :as token]
     [quo.components.wallet.token-input.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.common :as common]
-    [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]))
@@ -41,9 +41,7 @@
           :style    {:flex-direction :row
                      :flex-grow      1
                      :align-items    :flex-end}}
-         [rn/image
-          {:style  style/token
-           :source (resources/get-token token)}]
+         [token/view {:token token :size :size-32}]
          [rn/text-input
           (cond-> {:auto-focus               true
                    :ref                      #(reset! input-ref %)

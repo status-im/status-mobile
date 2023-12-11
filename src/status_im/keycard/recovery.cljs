@@ -11,7 +11,6 @@
     [status-im.multiaccounts.model :as multiaccounts.model]
     [status-im.popover.core :as popover]
     [status-im.utils.deprecated-types :as types]
-    [status-im.utils.keychain.core :as keychain]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
@@ -278,7 +277,7 @@
     {:db                (-> db
                             (assoc-in [:profile/profiles-overview key-uid :keycard-pairing] pairing)
                             (assoc :profile/login account)
-                            (assoc :auth-method keychain/auth-method-none)
+                            (assoc :auth-method "none")
                             (update :keycard dissoc :flow :migration-password)
                             (dissoc :recovered-account?))
      ::finish-migration [account settings password encryption-pass login-params]}))

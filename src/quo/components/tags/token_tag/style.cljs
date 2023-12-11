@@ -34,14 +34,10 @@
 
 (defn token-img
   [size]
-  (condp = size
-    :size-24 {:width         20
-              :height        20
-              :margin-right  6
+  (case size
+    :size-24 {:margin-right  6
               :border-radius 10}
-    :size-32 {:width         28
-              :height        28
-              :margin-right  8
+    :size-32 {:margin-right  8
               :border-radius 14}))
 
 (defn label

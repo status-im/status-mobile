@@ -63,16 +63,12 @@
                   (events/mark-as-read cofx (:id notif)))))))
 
 (deftest mark-as-read-success-test
-  (let [f-args (atom [])
-        cofx   {:db {}}
-        notif  {:id "0x1" :read false :type types/one-to-one-chat}]
-    (with-redefs [events/notifications-reconcile
-                  (fn [& args]
-                    (reset! f-args args)
-                    :result)]
-      (is (= :result (events/mark-as-read-success cofx notif)))
-      (is (match? [cofx [(assoc notif :read true)]]
-                  @f-args)))))
+  (let [cofx        {:db {}}
+        notif       {:id "0x1" :read false :type types/one-to-one-chat :chat-id "chat-id"}
+        expected-fx {:fx [[:dispatch [:chats-list/load-chat "chat-id"]]
+                          [:dispatch
+                           [:activity-center.notifications/reconcile [(assoc notif :read true)]]]]}]
+    (is (match? expected-fx (events/mark-as-read-success cofx [notif])))))
 
 (deftest mark-as-unread-test
   (testing "does nothing if the notification ID cannot be found in the app db"

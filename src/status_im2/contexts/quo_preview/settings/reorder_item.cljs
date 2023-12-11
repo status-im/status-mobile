@@ -2,7 +2,6 @@
   (:require
     [quo.components.settings.reorder-item.types :as types]
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -22,10 +21,10 @@
            :title      "Status"}}
    {:id   3
     :type types/item
-    :data {:image      (quo.resources/get-token :eth)
+    :data {:image      (resources/get-mock-image :status-logo)
            :image-size 21
            :right-icon :i/world
-           :title      "Ethereum"}}
+           :title      "Status"}}
    {:id   4
     :type types/item
     :data {:image      (resources/get-mock-image :monkey)
