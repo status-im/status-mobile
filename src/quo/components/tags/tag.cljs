@@ -5,7 +5,8 @@
     [quo.components.tags.base-tag :as base-tag]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [status-im.ui.components.react :as react]))
 
 (def themes
   {:light {:default  {:border-color         colors/neutral-20
@@ -47,13 +48,22 @@
                           24 12)
        :color           icon-color}])
    (when (= type :emoji)
-     [text/text
-      {:style {:margin-right 4}
-       :size  (case size
-                32 :paragraph-1
-                24 :paragraph-2
-                nil)}
-      resource])
+     (let [image-emoji? (int? resource)]
+       (if image-emoji?
+         [react/image
+          {:source resource
+           :style  (merge {:margin-right 4}
+                          (case size
+                            32 {:width 20 :height 20}
+                            24 {:width 12 :height 12}
+                            nil))}]
+         [rn/text
+          {:style {:margin-right 4
+                   :font-size    (case size
+                                   32 20
+                                   24 12
+                                   nil)}}
+          resource])))
    (when labelled?
      [text/text
       (merge {:size            (case size
@@ -73,7 +83,7 @@
     :size         32/24
     :on-press     fn
     :blurred?     true/false
-    :resource     icon/image
+    :resource     icon/image/text(emojis)
     :labelled?    true/false
     :disabled?    true/false}
 
