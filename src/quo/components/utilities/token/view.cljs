@@ -1,8 +1,10 @@
 (ns quo.components.utilities.token.view
-  (:require [quo.components.utilities.token.loader :as token-loader]
-            [react-native.core :as rn]
-            [schema.core :as schema]
-            [utils.number]))
+  (:require
+    [quo.components.markdown.text :as quo]
+    [quo.components.utilities.token.loader :as token-loader]
+    [react-native.core :as rn]
+    [schema.core :as schema]
+    [utils.number]))
 
 (def ?schema
   [:=>
@@ -33,6 +35,19 @@
 
 (def ^:private b64-png-image-prefix "data:image/png;base64,")
 
+(defn temp-empty-symbol
+  [size]
+  [rn/view
+   {:style (merge (token-style {:justify-content :center
+                                :align-items     :center
+                                :border-radius   20
+                                :border-width    1
+                                :border-color    :grey}
+                               size))}
+   [quo/text
+    {:size  :paragraph-2
+     :style {:color :grey}} "TBA"]])
+
 (defn view-internal
   "Render a token image.
    Props:
@@ -51,8 +66,10 @@
                      (str b64-png-image-prefix image-source)
                      image-source)
         source     (or b64-string (token-loader/get-token-image token))]
-    [rn/image
-     {:style  (token-style style size)
-      :source source}]))
+    (if source
+      [rn/image
+       {:style  (token-style style size)
+        :source source}]
+      [temp-empty-symbol size])))
 
 (def view (schema/instrument #'view-internal ?schema))
