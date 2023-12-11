@@ -1,5 +1,6 @@
 (ns quo.components.utilities.token.view
   (:require
+    [clojure.string :as string]
     [quo.components.markdown.text :as quo]
     [quo.components.utilities.token.loader :as token-loader]
     [react-native.core :as rn]
@@ -36,7 +37,7 @@
 (def ^:private b64-png-image-prefix "data:image/png;base64,")
 
 (defn temp-empty-symbol
-  [size]
+  [token size]
   [rn/view
    {:style (merge (token-style {:justify-content :center
                                 :align-items     :center
@@ -45,8 +46,7 @@
                                 :border-color    :grey}
                                size))}
    [quo/text
-    {:size  :paragraph-2
-     :style {:color :grey}} "TBA"]])
+    {:style {:color :grey}} (string/capitalize (first (name token)))]])
 
 (defn view-internal
   "Render a token image.
@@ -70,6 +70,6 @@
       [rn/image
        {:style  (token-style style size)
         :source source}]
-      [temp-empty-symbol size])))
+      [temp-empty-symbol token size])))
 
 (def view (schema/instrument #'view-internal ?schema))
