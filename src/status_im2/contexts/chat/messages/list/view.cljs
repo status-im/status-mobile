@@ -442,12 +442,11 @@
                     (on-scroll event show-floating-scroll-down-button?))
        :content-container-style {:justify-content :flex-end
                                  :min-height      @messages-view-height}
-       :style                {:background-color (colors/theme-colors
-                                   colors/white
-                                   colors/neutral-95
-                                   theme)}
-       ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
-       :inverted (when platform/ios? true)
+       :style {:background-color (colors/theme-colors
+                                  colors/white
+                                  colors/neutral-95
+                                  theme)}
+       :inverted true
        :on-layout (fn [e]
                     ;; FIXME: the 1s timeout is to assure all effects with
                     ;; timeouts that depend on the value are considered.
