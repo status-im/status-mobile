@@ -54,7 +54,6 @@
     [quo.components.markdown.text-component-spec]
     [quo.components.navigation.top-nav.component-spec]
     [quo.components.notifications.notification.component-spec]
-    [quo.components.numbered-keyboard.keyboard-key.component-spec]
     [quo.components.onboarding.small-option-card.component-spec]
     [quo.components.password.tips.component-spec]
     [quo.components.profile.select-profile.component-spec]
