@@ -173,6 +173,7 @@
         {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
         profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
+        auth-method                                (rf/sub [:auth-method])
         login-multiaccount                         #(rf/dispatch [:profile.login/login])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
@@ -209,12 +210,14 @@
         :card-style          style/login-profile-card}]
       [standard-authentication/password-input
        {:shell?              true
-        :on-press-biometrics (fn []
-                               (rf/dispatch [:biometric/authenticate
-                                             {:on-success #(rf/dispatch
-                                                            [:profile.login/biometric-success])
-                                              :on-fail    #(rf/dispatch
-                                                            [:profile.login/biometric-auth-fail %])}]))
+        :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
+                               (fn []
+                                 (rf/dispatch [:biometric/authenticate
+                                               {:on-success #(rf/dispatch
+                                                              [:profile.login/biometric-success])
+                                                :on-fail    #(rf/dispatch
+                                                              [:profile.login/biometric-auth-fail
+                                                               %])}])))
         :default-password    password}]]
      [quo/button
       {:size                40
