@@ -3,7 +3,10 @@
             [clojure.java.io :as io]
             [clojure.string :as string]))
 
-(def ^:private social-path "./resources/images/socials/")
+(defn- social-path
+  [size type]
+  (println (str "./resources/images/socials/" size "/" type))
+  (str "./resources/images/socials/" size "/" type))
 
 (defn- clean-filename
   "Return a (string) filename without the .png extension and @<number>x suffix."
@@ -23,8 +26,9 @@
       (string/lower-case)))
 
 (defn get-socials
-  []
-  (let [files         (file-seq (io/file social-path))
+  [size type]
+  (println "here" size type)
+  (let [files         (file-seq (io/file (social-path size type)))
         png-filenames (keep (fn [file]
                               (when (string/ends-with? file "png")
                                 (clean-filename file)))
@@ -32,4 +36,7 @@
     (zipmap (map get-file-key png-filenames)
             (map get-js-require png-filenames))))
 
-(defmacro resolve-socials [] (get-socials))
+(defmacro resolve-socials 
+  [size type] 
+  (println "rere" size type)
+  (get-socials size type))

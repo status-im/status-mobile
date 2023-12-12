@@ -9,30 +9,17 @@
    [:cat
     [:map {:closed true}
      [:accessibility-label {:optional true} [:or keyword? string?]]
-     [:size {:optional true :default 32} [:or keyword? pos-int?]]
+     [:size {:optional true :default :default} [:or keyword? string?]]
+     [:type {:optional true :default :default} [:or keyword? string?]]
      [:social {:optional true} [:or keyword? string?]]
-     [:style {:optional true} map?]
-     ;; Ignores `social` and uses this as parameter to `rn/image`'s source.
-     [:image-source {:optional true} [:or string? map?]]
-     ;; If true, adds `data:image/png;base64,` as prefix to the string passed as `image-source`
-     [:add-b64-prefix? {:optional true} boolean?]]]
+     [:style {:optional true} map?]]]
    :any])
 
-(defn- size->number
-  "Remove `size-` prefix in size keywords and returns a number useful for styling."
-  [size]
-  (-> size name (subs 5) utils.number/parse-int))
-
 (defn- social-style
-  [style size]
-  (let [size-number (if (keyword? size)
-                      (size->number size)
-                      size)]
+  [style]
     (assoc style
-           :width  size-number
-           :height size-number)))
-
-(def ^:private b64-png-image-prefix "data:image/png;base64,")
+           :width  20
+           :height 20))
 
 (defn view-internal
   "Render a social image.
@@ -43,19 +30,14 @@
    - social:             string or keyword, it can contain upper case letters or not.
                          E.g. all of these are valid and resolve to the same:
                          :social/github | :github | :GITHUB | \"GITHUB\" | \"github\".
-   - image-source:       Ignores `social` and uses this as parameter to `rn/image`'s source.
-   - add-b64-prefix?:    If true, adds `data:image/png;base64,` as prefix to the string
-                         passed as `image-source`.
   "
-  [{:keys [social size style image-source add-b64-prefix? accessibility-label]
-    :or   {size 20}}]
-  (let [b64-string (if (and image-source add-b64-prefix?)
-                     (str b64-png-image-prefix image-source)
-                     image-source)
-        source     (or b64-string (social-loader/get-social-image social))]
+  [{:keys [social size style accessibility-label type]
+    :or   {size :default
+           type :default}}]
+  (let [source (social-loader/get-social-image social size type)]
     [rn/image
      {:accessibility-label accessibility-label
-      :style               (social-style style size)
+      :style               (social-style style)
       :source              source}]))
 
 (def view (schema/instrument #'view-internal ?schema))
