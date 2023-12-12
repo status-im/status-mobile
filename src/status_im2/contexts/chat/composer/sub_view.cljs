@@ -4,7 +4,6 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im2.config :as config]
     [status-im2.contexts.chat.composer.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -40,8 +39,6 @@
       [quo/floating-shell-button
        {:jump-to
         {:on-press            (fn []
-                                (when config/shell-navigation-disabled?
-                                  (rf/dispatch [:chat/close true]))
                                 (rf/dispatch [:shell/navigate-to-jump-to]))
          :customization-color customization-color
          :label               (i18n/label :t/jump-to)

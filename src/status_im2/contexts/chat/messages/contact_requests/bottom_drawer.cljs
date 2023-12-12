@@ -2,7 +2,6 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
@@ -40,8 +39,6 @@
      [quo/floating-shell-button
       {:jump-to
        {:on-press            (fn []
-                               (when config/shell-navigation-disabled?
-                                 (rf/dispatch [:chat/close true]))
                                (rf/dispatch [:shell/navigate-to-jump-to]))
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}

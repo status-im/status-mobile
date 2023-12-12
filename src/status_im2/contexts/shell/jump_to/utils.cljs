@@ -6,7 +6,6 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [status-im2.config :as config]
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     [status-im2.contexts.shell.jump-to.state :as state]
     [utils.re-frame :as rf]))
@@ -120,8 +119,7 @@
 ;;; Navigation
 (defn shell-navigation?
   [view-id]
-  (when-not config/shell-navigation-disabled?
-    (some #{view-id} shell.constants/floating-screens)))
+  (some #{view-id} shell.constants/floating-screens))
 
 (defn calculate-view-id
   []

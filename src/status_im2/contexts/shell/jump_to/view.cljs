@@ -1,9 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.view
   (:require
     [quo.core :as quo]
-    re-frame.db
     [react-native.core :as rn]
-    [status-im2.config :as config]
     [status-im2.contexts.shell.jump-to.animation :as animation]
     [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
     [status-im2.contexts.shell.jump-to.components.floating-screens.view :as floating-screens]
@@ -17,18 +15,12 @@
 
 (defn navigate-back-handler
   []
-  (let [chat-screen-open?     (and config/shell-navigation-disabled?
-                                   (= (get @re-frame.db/app-db :view-id) :chat))
-        open-floating-screens (utils/open-floating-screens)]
-    (if (and (not @navigation.state/curr-modal)
-             (or
-              chat-screen-open?
-              (seq open-floating-screens)))
-      (do
-        (when chat-screen-open? (rf/dispatch [:chat/close]))
-        (rf/dispatch [:navigate-back])
-        true)
-      false)))
+  (if (and (not @navigation.state/curr-modal)
+           (seq (utils/open-floating-screens)))
+    (do
+      (rf/dispatch [:navigate-back])
+      true)
+    false))
 
 (defn floating-button
   [shared-values]
@@ -53,8 +45,7 @@
      [:f> bottom-tabs/f-bottom-tabs]
      [:f> home-stack/f-home-stack]
      [floating-button shared-values]
-     (when-not config/shell-navigation-disabled?
-       [floating-screens/view])]))
+     [floating-screens/view]]))
 
 (defn shell-stack
   []
