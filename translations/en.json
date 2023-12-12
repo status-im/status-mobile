@@ -494,7 +494,7 @@
     "empty-chat-description-community": "It's been quiet here for the last {{quiet-hours}}.",
     "empty-chat-description-public-share-this": "share this chat.",
     "enable": "Enable",
-    "enable-notifications-sub-title": "Receive notifications when somebody sends you a message or crypto to your wallet",
+    "enable-notifications-sub-title": "Receive notifications about your new messages or wallet transactions",
     "encrypt-with-password": "Encrypt with password",
     "ending-not-allowed": "{{ending}} ending is not allowed",
     "ends-with-space": "Cannot end with space",
