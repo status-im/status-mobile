@@ -9,7 +9,6 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im2.common.home.actions.view :as actions]
-    [status-im2.config :as config]
     [status-im2.contexts.chat.messages.list.view :refer [topbar-invisible-scroll-y-value]]
     [status-im2.contexts.chat.messages.navigation.style :as style]
     [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
@@ -115,10 +114,7 @@
         :background          :blur
         :size                32
         :accessibility-label :back-button
-        :on-press            #(do
-                                (when config/shell-navigation-disabled?
-                                  (rf/dispatch [:chat/close]))
-                                (rf/dispatch [:navigate-back]))}
+        :on-press            #(rf/dispatch [:navigate-back])}
        back-icon]
       [reanimated/view
        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}

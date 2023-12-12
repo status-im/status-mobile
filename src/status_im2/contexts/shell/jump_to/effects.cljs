@@ -1,6 +1,5 @@
 (ns status-im2.contexts.shell.jump-to.effects
   (:require
-    [status-im2.config :as config]
     [status-im2.contexts.shell.jump-to.animation :as animation]
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     [status-im2.contexts.shell.jump-to.state :as state]
@@ -15,9 +14,8 @@
 (rf/reg-fx :effects.shell/navigate-to-jump-to
  (fn []
    (animation/close-home-stack false)
-   (when-not config/shell-navigation-disabled?
-     (some-> ^js @state/jump-to-list-ref
-             (.scrollToOffset #js {:y 0 :animated false})))))
+   (some-> ^js @state/jump-to-list-ref
+           (.scrollToOffset #js {:y 0 :animated false}))))
 
 ;; Note - pop-to-root resets currently opened screens to `close-screen-without-animation`.
 ;; This might take some time. So don't directly merge the effect of `pop-to-root` and
