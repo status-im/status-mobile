@@ -210,6 +210,7 @@
         :card-style          style/login-profile-card}]
       [standard-authentication/password-input
        {:shell?              true
+        :blur?               true
         :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
                                (fn []
                                  (rf/dispatch [:biometric/authenticate
