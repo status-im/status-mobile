@@ -34,13 +34,15 @@
  :wallet/network-details
  :<- [:wallet/filtered-networks-by-mode false]
  (fn [networks]
-   (keep
-    (fn [{:keys [chain-id related-chain-id test?]}]
-      (let [network-details (get network-list (if test? related-chain-id chain-id))]
-        (assoc network-details
-               :chain-id         chain-id
-               :related-chain-id related-chain-id)))
-    networks)))
+   (->> networks
+        (keep
+         (fn [{:keys [chain-id related-chain-id layer test?]}]
+           (let [network-details (get network-list (if test? related-chain-id chain-id))]
+             (assoc network-details
+                    :chain-id         chain-id
+                    :related-chain-id related-chain-id
+                    :layer            layer))))
+        (sort-by (juxt :layer :short-name)))))
 
 (re-frame/reg-sub
  :wallet/network-details-by-chain-id
