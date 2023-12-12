@@ -24,7 +24,7 @@
     "add-members": "增添成員",
     "photos-access-error": "要授予所需的照片許可，請轉到系統設置，並確保選擇“狀態“>“照片“。",
     "done": "完成",
-    "delete-chat": "刪除對話",
+    "close-chat": "刪除對話",
     "new-group-chat": "新增群聊",
     "sign-in": "登入",
     "datetime-yesterday": "昨天",

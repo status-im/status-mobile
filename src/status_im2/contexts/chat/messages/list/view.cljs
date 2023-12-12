@@ -174,12 +174,6 @@
   [props]
   [:f> f-list-footer-avatar props])
 
-;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
-(defn- add-inverted-y-android
-  [style]
-  (cond-> style
-    platform/android?
-    (assoc :scale-y -1)))
 
 (defn actions
   [chat-id cover-bg-color]
@@ -236,7 +230,7 @@
                                                      [30 50]
                                                      [card-border-radius 0]
                                                      header-extrapolation-option)]
-    [rn/view (add-inverted-y-android {:flex 1})
+    [rn/view {:flex 1}
      [rn/view
       {:style     (style/header-container all-loaded? theme)
        :on-layout on-layout}
@@ -287,8 +281,7 @@
    {:keys [context keyboard-shown?]}]
   (when (not= content-type constants/content-type-contact-request)
     [rn/view
-     (add-inverted-y-android
-      {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+     {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)}
      (cond
        (= type :datemark)
        [quo/divider-date value]
@@ -449,11 +442,10 @@
                     (on-scroll event show-floating-scroll-down-button?))
        :content-container-style {:justify-content :flex-end
                                  :min-height      @messages-view-height}
-       :style (add-inverted-y-android
-               {:background-color (colors/theme-colors
+       :style                {:background-color (colors/theme-colors
                                    colors/white
                                    colors/neutral-95
-                                   theme)})
+                                   theme)}
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted (when platform/ios? true)
        :on-layout (fn [e]

@@ -52,7 +52,7 @@
           :accessibility-label accessibility-label}
          [quo/text
           {:weight :semi-bold
-           :size   :heading-1} title]
+           :size   :heading-2} title]
          [rn/view {:style (style/context-container)}
           [avatar group-chat color display-name photo-path]
           [quo/text

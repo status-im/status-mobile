@@ -5,6 +5,7 @@
     [re-frame.core :as re-frame]
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
+    [schema.core :as schema]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
@@ -15,14 +16,6 @@
 (def domains
   {:external "https://status.app"
    :internal "status-app:/"})
-
-(def links
-  {:private-chat       "%s/p/%s"
-   :community-requests "%s/cr/%s"
-   :community          "%s/c#%s"
-   :group-chat         "%s/g/%s"
-   :user               "%s/u#%s"
-   :browse             "%s/b/%s"})
 
 (rf/defn handle-browse
   [_ {:keys [url]}]
@@ -182,6 +175,61 @@
     (rf/merge cofx
               {:db (dissoc db :universal-links/url)}
               (handle-url url))))
+
+(defn generate-profile-url
+  ([cofx] (generate-profile-url cofx nil))
+  ([{:keys [db]} [{:keys [public-key cb]}]]
+   (let [profile-public-key (get-in db [:profile/profile :public-key])
+         profile?           (or (not public-key) (= public-key profile-public-key))
+         ens-name?          (if profile?
+                              (get-in db [:profile/profile :ens-name?])
+                              (get-in db [:contacts/contacts public-key :ens-name]))
+         public-key         (if profile? profile-public-key public-key)]
+     (when public-key
+       {:json-rpc/call
+        [{:method     (if ens-name? "wakuext_shareUserURLWithENS" "wakuext_shareUserURLWithData")
+          :params     [public-key]
+          :on-success (fn [url]
+                        (rf/dispatch [:universal-links/save-profile-url public-key url])
+                        (when (fn? cb) (cb)))
+          :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
+                                  {:error      %
+                                   :public-key public-key})}]}))))
+
+(schema/=> generate-profile-url
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema
+      [:?
+       [:map
+        [:public-key {:optional true} :schema.common/public-key]
+        [:cb {:optional true} fn?]]]]]]
+   [:map
+    [:json-rpc/call :schema.common/rpc-call]]])
+
+(rf/reg-event-fx :universal-links/generate-profile-url generate-profile-url)
+
+(defn save-profile-url
+  [{:keys [db]} [public-key url]]
+  (when url
+    {:db
+     (cond-> db
+       (get-in db [:contacts/contacts public-key])
+       (assoc-in [:contacts/contacts public-key :universal-profile-url] url)
+       (= public-key (get-in db [:profile/profile :public-key]))
+       (assoc-in [:profile/profile :universal-profile-url] url))}))
+
+(schema/=> save-profile-url
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:cat :schema.common/public-key :string]]]]
+   [:maybe :map]])
+
+(rf/reg-event-fx :universal-links/save-profile-url save-profile-url)
 
 (defn unwrap-js-url
   [e]

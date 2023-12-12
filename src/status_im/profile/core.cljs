@@ -3,10 +3,8 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [status-im.ui.components.list-selection :as list-selection]
     [status-im.ui.components.react :as react]
-    [utils.re-frame :as rf]
-    [utils.universal-links :as universal-links]))
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :copy-to-clipboard
@@ -36,12 +34,6 @@
                                          (- opacity 0.05)))))))
                           100)]
          (swap! tooltips assoc tooltip-id {:opacity 1.0 :interval-id interval-id :cnt 0}))))))
-
-(re-frame/reg-fx
- :profile/share-profile-link
- (fn [contact-code]
-   (let [link (universal-links/generate-link :user :external contact-code)]
-     (list-selection/open-share {:message link}))))
 
 (rf/defn finish-success
   {:events [:my-profile/finish-success]}
@@ -80,11 +72,6 @@
   {:events [:show-tooltip]}
   [_ tooltip-id]
   {:show-tooltip tooltip-id})
-
-(rf/defn share-profile-link
-  {:events [:profile/share-profile-link]}
-  [_ value]
-  {:profile/share-profile-link value})
 
 (rf/defn show-profile
   {:events [:chat.ui/show-profile]}

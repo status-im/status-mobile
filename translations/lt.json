@@ -37,7 +37,7 @@
     "photos-access-error": "Norėdami suteikti reikalingą leidimą fotografuoti, eikite į savo sistemos nustatymus ir įsitikinkite, kad pasirinktas Status > Photo.",
     "hash": "Hash",
     "done": "Baigta",
-    "delete-chat": "Trinti pokalbį",
+    "close-chat": "Trinti pokalbį",
     "new-group-chat": "Naujas grupinis pokalbis",
     "wallet": "Piniginė",
     "wallet-request": "Užklausa",
