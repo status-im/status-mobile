@@ -83,7 +83,6 @@
        [enable-notifications-simple])
      [enable-notification-buttons {:insets insets}]]))
 
-
 (defn view
   []
   [:f> f-enable-notifications])
