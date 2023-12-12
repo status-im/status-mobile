@@ -242,6 +242,7 @@
 
 (defn- internal-discover-view
   [params]
+  (rf/dispatch [:fetch-contract-communities])
   [:f> f-view-internal params])
 
 (def view (quo.theme/with-theme internal-discover-view))
