@@ -210,7 +210,7 @@
                  :animations             (merge transitions/new-to-status-modal-animations
                                                 transitions/push-animations-for-transparent-background)
                  :modalPresentationStyle :overCurrentContext}
-     :component enable-notifications/enable-notifications}
+     :component enable-notifications/view}
 
     {:name      :identifiers
      :component identifiers/view
