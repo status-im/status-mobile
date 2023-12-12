@@ -1,0 +1,9 @@
+<resources>
+    <string name="status_service">Status Background Service</string>
+    <string name="stop">STOP</string>
+    <string name="tap_to_hide_notification">Tap to hide this notification permanently</string>
+    <string name="keep_status_running">Keep Status running to receive notifications</string>
+    <string name="background_service_opened">Background service for notifications is running</string>
+    <string name="channel_description">Get notifications on new messages and mentions</string>
+</resources>
+
