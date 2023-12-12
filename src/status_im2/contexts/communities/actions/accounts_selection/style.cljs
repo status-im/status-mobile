@@ -11,8 +11,9 @@
   {:padding-vertical   12
    :padding-horizontal screen-horizontal-padding})
 
-(def content
-  {:margin-bottom      20
+(def section-title
+  {:padding-top        12
+   :padding-bottom     4
    :padding-horizontal screen-horizontal-padding})
 
 (defn bottom-actions

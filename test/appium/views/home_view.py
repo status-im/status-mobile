@@ -276,7 +276,7 @@ class HomeView(BaseView):
 
         # Options on long tap
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
-        self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
+        self.delete_chat_button = Button(self.driver, translation_id="close-chat")
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history")
         self.mute_chat_button = MuteButton(self.driver, accessibility_id="mute-chat")
         self.mute_community_button = MuteButton(self.driver, accessibility_id="mute-community")

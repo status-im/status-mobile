@@ -7,11 +7,11 @@
     [status-im.chat.models.loading :as loading]
     [status-im.data-store.chats :as chats-store]
     [status-im2.common.muting.helpers :refer [format-mute-till]]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
     status-im2.contexts.chat.effects
     status-im2.contexts.chat.lightbox.events
+    status-im2.contexts.chat.messages.content.reactions.events
     [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.state :as chat.state]
@@ -152,7 +152,7 @@
                        (update :chats-home-list disj chat-id)
                        (assoc :current-chat-id nil))
     :json-rpc/call [{:method     "wakuext_deactivateChat"
-                     :params     [{:id chat-id}]
+                     :params     [{:id chat-id :preserveHistory true}]
                      :on-success #()
                      :on-error   #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)))
@@ -167,7 +167,7 @@
 
 (rf/defn close-chat
   {:events [:chat/close]}
-  [{:keys [db] :as cofx} navigate-to-shell?]
+  [{:keys [db] :as cofx}]
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (rf/merge cofx
@@ -176,15 +176,7 @@
                                                (dissoc :current-chat-id)
                                                (assoc-in [:chat/inputs chat-id :focused?] false))
                 :effects.async-storage/set {:chat-id nil
-                                            :key-uid nil}}
-               (let [community-id (get-in db [:chats chat-id :community-id])]
-                 ;; When navigating back from community chat to community, update switcher card
-                 ;; A close chat event is also called while opening any chat.
-                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n
-                 ;; is used here.
-                 (when (and community-id config/shell-navigation-disabled? (not navigate-to-shell?))
-                   {:dispatch-n [[:shell/add-switcher-card
-                                  :community-overview community-id]]})))
+                                            :key-uid nil}})
               (link-preview/reset-all)
               (delete-for-me/sync-all)
               (delete-message/send-all)
@@ -218,7 +210,7 @@
             {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
             (when-not (#{:community :community-overview :shell} (:view-id db))
               (navigation/pop-to-root :shell-stack))
-            (close-chat false)
+            (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id)})
@@ -282,9 +274,9 @@
                               :on-error   #(log/error "failed to clear history " chat-id %)}]}
             (clear-history chat-id remove-chat?)))
 
-(rf/defn remove-chat
-  "Removes chat completely from app, producing all necessary effects for that"
-  {:events [:chat.ui/remove-chat]}
+(rf/defn close-and-remove-chat
+  "Closes the chat and removes it from chat list while retaining history, producing all necessary effects for that"
+  {:events [:chat.ui/close-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
             {:effects/push-notifications-clear-message-notifications [chat-id]
@@ -383,15 +375,15 @@
                             (rf/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn show-remove-chat-confirmation
-  {:events [:chat.ui/show-remove-confirmation]}
+  {:events [:chat.ui/show-close-confirmation]}
   [_ chat-id]
   {:ui/show-confirmation
    {:title               (i18n/label :t/delete-confirmation)
-    :content             (i18n/label :t/delete-chat-confirmation)
+    :content             (i18n/label :t/close-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
                             (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
+                            (rf/dispatch [:chat.ui/close-chat chat-id]))}})
 
 (rf/defn navigate-to-user-pinned-messages
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

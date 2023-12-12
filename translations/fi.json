@@ -24,7 +24,7 @@
     "add-members": "Lisää käyttäjiä",
     "photos-access-error": "Myöntääksesi vaadittu kuvien käyttölupa, siirry järjestelmäasetuksiin ja varmista, että Status > Kuvat on valittu.",
     "done": "Valmis",
-    "delete-chat": "Poista keskustelu",
+    "close-chat": "Poista keskustelu",
     "new-group-chat": "Uusi ryhmäkeskustelu",
     "sign-in": "Luo tili",
     "datetime-yesterday": "eilen",

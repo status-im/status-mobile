@@ -25,7 +25,6 @@
     [status-im2.contexts.profile.settings.events :as profile.settings.events]
     [status-im2.contexts.push-notifications.events :as notifications]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
-    [status-im2.contexts.wallet.events :as wallet]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
@@ -85,7 +84,9 @@
                               :networks/current-network current-network
                               :networks/networks        (merge networks config/default-networks-by-id)
                               :profile/profile          (merge profile-overview settings))
-                       (assoc-in [:wallet :ui :tokens-loading?] true))}
+                       (assoc-in [:wallet :ui :tokens-loading?] true))
+               :fx [[:dispatch [:wallet/get-ethereum-chains]]
+                    [:dispatch [:universal-links/generate-profile-url]]]}
               (notifications/load-preferences)
               (data-store.chats/fetch-chats-preview
                {:on-success
@@ -100,7 +101,6 @@
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count)
-              (wallet/get-ethereum-chains)
               (redirect-to-root))))
 
 ;; login phase 2, we want to load and show chats faster so we split login into 2 phases

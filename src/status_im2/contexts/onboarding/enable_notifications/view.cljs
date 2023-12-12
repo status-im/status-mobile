@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.onboarding.enable-notifications.style :as style]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -25,6 +26,11 @@
      [quo/button
       {:on-press            (fn []
                               (shell.utils/change-selected-stack-id :communities-stack true nil)
+                              (rf/dispatch
+                               [:request-permissions
+                                {:permissions [:post-notifications]
+                                 :on-allowed  #(log/info "push notification permissions were allowed")
+                                 :on-denied   #(log/error "user denied push notification permissions")}])
                               (rf/dispatch [:push-notifications/switch true platform/ios?])
                               (rf/dispatch [:navigate-to-within-stack
                                             [:welcome :enable-notifications]]))

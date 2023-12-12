@@ -24,7 +24,7 @@
     "add-members": "Agregar miembros",
     "photos-access-error": "Para permitir el acceso a fotos, porfavor, ve a configuración de sistema y asegúrate que la opción 'Status > Fotos' está seleccionada.",
     "done": "Listo",
-    "delete-chat": "Eliminar chat",
+    "close-chat": "Eliminar chat",
     "new-group-chat": "Nuevo grupo de chat",
     "sign-in": "Regístrate",
     "datetime-yesterday": "ayer",

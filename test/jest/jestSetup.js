@@ -3,13 +3,19 @@ const { NativeModules } = require('react-native');
 
 require('@react-native-async-storage/async-storage/jest/async-storage-mock');
 require('react-native-gesture-handler/jestSetup');
-require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
+require('react-native-reanimated/src/reanimated2/jestUtils').setUpTests();
 
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
 jest.mock('react-native-navigation', () => ({
   getNavigationConstants: () => ({ constants: [] }),
-  Navigation: { constants: async () => {} },
+  Navigation: {
+    constants: async () => ({
+      statusBarHeight: 10,
+      topBarHeight: 10,
+      bottomTabsHeight: 10,
+    }),
+  },
 }));
 
 jest.mock('react-native-background-timer', () => ({}));

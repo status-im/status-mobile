@@ -12,3 +12,5 @@
 (def ios? (= os "ios"))
 
 (def low-device? (and android? (< version 29)))
+
+(def is-below-android-13? (and android? (< version 33)))
