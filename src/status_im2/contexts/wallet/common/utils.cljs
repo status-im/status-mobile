@@ -9,13 +9,13 @@
   (first (string/split full-name #" ")))
 
 (defn prettify-balance
-  [balance]
+  [currency-symbol balance]
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
       (if valid-balance? $ 0)
       (.toFixed $ 2)
-      (str "$" $))))
+      (str currency-symbol $))))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -60,15 +60,18 @@
 
 (defn total-token-fiat-value
   "Returns the total token fiat value taking into account all token's chains."
-  [{:keys [market-values-per-currency] :as token}]
-  (let [usd-price                 (-> market-values-per-currency :usd :price)
+  [currency {:keys [market-values-per-currency] :as token}]
+  (let [price                     (get-in market-values-per-currency
+                                          [currency :price]
+                                          (get-in market-values-per-currency
+                                                  [constants/profile-default-currency :price]))
         total-units-in-all-chains (total-token-units-in-all-chains token)]
-    (money/crypto->fiat total-units-in-all-chains usd-price)))
+    (money/crypto->fiat total-units-in-all-chains price)))
 
 (defn calculate-balance-for-account
-  [{:keys [tokens] :as _account}]
+  [currency {:keys [tokens] :as _account}]
   (->> tokens
-       (map total-token-fiat-value)
+       (map #(total-token-fiat-value currency %))
        (reduce money/add)))
 
 (defn network-list
