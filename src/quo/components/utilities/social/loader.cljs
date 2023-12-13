@@ -7,8 +7,8 @@
 (defn get-social-image
   [social]
   (if-let [res (get socials social)]
-     res
-     (do
-       (log/error "could not find source for " social " social icon")
-       nil)))
+    res
+    (do
+      (log/error "could not find source for " social " social icon")
+      nil)))
 
