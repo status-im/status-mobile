@@ -9,7 +9,8 @@
   (rf/merge cofx
             {:copy-to-clipboard text-to-copy}
             (toasts/upsert
-             {:id         :successful-copy-toast-message
+             {:icon       :i/correct
+              :id         :successful-copy-toast-message
               :type       :positive
               :theme      :dark
               :text       post-copy-message})))
