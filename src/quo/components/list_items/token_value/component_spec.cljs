@@ -7,6 +7,7 @@
   (h/test "Token label renders"
     (h/render [token-value/view
                {:token               :snt
+                :token-name          "Status"
                 :state               :default
                 :status              :empty
                 :customization-color :blue
@@ -20,6 +21,7 @@
   (h/test "Status change"
     (h/render [token-value/view
                {:token               :snt
+                :token-name          "Status"
                 :state               :default
                 :status              :positive
                 :customization-color :blue
