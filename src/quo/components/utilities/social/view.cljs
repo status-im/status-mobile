@@ -11,7 +11,7 @@
      [:accessibility-label {:optional true} [:or keyword? string?]]
      [:size {:optional true :default :default} [:or keyword? string?]]
      [:type {:optional true :default :default} [:or keyword? string?]]
-     [:social {:optional true} [:or keyword? string?]]
+     [:social [:or keyword? string?]]
      [:style {:optional true} map?]]]
    :any])
 
