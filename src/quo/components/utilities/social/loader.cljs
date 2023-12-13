@@ -1,18 +1,16 @@
 (ns quo.components.utilities.social.loader
   (:require-macros [quo.components.utilities.social.loader :as loader])
-  (:require [clojure.string :as string]))
+  (:require [taoensso.timbre :as log]))
 
-(defn socials
-  [size type]
-  (loader/resolve-socials size "default"))
+(def socials
+  (loader/resolve-socials))
 
-(defn- get-social-image*
-  [social size type]
-  (let [social-symbol (cond-> social
-                        (keyword? social) name
-                        :always           string/lower-case)
-        symbols  (socials "bigger" type)]
-    (println "symbols" symbols)
-    (get symbols social-symbol)))
+(defn get-social-image
+  [social]
+  (prn "SOCIAL" socials)
+  (if-let [res (get socials social)]
+     res
+     (do
+       (log/error "could not find source for " social " social icon")
+       nil)))
 
-(def get-social-image (memoize get-social-image*))

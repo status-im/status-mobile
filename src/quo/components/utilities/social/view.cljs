@@ -17,16 +17,16 @@
 
 (defn- social-style
   [style]
-    (assoc style
-           :width  20
-           :height 20))
+  (assoc style
+         :width  20
+         :height 20))
 
 (defn view-internal
   "Render a social image.
    Props:
    - accessibility-label accessibility-label to the rn/image
    - style:              extra styles to apply to the `rn/image` component.
-   - size:               `:size-nn` or just `nn`, being `nn` any number. Defaults to 32.
+   - size:               `:default` or :bigger
    - social:             string or keyword, it can contain upper case letters or not.
                          E.g. all of these are valid and resolve to the same:
                          :social/github | :github | :GITHUB | \"GITHUB\" | \"github\".
@@ -34,10 +34,11 @@
   [{:keys [social size style accessibility-label type]
     :or   {size :default
            type :default}}]
-  (let [source (social-loader/get-social-image social size type)]
+  (let [source (social-loader/get-social-image (str (name social) (name size) (name type)))]
     [rn/image
      {:accessibility-label accessibility-label
       :style               (social-style style)
       :source              source}]))
+
 
 (def view (schema/instrument #'view-internal ?schema))

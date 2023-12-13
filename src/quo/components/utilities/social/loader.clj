@@ -3,40 +3,38 @@
             [clojure.java.io :as io]
             [clojure.string :as string]))
 
-(defn- social-path
-  [size type]
-  (println (str "./resources/images/socials/" size "/" type))
-  (str "./resources/images/socials/" size "/" type))
+(def ^:private icon-path "./resources/images/socials/")
 
-(defn- clean-filename
-  "Return a (string) filename without the .png extension and @<number>x suffix."
-  [file]
-  (first (string/split (str file) #"@|\.png")))
+(defn- require-icon
+  [size path social-type]
+  (fn [el]
+    (let [s (str "." path el ".png")
+          k (-> el
+                (string/replace "_" "-")
+                (string/replace " " "-")
+                (string/lower-case)
+                (str size)
+                (str social-type))]
+      [k `(js/require ~s)])))
 
-(defn- get-js-require
-  [filename]
-  (let [require-path (str "." filename ".png")]
-    `(js/require ~require-path)))
+(defn- get-files
+  [path]
+  (->> (io/file path)
+       file-seq
+       (filter #(string/ends-with? % "png"))
+       (map #(first (string/split (.getName %) #"@")))
+       distinct))
 
-(defn- get-file-key
-  [filename]
-  (-> filename
-      (string/split #"\/")
-      (peek)
-      (string/lower-case)))
+(defn- get-socials
+  [size social-type]
+  (let [path (str icon-path size "/" social-type "/")]
+    (into {} (map (require-icon size path social-type) (get-files path)))))
 
-(defn get-socials
-  [size type]
-  (println "here" size type)
-  (let [files         (file-seq (io/file (social-path size type)))
-        png-filenames (keep (fn [file]
-                              (when (string/ends-with? file "png")
-                                (clean-filename file)))
-                            files)]
-    (zipmap (map get-file-key png-filenames)
-            (map get-js-require png-filenames))))
 
-(defmacro resolve-socials 
-  [size type] 
-  (println "rere" size type)
-  (get-socials size type))
+(defmacro resolve-socials
+  []
+  (merge
+   (get-socials "default" "default")
+   (get-socials "bigger" "default")
+   (get-socials "default" "solid")
+   (get-socials "bigger" "solid")))
