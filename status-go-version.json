@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "chore/storenode-requests-manager",
+    "commit-sha1": "43d7c93cb6c1aeb414adc3f3f6e6f6e173d98c7a",
+    "src-sha256": "03va3x6q50kzb2g0kvqyqh3zpix0nlz1v5089sz24hq4k7bidz36"
+}
