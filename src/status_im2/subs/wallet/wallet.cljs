@@ -130,7 +130,7 @@
         market-values                     (:usd market-values-per-currency)
         {:keys [price change-pct-24hour]} market-values
         fiat-change                       (utils/calculate-fiat-change crypto-value change-pct-24hour)]
-    (when (and crypto-value (not (empty? (:name item))))
+    (when (and crypto-value (seq (:name item)))
       {:token               (keyword (string/lower-case (:symbol item)))
        :token-name          (:name item)
        :state               :default

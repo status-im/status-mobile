@@ -39,14 +39,14 @@
 (defn temp-empty-symbol
   [token size]
   [rn/view
-   {:style (merge (token-style {:justify-content :center
-                                :align-items     :center
-                                :border-radius   20
-                                :border-width    1
-                                :border-color    :grey}
-                               size))}
-   [quo/text
-    {:style {:color :grey}} (string/capitalize (first (name token)))]])
+   {:style (token-style {:justify-content :center
+                         :align-items     :center
+                         :border-radius   20
+                         :border-width    1
+                         :border-color    :grey}
+                        size)}
+   [quo/text {:style {:color :grey}}
+    (string/capitalize (first (name token)))]])
 
 (defn view-internal
   "Render a token image.
