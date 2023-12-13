@@ -121,7 +121,7 @@
                                                                           "failed to start messenger")}]
               :check-eip1559-activation                   {:network-id network-id}
               :effects.profile/enable-local-notifications nil
-              :dispatch-n                                 [:wallet/get-accounts]}
+              :dispatch-n                                 [[:wallet/get-accounts]]}
        (not (:universal-links/handling db))
        (assoc :effects.chat/open-last-chat (get-in db [:profile/profile :key-uid]))
        notifications-enabled?
