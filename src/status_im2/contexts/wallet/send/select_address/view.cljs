@@ -128,7 +128,9 @@
          {:content-container-style      style/container
           :keyboard-should-persist-taps :handled
           :scroll-enabled               false}
-         [account-switcher/view {:on-press on-close}]
+         [account-switcher/view
+          {:on-press      on-close
+           :switcher-type :select-account}]
          [quo/text-combinations
           {:title                     (i18n/label :t/send-to)
            :container-style           style/title-container

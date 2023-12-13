@@ -79,10 +79,10 @@
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
  (fn [[accounts balances tokens-loading?]]
-   (mapv (fn [{:keys [color address type] :as account}]
+   (mapv (fn [{:keys [color address watch-only?] :as account}]
            (assoc account
                   :customization-color color
-                  :type                (if (= type :watch) :watch-only :empty)
+                  :type                (if watch-only? :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
                   :loading?            tokens-loading?
                   :balance             (utils/prettify-balance (get balances address))))
@@ -123,6 +123,12 @@
  :<- [:wallet/current-viewing-account-address]
  (fn [[accounts current-viewing-account-address]]
    (remove #(= (:address %) current-viewing-account-address) accounts)))
+
+(rf/reg-sub
+ :wallet/accounts-without-watched-accounts
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (remove #(:watch-only? %) accounts)))
 
 (defn- calc-token-value
   [{:keys [market-values-per-currency] :as item} chain-id]

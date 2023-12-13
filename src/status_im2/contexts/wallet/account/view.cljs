@@ -35,8 +35,7 @@
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-      (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
-            watch-only?                       (= type :watch)]
+      (let [{:keys [name color balance watch-only?]} (rf/sub [:wallet/current-viewing-account])]
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
