@@ -282,14 +282,14 @@
    (let [color-set (case set-type
                      :socials colors/socials
                      colors/customization)]
-   (merge {:key     :customization-color
-           :type    :select
-           :options (->> (merge color-set (when feng-shui? {:feng-shui nil}))
-                         keys
-                         sort
-                         (map (fn [k]
-                                {:key k :value (string/capitalize (name k))})))}
-          opts))))
+     (merge {:key     :customization-color
+             :type    :select
+             :options (->> (merge color-set (when feng-shui? {:feng-shui nil}))
+                           keys
+                           sort
+                           (map (fn [k]
+                                  {:key k :value (string/capitalize (name k))})))}
+            opts))))
 
 (defn blur-view
   [{:keys [show-blur-background? image height blur-view-props style theme]} & children]
