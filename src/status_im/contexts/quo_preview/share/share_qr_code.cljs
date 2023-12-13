@@ -116,7 +116,6 @@
                                           :wallet-legacy     wallet-legacy-descriptor
                                           :wallet-multichain wallet-multichain-descriptor
                                           nil))]
-        (println "xxx" qr-url)
         [preview/preview-container
          {:state                     state
           :descriptor                typed-descriptor
