@@ -26,7 +26,8 @@
    Props:
    - accessibility-label accessibility-label to the rn/image
    - style:              extra styles to apply to the `rn/image` component.
-   - size:               `:default` or :bigger
+   - size:               `:default` or `:bigger`
+   - type:               `:default` or `:solid`
    - social:             string or keyword, it can contain upper case letters or not.
                          E.g. all of these are valid and resolve to the same:
                          :social/github | :github | :GITHUB | \"GITHUB\" | \"github\".

@@ -2,12 +2,10 @@
   (:require-macros [quo.components.utilities.social.loader :as loader])
   (:require [taoensso.timbre :as log]))
 
-(def socials
-  (loader/resolve-socials))
+(def socials (loader/resolve-socials))
 
 (defn get-social-image
   [social]
-  (prn "SOCIAL" socials)
   (if-let [res (get socials social)]
      res
      (do
