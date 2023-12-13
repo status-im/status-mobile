@@ -291,7 +291,8 @@ class ChatElementByText(Text):
         try:
             self.driver.info("Trying to access image inside message with text '%s'" % self.message_text)
             ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
-            return Button(self.driver, xpath="%s//*[@content-desc='image-message']" % self.locator)
+            return Button(self.driver,
+                          xpath="%s//android.widget.ImageView[@content-desc='image-message']" % self.locator)
         except NoSuchElementException:
             self.driver.fail("No image is found in message!")
 
@@ -763,7 +764,7 @@ class ChatView(BaseView):
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)
-        self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
+        self.delete_chat_button = Button(self.driver, translation_id="close-chat")
         self.clear_history_button = Button(self.driver, translation_id="clear-history")
         self.reply_message_button = Button(self.driver, translation_id="message-reply")
         self.share_chat_button = Button(self.driver, accessibility_id="share-chat-button")

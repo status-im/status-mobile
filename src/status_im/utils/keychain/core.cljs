@@ -6,10 +6,6 @@
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
-(def auth-method-biometric "biometric")
-(def auth-method-biometric-prepare "biometric-prepare")
-(def auth-method-none "none")
-
 (defn- whisper-key-name
   [address]
   (str address "-whisper"))

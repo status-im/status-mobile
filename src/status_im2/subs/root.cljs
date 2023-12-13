@@ -13,6 +13,7 @@
     status-im2.subs.shell
     status-im2.subs.wallet.collectibles
     status-im2.subs.wallet.networks
+    status-im2.subs.wallet.send
     status-im2.subs.wallet.wallet))
 
 (defn reg-root-key-sub
@@ -99,7 +100,7 @@
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :chats-home-list :chats-home-list)
 (reg-root-key-sub :chats/recording? :chats/recording?)
-(reg-root-key-sub :chat/reactions-authors :chat/reactions-authors)
+(reg-root-key-sub :reactions/authors :reactions/authors)
 
 ;;chat images lightbox
 (reg-root-key-sub :lightbox/exit-signal :lightbox/exit-signal)

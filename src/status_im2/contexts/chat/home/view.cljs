@@ -65,7 +65,8 @@
         :on-end-reached                    #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps      :always
         :data                              items
-        :render-fn                         chat-list-item/chat-list-item
+        :render-fn                         (fn [item]
+                                             (chat-list-item/chat-list-item item theme))
         :scroll-event-throttle             8
         :content-container-style           {:padding-bottom
                                             jump-to.constants/floating-shell-button-height}

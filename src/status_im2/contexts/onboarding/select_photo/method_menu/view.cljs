@@ -2,6 +2,9 @@
   (:require
     ["react-native-image-crop-picker" :default image-picker]
     [quo.core :as quo]
+    [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -61,8 +64,26 @@
    [[{:icon                :i/camera
       :accessibility-label :take-photo-button
       :label               (i18n/label :t/profile-pic-take)
-      :on-press            #(take-pic update-profile-pic-callback)}
+      :on-press            (fn []
+                             (permissions/request-permissions
+                              {:permissions [(if platform/is-below-android-13?
+                                               :read-external-storage
+                                               :read-media-images)
+                                             :write-external-storage]
+                               :on-allowed  (fn [] (take-pic update-profile-pic-callback))
+                               :on-denied   (fn []
+                                              (log/info
+                                               "user has denied permissions to click picture"))}))}
      {:icon                :i/image
       :accessibility-label :select-from-gallery-button
       :label               (i18n/label :t/profile-pic-pick)
-      :on-press            #(pick-pic update-profile-pic-callback)}]]])
+      :on-press            (fn []
+                             (permissions/request-permissions
+                              {:permissions [(if platform/is-below-android-13?
+                                               :read-external-storage
+                                               :read-media-images)
+                                             :write-external-storage]
+                               :on-allowed  (fn [] (pick-pic update-profile-pic-callback))
+                               :on-denied   (fn []
+                                              (log/info "user has denied permissions to select picture"))
+                              }))}]]])

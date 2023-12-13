@@ -45,6 +45,7 @@
     {:db (update-in db [:chats chat-id] merge chat)}))
 
 (rf/defn load-chat
+  {:events [:chats-list/load-chat]}
   [_ chat-id]
   {:json-rpc/call [{:method     "wakuext_chat"
                     :params     [chat-id]
@@ -177,7 +178,7 @@
         (when (or first-request cursor)
           (merge
            {:db (assoc-in db [:pagination-info chat-id :loading-messages?] true)}
-           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}]}
+           {:utils/dispatch-later [{:ms 100 :dispatch [:reactions/load-more cursor chat-id]}]}
            (data-store.messages/messages-by-chat-id-rpc
             chat-id
             cursor

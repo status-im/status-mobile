@@ -47,7 +47,7 @@
 
   (h/test "Token view render"
     (h/render [summary-tag/view
-               {:type         :token
-                :label        "1,000 SNT"
-                :image-source "path/to/token-image.png"}])
+               {:type  :token
+                :label "1,000 SNT"
+                :token :eth}])
     (h/is-truthy (h/get-by-text "1,000 SNT"))))

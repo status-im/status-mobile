@@ -59,6 +59,10 @@
   [theme]
   {:color (colors/theme-colors colors/neutral-100 colors/white theme)})
 
+(defn token-logo
+  [size]
+  {:border-radius (if (= size 24) 10 14)})
+
 (defn circle-logo
   [size]
   (if (= size 24)

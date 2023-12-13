@@ -350,12 +350,6 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if reply_element.is_element_displayed():
             self.errors.append("Reply is still shown after removing from activity centre!")
 
-        self.home_1.just_fyi("Reset filter to show all AC notifications again")
-        self.home_1.reply_activity_tab_button.click()
-        self.home_1.mention_activity_tab_button.click()
-        self.home_1.all_activity_tab_button.click()
-        self.home_1.close_activity_centre.click()
-
         self.errors.verify_no_errors()
 
 

@@ -12,7 +12,6 @@
     [status-im2.contexts.syncing.utils :as sync-utils]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
 (rf/defn local-pairing-update-role
@@ -97,7 +96,7 @@
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string]}
-  [{:keys [db] :as cofx} entered-password on-valid-connection-string]
+  [{:keys [db] :as cofx} sha3-pwd on-valid-connection-string]
   (let [error             (get-in db [:profile/login :error])
         handle-connection (fn [response]
                             (when (sync-utils/valid-connection-string? response)
@@ -105,8 +104,7 @@
                               (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
                               (rf/dispatch [:hide-bottom-sheet])))]
     (when-not (and error (string/blank? error))
-      (let [key-uid    (get-in db [:profile/login :key-uid])
-            sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
+      (let [key-uid    (get-in db [:profile/profile :key-uid])
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID       key-uid
                                                             :keystorePath ""

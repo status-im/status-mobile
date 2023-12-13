@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require
-    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as status.resources]
     [utils.i18n :as i18n]))
@@ -20,6 +19,7 @@
 
 (def tokens
   [{:token               :snt
+    :token-name          "Status"
     :state               :default
     :status              :empty
     :customization-color :blue
@@ -28,6 +28,7 @@
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}
    {:token               :eth
+    :token-name          "Ether"
     :state               :default
     :status              :empty
     :customization-color :blue
@@ -36,6 +37,7 @@
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}
    {:token               :dai
+    :token-name          "Dai Stablecoin"
     :state               :default
     :status              :empty
     :customization-color :blue
@@ -86,24 +88,28 @@
 
 (defn bridge-token-list
   [networks-list]
-  [{:token               (quo.resources/get-token :snt)
+  [{:token               :snt
     :label               "Status"
     :token-value         "0.00 SNT"
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
     :customization-color :blue}
-   {:token               (quo.resources/get-token :eth)
+   {:token               :eth
     :label               "Ethereum"
     :token-value         "0.00 ETH"
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
     :customization-color :blue}
-   {:token               (quo.resources/get-token :dai)
+   {:token               :dai
     :label               "Dai"
     :token-value         "0.00 DAI"
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
     :customization-color :blue}])
+
+(def secret-phrase
+  ["witch" "collapse" "practice" "feed" "shame" "open" "lion"
+   "collapse" "umbrella" "fabric" "sadness" "obligue"])

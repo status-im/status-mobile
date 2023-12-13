@@ -368,17 +368,6 @@
     :LineChart        #js {}
     :LineChartBicolor #js {}})
 
-(def wallet-connect-client
-  #js
-   {:default       #js {}
-    :CLIENT_EVENTS #js
-                    {:session #js
-                               {:request  nil
-                                :created  nil
-                                :deleted  nil
-                                :proposal nil
-                                :updated  nil}}})
-
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
@@ -396,7 +385,6 @@
                                                                :getBottomSpace     (fn [])})
     "react-native-screens"                           (clj->js {})
     "react-native-reanimated"                        react-native-reanimated
-    "react-native-redash/lib/module/v1"              react-native-redash
     "react-native-redash"                            react-native-redash
     "react-native-fetch-polyfill"                    fetch
     "react-native-status-keycard"                    status-keycard
@@ -447,7 +435,6 @@
     "../src/js/worklets/parallax.js"                 #js {}
     "../src/js/worklets/identifiers_highlighting.js" #js {}
     "./fleets.js"                                    default-fleets
-    "@walletconnect/client"                          wallet-connect-client
     "../translations/ar.json"                        (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json"                        (js/JSON.parse (slurp "./translations/de.json"))
     "../translations/en.json"                        (js/JSON.parse (slurp "./translations/en.json"))

@@ -22,7 +22,7 @@
     "remove": "Supprimer",
     "add-members": "Ajouter des membres",
     "done": "Terminé",
-    "delete-chat": "Supprimer la discussion",
+    "close-chat": "Supprimer la discussion",
     "new-group-chat": "Nouveau chat de groupe",
     "sign-in": "S'identifier",
     "datetime-yesterday": "hier",

@@ -353,7 +353,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 
         self.device_1.just_fyi("Check Device 1 is actually on chat")
-        if not (chat_1.element_by_text_part(message).is_element_displayed()
+        if not (chat_1.element_by_text_part(message).is_element_displayed(15)
                 and chat_1.element_by_text_part(emoji_unicode).is_element_displayed()):
             self.device_1.driver.fail("Failed to open chat view after tap on PN")
 
@@ -668,9 +668,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
         self.home_2.delete_chat_long_press(username=self.username_1)
         if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed():
-            self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.username_1)
+            self.errors.append("Deleted '%s' chat is shown, but the chat has been deleted" % self.username_1)
         self.home_2.reopen_app()
         if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed(15):
             self.errors.append(
-                'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.username_1)
+                "Deleted chat '%s' is shown after re-login, but the chat has been deleted" % self.username_1)
         self.errors.verify_no_errors()

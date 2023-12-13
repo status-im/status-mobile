@@ -49,7 +49,7 @@
     ;; Note - Don't pass `behavior :height` to keyboard avoiding view,. It breaks composer -
     ;; https://github.com/status-im/status-mobile/issues/16595
     [rn/keyboard-avoiding-view
-     {:style                    (style/keyboard-avoiding-container insets)
+     {:style                    style/keyboard-avoiding-container
       :keyboard-vertical-offset (- (:bottom insets))}
 
      [list.view/message-list-content-view

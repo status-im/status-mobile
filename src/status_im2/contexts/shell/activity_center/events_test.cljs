@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.events-test
   (:require
     [cljs.test :refer [deftest is testing]]
+    matcher-combinators.test
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.events :as events]
     [status-im2.contexts.shell.activity-center.notification-types :as types]
@@ -14,18 +15,18 @@
 
 (deftest open-activity-center-test
   (testing "opens the activity center with default filters"
-    (is (= {:db {}
-            :fx [[:dispatch [:open-modal :activity-center {}]]
-                 [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
-           (events/open-activity-center {:db {}} [nil]))))
+    (is (match? {:db {}
+                 :fx [[:dispatch [:open-modal :activity-center {}]]
+                      [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
+                (events/open-activity-center {:db {}} [nil]))))
 
   (testing "opens the activity center with filters enabled"
-    (is (= {:db {:activity-center {:filter {:status :unread :type types/contact-request}}}
-            :fx [[:dispatch [:open-modal :activity-center {}]]
-                 [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
-           (events/open-activity-center {:db {}}
-                                        [{:filter-type   types/contact-request
-                                          :filter-status :unread}])))))
+    (is (match? {:db {:activity-center {:filter {:status :unread :type types/contact-request}}}
+                 :fx [[:dispatch [:open-modal :activity-center {}]]
+                      [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
+                (events/open-activity-center {:db {}}
+                                             [{:filter-type   types/contact-request
+                                               :filter-status :unread}])))))
 
 (deftest process-notification-failure-test
   (testing "logs and returns nil"
@@ -34,11 +35,11 @@
                notification-id
                :some-action-name
                :some-error)))
-    (is (= {:args  ["Failed to :some-action-name"
-                    {:notification-id notification-id
-                     :error           :some-error}]
-            :level :warn}
-           (last @h/logs)))))
+    (is (match? {:args  ["Failed to :some-action-name"
+                         {:notification-id notification-id
+                          :error           :some-error}]
+                 :level :warn}
+                (last @h/logs)))))
 
 ;;;; Mark as read/unread
 
@@ -53,25 +54,21 @@
   (testing "dispatches RPC call"
     (let [notif {:id "0x1" :read false :type types/one-to-one-chat}
           cofx  {:db {:activity-center {:notifications [notif]}}}]
-      (is (= {:json-rpc/call
-              [{:method     "wakuext_markActivityCenterNotificationsRead"
-                :params     [[(:id notif)]]
-                :on-success [:activity-center.notifications/mark-as-read-success notif]
-                :on-error   [:activity-center/process-notification-failure (:id notif)
-                             :notification/mark-as-read]}]}
-             (events/mark-as-read cofx (:id notif)))))))
+      (is (match? {:json-rpc/call
+                   [{:method     "wakuext_markActivityCenterNotificationsRead"
+                     :params     [[(:id notif)]]
+                     :on-success [:activity-center.notifications/mark-as-read-success notif]
+                     :on-error   [:activity-center/process-notification-failure (:id notif)
+                                  :notification/mark-as-read]}]}
+                  (events/mark-as-read cofx (:id notif)))))))
 
 (deftest mark-as-read-success-test
-  (let [f-args (atom [])
-        cofx   {:db {}}
-        notif  {:id "0x1" :read false :type types/one-to-one-chat}]
-    (with-redefs [events/notifications-reconcile
-                  (fn [& args]
-                    (reset! f-args args)
-                    :result)]
-      (is (= :result (events/mark-as-read-success cofx notif)))
-      (is (= [cofx [(assoc notif :read true)]]
-             @f-args)))))
+  (let [cofx        {:db {}}
+        notif       {:id "0x1" :read false :type types/one-to-one-chat :chat-id "chat-id"}
+        expected-fx {:fx [[:dispatch [:chats-list/load-chat "chat-id"]]
+                          [:dispatch
+                           [:activity-center.notifications/reconcile [(assoc notif :read true)]]]]}]
+    (is (match? expected-fx (events/mark-as-read-success cofx [notif])))))
 
 (deftest mark-as-unread-test
   (testing "does nothing if the notification ID cannot be found in the app db"
@@ -84,13 +81,13 @@
   (testing "dispatches RPC call"
     (let [notif {:id "0x1" :read true :type types/one-to-one-chat}
           cofx  {:db {:activity-center {:notifications [notif]}}}]
-      (is (= {:json-rpc/call
-              [{:method     "wakuext_markActivityCenterNotificationsUnread"
-                :params     [[(:id notif)]]
-                :on-success [:activity-center.notifications/mark-as-unread-success notif]
-                :on-error   [:activity-center/process-notification-failure (:id notif)
-                             :notification/mark-as-unread]}]}
-             (events/mark-as-unread cofx (:id notif)))))))
+      (is (match? {:json-rpc/call
+                   [{:method     "wakuext_markActivityCenterNotificationsUnread"
+                     :params     [[(:id notif)]]
+                     :on-success [:activity-center.notifications/mark-as-unread-success notif]
+                     :on-error   [:activity-center/process-notification-failure (:id notif)
+                                  :notification/mark-as-unread]}]}
+                  (events/mark-as-unread cofx (:id notif)))))))
 
 (deftest mark-as-unread-success-test
   (let [f-args (atom [])
@@ -101,19 +98,19 @@
                     (reset! f-args args)
                     :reconciliation-result)]
       (is (= :reconciliation-result (events/mark-as-unread-success cofx notif)))
-      (is (= [cofx [(assoc notif :read false)]]
-             @f-args)))))
+      (is (match? [cofx [(assoc notif :read false)]]
+                  @f-args)))))
 
 ;;;; Acceptance/dismissal
 
 (deftest accept-notification-test
-  (is (= {:json-rpc/call
-          [{:method     "wakuext_acceptActivityCenterNotifications"
-            :params     [[notification-id]]
-            :on-success [:activity-center.notifications/accept-success notification-id]
-            :on-error   [:activity-center/process-notification-failure notification-id
-                         :notification/accept]}]}
-         (events/accept-notification {:db {}} notification-id))))
+  (is (match? {:json-rpc/call
+               [{:method     "wakuext_acceptActivityCenterNotifications"
+                 :params     [[notification-id]]
+                 :on-success [:activity-center.notifications/accept-success notification-id]
+                 :on-error   [:activity-center/process-notification-failure notification-id
+                              :notification/accept]}]}
+              (events/accept-notification {:db {}} notification-id))))
 
 (deftest accept-notification-success-test
   (testing "does nothing if the notification ID cannot be found in the app db"
@@ -129,18 +126,18 @@
           notif-2-accepted (assoc notif-2 :accepted true :read true)
           cofx             {:db {:activity-center {:filter        {:type types/no-type :status :all}
                                                    :notifications [notif-2 notif-1]}}}]
-      (is (= {:fx [[:dispatch [:chat/ensure-chats []]]
-                   [:dispatch [:activity-center.notifications/reconcile [notif-2-accepted]]]]}
-             (events/accept-notification-success cofx [(:id notif-2) nil]))))))
+      (is (match? {:fx [[:dispatch [:chat/ensure-chats []]]
+                        [:dispatch [:activity-center.notifications/reconcile [notif-2-accepted]]]]}
+                  (events/accept-notification-success cofx [(:id notif-2) nil]))))))
 
 (deftest dismiss-notification-test
-  (is (= {:json-rpc/call
-          [{:method     "wakuext_dismissActivityCenterNotifications"
-            :params     [[notification-id]]
-            :on-success [:activity-center.notifications/dismiss-success notification-id]
-            :on-error   [:activity-center/process-notification-failure notification-id
-                         :notification/dismiss]}]}
-         (events/dismiss-notification {:db {}} notification-id))))
+  (is (match? {:json-rpc/call
+               [{:method     "wakuext_dismissActivityCenterNotifications"
+                 :params     [[notification-id]]
+                 :on-success [:activity-center.notifications/dismiss-success notification-id]
+                 :on-error   [:activity-center/process-notification-failure notification-id
+                              :notification/dismiss]}]}
+              (events/dismiss-notification {:db {}} notification-id))))
 
 (deftest dismiss-notification-success-test
   (testing "does nothing if the notification ID cannot be found in the app db"
@@ -156,11 +153,11 @@
           notif-2-dismissed (assoc notif-2 :dismissed true :read true)
           cofx              {:db {:activity-center {:filter        {:type types/no-type :status :all}
                                                     :notifications [notif-2 notif-1]}}}]
-      (is (= {:db         {:activity-center {:filter        {:type 0 :status :all}
-                                             :notifications [notif-2-dismissed notif-1]}}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/dismiss-notification-success cofx (:id notif-2)))))))
+      (is (match? {:db         {:activity-center {:filter        {:type 0 :status :all}
+                                                  :notifications [notif-2-dismissed notif-1]}}
+                   :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                                [:activity-center.notifications/fetch-pending-contact-requests]]}
+                  (events/dismiss-notification-success cofx (:id notif-2)))))))
 
 ;;;; Contact verification
 
@@ -208,41 +205,41 @@
    :type                        types/contact-verification})
 
 (deftest contact-verification-decline-test
-  (is (= {:json-rpc/call
-          [{:method     "wakuext_declineContactVerificationRequest"
-            :params     [notification-id]
-            :on-success [:activity-center/reconcile-notifications-from-response]
-            :on-error   [:activity-center/process-notification-failure notification-id
-                         :contact-verification/decline]}]}
-         (events/contact-verification-decline {:db {}} notification-id))))
+  (is (match? {:json-rpc/call
+               [{:method     "wakuext_declineContactVerificationRequest"
+                 :params     [notification-id]
+                 :on-success [:activity-center/reconcile-notifications-from-response]
+                 :on-error   [:activity-center/process-notification-failure notification-id
+                              :contact-verification/decline]}]}
+              (events/contact-verification-decline {:db {}} notification-id))))
 
 (deftest contact-verification-reply-test
   (let [reply "The answer is 42"]
-    (is (= {:json-rpc/call
-            [{:method     "wakuext_acceptContactVerificationRequest"
-              :params     [notification-id reply]
-              :on-success [:activity-center/reconcile-notifications-from-response]
-              :on-error   [:activity-center/process-notification-failure notification-id
-                           :contact-verification/reply]}]}
-           (events/contact-verification-reply {:db {}} notification-id reply)))))
+    (is (match? {:json-rpc/call
+                 [{:method     "wakuext_acceptContactVerificationRequest"
+                   :params     [notification-id reply]
+                   :on-success [:activity-center/reconcile-notifications-from-response]
+                   :on-error   [:activity-center/process-notification-failure notification-id
+                                :contact-verification/reply]}]}
+                (events/contact-verification-reply {:db {}} notification-id reply)))))
 
 (deftest contact-verification-mark-as-trusted-test
-  (is (= {:json-rpc/call
-          [{:method     "wakuext_verifiedTrusted"
-            :params     [{:id notification-id}]
-            :on-success [:activity-center/reconcile-notifications-from-response]
-            :on-error   [:activity-center/process-notification-failure notification-id
-                         :contact-verification/mark-as-trusted]}]}
-         (events/contact-verification-mark-as-trusted {:db {}} notification-id))))
+  (is (match? {:json-rpc/call
+               [{:method     "wakuext_verifiedTrusted"
+                 :params     [{:id notification-id}]
+                 :on-success [:activity-center/reconcile-notifications-from-response]
+                 :on-error   [:activity-center/process-notification-failure notification-id
+                              :contact-verification/mark-as-trusted]}]}
+              (events/contact-verification-mark-as-trusted {:db {}} notification-id))))
 
 (deftest contact-verification-mark-as-untrustworthy-test
-  (is (= {:json-rpc/call
-          [{:method     "wakuext_verifiedUntrustworthy"
-            :params     [{:id notification-id}]
-            :on-success [:activity-center/reconcile-notifications-from-response]
-            :on-error   [:activity-center/process-notification-failure notification-id
-                         :contact-verification/mark-as-untrustworthy]}]}
-         (events/contact-verification-mark-as-untrustworthy {:db {}} notification-id))))
+  (is (match? {:json-rpc/call
+               [{:method     "wakuext_verifiedUntrustworthy"
+                 :params     [{:id notification-id}]
+                 :on-success [:activity-center/reconcile-notifications-from-response]
+                 :on-error   [:activity-center/process-notification-failure notification-id
+                              :contact-verification/mark-as-untrustworthy]}]}
+              (events/contact-verification-mark-as-untrustworthy {:db {}} notification-id))))
 
 ;;;; Notification reconciliation
 
@@ -256,17 +253,17 @@
           cofx        {:db {:activity-center
                             {:filter        {:type types/no-type :status :all}
                              :notifications [notif-2 notif-1]}}}]
-      (is (= {:db         {:activity-center
-                           {:filter        {:type types/no-type :status :all}
-                            :notifications [new-notif-4 new-notif-3 new-notif-2]}}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/notifications-reconcile
-              cofx
-              [(assoc notif-1 :deleted true) ; will be removed
-               new-notif-2
-               new-notif-3
-               new-notif-4])))))
+      (is (match? {:db         {:activity-center
+                                {:filter        {:type types/no-type :status :all}
+                                 :notifications [new-notif-4 new-notif-3 new-notif-2]}}
+                   :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                                [:activity-center.notifications/fetch-pending-contact-requests]]}
+                  (events/notifications-reconcile
+                   cofx
+                   [(assoc notif-1 :deleted true) ; will be removed
+                    new-notif-2
+                    new-notif-3
+                    new-notif-4])))))
 
   (testing "All tab + Unread filter"
     (let [notif-1     {:id "0x1" :read false :type types/one-to-one-chat}
@@ -278,18 +275,18 @@
           cofx        {:db {:activity-center
                             {:filter        {:type types/no-type :status :unread}
                              :notifications [notif-5 notif-2 notif-1]}}}]
-      (is (= {:db         {:activity-center
-                           {:filter        {:type types/no-type :status :unread}
-                            :notifications [new-notif-3 notif-1]}}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/notifications-reconcile
-              cofx
-              [new-notif-2 ; will be removed because it's read
-               new-notif-3 ; will be inserted
-               new-notif-4 ; will be ignored because it's read
-               (assoc notif-5 :deleted true) ; will be removed
-              ])))))
+      (is (match? {:db         {:activity-center
+                                {:filter        {:type types/no-type :status :unread}
+                                 :notifications [new-notif-3 notif-1]}}
+                   :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                                [:activity-center.notifications/fetch-pending-contact-requests]]}
+                  (events/notifications-reconcile
+                   cofx
+                   [new-notif-2 ; will be removed because it's read
+                    new-notif-3 ; will be inserted
+                    new-notif-4 ; will be ignored because it's read
+                    (assoc notif-5 :deleted true) ; will be removed
+                   ])))))
 
   (testing "Contact request tab + All filter"
     (let [notif-1     {:id "0x1" :read true :type types/contact-request}
@@ -301,18 +298,18 @@
           cofx        {:db {:activity-center
                             {:filter        {:type types/contact-request :status :all}
                              :notifications [notif-5 notif-2 notif-1]}}}]
-      (is (= {:db         {:activity-center
-                           {:filter        {:type types/contact-request :status :all}
-                            :notifications [new-notif-3 new-notif-2 notif-1]}}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/notifications-reconcile
-              cofx
-              [new-notif-2 ; will be updated
-               new-notif-3 ; will be inserted
-               new-notif-4 ; will be ignored because it's not a contact request
-               (assoc notif-5 :deleted true) ; will be removed
-              ])))))
+      (is (match? {:db         {:activity-center
+                                {:filter        {:type types/contact-request :status :all}
+                                 :notifications [new-notif-3 new-notif-2 notif-1]}}
+                   :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                                [:activity-center.notifications/fetch-pending-contact-requests]]}
+                  (events/notifications-reconcile
+                   cofx
+                   [new-notif-2 ; will be updated
+                    new-notif-3 ; will be inserted
+                    new-notif-4 ; will be ignored because it's not a contact request
+                    (assoc notif-5 :deleted true) ; will be removed
+                   ])))))
 
   (testing "Contact request tab + Unread filter"
     (let [notif-1     {:id "0x1" :read false :type types/contact-request}
@@ -326,20 +323,20 @@
                             {:filter        {:type   types/contact-request
                                              :status :unread}
                              :notifications [notif-6 notif-2 notif-1]}}}]
-      (is (= {:db         {:activity-center
-                           {:filter        {:type   types/contact-request
-                                            :status :unread}
-                            :notifications [new-notif-3 notif-1]}}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/notifications-reconcile
-              cofx
-              [new-notif-2 ; will be removed because it's read
-               new-notif-3 ; will be inserted
-               new-notif-4 ; will be ignored because it's read
-               new-notif-5 ; will be ignored because it's not a contact request
-               (assoc notif-6 :deleted true) ; will be removed
-              ])))))
+      (is (match? {:db         {:activity-center
+                                {:filter        {:type   types/contact-request
+                                                 :status :unread}
+                                 :notifications [new-notif-3 notif-1]}}
+                   :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                                [:activity-center.notifications/fetch-pending-contact-requests]]}
+                  (events/notifications-reconcile
+                   cofx
+                   [new-notif-2 ; will be removed because it's read
+                    new-notif-3 ; will be inserted
+                    new-notif-4 ; will be ignored because it's read
+                    new-notif-5 ; will be ignored because it's not a contact request
+                    (assoc notif-6 :deleted true) ; will be removed
+                   ])))))
 
   ;; Sorting by timestamp and ID is compatible with what the backend does when
   ;; returning paginated results.
@@ -354,15 +351,15 @@
           cofx        {:db {:activity-center
                             {:notifications [notif-1 notif-3 notif-4 notif-2
                                              notif-5]}}}]
-      (is (= {:db         {:activity-center
-                           {:notifications [notif-5
-                                            new-notif-4
-                                            notif-3
-                                            notif-2
-                                            new-notif-1]}}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/notifications-reconcile cofx [new-notif-1 new-notif-4]))))))
+      (is (match? {:db         {:activity-center
+                                {:notifications [notif-5
+                                                 new-notif-4
+                                                 notif-3
+                                                 notif-2
+                                                 new-notif-1]}}
+                   :dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                                [:activity-center.notifications/fetch-pending-contact-requests]]}
+                  (events/notifications-reconcile cofx [new-notif-1 new-notif-4]))))))
 
 (deftest remove-pending-contact-request-test
   (testing "removes notification from all related filter types and status"
@@ -376,26 +373,27 @@
                           notif-2 ; will be removed
                           notif-1 ; will be ignored because it's not from the same author
                          ]}}}]
-      (is (= {:db {:activity-center {:notifications [notif-3 notif-1]}}}
-             (events/notifications-remove-pending-contact-request cofx author))))))
+      (is (match? {:db {:activity-center {:notifications [notif-3 notif-1]}}}
+                  (events/notifications-remove-pending-contact-request cofx author))))))
 
 ;;;; Notifications fetching and pagination
 
 (deftest notifications-fetch-first-page-test
   (testing "fetches first page"
     (let [cofx {:db {}}]
-      (is (= {:db            {:activity-center {:filter   {:type   types/one-to-one-chat
-                                                           :status :unread}
-                                                :loading? true}}
-              :json-rpc/call [{:method     "wakuext_activityCenterNotifications"
-                               :params     [{:cursor        ""
-                                             :limit         (:notifications-per-page events/defaults)
-                                             :activityTypes [types/one-to-one-chat]
-                                             :readType      events/read-type-unread}]
-                               :on-success [:activity-center.notifications/fetch-success true]
-                               :on-error   [:activity-center.notifications/fetch-error
-                                            types/one-to-one-chat :unread]}]}
-             (events/notifications-fetch-first-page cofx {:filter-type types/one-to-one-chat}))))))
+      (is (match? {:db            {:activity-center {:filter   {:type   types/one-to-one-chat
+                                                                :status :unread}
+                                                     :loading? true}}
+                   :json-rpc/call [{:method     "wakuext_activityCenterNotifications"
+                                    :params     [{:cursor        ""
+                                                  :limit         (:notifications-per-page
+                                                                  events/defaults)
+                                                  :activityTypes [types/one-to-one-chat]
+                                                  :readType      events/read-type-unread}]
+                                    :on-success [:activity-center.notifications/fetch-success true]
+                                    :on-error   [:activity-center.notifications/fetch-error
+                                                 types/one-to-one-chat :unread]}]}
+                  (events/notifications-fetch-first-page cofx {:filter-type types/one-to-one-chat}))))))
 
 (deftest notifications-fetch-next-next-page-test
   (testing "does not fetch next page when pagination cursor reached the end"
@@ -413,12 +411,12 @@
                       (reset! f-args args)
                       :result)]
         (is (= :result (events/notifications-fetch-next-page cofx)))
-        (is (= [cofx
-                {:cursor        cursor
-                 :filter-type   types/one-to-one-chat
-                 :filter-status :unread
-                 :reset-data?   false}]
-               @f-args))))))
+        (is (match? [cofx
+                     {:cursor        cursor
+                      :filter-type   types/one-to-one-chat
+                      :filter-status :unread
+                      :reset-data?   false}]
+                    @f-args))))))
 
 (deftest notifications-fetch-error-test
   (testing "resets loading state"
@@ -427,23 +425,23 @@
                       :filter   {:status :unread
                                  :type   types/one-to-one-chat}
                       :cursor   ""}}}]
-      (is (= {:db {:activity-center {:filter {:status :unread
-                                              :type   types/one-to-one-chat}
-                                     :cursor ""}}}
-             (events/notifications-fetch-error cofx :dummy-error))))))
+      (is (match? {:db {:activity-center {:filter {:status :unread
+                                                   :type   types/one-to-one-chat}
+                                          :cursor ""}}}
+                  (events/notifications-fetch-error cofx :dummy-error))))))
 
 (deftest seen-state-test
   (testing "update seen state"
-    (is (= {:db {:activity-center {:seen? true}}}
-           (events/reconcile-seen-state {:db {}} true))))
+    (is (match? {:db {:activity-center {:seen? true}}}
+                (events/reconcile-seen-state {:db {}} true))))
 
   (testing "update seen state when the user is on other screen"
-    (is (= {:db {:view-id         :chats-stack
-                 :activity-center {:seen? false}}}
-           (events/reconcile-seen-state {:db {:view-id :chats-stack}} false))))
+    (is (match? {:db {:view-id         :chats-stack
+                      :activity-center {:seen? false}}}
+                (events/reconcile-seen-state {:db {:view-id :chats-stack}} false))))
 
   (testing "update seen state when the user is on activity center"
-    (is (= {:db       {:view-id         :activity-center
-                       :activity-center {:seen? false}}
-            :dispatch [:activity-center/mark-as-seen]}
-           (events/reconcile-seen-state {:db {:view-id :activity-center}} false)))))
+    (is (match? {:db       {:view-id         :activity-center
+                            :activity-center {:seen? false}}
+                 :dispatch [:activity-center/mark-as-seen]}
+                (events/reconcile-seen-state {:db {:view-id :activity-center}} false)))))

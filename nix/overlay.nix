@@ -63,7 +63,7 @@ in {
   };
 
   # Package version adjustments
-  gradle = super.gradle_7;
+  gradle = super.gradle_8;
   nodejs = super.nodejs-18_x;
   ruby = super.ruby_3_1;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
@@ -73,6 +73,7 @@ in {
     allowHigher = true;
   };
   go = super.go_1_19;
+  clang = super.clang_15;
   buildGoPackage = super.buildGo119Package;
   buildGoModule = super.buildGo119Module;
   gomobile = (super.gomobile.overrideAttrs (old: {

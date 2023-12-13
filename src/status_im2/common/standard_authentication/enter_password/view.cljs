@@ -9,7 +9,7 @@
     [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [on-enter-password button-label button-icon-left]}]
+  [{:keys [on-enter-password on-press-biometrics button-label button-icon-left]}]
   (let [{:keys [key-uid customization-color] :as profile} (rf/sub [:profile/profile-with-image])
         {:keys [error processing password]}               (rf/sub [:profile/login])
         sign-in-enabled?                                  (rf/sub [:sign-in-enabled?])]
@@ -32,20 +32,21 @@
           :customization-color customization-color
           :size                24}]]
        [password-input/view
-        {:processing       processing
-         :error            error
-         :default-password password
-         :sign-in-enabled? sign-in-enabled?}]
-       [rn/view {:style style/enter-password-button}
-        [quo/button
-         {:size                40
-          :type                :primary
-          :customization-color (or customization-color :primary)
-          :accessibility-label :login-button
-          :icon-left           button-icon-left
-          :disabled?           (or (not sign-in-enabled?) processing)
-          :on-press            (fn []
-                                 (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
-                                 (rf/dispatch [:profile.login/verify-database-password password
-                                               #(on-enter-password password)]))}
-         button-label]]]]]))
+        {:on-press-biometrics on-press-biometrics
+         :processing          processing
+         :error               error
+         :default-password    password
+         :sign-in-enabled?    sign-in-enabled?}]
+       [quo/button
+        {:size                40
+         :container-style     style/enter-password-button
+         :type                :primary
+         :customization-color (or customization-color :primary)
+         :accessibility-label :login-button
+         :icon-left           button-icon-left
+         :disabled?           (or (not sign-in-enabled?) processing)
+         :on-press            (fn []
+                                (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
+                                (rf/dispatch [:profile.login/verify-database-password password
+                                              #(on-enter-password password)]))}
+        button-label]]]]))

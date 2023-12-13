@@ -47,6 +47,7 @@
    :no-contacts-to-invite-dark    (js/require "../resources/images/ui2/no-contacts-to-invite-dark.png")
    :no-notifications-light        (js/require "../resources/images/ui2/no-notifications-light.png")
    :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")
+   :notifications                 (js/require "../resources/images/ui2/notifications.png")
    :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")})
 
 (def ui-themed
@@ -138,7 +139,11 @@
                    (js/require "../resources/videos2/biometrics_04.mp4")]
    :generate-keys [(js/require "../resources/videos2/generating_keys_01.mp4")
                    (js/require "../resources/videos2/generating_keys_02.mp4")
-                   (js/require "../resources/videos2/generating_keys_03.mp4")]})
+                   (js/require "../resources/videos2/generating_keys_03.mp4")]
+   :notifications [(js/require "../resources/videos2/notifications_01.mp4")
+                   (js/require "../resources/videos2/notifications_02.mp4")
+                   (js/require "../resources/videos2/notifications_03.mp4")
+                   (js/require "../resources/videos2/notifications_04.mp4")]})
 
 (def services
   {:latamex (js/require "../resources/images/services/Latamex.png")

@@ -46,6 +46,8 @@
     [status-im2.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
     [status-im2.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
+    [status-im2.contexts.wallet.create-account.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
@@ -55,6 +57,7 @@
     [status-im2.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.contexts.wallet.send.select-asset.view :as wallet-select-asset]
+    [status-im2.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
 
@@ -207,7 +210,7 @@
                  :animations             (merge transitions/new-to-status-modal-animations
                                                 transitions/push-animations-for-transparent-background)
                  :modalPresentationStyle :overCurrentContext}
-     :component enable-notifications/enable-notifications}
+     :component enable-notifications/view}
 
     {:name      :identifiers
      :component identifiers/view
@@ -296,6 +299,10 @@
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
 
+    {:name      :wallet-backup-recovery-phrase
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-backup-recovery-phrase/view}
+
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
 
@@ -305,12 +312,17 @@
      :component wallet-send-input-amount/view}
 
     {:name      :wallet-select-address
-     :options   {:modalPresentationStyle :overCurrentContext}
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
      :component wallet-select-address/view}
 
     {:name      :wallet-select-asset
      :options   {:insets {:top? true}}
      :component wallet-select-asset/view}
+
+    {:name      :wallet-transaction-confirmation
+     :options   {:insets {:bottom? true}}
+     :component wallet-transaction-confirmation/view}
 
     {:name      :scan-address
      :options   (merge

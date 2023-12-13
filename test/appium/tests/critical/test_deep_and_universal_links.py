@@ -92,6 +92,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(704614)
+    @marks.skip  # ToDo: the feature is not ready yet
     def test_links_open_universal_links_from_other_apps(self):
         app_package = self.driver.current_package
         self.home.just_fyi("Opening a profile URL from google search bar when user is still logged in")
@@ -111,14 +112,15 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 "community-admins-will-review-your-request").is_element_displayed(10):
             self.errors.append("Closed community was not requested to join by the url %s" % community_url)
 
-        self.home.just_fyi("Opening a community channel URL from google search bar with no account created")
-        self.driver.reset()
-        self.home.click_system_home_button()
-        channel_url = "https://status.app/cc/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
-        self.home.open_link_from_google_search_app(channel_url, app_package)
-        self.sign_in.create_user()
-        if not self.home.element_by_translation_id(
-                "community-admins-will-review-your-request").is_element_displayed(10):
-            self.errors.append("Created user was not redirected to a community channel by the url %s" % channel_url)
+        # ToDo: enable when https://github.com/status-im/status-mobile/issues/18074 is fixed
+        # self.home.just_fyi("Opening a community channel URL from google search bar with no account created")
+        # self.driver.reset()
+        # self.home.click_system_home_button()
+        # channel_url = "https://status.app/cc/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
+        # self.home.open_link_from_google_search_app(channel_url, app_package)
+        # self.sign_in.create_user()
+        # if not self.home.element_by_translation_id(
+        #         "community-admins-will-review-your-request").is_element_displayed(10):
+        #     self.errors.append("Created user was not redirected to a community channel by the url %s" % channel_url)
 
         self.errors.verify_no_errors()

@@ -38,13 +38,14 @@
 (def keychain-secure-hardware
   ;; (Android) Requires storing the encryption key for the entry in secure hardware
   ;; or StrongBox (see https://developer.android.com/training/articles/keystore#ExtractionPrevention)
-  "SECURE_HARDWARE")
+  #js {:accessible (enum-val "SECURITY_LEVEL" "SECURE_HARDWARE")})
 
 ;; Android only
 (defn secure-hardware-available?
   [callback]
   (-> (.getSecurityLevel ^js react-native-keychain)
-      (.then (fn [level] (callback (= level keychain-secure-hardware))))))
+      (.then (fn [level]
+               (callback (= level "SECURE_HARDWARE"))))))
 
 ;; iOS only
 (defn device-encrypted?

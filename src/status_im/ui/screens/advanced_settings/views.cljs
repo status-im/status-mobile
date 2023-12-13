@@ -7,6 +7,11 @@
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
+(defn hide-sheet-and-dispatch
+  [event]
+  (re-frame/dispatch [:bottom-sheet/hide-old])
+  (re-frame/dispatch event))
+
 (defn- normal-mode-settings-data
   [{:keys [network-name
            current-log-level
@@ -14,7 +19,8 @@
            transactions-management-enabled?
            wakuv2-flag
            current-fleet
-           webview-debug]}]
+           webview-debug
+           test-networks-enabled?]}]
   (keep
    identity
    [{:size :small
@@ -96,6 +102,14 @@
      :accessory :switch
      :active webview-debug}
     {:size :small
+     :title "Testnet mode"
+     :accessibility-label :test-networks-enabled
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch [:profile.settings/toggle-test-networks])
+     :accessory :switch
+     :active test-networks-enabled?}
+    {:size :small
      :title (i18n/label :t/waku-bloom-filter-mode)
      :accessibility-label :waku-bloom-filter-mode-settings-switch
      :container-margin-bottom 8
@@ -103,7 +117,13 @@
      #(re-frame/dispatch
        [:multiaccounts.ui/waku-bloom-filter-mode-switched (not waku-bloom-filter-mode)])
      :accessory :switch
-     :active waku-bloom-filter-mode}]))
+     :active waku-bloom-filter-mode}
+    {:size                :small
+     :title               (i18n/label :t/set-currency)
+     :accessibility-label :wallet-change-currency
+     :on-press            #(hide-sheet-and-dispatch
+                            [:navigate-to :currency-settings])
+     :chevron             true}]))
 
 (defn- flat-list-data
   [options]
@@ -117,7 +137,8 @@
 
 (views/defview advanced-settings
   []
-  (views/letsubs [{:keys [webview-debug]}          [:profile/profile]
+  (views/letsubs [{:keys [webview-debug
+                          test-networks-enabled?]} [:profile/profile]
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
                   wakuv2-flag                      [:waku/v2-flag]
@@ -133,6 +154,7 @@
                    :dev-mode?                        false
                    :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
-                   :webview-debug                    webview-debug})
+                   :webview-debug                    webview-debug
+                   :test-networks-enabled?           test-networks-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

@@ -5,7 +5,7 @@
             [test-helpers.component :as h]))
 
 (def props
-  {:token       (resources/get-token :snt)
+  {:token       :snt
    :state       :default
    :label       "Status"
    :networks    [(resources/get-network :ethereum)]

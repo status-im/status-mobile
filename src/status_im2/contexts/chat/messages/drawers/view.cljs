@@ -71,7 +71,7 @@
 (defn reaction-authors
   [{:keys [reactions-order theme]}]
   (let [{:keys [reaction-authors-list
-                selected-reaction]} (rf/sub [:chat/reactions-authors])
+                selected-reaction]} (rf/sub [:reactions/authors])
         selected-tab                (reagent/atom (or selected-reaction
                                                       (first (keys reaction-authors-list))))]
     (fn []

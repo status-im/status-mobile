@@ -11,8 +11,6 @@
 (def ^:const account-initials-action "/accountInitials")
 (def ^:const contact-images-action "/contactImages")
 (def ^:const generate-qr-action "/GenerateQRCode")
-(def ^:const status-profile-base-url "https://status.app/u#")
-(def ^:const status-profile-base-url-without-https "status.app/u#")
 
 (defn get-font-file-ready
   "setup font file and get the absolute path to it
@@ -263,30 +261,6 @@
                             :indicator-color          indicator-color
                             :ring?                    (if (nil? override-ring?) ring? override-ring?)
                             :ring-width               ring-width})))
-
-(defn get-account-qr-image-uri
-  [{:keys [key-uid public-key port qr-size]}]
-  (let [profile-qr-url         (str status-profile-base-url public-key)
-        base-64-qr-url         (js/btoa profile-qr-url)
-        profile-image-type     "large"
-        error-correction-level (correction-level->index :highest)
-        superimpose-profile?   true
-        media-server-url       (str image-server-uri-prefix
-                                    port
-                                    generate-qr-action
-                                    "?level="
-                                    error-correction-level
-                                    "&url="
-                                    base-64-qr-url
-                                    "&keyUid="
-                                    key-uid
-                                    "&allowProfileImage="
-                                    superimpose-profile?
-                                    "&size="
-                                    (* 2 qr-size)
-                                    "&imageName="
-                                    profile-image-type)]
-    media-server-url))
 
 (defn get-qr-image-uri-for-any-url
   [{:keys [url port qr-size error-level]}]
