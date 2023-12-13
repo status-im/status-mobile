@@ -14,12 +14,14 @@
      [text/text
       {:weight :medium
        :size   :paragraph-2
-       :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+       :style  {:color (if blur?
+                         colors/white-opa-40
+                         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
       label])
    [rn/flat-list
     {:data      data
      :style     (style/settings-items theme blur?)
-     :render-fn (fn [item] [settings-item/view item])
+     :render-fn settings-item/view
      :separator [rn/view {:style (style/settings-separator theme blur?)}]}]])
 
 (def settings-category (quo.theme/with-theme category-internal))

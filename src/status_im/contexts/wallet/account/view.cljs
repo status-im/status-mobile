@@ -28,8 +28,8 @@
   (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
            {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
            {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-          (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-          true (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
+    true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn view
   []
@@ -40,8 +40,12 @@
             currency-symbol                          (rf/sub [:profile/currency-symbol])]
 =======
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
+<<<<<<< HEAD
             watch-only? (= type :watch)]
 >>>>>>> 704441c8a (wallet: receive screen)
+=======
+            watch-only?                       (= type :watch)]
+>>>>>>> 84f39453e (wallet: receive screen)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview

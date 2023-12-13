@@ -4,8 +4,6 @@
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.buttons.button.view :as button]
-            [quo.components.icon :as icon]
-            [quo.components.list-items.preview-list.view :as preview-list]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
@@ -125,9 +123,10 @@
 (defn wallet-multichain-bottom
   [{:keys [share-qr-type component-width qr-data on-text-press on-text-long-press
            on-share-press networks on-settings-press]}]
-  [rn/view {:style {:flex-direction :row
-                    :justify-content :space-between
-                    :flex 1}}
+  [rn/view
+   {:style {:flex-direction  :row
+            :justify-content :space-between
+            :flex            1}}
    [info-text
     {:width         component-width
      :on-press      on-text-press
@@ -147,18 +146,22 @@
            profile-picture emoji on-share-press]
     :as   props}]
   [rn/view {:style style/content-container}
-   [rn/view {:style {:flex-direction :row
-                     :justify-content :space-between
-                     :margin-bottom 12}}
-    [rn/view {:style {:flex-direction :row
-                      :align-items :center}}
-     [account-avatar/view {:customization-color customization-color
-                           :emoji emoji
-                           :size 32}]
-     [text/text {:size :heading-2
-                 :weight :semi-bold
-                 :style {:margin-left 8}} full-name]]
-    [share-button {:on-press  on-share-press}]]
+   [rn/view
+    {:style {:flex-direction  :row
+             :justify-content :space-between
+             :margin-bottom   12}}
+    [rn/view
+     {:style {:flex-direction :row
+              :align-items    :center}}
+     [account-avatar/view
+      {:customization-color customization-color
+       :emoji               emoji
+       :size                32}]
+     [text/text
+      {:size   :heading-2
+       :weight :semi-bold
+       :style  {:margin-left 8}} full-name]]
+    [share-button {:on-press on-share-press}]]
    (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
      [header props])
    [quo.theme/provider {:theme :light}
