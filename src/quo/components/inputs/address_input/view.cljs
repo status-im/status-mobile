@@ -60,8 +60,9 @@
   (let [status   (reagent/atom :default)
         value    (reagent/atom "")
         focused? (atom false)]
-    (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan on-detect-ens
-                 on-detect-address address-regex valid-ens-or-address?]}]
+    (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan
+                 on-detect-ens on-detect-address address-regex valid-ens-or-address?
+                 container-style]}]
       (let [on-change              (fn [text]
                                      (when (not= @value text)
                                        (let [address? (when address-regex
@@ -108,14 +109,14 @@
                          (when-not (empty? scanned-value)
                            (on-change scanned-value)))
                        [scanned-value])
-        [rn/view {:style style/container}
+        [rn/view {:style (style/container container-style)}
          [rn/text-input
           {:accessibility-label    :address-text-input
            :style                  (style/input-text theme)
            :placeholder            (i18n/label :t/name-ens-or-address)
            :placeholder-text-color placeholder-text-color
            :default-value          @value
-           :auto-complete          (when platform/ios? :none)
+           :auto-complete          (when platform/ios? :off)
            :auto-capitalize        :none
            :auto-correct           false
            :spell-check            false
