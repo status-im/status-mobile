@@ -35,9 +35,8 @@
 (defn view
   []
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
-        {:keys [type address path]}               (rf/sub [:wallet/current-viewing-account])
-        networks                                  (rf/sub [:wallet/network-details])
-        watch-only?                               (= type :watch)]
+        {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
+        networks                                  (rf/sub [:wallet/network-details])]
     [rn/view {:style style/about-tab}
      [quo/data-item
       {:description     :default

@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im2.contexts.wallet.send.input-amount.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -101,14 +102,10 @@
              #(.remove app-keyboard-listener))))
         [rn/view
          {:style style/screen}
-         [quo/page-nav
-          {:background       :blur
-           :icon-name        :i/arrow-left
-           :on-press         #(rf/dispatch [:navigate-back])
-           :right-side       :account-switcher
-           :account-switcher {:customization-color :yellow
-                              :emoji               "🎮"
-                              :on-press            #(js/alert "Switch account")}}]
+         [account-switcher/view
+          {:icon-name     :i/arrow-left
+           :on-press      #(rf/dispatch [:navigate-back])
+           :switcher-type :select-account}]
          [quo/token-input
           {:container-style style/input-container
            :token           token
