@@ -13,6 +13,11 @@
     [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
     [utils.re-frame :as rf]))
 
+;; NOTE(parvesh) - I am working on refactoring/optimization of the chat screen for performance
+;; improvement.
+;; Please avoid refactoring these files. Also if you are not already working on bug fixes related to the
+;; chat navigation bar,
+;; please skip them. And ping me, so I can address them while refactoring
 (defn f-chat
   [{:keys [show-floating-scroll-down-button? animate-topbar-name?
            big-name-visible? animate-topbar-opacity? on-end-reached? messages-list-on-layout-finished?]
