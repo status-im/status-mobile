@@ -9,3 +9,7 @@
    ;;"node.login" signal will be triggered as a callback
    (native-module/login-account
     (assoc (profile.config/login) :keyUid key-uid :password hashed-password))))
+
+(rf/reg-fx :effects.profile/enable-local-notifications
+ (fn []
+   (native-module/start-local-notifications)))

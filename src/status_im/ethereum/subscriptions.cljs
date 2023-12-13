@@ -70,9 +70,9 @@
 (rf/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts] :as event}]
   (log/debug "[wallet-subs] new-wallet-event"
-            "event-type"  type
-            "blockNumber" blockNumber
-            "accounts"    accounts)
+             "event-type"  type
+             "blockNumber" blockNumber
+             "accounts"    accounts)
   (case type
     "new-transfers"                            (new-transfers cofx blockNumber accounts)
     "recent-history-fetching"                  (recent-history-fetching-started cofx accounts)
