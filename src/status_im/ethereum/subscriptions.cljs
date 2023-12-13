@@ -69,7 +69,7 @@
 
 (rf/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts] :as event}]
-  (log/info "[wallet-subs] new-wallet-event"
+  (log/debug "[wallet-subs] new-wallet-event"
             "event-type"  type
             "blockNumber" blockNumber
             "accounts"    accounts)
@@ -85,4 +85,4 @@
     "wallet-get-collectibles-details-done"     {:fx [[:dispatch
                                                       [:wallet/get-collectible-details-done
                                                        event]]]}
-    (log/warn ::unknown-wallet-event :type type :event event)))
+    (log/debug ::unknown-wallet-event :type type :event event)))

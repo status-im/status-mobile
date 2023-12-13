@@ -32,10 +32,7 @@
    (case stack-id
      :communities-stack [:f> communities/view]
      :chats-stack       [:f> chat/view]
-     ;NOTE temporary while we support old wallet
-     :wallet-stack      (if @state/load-new-wallet?
-                          [wallet-new/view]
-                          [wallet.accounts/accounts-overview-old])
+     :wallet-stack      [wallet-new/view]
      :browser-stack     [browser.stack/browser-stack]
      [:<>])])
 
