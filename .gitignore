@@ -36,6 +36,10 @@ project.xcworkspace
 **/android/.project
 **/android/.settings/org.eclipse.buildship.core.prefs
 local.properties
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
 
 # Atom
 .tags*

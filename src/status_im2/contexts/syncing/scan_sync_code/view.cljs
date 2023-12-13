@@ -289,14 +289,22 @@
         scan-code?         (reagent/atom true)
         set-rescan-timeout (fn []
                              (reset! scan-code? false)
-                             (js/setTimeout #(reset! scan-code? true) 3000))]
+                             (js/setTimeout (fn []
+                                              (reset! scan-code? true)
+                                              (reset! qr-code-succeed? false))
+                                            3000))]
     (fn [{:keys [title show-bottom-view? background animated?]}]
       (let [torch-mode              (if @torch? :on :off)
             flashlight-icon         (if @torch? :i/flashlight-on :i/flashlight-off)
             scan-qr-code-tab?       (= @active-tab 1)
+            view-id                 (rf/sub [:view-id])
             show-camera?            (and scan-qr-code-tab?
                                          @camera-permission-granted?
                                          @preflight-check-passed?
+                                         (some #{view-id}
+                                               [:sign-in-intro
+                                                :sign-in
+                                                :scan-sync-code-page])
                                          (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
                                          show-camera?
@@ -312,8 +320,7 @@
                                       :show-camera?     show-camera?
                                       :content-opacity  content-opacity
                                       :subtitle-opacity subtitle-opacity
-                                      :title-opacity    title-opacity})
-            view-id                 (rf/sub [:view-id])]
+                                      :title-opacity    title-opacity})]
 
         (rn/use-effect
          #(set-listener-torch-off-on-app-inactive torch?))
@@ -348,7 +355,9 @@
             {:torch-mode            torch-mode
              :qr-view-finder        @qr-view-finder
              :scan-code?            @scan-code?
-             :set-qr-code-succeeded #(reset! qr-code-succeed? true)
+             :set-qr-code-succeeded (fn []
+                                      (reset! qr-code-succeed? true)
+                                      (set-rescan-timeout))
              :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [:f> header

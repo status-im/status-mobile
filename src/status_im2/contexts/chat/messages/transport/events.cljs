@@ -4,12 +4,10 @@
     [clojure.string :as string]
     [status-im.browser.core :as browser]
     [status-im.chat.models.message :as models.message]
-    [status-im.chat.models.reactions :as models.reactions]
     [status-im.communities.core :as models.communities]
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.invitations :as data-store.invitations]
-    [status-im.data-store.reactions :as data-store.reactions]
     [status-im.group-chats.core :as models.group]
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
@@ -18,6 +16,7 @@
     [status-im.wallet.core :as wallet]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.events :as chat.events]
+    [status-im2.contexts.chat.messages.content.reactions.events :as reactions]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
     [status-im2.contexts.contacts.events :as models.contact]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
@@ -139,7 +138,7 @@
         (js-delete response-js "emojiReactions")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (models.reactions/receive-signal (map data-store.reactions/<-rpc reactions))))
+                  (reactions/receive-signal (map reactions/<-rpc reactions))))
 
       (seq invitations)
       (let [invitations (types/js->clj invitations)]
@@ -386,21 +385,3 @@
                     :on-error    #(do
                                     (log/warn "failed to send a message" %)
                                     (js/alert (str "failed to send a message: " %)))}]})
-
-(rf/defn send-emoji-reaction
-  {:events [:reactions/send-emoji-reaction]}
-  [{{:keys [current-chat-id]} :db} {:keys [message-id emoji-id]}]
-  {:json-rpc/call [{:method      "wakuext_sendEmojiReaction"
-                    :params      [current-chat-id message-id emoji-id]
-                    :js-response true
-                    :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-                    :on-error    #(log/error "failed to send a reaction" %)}]})
-
-(rf/defn send-retract-emoji-reaction
-  {:events [:reactions/send-emoji-reaction-retraction]}
-  [_ emoji-reaction-id]
-  {:json-rpc/call [{:method      "wakuext_sendEmojiReactionRetraction"
-                    :params      [emoji-reaction-id]
-                    :js-response true
-                    :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
-                    :on-error    #(log/error "failed to send a reaction retraction" %)}]})

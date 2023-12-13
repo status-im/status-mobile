@@ -1,7 +1,6 @@
 (ns status-im2.subs.messages
   (:require
     [re-frame.core :as re-frame]
-    [status-im.chat.models.reactions :as models.reactions]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.list.events :as models.message-list]
     [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
@@ -177,9 +176,21 @@
  :<- [:multiaccount/public-key]
  :<- [:messages/reactions]
  (fn [[current-public-key reactions] [_ message-id chat-id]]
-   (models.reactions/message-reactions
-    current-public-key
-    (get-in reactions [chat-id message-id]))))
+   (let [reactions (get-in reactions [chat-id message-id])]
+     (reduce
+      (fn [acc [emoji-id reactions]]
+        (if (pos? (count reactions))
+          (let [own (first (filter (fn [[_ {:keys [from]}]]
+                                     (= from current-public-key))
+                                   reactions))]
+            (conj acc
+                  {:emoji-id          emoji-id
+                   :own               (boolean (seq own))
+                   :emoji-reaction-id (:emoji-reaction-id (second own))
+                   :quantity          (count reactions)}))
+          acc))
+      []
+      reactions))))
 
 (re-frame/reg-sub
  :chats/all-loaded?

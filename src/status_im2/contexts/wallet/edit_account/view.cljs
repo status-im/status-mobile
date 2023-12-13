@@ -15,9 +15,10 @@
 (defn- show-save-account-toast
   [updated-key theme]
   (let [message (case updated-key
-                  :name  :t/edit-wallet-account-name-updated-message
-                  :color :t/edit-wallet-account-colour-updated-message
-                  :emoji :t/edit-wallet-account-emoji-updated-message
+                  :name                     :t/edit-wallet-account-name-updated-message
+                  :color                    :t/edit-wallet-account-colour-updated-message
+                  :emoji                    :t/edit-wallet-account-emoji-updated-message
+                  :prod-preferred-chain-ids :t/edit-wallet-network-preferences-updated-message
                   nil)]
     (rf/dispatch [:toasts/upsert
                   {:id         :edit-account
@@ -55,10 +56,11 @@
                                               :new-value   @edited-account-name
                                               :theme       theme}))]
     (fn []
-      (let [{:keys [name emoji address color]
-             :as   account}  (rf/sub [:wallet/current-viewing-account])
-            account-name     (or @edited-account-name name)
-            button-disabled? (or (nil? @edited-account-name) (= name @edited-account-name))]
+      (let [{:keys [name emoji address color] :as account} (rf/sub [:wallet/current-viewing-account])
+            network-details                                (rf/sub [:wallet/network-preference-details])
+            account-name                                   (or @edited-account-name name)
+            button-disabled?                               (or (nil? @edited-account-name)
+                                                               (= name @edited-account-name))]
         [create-or-edit-account/view
          {:page-nav-right-side [{:icon-name :i/delete
                                  :on-press  #(js/alert "Delete account: to be implemented")}]
@@ -86,18 +88,22 @@
            :right-icon      :i/advanced
            :card?           true
            :title           (i18n/label :t/address)
-           :custom-subtitle (fn []
-                              [quo/address-text
-                               {:networks [{:network-name :ethereum :short-name "eth"}
-                                           {:network-name :optimism :short-name "opt"}
-                                           {:network-name :arbitrum :short-name "arb1"}]
-                                :address  address
-                                :format   :long}])
+           :custom-subtitle (fn [] [quo/address-text
+                                    {:networks network-details
+                                     :address  address
+                                     :format   :long}])
            :on-press        (fn []
                               (rf/dispatch [:show-bottom-sheet
-                                            {:content (fn []
-                                                        [network-preferences/view
-                                                         {:on-save #(js/alert "calling on save")}])}]))
+                                            {:content
+                                             (fn []
+                                               [network-preferences/view
+                                                {:on-save (fn [chain-ids]
+                                                            (rf/dispatch [:hide-bottom-sheet])
+                                                            (save-account
+                                                             {:account     account
+                                                              :updated-key :prod-preferred-chain-ids
+                                                              :new-value   chain-ids
+                                                              :theme       theme}))}])}]))
            :container-style style/data-item}]]))))
 
 (def view (quo.theme/with-theme view-internal))

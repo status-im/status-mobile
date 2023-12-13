@@ -5,7 +5,6 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
     [status-im2.contexts.shell.jump-to.animation :as animation]
@@ -198,13 +197,7 @@
     (rf/dispatch [:chat/navigate-to-chat id])
 
     (= card-type shell.constants/community-channel-card)
-    (if config/shell-navigation-disabled?
-      (do
-        (rf/dispatch [:navigate-to :community-overview id])
-        (js/setTimeout
-         #(rf/dispatch [:chat/navigate-to-chat channel-id])
-         100))
-      (rf/dispatch [:chat/navigate-to-chat channel-id]))
+    (rf/dispatch [:chat/navigate-to-chat channel-id])
 
     (= card-type shell.constants/community-card)
     (rf/dispatch [:navigate-to :community-overview id])))

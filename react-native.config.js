@@ -5,12 +5,6 @@ module.exports = {
         ios: null,
       },
     },
-    'react-native-dialogs': {
-      platforms: {
-        android: null,
-        ios: null,
-      },
-    },
     'react-native-image-resizer': {
       platforms: {
         ios: null,

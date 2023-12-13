@@ -7,11 +7,11 @@
     [status-im.chat.models.loading :as loading]
     [status-im.data-store.chats :as chats-store]
     [status-im2.common.muting.helpers :refer [format-mute-till]]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
     status-im2.contexts.chat.effects
     status-im2.contexts.chat.lightbox.events
+    status-im2.contexts.chat.messages.content.reactions.events
     [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.state :as chat.state]
@@ -167,7 +167,7 @@
 
 (rf/defn close-chat
   {:events [:chat/close]}
-  [{:keys [db] :as cofx} navigate-to-shell?]
+  [{:keys [db] :as cofx}]
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (rf/merge cofx
@@ -176,15 +176,7 @@
                                                (dissoc :current-chat-id)
                                                (assoc-in [:chat/inputs chat-id :focused?] false))
                 :effects.async-storage/set {:chat-id nil
-                                            :key-uid nil}}
-               (let [community-id (get-in db [:chats chat-id :community-id])]
-                 ;; When navigating back from community chat to community, update switcher card
-                 ;; A close chat event is also called while opening any chat.
-                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n
-                 ;; is used here.
-                 (when (and community-id config/shell-navigation-disabled? (not navigate-to-shell?))
-                   {:dispatch-n [[:shell/add-switcher-card
-                                  :community-overview community-id]]})))
+                                            :key-uid nil}})
               (link-preview/reset-all)
               (delete-for-me/sync-all)
               (delete-message/send-all)
@@ -218,7 +210,7 @@
             {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
             (when-not (#{:community :community-overview :shell} (:view-id db))
               (navigation/pop-to-root :shell-stack))
-            (close-chat false)
+            (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id)})

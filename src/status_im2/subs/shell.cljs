@@ -2,7 +2,6 @@
   (:require
     [re-frame.core :as re-frame]
     [status-im2.common.resources :as resources]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     [utils.datetime :as datetime]
@@ -269,5 +268,4 @@
  :shell/chat-screen-loaded?
  :<- [:shell/loaded-screens]
  (fn [screens]
-   (or config/shell-navigation-disabled?
-       (get screens shell.constants/chat-screen))))
+   (get screens shell.constants/chat-screen)))
