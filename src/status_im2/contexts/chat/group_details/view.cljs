@@ -230,5 +230,6 @@
                                            :admin?  admin?}
           :render-fn                      contact-item-render}]])]))
 
-(defn group-details []
+(defn group-details
+  []
   [:f> f-group-details])
