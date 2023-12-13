@@ -41,4 +41,5 @@
       :style               (social-style style)
       :source              source}]))
 
+
 (def view (schema/instrument #'view-internal ?schema))
