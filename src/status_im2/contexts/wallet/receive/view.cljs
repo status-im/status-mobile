@@ -86,7 +86,8 @@
           {:icon-name           :i/close
            :on-press            #(rf/dispatch [:navigate-back])
            :background          :blur
-           :right-side          [{:icon-name :i/scan}]
+           :right-side          [{:icon-name :i/scan
+                                  :on-press #(js/alert "To be implemented")}]
            :accessibility-label :top-bar}]
          [quo/text-combinations
           {:container-style style/header-container
