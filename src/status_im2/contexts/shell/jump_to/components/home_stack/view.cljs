@@ -3,7 +3,6 @@
     [quo.theme :as quo.theme]
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.browser.stack :as browser.stack]
-    [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
     [status-im2.contexts.chat.home.view :as chat]
     [status-im2.contexts.communities.home.view :as communities]
     [status-im2.contexts.shell.jump-to.components.home-stack.style :as style]
@@ -32,10 +31,7 @@
    (case stack-id
      :communities-stack [:f> communities/view]
      :chats-stack       [:f> chat/view]
-     ;NOTE temporary while we support old wallet
-     :wallet-stack      (if @state/load-new-wallet?
-                          [wallet-new/view]
-                          [wallet.accounts/accounts-overview-old])
+     :wallet-stack      [wallet-new/view]
      :browser-stack     [browser.stack/browser-stack]
      [:<>])])
 

@@ -8,8 +8,7 @@
 (def mock-data
   [{:id   1
     :type types/item
-    :data {:on-press   (println "pressed")
-           :image      (resources/get-mock-image :diamond)
+    :data {:image      (resources/get-mock-image :diamond)
            :image-size 21
            :right-icon :i/world
            :title      "Trip to Bahamas"}}
