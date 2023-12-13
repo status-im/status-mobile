@@ -8,6 +8,7 @@
     [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
     [status-im2.contexts.onboarding.identifiers.style :as style]
     [utils.i18n :as i18n]
+    [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
 (def header-text
@@ -38,6 +39,7 @@
      [])
     [:<>
      [rn/view {:style style/page-container}
+      (log/info "sooqa" progress drag-amount is-dragging?)
       [carousel/view
        {:animate?     true
         :progress     progress

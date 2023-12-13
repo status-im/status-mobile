@@ -94,6 +94,15 @@
   {:padding-horizontal screen-padding
    :margin-vertical    8})
 
-(def wip-style
-  {:color      colors/white
-   :text-align :center})
+(def wallet-tab-container
+  {})
+
+(def background-container
+  {:background-color colors/neutral-95
+   :flex-direction   :row
+   :position         :absolute
+   :overflow         :hidden
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0})

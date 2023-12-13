@@ -12,6 +12,7 @@
     [status-im2.contexts.onboarding.common.carousel.view :as carousel]
     [status-im2.contexts.shell.jump-to.state :as shell.state]
     [utils.i18n :as i18n]
+    [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
 (def header-text
@@ -78,6 +79,7 @@
     [rn/view
      {:style     style/background-container
       :on-layout store-screen-height}
+     (log/info "sooqa" progress drag-amount is-dragging?)
      [carousel/view
       {:animate?          animate?
        :progress          progress
