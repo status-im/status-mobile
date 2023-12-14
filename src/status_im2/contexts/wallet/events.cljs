@@ -100,14 +100,21 @@
    (let [addresses (->> (get-in db [:wallet :accounts])
                         vals
                         (map :address))]
-     {:fx [[:json-rpc/call
+     {:db (assoc-in db [:wallet :ui :tokens-loading?] true)
+      :fx [[:json-rpc/call
             [{:method     "wallet_getWalletToken"
               :params     [addresses]
               :on-success [:wallet/store-wallet-token]
-              :on-error   #(log/info "failed to get wallet token "
-                                     {:error  %
-                                      :event  :wallet/get-wallet-token
-                                      :params addresses})}]]]})))
+              :on-error   [:wallet/get-wallet-token-failed addresses]}]]]})))
+
+(rf/reg-event-fx
+ :wallet/get-wallet-token-failed
+ (fn [{:keys [db]} [params error]]
+   (log/info "failed to get wallet token "
+             {:error  error
+              :event  :wallet/get-wallet-token
+              :params params})
+   {:db (assoc-in db [:wallet :ui :tokens-loading?] false)}))
 
 (defn- fix-balances-per-chain
   [token]
