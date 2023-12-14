@@ -276,7 +276,7 @@
                               :max-cache-age-seconds max-cache-age-seconds}
          request-params      [request-id
                               [(chain/chain-id db)]
-                              (map :address (:profile/wallet-accounts db))
+                              (keys (get-in db [:wallet :accounts]))
                               collectibles-filter
                               start-at-index
                               collectibles-request-batch-size

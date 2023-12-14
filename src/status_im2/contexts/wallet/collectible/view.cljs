@@ -110,6 +110,25 @@
         :subtitle      network-name
         :subtitle-type :network}]]]))
 
+(defn collectible-actions-sheet
+  []
+  [quo/action-drawer
+   [[{:icon                :i/messages
+      :accessibility-label :share-opensea-link
+      :label               (i18n/label :t/share-opensea-link)}
+     {:icon                :i/link
+      :accessibility-label :view-on-eth
+      :label               (i18n/label :t/view-on-eth)}
+     {:icon                :i/download
+      :accessibility-label :save-image-to-photos
+      :label               (i18n/label :t/save-image-to-photos)}
+     {:icon                :i/copy
+      :accessibility-label :copy-all-details
+      :label               (i18n/label :t/copy-all-details)}
+     {:icon                :i/share
+      :accessibility-label :share-details
+      :label               (i18n/label :t/share-details)}]]])
+
 (defn view
   []
   (let [collectible                  (rf/sub [:wallet/last-collectible-details])
@@ -124,7 +143,10 @@
                        :title       name
                        :description description
                        :right-side  [{:icon-name :i/options
-                                      :on-press  #(js/alert "pressed")}]
+                                      :on-press  #(rf/dispatch
+                                                   [:show-bottom-sheet
+                                                    {:content (fn [] [collectible-actions-sheet])
+                                                     :theme   nil}])}]
                        :picture     preview-url}}
      [rn/view {:style style/container}
       [rn/view {:style style/preview-container}

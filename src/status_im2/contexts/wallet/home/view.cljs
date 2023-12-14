@@ -38,41 +38,53 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
+(def aval
+  (atom {:a 1
+         :b 2}))
+
+(reset! aval {:a 4})
+
+(defn f-view-internal
+  [selected-tab]
+  (let [networks           (rf/sub [:wallet/network-details])
+        account-cards-data (rf/sub [:wallet/account-cards-data])
+        accounts           (rf/sub [:wallet/accounts])
+        cards              (conj account-cards-data (new-account-card-data))
+        top                (safe-area/get-top)]
+    (rn/use-effect (fn []
+                     (rf/dispatch [:wallet/request-collectibles
+                                   {:start-at-index 0
+                                    :new-request?   true}]))
+                   [(count accounts)])
+    [rn/view {:style {:margin-top top :flex 1}}
+     [common.top-nav/view]
+     [rn/view {:style style/overview-container}
+      [quo/wallet-overview (temp/wallet-overview-state networks)]]
+     [quo/wallet-graph {:time-frame :empty}]
+     [rn/flat-list
+      {:style                             style/accounts-list
+       :content-container-style           style/accounts-list-container
+       :data                              cards
+       :horizontal                        true
+       :separator                         [rn/view {:style {:width 12}}]
+       :render-fn                         quo/account-card
+       :shows-horizontal-scroll-indicator false}]
+     [quo/tabs
+      {:style          style/tabs
+       :size           32
+       :default-active @selected-tab
+       :data           tabs-data
+       :on-change      #(reset! selected-tab %)}]
+     (case @selected-tab
+       :assets       [rn/flat-list
+                      {:render-fn               quo/token-value
+                       :data                    temp/tokens
+                       :key                     :assets-list
+                       :content-container-style {:padding-horizontal 8}}]
+       :collectibles [collectibles/view]
+       [activity/view])]))
+
 (defn view
   []
-  (rf/dispatch [:wallet/request-collectibles
-                {:start-at-index 0
-                 :new-request?   true}])
-  (let [top          (safe-area/get-top)
-        selected-tab (reagent/atom (:id (first tabs-data)))]
-    (fn []
-      (let [networks           (rf/sub [:wallet/network-details])
-            account-cards-data (rf/sub [:wallet/account-cards-data])
-            cards              (conj account-cards-data (new-account-card-data))]
-        [rn/view {:style {:margin-top top :flex 1}}
-         [common.top-nav/view]
-         [rn/view {:style style/overview-container}
-          [quo/wallet-overview (temp/wallet-overview-state networks)]]
-         [quo/wallet-graph {:time-frame :empty}]
-         [rn/flat-list
-          {:style                             style/accounts-list
-           :content-container-style           style/accounts-list-container
-           :data                              cards
-           :horizontal                        true
-           :separator                         [rn/view {:style {:width 12}}]
-           :render-fn                         quo/account-card
-           :shows-horizontal-scroll-indicator false}]
-         [quo/tabs
-          {:style          style/tabs
-           :size           32
-           :default-active @selected-tab
-           :data           tabs-data
-           :on-change      #(reset! selected-tab %)}]
-         (case @selected-tab
-           :assets       [rn/flat-list
-                          {:render-fn               quo/token-value
-                           :data                    temp/tokens
-                           :key                     :assets-list
-                           :content-container-style {:padding-horizontal 8}}]
-           :collectibles [collectibles/view]
-           [activity/view])]))))
+  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
+    [:f> f-view-internal selected-tab]))
