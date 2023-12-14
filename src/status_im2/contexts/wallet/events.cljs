@@ -67,6 +67,10 @@
                   db
                   (data-store/rpc->accounts wallet-accounts))
       :fx [[:dispatch [:wallet/get-wallet-token]]
+           [:dispatch
+            [:wallet/request-collectibles
+             {:start-at-index 0
+              :new-request?   true}]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
