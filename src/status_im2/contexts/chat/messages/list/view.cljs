@@ -6,11 +6,11 @@
     [quo.theme :as quo.theme]
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
-    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.react-native-intersection-observer :as rnio]
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.chat.group :as chat.group]
+    [status-im2.common.home.actions.view :as home.actions]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
@@ -21,12 +21,13 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defonce ^:const card-border-radius 16)
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
-(defonce ^:const topbar-visible-scroll-y-value 85)
+(defonce ^:const topbar-visible-scroll-y-value 50)
 (defonce ^:const topbar-invisible-scroll-y-value 135)
 (defonce ^:const minimum-scroll-y-topbar-overlaying-avatar 400)
 (def root-margin-for-big-name-visibility-detector {:bottom -35})
@@ -131,36 +132,38 @@
        ;; https://github.com/status-im/status-mobile/issues/17426
        [quo/skeleton-list (skeleton-list-props :messages parent-height platform/ios?)]])))
 
+(defn calc-list-header-height
+  [insets able-to-send-message? images]
+  (if able-to-send-message?
+    (+ composer.constants/composer-default-height
+       jump-to.constants/floating-shell-button-height
+       (if (seq images) composer.constants/images-container-height 0)
+       (:bottom insets))
+    (- 70 (:bottom insets))))
+
 (defn list-header
-  [insets able-to-send-message? theme]
-  (let [images (rf/sub [:chats/sending-image])]
+  [insets able-to-send-message? images theme]
+  (let [height (calc-list-header-height insets able-to-send-message? images)]
     [rn/view
      {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-      :height           (if able-to-send-message?
-                          (+ composer.constants/composer-default-height
-                             jump-to.constants/floating-shell-button-height
-                             (if (seq images) composer.constants/images-container-height 0)
-                             (:bottom insets))
-                          (- 70 (:bottom insets)))}]))
+      :height           height}]))
 
 (defn f-list-footer-avatar
   [{:keys [scroll-y display-name online? profile-picture]}]
-  (let [image-scale-animation       (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [1 0.5]
-                                                            header-extrapolation-option)
-        image-top-margin-animation  (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [0 40]
-                                                            header-extrapolation-option)
-        image-side-margin-animation (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [0 -20]
-                                                            header-extrapolation-option)]
+  (let [image-scale-animation  (reanimated/interpolate scroll-y
+                                                       scroll-animation-input-range
+                                                       [1 0.5]
+                                                       header-extrapolation-option)
+        image-bottom-animation (reanimated/interpolate scroll-y
+                                                       scroll-animation-input-range
+                                                       [0 56]
+                                                       header-extrapolation-option)
+        image-side-animation   (reanimated/interpolate scroll-y
+                                                       scroll-animation-input-range
+                                                       [0 -40]
+                                                       header-extrapolation-option)]
     [reanimated/view
-     {:style (style/header-image image-scale-animation
-                                 image-top-margin-animation
-                                 image-side-margin-animation)}
+     {:style (style/header-image image-scale-animation image-side-animation image-bottom-animation)}
      [quo/user-avatar
       {:full-name       display-name
        :online?         online?
@@ -174,8 +177,13 @@
 
 (defn actions
   [chat-id cover-bg-color]
-  (let [latest-pin-text (rf/sub [:chats/last-pinned-message-text chat-id])
-        pins-count      (rf/sub [:chats/pin-messages-count chat-id])]
+  (let [latest-pin-text                      (rf/sub [:chats/last-pinned-message-text chat-id])
+        pins-count                           (rf/sub [:chats/pin-messages-count chat-id])
+        {:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])
+        community-channel?                   (= constants/community-chat-type chat-type)
+        muted?                               (and muted (some? muted-till))
+        mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
+        unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
     [quo/channel-actions
      {:style   {:margin-top 16}
       :actions [{:accessibility-label :action-button-pinned
@@ -187,7 +195,19 @@
                  :on-press            (fn []
                                         (rf/dispatch [:dismiss-keyboard])
                                         (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                                      chat-id]))}]}]))
+                                                      chat-id]))}
+                {:accessibility-label :action-button-mute
+                 :label               (i18n/label (if muted
+                                                    unmute-chat-label
+                                                    mute-chat-label))
+                 :color               cover-bg-color
+                 :icon                (if muted? :i/muted :i/activity-center)
+                 :on-press            (fn []
+                                        (if muted?
+                                          (home.actions/unmute-chat-action chat-id)
+                                          (home.actions/mute-chat-action chat-id
+                                                                         chat-type
+                                                                         muted?)))}]}]))
 
 (defn f-list-footer
   [{:keys [chat scroll-y cover-bg-color on-layout theme messages-view-height
@@ -207,8 +227,8 @@
                                (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path           (rf/sub [:chats/photo-path chat-id])
         border-animation     (reanimated/interpolate scroll-y
-                                                     [30 125]
-                                                     [14 0]
+                                                     [30 50]
+                                                     [card-border-radius 0]
                                                      header-extrapolation-option)]
     [rn/view {:flex 1}
      [rn/view
@@ -269,21 +289,23 @@
        :else
        [message/message message-data context keyboard-shown?])]))
 
-(defn scroll-handler
-  [event scroll-y animate-topbar-opacity? on-end-reached? animate-topbar-name?]
-  (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
-                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y       (oops/oget event "nativeEvent.contentOffset.y")
-        scroll-distance (- content-size-y current-y)]
-    (when (and @on-end-reached? (pos? scroll-distance))
+(defn use-scroll-handler
+  [{:keys [scroll-y-animated-value
+           content-size-animated-value
+           animate-topbar-opacity?
+           on-end-reached?
+           animate-topbar-name?]}]
+  (fn [new-scroll-y new-content-size]
+    (when (and @on-end-reached? (pos? new-scroll-y))
       (reset! on-end-reached? false))
-    (if (< topbar-visible-scroll-y-value scroll-distance)
+    (if (< topbar-visible-scroll-y-value new-scroll-y)
       (reset! animate-topbar-opacity? true)
       (reset! animate-topbar-opacity? false))
-    (if (< topbar-invisible-scroll-y-value scroll-distance)
+    (if (< topbar-invisible-scroll-y-value new-scroll-y)
       (reset! animate-topbar-name? true)
       (reset! animate-topbar-name? false))
-    (reanimated/set-shared-value scroll-y scroll-distance)))
+    (reanimated/set-shared-value content-size-animated-value new-content-size)
+    (reanimated/set-shared-value scroll-y-animated-value (max new-scroll-y 0))))
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
@@ -297,14 +319,21 @@
                  [composer-active? @on-end-reached? @animate-topbar-opacity?])
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
-        {:keys [keyboard-height]}             (hooks/use-keyboard)
         context                               (rf/sub [:chats/current-chat-message-list-view-context])
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        images                                (rf/sub [:chats/sending-image])
         recording?                            (rf/sub [:chats/recording?])
-        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         {:keys [show-floating-scroll-down-button?
+                messages-scroll-y-value-initialized?
                 messages-view-height
-                messages-view-header-height]} inner-state-atoms]
+                messages-view-header-height]} inner-state-atoms
+        scroll-handler                        (use-scroll-handler
+                                               {:animate-topbar-name? animate-topbar-name?
+                                                :animate-topbar-opacity? animate-topbar-opacity?
+                                                :on-end-reached? on-end-reached?
+                                                :scroll-y-animated-value scroll-y
+                                                :content-size-animated-value
+                                                content-height})]
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
       {:root-margin root-margin-for-big-name-visibility-detector
@@ -312,7 +341,7 @@
        :ref list-ref
        :bounces false
        :header [:<>
-                [list-header insets (:able-to-send-message? context) theme]
+                [list-header insets (:able-to-send-message? context) images theme]
                 (when (= (:chat-type chat) constants/private-group-chat-type)
                   [list-group-chat-header chat])]
        :footer [list-footer
@@ -333,37 +362,61 @@
                      :insets          insets}
        :render-fn render-fn
        :on-viewable-items-changed on-viewable-items-changed
-       :on-content-size-change (fn [_ y]
-                                 (if (or
-                                      (< minimum-scroll-y-topbar-overlaying-avatar
-                                         (reanimated/get-shared-value scroll-y))
-                                      (< topbar-visible-scroll-y-value
-                                         (reanimated/get-shared-value scroll-y)))
-                                   (reset! animate-topbar-opacity? true)
-                                   (reset! animate-topbar-opacity? false))
-                                 (when-not (or
-                                            (not @big-name-visible?)
-                                            (= :initial-render @big-name-visible?)
-                                            (pos? (reanimated/get-shared-value
-                                                   scroll-y)))
-                                   (reset! on-end-reached? false))
-                                 ;; NOTE(alwx): here we set the initial value of
-                                 ;; `scroll-y` which is needed because by default the
-                                 ;; chat is scrolled to the bottom and no initial
-                                 ;; `on-scroll` event is getting triggered
-                                 (let [scroll-y-shared       (reanimated/get-shared-value
-                                                              scroll-y)
-                                       content-height-shared (reanimated/get-shared-value
-                                                              content-height)]
-                                   (when (or (= scroll-y-shared 0)
-                                             (> (Math/abs (- content-height-shared y))
-                                                min-message-height))
-                                     (reanimated/set-shared-value scroll-y
-                                                                  (- y
-                                                                     window-height
-                                                                     (- (when keyboard-shown?
-                                                                          keyboard-height))))
-                                     (reanimated/set-shared-value content-height y))))
+       :on-content-size-change
+       (fn [_ y]
+         (if (or
+              (< minimum-scroll-y-topbar-overlaying-avatar
+                 (reanimated/get-shared-value scroll-y))
+              (< topbar-visible-scroll-y-value
+                 (reanimated/get-shared-value scroll-y)))
+           (reset! animate-topbar-opacity? true)
+           (reset! animate-topbar-opacity? false))
+         (when-not (or
+                    (not @big-name-visible?)
+                    (= :initial-render @big-name-visible?)
+                    (pos? (reanimated/get-shared-value
+                           scroll-y)))
+           (reset! on-end-reached? false))
+         ;; NOTE(alwx): here we set the initial value of `scroll-y` which is needed because by
+         ;; default the chat is scrolled to the bottom and no initial `on-scroll` event is getting
+         ;; triggered. Also makes sure changes in the content size are reflected in `scroll-y` e.g.
+         ;; incoming messages scrolling the content up, which should affect the header
+         ;; animations/interpolations.
+         (let [content-size-shared                (reanimated/get-shared-value
+                                                   content-height)
+               scroll-y-shared                    (if
+                                                    @messages-scroll-y-value-initialized?
+                                                    (reanimated/get-shared-value
+                                                     scroll-y)
+                                                    y)
+               ;; NOTE: when the keyboard is shown and the message list
+               ;; doesn't fill the screen, we use a different value for
+               ;; scroll-y, which would make sure the avatar is minimized
+               ;; appropriately and the header is shown.
+               keyboard-shown-with-unfilled-list? (< y window-height)
+               keyboard-space                     (- window-height y)
+               keyboard-scroll-value              (- y keyboard-space keyboard-space)
+               ;; NOTE: doing the calculations as we would in `on-scroll`, so the animations
+               ;; and interpolations are triggered properly.
+               content-size                       (- y
+                                                     window-height
+                                                     ;; NOTE: for some reason android insets are
+                                                     ;; included in the content size `y`, while iOS
+                                                     ;; are not.
+                                                     (when platform/android? (:top insets)))
+               current-y                          (max (- content-size-shared
+                                                          scroll-y-shared)
+                                                       0)
+               new-scroll-value                   (if keyboard-shown-with-unfilled-list?
+                                                    keyboard-scroll-value
+                                                    (- content-size
+                                                       current-y))]
+           (when (and (>= new-scroll-value 0)
+                      (or (= scroll-y-shared 0)
+                          (> (Math/abs (- content-size-shared y))
+                             min-message-height)))
+             (reset! messages-scroll-y-value-initialized? true)
+             (scroll-handler new-scroll-value content-size))))
        :on-end-reached #(list-on-end-reached scroll-y on-end-reached?)
        :on-scroll-to-index-failed identity
        :scroll-indicator-insets {:top (if (:able-to-send-message? context)
@@ -378,26 +431,21 @@
        :on-momentum-scroll-end state/stop-scrolling
        :scroll-event-throttle 16
        :on-scroll (fn [event]
-                    (scroll-handler event
-                                    scroll-y
-                                    animate-topbar-opacity?
-                                    on-end-reached?
-                                    animate-topbar-name?)
+                    (let [content-size-y
+                          (- (oops/oget event "nativeEvent.contentSize.height")
+                             (oops/oget event
+                                        "nativeEvent.layoutMeasurement.height"))
+                          current-y (oops/oget event
+                                               "nativeEvent.contentOffset.y")
+                          scroll-distance (- content-size-y current-y)]
+                      (scroll-handler scroll-distance content-size-y))
                     (on-scroll event show-floating-scroll-down-button?))
-       :style
-       {:background-color (if all-loaded?
-                            (colors/theme-colors
-                             (colors/custom-color cover-bg-color
-                                                  50
-                                                  20)
-                             (colors/custom-color cover-bg-color
-                                                  50
-                                                  40)
-                             theme)
-                            (colors/theme-colors
-                             colors/white
-                             colors/neutral-95
-                             theme))}
+       :content-container-style {:justify-content :flex-end
+                                 :min-height      @messages-view-height}
+       :style {:background-color (colors/theme-colors
+                                  colors/white
+                                  colors/neutral-95
+                                  theme)}
        :inverted true
        :on-layout (fn [e]
                     ;; FIXME: the 1s timeout is to assure all effects with
