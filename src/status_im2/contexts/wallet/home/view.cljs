@@ -2,8 +2,8 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.ui.screens.wallet.components.styles :as styles]
     [status-im2.common.home.top-nav.view :as common.top-nav]
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
@@ -49,14 +49,13 @@
   (let [networks           (rf/sub [:wallet/network-details])
         account-cards-data (rf/sub [:wallet/account-cards-data])
         accounts           (rf/sub [:wallet/accounts])
-        cards              (conj account-cards-data (new-account-card-data))
-        top                (safe-area/get-top)]
+        cards              (conj account-cards-data (new-account-card-data))]
     (rn/use-effect (fn []
                      (rf/dispatch [:wallet/request-collectibles
                                    {:start-at-index 0
                                     :new-request?   true}]))
                    [(count accounts)])
-    [rn/view {:style {:margin-top top :flex 1}}
+    [rn/view {:style style/home-container}
      [common.top-nav/view]
      [rn/view {:style style/overview-container}
       [quo/wallet-overview (temp/wallet-overview-state networks)]]
@@ -66,7 +65,7 @@
        :content-container-style           style/accounts-list-container
        :data                              cards
        :horizontal                        true
-       :separator                         [rn/view {:style {:width 12}}]
+       :separator                         [rn/view {:style styles/separator}]
        :render-fn                         quo/account-card
        :shows-horizontal-scroll-indicator false}]
      [quo/tabs
@@ -80,7 +79,7 @@
                       {:render-fn               quo/token-value
                        :data                    temp/tokens
                        :key                     :assets-list
-                       :content-container-style {:padding-horizontal 8}}]
+                       :content-container-style style/selected-tab-container}]
        :collectibles [collectibles/view]
        [activity/view])]))
 

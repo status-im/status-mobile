@@ -86,7 +86,8 @@
   (let [network         (rf/sub [:wallet/network-details-by-chain-id
                                  chain-id])
         network-keyword (get network :network-name)
-        network-name    (string/capitalize (name network-keyword))]
+        network-name    (when network-keyword
+                          (string/capitalize (name network-keyword)))]
     [rn/view
      {:style style/info-container}
      [rn/view {:style style/account}
@@ -131,11 +132,11 @@
 
 (defn view
   []
-  (let [collectible                  (rf/sub [:wallet/last-collectible-details])
+  (let [collectible                       (rf/sub [:wallet/last-collectible-details])
         {:keys [collectible-data preview-url
-                collection-data]}    collectible
-        {:keys [traits description]} collectible-data
-        chain-id                     (rf/sub [:wallet/last-collectible-chain-id])]
+                collection-data]}         collectible
+        {:keys [traits name description]} collectible-data
+        chain-id                          (rf/sub [:wallet/last-collectible-chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
@@ -145,7 +146,7 @@
                        :right-side  [{:icon-name :i/options
                                       :on-press  #(rf/dispatch
                                                    [:show-bottom-sheet
-                                                    {:content (fn [] [collectible-actions-sheet])
+                                                    {:content collectible-actions-sheet
                                                      :theme   nil}])}]
                        :picture     preview-url}}
      [rn/view {:style style/container}
