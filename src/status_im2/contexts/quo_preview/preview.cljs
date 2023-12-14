@@ -5,6 +5,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
+    [re-frame.core :as rf]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -320,9 +321,10 @@
   [{:keys [title state descriptor blur? blur-dark-only?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
-    :or   {blur-height 200 title "quo component"}}
+    :or   {blur-height 200}}
    & children]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme-value)
+        title (or title @(rf/subscribe [:view-id]))]
     (rn/use-effect (fn []
                      (when blur-dark-only?
                        (if blur?
