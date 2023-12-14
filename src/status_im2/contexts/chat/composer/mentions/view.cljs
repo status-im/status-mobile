@@ -25,7 +25,7 @@
   [user _ _ render-data]
   [contact-list-item/contact-list-item
    {:on-press (fn []
-                (rf/dispatch [:chat.ui/select-mention nil user])
+                (rf/dispatch [:chat.ui/select-mention user])
                 (update-cursor user render-data))}
    user])
 

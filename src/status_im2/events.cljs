@@ -11,6 +11,7 @@
     status-im2.common.theme.events
     [status-im2.common.toasts.events]
     [status-im2.contexts.add-new-contact.events]
+    status-im2.contexts.chat.composer.events
     status-im2.contexts.chat.events
     status-im2.contexts.chat.photo-selector.events
     status-im2.contexts.communities.overview.events
