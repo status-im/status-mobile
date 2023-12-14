@@ -1,5 +1,6 @@
 (ns quo.components.navigation.page-nav.view
   (:require
+    [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.avatars.group-avatar.view :as group-avatar]
     [quo.components.buttons.button.properties :as button-properties]
     [quo.components.buttons.button.view :as button]
@@ -59,15 +60,13 @@
         (interpose [right-section-spacing])))
 
 (defn- account-switcher-content
-  [{:keys [customization-color on-press emoji state]}]
-  [dropdown/view
-   {:type                :customization
-    :customization-color customization-color
-    :state               (or state :default)
-    :size                :size-32
-    :on-press            on-press
-    :emoji?              true}
-   emoji])
+  [{:keys [customization-color on-press emoji type]}]
+  [rn/pressable {:on-press on-press}
+   [account-avatar/view
+    {:emoji               emoji
+     :size                32
+     :type                (or type :default)
+     :customization-color customization-color}]])
 
 (defn- right-content
   [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
