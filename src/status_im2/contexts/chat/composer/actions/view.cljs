@@ -32,7 +32,7 @@
   (js/setTimeout #(reanimated/set-shared-value background-y
                                                (- window-height))
                  300)
-  (rf/dispatch [:chat.ui/send-current-message])
+  (rf/dispatch [:chat.ui/replace-mentions-and-send-current-message])
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height comp-constants/input-height])
   (rf/dispatch [:chat.ui/set-chat-input-text nil])

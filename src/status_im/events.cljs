@@ -10,7 +10,6 @@
     status-im.bootnodes.core
     status-im.browser.core
     status-im.browser.permissions
-    status-im.chat.models.input
     status-im.chat.models.loading
     status-im.contact.block
     status-im.currency.core
