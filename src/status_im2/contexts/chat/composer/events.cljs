@@ -8,7 +8,8 @@
             [taoensso.timbre :as log]
             [utils.emojilib :as emoji]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            utils.string))
 
 (rf/defn set-chat-input-text
   {:events [:chat.ui/set-chat-input-text]}

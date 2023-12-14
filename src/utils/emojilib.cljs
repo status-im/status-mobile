@@ -1,6 +1,7 @@
 (ns utils.emojilib
   (:require ["emojilib" :as emojis]
-            [goog.object :as object]))
+            [goog.object :as object]
+            utils.string))
 
 (def lib (.-lib emojis))
 
