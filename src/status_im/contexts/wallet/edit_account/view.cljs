@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.edit-account.view
   (:require [quo.core :as quo]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
@@ -31,8 +30,7 @@
                   {:account    edited-account-data
                    :on-success #(show-save-account-toast updated-key)}])))
 
-(defn- view-internal
-  []
+(def view
   (let [edited-account-name  (reagent/atom nil)
         show-confirm-button? (reagent/atom false)
         on-change-color      (fn [edited-color {:keys [color] :as account}]
@@ -97,8 +95,5 @@
                                                             (save-account
                                                              {:account     account
                                                               :updated-key :prod-preferred-chain-ids
-                                                              :new-value   chain-ids
-                                                              :theme       theme}))}])}]))
+                                                              :new-value   chain-ids}))}])}]))
            :container-style style/data-item}]]))))
-
-(def view (quo.theme/with-theme view-internal))
