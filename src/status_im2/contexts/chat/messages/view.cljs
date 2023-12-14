@@ -98,13 +98,14 @@
 (defn chat
   []
   (let [inner-state-atoms
-        {:extra-keyboard-height             (reagent/atom 0)
-         :show-floating-scroll-down-button? (reagent/atom false)
-         :messages-view-height              (reagent/atom 0)
-         :messages-view-header-height       (reagent/atom 0)
-         :animate-topbar-name?              (reagent/atom false)
-         :big-name-visible?                 (reagent/atom :initial-render)
-         :animate-topbar-opacity?           (reagent/atom false)
-         :on-end-reached?                   (reagent/atom false)
-         :messages-list-on-layout-finished? (reagent/atom false)}]
+        {:extra-keyboard-height                (reagent/atom 0)
+         :show-floating-scroll-down-button?    (reagent/atom false)
+         :messages-scroll-y-value-initialized? (reagent/atom false)
+         :messages-view-height                 (reagent/atom 0)
+         :messages-view-header-height          (reagent/atom 0)
+         :animate-topbar-name?                 (reagent/atom false)
+         :big-name-visible?                    (reagent/atom :initial-render)
+         :animate-topbar-opacity?              (reagent/atom false)
+         :on-end-reached?                      (reagent/atom false)
+         :messages-list-on-layout-finished?    (reagent/atom false)}]
     [:f> f-chat inner-state-atoms]))

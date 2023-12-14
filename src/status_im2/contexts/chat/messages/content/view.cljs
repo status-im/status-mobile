@@ -32,10 +32,11 @@
 
 (defn avatar-container
   [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?
-   in-reaction-and-action-menu? in-pinned-view?]
+   in-reaction-and-action-menu? show-user-info? in-pinned-view?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
+          show-user-info?
           pinned-by
           (not show-reactions?)
           in-reaction-and-action-menu?)
@@ -54,10 +55,12 @@
            from
            timestamp]}
    show-reactions?
-   in-reaction-and-action-menu?]
+   in-reaction-and-action-menu?
+   show-user-info?]
   (when (or (and (seq response-to) quoted-message)
             last-in-group?
             pinned-by
+            show-user-info?
             (not show-reactions?)
             in-reaction-and-action-menu?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
@@ -116,7 +119,7 @@
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
-                 theme]}]
+                 show-user-info? theme]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by]} message-data
             first-image                                  (first (:album message-data))
@@ -170,7 +173,7 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data show-reactions? in-reaction-and-action-menu?
+           [avatar-container message-data show-reactions? in-reaction-and-action-menu? show-user-info?
             (:in-pinned-view? context)]
            (into
             (if show-reactions?
@@ -180,7 +183,7 @@
                       :flex        1
                       :max-height  (when-not show-reactions?
                                      (* 0.4 height))}}
-             [author message-data show-reactions? in-reaction-and-action-menu?]
+             [author message-data show-reactions? in-reaction-and-action-menu? show-user-info?]
              (condp = content-type
                constants/content-type-text
                [content.text/text-content message-data context]
