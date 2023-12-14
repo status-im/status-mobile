@@ -13,3 +13,14 @@
 (def section-label
   {:margin-horizontal 20
    :margin-top        12})
+
+(def link-cards-container
+  {:margin-horizontal 20
+   :margin-top        12
+   :flex-direction :row
+   :flex-wrap :wrap
+   :justify-content :space-between})
+
+(def link-card
+  {:margin-bottom 16
+   :flex 1})
