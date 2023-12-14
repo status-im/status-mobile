@@ -27,7 +27,7 @@
          :color               (if blur?
                                 colors/white-opa-40
                                 (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
-         :container-style     style/keycard-icon-container
+         :container-style     style/title-icon-container
          :accessibility-label :title-icon}])]
     [address-text/view
      {:networks (:networks account-props)
