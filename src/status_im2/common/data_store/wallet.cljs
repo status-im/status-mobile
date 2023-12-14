@@ -15,6 +15,10 @@
   [ids]
   (string/join constants/chain-id-separator ids))
 
+(defn add-keys-to-account
+  [account]
+  (assoc account :watch-only? (= (:type account) :watch)))
+
 (defn rpc->account
   [account]
   (-> account
@@ -25,7 +29,8 @@
       (update :prod-preferred-chain-ids chain-ids-string->set)
       (update :test-preferred-chain-ids chain-ids-string->set)
       (update :type keyword)
-      (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))))
+      (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))
+      add-keys-to-account))
 
 (defn rpc->accounts
   [accounts]
@@ -40,7 +45,8 @@
                         :test-preferred-chain-ids :testPreferredChainIds
                         :color                    :colorId})
       (update :prodPreferredChainIds chain-ids-set->string)
-      (update :testPreferredChainIds chain-ids-set->string)))
+      (update :testPreferredChainIds chain-ids-set->string)
+      (dissoc :watch-only?)))
 
 (defn <-rpc
   [network]
