@@ -6,7 +6,6 @@
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
-    [quo.foundations.common :as common]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]))
@@ -14,7 +13,8 @@
 (defn- internal-view
   []
   (let [state (reagent/atom :default)]
-    (fn [{:keys [theme customization-color status token metrics? values on-press on-long-press]}]
+    (fn [{:keys [theme customization-color status token metrics? values on-press on-long-press
+                 token-name]}]
       (let [bg-opacity                                                      (case @state
                                                                               :active  10
                                                                               :pressed 5
@@ -36,7 +36,7 @@
                    :flex           1}}
           [token/view {:token token :size :size-32}]
           [rn/view {:style {:margin-left 8}}
-           [text/text {:weight :semi-bold} (common/token-label token)]
+           [text/text {:weight :semi-bold} token-name]
            [text/text
             {:size  :paragraph-2
              :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}

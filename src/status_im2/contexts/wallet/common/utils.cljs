@@ -42,6 +42,10 @@
       (total-raw-balance-in-all-chains)
       (money/token->unit decimals)))
 
+(defn get-account-by-address
+  [accounts address]
+  (some #(when (= (:address %) address) %) accounts))
+
 (defn calculate-raw-balance
   [raw-balance decimals]
   (if-let [n (utils.number/parse-int raw-balance nil)]

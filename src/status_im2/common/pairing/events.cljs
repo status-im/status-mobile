@@ -18,6 +18,8 @@
                                                 constants/local-pairing-event-connection-success)
                                              (= action
                                                 constants/local-pairing-action-connect))
+        connection-error?               (and (= type
+                                                constants/local-pairing-event-connection-error))
         error-on-pairing?               (contains? constants/local-pairing-event-errors type)
         completed-pairing?              (and (= type
                                                 constants/local-pairing-event-transfer-success)
@@ -30,8 +32,9 @@
                                              (and (some? account) (some? password)))
         multiaccount-data               (when received-account?
                                           (merge account {:password password}))
-        navigate-to-syncing-devices?    (and (or connection-success? error-on-pairing?) receiver?)
+        navigate-to-syncing-devices?    (and (or connection-success? connection-error?) receiver?)
         user-in-syncing-devices-screen? (or (= (:view-id db) :syncing-progress)
+                                            (= (:view-id db) :profiles)
                                             (= (:view-id db) :syncing-progress-intro))
         user-in-sign-in-intro-screen?   (= (:view-id db) :sign-in-intro)]
     (merge {:db (cond-> db

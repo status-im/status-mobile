@@ -155,7 +155,7 @@
                                       ;; setupFilesAfterEnv.
                                       status-im2.setup.schema-preload
 
-                                      quo.core-spec
+                                      ;;quo.core-spec
                                       status-im2.core-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"

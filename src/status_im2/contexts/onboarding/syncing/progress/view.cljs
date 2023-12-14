@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.syncing.progress.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -25,12 +26,17 @@
     :description-accessibility-label :progress-screen-sub-title}])
 
 (defn try-again-button
-  [profile-color in-onboarding?]
+  [profile-color in-onboarding? logged-in?]
   [quo/button
    {:on-press            (fn []
                            (rf/dispatch [:syncing/clear-states])
-                           (rf/dispatch [:navigate-back-to
-                                         (if in-onboarding? :sign-in-intro :sign-in)]))
+                           (cond
+                             logged-in?     (rf/dispatch [:navigate-back])
+                             in-onboarding? (rf/dispatch [:navigate-back-to :sign-in-intro])
+                             :else          (do
+                                              (rf/dispatch [:navigate-back])
+                                              (debounce/dispatch-and-chill [:open-modal :sign-in]
+                                                                           1000))))
     :accessibility-label :try-again-later-button
     :customization-color profile-color
     :container-style     style/try-again-button}
@@ -39,7 +45,8 @@
 (defn view
   [in-onboarding?]
   (let [pairing-status (rf/sub [:pairing/pairing-status])
-        profile-color  (:color (rf/sub [:onboarding/profile]))]
+        profile-color  (:color (rf/sub [:onboarding/profile]))
+        logged-in?     (rf/sub [:multiaccount/logged-in?])]
     [rn/view {:style (style/page-container in-onboarding?)}
      (when-not in-onboarding? [background/view true])
      [quo/page-nav {:type :no-title :background :blur}]
@@ -50,7 +57,7 @@
        [rn/view {:style style/page-illustration}
         [quo/text "[Error here]"]])
      (when-not (pairing-progress pairing-status)
-       [try-again-button profile-color in-onboarding?])]))
+       [try-again-button profile-color in-onboarding? logged-in?])]))
 
 (defn view-onboarding
   []

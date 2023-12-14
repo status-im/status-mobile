@@ -19,6 +19,7 @@
 
 (def tokens
   [{:token               :snt
+    :token-name          "Status"
     :state               :default
     :status              :empty
     :customization-color :blue
@@ -27,6 +28,7 @@
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}
    {:token               :eth
+    :token-name          "Ether"
     :state               :default
     :status              :empty
     :customization-color :blue
@@ -35,6 +37,7 @@
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}
    {:token               :dai
+    :token-name          "Dai Stablecoin"
     :state               :default
     :status              :empty
     :customization-color :blue

@@ -23,7 +23,8 @@
 
 (defn- options
   [{:keys [theme show-account-selector? options-height]}]
-  (let [{:keys [name color emoji address]} (rf/sub [:wallet/current-viewing-account])]
+  (let [{:keys [name color emoji address]} (rf/sub [:wallet/current-viewing-account])
+        network-preference-details         (rf/sub [:wallet/network-preference-details])]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -44,9 +45,7 @@
      [quo/drawer-top
       {:title                name
        :type                 :account
-       :networks             [{:network-name :ethereum :short-name "eth"}
-                              {:network-name :optimism :short-name "opt"}
-                              {:network-name :arbitrum :short-name "arb1"}]
+       :networks             network-preference-details
        :description          address
        :account-avatar-emoji emoji
        :customization-color  color}]

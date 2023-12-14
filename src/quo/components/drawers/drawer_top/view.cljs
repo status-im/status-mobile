@@ -14,6 +14,8 @@
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
+(def ^:private left-image-supported-types #{:account :keypair :default-keypair})
+
 (defn- left-image
   [{:keys [type customization-color account-avatar-emoji icon-avatar profile-picture]}]
   (case type
@@ -165,13 +167,14 @@
            button-disabled? account-avatar-emoji customization-color icon-avatar
            profile-picture keycard? networks label]}]
   [rn/view {:style style/container}
-   [rn/view {:style style/left-container}
-    [left-image
-     {:type                 type
-      :customization-color  customization-color
-      :account-avatar-emoji account-avatar-emoji
-      :icon-avatar          icon-avatar
-      :profile-picture      profile-picture}]]
+   (when (left-image-supported-types type)
+     [rn/view {:style style/left-container}
+      [left-image
+       {:type                 type
+        :customization-color  customization-color
+        :account-avatar-emoji account-avatar-emoji
+        :icon-avatar          icon-avatar
+        :profile-picture      profile-picture}]])
    [rn/view {:style style/body-container}
     [left-title
      {:type  type

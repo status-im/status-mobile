@@ -20,6 +20,7 @@
 (defn view
   []
   (let [state (reagent/atom {:token               :snt
+                             :token-name          "Status"
                              :state               :default
                              :status              :empty
                              :customization-color :blue
