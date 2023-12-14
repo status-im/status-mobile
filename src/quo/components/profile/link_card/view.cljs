@@ -24,11 +24,14 @@
        :social              icon}]]
     [text/text
      {:accessibility-label :title
+      :numberOfLines       1
       :weight              :semi-bold}
      title]
     [text/text
      {:accessibility-label :address
-      :size                :paragraph-2}
+      :size                :paragraph-2
+      :numberOfLines       1
+      :style               (style/address theme)}
      address]]])
 
 (def view (quo.theme/with-theme view-internal))

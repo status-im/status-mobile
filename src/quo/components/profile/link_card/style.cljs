@@ -3,8 +3,7 @@
 
 (defn container
   [theme]
-  {:width         160
-   :height        88
+  {:height        88
    :border-width  1
    :border-radius 16
    :padding       12
@@ -15,3 +14,10 @@
 
 (def icon-container
   {:margin-bottom 4})
+
+(defn address
+  [theme]
+  {:color (colors/theme-colors
+           colors/neutral-50
+           colors/neutral-40
+           theme)})

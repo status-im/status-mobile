@@ -120,5 +120,6 @@
       [preview/preview-container
        {:state                     state
         :descriptor                descriptor
-        :component-container-style {:padding-bottom 50}}
+        :component-container-style {:padding-bottom 50
+                                    :width          200}}
        [quo/link-card (initial-state (:link @state))]])))
