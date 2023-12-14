@@ -394,3 +394,5 @@
 
 (def ^:const status-address-domain ".stateofus.eth")
 (def ^:const eth-address-domain ".eth")
+
+(def ^:const testnet-banner-height 40)

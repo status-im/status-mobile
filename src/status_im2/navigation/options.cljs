@@ -81,7 +81,8 @@
 
 (def transparent-screen-options
   (merge
-   {:modalPresentationStyle :overCurrentContext
+   {:show-blur?             true
+    :modalPresentationStyle :overCurrentContext
     :theme                  :dark
     :layout                 {:componentBackgroundColor :transparent
                              :orientation              ["portrait"]
@@ -112,26 +113,29 @@
                    :backgroundColor          colors/neutral-95}}))
 
 (def lightbox
-  {:topBar        {:visible false}
-   :statusBar     {:backgroundColor :transparent
-                   :style           :light
-                   :animate         true
-                   :drawBehind      true
-                   :translucent     true}
-   :navigationBar {:backgroundColor colors/neutral-100}
-   :layout        {:componentBackgroundColor :transparent
-                   :backgroundColor          :transparent
-                   ;; issue: https://github.com/wix/react-native-navigation/issues/7726
-                   :orientation              (if platform/ios? ["portrait" "landscape"] ["portrait"])}
-   :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
-                                                      :toId          :shared-element
-                                                      :interpolation {:type   :decelerate
-                                                                      :factor 1.5}}]}
-                   :pop  {:sharedElementTransitions [{:fromId        :shared-element
-                                                      :toId          :shared-element
-                                                      :interpolation {:type
-                                                                      :decelerate
-                                                                      :factor 1.5}}]}}})
+  {:hide-testnet-banner? true
+   :topBar               {:visible false}
+   :statusBar            {:backgroundColor :transparent
+                          :style           :light
+                          :animate         true
+                          :drawBehind      true
+                          :translucent     true}
+   :navigationBar        {:backgroundColor colors/neutral-100}
+   :layout               {:componentBackgroundColor :transparent
+                          :backgroundColor          :transparent
+                          ;; issue: https://github.com/wix/react-native-navigation/issues/7726
+                          :orientation              (if platform/ios?
+                                                      ["portrait" "landscape"]
+                                                      ["portrait"])}
+   :animations           {:push {:sharedElementTransitions [{:fromId        :shared-element
+                                                             :toId          :shared-element
+                                                             :interpolation {:type   :decelerate
+                                                                             :factor 1.5}}]}
+                          :pop  {:sharedElementTransitions [{:fromId        :shared-element
+                                                             :toId          :shared-element
+                                                             :interpolation {:type
+                                                                             :decelerate
+                                                                             :factor 1.5}}]}}})
 
 (def camera-screen
   {:navigationBar {:backgroundColor colors/black}})

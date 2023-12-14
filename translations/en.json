@@ -2429,5 +2429,6 @@
     "backup-step-4": "I know I can only see it once",
     "reveal-phrase": "Reveal phrase",
     "i-have-written": "I have written it down on paper",
-    "next-you-will": "Next, you will be asked to confirm the position of certain words in your recovery phrase"
+    "next-you-will": "Next, you will be asked to confirm the position of certain words in your recovery phrase",
+    "testnet-mode-enabled": "Testnet mode enabled"
 }

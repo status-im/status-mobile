@@ -2,7 +2,8 @@
   (:require
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]))
+    [react-native.safe-area :as safe-area]
+    [status-im2.constants :as constants]))
 
 (def ^:private card-height (+ 56 16))
 (def ^:private max-scroll (+ card-height 8))
@@ -23,7 +24,7 @@
   (reanimated/interpolate scroll-shared-value [0 max-scroll] [0 (+ max-scroll)] :clamp))
 
 (defn banner-card-blur-layer
-  [scroll-shared-value]
+  [scroll-shared-value testnet-enabled?]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y (animated-card-translation-y scroll-shared-value)}]}
    {:overflow (if platform/ios? :visible :hidden)
@@ -32,7 +33,7 @@
     :top      0
     :right    0
     :left     0
-    :height   (+ (safe-area/get-top) 244)}))
+    :height   (+ (safe-area/get-top) 244 (when testnet-enabled? constants/testnet-banner-height))}))
 
 (defn banner-card-hiding-layer
   [scroll-shared-value]
@@ -53,12 +54,12 @@
    {}))
 
 (defn banner-card-tabs-layer
-  [scroll-shared-value]
+  [scroll-shared-value testnet-enabled?]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y (animated-card-translation-y scroll-shared-value)}]}
    {:z-index  3
     :position :absolute
-    :top      (+ (safe-area/get-top) 192)
+    :top      (+ (safe-area/get-top) 192 (when testnet-enabled? constants/testnet-banner-height))
     :right    0
     :left     0}))
 

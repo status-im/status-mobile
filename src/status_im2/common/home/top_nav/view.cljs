@@ -14,7 +14,8 @@
    :jump-to? true/false
    :container-style passed to outer view of component}"
   [{:keys [container-style blur? jump-to?]}]
-  (let [{:keys [public-key] :as profile} (rf/sub [:profile/profile-with-image])
+  (let [testnet-enabled?                 (rf/sub [:profile/testnet-enabled?])
+        {:keys [public-key] :as profile} (rf/sub [:profile/profile-with-image])
         online?                          (rf/sub [:visibility-status-updates/online?
                                                   public-key])
         customization-color              (rf/sub [:profile/customization-color])
@@ -37,7 +38,10 @@
       :scan-on-press            #(js/alert "to be implemented")
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
       :qr-code-on-press         #(dispatch-and-chill [:open-modal :share-shell] 1000)
-      :container-style          (merge style/top-nav-container container-style)
+      :container-style          (merge style/top-nav-container
+                                       (when testnet-enabled?
+                                         {:margin-top constants/testnet-banner-height})
+                                       container-style)
       :blur?                    blur?
       :jump-to?                 jump-to?
       :customization-color      customization-color

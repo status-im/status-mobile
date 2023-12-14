@@ -17,6 +17,11 @@
     [utils.re-frame :as rf]
     [utils.transforms :as types]))
 
+(rf/reg-event-fx
+ :wallet/hide-token-loading
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :tokens-loading?] false)}))
+
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
    (let [account (get-in db [:wallet :accounts address])]

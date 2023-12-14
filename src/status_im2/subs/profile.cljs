@@ -14,6 +14,13 @@
     [utils.security.core :as security]))
 
 (re-frame/reg-sub
+ :profile/testnet-enabled?
+ :<- [:multiaccount/logged-in?]
+ :<- [:profile/profile]
+ (fn [[logged-in? {:keys [test-networks-enabled?]}]]
+   (if logged-in? (boolean? test-networks-enabled?) false)))
+
+(re-frame/reg-sub
  :profile/customization-color
  :<- [:profile/profile]
  (fn [{:keys [customization-color]}]

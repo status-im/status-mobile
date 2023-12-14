@@ -1,7 +1,9 @@
 (ns status-im2.navigation.view
   (:require
+    [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
+    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -13,8 +15,10 @@
     [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [status-im2.common.bottom-sheet.view :as bottom-sheet]
     [status-im2.common.toasts.view :as toasts]
+    [status-im2.constants :as constants]
     [status-im2.navigation.screens :as screens]
     [status-im2.setup.hot-reload :as reloader]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn get-screens
@@ -50,25 +54,76 @@
    (when top?
      {:padding-top (safe-area/get-top)})))
 
+
+(defn banner-view-internal
+  [{:keys [theme show-blur?]}]
+  [:<>
+   ;; Adding blur for top safe area for screens such as activity center, and scan QR code.
+   (when show-blur?
+     [blur/view
+      {:style        {:position :absolute
+                      :top      0
+                      :left     0
+                      :right    0
+                      :height   (safe-area/get-top)}
+       :overlayColor colors/neutral-80-opa-80
+       :blur-amount  20}])
+   [rn/view
+    {:style {:position         :absolute
+             :top              0
+             :left             0
+             :right            0
+             :z-index          1
+             :padding-top      (safe-area/get-top)
+             :background-color (colors/resolve-color :warning theme 20)}}
+    [quo/text
+     {:style  {:padding-vertical 11
+               :height           constants/testnet-banner-height
+               :color            (colors/resolve-color :warning theme)
+               :text-align       :center}
+      :weight :medium
+      :size   :paragraph-2}
+     (i18n/label :t/testnet-mode-enabled)]]])
+
+(def banner-view (quo.theme/with-theme banner-view-internal))
+
+(defn wrapper-view
+  [{:keys [component show-blur? hide-testnet-banner?]
+    :or   {hide-testnet-banner? false}}]
+  (let [testnet-enabled? (rf/sub [:profile/testnet-enabled?])]
+    [:<>
+     [rn/view
+      {:style (cond-> {:flex 1}
+
+                testnet-enabled?
+                (assoc :padding-top constants/testnet-banner-height))}
+      [component]]
+     (when (and testnet-enabled? (not hide-testnet-banner?))
+       [banner-view {:show-blur? show-blur?}])]))
+
 (defn screen
   [screen-key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component options]}   (get (if js/goog.DEBUG
-                                                (get-screens)
-                                                screens)
-                                              (keyword screen-key))
-           {:keys [insets sheet? theme]} options
-           user-theme                    (theme/get-theme)
-           background-color              (or (get-in options [:layout :backgroundColor])
-                                             (when sheet? :transparent))]
+     (let [{:keys [component options]}    (get (if js/goog.DEBUG
+                                                 (get-screens)
+                                                 screens)
+                                               (keyword screen-key))
+           {:keys [insets sheet? theme show-blur?
+                   hide-testnet-banner?]} options
+           user-theme                     (theme/get-theme)
+           background-color               (or (get-in options [:layout :backgroundColor])
+                                              (when sheet? :transparent))]
        ^{:key (str "root" screen-key @reloader/cnt)}
        [theme/provider {:theme (or theme user-theme)}
         [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
            [bottom-sheet-screen/view {:content component}]
-           [component])]
+           [wrapper-view
+            {:component            component
+             :show-blur?           show-blur?
+             :hide-testnet-banner? hide-testnet-banner?}])]
         (when js/goog.DEBUG
           [:<>
            [reloader/reload-view]

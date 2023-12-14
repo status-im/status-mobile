@@ -8,6 +8,7 @@
     [react-native.linear-gradient :as linear-gradient]
     [react-native.safe-area :as safe-area]
     [status-im2.common.home.top-nav.view :as common.top-nav]
+    [status-im2.constants :as constants]
     [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
     [status-im2.contexts.shell.jump-to.components.jump-to-screen.style :as style]
     [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
@@ -41,11 +42,13 @@
 
 (defn jump-to-text
   []
-  [quo/text
-   {:size   :heading-1
-    :weight :semi-bold
-    :style  (style/jump-to-text (safe-area/get-top))}
-   (i18n/label :t/jump-to)])
+  (let [testnet-enabled? (rf/sub [:profile/testnet-enabled?])]
+    [quo/text
+     {:size   :heading-1
+      :weight :semi-bold
+      :style  (style/jump-to-text (+ (safe-area/get-top)
+                                     (when testnet-enabled? constants/testnet-banner-height)))}
+     (i18n/label :t/jump-to)]))
 
 (defn render-card
   [{:keys [type screen-id] :as card}]
@@ -96,10 +99,11 @@
 
 (defn view
   []
-  (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
-        width          (rf/sub [:dimensions/window-width])
-        top            (safe-area/get-top)
-        shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
+  (let [testnet-enabled? (rf/sub [:profile/testnet-enabled?])
+        switcher-cards   (rf/sub [:shell/sorted-switcher-cards])
+        width            (rf/sub [:dimensions/window-width])
+        top              (+ (safe-area/get-top) (when testnet-enabled? constants/testnet-banner-height))
+        shell-margin     (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
     [theme/provider {:theme :dark}
      [rn/view
       {:style {:top              0

@@ -31,8 +31,9 @@
 
 (defn- banner-card-blur-layer
   [scroll-shared-value child]
-  (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)]
-    [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value)}
+  (let [testnet-enabled? (rf/sub [:profile/testnet-enabled?])
+        open-sheet?      (-> (rf/sub [:bottom-sheet]) :sheets seq)]
+    [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value testnet-enabled?)}
      [blur/view
       {:style         style/fill-space
        :blur-amount   (if platform/ios? 20 10)
@@ -54,20 +55,21 @@
 
 (defn- banner-card-tabs-layer
   [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value customization-color]}]
-  [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value)}
-   ^{:key (str "tabs-" selected-tab)}
-   [quo/tabs
-    {:style               style/banner-card-tabs
-     :customization-color customization-color
-     :size                32
-     :default-active      selected-tab
-     :data                tabs
-     :on-change           (fn [tab]
-                            (reset-banner-animation scroll-shared-value)
-                            (some-> scroll-ref
-                                    deref
-                                    reset-scroll)
-                            (on-tab-change tab))}]])
+  (let [testnet-enabled? (rf/sub [:profile/testnet-enabled?])]
+    [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value testnet-enabled?)}
+     ^{:key (str "tabs-" selected-tab)}
+     [quo/tabs
+      {:style               style/banner-card-tabs
+       :customization-color customization-color
+       :size                32
+       :default-active      selected-tab
+       :data                tabs
+       :on-change           (fn [tab]
+                              (reset-banner-animation scroll-shared-value)
+                              (some-> scroll-ref
+                                      deref
+                                      reset-scroll)
+                              (on-tab-change tab))}]]))
 
 (defn animated-banner
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
