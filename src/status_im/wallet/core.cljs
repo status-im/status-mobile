@@ -1153,26 +1153,18 @@
         #(async-storage/set-item! :invalid-ens-name-seen true)))))
   nil)
 
-(re-frame/reg-fx
- ::enable-local-notifications
- (fn []
-   (native-module/start-local-notifications)))
-
 (rf/defn initialize-wallet
   {:events [:wallet-legacy/initialize-wallet]}
   [{:keys [db] :as cofx} accounts tokens custom-tokens
    favourites scan-all-tokens? new-account?]
   (rf/merge
    cofx
-   {:db                          (assoc db
-                                        :profile/wallet-accounts
-                                        (rpc->accounts accounts))
-    ;; NOTE: Local notifications should be enabled only after wallet was started
-    ::enable-local-notifications nil
-    :dispatch-n                  [(when (or (not (utils.mobile-sync/syncing-allowed? cofx))
-                                            (chain/binance-chain? db))
-                                    [:transaction/get-fetched-transfers])]
-    :dispatch                    [:wallet/get-accounts-success accounts]}
+   {:db         (assoc db
+                       :profile/wallet-accounts
+                       (rpc->accounts accounts))
+    :dispatch-n [(when (or (not (utils.mobile-sync/syncing-allowed? cofx))
+                           (chain/binance-chain? db))
+                   [:transaction/get-fetched-transfers])]}
    (check-invalid-ens)
    (initialize-tokens tokens custom-tokens)
    (initialize-favourites favourites)

@@ -112,31 +112,29 @@
         current-network-config                      (get networks current-network)
         network-id                                  (str (get-in networks
                                                                  [current-network :config :NetworkId]))]
-    (rf/merge cofx
-              (cond-> {:json-rpc/call [{:method     "wakuext_startMessenger"
-                                        :on-success #(re-frame/dispatch [:messenger-started %])
-                                        :on-error   #(log/error "failed to start messenger")}]
-                       :wallet-legacy/initialize-transactions-management-enabled nil
-                       :wallet-legacy/initialize-wallet
-                       [network-id
-                        current-network-config
-                        (fn [accounts tokens custom-tokens favourites]
-                          (re-frame/dispatch [:wallet-legacy/initialize-wallet
-                                              accounts tokens custom-tokens favourites]))]
-                       :check-eip1559-activation {:network-id network-id}}
-                (not (:universal-links/handling db))
-                (assoc :effects.chat/open-last-chat (get-in db [:profile/profile :key-uid]))
-                notifications-enabled?
-                (assoc :effects/push-notifications-enable nil))
-              (contacts/initialize-contacts)
-              (browser/initialize-browser)
-              (mobile-network/on-network-status-change)
-              (group-chats/get-group-chat-invitations)
-              (profile.settings.events/get-profile-picture)
-              (profile.settings.events/change-preview-privacy)
-              (link-preview/request-link-preview-whitelist)
-              (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
-              (switcher-cards-store/fetch-switcher-cards-rpc))))
+    (rf/merge
+     cofx
+     (cond-> {:json-rpc/call                              [{:method     "wakuext_startMessenger"
+                                                            :on-success #(re-frame/dispatch
+                                                                          [:messenger-started %])
+                                                            :on-error   #(log/error
+                                                                          "failed to start messenger")}]
+              :check-eip1559-activation                   {:network-id network-id}
+              :effects.profile/enable-local-notifications nil
+              :dispatch-n                                 [[:wallet/get-accounts]]}
+       (not (:universal-links/handling db))
+       (assoc :effects.chat/open-last-chat (get-in db [:profile/profile :key-uid]))
+       notifications-enabled?
+       (assoc :effects/push-notifications-enable nil))
+     (contacts/initialize-contacts)
+     (browser/initialize-browser)
+     (mobile-network/on-network-status-change)
+     (group-chats/get-group-chat-invitations)
+     (profile.settings.events/get-profile-picture)
+     (profile.settings.events/change-preview-privacy)
+     (link-preview/request-link-preview-whitelist)
+     (visibility-status-updates-store/fetch-visibility-status-updates-rpc)
+     (switcher-cards-store/fetch-switcher-cards-rpc))))
 
 (rf/defn messenger-started
   {:events [:messenger-started]}
