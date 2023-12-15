@@ -3,6 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.style :as style]
@@ -59,7 +60,7 @@
         [rn/view {:style {:margin-top 0}}
          top-nav]
         [quo/page-nav
-         (cond-> {:margin-top     44
+         (cond-> {:margin-top     (if platform/ios? 44 40)
                   :type           :no-title
                   :background     (if (= 1 (reanimated/get-shared-value opacity-animation))
                                     :blur

@@ -1,6 +1,7 @@
 (ns status-im.contexts.communities.overview.style
   (:require
     [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]))
 
 (def screen-horizontal-padding 20)
@@ -23,7 +24,7 @@
 
 (def blur-channel-header
   {:position :absolute
-   :top      100
+   :top      (if platform/ios? 100 96)
    :height   34
    :right    0
    :left     0
