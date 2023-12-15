@@ -14,7 +14,7 @@
     [gesture/touchable-without-feedback
      {:on-press (fn []
                   (rf/dispatch [:hide-popover])
-                  (rf/dispatch [:chat/navigate-to-chat chat-id]))}
+                  (rf/dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]))}
      child]
     child))
 

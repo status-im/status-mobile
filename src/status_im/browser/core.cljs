@@ -17,6 +17,7 @@
     [status-im.utils.deprecated-types :as types]
     [status-im.utils.random :as random]
     [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.address :as address]
@@ -310,6 +311,7 @@
                             {:browser-id (:browser-id browser)}
                             :browser/screen-id :browser)}
                 (navigation/pop-to-root :shell-stack)
+                (chat.events/close-chat)
                 (navigation/change-tab :browser-stack)
                 (update-browser browser)
                 (resolve-url nil)))))
