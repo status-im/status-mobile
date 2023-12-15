@@ -153,16 +153,17 @@
 
 (defn f-group-details
   []
-  (let [{:keys [admins chat-id chat-name color public?
-                muted contacts]} (rf/sub [:chats/current-chat])
-        members                  (rf/sub [:contacts/group-members-sections])
-        pinned-messages          (rf/sub [:chats/pinned chat-id])
-        current-pk               (rf/sub [:multiaccount/public-key])
-        admin?                   (get admins current-pk)]
-    [:f>
-     (fn []
-       (rn/use-effect (fn []
-                        #(rf/dispatch [:chat/close])))
+
+  [:f>
+   (fn []
+     (rn/use-effect (fn []
+                      #(rf/dispatch [:chat/close])))
+     (let [{:keys [admins chat-id chat-name color public?
+                   muted contacts]} (rf/sub [:chats/current-chat])
+           members                  (rf/sub [:contacts/group-members-sections])
+           pinned-messages          (rf/sub [:chats/pinned chat-id])
+           current-pk               (rf/sub [:multiaccount/public-key])
+           admin?                   (get admins current-pk)]
        [rn/view
         {:style {:flex             1
                  :background-color (colors/theme-colors colors/white colors/neutral-95)}}
@@ -228,7 +229,7 @@
           :render-section-header-fn       contacts-section-header
           :render-data                    {:chat-id chat-id
                                            :admin?  admin?}
-          :render-fn                      contact-item-render}]])]))
+          :render-fn                      contact-item-render}]]))])
 
 (defn group-details
   []
