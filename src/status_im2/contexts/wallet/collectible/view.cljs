@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im2.common.scroll-page.view :as scroll-page]
     [status-im2.contexts.wallet.collectible.style :as style]
@@ -10,11 +11,11 @@
     [utils.re-frame :as rf]))
 
 (defn header
-  [{:keys [name description] :as _collectible-details} collection-image-url]
+  [collectible-name description collection-image-url]
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
-     :size   :heading-1} name]
+     :size   :heading-1} collectible-name]
    [rn/view {:style style/collection-container}
     [rn/view {:style style/collection-avatar-container}
      [quo/collection-avatar {:image collection-image-url}]]
@@ -130,32 +131,36 @@
       :accessibility-label :share-details
       :label               (i18n/label :t/share-details)}]]])
 
-(defn view
-  []
-  (let [collectible                       (rf/sub [:wallet/last-collectible-details])
+(defn view-internal
+  [{:keys [theme] :as _props}]
+  (let [collectible                     (rf/sub [:wallet/last-collectible-details])
         {:keys [collectible-data preview-url
-                collection-data]}         collectible
-        {:keys [traits name description]} collectible-data
-        chain-id                          (rf/sub [:wallet/last-collectible-chain-id])]
+                collection-data]}       collectible
+        {traits           :traits
+         collectible-name :name
+         description      :description} collectible-data
+        chain-id                        (rf/sub [:wallet/last-collectible-chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
       :page-nav-props {:type        :title-description
-                       :title       name
+                       :title       collectible-name
                        :description description
                        :right-side  [{:icon-name :i/options
                                       :on-press  #(rf/dispatch
                                                    [:show-bottom-sheet
                                                     {:content collectible-actions-sheet
-                                                     :theme   nil}])}]
+                                                     :theme   theme}])}]
                        :picture     preview-url}}
      [rn/view {:style style/container}
       [rn/view {:style style/preview-container}
        [rn/image
         {:source preview-url
          :style  style/preview}]]
-      [header collectible-data (:image-url collection-data)]
+      [header collectible-name description (:image-url collection-data)]
       [cta-buttons]
       [tabs]
       [info chain-id]
       [traits-section traits]]]))
+
+(def view (quo.theme/with-theme view-internal))
