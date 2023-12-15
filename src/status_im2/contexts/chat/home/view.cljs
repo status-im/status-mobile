@@ -133,18 +133,11 @@
   (let [scroll-ref     (atom nil)
         set-scroll-ref #(reset! scroll-ref %)]
     (fn []
-      (let [{:keys [public-key
-                    compressed-key
-                    preferred-name]} (rf/sub [:profile/profile-with-image])
+      (let [{:keys [universal-profile-url]} (rf/sub [:profile/profile])
             customization-color      (rf/sub [:profile/customization-color])
             pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
             selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
-            scroll-shared-value      (reanimated/use-shared-value 0)
-            profile-link             (universal-links/generate-link :user
-                                                                    :external
-                                                                    (or preferred-name
-                                                                        compressed-key
-                                                                        public-key))]
+            scroll-shared-value      (reanimated/use-shared-value 0)]
         [:<>
          (if (= selected-tab :tab/contacts)
            [contacts
@@ -158,7 +151,7 @@
              :scroll-shared-value scroll-shared-value
              :theme               theme}])
          [:f> common.banner/animated-banner
-          {:content             (banner-data profile-link)
+          {:content             (banner-data universal-profile-url)
            :customization-color customization-color
            :scroll-ref          scroll-ref
            :tabs                [{:id                  :tab/recent
