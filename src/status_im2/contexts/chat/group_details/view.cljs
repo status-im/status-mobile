@@ -20,7 +20,9 @@
     :icon-only?          true
     :container-style     {:margin-left 20}
     :accessibility-label :back-button
-    :on-press            #(rf/dispatch [:navigate-back])}
+    :on-press            (fn []
+                           (rf/dispatch [:navigate-back])
+                           (rf/dispatch [:chat/close]))}
    :i/arrow-left])
 
 (defn options-button
@@ -149,77 +151,84 @@
                         :on-press show-profile-actions}})
      item]))
 
+(defn f-group-details
+  []
+  (fn []
+    (rn/use-effect (fn []
+                     #(rf/dispatch [:chat/close])))
+    (let [{:keys [admins chat-id chat-name color public?
+                  muted contacts]} (rf/sub [:chats/current-chat])
+          members                  (rf/sub [:contacts/group-members-sections])
+          pinned-messages          (rf/sub [:chats/pinned chat-id])
+          current-pk               (rf/sub [:multiaccount/public-key])
+          admin?                   (get admins current-pk)]
+      [rn/view
+       {:style {:flex             1
+                :background-color (colors/theme-colors colors/white colors/neutral-95)}}
+       [quo/header
+        {:left-component  [back-button]
+         :right-component [options-button]
+         :background      (colors/theme-colors colors/white colors/neutral-95)}]
+       [rn/view
+        {:style {:flex-direction     :row
+                 :margin-top         24
+                 :padding-horizontal 20}}
+        [quo/group-avatar
+         {:customization-color color
+          :size                :size-32}]
+        [quo/text
+         {:weight :semi-bold
+          :size   :heading-1
+          :style  {:margin-horizontal 8}} chat-name]
+        [rn/view {:style {:margin-top 8}}
+         [quo/icon (if public? :i/world :i/privacy)
+          {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]
+       [rn/view {:style (style/actions-view)}
+        [rn/touchable-opacity
+         {:style               (style/action-container color)
+          :accessibility-label :pinned-messages
+          :on-press            (fn []
+                                 (rf/dispatch [:dismiss-keyboard])
+                                 (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))}
+         [rn/view
+          {:style {:flex-direction  :row
+                   :justify-content :space-between}}
+          [quo/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+          [count-container (count pinned-messages) :pinned-count]]
+         [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
+          (i18n/label :t/pinned-messages)]]
+        [rn/touchable-opacity
+         {:style               (style/action-container color)
+          :accessibility-label :toggle-mute
+          :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)
+                                              (when-not muted constants/mute-till-unmuted)])}
+         [quo/icon (if muted :i/muted :i/activity-center)
+          {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+         [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
+          (i18n/label (if muted :unmute-group :mute-group))]]
+        [rn/touchable-opacity
+         {:style               (style/action-container color)
+          :accessibility-label :manage-members
+          :on-press            (fn []
+                                 (rf/dispatch [:group/clear-added-participants])
+                                 (rf/dispatch [:group/clear-removed-members])
+                                 (rf/dispatch [:open-modal :group-add-manage-members]))}
+         [rn/view
+          {:style {:flex-direction  :row
+                   :justify-content :space-between}}
+          [quo/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
+          [count-container (count contacts) :members-count]]
+         [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
+          (i18n/label (if admin? :t/manage-members :t/add-members))]]]
+       [rn/section-list
+        {:key-fn                         :title
+         :sticky-section-headers-enabled false
+         :sections                       members
+         :render-section-header-fn       contacts-section-header
+         :render-data                    {:chat-id chat-id
+                                          :admin?  admin?}
+         :render-fn                      contact-item-render}]])))
+
 (defn group-details
   []
-  (let [{:keys [admins chat-id chat-name color public?
-                muted contacts]} (rf/sub [:chats/current-chat])
-        members                  (rf/sub [:contacts/group-members-sections])
-        pinned-messages          (rf/sub [:chats/pinned chat-id])
-        current-pk               (rf/sub [:multiaccount/public-key])
-        admin?                   (get admins current-pk)]
-    [rn/view
-     {:style {:flex             1
-              :background-color (colors/theme-colors colors/white colors/neutral-95)}}
-     [quo/header
-      {:left-component  [back-button]
-       :right-component [options-button]
-       :background      (colors/theme-colors colors/white colors/neutral-95)}]
-     [rn/view
-      {:style {:flex-direction     :row
-               :margin-top         24
-               :padding-horizontal 20}}
-      [quo/group-avatar
-       {:customization-color color
-        :size                :size-32}]
-      [quo/text
-       {:weight :semi-bold
-        :size   :heading-1
-        :style  {:margin-horizontal 8}} chat-name]
-      [rn/view {:style {:margin-top 8}}
-       [quo/icon (if public? :i/world :i/privacy)
-        {:size 20 :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]
-     [rn/view {:style (style/actions-view)}
-      [rn/touchable-opacity
-       {:style               (style/action-container color)
-        :accessibility-label :pinned-messages
-        :on-press            (fn []
-                               (rf/dispatch [:dismiss-keyboard])
-                               (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))}
-       [rn/view
-        {:style {:flex-direction  :row
-                 :justify-content :space-between}}
-        [quo/icon :i/pin {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
-        [count-container (count pinned-messages) :pinned-count]]
-       [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
-        (i18n/label :t/pinned-messages)]]
-      [rn/touchable-opacity
-       {:style               (style/action-container color)
-        :accessibility-label :toggle-mute
-        :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)
-                                            (when-not muted constants/mute-till-unmuted)])}
-       [quo/icon (if muted :i/muted :i/activity-center)
-        {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
-       [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
-        (i18n/label (if muted :unmute-group :mute-group))]]
-      [rn/touchable-opacity
-       {:style               (style/action-container color)
-        :accessibility-label :manage-members
-        :on-press            (fn []
-                               (rf/dispatch [:group/clear-added-participants])
-                               (rf/dispatch [:group/clear-removed-members])
-                               (rf/dispatch [:open-modal :group-add-manage-members]))}
-       [rn/view
-        {:style {:flex-direction  :row
-                 :justify-content :space-between}}
-        [quo/icon :i/add-user {:size 20 :color (colors/theme-colors colors/neutral-100 colors/white)}]
-        [count-container (count contacts) :members-count]]
-       [quo/text {:style {:margin-top 16} :size :paragraph-1 :weight :medium}
-        (i18n/label (if admin? :t/manage-members :t/add-members))]]]
-     [rn/section-list
-      {:key-fn                         :title
-       :sticky-section-headers-enabled false
-       :sections                       members
-       :render-section-header-fn       contacts-section-header
-       :render-data                    {:chat-id chat-id
-                                        :admin?  admin?}
-       :render-fn                      contact-item-render}]]))
+  [:f> f-group-details])
