@@ -15,7 +15,7 @@
      [:token {:optional true} [:or keyword? string?]]
      [:style {:optional true} map?]
      ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
-     [:image-source {:optional true} [:or string? map?]]
+     [:image-source {:optional true} [:or :schema.common/image-source :string]]
      ;; If true, adds `data:image/png;base64,` as prefix to the string passed as `image-source`
      [:add-b64-prefix? {:optional true} boolean?]]]
    :any])

@@ -69,7 +69,7 @@
 (rf/defn handle-community-chat
   [cofx {:keys [chat-id]}]
   (log/info "universal-links: handling community chat" chat-id)
-  {:dispatch [:chat/navigate-to-chat chat-id]})
+  {:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]})
 
 (rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]

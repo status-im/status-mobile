@@ -6,6 +6,7 @@
     [re-frame.core :as re-frame]
     [status-im.fleet.core :as fleet]
     [status-im.multiaccounts.db :as multiaccounts.db]
+    [status-im.utils.currency :as currency]
     [status-im.wallet.utils :as wallet.utils]
     [status-im2.constants :as constants]
     [utils.address :as address]
@@ -17,6 +18,19 @@
  :<- [:profile/profile]
  (fn [{:keys [customization-color]}]
    (or customization-color constants/profile-default-color)))
+
+(re-frame/reg-sub
+ :profile/currency
+ :<- [:profile/profile]
+ (fn [{:keys [currency]}]
+   (or currency constants/profile-default-currency)))
+
+(re-frame/reg-sub
+ :profile/currency-symbol
+ :<- [:profile/currency]
+ (fn [currency-id]
+   (-> (get currency/currencies currency-id)
+       :symbol)))
 
 (re-frame/reg-sub
  :profile/onboarding-placeholder-avatar

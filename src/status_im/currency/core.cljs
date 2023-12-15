@@ -15,5 +15,6 @@
             (multiaccounts.update/multiaccount-update
              :currency
              currency
-             {})
+             ;; on changing currency, we should fetch tokens prices again
+             {:on-success #(rf/dispatch [:wallet/get-wallet-token])})
             (prices/update-prices)))

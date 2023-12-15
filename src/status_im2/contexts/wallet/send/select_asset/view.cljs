@@ -20,7 +20,7 @@
     (let [on-press                #(js/alert "Not implemented yet")
           total-balance-formatted (.toFixed (:total-balance token) 2)
           balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
-          currency-symbol         "$"]
+          currency-symbol         (rf/sub [:profile/currency-symbol])]
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)
