@@ -178,6 +178,8 @@
     },
     "community-rules": "Community rules",
     "address-to-share": "Addresses to share",
+    "addresses-for-permissions": "Addresses for permissions",
+    "confirm-changes": "Confirm changes",
     "join-as-a-member": "Join as a Member",
     "all-addresses": "All addresses",
     "for-airdrops": "For airdrops",
@@ -2429,5 +2431,9 @@
     "backup-step-4": "I know I can only see it once",
     "reveal-phrase": "Reveal phrase",
     "i-have-written": "I have written it down on paper",
-    "next-you-will": "Next, you will be asked to confirm the position of certain words in your recovery phrase"
+    "next-you-will": "Next, you will be asked to confirm the position of certain words in your recovery phrase",
+    "share-opensea-link": "Share OpenSea link",
+    "save-image-to-photos": "Save image to Photos",
+    "copy-all-details": "Copy all details",
+    "share-details": "Share details"
 }
