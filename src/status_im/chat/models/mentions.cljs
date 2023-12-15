@@ -161,3 +161,18 @@
                        :on-error   #(log/error "Error while calling wakuext_chatMentionClearMentions"
                                                {:error %})}]}
      (clear-suggestions))))
+
+(rf/defn select-mention
+  {:events [:chat.ui/select-mention]}
+  [{:keys [db]} {:keys [primary-name searched-text match public-key] :as user}]
+  (let [chat-id (:current-chat-id db)
+        text    (get-in db [:chat/inputs chat-id :input-text])
+        method  "wakuext_chatMentionSelectMention"
+        params  [chat-id text primary-name public-key]]
+    {:json-rpc/call [{:method     method
+                      :params     params
+                      :on-success #(rf/dispatch [:mention/on-select-mention-success %
+                                                 primary-name match searched-text public-key])
+                      :on-error   #(rf/dispatch [:mention/on-error
+                                                 {:method method
+                                                  :params params} %])}]}))

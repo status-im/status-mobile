@@ -45,12 +45,11 @@
    :margin-bottom     header-avatar-top-offset})
 
 (defn header-image
-  [scale-animation top-margin-animation side-margin-animation]
+  [scale-animation side-animation bottom-animation]
   (reanimated/apply-animations-to-style
-   {:transform     [{:scale scale-animation}]
-    :margin-top    top-margin-animation
-    :margin-left   side-margin-animation
-    :margin-bottom side-margin-animation}
+   {:transform [{:scale scale-animation}
+                {:translate-x side-animation}
+                {:translate-y bottom-animation}]}
    {:align-items :flex-start}))
 
 (def bio

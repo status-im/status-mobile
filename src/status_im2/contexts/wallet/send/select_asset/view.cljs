@@ -20,7 +20,7 @@
     (let [on-press                #(js/alert "Not implemented yet")
           total-balance-formatted (.toFixed (:total-balance token) 2)
           balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
-          currency-symbol         "$"]
+          currency-symbol         (rf/sub [:profile/currency-symbol])]
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)
@@ -75,7 +75,10 @@
         {:content-container-style      {:flex 1}
          :keyboard-should-persist-taps :handled
          :scroll-enabled               false}
-        [account-switcher/view {:on-press on-close}]
+        [account-switcher/view
+         {:icon-name     :i/arrow-left
+          :on-press      on-close
+          :switcher-type :select-account}]
         [quo/text-combinations
          {:title                     (i18n/label :t/select-asset)
           :container-style           style/title-container

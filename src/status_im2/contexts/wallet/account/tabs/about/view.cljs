@@ -2,6 +2,8 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
     [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.contexts.wallet.account.tabs.about.style :as style]
     [utils.i18n :as i18n]
@@ -9,35 +11,51 @@
 
 (defn about-options
   []
-  [quo/action-drawer
-   [[{:icon                :i/link
-      :accessibility-label :view-on-eth
-      :label               (i18n/label :t/view-on-eth)
-      :right-icon          :i/external}
-     {:icon                :i/link
-      :accessibility-label :view-on-opt
-      :label               (i18n/label :t/view-on-opt)
-      :right-icon          :i/external}
-     {:icon                :i/link
-      :accessibility-label :view-on-arb
-      :label               (i18n/label :t/view-on-arb)
-      :right-icon          :i/external}
-     {:icon                :i/copy
-      :accessibility-label :copy-address
-      :label               (i18n/label :t/copy-address)}
-     {:icon                :i/qr-code
-      :accessibility-label :show-address-qr
-      :label               (i18n/label :t/show-address-qr)}
-     {:icon                :i/share
-      :accessibility-label :share-address
-      :label               (i18n/label :t/share-address)}]]])
+  (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
+        share-title                   (str (:name account) " " (i18n/label :t/address))]
+    [quo/action-drawer
+     [[{:icon                :i/link
+        :accessibility-label :view-on-eth
+        :label               (i18n/label :t/view-on-eth)
+        :right-icon          :i/external}
+       {:icon                :i/link
+        :accessibility-label :view-on-opt
+        :label               (i18n/label :t/view-on-opt)
+        :right-icon          :i/external}
+       {:icon                :i/link
+        :accessibility-label :view-on-arb
+        :label               (i18n/label :t/view-on-arb)
+        :right-icon          :i/external}
+       {:icon                :i/copy
+        :accessibility-label :copy-address
+        :label               (i18n/label :t/copy-address)}
+       {:icon                :i/qr-code
+        :accessibility-label :show-address-qr
+        :label               (i18n/label :t/show-address-qr)}
+       {:icon                :i/share
+        :accessibility-label :share-address
+        :label               (i18n/label :t/share-address)
+        :on-press            (fn []
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (js/setTimeout
+                                #(share/open
+                                  (if platform/ios?
+                                    {:activityItemSources [{:placeholderItem {:type    "text"
+                                                                              :content address}
+                                                            :item            {:default {:type "text"
+                                                                                        :content
+                                                                                        address}}
+                                                            :linkMetadata    {:title share-title}}]}
+                                    {:title   share-title
+                                     :subject share-title
+                                     :message address}))
+                                600))}]]]))
 
 (defn view
   []
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
-        {:keys [type address path]}               (rf/sub [:wallet/current-viewing-account])
-        networks                                  (rf/sub [:wallet/network-details])
-        watch-only?                               (= type :watch)]
+        {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
+        networks                                  (rf/sub [:wallet/network-details])]
     [rn/view {:style style/about-tab}
      [quo/data-item
       {:description     :default

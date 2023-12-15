@@ -12,12 +12,33 @@
      (fn [_] (val keyval)))))
 
 (def sub-mocks
-  {:profile/profile        {:currency :usd}
-   :wallet/network-details [{:source           525
-                             :short-name       "eth"
-                             :network-name     :ethereum
-                             :chain-id         1
-                             :related-chain-id 5}]})
+  {:profile/profile                {:currency :usd}
+   :wallet/network-details         [{:source           525
+                                     :short-name       "eth"
+                                     :network-name     :ethereum
+                                     :chain-id         1
+                                     :related-chain-id 5}]
+   :wallet/current-viewing-account {:path                      "m/44'/60'/0'/0/1"
+                                    :emoji                     "💎"
+                                    :key-uid                   "0x2f5ea39"
+                                    :address                   "0x1"
+                                    :wallet                    false
+                                    :name                      "Account One"
+                                    :type                      :generated
+                                    :watch-only?               false
+                                    :chat                      false
+                                    :test-preferred-chain-ids  #{5 420 421613}
+                                    :color                     :purple
+                                    :hidden                    false
+                                    :prod-preferred-chain-ids  #{1 10 42161}
+                                    :network-preferences-names #{:ethereum :arbitrum :optimism}
+                                    :position                  1
+                                    :clock                     1698945829328
+                                    :created-at                1698928839000
+                                    :operable                  "fully"
+                                    :mixedcase-address         "0x7bcDfc75c431"
+                                    :public-key                "0x04371e2d9d66b82f056bc128064"
+                                    :removed                   false}})
 
 (h/describe "Send > input amount screen"
   (h/test "Default render"

@@ -35,12 +35,12 @@
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-      (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
-            watch-only?                       (= type :watch)]
+      (let [{:keys [name color balance watch-only?]} (rf/sub [:wallet/current-viewing-account])
+            currency-symbol                          (rf/sub [:profile/currency-symbol])]
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
-          {:current-value       (utils/prettify-balance balance)
+          {:current-value       (utils/prettify-balance currency-symbol balance)
            :account-name        name
            :account             (if watch-only? :watched-address :default)
            :customization-color color}]

@@ -1,6 +1,7 @@
 (ns status-im2.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
+            [status-im2.constants :as constants]
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
 
@@ -69,23 +70,25 @@
 (rf/reg-sub
  :wallet/balances
  :<- [:wallet/accounts]
- (fn [accounts]
+ :<- [:profile/currency]
+ (fn [[accounts currency]]
    (zipmap (map :address accounts)
-           (map utils/calculate-balance-for-account accounts))))
+           (map #(utils/calculate-balance-for-account currency %) accounts))))
 
 (rf/reg-sub
  :wallet/account-cards-data
  :<- [:wallet/accounts]
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
- (fn [[accounts balances tokens-loading?]]
-   (mapv (fn [{:keys [color address type] :as account}]
+ :<- [:profile/currency-symbol]
+ (fn [[accounts balances tokens-loading? currency-symbol]]
+   (mapv (fn [{:keys [color address watch-only?] :as account}]
            (assoc account
                   :customization-color color
-                  :type                (if (= type :watch) :watch-only :empty)
+                  :type                (if watch-only? :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
                   :loading?            tokens-loading?
-                  :balance             (utils/prettify-balance (get balances address))))
+                  :balance             (utils/prettify-balance currency-symbol (get balances address))))
          accounts)))
 
 (rf/reg-sub
@@ -124,32 +127,39 @@
  (fn [[accounts current-viewing-account-address]]
    (remove #(= (:address %) current-viewing-account-address) accounts)))
 
+(rf/reg-sub
+ :wallet/accounts-without-watched-accounts
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (remove #(:watch-only? %) accounts)))
+
 (defn- calc-token-value
-  [{:keys [market-values-per-currency] :as item} chain-id]
-  (let [crypto-value                      (utils/token-value-in-chain item chain-id)
-        market-values                     (:usd market-values-per-currency)
-        {:keys [price change-pct-24hour]} market-values
-        fiat-change                       (utils/calculate-fiat-change crypto-value change-pct-24hour)]
-    (when (and crypto-value (seq (:name item)))
-      {:token               (keyword (string/lower-case (:symbol item)))
-       :token-name          (:name item)
-       :state               :default
-       :status              (cond
-                              (pos? change-pct-24hour) :positive
-                              (neg? change-pct-24hour) :negative
-                              :else                    :empty)
-       :customization-color :blue
-       :values              {:crypto-value      crypto-value
-                             :fiat-value        (utils/prettify-balance (* crypto-value price))
-                             :percentage-change (.toFixed change-pct-24hour 2)
-                             :fiat-change       (utils/prettify-balance fiat-change)}})))
+  [{:keys [market-values-per-currency] :as token} color currency currency-symbol]
+  (let [token-units                 (utils/total-token-units-in-all-chains token)
+        fiat-value                  (utils/total-token-fiat-value currency token)
+        market-values               (get market-values-per-currency
+                                         currency
+                                         (get market-values-per-currency
+                                              constants/profile-default-currency))
+        {:keys [change-pct-24hour]} market-values]
+    {:token               (:symbol token)
+     :token-name          (:name token)
+     :state               :default
+     :status              (cond
+                            (pos? change-pct-24hour) :positive
+                            (neg? change-pct-24hour) :negative
+                            :else                    :empty)
+     :customization-color color
+     :values              {:crypto-value token-units
+                           :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
 
 (rf/reg-sub
  :wallet/account-token-values
  :<- [:wallet/current-viewing-account]
- :<- [:chain-id]
- (fn [[current-account chain-id]]
-   (mapv #(calc-token-value % chain-id) (:tokens current-account))))
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[{:keys [tokens color]} currency currency-symbol]]
+   (mapv #(calc-token-value % color currency currency-symbol) tokens)))
 
 (rf/reg-sub
  :wallet/network-preference-details

@@ -11,6 +11,12 @@
 (def ^:private ?public-key
   [:re #"^0x04[0-9a-f]{128}$"])
 
+(def ^:private ?image-source
+  [:or
+   [:int]
+   [:map
+    [:uri [:maybe [:string]]]]])
+
 (def ^:private ?rpc-call
   [:sequential
    {:min 1}
@@ -27,4 +33,5 @@
   (registry/register ::theme ?theme)
   (registry/register ::customization-color ?customization-color)
   (registry/register ::public-key ?public-key)
+  (registry/register ::image-source ?image-source)
   (registry/register ::rpc-call ?rpc-call))

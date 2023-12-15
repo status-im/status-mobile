@@ -16,12 +16,10 @@
      (assoc :margin-top 4))))
 
 (defn user-message-content
-  [{:keys [first-in-group? outgoing outgoing-status]}]
+  [{:keys [outgoing outgoing-status]}]
   {:border-radius      16
    :padding-horizontal 8
-   :padding-vertical   (if first-in-group?
-                         8
-                         4)
+   :padding-vertical   4
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
                          1)})
