@@ -153,7 +153,6 @@
 
 (defn f-group-details
   []
-
   [:f>
    (fn []
      (rn/use-effect (fn []
