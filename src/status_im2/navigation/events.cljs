@@ -60,15 +60,12 @@
 (rf/defn pop-to-root
   {:events [:pop-to-root]}
   [{:keys [db]} tab]
-  (merge
-   {:pop-to-root-fx            tab
-    :db                        (-> db
-                                   (dissoc :shell/floating-screens)
-                                   (dissoc :shell/loaded-screens)
-                                   (assoc :view-id (or @shell.state/selected-stack-id :shell)))
-    :effects.shell/pop-to-root nil}
-   (when (:current-chat-id db)
-     {:dispatch-n [[:chat/close]]})))
+  {:pop-to-root-fx            tab
+   :db                        (-> db
+                                  (dissoc :shell/floating-screens)
+                                  (dissoc :shell/loaded-screens)
+                                  (assoc :view-id (or @shell.state/selected-stack-id :shell)))
+   :effects.shell/pop-to-root nil})
 
 (rf/defn init-root
   {:events [:init-root]}
