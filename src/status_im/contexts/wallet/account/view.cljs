@@ -28,24 +28,15 @@
   (cond-> [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
            {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
            {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}]
-    (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
-    true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
+          (not watch-only?) (conj {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps})
+          true              (conj {:id :about :label (i18n/label :t/about) :accessibility-label :about})))
 
 (defn view
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-<<<<<<< HEAD
       (let [{:keys [name color balance watch-only?]} (rf/sub [:wallet/current-viewing-account])
             currency-symbol                          (rf/sub [:profile/currency-symbol])]
-=======
-      (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
-<<<<<<< HEAD
-            watch-only? (= type :watch)]
->>>>>>> 704441c8a (wallet: receive screen)
-=======
-            watch-only?                       (= type :watch)]
->>>>>>> 84f39453e (wallet: receive screen)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
@@ -56,11 +47,11 @@
          [quo/wallet-graph {:time-frame :empty}]
          (when (not watch-only?)
            [quo/wallet-ctas
-            {:send-action    #(rf/dispatch [:open-modal :wallet-select-address])
+            {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])
              :receive-action #(rf/dispatch [:open-modal :wallet-receive])
-             :buy-action     #(rf/dispatch [:show-bottom-sheet
-                                            {:content buy-drawer}])
-             :bridge-action  #(rf/dispatch [:open-modal :wallet-bridge])}])
+             :buy-action    #(rf/dispatch [:show-bottom-sheet
+                                           {:content buy-drawer}])
+             :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}])
          [quo/tabs
           {:style            style/tabs
            :size             32
