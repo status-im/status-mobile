@@ -68,7 +68,8 @@
   {:events [:chat.ui/edit-message]}
   [{:keys [db]} message]
   (let [current-chat-id (:current-chat-id db)
-        text            (get-in message [:content :text])]
+        text            (get-in message [:content :text])
+        text            (string/replace text #"@0x00001" "@everyone")]
     {:db         (-> db
                      (assoc-in [:chat/inputs current-chat-id :metadata :editing-message]
                                message)
