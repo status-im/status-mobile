@@ -105,6 +105,7 @@
 
 (def ^:const profile-default-color :blue)
 (def ^:const profile-name-max-length 24)
+(def ^:const profile-default-currency :usd)
 
 (def ^:const profile-pictures-show-to-contacts-only 1)
 (def ^:const profile-pictures-show-to-everyone 2)
