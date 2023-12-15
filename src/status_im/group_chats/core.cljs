@@ -17,7 +17,7 @@
   {:events [:navigate-chat-updated]}
   [cofx chat-id]
   (when (get-in cofx [:db :chats chat-id])
-    (chat.events/navigate-to-chat cofx chat-id nil)))
+    (chat.events/pop-to-root-and-navigate-to-chat cofx chat-id nil)))
 
 (rf/defn handle-chat-removed
   {:events [:chat-removed]}
@@ -80,7 +80,7 @@
   {:events [:group-chats/create-from-link]}
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
-    {:dispatch [:chat/navigate-to-chat chat-id]}
+    {:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]}
     {:json-rpc/call [{:method      "wakuext_createGroupChatFromInvitation"
                       :params      [chat-name chat-id invitation-admin]
                       :js-response true

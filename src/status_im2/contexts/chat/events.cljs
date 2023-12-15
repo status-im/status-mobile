@@ -208,8 +208,6 @@
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
             {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
-            (when-not (#{:community :community-overview :shell} (:view-id db))
-              (navigation/pop-to-root :shell-stack))
             (close-chat)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
@@ -217,6 +215,14 @@
             (preload-chat-data chat-id)
             #(when (group-chat? cofx chat-id)
                (loading/load-chat % chat-id))))
+
+(rf/defn pop-to-root-and-navigate-to-chat
+  {:events [:chat/pop-to-root-and-navigate-to-chat]}
+  [cofx chat-id animation]
+  (rf/merge
+   cofx
+   (navigation/pop-to-root :shell-stack)
+   (navigate-to-chat chat-id animation)))
 
 (rf/defn handle-clear-history-response
   {:events [:chat/history-cleared]}
@@ -237,7 +243,7 @@
                  (assoc-in [:chats chat-id] chat)
                  :always
                  (update :chats-home-list conj chat-id))
-     :dispatch [:chat/navigate-to-chat chat-id]}))
+     :dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]}))
 
 (rf/defn decrease-unviewed-count
   {:events [:chat/decrease-unviewed-count]}
