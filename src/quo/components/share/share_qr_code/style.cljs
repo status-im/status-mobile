@@ -60,9 +60,10 @@
   {:width (- total-width (* 2 padding-horizontal) share-button-size share-button-gap)})
 
 ;;; Wallet variants
-(def wallet-multichain-container {:flex-direction  :row
-                                  :justify-content :space-between
-                                  :flex            1})
+(def wallet-multichain-container
+  {:flex-direction  :row
+   :justify-content :space-between
+   :flex            1})
 
 ;;; Dashed line
 (def ^:private padding-for-divider (+ padding-horizontal 4))

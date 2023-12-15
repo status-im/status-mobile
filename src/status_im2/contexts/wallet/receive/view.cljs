@@ -7,10 +7,10 @@
     [react-native.safe-area :as safe-area]
     [react-native.share :as share]
     [reagent.core :as reagent]
+    [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.constants :as constants]
     [status-im2.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
     [status-im2.contexts.wallet.receive.style :as style]
-    [status-im2.common.qr-codes.view :as qr-codes]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
@@ -80,7 +80,7 @@
            :on-press            #(rf/dispatch [:navigate-back])
            :background          :blur
            :right-side          [{:icon-name :i/scan
-                                  :on-press #(js/alert "To be implemented")}]
+                                  :on-press  #(js/alert "To be implemented")}]
            :accessibility-label :top-bar}]
          [quo/text-combinations
           {:container-style style/header-container
