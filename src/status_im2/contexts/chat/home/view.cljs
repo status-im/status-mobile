@@ -18,8 +18,7 @@
     [status-im2.contexts.chat.home.contact-request.view :as contact-request]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.universal-links :as universal-links]))
+    [utils.re-frame :as rf]))
 
 (defn get-item-layout
   [_ index]
@@ -134,10 +133,10 @@
         set-scroll-ref #(reset! scroll-ref %)]
     (fn []
       (let [{:keys [universal-profile-url]} (rf/sub [:profile/profile])
-            customization-color      (rf/sub [:profile/customization-color])
-            pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
-            selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
-            scroll-shared-value      (reanimated/use-shared-value 0)]
+            customization-color             (rf/sub [:profile/customization-color])
+            pending-contact-requests        (rf/sub [:activity-center/pending-contact-requests])
+            selected-tab                    (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
+            scroll-shared-value             (reanimated/use-shared-value 0)]
         [:<>
          (if (= selected-tab :tab/contacts)
            [contacts
