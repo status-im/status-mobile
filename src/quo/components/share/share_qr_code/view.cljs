@@ -96,7 +96,7 @@
       (conj $ address))))
 
 (defn- profile-bottom
-  [{:keys [component-width qr-data on-text-press on-text-long-press on-share-press share-qr-type]}]
+  [{:keys [component-width qr-data on-text-press on-text-long-press share-qr-type]}]
   [rn/view
    [info-label share-qr-type]
    [info-text
@@ -107,7 +107,7 @@
     qr-data]])
 
 (defn- wallet-legacy-bottom
-  [{:keys [share-qr-type component-width qr-data on-text-press on-text-long-press on-share-press]}]
+  [{:keys [component-width qr-data on-text-press on-text-long-press]}]
   [info-text
    {:width         component-width
     :on-press      on-text-press
@@ -121,12 +121,9 @@
   {:source (quo.resources/get-network (get known-networks network :unknown))})
 
 (defn wallet-multichain-bottom
-  [{:keys [share-qr-type component-width qr-data on-text-press on-text-long-press
-           on-share-press networks on-settings-press]}]
+  [{:keys [component-width qr-data on-text-press on-text-long-press on-settings-press]}]
   [rn/view
-   {:style {:flex-direction  :row
-            :justify-content :space-between
-            :flex            1}}
+   {:style style/wallet-multichain-container}
    [info-text
     {:width         component-width
      :on-press      on-text-press
@@ -147,12 +144,9 @@
     :as   props}]
   [rn/view {:style style/content-container}
    [rn/view
-    {:style {:flex-direction  :row
-             :justify-content :space-between
-             :margin-bottom   12}}
+    {:style style/share-qr-container}
     [rn/view
-     {:style {:flex-direction :row
-              :align-items    :center}}
+     {:style style/share-qr-inner-container}
      [account-avatar/view
       {:customization-color customization-color
        :emoji               emoji

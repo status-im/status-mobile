@@ -25,16 +25,19 @@
 (def header-tab-inactive {:background-color colors/white-opa-5})
 (def space-between-tabs {:width 8})
 
-(def info-icon
-  {:margin-left :auto
-   :align-self  :center})
-
-(def info-icon-color colors/white-opa-40)
-
 ;;; QR code
 (defn qr-code-size
   [total-width]
   (- total-width (* 2 padding-horizontal)))
+
+(def share-qr-container
+  {:flex-direction  :row
+   :justify-content :space-between
+   :margin-bottom   12})
+
+(def share-qr-inner-container
+  {:flex-direction :row
+   :align-items    :center})
 
 ;;; Bottom part
 (def bottom-container
@@ -57,29 +60,11 @@
   {:width (- total-width (* 2 padding-horizontal) share-button-size share-button-gap)})
 
 ;;; Wallet variants
-(def wallet-data-and-share-container
-  {:margin-top      2
-   :flex-direction  :row
-   :justify-content :space-between})
-
-(def wallet-legacy-container {:flex 1})
-
-(def wallet-multichain-container {:flex 1 :margin-top 4})
-
-(def wallet-multichain-networks
-  {:flex-direction  :row
-   :justify-content :space-between
-   :margin-bottom   8})
-
-(def wallet-multichain-data-container {:margin-top 4})
+(def wallet-multichain-container {:flex-direction  :row
+                                  :justify-content :space-between
+                                  :flex            1})
 
 ;;; Dashed line
-(def divider-container
-  {:height            8
-   :margin-horizontal 4
-   :justify-content   :center
-   :overflow          :hidden})
-
 (def ^:private padding-for-divider (+ padding-horizontal 4))
 (def ^:private dashed-line-width 2)
 (def ^:private dashed-line-space 4)

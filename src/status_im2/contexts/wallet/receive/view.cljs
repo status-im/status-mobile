@@ -10,17 +10,10 @@
     [status-im2.constants :as constants]
     [status-im2.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
     [status-im2.contexts.wallet.receive.style :as style]
+    [status-im2.common.qr-codes.view :as qr-codes]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
-
-(defn- get-network-short-name-url
-  [network]
-  (case network
-    :ethereum "eth:"
-    :optimism "opt:"
-    :arbitrum "arb1:"
-    (str (name network) ":")))
 
 (def id-to-network
   {constants/mainnet-chain-id  :ethereum
@@ -66,7 +59,7 @@
             share-title                               (str (:name account) " " (i18n/label :t/address))
             qr-url                                    (if (= @wallet-type :wallet-multichain)
                                                         (as-> @selected-networks $
-                                                          (map get-network-short-name-url $)
+                                                          (map qr-codes/get-network-short-name-url $)
                                                           (apply str $)
                                                           (str $ address))
                                                         address)
