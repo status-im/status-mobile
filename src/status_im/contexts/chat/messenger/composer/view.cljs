@@ -73,8 +73,7 @@
                                    ;; Needs to be queued, Otherwise might not be called on the right
                                    ;; time.
                                    (js/setTimeout #(when @(:composer-scrollview-ref props)
-                                                     (.scrollToEnd @(:composer-scrollview-ref props)
-                                                                   #js {:animated true}))
+                                                     (.scrollToEnd @(:composer-scrollview-ref props)))
                                                   50))]
     (effects/did-mount props)
     (effects/initialize props
@@ -121,10 +120,11 @@
            :style      (style/input-view state)}
           ;; https://github.com/facebook/react-native/issues/39660
           [rn/scroll-view
-           {:on-scroll                    #(handler/scroll % props state animations dimensions)
-            :keyboard-should-persist-taps :handled
-            :scroll-event-throttle        64
-            :ref                          #(reset! (:composer-scrollview-ref props) %)}
+           {:on-scroll                       #(handler/scroll % props state animations dimensions)
+            :keyboard-should-persist-taps    :handled
+            :scroll-event-throttle           64
+            :ref                             #(reset! (:composer-scrollview-ref props) %)
+            :shows-vertical-scroll-indicator false}
            [rn/text-input
             {:ref #(reset! (:input-ref props) %)
              :default-value @(:text-value state)
