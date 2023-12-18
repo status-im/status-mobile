@@ -69,17 +69,11 @@
    :min-height constants/input-height})
 
 (defn input-text
-  [{:keys [saved-emoji-kb-extra-height]}
-   {:keys [focused? maximized?]}
-   {:keys [max-height theme]}]
+  [{:keys [maximized?]}
+   {:keys [theme]}]
   (assoc typography/paragraph-1
          :color               (colors/theme-colors :black :white theme)
          :text-align-vertical :top
-         :position            (if @saved-emoji-kb-extra-height :relative :absolute)
-         :top                 0
-         :left                0
-         :right               (when (or focused? platform/ios?) 0)
-         :max-height          max-height
          :padding-bottom      (when @maximized? 0)))
 
 (defn background

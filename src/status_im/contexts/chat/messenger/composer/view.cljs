@@ -68,7 +68,14 @@
         ;; Cursor position, needed to determine where to display the mentions view
         cursor-pos               (utils/cursor-y-position-relative-to-container
                                   props
-                                  state)]
+                                  state)
+        scroll-to-end            (fn []
+                                   ;; Needs to be queued, Otherwise might not be called on the right
+                                   ;; time.
+                                   (js/setTimeout #(when @(:composer-scrollview-ref props)
+                                                     (.scrollToEnd @(:composer-scrollview-ref props)
+                                                                   #js {:animated true}))
+                                                  50))]
     (effects/did-mount props)
     (effects/initialize props
                         state
@@ -112,37 +119,45 @@
           {:ref        #(reset! (:selectable-input-ref props) %)
            :menu-items @(:menu-items state)
            :style      (style/input-view state)}
-          [rn/text-input
-           {:ref                      #(reset! (:input-ref props) %)
-            :default-value            @(:text-value state)
-            :on-focus                 #(handler/focus props state animations dimensions)
-            :on-blur                  #(handler/blur state animations dimensions subscriptions)
-            :on-content-size-change   #(handler/content-size-change %
-                                                                    state
-                                                                    animations
-                                                                    dimensions
-                                                                    (or keyboard-shown
-                                                                        (:edit subscriptions)))
-            :on-scroll                #(handler/scroll % props state animations dimensions)
-            :on-change-text           #(handler/change-text % props state)
-            :on-selection-change      #(handler/selection-change % props state)
-            :on-selection             #(selection/on-selection % props state)
-            :keyboard-appearance      (quo.theme/theme-value :light :dark)
-            :max-font-size-multiplier 1
-            :multiline                true
-            :placeholder              (i18n/label :t/type-something)
-            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-            :style                    (style/input-text props
-                                                        state
-                                                        {:max-height max-height
-                                                         :theme      theme})
-            :max-length               constants/max-text-size
-            :accessibility-label      :chat-message-input}]]]
-        [:<>
-         [gradients/view props state animations show-bottom-gradient?]
-         [link-preview/view]
-         [images/images-list]]
-        [:f> actions/view props state animations window-height insets subscriptions]]]]]))
+          ;; https://github.com/facebook/react-native/issues/39660
+          [rn/scroll-view
+           {:on-scroll                    #(handler/scroll % props state animations dimensions)
+            :keyboard-should-persist-taps :handled
+            :scroll-event-throttle        64
+            :ref                          #(reset! (:composer-scrollview-ref props) %)}
+           [rn/text-input
+            {:ref #(reset! (:input-ref props) %)
+             :default-value @(:text-value state)
+             :on-focus
+             #(handler/focus props state animations dimensions show-floating-scroll-down-button?)
+             :on-blur #(handler/blur state animations dimensions subscriptions)
+             :on-change-text #(handler/change-text % props state scroll-to-end)
+             :on-selection-change #(handler/selection-change % props state)
+             :on-content-size-change #(handler/content-size-change %1
+                                                                   state
+                                                                   animations
+                                                                   dimensions
+                                                                   (or keyboard-shown
+                                                                       (:edit subscriptions)))
+             :on-selection #(selection/on-selection % props state)
+             :keyboard-appearance (quo.theme/theme-value :light :dark)
+             :max-font-size-multiplier 1
+             :multiline true
+             :scroll-enabled false
+             :placeholder (i18n/label :t/type-something)
+             :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50)
+             :style (style/input-text state
+                                      {:max-height max-height
+                                       :theme      theme})
+             :max-length constants/max-text-size
+             :accessibility-label :chat-message-input}]]]]
+        (when chat-screen-loaded?
+          [:<>
+           [gradients/view props state animations show-bottom-gradient?]
+           [link-preview/view]
+           [images/images-list]])
+        [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
+         subscriptions]]]]]))
 
 (defn f-composer
   [props]

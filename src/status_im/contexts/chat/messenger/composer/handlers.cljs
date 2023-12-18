@@ -128,7 +128,8 @@
   "Update `text-value`, update cursor selection, find links, find mentions"
   [text
    {:keys [input-ref record-reset-fn]}
-   {:keys [text-value cursor-position recording?]}]
+   {:keys [text-value cursor-position recording?]}
+   scroll-to-end]
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref
@@ -140,6 +141,8 @@
   (rf/dispatch [:chat.ui/set-chat-input-text text])
   (debounce/debounce-and-dispatch [:link-preview/unfurl-urls text]
                                   constants/unfurl-debounce-ms)
+  (when (string/ends-with? text "\n")
+    (scroll-to-end))
   (if (string/ends-with? text "@")
     (rf/dispatch [:mention/on-change-text text])
     (debounce/debounce-and-dispatch [:mention/on-change-text text] 300)))

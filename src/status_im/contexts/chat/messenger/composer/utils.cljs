@@ -175,7 +175,8 @@
    :record-reset-fn             (atom nil)
    :scroll-y                    (atom 0)
    :selection-event             (atom nil)
-   :selection-manager           (rn/selectable-text-input-manager)})
+   :selection-manager           (rn/selectable-text-input-manager)
+   :composer-scrollview-ref     (atom nil)})
 
 (defn init-reactive-state
   []
