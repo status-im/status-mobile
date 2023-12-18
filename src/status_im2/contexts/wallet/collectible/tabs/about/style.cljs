@@ -23,4 +23,4 @@
 
 (def link-card
   {:margin-bottom 16
-   :flex 1})
+   :width         "100%"})
