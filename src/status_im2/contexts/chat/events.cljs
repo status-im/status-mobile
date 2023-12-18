@@ -433,3 +433,12 @@
   {:events [:chat/check-last-chat]}
   [{:keys [db]}]
   {:effects.chat/open-last-chat (get-in db [:profile/profile :key-uid])})
+
+(rf/defn status-tag-pressed
+  {:events [:communities/status-tag-pressed]}
+  [{:keys [db] :as cofx} community-id literal]
+  (let [{:keys [id]} (some #(when (= (:name %) literal) %)
+                           (vals (get-in db [:communities community-id :chats])))]
+    (when (and id
+               (not= (:current-chat-id db) (str community-id id)))
+      (navigate-to-chat cofx (str community-id id) nil))))

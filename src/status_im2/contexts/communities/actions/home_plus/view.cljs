@@ -13,19 +13,15 @@
               :on-press            #(rf/dispatch [:navigate-to :community-import])}]
             (when config/fast-create-community-enabled?
               [{:icon                :i/communities
-                :accessibility-label :create-community
-                :label               "Create community (only for e2e)"
-                :on-press            #(rf/dispatch [:legacy-only-for-e2e/open-create-community])}
-               {:icon                :i/communities
                 :accessibility-label :create-closed-community
-                :label               "Create closed community"
+                :label               "Create closed community (only for testing)"
                 :on-press            #(rf/dispatch [:fast-create-community/create-closed-community])}
                {:icon                :i/communities
                 :accessibility-label :create-open-community
-                :label               "Create open community"
+                :label               "Create open community (only for testing)"
                 :on-press            #(rf/dispatch [:fast-create-community/create-open-community])}
                {:icon                :i/communities
                 :accessibility-label :create-token-gated-community
-                :label               "Create token-gated community"
+                :label               "Create token-gated community (only for testing)"
                 :on-press            #(rf/dispatch
                                        [:fast-create-community/create-token-gated-community])}]))]])

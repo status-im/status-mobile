@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.communities.core :as communities]
     [status-im.group-chats.core :as group-chat]
     [status-im.group-chats.db :as group-chats.db]
     [status-im2.constants :as constants]
@@ -216,7 +215,7 @@
               :member?               true)
 
        (and (chat.events/community-chat? current-chat)
-            (communities/can-post? community my-public-key (:chat-id current-chat)))
+            (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
        (assoc :able-to-send-message? true)
 
        (not group-chat)

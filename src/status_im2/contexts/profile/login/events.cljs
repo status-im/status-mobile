@@ -3,7 +3,6 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.browser.core :as browser]
-    [status-im.communities.core :as communities]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.settings :as data-store.settings]
     [status-im.data-store.switcher-cards :as switcher-cards-store]
@@ -93,7 +92,8 @@
                               :profile/profile          (merge profile-overview settings))
                        (assoc-in [:wallet :ui :tokens-loading?] true))
                :fx [[:dispatch [:wallet/get-ethereum-chains]]
-                    [:dispatch [:universal-links/generate-profile-url]]]}
+                    [:dispatch [:universal-links/generate-profile-url]]
+                    [:dispatch [:community/fetch]]]}
               (notifications/load-preferences)
               (data-store.chats/fetch-chats-preview
                {:on-success
@@ -101,9 +101,6 @@
                      (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [:profile.login/get-chats-callback]))})
               (profile.config/get-node-config)
-              (communities/fetch)
-              (communities/fetch-collapsed-community-categories)
-              (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level settings))
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)

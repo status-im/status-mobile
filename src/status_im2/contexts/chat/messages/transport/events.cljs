@@ -4,7 +4,6 @@
     [clojure.string :as string]
     [status-im.browser.core :as browser]
     [status-im.chat.models.message :as models.message]
-    [status-im.communities.core :as models.communities]
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.invitations :as data-store.invitations]
@@ -18,6 +17,7 @@
     [status-im2.contexts.chat.events :as chat.events]
     [status-im2.contexts.chat.messages.content.reactions.events :as reactions]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
+    [status-im2.contexts.communities.events :as communities]
     [status-im2.contexts.contacts.events :as models.contact]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
     [taoensso.timbre :as log]
@@ -101,7 +101,7 @@
         (js-delete response-js "communities")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-communities communities-clj)))
+                  (communities/handle-communities communities-clj)))
 
       (seq bookmarks)
       (let [bookmarks-clj (types/js->clj bookmarks)]
@@ -122,16 +122,16 @@
         (js-delete response-js "removedChats")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-removed-chats removed-chats-clj)))
+                  (communities/handle-removed-chats removed-chats-clj)))
 
       (seq requests-to-join-community)
       (let [requests (->> requests-to-join-community
                           types/js->clj
-                          (map models.communities/<-request-to-join-community-rpc))]
+                          (map communities/<-request-to-join-community-rpc))]
         (js-delete response-js "requestsToJoinCommunity")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (models.communities/handle-requests-to-join requests)))
+                  (communities/handle-requests-to-join requests)))
 
       (seq emoji-reactions)
       (let [reactions (types/js->clj emoji-reactions)]

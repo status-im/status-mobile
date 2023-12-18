@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.link-preview.events
   (:require
     [camel-snake-kebab.core :as csk]
-    [status-im.communities.core :as models.communities]
+    [status-im2.contexts.communities.events :as communities]
     [status-im2.contexts.profile.settings.events :as profile.settings.events]
     [taoensso.timbre :as log]
     [utils.collection]
@@ -50,7 +50,7 @@
               (some? community)
               (assoc :dispatch
                      [:chat.ui/cache-link-preview-data (community-link community-id) community]))
-            (models.communities/handle-community community)))
+            (communities/handle-community community)))
 
 (rf/defn handle-community-failed-to-resolve
   {:events [:chat.ui/community-failed-to-resolve]}

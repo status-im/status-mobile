@@ -43,7 +43,7 @@
                      (swap! selected disj public-key)
                      (swap! selected conj public-key)))}]))
 
-(defn invite
+(defn legacy-invite
   []
   (let [user-pk           (reagent/atom "")
         contacts-selected (reagent/atom #{})

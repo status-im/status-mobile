@@ -41,9 +41,9 @@
       (= membership-status constants/activity-center-membership-status-pending)
       [common/swipeable
        {:left-button      swipe-button-accept
-        :left-on-press    #(rf/dispatch [:communities.ui/accept-request-to-join-pressed community-id id])
+        :left-on-press    #(rf/dispatch [:communities/accept-request-to-join-pressed community-id id])
         :right-button     swipe-button-decline
-        :right-on-press   #(rf/dispatch [:communities.ui/decline-request-to-join-pressed community-id
+        :right-on-press   #(rf/dispatch [:communities/decline-request-to-join-pressed community-id
                                          id])
         :active-swipeable active-swipeable
         :extra-fn         extra-fn}
@@ -98,7 +98,7 @@
                                 :accessibility-label :decline-join-request
                                 :on-press            (fn []
                                                        (rf/dispatch
-                                                        [:communities.ui/decline-request-to-join-pressed
+                                                        [:communities/decline-request-to-join-pressed
                                                          community-id id]))}
                                {:type                :button
                                 :subtype             :positive
@@ -107,7 +107,7 @@
                                 :accessibility-label :accept-join-request
                                 :on-press            (fn []
                                                        (rf/dispatch
-                                                        [:communities.ui/accept-request-to-join-pressed
+                                                        [:communities/accept-request-to-join-pressed
                                                          community-id id]))}]
 
                               nil)}]]))
