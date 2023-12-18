@@ -17,13 +17,14 @@
 (def ^:private left-image-supported-types #{:account :keypair :default-keypair})
 
 (defn- left-image
-  [{:keys [type customization-color account-avatar-emoji icon-avatar profile-picture]}]
+  [{:keys [type customization-color account-avatar-emoji account-avatar-type icon-avatar
+           profile-picture]}]
   (case type
     :account         [account-avatar/view
                       {:customization-color customization-color
                        :size                32
                        :emoji               account-avatar-emoji
-                       :type                :default}]
+                       :type                (or account-avatar-type :default)}]
     :keypair         [icon-avatar/icon-avatar
                       {:icon    icon-avatar
                        :border? true
@@ -149,22 +150,31 @@
      button-icon]))
 
 (defn- left-title
-  [{:keys [type label title theme blur?]}]
+  [{:keys [type label title title-icon theme blur?]}]
   (case type
     :label [text/text
             {:weight :medium
              :size   :paragraph-2
              :style  (style/description theme blur?)}
             label]
-    [text/text
-     {:size   :heading-2
-      :weight :semi-bold}
-     title]))
+    [rn/view {:style style/title-container}
+     [text/text
+      {:size   :heading-2
+       :weight :semi-bold}
+      title]
+     (when title-icon
+       [icons/icon title-icon
+        {:container-style style/title-icon
+         :size            20
+         :color           (if blur?
+                            colors/white-opa-40
+                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])]))
 
 (defn- view-internal
-  [{:keys [title type theme description blur? community-name community-logo button-icon on-button-press
+  [{:keys [title title-icon type theme description blur? community-name community-logo button-icon
+           on-button-press
            on-button-long-press
-           button-disabled? account-avatar-emoji customization-color icon-avatar
+           button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
            profile-picture keycard? networks label]}]
   [rn/view {:style style/container}
    (when (left-image-supported-types type)
@@ -173,15 +183,17 @@
        {:type                 type
         :customization-color  customization-color
         :account-avatar-emoji account-avatar-emoji
+        :account-avatar-type  account-avatar-type
         :icon-avatar          icon-avatar
         :profile-picture      profile-picture}]])
    [rn/view {:style style/body-container}
     [left-title
-     {:type  type
-      :label label
-      :title title
-      :theme theme
-      :blur? blur?}]
+     {:type       type
+      :label      label
+      :title      title
+      :title-icon title-icon
+      :theme      theme
+      :blur?      blur?}]
     [subtitle
      {:type           type
       :theme          theme

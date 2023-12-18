@@ -14,17 +14,24 @@
             [utils.re-frame :as rf]))
 
 (defn- render-account-item
-  [{:keys [color address] :as account}]
+  [{:keys [name emoji color address watch-only?]}]
   [quo/account-item
-   {:account-props (assoc account :customization-color color)
+   {:account-props (cond-> {:name                name
+                            :emoji               emoji
+                            :customization-color color
+                            :address             address}
+
+                     watch-only?
+                     (assoc :type :watch-only))
+    :title-icon    (when watch-only? :i/reveal)
     :on-press      (fn []
                      (rf/dispatch [:wallet/switch-current-viewing-account address])
                      (rf/dispatch [:hide-bottom-sheet]))}])
 
 (defn- options
   [{:keys [theme show-account-selector? options-height]}]
-  (let [{:keys [name color emoji address]} (rf/sub [:wallet/current-viewing-account])
-        network-preference-details         (rf/sub [:wallet/network-preference-details])]
+  (let [{:keys [name color emoji address watch-only?]} (rf/sub [:wallet/current-viewing-account])
+        network-preference-details                     (rf/sub [:wallet/network-preference-details])]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -43,12 +50,16 @@
         :opacity             0.4}]]
      [quo/drawer-bar]
      [quo/drawer-top
-      {:title                name
-       :type                 :account
-       :networks             network-preference-details
-       :description          address
-       :account-avatar-emoji emoji
-       :customization-color  color}]
+      (cond-> {:title                name
+               :type                 :account
+               :networks             network-preference-details
+               :description          address
+               :account-avatar-emoji emoji
+               :customization-color  color}
+
+        watch-only?
+        (assoc :title-icon          :i/reveal
+               :account-avatar-type :watch-only))]
      [quo/action-drawer
       [[{:icon                :i/edit
          :accessibility-label :edit

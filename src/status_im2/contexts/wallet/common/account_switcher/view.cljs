@@ -17,8 +17,8 @@
     :or   {icon-name           :i/close
            accessibility-label :top-bar
            switcher-type       :account-options}}]
-  (let [{:keys [color emoji]} (rf/sub [:wallet/current-viewing-account])
-        networks              (rf/sub [:wallet/network-details])]
+  (let [{:keys [color emoji watch-only?]} (rf/sub [:wallet/current-viewing-account])
+        networks                          (rf/sub [:wallet/network-details])]
     [quo/page-nav
      {:icon-name           icon-name
       :background          :blur
@@ -30,4 +30,5 @@
       :account-switcher    {:customization-color color
                             :on-press            #(rf/dispatch [:show-bottom-sheet
                                                                 (get-bottom-sheet-args switcher-type)])
-                            :emoji               emoji}}]))
+                            :emoji               emoji
+                            :type                (when watch-only? :watch-only)}}]))

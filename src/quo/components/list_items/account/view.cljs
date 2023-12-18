@@ -11,8 +11,7 @@
     [reagent.core :as reagent]))
 
 (defn- account-view
-  [{:keys [account-props title-icon? blur? theme]
-    :or   {title-icon? false}}]
+  [{:keys [account-props title-icon blur? theme]}]
   [rn/view {:style style/left-container}
    [account-avatar/view (assoc account-props :size 32)]
    [rn/view {:style style/account-container}
@@ -22,15 +21,14 @@
       {:weight :semi-bold
        :size   :paragraph-1}
       (:name account-props)]
-     (when title-icon?
-       [rn/view
-        {:style               style/keycard-icon-container
-         :accessibility-label :keycard-icon}
-        [icon/icon :i/keycard
-         {:size  20
-          :color (if blur?
-                   colors/white-opa-40
-                   (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]
+     (when title-icon
+       [icon/icon title-icon
+        {:size                20
+         :color               (if blur?
+                                colors/white-opa-40
+                                (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
+         :container-style     style/title-icon-container
+         :accessibility-label :title-icon}])]
     [address-text/view
      {:networks (:networks account-props)
       :address  (:address account-props)
