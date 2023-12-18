@@ -163,7 +163,7 @@
               :scrollable?      true
               :scroll-on-press? true
               :on-change        on-change-tab}]
-            [tabs/view selected-tab]])]))))
+            [tabs/view {:selected-tab selected-tab}]])]))))
 
 (defn view
   []
