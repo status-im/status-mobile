@@ -67,6 +67,10 @@
                   db
                   (data-store/rpc->accounts wallet-accounts))
       :fx [[:dispatch [:wallet/get-wallet-token]]
+           [:dispatch
+            [:wallet/request-collectibles
+             {:start-at-index 0
+              :new-request?   true}]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
@@ -276,7 +280,7 @@
                               :max-cache-age-seconds max-cache-age-seconds}
          request-params      [request-id
                               [(chain/chain-id db)]
-                              (map :address (:profile/wallet-accounts db))
+                              (keys (get-in db [:wallet :accounts]))
                               collectibles-filter
                               start-at-index
                               collectibles-request-batch-size

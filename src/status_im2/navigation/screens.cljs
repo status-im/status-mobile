@@ -11,6 +11,8 @@
     [status-im2.contexts.chat.new-chat.view :as new-chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
+    [status-im2.contexts.communities.actions.addresses-for-permissions.view :as
+     addresses-for-permissions]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
@@ -97,6 +99,10 @@
     {:name      :community-account-selection
      :options   {:sheet? true}
      :component communities.accounts-selection/view}
+
+    {:name      :addresses-for-permissions
+     :options   {:sheet? true}
+     :component addresses-for-permissions/view}
 
     {:name      :lightbox
      :options   options/lightbox
@@ -352,4 +358,3 @@
 
    (when config/quo-preview-enabled?
      status-im-preview/main-screens)))
-

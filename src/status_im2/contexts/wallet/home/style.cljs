@@ -1,4 +1,6 @@
-(ns status-im2.contexts.wallet.home.style)
+(ns status-im2.contexts.wallet.home.style
+  (:require
+    [react-native.safe-area :as safe-area]))
 
 (def tabs
   {:padding-horizontal 20
@@ -23,3 +25,13 @@
   {:justify-content :center
    :flex            1
    :margin-bottom   44})
+
+(def separator
+  {:width 12})
+
+(def selected-tab-container
+  {:padding-horizontal 8})
+
+(def home-container
+  {:margin-top (safe-area/get-top)
+   :flex       1})
