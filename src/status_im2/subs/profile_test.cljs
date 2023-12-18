@@ -96,6 +96,7 @@
    :colorId 2
    :networks/current-network "mainnet_rpc"
    :mutual-contact-enabled? false
+   :test-networks-enabled? false
    :public-key
    "0x0445b4d3a20f9fcf95b9e669857f83a073e7fdb7b79d0ac03ffb601d6889c413fa86282a2b2bed46ecf7d499807c1567549367a4eaa2b7b925067d44562d93cfa6"
    :colorHash [[3 25] [4 3] [5 4] [2 0] [1 10] [5 2] [2 4] [1 17] [3 23] [2 19] [4 1]]
@@ -112,3 +113,12 @@
   (testing "returns the symbol of the user's selected currency"
     (swap! rf-db/app-db #(assoc % :profile/profile sample-profile))
     (is (match? "$" (rf/sub [sub-name])))))
+
+(h/deftest-sub :profile/test-networks-enabled?
+  [sub-name]
+  (testing "testnet is not active"
+    (swap! rf-db/app-db #(assoc-in % [:profile/profile :test-networks-enabled?] true))
+    (is (true? (rf/sub [sub-name]))))
+  (testing "returns the state of whether testnet is enabled or not"
+    (swap! rf-db/app-db #(assoc-in % [:profile/profile :test-networks-enabled?] false))
+    (is (false? (rf/sub [sub-name])))))

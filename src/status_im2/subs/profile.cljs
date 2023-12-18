@@ -33,6 +33,11 @@
        :symbol)))
 
 (re-frame/reg-sub
+ :profile/test-networks-enabled?
+ :<- [:profile/profile]
+ :-> :test-networks-enabled?)
+
+(re-frame/reg-sub
  :profile/onboarding-placeholder-avatar
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
