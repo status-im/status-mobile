@@ -5,8 +5,10 @@
     [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
+    [status-im.contexts.wallet.temp :as temp]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -40,24 +42,19 @@
      :icon-left       :i/opensea}
     (i18n/label :t/opensea)]])
 
-(defn tabs
-  []
-  [quo/tabs
-   {:size        32
-    :style       style/tabs
-    :scrollable? true
-    :data        [{:id                  :overview
-                   :label               (i18n/label :t/overview)
-                   :accessibility-label :overview-tab}
-                  {:id                  :activity
-                   :label               (i18n/label :t/activity)
-                   :accessibility-label :activity-tab}
-                  {:id                  :permissions
-                   :label               (i18n/label :t/permissions)
-                   :accessibility-label :permissions-tab}
-                  {:id                  :about
-                   :label               (i18n/label :t/about)
-                   :accessibility-label :about-tab}]}])
+(def tabs-data
+  [{:id                  :overview
+    :label               (i18n/label :t/overview)
+    :accessibility-label :overview-tab}
+   {:id                  :activity
+    :label               (i18n/label :t/activity)
+    :accessibility-label :activity-tab}
+   {:id                  :permissions
+    :label               (i18n/label :t/permissions)
+    :accessibility-label :permissions-tab}
+   {:id                  :about
+    :label               (i18n/label :t/about)
+    :accessibility-label :about-tab}])
 
 (defn traits-section
   [traits]
@@ -81,6 +78,21 @@
        :key-fn                  :id
        :num-columns             2
        :content-container-style style/traits-container}]]))
+
+(defn activity-item
+  [item]
+  [:<>
+   [quo/divider-date (:timestamp item)]
+   [quo/wallet-activity
+    (merge {:on-press #(js/alert "Item pressed")}
+           item)]])
+
+(defn activity-section
+  []
+  [rn/flat-list
+   {:data      temp/collectible-activities
+    :style     {:flex 1}
+    :render-fn activity-item}])
 
 (defn info
   [chain-id]
@@ -111,6 +123,25 @@
         :network-image (quo.resources/get-network network-keyword)
         :subtitle      network-name
         :subtitle-type :network}]]]))
+
+(defn tabs
+  [_]
+  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
+    (fn [{:keys [traits chain-id] :as _props}]
+      [:<>
+       [quo/tabs
+        {:size           32
+         :style          style/tabs
+         :scrollable?    true
+         :default-active @selected-tab
+         :data           tabs-data
+         :on-change      #(reset! selected-tab %)}]
+       (condp = @selected-tab
+         :overview [:<>
+                    [info chain-id]
+                    [traits-section traits]]
+         :activity [activity-section]
+         [rn/view])])))
 
 (defn collectible-actions-sheet
   []
@@ -159,8 +190,8 @@
          :style  style/preview}]]
       [header collectible-name description (:image-url collection-data)]
       [cta-buttons]
-      [tabs]
-      [info chain-id]
-      [traits-section traits]]]))
+      [tabs
+       {:traits   traits
+        :chain-id chain-id}]]]))
 
 (def view (quo.theme/with-theme view-internal))
