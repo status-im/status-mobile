@@ -3,6 +3,8 @@
             [clojure.walk :as walk]
             [status-im.ui.components.colors :as colors]
             [status-im2.constants :as constants]
+            status-im2.contexts.communities.actions.community-options.events
+            status-im2.contexts.communities.actions.leave.events
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -111,6 +113,31 @@
                  (assoc-in db [:communities id] (<-rpc community)))
                db
                communities)})
+
+(rf/reg-event-fx :communities/request-to-join-result
+ (fn [{:keys [db]} [community-id request-id response-js]]
+   {:db         (update-in db [:communities/requests-to-join community-id] dissoc request-id)
+    :dispatch-n [[:sanitize-messages-and-process-response response-js]
+                 [:activity-center.notifications/mark-as-read request-id]]}))
+
+(rf/reg-event-fx :communities/decline-request-to-join-pressed
+ (fn [_ [community-id request-id]]
+   {:json-rpc/call
+    [{:method      "wakuext_declineRequestToJoinCommunity"
+      :params      [{:id request-id}]
+      :js-response true
+      :on-success  #(rf/dispatch [:communities/request-to-join-result community-id request-id %])
+      :on-error    #(log/error "failed to decline " community-id request-id)}]}))
+
+(rf/reg-event-fx :communities/accept-request-to-join-pressed
+ (fn [_ [community-id request-id]]
+   {:json-rpc/call
+    [{:method      "wakuext_acceptRequestToJoinCommunity"
+      :params      [{:id request-id}]
+      :js-response true
+      :on-success  #(rf/dispatch [:communities/request-to-join-result community-id request-id %])
+      :on-error    #(log/error "failed to accept requests-to-join" community-id request-id %)}]}))
+
 
 (rf/reg-event-fx :communities/get-user-requests-to-join-success
  (fn [{:keys [db]} [requests]]
