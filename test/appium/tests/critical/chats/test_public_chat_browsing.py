@@ -317,7 +317,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
-        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
         self.channel_2.chat_message_input.wait_for_visibility_of_element(20)
@@ -838,7 +837,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
-        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
@@ -1014,7 +1012,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_2.get_chat(self.username_1).click()
         control_message_1_1_chat = "it is just a message text"
         self.chat_2.send_message(control_message_1_1_chat)
-        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
         self.community_2.join_community(open_community=False)
 
         self.home_1.just_fyi("Device 1 accepts the community request")
@@ -1098,7 +1095,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Device 2 requests to join the community")
         self.home_2.jump_to_messages_home()
         self.home_2.get_chat(self.username_1).click()
-        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
         self.community_2.join_community(open_community=False)
         exp_text = "You requested to join “%s”" % community_name
         if self.community_2.toast_content_element.is_element_displayed(10):

@@ -33,9 +33,12 @@
 (rf/defn login
   {:events [:profile.login/login]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password]} (:profile/login db)]
-    {:db                    (assoc-in db [:profile/login :processing] true)
-     :effects.profile/login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
+  (let [{:keys [key-uid password]} (:profile/login db)
+        login-sha3-password        (native-module/sha3 (security/safe-unmask-data password))]
+    {:db                    (-> db
+                                (assoc-in [:profile/login :processing] true)
+                                (assoc-in [:syncing :login-sha3-password] login-sha3-password))
+     :effects.profile/login [key-uid login-sha3-password]}))
 
 (rf/defn biometrics-login
   {:events [:profile.login/biometrics-login]}
@@ -48,6 +51,10 @@
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
+        login-sha3-password        (get-in db [:syncing :login-sha3-password])
+        password                   (if-not (nil? login-sha3-password) ;; already logged in
+                                     login-sha3-password
+                                     password)
         masked-password            (security/mask-data password)]
     {:db                    (-> db
                                 (assoc-in [:onboarding/profile :password] masked-password)

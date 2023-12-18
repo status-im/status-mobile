@@ -245,7 +245,6 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
@@ -387,7 +386,6 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
         self.channel_2.chat_message_input.wait_for_visibility_of_element(20)
@@ -448,7 +446,6 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.chat_element_by_text(community_name).view_community_button.wait_and_click(sec=60)
         self.community_2.join_community(open_community=False)
         for home in self.home_1, self.home_2:
             home.navigate_back_to_home_view()

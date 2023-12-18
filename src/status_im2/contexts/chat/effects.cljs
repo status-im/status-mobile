@@ -14,5 +14,5 @@
          :key-uid
          (fn [stored-key-uid]
            (when (= stored-key-uid key-uid)
-             (rf/dispatch [:chat/navigate-to-chat chat-id
+             (rf/dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id
                            shell.constants/open-screen-without-animation])))))))))

@@ -22,7 +22,8 @@
               :network/type              type
               :initials-avatar-font-file initials-avatar-font-file
               :keycard                   (dissoc keycard :secrets :pin :application-info)
-              :biometric/supported-type  supported-type)})
+              :biometric/supported-type  supported-type
+              :syncing                   nil)})
 
 (rf/defn logout-method
   {:events [::logout-method]}

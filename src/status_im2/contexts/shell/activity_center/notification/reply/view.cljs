@@ -74,7 +74,7 @@
      [gesture/touchable-without-feedback
       {:on-press (fn []
                    (rf/dispatch [:hide-popover])
-                   (rf/dispatch [:chat/navigate-to-chat chat-id]))}
+                   (rf/dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]))}
       [quo/activity-log
        {:title               (i18n/label :t/message-reply)
         :customization-color customization-color

@@ -62,7 +62,8 @@
        [quo/category
         {:list-type :settings
          :data      [{:title             (i18n/label :t/join-as-a-member)
-                      :on-press          not-implemented/alert
+                      :on-press          #(rf/dispatch [:open-modal :addresses-for-permissions
+                                                        {:community-id id}])
                       :description       :text
                       :action            :arrow
                       :label             :preview

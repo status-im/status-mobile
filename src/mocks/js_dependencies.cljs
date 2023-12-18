@@ -251,6 +251,7 @@
                               :onChange                nil
                               :View                    #js {}
                               :Image                   #js {}
+                              :FlatList                #js {}
                               :ScrollView              #js {}
                               :Text                    #js {}
                               :Extrapolate             #js {:CLAMP nil}
