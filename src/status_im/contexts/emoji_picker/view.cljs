@@ -74,7 +74,8 @@
 (defn- emoji-row
   [row-data {:keys [on-select close]}]
   (into [rn/view {:style style/emoji-row-container}]
-        (map-indexed (fn [col-index emoji]
+        (map-indexed (fn [col-index {:keys [hexcode] :as emoji}]
+                       ^{:key hexcode}
                        [emoji-item emoji col-index on-select close]))
         row-data))
 
@@ -213,4 +214,3 @@
               :scroll-ref                scroll-ref)])))
 
 (def view (quo.theme/with-theme view-internal))
-
