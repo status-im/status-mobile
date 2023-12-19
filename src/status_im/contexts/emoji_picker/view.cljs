@@ -32,7 +32,7 @@
     (let [viewable-item (some-> event
                                 (oops/oget "viewableItems")
                                 (aget 0)
-                                (.-item))
+                                (oops/oget "item"))
           header?       (and (map? viewable-item) (:header? viewable-item))
           section-key   (if header?
                           (:id viewable-item)
