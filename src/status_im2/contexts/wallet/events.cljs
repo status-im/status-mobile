@@ -152,7 +152,9 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
+  {:db (-> db
+           (dissoc :wallet/scanned-address :wallet/send-address)
+           (update-in [:wallet :ui :send] dissoc :to-address))})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
@@ -436,10 +438,6 @@
    (let [current-timeout (get db :wallet/search-timeout)]
      (background-timer/clear-timeout current-timeout)
      {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
-
-(rf/reg-event-fx :wallet/select-send-address
- (fn [{:keys [db]} [address]]
-   {:db (assoc db :wallet/send-address address)}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]

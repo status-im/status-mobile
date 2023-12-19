@@ -74,6 +74,18 @@
        (map #(total-token-fiat-value currency %))
        (reduce money/add)))
 
+(defn calculate-balance-for-token
+  [token]
+  (money/bignumber
+   (money/mul (total-token-units-in-all-chains token)
+              (-> token :market-values-per-currency :usd :price))))
+
+(defn calculate-balance
+  [tokens-in-account]
+  (->> tokens-in-account
+       (map #(calculate-balance-for-token %))
+       (reduce +)))
+
 (defn network-list
   [{:keys [balances-per-chain]} networks]
   (into #{}

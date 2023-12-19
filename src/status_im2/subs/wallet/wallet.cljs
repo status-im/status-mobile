@@ -30,6 +30,11 @@
  :-> :ui)
 
 (rf/reg-sub
+ :wallet/wallet-send
+ :<- [:wallet/ui]
+ :-> :send)
+
+(rf/reg-sub
  :wallet/tokens-loading?
  :<- [:wallet/ui]
  :-> :tokens-loading?)
@@ -39,6 +44,31 @@
  :wallet/current-viewing-account-address
  :<- [:wallet]
  :-> :current-viewing-account-address)
+
+(rf/reg-sub
+ :wallet/wallet-send-to-address
+ :<- [:wallet/wallet-send]
+ :-> :to-address)
+
+(rf/reg-sub
+ :wallet/wallet-send-route
+ :<- [:wallet/wallet-send]
+ :-> :route)
+
+(rf/reg-sub
+ :wallet/wallet-send-token
+ :<- [:wallet/wallet-send]
+ :-> :token)
+
+(rf/reg-sub
+ :wallet/wallet-send-amount
+ :<- [:wallet/wallet-send]
+ :-> :amount)
+
+(rf/reg-sub
+ :wallet/wallet-send-loading-suggested-routes?
+ :<- [:wallet/wallet-send]
+ :-> :loading-suggested-routes?)
 
 (rf/reg-sub
  :wallet/watch-address-activity-state
@@ -110,7 +140,7 @@
                                 (assoc token
                                        :networks           (utils/network-list token networks)
                                        :total-balance      (utils/total-token-units-in-all-chains token)
-                                       :total-balance-fiat 0))
+                                       :total-balance-fiat (utils/calculate-balance-for-token token)))
                               (:tokens account))
          sorted-tokens   (sort-by :name compare tokens)
          filtered-tokens (filter #(or (string/starts-with? (string/lower-case (:name %))

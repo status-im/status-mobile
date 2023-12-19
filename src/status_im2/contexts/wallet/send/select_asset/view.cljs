@@ -17,10 +17,13 @@
 (defn- asset-component
   []
   (fn [token _ _ _]
-    (let [on-press                #(js/alert "Not implemented yet")
+    (let [on-press
+          #(rf/dispatch [:wallet/send-select-token
+                         {:token    token
+                          :stack-id :wallet-select-asset}])
           total-balance-formatted (.toFixed (:total-balance token) 2)
-          balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
-          currency-symbol         (rf/sub [:profile/currency-symbol])]
+          balance-fiat-formatted (.toFixed (:total-balance-fiat token) 2)
+          currency-symbol (rf/sub [:profile/currency-symbol])]
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)

@@ -394,3 +394,15 @@
 
 (def ^:const status-address-domain ".stateofus.eth")
 (def ^:const eth-address-domain ".eth")
+
+(def ^:const gas-rate-low 0)
+(def ^:const gas-rate-medium 1)
+(def ^:const gas-rate-high 2)
+
+(def ^:const send-type-transfer 0)
+(def ^:const send-type-ens-register 1)
+(def ^:const send-type-ens-release 2)
+(def ^:const send-type-ens-set-pub-key 3)
+(def ^:const send-type-stickers-buy 4)
+(def ^:const send-type-bridge 5)
+(def ^:const send-type-erc-721-transfer 6)
