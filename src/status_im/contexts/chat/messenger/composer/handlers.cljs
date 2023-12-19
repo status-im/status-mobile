@@ -127,7 +127,7 @@
 (defn change-text
   "Update `text-value`, update cursor selection, find links, find mentions"
   [text
-   {:keys [input-ref record-reset-fn]}
+   {:keys [input-ref record-reset-fn] :as props}
    {:keys [text-value cursor-position recording?]}
    scroll-to-end]
   (reset! text-value text)
@@ -141,8 +141,8 @@
   (rf/dispatch [:chat.ui/set-chat-input-text text])
   (debounce/debounce-and-dispatch [:link-preview/unfurl-urls text]
                                   constants/unfurl-debounce-ms)
-  (when (string/ends-with? text "\n")
-    (scroll-to-end))
+  (when (string/ends-with? text (with-out-str (newline)))
+    (scroll-to-end props))
   (if (string/ends-with? text "@")
     (rf/dispatch [:mention/on-change-text text])
     (debounce/debounce-and-dispatch [:mention/on-change-text text] 300)))
