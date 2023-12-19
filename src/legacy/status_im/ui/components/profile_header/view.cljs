@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.components.profile-header.view
   (:require
-    [react-native.core :as rn]
-    [react-native.reanimated :as animated]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
-    [legacy.status-im.ui.components.spacing :as spacing]))
+    [legacy.status-im.ui.components.spacing :as spacing]
+    [react-native.core :as rn]
+    [react-native.reanimated :as animated]))
 
 (def avatar-extended-size 64)
 (def avatar-minimized-size 40)

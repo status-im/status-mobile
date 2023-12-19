@@ -1,16 +1,16 @@
 (ns legacy.status-im.ui.components.chat-icon.screen
   (:require
     [clojure.string :as string]
-    [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.core :as quo]
-    [quo.theme :as theme]
-    [re-frame.core :as re-frame.core]
-    [react-native.core :as rn]
     [legacy.status-im.ui.components.chat-icon.styles :as styles]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.screens.chat.photos :as photos]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.core :as quo]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame.core]
+    [react-native.core :as rn]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.ens.core :as utils.ens]))
 

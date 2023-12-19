@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.keycard.components.keycard-animation
   (:require
-    [reagent.core :as reagent]
     [legacy.status-im.keycard.card :as keycard-nfc]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
-    [legacy.status-im.ui.components.react :as react]))
+    [legacy.status-im.ui.components.react :as react]
+    [reagent.core :as reagent]))
 
 (defn circle
   [{:keys [animation-value color size]}]

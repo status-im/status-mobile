@@ -1,8 +1,6 @@
 (ns legacy.status-im.ui.screens.wallet.account-settings.views
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]])
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.copyable-text :as copyable-text]
     [legacy.status-im.ui.components.core :as quo]
@@ -11,6 +9,8 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 

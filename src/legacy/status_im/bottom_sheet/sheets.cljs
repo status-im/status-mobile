@@ -1,11 +1,11 @@
 (ns legacy.status-im.bottom-sheet.sheets
   (:require
-    [quo.theme :as theme]
-    [react-native.core :as rn]
     [legacy.status-im.bottom-sheet.view :as bottom-sheet]
     [legacy.status-im.ui.screens.about-app.views :as about-app]
     [legacy.status-im.ui.screens.keycard.views :as keycard]
     [legacy.status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+    [quo.theme :as theme]
+    [react-native.core :as rn]
     [utils.re-frame :as rf]))
 
 (defn bottom-sheet

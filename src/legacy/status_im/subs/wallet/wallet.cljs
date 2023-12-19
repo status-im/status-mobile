@@ -1,10 +1,10 @@
 (ns legacy.status-im.subs.wallet.wallet
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.utils.currency :as currency]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [status-im2.config :as config]
     [utils.i18n :as i18n]
     [utils.money :as money]))

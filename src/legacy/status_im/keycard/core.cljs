@@ -1,6 +1,5 @@
 (ns legacy.status-im.keycard.core
   (:require
-    [re-frame.db]
     legacy.status-im.keycard.backup-key
     [legacy.status-im.keycard.card :as card]
     [legacy.status-im.keycard.change-pin :as change-pin]
@@ -15,6 +14,7 @@
     legacy.status-im.keycard.unpair
     [legacy.status-im.keycard.wallet :as wallet]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
+    [re-frame.db]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]

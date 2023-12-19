@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.mobile-network-settings.view
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
     legacy.status-im.mobile-sync-settings.core
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.mobile-network-settings.sheets :as sheets]
     [legacy.status-im.ui.screens.mobile-network-settings.style :as styles]
     [legacy.status-im.ui.screens.profile.components.views :as profile.components]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (defn hide-sheet-and-dispatch

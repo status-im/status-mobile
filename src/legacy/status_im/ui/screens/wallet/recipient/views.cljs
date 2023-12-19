@@ -1,8 +1,6 @@
 (ns legacy.status-im.ui.screens.wallet.recipient.views
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
@@ -15,6 +13,8 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wallet.components.views :as components]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.ens.stateofus :as stateofus]

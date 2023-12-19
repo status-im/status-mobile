@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.log-level-settings.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.screens.log-level-settings.styles :as styles])
+    [legacy.status-im.ui.screens.log-level-settings.styles :as styles]
+    [re-frame.core :as re-frame])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (defn- log-level-icon

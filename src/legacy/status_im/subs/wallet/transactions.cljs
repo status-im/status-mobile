@@ -1,10 +1,10 @@
 (ns legacy.status-im.subs.wallet.transactions
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.transactions.core :as transactions]
     [legacy.status-im.notifications.wallet :as notifications.wallet]
     [legacy.status-im.wallet.db :as wallet.db]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.money :as money]))

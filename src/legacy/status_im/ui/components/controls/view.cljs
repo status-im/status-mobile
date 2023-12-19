@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.components.controls.view
   (:require
-    [react-native.core :as rn]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.controls.styles :as styles]
-    [legacy.status-im.ui.components.icons.icons :as icons]))
+    [legacy.status-im.ui.components.icons.icons :as icons]
+    [react-native.core :as rn]))
 
 (defn switch
   [{:keys [disabled value]}]

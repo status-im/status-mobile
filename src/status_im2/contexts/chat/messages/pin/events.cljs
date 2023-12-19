@@ -1,9 +1,9 @@
 (ns status-im2.contexts.chat.messages.pin.events
   (:require
-    [quo.foundations.colors :as colors]
-    [re-frame.core :as re-frame]
     [legacy.status-im.data-store.messages :as data-store.messages]
     [legacy.status-im.data-store.pin-messages :as data-store.pin-messages]
+    [quo.foundations.colors :as colors]
+    [re-frame.core :as re-frame]
     [status-im2.common.toasts.events :as toasts]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.menus.pinned-messages.view :as pinned-messages-menu]

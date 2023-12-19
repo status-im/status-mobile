@@ -1,8 +1,6 @@
 (ns legacy.status-im.ui.screens.ens.views
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ens.core :as ens]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.react-native.resources :as resources]
@@ -20,6 +18,8 @@
     [legacy.status-im.ui.screens.profile.components.views :as profile.components]
     [legacy.status-im.ui.screens.wallet.send.sheets :as sheets]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.config :as config]
     [utils.address :as address]
     [utils.debounce :as debounce]

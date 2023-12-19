@@ -1,8 +1,8 @@
 (ns legacy.status-im.log-level.core
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.node.core :as node]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

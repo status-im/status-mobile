@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.browser.options.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.browser.core :as browser]
     [legacy.status-im.qr-scanner.core :as qr-scanner]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -11,6 +10,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.wallet.components.views :as components]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]
     [utils.url :as url]))

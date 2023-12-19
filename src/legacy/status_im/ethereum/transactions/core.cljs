@@ -1,11 +1,11 @@
 (ns legacy.status-im.ethereum.transactions.core
   (:require
     [cljs.spec.alpha :as spec]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.decode :as decode]
     [legacy.status-im.ethereum.encode :as encode]
     [legacy.status-im.utils.mobile-sync :as utils.mobile-sync]
     [legacy.status-im.wallet.core :as wallet]
+    [re-frame.core :as re-frame]
     [status-im2.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]

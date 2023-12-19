@@ -1,9 +1,5 @@
 (ns legacy.status-im.ui.screens.profile.user.views
   (:require
-    [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.theme :as theme]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.common.common :as components.common]
     [legacy.status-im.ui.components.copyable-text :as copyable-text]
@@ -17,6 +13,10 @@
     [legacy.status-im.ui.screens.profile.user.styles :as styles]
     [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status]
     [legacy.status-im.utils.utils :as utils]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.config :as config]
     [status-im2.contexts.profile.utils :as profile.utils]

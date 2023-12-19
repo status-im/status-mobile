@@ -1,11 +1,11 @@
 (ns legacy.status-im.ui.screens.browser.accounts
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (defn render-account

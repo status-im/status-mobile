@@ -1,16 +1,16 @@
 (ns legacy.status-im.ui.components.text-input
   (:require
     [clojure.spec.alpha :as s]
-    [oops.core :refer [ocall]]
-    [react-native.core :as rn] ;; TODO(Ferossgp): Move icon component to lib
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.spacing :as spacing]
     [legacy.status-im.ui.components.text :as text]
     [legacy.status-im.ui.components.tooltip :as tooltip]
-    [legacy.status-im.ui.components.typography :as typography]))
+    [legacy.status-im.ui.components.typography :as typography]
+    [oops.core :refer [ocall]]
+    [react-native.core :as rn] ;; TODO(Ferossgp): Move icon component to lib
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]))
 
 ;; NOTE(Ferossgp): Refactor with hooks when available
 ;; We track all currently mounted text input refs

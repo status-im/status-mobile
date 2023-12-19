@@ -1,11 +1,5 @@
 (ns legacy.status-im.ui.screens.wallet.accounts.views
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as quo.colors]
-    [re-frame.core :as re-frame]
-    [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
     [legacy.status-im.keycard.login :as keycard.login]
     [legacy.status-im.qr-scanner.core :as qr-scanner]
     [legacy.status-im.ui.components.colors :as colors]
@@ -17,6 +11,12 @@
     [legacy.status-im.ui.screens.wallet.accounts.sheets :as sheets]
     [legacy.status-im.ui.screens.wallet.accounts.styles :as styles]
     [legacy.status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
+    [re-frame.core :as re-frame]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

@@ -1,8 +1,8 @@
 (ns legacy.status-im.subs.ens
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ens.core :as ens]
+    [re-frame.core :as re-frame]
     [utils.address :as address]
     [utils.ethereum.chain :as chain]
     [utils.money :as money]))

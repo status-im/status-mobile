@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.screens.keycard.components.description
   (:require
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.screens.keycard.components.style :as styles]))
+    [legacy.status-im.ui.screens.keycard.components.style :as styles]
+    [reagent.core :as reagent]))
 
 (defn text-block-style
   [animated]

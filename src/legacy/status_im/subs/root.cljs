@@ -1,6 +1,5 @@
 (ns legacy.status-im.subs.root
   (:require
-    [re-frame.core :as re-frame]
     legacy.status-im.subs.bootnodes
     legacy.status-im.subs.browser
     legacy.status-im.subs.ens
@@ -11,7 +10,8 @@
     legacy.status-im.subs.wallet.search
     legacy.status-im.subs.wallet.signing
     legacy.status-im.subs.wallet.transactions
-    legacy.status-im.subs.wallet.wallet))
+    legacy.status-im.subs.wallet.wallet
+    [re-frame.core :as re-frame]))
 
 (defn reg-root-key-sub
   [sub-name db-key]

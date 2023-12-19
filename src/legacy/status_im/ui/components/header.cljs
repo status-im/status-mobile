@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.components.header
   (:require
-    [oops.core :refer [oget]]
-    [react-native.core :as rn]
-    [react-native.reanimated :as animated]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.button.view :as button]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.spacing :as spacing]
-    [legacy.status-im.ui.components.text :as text]))
+    [legacy.status-im.ui.components.text :as text]
+    [oops.core :refer [oget]]
+    [react-native.core :as rn]
+    [react-native.reanimated :as animated]
+    [reagent.core :as reagent]))
 
 (def header-height 56)
 

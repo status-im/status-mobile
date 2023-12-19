@@ -1,11 +1,11 @@
 (ns status-im2.contexts.chat.events
   (:require
     [clojure.set :as set]
+    [legacy.status-im.chat.models.loading :as loading]
+    [legacy.status-im.data-store.chats :as chats-store]
     [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [legacy.status-im.chat.models.loading :as loading]
-    [legacy.status-im.data-store.chats :as chats-store]
     [status-im2.common.muting.helpers :refer [format-mute-till]]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.link-preview.events :as link-preview]

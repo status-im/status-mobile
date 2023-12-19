@@ -1,8 +1,5 @@
 (ns legacy.status-im.ui.screens.browser.views
   (:require
-    [re-frame.core :as re-frame]
-    [react-native.permissions :as components.permissions]
-    [reagent.core :as reagent]
     [legacy.status-im.browser.core :as browser]
     [legacy.status-im.browser.webview-ref :as webview-ref]
     [legacy.status-im.qr-scanner.core :as qr-scanner]
@@ -21,6 +18,9 @@
     [legacy.status-im.ui.screens.browser.styles :as styles]
     [legacy.status-im.ui.screens.wallet.components.views :as components]
     [legacy.status-im.utils.js-resources :as js-res]
+    [re-frame.core :as re-frame]
+    [react-native.permissions :as components.permissions]
+    [reagent.core :as reagent]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.url :as url])

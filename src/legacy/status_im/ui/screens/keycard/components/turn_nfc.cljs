@@ -1,11 +1,11 @@
 (ns legacy.status-im.ui.screens.keycard.components.turn-nfc
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.keycard.components.style :as styles]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (defn turn-nfc-on

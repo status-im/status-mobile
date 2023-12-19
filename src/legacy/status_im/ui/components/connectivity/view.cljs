@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.components.connectivity.view
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views :refer [defview letsubs]]))
 

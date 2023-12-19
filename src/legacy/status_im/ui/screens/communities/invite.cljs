@@ -1,14 +1,14 @@
 (ns legacy.status-im.ui.screens.communities.invite
   (:require
     [clojure.string :as string]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.communities.core :as communities]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]

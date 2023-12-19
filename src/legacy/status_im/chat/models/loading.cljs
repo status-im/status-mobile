@@ -1,8 +1,8 @@
 (ns legacy.status-im.chat.models.loading
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.data-store.chats :as data-store.chats]
     [legacy.status-im.data-store.messages :as data-store.messages]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.list.events :as message-list]
     [taoensso.timbre :as log]

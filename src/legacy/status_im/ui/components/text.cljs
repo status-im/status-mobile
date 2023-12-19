@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.components.text
   (:require
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.typography :as typography]))
+    [legacy.status-im.ui.components.typography :as typography]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn text-style
   [{:keys [size align weight monospace color style]}]

@@ -2,13 +2,13 @@
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]])
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (def debounce-timers (atom {}))

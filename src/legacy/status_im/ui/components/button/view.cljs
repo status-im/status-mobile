@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.components.button.view
   (:require
-    [react-native.core :as rn]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.spacing :as spacing]
-    [legacy.status-im.ui.components.text :as text]))
+    [legacy.status-im.ui.components.text :as text]
+    [react-native.core :as rn]))
 
 (defn style-container
   [type]

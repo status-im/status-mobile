@@ -9,11 +9,11 @@
     ["react-native-image-crop-picker" :default image-picker]
     ["react-native-linear-gradient" :default LinearGradient]
     ["react-native-navigation" :refer (Navigation)]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.text-style :as typography]
     [legacy.status-im.utils.utils :as utils]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

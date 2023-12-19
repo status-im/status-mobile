@@ -2,16 +2,16 @@
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
     ["react-native" :refer (BackHandler)]
-    [re-frame.core :as re-frame]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as anim]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.profile.visibility-status.styles :as styles]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as utils]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [utils.re-frame :as rf]))
 

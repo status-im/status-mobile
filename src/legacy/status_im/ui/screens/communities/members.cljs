@@ -1,7 +1,5 @@
 (ns legacy.status-im.ui.screens.communities.members
   (:require
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.communities.core :as communities]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.core :as quo]
@@ -9,6 +7,8 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.components.unviewed-indicator :as unviewed-indicator]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]

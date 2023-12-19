@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.screens.bug-report
   (:require
-    [re-frame.core :as re-frame]
-    [react-native.core :as react-native]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.topbar :as topbar]
+    [re-frame.core :as re-frame]
+    [react-native.core :as react-native]
     [utils.i18n :as i18n]))
 
 (defn bug-report

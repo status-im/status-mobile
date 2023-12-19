@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.reset-password.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.multiaccounts.reset-password.core :as reset-password]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]
     [utils.security.core :as security])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.communities.import
   (:require
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.communities.core :as communities]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.toolbar :as toolbar]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

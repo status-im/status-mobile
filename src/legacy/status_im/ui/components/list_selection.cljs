@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.components.list-selection
   (:require
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [legacy.status-im.ui.components.action-sheet :as action-sheet]
     [legacy.status-im.ui.components.dialog :as dialog]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [utils.i18n :as i18n]
     [utils.url :as url]))
 

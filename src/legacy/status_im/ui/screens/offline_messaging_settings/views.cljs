@@ -1,7 +1,6 @@
 (ns legacy.status-im.ui.screens.offline-messaging-settings.views
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
@@ -10,6 +9,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.offline-messaging-settings.styles :as styles]
     [legacy.status-im.ui.screens.profile.components.views :as profile.components]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (defn pinned-state

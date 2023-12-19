@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.wallet.request.views
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.copyable-text :as copyable-text]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.common.qr-codes.view :as qr-codes]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.ethereum.eip.eip681 :as eip681]

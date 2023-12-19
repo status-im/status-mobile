@@ -1,11 +1,11 @@
 (ns legacy.status-im.chat.models.message
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [legacy.status-im.chat.models.loading :as chat.loading]
     [legacy.status-im.data-store.messages :as data-store.messages]
     [legacy.status-im.utils.deprecated-types :as types]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
     [status-im2.contexts.chat.messages.list.events :as message-list]
     [status-im2.contexts.chat.messages.list.state :as view.state]

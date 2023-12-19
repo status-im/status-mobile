@@ -1,9 +1,9 @@
 (ns legacy.status-im.subs.wallet.wallet-test
   (:require
     [cljs.test :refer [deftest is testing]]
-    [re-frame.db :as rf-db]
     [legacy.status-im.subs.wallet.transactions :as wallet.transactions]
     [legacy.status-im.subs.wallet.wallet :as wallet]
+    [re-frame.db :as rf-db]
     [test-helpers.unit :as h]
     [utils.money :as money]
     [utils.re-frame :as rf]))

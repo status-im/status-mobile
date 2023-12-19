@@ -1,8 +1,8 @@
 (ns legacy.status-im.ui.components.fast-image
   (:require
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.icons.icons :as icons]
-    [legacy.status-im.ui.components.react :as react]))
+    [legacy.status-im.ui.components.react :as react]
+    [reagent.core :as reagent]))
 
 (defn placeholder
   [style child]

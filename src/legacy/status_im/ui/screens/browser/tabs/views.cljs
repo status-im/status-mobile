@@ -1,8 +1,6 @@
 (ns legacy.status-im.ui.screens.browser.tabs.views
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.item :as list.item]
@@ -11,6 +9,8 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wallet.components.views :as components]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [utils.url :as url]))
 

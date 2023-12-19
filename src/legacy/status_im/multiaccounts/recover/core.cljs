@@ -1,9 +1,9 @@
 (ns legacy.status-im.multiaccounts.recover.core
   (:require
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.multiaccounts.create.core :as multiaccounts.create]
     [legacy.status-im.utils.deprecated-types :as types]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]))
 

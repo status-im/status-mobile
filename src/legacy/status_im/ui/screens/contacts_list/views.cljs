@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.contacts-list.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.invite.views :as invite]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list.views]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

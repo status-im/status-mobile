@@ -1,8 +1,8 @@
 (ns legacy.status-im.qr-scanner.core
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.group-chats.core :as group-chats]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]

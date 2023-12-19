@@ -1,16 +1,16 @@
 (ns legacy.status-im.ui.screens.wallet.accounts.common
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as quo.colors]
-    [re-frame.core :as re-frame]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
     [legacy.status-im.utils.utils :as utils.utils]
-    [legacy.status-im.wallet.utils :as wallet.utils]))
+    [legacy.status-im.wallet.utils :as wallet.utils]
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 ;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
 ;; too fast. By updating this atom in 1s we ensure that `refreshing?` property

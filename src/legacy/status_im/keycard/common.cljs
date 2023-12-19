@@ -1,14 +1,14 @@
 (ns legacy.status-im.keycard.common
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.keycard.nfc :as nfc]
     [legacy.status-im.popover.core :as popover]
     [legacy.status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.keychain.core :as keychain]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.address :as address]

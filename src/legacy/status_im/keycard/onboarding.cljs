@@ -1,12 +1,12 @@
 (ns legacy.status-im.keycard.onboarding
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.common :as common]
     legacy.status-im.keycard.fx
     [legacy.status-im.keycard.mnemonic :as mnemonic]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]

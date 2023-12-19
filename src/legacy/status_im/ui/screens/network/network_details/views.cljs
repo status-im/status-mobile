@@ -1,11 +1,11 @@
 (ns legacy.status-im.ui.screens.network.network-details.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.network.core :as network]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.network.styles :as st]
     [legacy.status-im.ui.screens.network.views :as network-settings]
+    [re-frame.core :as re-frame]
     [utils.debounce :refer [dispatch-and-chill]]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))

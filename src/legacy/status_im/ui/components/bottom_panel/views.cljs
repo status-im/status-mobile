@@ -1,11 +1,11 @@
 (ns legacy.status-im.ui.components.bottom-panel.views
   (:require
     ["react-native" :refer (BackHandler)]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as anim]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.react :as react])
+    [legacy.status-im.ui.components.react :as react]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (def back-listener (atom nil))

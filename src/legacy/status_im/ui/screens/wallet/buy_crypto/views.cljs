@@ -1,7 +1,5 @@
 (ns legacy.status-im.ui.screens.wallet.buy-crypto.views
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.item :as list.item]
@@ -12,6 +10,8 @@
     [legacy.status-im.ui.screens.browser.views :as browser.views]
     [legacy.status-im.ui.screens.chat.photos :as photos]
     [legacy.status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

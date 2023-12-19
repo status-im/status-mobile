@@ -2,9 +2,6 @@
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.keycard.common :as keycard.common]
     [legacy.status-im.react-native.resources :as resources]
@@ -25,6 +22,9 @@
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.utils :as utils]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))

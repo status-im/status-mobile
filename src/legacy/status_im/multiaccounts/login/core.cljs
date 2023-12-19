@@ -1,10 +1,10 @@
 (ns legacy.status-im.multiaccounts.login.core
   (:require
+    [legacy.status-im.ui.components.react :as react]
+    [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.utils.deprecated-types :as types]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 

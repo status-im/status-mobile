@@ -1,10 +1,10 @@
 (ns legacy.status-im.multiaccounts.reset-password.core
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.popover.core :as popover]
     [legacy.status-im.utils.deprecated-types :as types]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 

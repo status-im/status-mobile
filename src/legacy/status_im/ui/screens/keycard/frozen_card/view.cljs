@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.keycard.frozen-card.view
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.login :as login]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (views/defview frozen-card

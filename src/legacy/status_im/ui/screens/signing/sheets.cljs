@@ -2,13 +2,13 @@
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.signing.gas :as gas]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [utils.money :as money]))
 

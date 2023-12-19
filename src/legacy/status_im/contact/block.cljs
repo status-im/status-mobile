@@ -1,9 +1,9 @@
 (ns legacy.status-im.contact.block
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.contact.db :as contact.db]
     [legacy.status-im.data-store.chats :as chats-store]
     [legacy.status-im.utils.deprecated-types :as types]
+    [re-frame.core :as re-frame]
     [status-im2.contexts.chat.messages.list.events :as message-list]
     [status-im2.contexts.contacts.events :as contacts-store]
     [status-im2.contexts.shell.activity-center.events :as activity-center]

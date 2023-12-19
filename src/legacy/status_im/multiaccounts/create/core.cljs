@@ -1,12 +1,12 @@
 (ns legacy.status-im.multiaccounts.create.core
   (:require
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.data-store.settings :as data-store.settings]
     [legacy.status-im.node.core :as node]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.signing-phrase.core :as signing-phrase]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [utils.ethereum.eip.eip55 :as eip55]

@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.network.edit-network.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.network.core :as network]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.network.edit-network.styles :as styles]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

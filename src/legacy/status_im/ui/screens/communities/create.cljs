@@ -1,7 +1,6 @@
 (ns legacy.status-im.ui.screens.communities.create
   (:require
     [clojure.string :as string]
-    [react-native.core :as rn]
     [legacy.status-im.communities.core :as communities]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
@@ -10,6 +9,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.utils.image :as utils.image]
+    [react-native.core :as rn]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

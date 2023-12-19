@@ -1,8 +1,8 @@
 (ns legacy.status-im.multiaccounts.logout.core
   (:require
+    [legacy.status-im.wallet.core :as wallet]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [legacy.status-im.wallet.core :as wallet]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.db :as db]
     [utils.i18n :as i18n]

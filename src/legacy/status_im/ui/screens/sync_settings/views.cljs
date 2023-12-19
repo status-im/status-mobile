@@ -1,11 +1,11 @@
 (ns legacy.status-im.ui.screens.sync-settings.views
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]))
 

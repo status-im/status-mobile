@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.wallet.transactions.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
@@ -12,6 +11,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wallet.transactions.styles :as styles]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))
 

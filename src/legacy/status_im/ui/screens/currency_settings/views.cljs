@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.currency-settings.views
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.search-input.view :as search-input]
-    [legacy.status-im.ui.screens.currency-settings.styles :as styles]))
+    [legacy.status-im.ui.screens.currency-settings.styles :as styles]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]))
 
 (defonce search-active? (reagent/atom false))
 

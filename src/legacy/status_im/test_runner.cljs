@@ -3,9 +3,9 @@
   (:require
     [cljs.test :as ct]
     [clojure.string :as string]
+    legacy.status-im.subs.root
     [shadow.test :as st]
     [shadow.test.env :as env]
-    legacy.status-im.subs.root
     status-im2.setup.i18n-resources
     [status-im2.setup.interceptors :as interceptors]
     [status-im2.setup.schema :as schema]

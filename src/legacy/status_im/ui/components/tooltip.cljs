@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.components.tooltip
   (:require
+    [legacy.status-im.ui.components.colors :as colors]
+    [legacy.status-im.ui.components.icons.icons :as icons]
+    [legacy.status-im.ui.components.spacing :as spacing]
     [oops.core :refer [oget]]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
-    [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.icons.icons :as icons]
-    [legacy.status-im.ui.components.spacing :as spacing]))
+    [reagent.core :as reagent]))
 
 (def ^:private initial-height 22)
 

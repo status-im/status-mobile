@@ -1,8 +1,8 @@
 (ns legacy.status-im.signing.keycard
   (:require
+    [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [legacy.status-im.utils.deprecated-types :as types]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

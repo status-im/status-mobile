@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.browser.eip3085.sheet
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.copyable-text :as copyable-text]
@@ -9,6 +8,7 @@
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.browser.styles :as styles]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

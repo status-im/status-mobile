@@ -1,11 +1,11 @@
 (ns legacy.status-im.wallet.recipient.core
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.random :as random]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.navigation.events :as navigation]
     [utils.address :as address]

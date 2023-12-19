@@ -1,8 +1,8 @@
 (ns legacy.status-im.ui.components.search-input.view
   (:require
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (defn search-input-old

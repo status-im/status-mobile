@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.browser.stack
   (:require
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [legacy.status-im.ui.screens.browser.empty-tab.views :as empty-tab]
     [legacy.status-im.ui.screens.browser.tabs.views :as tabs]
     [legacy.status-im.ui.screens.browser.views :as browser]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [utils.re-frame :as rf]))
 
 (defn browser-stack

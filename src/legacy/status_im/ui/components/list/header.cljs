@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.components.list.header
   (:require
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.spacing :as spacing]
-    [legacy.status-im.ui.components.text :as text]))
+    [legacy.status-im.ui.components.text :as text]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn header
   []

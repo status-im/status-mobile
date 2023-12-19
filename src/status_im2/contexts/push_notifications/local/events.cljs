@@ -1,7 +1,7 @@
 (ns status-im2.contexts.push-notifications.local.events
   (:require
-    [react-native.platform :as platform]
     [legacy.status-im.notifications.wallet :as notifications.wallet]
+    [react-native.platform :as platform]
     status-im2.contexts.push-notifications.local.effects
     [utils.re-frame :as rf]))
 

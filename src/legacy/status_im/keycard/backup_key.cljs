@@ -1,11 +1,11 @@
 (ns legacy.status-im.keycard.backup-key
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.mnemonic :as mnemonic]
     [legacy.status-im.keycard.common :as common]
     [legacy.status-im.multiaccounts.recover.core :as multiaccounts.recover]
     [legacy.status-im.signing.core :as signing.core]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]

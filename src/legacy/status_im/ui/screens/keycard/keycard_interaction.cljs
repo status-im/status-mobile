@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.keycard.keycard-interaction
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.keycard.components.description :as description]
     [legacy.status-im.ui.screens.keycard.components.keycard-animation :refer [animated-circles]]
     [legacy.status-im.ui.screens.keycard.components.style :as styles]
     [legacy.status-im.ui.screens.keycard.components.turn-nfc :as turn-nfc]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (def state->translations

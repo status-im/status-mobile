@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.bootnodes-settings.edit-bootnode.views
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.qr-scanner.core :as qr-scanner]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

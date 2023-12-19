@@ -3,9 +3,9 @@
   (:require
     [clojure.spec.alpha :as spec]
     [clojure.string :as string]
+    [legacy.status-im.data-store.invitations :as data-store.invitations]
     [oops.core :as oops]
     [re-frame.core :as re-frame]
-    [legacy.status-im.data-store.invitations :as data-store.invitations]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.events :as chat.events]
     [status-im2.contexts.shell.activity-center.events :as activity-center]

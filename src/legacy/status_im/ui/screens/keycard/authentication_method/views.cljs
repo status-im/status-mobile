@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.keycard.authentication-method.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
@@ -8,6 +7,7 @@
     [legacy.status-im.ui.components.separator :as separator]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.keycard.authentication-method.styles :as styles]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (defn authentication-method-row

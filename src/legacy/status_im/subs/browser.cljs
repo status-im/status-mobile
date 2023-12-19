@@ -1,7 +1,7 @@
 (ns legacy.status-im.subs.browser
   (:require
-    [re-frame.core :as re-frame]
-    [legacy.status-im.browser.core :as browser]))
+    [legacy.status-im.browser.core :as browser]
+    [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  :browser/browsers

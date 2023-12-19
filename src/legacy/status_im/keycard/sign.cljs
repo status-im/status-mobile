@@ -1,10 +1,10 @@
 (ns legacy.status-im.keycard.sign
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.common :as common]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.ethereum.chain :as chain]

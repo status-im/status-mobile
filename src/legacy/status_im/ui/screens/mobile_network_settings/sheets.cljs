@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.screens.mobile-network-settings.sheets
   (:require-macros [legacy.status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [legacy.status-im.ui.components.list.item :as list.item]
+  (:require [legacy.status-im.ui.components.list.item :as list.item]
             [legacy.status-im.ui.components.react :as react]
             [legacy.status-im.ui.screens.mobile-network-settings.sheets-styles :as styles]
+            [re-frame.core :as re-frame]
             [utils.i18n :as i18n]))
 
 (defn title

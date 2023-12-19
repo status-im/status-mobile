@@ -1,7 +1,6 @@
 (ns legacy.status-im.ui.screens.wallet.swap.views
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.colors :as colors]
@@ -17,6 +16,7 @@
     [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
     [legacy.status-im.wallet.swap.core :as wallet-legacy.swap]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

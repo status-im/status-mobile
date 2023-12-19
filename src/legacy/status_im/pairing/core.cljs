@@ -1,8 +1,8 @@
 (ns legacy.status-im.pairing.core
   (:require
+    [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [re-frame.core :as re-frame]
     [react-native.platform :as utils.platform]
-    [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.config :as config]
     [status-im2.navigation.events :as navigation]

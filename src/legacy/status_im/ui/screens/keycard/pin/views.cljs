@@ -1,15 +1,15 @@
 (ns legacy.status-im.ui.screens.keycard.pin.views
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]])
   (:require
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.checkbox.view :as checkbox]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.keycard.pin.styles :as styles]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (def default-pin-retries-number 3)

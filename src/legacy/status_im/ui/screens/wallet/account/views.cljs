@@ -1,9 +1,5 @@
 (ns legacy.status-im.ui.screens.wallet.account.views
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as quo.colors]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as components.core]
@@ -18,6 +14,10 @@
     [legacy.status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
     [legacy.status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
     [legacy.status-im.ui.screens.wallet.transactions.views :as history]
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.config :as config]
     [utils.address :as address]
     [utils.i18n :as i18n]

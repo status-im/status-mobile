@@ -1,7 +1,7 @@
 (ns legacy.status-im.ui.components.invite.events
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

@@ -14,7 +14,13 @@
     (-pr-writer [coll writer opts]
       (let [pr-pair (fn [keyval]
                       (pr-sequential-writer writer #'cljs.core/pr-writer "" " " "" opts keyval))]
-        (pr-sequential-writer writer pr-pair "#legacy.status-im.utils.priority-map {" ", " "}" opts coll)))
+        (pr-sequential-writer writer
+                              pr-pair
+                              "#legacy.status-im.utils.priority-map {"
+                              ", "
+                              "}"
+                              opts
+                              coll)))
 
   IWithMeta
     (-with-meta [_this meta]

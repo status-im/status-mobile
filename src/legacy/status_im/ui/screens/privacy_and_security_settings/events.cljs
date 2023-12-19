@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.screens.privacy-and-security-settings.events
   (:require
     [clojure.string :as string]
+    [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [legacy.status-im.utils.deprecated-types :as types]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]

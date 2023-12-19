@@ -3,9 +3,6 @@
   (:require
     [cljs.spec.alpha :as spec]
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
@@ -15,6 +12,9 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.wallet.account-settings.views :as account-settings]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 

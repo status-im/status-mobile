@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.components.topbar
   (:require
+    [legacy.status-im.ui.components.core :as quo]
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
-    [react-native.safe-area :as safe-area]
-    [legacy.status-im.ui.components.core :as quo]))
+    [react-native.safe-area :as safe-area]))
 
 (def default-button-width 48)
 

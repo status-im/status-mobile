@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.network-info.views
   (:require
+    [legacy.status-im.ethereum.decode :as decode]
+    [legacy.status-im.ui.components.react :as react]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [legacy.status-im.ethereum.decode :as decode]
-    [legacy.status-im.ui.components.react :as react]
     [status-im2.common.json-rpc.events :as json-rpc]
     [utils.datetime :as datetime]))
 

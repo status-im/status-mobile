@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.profile.group-chat.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.common.common :as components.common]
@@ -13,6 +12,7 @@
     [legacy.status-im.ui.screens.chat.photos :as photos]
     [legacy.status-im.ui.screens.chat.utils :as chat.utils]
     [legacy.status-im.ui.screens.profile.components.styles :as profile.components.styles]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.debounce :as debounce]

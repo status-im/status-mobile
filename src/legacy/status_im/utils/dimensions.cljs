@@ -1,7 +1,7 @@
 (ns legacy.status-im.utils.dimensions
   (:require
-    [re-frame.core :as re-frame]
-    [legacy.status-im.ui.components.react :as react]))
+    [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]))
 
 (defn add-event-listener
   []

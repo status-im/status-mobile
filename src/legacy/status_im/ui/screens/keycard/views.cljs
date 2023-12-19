@@ -1,8 +1,6 @@
 (ns legacy.status-im.ui.screens.keycard.views
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.keycard.login :as keycard.login]
     [legacy.status-im.react-native.resources :as resources]
@@ -17,6 +15,8 @@
     [legacy.status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view]
     [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.keycard.styles :as styles]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.navigation.events :as navigation]

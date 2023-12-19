@@ -1,8 +1,8 @@
 (ns legacy.status-im.fleet.core
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.node.core :as node]
+    [re-frame.core :as re-frame]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]

@@ -1,8 +1,8 @@
 (ns status-im2.integration-test.community-test
   (:require [cljs.test :refer [deftest]]
             [day8.re-frame.test :as rf-test]
-            [re-frame.core :as rf]
             [legacy.status-im.multiaccounts.logout.core :as logout]
+            [re-frame.core :as rf]
             [status-im2.integration-test.constants :as constants]
             [test-helpers.integration :as h]))
 

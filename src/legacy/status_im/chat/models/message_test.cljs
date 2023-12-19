@@ -121,7 +121,9 @@
 
 (deftest message-loaded?
   (testing "it returns false when it's not in loaded message"
-    (is (not (#'legacy.status-im.chat.models.message/message-loaded? {:messages {"a" {}}} "a" "message-id"))))
+    (is
+     (not
+      (#'legacy.status-im.chat.models.message/message-loaded? {:messages {"a" {}}} "a" "message-id"))))
   (testing "it returns true when it's already in the loaded message"
     (is (#'legacy.status-im.chat.models.message/message-loaded?
          {:messages {"a" {"message-id" {}}}}

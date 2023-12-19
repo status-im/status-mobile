@@ -1,15 +1,15 @@
 (ns legacy.status-im.ui.screens.qr-scanner.views
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [react-native.camera-kit :as camera-kit]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.qr-scanner.styles :as styles]
+    [re-frame.core :as re-frame]
+    [react-native.camera-kit :as camera-kit]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im2.config :as config]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

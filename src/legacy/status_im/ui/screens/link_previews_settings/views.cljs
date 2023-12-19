@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.link-previews-settings.views
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.link-previews-settings.styles :as styles]
+    [re-frame.core :as re-frame]
     [status-im2.contexts.chat.messages.link-preview.events]
     [utils.i18n :as i18n]))
 

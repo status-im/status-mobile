@@ -1,8 +1,8 @@
 (ns legacy.status-im.subs.keycard
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.common :as common]
+    [re-frame.core :as re-frame]
     [utils.address :as address]
     [utils.datetime :as datetime]))
 

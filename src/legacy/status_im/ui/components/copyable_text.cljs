@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.components.copyable-text
   (:require
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (defn hide-cue-atom

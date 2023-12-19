@@ -1,5 +1,6 @@
 (ns legacy.status-im.bottom-sheet.view
   (:require
+    [legacy.status-im.bottom-sheet.styles :as styles]
     [oops.core :refer [oget]]
     [re-frame.core :as re-frame]
     [react-native.background-timer :as timer]
@@ -11,7 +12,6 @@
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [legacy.status-im.bottom-sheet.styles :as styles]
     [utils.worklets.bottom-sheet :as worklets.bottom-sheet]))
 
 (def animation-delay 450)

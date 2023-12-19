@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.privacy-and-security-settings.views
   (:require
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [legacy.status-im.multiaccounts.reset-password.core :as reset-password]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.ui.components.common.common :as components.common]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n])

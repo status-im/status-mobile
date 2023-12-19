@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.privacy-and-security-settings.delete-profile
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     legacy.status-im.keycard.delete-key
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))

@@ -1,8 +1,6 @@
 (ns legacy.status-im.ui.screens.wallet.send.views
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [quo.core :as quo]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as components.core]
@@ -17,6 +15,8 @@
     [legacy.status-im.ui.screens.wallet.send.styles :as styles]
     [legacy.status-im.utils.utils :as utils]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [quo.core :as quo]
+    [re-frame.core :as re-frame]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.address :as address]
     [utils.i18n :as i18n]

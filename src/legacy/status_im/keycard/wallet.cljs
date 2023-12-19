@@ -1,10 +1,10 @@
 (ns legacy.status-im.keycard.wallet
   (:require
-    [native-module.core :as native-module]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.keycard.common :as common]
     [legacy.status-im.ui.screens.wallet.add-new.views :as add-new.views]
     [legacy.status-im.utils.hex :as utils.hex]
+    [native-module.core :as native-module]
     [status-im2.constants :as constants]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.re-frame :as rf]))

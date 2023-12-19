@@ -2,9 +2,9 @@
   (:require
     ["@react-native-async-storage/async-storage" :default AsyncStorage]
     ["react-native" :refer (BackHandler)]
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.card :as card]
     [legacy.status-im.utils.deprecated-types :as types]
+    [re-frame.core :as re-frame]
     [taoensso.timbre :as log]))
 
 (re-frame/reg-fx

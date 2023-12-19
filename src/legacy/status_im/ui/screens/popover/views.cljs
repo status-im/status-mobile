@@ -2,9 +2,6 @@
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
     ["react-native" :refer (BackHandler)]
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as anim]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
@@ -15,7 +12,10 @@
     [legacy.status-im.ui.screens.signing.sheets :as signing-sheets]
     [legacy.status-im.ui.screens.signing.views :as signing]
     [legacy.status-im.ui.screens.wallet.request.views :as request]
-    [legacy.status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]))
+    [legacy.status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]

@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.chat.message.legacy-view
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.foundations.typography :as typography]
-    [react-native.core :as rn]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.colors :as quo.colors]
     [legacy.status-im.ui.components.fast-image :as fast-image]
     [legacy.status-im.ui.screens.chat.message.legacy-style :as style]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
+    [react-native.core :as rn]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.delete-message-for-me.events]
     [status-im2.contexts.chat.messages.delete-message.events]

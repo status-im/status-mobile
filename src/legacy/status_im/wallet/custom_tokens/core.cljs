@@ -1,11 +1,11 @@
 (ns legacy.status-im.wallet.custom-tokens.core
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.wallet.core :as wallet]
     [legacy.status-im.wallet.prices :as prices]
+    [re-frame.core :as re-frame]
     [status-im2.navigation.events :as navigation]
     [utils.address :as address]
     [utils.ethereum.chain :as chain]

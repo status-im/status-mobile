@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.screens.about-app.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.copyable-text :as copyable-text]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.webview :refer [webview]]
+    [re-frame.core :as re-frame]
     [status-im2.constants :refer
      [principles-link privacy-policy-link terms-of-service-link]]
     [utils.i18n :as i18n])

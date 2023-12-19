@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.screens.rpc-usage-info
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.core :as legacy.status-im.ui.components.core]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.typography :as typography]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im2.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]

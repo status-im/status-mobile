@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.keycard.recovery.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.recovery :as keycard.recovery]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.colors :as colors]
@@ -14,6 +13,7 @@
     [legacy.status-im.ui.screens.keycard.styles :as styles]
     [legacy.status-im.ui.screens.keycard.views :as keycard.views]
     [legacy.status-im.utils.core :as utils.core]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

@@ -3,10 +3,10 @@
 (ns legacy.status-im.browser.eip3085
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.network.core :as network]
     [legacy.status-im.ui.screens.browser.eip3085.sheet :as sheet]
     [legacy.status-im.utils.random :as random]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))

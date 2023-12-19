@@ -1,8 +1,8 @@
 (ns legacy.status-im.keycard.unpair
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.common :as common]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
+    [re-frame.core :as re-frame]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]

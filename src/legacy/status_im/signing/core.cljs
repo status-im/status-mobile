@@ -2,8 +2,6 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.keycard.card :as keycard.card]
     [legacy.status-im.keycard.common :as keycard.common]
@@ -15,6 +13,8 @@
     [legacy.status-im.wallet.core :as wallet]
     [legacy.status-im.wallet.prices :as prices]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]

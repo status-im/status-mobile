@@ -1,9 +1,6 @@
 (ns legacy.status-im.keycard.recovery
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.keycard.common :as common]
     legacy.status-im.keycard.fx
@@ -11,6 +8,9 @@
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.popover.core :as popover]
     [legacy.status-im.utils.deprecated-types :as types]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]

@@ -1,10 +1,10 @@
 (ns legacy.status-im.subs.wallet.signing
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.signing.gas :as signing.gas]
     [legacy.status-im.wallet.db :as wallet.db]
+    [re-frame.core :as re-frame]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.money :as money]))

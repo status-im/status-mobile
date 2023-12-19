@@ -1,14 +1,14 @@
 (ns legacy.status-im.keycard.simulated-keycard
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [re-frame.db :as re-frame.db]
     [legacy.status-im.keycard.keycard :as keycard]
     [legacy.status-im.multiaccounts.create.core :as multiaccounts.create]
     [legacy.status-im.node.core :as node]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.utils :as utils]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [re-frame.db :as re-frame.db]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.address :as address]

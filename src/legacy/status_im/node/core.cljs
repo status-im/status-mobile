@@ -1,10 +1,10 @@
 (ns legacy.status-im.node.core
   (:require
     [clojure.string :as string]
+    [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [legacy.status-im.utils.deprecated-types :as types]
     [status-im2.config :as config]
     [utils.re-frame :as rf]))
 

@@ -1,9 +1,9 @@
 (ns legacy.status-im.keycard.card
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.keycard :as keycard]
     [legacy.status-im.keycard.real-keycard :as real-keycard]
     [legacy.status-im.keycard.simulated-keycard :as simulated-keycard]
+    [re-frame.core :as re-frame]
     [status-im2.config :as config]
     [taoensso.timbre :as log]))
 

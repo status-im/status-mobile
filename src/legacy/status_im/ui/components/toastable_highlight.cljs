@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.components.toastable-highlight
   "A wrapped touchable highlight that presents a toast when clicked"
   (:require
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.animation :as animation]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.react :as react]))
+    [legacy.status-im.ui.components.react :as react]
+    [reagent.core :as reagent]))
 
 (defn hide-cue-atom
   [anim-opacity anim-y cue-atom]

@@ -1,11 +1,6 @@
 (ns legacy.status-im.events
   (:require
     clojure.set
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [react-native.core :as rn]
-    [react-native.permissions :as permissions]
-    [react-native.platform :as platform]
     legacy.status-im.backup.core
     legacy.status-im.bootnodes.core
     legacy.status-im.browser.core
@@ -42,6 +37,11 @@
     legacy.status-im.wallet.choose-recipient.core
     [legacy.status-im.wallet.core :as wallet]
     legacy.status-im.wallet.custom-tokens.core
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
     [status-im2.common.biometric.events :as biometric]
     status-im2.common.standard-authentication.events
     [status-im2.common.theme.core :as theme]

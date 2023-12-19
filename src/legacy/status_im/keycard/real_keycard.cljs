@@ -3,10 +3,10 @@
     ["react-native" :as rn]
     ["react-native-status-keycard" :default status-keycard]
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [react-native.platform :as platform]
     [legacy.status-im.keycard.keycard :as keycard]
     [legacy.status-im.utils.deprecated-types :as types]
+    [native-module.core :as native-module]
+    [react-native.platform :as platform]
     [taoensso.timbre :as log]
     [utils.address :as address]))
 

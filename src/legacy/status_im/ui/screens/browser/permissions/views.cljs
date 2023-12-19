@@ -1,7 +1,5 @@
 (ns legacy.status-im.ui.screens.browser.permissions.views
   (:require
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.browser.permissions :as browser.permissions]
     [legacy.status-im.ui.components.animation :as anim]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -10,6 +8,8 @@
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.browser.styles :as styles]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

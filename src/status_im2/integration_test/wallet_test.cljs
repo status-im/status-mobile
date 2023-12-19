@@ -3,10 +3,10 @@
     [cljs.test :refer [is]]
     [clojure.string :as string]
     [day8.re-frame.test :as rf-test]
-    [re-frame.core :as rf]
     legacy.status-im.events
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
+    [re-frame.core :as rf]
     status-im2.events
     status-im2.navigation.core
     status-im2.subs.root

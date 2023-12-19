@@ -1,10 +1,10 @@
 (ns legacy.status-im.network.net-info
   (:require
     ["@react-native-community/netinfo" :default net-info]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.mobile-sync-settings.core :as mobile-network]
     [legacy.status-im.wallet.core :as wallet]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 

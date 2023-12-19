@@ -1,9 +1,6 @@
 (ns legacy.status-im.ui.screens.home.views.inner-item
   (:require
     [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.foundations.colors :as quo.colors]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.badge :as badge]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.chat-icon.styles :as chat-icon.styles]
@@ -14,6 +11,9 @@
     [legacy.status-im.ui.screens.home.styles :as styles]
     [legacy.status-im.utils.core :as utils]
     [legacy.status-im.utils.utils :as utils.utils]
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]))

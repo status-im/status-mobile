@@ -2,8 +2,6 @@
   (:require
     ["react-native-svg" :refer (SvgUri)]
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.accordion :as accordion]
@@ -16,6 +14,8 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
     [legacy.status-im.wallet.core :as wallet-legacy]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

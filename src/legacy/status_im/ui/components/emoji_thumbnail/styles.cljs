@@ -1,8 +1,8 @@
 (ns legacy.status-im.ui.components.emoji-thumbnail.styles
   (:require
-    [react-native.platform :as platform]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]))
+    [legacy.status-im.ui.components.emoji-thumbnail.utils :as emoji-utils]
+    [react-native.platform :as platform]))
 
 (defn emoji-thumbnail-icon
   [color size]

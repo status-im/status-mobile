@@ -2,9 +2,6 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [react-native.async-storage :as async-storage]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.contact.db :as contact.db]
     [legacy.status-im.ethereum.ens :as ens]
@@ -21,6 +18,9 @@
     [legacy.status-im.wallet.prices :as prices]
     legacy.status-im.wallet.recipient.core
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.async-storage :as async-storage]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.config :as config]
     [status-im2.navigation.events :as navigation]

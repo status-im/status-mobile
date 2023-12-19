@@ -1,10 +1,6 @@
 (ns legacy.status-im.ui.screens.profile.contact.views
   (:require
     [clojure.string :as string]
-    [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.theme :as theme]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
@@ -14,6 +10,10 @@
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.profile.components.sheets :as sheets]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]

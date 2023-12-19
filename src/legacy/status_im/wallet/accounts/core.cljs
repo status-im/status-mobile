@@ -1,8 +1,6 @@
 (ns legacy.status-im.wallet.accounts.core
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ens.core :as ens.core]
     [legacy.status-im.ethereum.mnemonic :as mnemonic]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -13,6 +11,8 @@
     [legacy.status-im.utils.mobile-sync :as utils.mobile-sync]
     [legacy.status-im.wallet.core :as wallet-legacy]
     [legacy.status-im.wallet.prices :as prices]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]

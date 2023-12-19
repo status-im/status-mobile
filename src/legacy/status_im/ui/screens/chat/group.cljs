@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.chat.group
   (:require
-    [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

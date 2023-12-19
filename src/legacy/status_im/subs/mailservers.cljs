@@ -1,8 +1,8 @@
 (ns legacy.status-im.subs.mailservers
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.fleet.core :as fleet]
-    [legacy.status-im.mailserver.core :as mailserver]))
+    [legacy.status-im.mailserver.core :as mailserver]
+    [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  :mailserver/current-name

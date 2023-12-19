@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.screens.chat.message.legacy-style
   (:require
-    [quo.foundations.colors :as quo.colors]
-    [quo.foundations.typography :as typography]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
+    [quo.foundations.colors :as quo.colors]
+    [quo.foundations.typography :as typography]
     [status-im2.constants :as constants]))
 
 (defn style-message-text

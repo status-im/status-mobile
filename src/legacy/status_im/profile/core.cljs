@@ -1,9 +1,9 @@
 (ns legacy.status-im.profile.core
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [utils.re-frame :as rf]))
 
 (re-frame/reg-fx

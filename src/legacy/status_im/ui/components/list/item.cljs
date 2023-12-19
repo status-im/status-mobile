@@ -1,13 +1,13 @@
 (ns legacy.status-im.ui.components.list.item
   (:require
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.controls.view :as controls]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.spacing :as spacing]
     [legacy.status-im.ui.components.text :as text]
-    [legacy.status-im.ui.components.tooltip :as tooltip]))
+    [legacy.status-im.ui.components.tooltip :as tooltip]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]))
 
 (defn themes
   [theme]

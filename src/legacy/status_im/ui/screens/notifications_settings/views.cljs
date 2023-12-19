@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.notifications-settings.views
   (:require
-    [react-native.platform :as platform]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
+    [react-native.platform :as platform]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

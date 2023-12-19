@@ -3,12 +3,12 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.random :as random]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]

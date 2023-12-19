@@ -1,11 +1,11 @@
 (ns legacy.status-im.wallet.prices
   (:require
     [clojure.set :as set]
-    [re-frame.core :as re-frame]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.utils.currency :as currency]
     [legacy.status-im.utils.prices :as prices]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]))

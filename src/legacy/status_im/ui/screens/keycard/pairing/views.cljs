@@ -1,10 +1,10 @@
 (ns legacy.status-im.ui.screens.keycard.pairing.views
   (:require
+    [legacy.status-im.ui.components.core :as quo]
+    [legacy.status-im.ui.components.toolbar :as toolbar]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [legacy.status-im.ui.components.core :as quo]
-    [legacy.status-im.ui.components.toolbar :as toolbar]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 

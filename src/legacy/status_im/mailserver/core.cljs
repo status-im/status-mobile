@@ -1,10 +1,10 @@
 (ns ^{:doc "Mailserver events and API"} legacy.status-im.mailserver.core
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.node.core :as node]
     [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
+    [re-frame.core :as re-frame]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]

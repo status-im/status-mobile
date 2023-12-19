@@ -1,13 +1,13 @@
 (ns legacy.status-im.wallet.choose-recipient.core
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.contact.db :as contact.db]
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.qr-scanner.core :as qr-scaner]
     [legacy.status-im.wallet.utils :as wallet.utils]
+    [re-frame.core :as re-frame]
     [status-im2.common.router :as router]
     [status-im2.navigation.events :as navigation]
     [utils.ethereum.chain :as chain]

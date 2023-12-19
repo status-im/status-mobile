@@ -1,7 +1,5 @@
 (ns status-im2.contexts.profile.login.events
   (:require
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [legacy.status-im.browser.core :as browser]
     [legacy.status-im.communities.core :as communities]
     [legacy.status-im.data-store.chats :as data-store.chats]
@@ -13,6 +11,8 @@
     [legacy.status-im.mobile-sync-settings.core :as mobile-network]
     [legacy.status-im.pairing.core :as pairing]
     [legacy.status-im.stickers.core :as stickers]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.common.log :as logging]
     [status-im2.common.universal-links :as universal-links]

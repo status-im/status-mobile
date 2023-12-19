@@ -1,12 +1,12 @@
 (ns legacy.status-im.ui.components.animated-header
   (:require
+    [legacy.status-im.ui.components.colors :as colors]
+    [legacy.status-im.ui.components.header :as header]
     [oops.core :refer [oget]]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.header :as header]))
+    [reagent.core :as reagent]))
 
 (defn header-wrapper-style
   [{:keys [offset]}]

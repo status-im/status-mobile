@@ -2,8 +2,6 @@
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]])
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.common.styles :as components.common.styles]
     [legacy.status-im.ui.components.core :as quo]
@@ -13,6 +11,8 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.profile.seed.styles :as styles]
     [legacy.status-im.utils.utils :as utils]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (def steps-numbers

@@ -1,8 +1,8 @@
 (ns legacy.status-im.ui.components.invite.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]))
 
 (defn button

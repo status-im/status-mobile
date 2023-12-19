@@ -1,6 +1,5 @@
 (ns legacy.status-im.ui.screens.keycard.onboarding.views
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.keycard.onboarding :as keycard.onboarding]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.checkbox.view :as checkbox]
@@ -13,6 +12,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.keycard.styles :as styles]
+    [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])

@@ -1,10 +1,10 @@
 (ns legacy.status-im.signing.gas
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.popover.core :as popover]
     [legacy.status-im.signing.eip1559 :as eip1559]
+    [re-frame.core :as re-frame]
     [status-im2.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]

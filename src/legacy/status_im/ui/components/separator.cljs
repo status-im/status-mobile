@@ -1,7 +1,7 @@
 (ns legacy.status-im.ui.components.separator
   (:require
-    [react-native.core :as react]
-    [legacy.status-im.ui.components.colors :as colors]))
+    [legacy.status-im.ui.components.colors :as colors]
+    [react-native.core :as react]))
 
 (defn separator
   [{:keys [color style]}]

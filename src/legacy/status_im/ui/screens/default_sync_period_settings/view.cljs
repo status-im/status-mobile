@@ -1,9 +1,9 @@
 (ns legacy.status-im.ui.screens.default-sync-period-settings.view
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
-    [re-frame.core :as re-frame]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
+    [re-frame.core :as re-frame]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]))
