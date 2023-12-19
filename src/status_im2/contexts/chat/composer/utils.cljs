@@ -197,21 +197,15 @@
 
 (defn init-subs
   []
-  (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])]
-    (merge
-     {:chat-screen-loaded? chat-screen-loaded?
-      :link-previews?      false}
-     (when chat-screen-loaded?
-       (let [chat-input (rf/sub [:chats/current-chat-input])]
-         {:images               (seq (rf/sub [:chats/sending-image]))
-          :link-previews?       (rf/sub [:chats/link-previews?])
-          :audio                (rf/sub [:chats/sending-audio])
-          :reply                (rf/sub [:chats/reply-message])
-          :edit                 (rf/sub [:chats/edit-message])
-          :input-with-mentions  (rf/sub [:chat/input-with-mentions])
-          :input-text           (:input-text chat-input)
-          :input-content-height (:input-content-height chat-input)
-          :chat-screen-loaded?  chat-screen-loaded?})))))
+  (let [chat-input (rf/sub [:chats/current-chat-input])]
+    {:images               (seq (rf/sub [:chats/sending-image]))
+     :link-previews?       (rf/sub [:chats/link-previews?])
+     :audio                (rf/sub [:chats/sending-audio])
+     :reply                (rf/sub [:chats/reply-message])
+     :edit                 (rf/sub [:chats/edit-message])
+     :input-with-mentions  (rf/sub [:chat/input-with-mentions])
+     :input-text           (:input-text chat-input)
+     :input-content-height (:input-content-height chat-input)}))
 
 (defn init-animations
   [{:keys [input-text images link-previews? reply audio]}

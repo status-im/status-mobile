@@ -432,7 +432,8 @@
     "../src/js/worklets/record_audio.js"             #js {}
     "../src/js/worklets/scroll_view.js"              #js {}
     "../src/js/worklets/onboarding_carousel.js"      #js {}
-    "../src/js/worklets/lightbox.js"                 #js {}
+    "../src/js/worklets/chat/lightbox.js"            #js {}
+    "../src/js/worklets/chat/messages.js"            #js {}
     "../src/js/worklets/parallax.js"                 #js {}
     "../src/js/worklets/identifiers_highlighting.js" #js {}
     "./fleets.js"                                    default-fleets

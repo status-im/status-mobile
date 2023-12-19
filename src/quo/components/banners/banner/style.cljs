@@ -2,7 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-
 (def container
   {:height           40
    :background-color (colors/custom-color :blue 50 20)
@@ -25,4 +24,3 @@
   [hide-pin?]
   {:flex         (if hide-pin? 16 15)
    :margin-right 10})
-

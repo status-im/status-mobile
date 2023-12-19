@@ -13,7 +13,7 @@
     [status-im2.contexts.chat.lightbox.constants :as constants]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
-    [utils.worklets.lightbox :as worklet]))
+    [utils.worklets.chat.lightbox :as worklet]))
 
 (defn clear-timers
   [timers]

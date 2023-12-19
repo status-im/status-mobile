@@ -19,6 +19,7 @@
                      SlideOutUp
                      LinearTransition
                      enableLayoutAnimations
+                     useAnimatedScrollHandler
                      runOnJS)]
     ["react-native-redash" :refer (withPause)]
     [react-native.flat-list :as rn-flat-list]
@@ -55,6 +56,7 @@
 ;; Hooks
 (def use-shared-value useSharedValue)
 (def use-animated-style useAnimatedStyle)
+(def use-animated-scroll-handler useAnimatedScrollHandler)
 
 ;; Animations
 (def with-timing withTiming)
