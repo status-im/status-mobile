@@ -69,6 +69,7 @@
     "react-native-transparent-video": "git+https://github.com/status-im/react-native-transparent-video.git#refs/tags/0.1.1",
     "react-native-webview": "13.6.3",
     "react-syntax-highlighter": "^15.5.0",
+    "rive-react-native": "^6.2.0",
     "rn-emoji-keyboard": "0.7.0",
     "tdigest": "^0.1.1"
   },

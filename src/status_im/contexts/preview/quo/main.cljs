@@ -553,10 +553,20 @@
   []
   [:<>
    [common/navigation-bar {:title "Quo components preview"}]
+   [:> Rive
+    { ;; :url "https://public.rive.app/community/runtime-files/2195-4346-avatar-pack-use-case.riv"
+     ;; :stateMachineName "avatar"
+     ;; :artboardName "Avatar 1"
+     :url "https://public.rive.app/community/runtime-files/5965-11570-viking-strike.riv"
+     :stateMachineName "State Machine 1"
+     :artboardName "Sword Swing"
+     :style {:width 400 :height 400}}
+    ]
    [rn/scroll-view {:style (style/main)}
     (for [category (sort screens-categories)]
       ^{:key (first category)}
-      [category-view category])]])
+      [category-view category])]
+   ])
 
 (def screens
   (->> screens-categories
