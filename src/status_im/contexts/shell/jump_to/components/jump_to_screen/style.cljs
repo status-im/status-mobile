@@ -12,6 +12,7 @@
    :right               0
    :bottom              (utils/bottom-tabs-container-height)
    :align-items         :center
+   :justify-content     :center
    :accessibility-label :shell-placeholder-view})
 
 (def placeholder-image

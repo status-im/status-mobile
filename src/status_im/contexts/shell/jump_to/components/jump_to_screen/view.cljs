@@ -8,6 +8,7 @@
     [react-native.linear-gradient :as linear-gradient]
     [react-native.safe-area :as safe-area]
     [status-im.common.home.top-nav.view :as common.top-nav]
+    [status-im.common.resources :as resources]
     [status-im.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
     [status-im.contexts.shell.jump-to.components.jump-to-screen.style :as style]
     [status-im.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
@@ -19,25 +20,16 @@
 
 (defn placeholder
   []
-  [linear-gradient/linear-gradient
-   {:colors [colors/neutral-100-opa-0 colors/neutral-100-opa-100]
-    :start  {:x 0 :y 0}
-    :end    {:x 0 :y 1}
-    :style  (style/placeholder-container (safe-area/get-top))}
-   [rn/image
-    {:source nil ;; TODO(parvesh) - add placeholder image
-     :style  style/placeholder-image}]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :semi-bold
-     :style  style/placeholder-title}
-    (i18n/label :t/shell-placeholder-title)]
-   [quo/text
-    {:size   :paragraph-2
-     :weight :regular
-     :align  :center
-     :style  style/placeholder-subtitle}
-    (i18n/label :t/shell-placeholder-subtitle)]])
+  [rn/view {:style (style/placeholder-container (safe-area/get-top))}
+   [linear-gradient/linear-gradient
+    {:colors [colors/neutral-100-opa-0 colors/neutral-100-opa-100]
+     :start  {:x 0 :y 0}
+     :end    {:x 0 :y 1}
+     :style  (style/placeholder-container (safe-area/get-top))}]
+   [quo/empty-state
+    {:title       (i18n/label :t/shell-placeholder-title)
+     :description (i18n/label :t/shell-placeholder-subtitle)
+     :image       (resources/get-themed-image :jump-to :dark)}]])
 
 (defn jump-to-text
   []
