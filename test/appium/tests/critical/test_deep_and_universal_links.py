@@ -33,6 +33,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             "https://status.app/u#zQ3shVVxZMwLVEQvuu1KF6h4D2mzVyCC4F4mHLZm5dz5XU1aa"]
 
         for url in profile_urls:
+            self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
             if not self.channel.profile_add_to_contacts_button.is_element_displayed(
@@ -42,10 +43,11 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
         closed_community_urls = [
             "https://status.app/c/G8EAAGTiXKuwNbVVAu0GNLD-XzX4oz_E8oC1-7qSLikaTnCuG9Ag13ZgQKrMd8En9Qcpuaj3Qx3mfZ1atZzH8Zw-x_sFJ_MDv0P_7YfqoV-pNr3V4dsza-jVk41GaCGWasJb92Oer8qggaoNWf0tYCgSH19VonXciKPUz3ITdgke#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
+            "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
             "https://status.app/c#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
         ]
         for url in closed_community_urls:
+            self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
             if not self.channel.element_by_translation_id(
