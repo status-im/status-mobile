@@ -1,8 +1,9 @@
-(ns status-im2.contexts.chat.messages.contact-requests.bottom-drawer
+(ns status-im2.contexts.chat.messages.contact-requests.bottom-drawer.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer.style :as style]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -11,7 +12,7 @@
   [contact-id contact-request-state group-chat]
   (let [customization-color (rf/sub [:profile/customization-color])
         [primary-name _]    (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
-    [rn/view
+    [rn/view {:style style/container}
      [quo/permission-context
       [quo/button
        {:type      :ghost
