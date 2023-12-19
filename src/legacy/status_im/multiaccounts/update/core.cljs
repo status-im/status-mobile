@@ -1,7 +1,7 @@
 (ns legacy.status-im.multiaccounts.update.core
   (:require
     [legacy.status-im.utils.deprecated-types :as types]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.ens.core :as utils.ens]
     [utils.re-frame :as rf]))

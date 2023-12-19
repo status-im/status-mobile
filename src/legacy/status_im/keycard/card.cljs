@@ -4,7 +4,7 @@
     [legacy.status-im.keycard.real-keycard :as real-keycard]
     [legacy.status-im.keycard.simulated-keycard :as simulated-keycard]
     [re-frame.core :as re-frame]
-    [status-im2.config :as config]
+    [status-im.config :as config]
     [taoensso.timbre :as log]))
 
 (defonce card

@@ -18,7 +18,7 @@
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.config :as config]
+    [status-im.config :as config]
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])

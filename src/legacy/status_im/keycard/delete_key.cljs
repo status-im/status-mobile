@@ -1,7 +1,7 @@
 (ns legacy.status-im.keycard.delete-key
   (:require
     [legacy.status-im.keycard.common :as common]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [utils.re-frame :as rf]))
 
 (rf/defn reset-card-pressed

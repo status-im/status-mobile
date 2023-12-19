@@ -6,10 +6,10 @@
     [legacy.status-im.data-store.invitations :as data-store.invitations]
     [oops.core :as oops]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.chat.events :as chat.events]
-    [status-im2.contexts.shell.activity-center.events :as activity-center]
-    [status-im2.navigation.events :as navigation]
+    [status-im.constants :as constants]
+    [status-im.contexts.chat.events :as chat.events]
+    [status-im.contexts.shell.activity-center.events :as activity-center]
+    [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

@@ -7,7 +7,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.webview :refer [webview]]
     [re-frame.core :as re-frame]
-    [status-im2.constants :refer
+    [status-im.constants :refer
      [principles-link privacy-policy-link terms-of-service-link]]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))

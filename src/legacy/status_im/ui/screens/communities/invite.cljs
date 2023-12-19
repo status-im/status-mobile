@@ -9,7 +9,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

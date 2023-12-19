@@ -17,7 +17,7 @@
     [legacy.status-im.wallet.utils :as wallet.utils]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.money :as money]))

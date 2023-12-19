@@ -3,7 +3,7 @@
     [legacy.status-im.group-chats.core :as group-chats]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]

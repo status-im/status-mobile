@@ -69,7 +69,7 @@
     [legacy.status-im.ui.screens.wallet.settings.views :as wallet-settings]
     [legacy.status-im.ui.screens.wallet.swap.views :as wallet.swap]
     [legacy.status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-    [status-im2.contexts.chat.group-details.view :as group-details]
+    [status-im.contexts.chat.group-details.view :as group-details]
     [utils.i18n :as i18n]))
 
 (defn right-button-options

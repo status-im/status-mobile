@@ -4,7 +4,7 @@
     [legacy.status-im.ui.components.react :as react]
     [quo.foundations.colors :as quo.colors]
     [quo.foundations.typography :as typography]
-    [status-im2.constants :as constants]))
+    [status-im.constants :as constants]))
 
 (defn style-message-text
   []

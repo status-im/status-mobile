@@ -8,7 +8,7 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

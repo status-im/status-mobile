@@ -3,7 +3,7 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.screens.profile.visibility-status.styles :as styles]
     [quo.foundations.colors :as quo.colors]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

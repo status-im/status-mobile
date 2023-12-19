@@ -13,8 +13,8 @@
     [legacy.status-im.ui.screens.chat.utils :as chat.utils]
     [legacy.status-im.ui.screens.profile.components.styles :as profile.components.styles]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.constants :as constants]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

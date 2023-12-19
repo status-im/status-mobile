@@ -2,7 +2,7 @@
   (:require
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.utils.styles :as styles]
-    [status-im2.config :as config]))
+    [status-im.config :as config]))
 
 (def tooltip-container
   (merge

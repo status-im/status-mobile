@@ -5,7 +5,7 @@
     [legacy.status-im.ui.screens.wallet.add-new.views :as add-new.views]
     [legacy.status-im.utils.hex :as utils.hex]
     [native-module.core :as native-module]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.re-frame :as rf]))
 

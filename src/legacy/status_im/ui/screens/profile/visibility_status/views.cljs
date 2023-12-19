@@ -12,7 +12,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.re-frame :as rf]))
 
 ;; === Code Related to visibility-status-button ===

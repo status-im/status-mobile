@@ -20,7 +20,7 @@
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.config :as config]
+    [status-im.config :as config]
     [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.ens.core :as utils.ens]

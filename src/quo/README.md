@@ -199,7 +199,7 @@ file.
 ## Preview screens
 
 Every component should be accompanied by a preview screen in
-`src/status_im2/contexts/quo_preview/`. Ideally, **all possible variations in
+`src/status_im/contexts/quo_preview/`. Ideally, **all possible variations in
 Figma should be achievable in the preview screen** by changing the input values
 without resorting to code changes. Designers will also use this capability to
 review components in PR builds.

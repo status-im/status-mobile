@@ -5,7 +5,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im.common.json-rpc.events :as json-rpc]
     [utils.datetime :as datetime]))
 
 (defn get-block

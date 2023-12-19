@@ -6,7 +6,7 @@
     [legacy.status-im.signing.core :as signing.core]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

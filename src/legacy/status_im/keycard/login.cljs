@@ -7,7 +7,7 @@
     [legacy.status-im.keycard.recovery :as recovery]
     [legacy.status-im.signing.core :as signing.core]
     [legacy.status-im.utils.deprecated-types :as types]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.re-frame :as rf]))

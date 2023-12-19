@@ -10,8 +10,8 @@
     [re-frame.core :as re-frame]
     [react-native.mail :as react-native-mail]
     [react-native.platform :as platform]
-    [status-im2.common.log :as log]
-    [status-im2.config :as config]
+    [status-im.common.log :as log]
+    [status-im.config :as config]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

@@ -7,7 +7,7 @@
     [legacy.status-im.ui.components.list.views :as list.views]
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))
 

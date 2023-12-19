@@ -3,8 +3,8 @@
     [legacy.status-im.wallet.core :as wallet]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im2.common.keychain.events :as keychain]
-    [status-im2.db :as db]
+    [status-im.common.keychain.events :as keychain]
+    [status-im.db :as db]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

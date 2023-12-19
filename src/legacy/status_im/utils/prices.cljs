@@ -1,6 +1,6 @@
 (ns legacy.status-im.utils.prices
   (:require
-    [status-im2.common.json-rpc.events :as json-rpc]))
+    [status-im.common.json-rpc.events :as json-rpc]))
 
 (defn- format-price-resp
   [resp to mainnet?]

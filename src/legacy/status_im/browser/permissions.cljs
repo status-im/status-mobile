@@ -1,8 +1,8 @@
 (ns legacy.status-im.browser.permissions
   (:require
     [legacy.status-im.qr-scanner.core :as qr-scanner]
-    [status-im2.constants :as constants]
-    [status-im2.navigation.events :as navigation]
+    [status-im.constants :as constants]
+    [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

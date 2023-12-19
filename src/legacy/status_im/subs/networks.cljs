@@ -1,7 +1,7 @@
 (ns legacy.status-im.subs.networks
   (:require
     [re-frame.core :as re-frame]
-    [status-im2.config :as config]
+    [status-im.config :as config]
     [utils.ethereum.chain :as chain]))
 
 (defn- filter-networks

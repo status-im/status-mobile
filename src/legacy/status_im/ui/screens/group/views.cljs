@@ -14,7 +14,7 @@
     [legacy.status-im.ui.screens.group.styles :as styles]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))

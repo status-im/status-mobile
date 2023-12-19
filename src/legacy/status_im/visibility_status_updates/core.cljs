@@ -3,7 +3,7 @@
     [legacy.status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as utils]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.datetime :as datetime]
     [utils.re-frame :as rf]))
 

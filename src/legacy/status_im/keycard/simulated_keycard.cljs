@@ -9,7 +9,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [re-frame.db :as re-frame.db]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.i18n :as i18n]))

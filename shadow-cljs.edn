@@ -44,29 +44,29 @@
   {:target :react-native
    ;; To match the folder created by Nix build of JSBundle.
    :output-dir "result"
-   :init-fn status-im2.core/init
+   :init-fn status-im.core/init
    ;; When false, the Shadow-CLJS watcher won't automatically refresh
    ;; the target files (a.k.a hot reload). When false, you can manually
    ;; reload by calling `shadow.cljs.devtools.api/watch-compile-all!`.
    :devtools {:autobuild #shadow/env ["SHADOW_AUTOBUILD_ENABLED" :default true :as :bool]}
-   :dev {:devtools {:before-load-async status-im2.setup.hot-reload/before-reload
-                    :after-load-async  status-im2.setup.hot-reload/reload
-                    :build-notify      status-im2.setup.hot-reload/build-notify
+   :dev {:devtools {:before-load-async status-im.setup.hot-reload/before-reload
+                    :after-load-async  status-im.setup.hot-reload/reload
+                    :build-notify      status-im.setup.hot-reload/build-notify
                     :preloads          [re-frisk-remote.preload
-                                        status-im2.setup.schema-preload
+                                        status-im.setup.schema-preload
                                         ;; In order to use component test helpers in the REPL we
                                         ;; need to preload namespaces that are not normally required
                                         ;; by production code, such as
                                         ;; @testing-library/react-native.
                                         test-helpers.component]}
          :closure-defines
-         {status-im2.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
-          status-im2.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
-          status-im2.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
-          status-im2.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
-          status-im2.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
-          status-im2.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-          status-im2.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
+         {status-im.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
+          status-im.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
+          status-im.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
+          status-im.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
+          status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
+          status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
+          status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
          :compiler-options {:output-feature-set :es5
                             ;; We disable `:fn-deprecated` warnings because we
                             ;; are managing deprecation via clj-kondo and we
@@ -87,13 +87,13 @@
    :chunks {:fleets legacy.status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines
-    {status-im2.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
-     status-im2.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
-     status-im2.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
-     status-im2.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
-     status-im2.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
-     status-im2.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im2.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
+    {status-im.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
+     status-im.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
+     status-im.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
+     status-im.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
@@ -112,21 +112,21 @@
    :output-dir "target/test"
    :optimizations :simple
    :target :node-test
-   :dev {:devtools {:preloads [status-im2.setup.schema-preload]}}
+   :dev {:devtools {:preloads [status-im.setup.schema-preload]}}
    ;; Uncomment line below to `make test-watch` a specific file
-   ;; :ns-regexp "status-im2.subs.messages-test$"
+   ;; :ns-regexp "status-im.subs.messages-test$"
    :main legacy.status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl
    :ui-driven true
    :closure-defines
-   {schema.core/throw-on-error?                      true
-    status-im2.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
-    status-im2.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
-    status-im2.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
-    status-im2.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
-    status-im2.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
-    status-im2.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-    status-im2.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
+   {schema.core/throw-on-error?                     true
+    status-im.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
+    status-im.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
+    status-im.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
+    status-im.config/ALCHEMY_ARBITRUM_GOERLI_TOKEN  #shadow/env "ALCHEMY_ARBITRUM_GOERLI_TOKEN"
+    status-im.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
+    status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
+    status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
    :compiler-options
    {;; needed because we override require and it
     ;; messes with source-map which reports callstack
@@ -153,10 +153,10 @@
                                       ;; the preloads namespace because it will
                                       ;; be used directly by Jest in the option
                                       ;; setupFilesAfterEnv.
-                                      status-im2.setup.schema-preload
+                                      status-im.setup.schema-preload
 
                                       ;;quo.core-spec
-                                      status-im2.core-spec]
+                                      status-im.core-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"
                    :closure-defines  {schema.core/throw-on-error? true}

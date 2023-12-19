@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [re-frame.core :as re-frame]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

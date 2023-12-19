@@ -1,7 +1,7 @@
 (ns legacy.status-im.multiaccounts.db
   (:require
     [cljs.spec.alpha :as spec]
-    [status-im2.constants :as const]))
+    [status-im.constants :as const]))
 
 (defn valid-length?
   [password]

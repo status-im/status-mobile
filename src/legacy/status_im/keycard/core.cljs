@@ -15,7 +15,7 @@
     [legacy.status-im.keycard.wallet :as wallet]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [re-frame.db]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]

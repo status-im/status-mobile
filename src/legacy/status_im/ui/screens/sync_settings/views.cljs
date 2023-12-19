@@ -6,7 +6,7 @@
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.i18n :as i18n]))
 
 (views/defview sync-settings

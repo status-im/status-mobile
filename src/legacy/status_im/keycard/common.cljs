@@ -9,7 +9,7 @@
     [legacy.status-im.utils.keychain.core :as keychain]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.datetime :as datetime]

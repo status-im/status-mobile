@@ -8,7 +8,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.keycard.views :as keycard.views]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.i18n :as i18n]))
 
 (defn- activity-indicator

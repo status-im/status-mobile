@@ -4,7 +4,7 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.node.core :as node]
     [re-frame.core :as re-frame]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
