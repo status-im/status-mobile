@@ -117,7 +117,6 @@
     :viewability-config              {:item-visible-percent-threshold 100
                                       :minimum-view-time              200}
     :on-viewable-items-changed       on-viewable-items-changed
-    :remove-clipped-subviews         true
     :window-size                     (if @sheet-animating? 1 10)}])
 
 (defn- footer
