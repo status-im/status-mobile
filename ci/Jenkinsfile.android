@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.7.15'
+library 'status-jenkins-lib@v1.8.4'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
