@@ -4,7 +4,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.ethereum.ens :as ens]
+    [legacy.status-im.ethereum.ens :as ens]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.events :as chat.events]
     [taoensso.timbre :as log]

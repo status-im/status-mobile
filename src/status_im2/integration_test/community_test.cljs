@@ -2,7 +2,7 @@
   (:require [cljs.test :refer [deftest]]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
-            [status-im.multiaccounts.logout.core :as logout]
+            [legacy.status-im.multiaccounts.logout.core :as logout]
             [status-im2.integration-test.constants :as constants]
             [test-helpers.integration :as h]))
 
@@ -13,10 +13,10 @@
     (h/with-account
      (rf/dispatch-sync [:legacy-only-for-e2e/open-create-community])
      (doseq [[k v] (dissoc constants/community :membership)]
-       (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
-     (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
+       (rf/dispatch-sync [:legacy.status-im.communities.core/create-field k v]))
+     (rf/dispatch [:legacy.status-im.communities.core/create-confirmation-pressed])
      (rf-test/wait-for
-       [:status-im.communities.core/community-created]
+       [:legacy.status-im.communities.core/community-created]
        (h/assert-community-created)
        (h/logout)
        (rf-test/wait-for [::logout/logout-method]))))))

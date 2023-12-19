@@ -4,7 +4,7 @@
     re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.keycard.recovery :as keycard]
+    [legacy.status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
     [status-im2.config :as config]
     [status-im2.contexts.onboarding.new-to-status.style :as style]

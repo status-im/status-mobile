@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]))
 

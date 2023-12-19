@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.overview.events
   (:require
-    [status-im.data-store.communities :as data-store]
+    [legacy.status-im.data-store.communities :as data-store]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 

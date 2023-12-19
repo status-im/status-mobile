@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.ethereum.mnemonic :as mnemonic]
+    [legacy.status-im.ethereum.mnemonic :as mnemonic]
     [status-im2.constants :as constants]
     [status-im2.contexts.onboarding.enter-seed-phrase.style :as style]
     [utils.i18n :as i18n]

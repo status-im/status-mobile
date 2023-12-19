@@ -39,7 +39,7 @@ export REACT_SERVER_PORT ?= 5001
 # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
 export NODE_OPTIONS += --openssl-legacy-provider
 # The path can be anything, but home is usually safest.
-export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
+export KEYSTORE_PATH ?= $(HOME)/.gradle/legacy.status-im.keystore
 
 # Our custom config is located in nix/nix.conf
 export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
@@ -219,7 +219,7 @@ build-android: ##@build Build unsigned Android APK
 	@scripts/build-android.sh
 
 release-android: export TARGET := keytool
-release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
+release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/legacy.status-im.keystore
 release-android: keystore build-android ##@build Build signed Android APK
 	@scripts/sign-android.sh result/app-release-unsigned.apk
 

@@ -2,9 +2,9 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.communities.core :as communities]
-    [status-im.group-chats.core :as group-chat]
-    [status-im.group-chats.db :as group-chats.db]
+    [legacy.status-im.communities.core :as communities]
+    [legacy.status-im.group-chats.core :as group-chat]
+    [legacy.status-im.group-chats.db :as group-chats.db]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.events :as chat.events]

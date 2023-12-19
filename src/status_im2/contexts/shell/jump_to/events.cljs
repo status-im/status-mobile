@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.events
   (:require
-    [status-im.data-store.switcher-cards :as switcher-cards-store]
-    [status-im.utils.core :as utils]
+    [legacy.status-im.data-store.switcher-cards :as switcher-cards-store]
+    [legacy.status-im.utils.core :as utils]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     status-im2.contexts.shell.jump-to.effects

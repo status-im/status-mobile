@@ -3,9 +3,9 @@
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]
     [re-frame.core :as rf]
-    status-im.events
-    [status-im.multiaccounts.logout.core :as logout]
-    status-im.subs.root
+    legacy.status-im.events
+    [legacy.status-im.multiaccounts.logout.core :as logout]
+    legacy.status-im.subs.root
     [status-im2.constants :as constants]
     status-im2.events
     status-im2.navigation.core

@@ -2,7 +2,7 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [status-im.data-store.messages :as data-store.messages]
+    [legacy.status-im.data-store.messages :as data-store.messages]
     [taoensso.timbre :as log]
     [utils.collection]
     [utils.re-frame :as rf]))

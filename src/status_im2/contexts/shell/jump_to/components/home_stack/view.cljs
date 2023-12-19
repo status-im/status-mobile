@@ -2,7 +2,7 @@
   (:require
     [quo.theme :as quo.theme]
     [react-native.reanimated :as reanimated]
-    [status-im.ui.screens.browser.stack :as browser.stack]
+    [legacy.status-im.ui.screens.browser.stack :as browser.stack]
     [status-im2.contexts.chat.home.view :as chat]
     [status-im2.contexts.communities.home.view :as communities]
     [status-im2.contexts.shell.jump-to.components.home-stack.style :as style]

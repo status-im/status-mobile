@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.link-preview.events
   (:require
     [camel-snake-kebab.core :as csk]
-    [status-im.communities.core :as models.communities]
+    [legacy.status-im.communities.core :as models.communities]
     [status-im2.contexts.profile.settings.events :as profile.settings.events]
     [taoensso.timbre :as log]
     [utils.collection]
