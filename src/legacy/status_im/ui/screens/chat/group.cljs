@@ -5,7 +5,7 @@
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))
 

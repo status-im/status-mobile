@@ -11,7 +11,7 @@
     [quo.theme :as theme]
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.ens.core :as utils.ens]))
 
 ;;TODO REWORK THIS NAMESPACE

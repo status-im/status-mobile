@@ -7,7 +7,7 @@
     [legacy.status-im.ui.screens.browser.eip3085.sheet :as sheet]
     [legacy.status-im.utils.random :as random]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 

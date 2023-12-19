@@ -2,7 +2,7 @@
   (:require
     [re-frame.core :as re-frame]
     [re-frame.db :as re-frame.db]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [utils.re-frame :as rf]))
 
 ;; "source? true" means we are selecting the source asset. false implies

@@ -2,7 +2,7 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.address :as address]))
 
 (defn public-key-and-ens-name->new-contact

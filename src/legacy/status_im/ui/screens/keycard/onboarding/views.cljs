@@ -13,7 +13,7 @@
     [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.keycard.styles :as styles]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

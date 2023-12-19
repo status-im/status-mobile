@@ -6,7 +6,7 @@
     [legacy.status-im.utils.mobile-sync :as utils.mobile-sync]
     [legacy.status-im.wallet.core :as wallet]
     [re-frame.core :as re-frame]
-    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]

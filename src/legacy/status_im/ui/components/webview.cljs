@@ -3,7 +3,7 @@
     ["react-native-webview" :default rn-webview]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [status-im2.config :as config]))
+    [status-im.config :as config]))
 
 (def webview-class
   (reagent/adapt-react-class rn-webview))

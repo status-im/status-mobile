@@ -6,8 +6,8 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.mobile-sync :as utils]
     [legacy.status-im.wallet.core :as wallet]
-    [status-im2.contexts.add-new-contact.events :as add-new-contact]
-    [status-im2.navigation.events :as navigation]
+    [status-im.contexts.add-new-contact.events :as add-new-contact]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 

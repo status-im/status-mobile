@@ -5,7 +5,7 @@
     [legacy.status-im.popover.core :as popover]
     [legacy.status-im.signing.eip1559 :as eip1559]
     [re-frame.core :as re-frame]
-    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]

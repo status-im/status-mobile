@@ -2,7 +2,7 @@
   (:require
     [clojure.set :as set]
     [legacy.status-im.data-store.visibility-status-updates :as visibility-status-updates]
-    [status-im2.config :as config]
+    [status-im.config :as config]
     [utils.ethereum.eip.eip55 :as eip55]))
 
 (defn rpc->networks

@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer-macros [deftest is testing]]
     [legacy.status-im.fleet.core :as fleet]
-    [status-im2.constants :as constants]))
+    [status-im.constants :as constants]))
 
 #_(deftest fleets-test
     (testing "not passing any extra fleet"

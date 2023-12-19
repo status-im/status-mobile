@@ -3,7 +3,7 @@
     [legacy.status-im.utils.utils :as utils]
     [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]))
 

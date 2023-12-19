@@ -14,8 +14,8 @@
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.constants :as constants]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

@@ -6,7 +6,7 @@
     [legacy.status-im.wallet.core :as wallet]
     [legacy.status-im.wallet.prices :as prices]
     [re-frame.core :as re-frame]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [utils.address :as address]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]

@@ -3,9 +3,9 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [re-frame.core :as re-frame]
     [react-native.platform :as utils.platform]
-    [status-im2.common.json-rpc.events :as json-rpc]
-    [status-im2.config :as config]
-    [status-im2.navigation.events :as navigation]
+    [status-im.common.json-rpc.events :as json-rpc]
+    [status-im.config :as config]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

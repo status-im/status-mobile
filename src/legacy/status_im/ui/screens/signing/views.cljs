@@ -25,7 +25,7 @@
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 

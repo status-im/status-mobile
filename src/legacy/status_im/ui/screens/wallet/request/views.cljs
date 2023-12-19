@@ -5,7 +5,7 @@
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im.common.qr-codes.view :as qr-codes]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.ethereum.eip.eip681 :as eip681]
     [utils.i18n :as i18n])

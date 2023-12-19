@@ -4,10 +4,10 @@
     [legacy.status-im.data-store.chats :as chats-store]
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]
-    [status-im2.contexts.chat.messages.list.events :as message-list]
-    [status-im2.contexts.contacts.events :as contacts-store]
-    [status-im2.contexts.shell.activity-center.events :as activity-center]
-    [status-im2.navigation.events :as navigation]
+    [status-im.contexts.chat.messages.list.events :as message-list]
+    [status-im.contexts.contacts.events :as contacts-store]
+    [status-im.contexts.shell.activity-center.events :as activity-center]
+    [status-im.navigation.events :as navigation]
     [utils.re-frame :as rf]))
 
 (rf/defn clean-up-chat

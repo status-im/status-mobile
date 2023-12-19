@@ -2,7 +2,7 @@
   (:require
     [legacy.status-im.keycard.common :as common]
     [legacy.status-im.keycard.onboarding :as onboarding]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]

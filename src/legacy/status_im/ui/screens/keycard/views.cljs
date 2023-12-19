@@ -17,9 +17,9 @@
     [legacy.status-im.ui.screens.keycard.styles :as styles]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.profile.utils :as profile.utils]
-    [status-im2.navigation.events :as navigation]
+    [status-im.constants :as constants]
+    [status-im.contexts.profile.utils :as profile.utils]
+    [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))

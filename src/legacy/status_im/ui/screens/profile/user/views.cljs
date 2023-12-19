@@ -17,9 +17,9 @@
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im2.common.qr-codes.view :as qr-codes]
-    [status-im2.config :as config]
-    [status-im2.contexts.profile.utils :as profile.utils]
+    [status-im.common.qr-codes.view :as qr-codes]
+    [status-im.config :as config]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.ens.stateofus :as stateofus]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))

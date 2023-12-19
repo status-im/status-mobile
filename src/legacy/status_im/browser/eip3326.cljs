@@ -3,7 +3,7 @@
 (ns legacy.status-im.browser.eip3326
   (:require
     [legacy.status-im.ui.screens.browser.eip3326.sheet :as sheet]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]))
 

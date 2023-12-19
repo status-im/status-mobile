@@ -42,17 +42,17 @@
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
-    [status-im2.common.biometric.events :as biometric]
-    status-im2.common.standard-authentication.events
-    [status-im2.common.theme.core :as theme]
-    [status-im2.common.universal-links :as universal-links]
-    [status-im2.constants :as constants]
-    status-im2.contexts.chat.home.events
-    status-im2.contexts.communities.home.events
-    status-im2.contexts.onboarding.events
-    status-im2.contexts.shell.activity-center.events
-    status-im2.contexts.shell.activity-center.notification.contact-requests.events
-    status-im2.contexts.shell.jump-to.events
+    [status-im.common.biometric.events :as biometric]
+    status-im.common.standard-authentication.events
+    [status-im.common.theme.core :as theme]
+    [status-im.common.universal-links :as universal-links]
+    [status-im.constants :as constants]
+    status-im.contexts.chat.home.events
+    status-im.contexts.communities.home.events
+    status-im.contexts.onboarding.events
+    status-im.contexts.shell.activity-center.events
+    status-im.contexts.shell.activity-center.notification.contact-requests.events
+    status-im.contexts.shell.jump-to.events
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -110,7 +110,7 @@
   [{:keys [db] :as cofx} _]
   (let [current-theme-type (get-in cofx [:db :profile/profile :appearance])]
     (when (and (multiaccounts.model/logged-in? db)
-               (= current-theme-type status-im2.constants/theme-type-system))
+               (= current-theme-type status-im.constants/theme-type-system))
       {:profile.settings/switch-theme-fx
        [(get-in db [:profile/profile :appearance])
         (:view-id db) true]})))

@@ -4,7 +4,7 @@
     [legacy.status-im.utils.deprecated-types :as types]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]))
 
 (re-frame/reg-fx

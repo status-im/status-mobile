@@ -3,8 +3,8 @@
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
-    [status-im2.config :as config]
-    [status-im2.contexts.profile.settings.events]
+    [status-im.config :as config]
+    [status-im.contexts.profile.settings.events]
     [utils.i18n :as i18n]))
 
 (def crop-size 1000)

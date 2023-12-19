@@ -6,10 +6,10 @@
     legacy.status-im.subs.root
     [shadow.test :as st]
     [shadow.test.env :as env]
-    status-im2.setup.i18n-resources
-    [status-im2.setup.interceptors :as interceptors]
-    [status-im2.setup.schema :as schema]
-    status-im2.subs.root
+    status-im.setup.i18n-resources
+    [status-im.setup.interceptors :as interceptors]
+    [status-im.setup.schema :as schema]
+    status-im.subs.root
     [utils.re-frame :as rf]))
 
 (defonce repl? (atom false))

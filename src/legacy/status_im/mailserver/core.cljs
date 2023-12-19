@@ -5,7 +5,7 @@
     [legacy.status-im.node.core :as node]
     [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
     [re-frame.core :as re-frame]
-    [status-im2.navigation.events :as navigation]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

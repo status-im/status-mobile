@@ -11,7 +11,7 @@
     [legacy.status-im.ui.screens.wallet.components.views :as components]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.url :as url]))
 

@@ -5,7 +5,7 @@
     [legacy.status-im.utils.currency :as currency]
     [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
-    [status-im2.config :as config]
+    [status-im.config :as config]
     [utils.i18n :as i18n]
     [utils.money :as money]))
 

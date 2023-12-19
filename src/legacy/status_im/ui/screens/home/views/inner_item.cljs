@@ -14,7 +14,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
+    [status-im.constants :as constants]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]))
 

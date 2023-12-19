@@ -1,7 +1,7 @@
 (ns legacy.status-im.ethereum.ens
   (:require
     [native-module.core :as native-module]
-    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im.common.json-rpc.events :as json-rpc]
     [utils.ens.core :as utils.ens]))
 
 (defn address
