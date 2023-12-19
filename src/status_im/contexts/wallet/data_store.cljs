@@ -1,4 +1,4 @@
-(ns status-im.common.data-store.wallet
+(ns status-im.contexts.wallet.data-store
   (:require
     [clojure.set :as set]
     [clojure.string :as string]

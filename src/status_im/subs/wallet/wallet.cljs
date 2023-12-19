@@ -30,11 +30,6 @@
  :-> :ui)
 
 (rf/reg-sub
- :wallet/wallet-send
- :<- [:wallet/ui]
- :-> :send)
-
-(rf/reg-sub
  :wallet/tokens-loading?
  :<- [:wallet/ui]
  :-> :tokens-loading?)

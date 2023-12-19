@@ -338,7 +338,6 @@
      :component wallet-select-asset/view}
 
     {:name      :wallet-transaction-confirmation
-     :options   {:insets {:bottom? true}}
      :component wallet-transaction-confirmation/view}
 
     {:name      :wallet-transaction-progress
