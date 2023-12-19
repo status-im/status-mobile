@@ -14,6 +14,8 @@
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
+(def qr-size 500)
+
 (def id-to-network
   {constants/mainnet-chain-id  :ethereum
    constants/optimism-chain-id :optimism
@@ -44,14 +46,15 @@
                      :on-save           (fn [chain-ids]
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (reset! selected-networks (map #(get id-to-network %)
-                                                                         chain-ids))
-                                        )}])}]))
+                                                                         chain-ids)))}])}]))
 
 
 (defn view
   []
   (let [padding-top       (:top (safe-area/get-insets))
         wallet-type       (reagent/atom :wallet-legacy)
+        ;; Design team is yet to confirm the default selected networks here.
+        ;; Should be the current selected for the account or all the networks always
         selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
     (fn []
       (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])
@@ -63,7 +66,7 @@
             qr-media-server-uri                       (image-server/get-qr-image-uri-for-any-url
                                                        {:url         qr-url
                                                         :port        (rf/sub [:mediaserver/port])
-                                                        :qr-size     500
+                                                        :qr-size     qr-size
                                                         :error-level :highest})]
         [quo/overlay {:type :shell}
          [rn/view
