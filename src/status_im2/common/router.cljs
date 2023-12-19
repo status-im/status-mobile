@@ -2,9 +2,9 @@
   (:require
     [bidi.bidi :as bidi]
     [clojure.string :as string]
+    [legacy.status-im.ethereum.ens :as ens]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.ethereum.ens :as ens]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.events :as chat.events]
     [taoensso.timbre :as log]

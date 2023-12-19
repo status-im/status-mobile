@@ -1,9 +1,9 @@
 (ns status-im2.contexts.shell.activity-center.notification.reply.view
   (:require
     [clojure.string :as string]
+    [legacy.status-im.ui.screens.chat.message.legacy-view :as old-message]
     [quo.core :as quo]
     [react-native.gesture :as gesture]
-    [status-im.ui.screens.chat.message.legacy-view :as old-message]
     [status-im2.common.not-implemented :as not-implemented]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.notification.common.view :as common]

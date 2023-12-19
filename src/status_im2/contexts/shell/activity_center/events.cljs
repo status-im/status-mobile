@@ -1,9 +1,9 @@
 (ns status-im2.contexts.shell.activity-center.events
   (:require
+    [legacy.status-im.data-store.activities :as activities]
+    [legacy.status-im.data-store.chats :as data-store.chats]
     [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
-    [status-im.data-store.activities :as activities]
-    [status-im.data-store.chats :as data-store.chats]
     [status-im2.common.toasts.events :as toasts]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.notification-types :as types]

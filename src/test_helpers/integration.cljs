@@ -2,10 +2,10 @@
   (:require-macros [test-helpers.integration])
   (:require
     [cljs.test :refer [is]]
+    legacy.status-im.events
+    legacy.status-im.subs.root
     [native-module.core :as native-module]
     [re-frame.core :as rf]
-    status-im.events
-    status-im.subs.root
     status-im2.events
     [status-im2.integration-test.constants :as constants]
     status-im2.navigation.core

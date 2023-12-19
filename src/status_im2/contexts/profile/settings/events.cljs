@@ -1,6 +1,6 @@
 (ns status-im2.contexts.profile.settings.events
   (:require [clojure.string :as string]
-            [status-im.bottom-sheet.events :as bottom-sheet.events]
+            [legacy.status-im.bottom-sheet.events :as bottom-sheet.events]
             [status-im2.constants :as constants]
             status-im2.contexts.profile.settings.effects
             [taoensso.timbre :as log]

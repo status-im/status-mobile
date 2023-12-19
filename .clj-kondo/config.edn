@@ -1,15 +1,15 @@
 {:config-paths ["status-im"]
- :lint-as      {status-im.utils.views/defview  clojure.core/defn
-                status-im.utils.views/letsubs  clojure.core/let
-                reagent.core/with-let          clojure.core/let
-                status-im.utils.fx/defn        clj-kondo.lint-as/def-catch-all
-                utils.re-frame/defn            clj-kondo.lint-as/def-catch-all
-                quo.react/with-deps-check      clojure.core/fn
-                quo.previews.preview/list-comp clojure.core/for
-                status-im.utils.styles/def     clojure.core/def
-                status-im.utils.styles/defn    clojure.core/defn
-                test-helpers.unit/deftest-sub  clojure.core/defn
-                taoensso.tufte/defnp           clojure.core/defn}
+ :lint-as      {legacy.status-im.utils.views/defview clojure.core/defn
+                legacy.status-im.utils.views/letsubs clojure.core/let
+                reagent.core/with-let                clojure.core/let
+                legacy.status-im.utils.fx/defn       clj-kondo.lint-as/def-catch-all
+                utils.re-frame/defn                  clj-kondo.lint-as/def-catch-all
+                quo.react/with-deps-check            clojure.core/fn
+                quo.previews.preview/list-comp       clojure.core/for
+                legacy.status-im.utils.styles/def    clojure.core/def
+                legacy.status-im.utils.styles/defn   clojure.core/defn
+                test-helpers.unit/deftest-sub        clojure.core/defn
+                taoensso.tufte/defnp                 clojure.core/defn}
  :linters      {:case-duplicate-test           {:level :error}
                 :case-quoted-test              {:level :error}
                 :case-symbol-test              {:level :error}
@@ -32,7 +32,8 @@
                 :docstring-blank               {:level :error}
                 :equals-true                   {:level :error}
                 :inline-def                    {:level :error}
-                :invalid-arity                 {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
+                :invalid-arity                 {:skip-args [legacy.status-im.utils.fx/defn
+                                                            utils.re-frame/defn]}
                 :loop-without-recur            {:level :error}
                 :minus-one                     {:level :error}
                 :misplaced-docstring           {:level :error}
@@ -62,7 +63,7 @@
                 ;; https://github.com/borkdude/clj-kondo/issues/867
                 :unresolved-symbol             {:exclude [PersistentPriorityMap.EMPTY
                                                           number
-                                                          status-im.test-helpers/restore-app-db]}
+                                                          legacy.status-im.test-helpers/restore-app-db]}
                 :unresolved-var                {:level :error}
                 :unsorted-required-namespaces  {:level :error}
                 :unused-alias                  {:level :warning}

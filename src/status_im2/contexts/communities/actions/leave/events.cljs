@@ -1,5 +1,5 @@
 (ns status-im2.contexts.communities.actions.leave.events
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [legacy.status-im.ui.components.colors :as colors]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))

@@ -11,8 +11,8 @@
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
     [reagent.impl.batching :as batching]
-    status-im.events
-    status-im.subs.root
+    legacy.status-im.events
+    legacy.status-im.subs.root
     [status-im2.common.log :as log]
     [status-im2.common.universal-links :as universal-links]
     [status-im2.config :as config]

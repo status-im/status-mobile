@@ -1,10 +1,10 @@
 (ns status-im2.common.theme.core
   (:require
+    [legacy.status-im.ui.components.colors :as legacy-colors]
     [oops.core :refer [oget]]
     [quo.theme :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [status-im.ui.components.colors :as legacy-colors]
     [utils.re-frame :as rf]))
 
 (def device-theme (atom (rn/get-color-scheme)))

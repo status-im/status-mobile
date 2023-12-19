@@ -1,12 +1,12 @@
 (ns status-im2.contexts.syncing.events
   (:require
     [clojure.string :as string]
+    [legacy.status-im.data-store.settings :as data-store.settings]
+    [legacy.status-im.node.core :as node]
     [native-module.core :as native-module]
     [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [status-im.data-store.settings :as data-store.settings]
-    [status-im.node.core :as node]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.syncing.utils :as sync-utils]

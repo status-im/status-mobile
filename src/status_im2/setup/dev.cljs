@@ -39,7 +39,7 @@
                            :pairing/set-installation-metadata
                            :fx
                            :dispatch-n
-                           :status-im.ens.core/verify-names
+                           :legacy.status-im.ens.core/verify-names
                            :shh/send-direct-message
                            :shh/remove-filter
                            :transport/confirm-messages-processed

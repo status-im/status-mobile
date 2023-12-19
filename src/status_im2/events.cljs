@@ -1,7 +1,7 @@
 (ns status-im2.events
   (:require
-    [status-im.bottom-sheet.events]
-    [status-im.keycard.core :as keycard]
+    [legacy.status-im.bottom-sheet.events]
+    [legacy.status-im.keycard.core :as keycard]
     status-im2.common.alert.effects
     status-im2.common.async-storage.effects
     status-im2.common.font.events

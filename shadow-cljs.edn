@@ -37,7 +37,7 @@
  :http {:port 3449
         :host "0.0.0.0"}
 
- :cache-blockers #{status-im.utils.js-resources status-im.ui.components.icons.icons}
+ :cache-blockers #{legacy.status-im.utils.js-resources legacy.status-im.ui.components.icons.icons}
 
  :builds
  {:mobile
@@ -84,7 +84,7 @@
          ;; in the SHADOW_HOST env variable to make sure that
          ;; it will use the right interface
          :local-ip #shadow/env "SHADOW_HOST"}
-   :chunks {:fleets status-im.fleet.default-fleet/default-fleets}
+   :chunks {:fleets legacy.status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines
     {status-im2.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
@@ -115,7 +115,7 @@
    :dev {:devtools {:preloads [status-im2.setup.schema-preload]}}
    ;; Uncomment line below to `make test-watch` a specific file
    ;; :ns-regexp "status-im2.subs.messages-test$"
-   :main status-im.test-runner/main
+   :main legacy.status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl
    :ui-driven true
    :closure-defines
