@@ -10,11 +10,8 @@
     [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
     [status-im.ui.screens.bug-report :as bug-report]
-    [status-im.ui.screens.communities.create :as communities.create]
-    [status-im.ui.screens.communities.import :as communities.import]
     [status-im.ui.screens.communities.invite :as communities.invite]
     [status-im.ui.screens.communities.members :as members]
-    [status-im.ui.screens.communities.membership :as membership]
     [status-im.ui.screens.contacts-list.views :as contacts-list]
     [status-im.ui.screens.currency-settings.views :as currency-settings]
     [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
@@ -89,7 +86,6 @@
     :component progress/progress}
 
    ;;CHAT
-
    {:name      :group-chat-profile
     ;;TODO animated-header
     :options   {:insets {:top? true}}
@@ -98,6 +94,10 @@
     ;;TODO parameter in the event
     :options   {:insets {:top? true}}
     :component profile.group-chat/group-chat-invite}
+   {:name      :legacy-community-members
+    ;;TODO custom subtitle
+    :options   {:insets {:top? true}}
+    :component members/legacy-members-container}
 
    {:name      :stickers
     :options   {:insets {:top? true}
@@ -108,35 +108,10 @@
     :options   {:insets {:top? true}}
     :component stickers/pack}
 
-   ;; Community (legacy only for e2e needed)
-
-   {:name      :community-members
-    ;;TODO custom subtitle
-    :options   {:insets {:top? true}}
-    :component members/members-container}
-   {:name      :contact-toggle-list
-    ;;TODO custom subtitle
-    :options   {:insets {:top? true}}
-    :component group-chat/contact-toggle-list}
    {:name      :new-group
     :options   {:insets {:top? true}}
     ;;TODO custom subtitle
     :component group-chat/new-group}
-   {:name      :community-import
-    :options   {:topBar {:title {:text (i18n/label :t/import-community-title)}}
-                :insets {:top?    true
-                         :bottom? true}}
-    :component communities.import/view}
-   {:name      :community-create
-    :options   {:topBar {:title {:text (i18n/label :t/new-community-title)}}
-                :insets {:top?    true
-                         :bottom? true}}
-    :component communities.create/view}
-   {:name      :community-membership
-    :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}
-                :insets {:top?    true
-                         :bottom? true}}
-    :component membership/membership-view}
 
    ;;WALLET
 
@@ -430,11 +405,11 @@
     :component group-chat/add-participants-toggle-list}
 
    ;[Communities] Invite people
-   {:name      :invite-people-community
+   {:name      :legacy-invite-people-community
     ;;TODO dyn title
     :options   {:insets {:bottom? true
                          :top?    true}}
-    :component communities.invite/invite}
+    :component communities.invite/legacy-invite}
 
    ;[Wallet] Recipient
    {:name      :recipient

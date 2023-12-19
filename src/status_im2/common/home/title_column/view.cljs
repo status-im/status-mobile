@@ -11,7 +11,8 @@
    [rn/view {:flex 1}
     [quo/text style/title-column-text
      label]]
-   [plus-button/plus-button
-    {:on-press            handler
-     :accessibility-label accessibility-label
-     :customization-color customization-color}]])
+   (when handler
+     [plus-button/plus-button
+      {:on-press            handler
+       :accessibility-label accessibility-label
+       :customization-color customization-color}])])

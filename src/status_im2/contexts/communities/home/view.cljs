@@ -9,6 +9,7 @@
     [status-im2.common.home.empty-state.view :as common.empty-state]
     [status-im2.common.home.header-spacing.view :as common.header-spacing]
     [status-im2.common.resources :as resources]
+    [status-im2.config :as config]
     [status-im2.contexts.communities.actions.community-options.view :as options]
     [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
@@ -62,7 +63,8 @@
 (def ^:private banner-data
   {:title-props
    {:label               (i18n/label :t/communities)
-    :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
+    :handler             (when config/fast-create-community-enabled?
+                           #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}]))
     :accessibility-label :new-communities-button}
    :card-props
    {:on-press            #(rf/dispatch [:navigate-to :discover-communities])

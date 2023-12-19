@@ -138,11 +138,12 @@
            :key-fn      identity
            :render-fn   render-member}]]))))
 
-(defn members-container
+(defn legacy-members-container
   []
   (reagent/create-class
    {:display-name        "community-members-view"
     :component-did-mount (fn []
-                           (communities/fetch-requests-to-join! (get (rf/sub [:get-screen-params])
-                                                                     :community-id)))
+                           (rf/dispatch [:community/fetch-requests-to-join
+                                         (get (rf/sub [:get-screen-params])
+                                              :community-id)]))
     :reagent-render      members}))

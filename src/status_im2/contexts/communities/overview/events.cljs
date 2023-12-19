@@ -1,7 +1,9 @@
 (ns status-im2.contexts.communities.overview.events
   (:require
     [status-im.data-store.communities :as data-store]
+    [status-im.ui.components.colors :as colors]
     [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :communities/check-all-community-channels-permissions-success
@@ -76,6 +78,19 @@
                :event        :communities/requested-to-join-error})
    {:db (assoc-in db [:password-authentication :error] error)}))
 
+(rf/reg-event-fx :communities/requested-to-join
+ (fn [_ [response-js]]
+   (let [community-name (aget response-js "communities" 0 "name")]
+     {:fx [[:dispatch [:sanitize-messages-and-process-response response-js]]
+           [:dispatch [:hide-bottom-sheet]]
+           [:dispatch
+            [:toasts/upsert
+             {:icon       :correct
+              :icon-color (:positive-01 @colors/theme)
+              :text       (i18n/label
+                           :t/requested-to-join-community
+                           {:community community-name})}]]]})))
+
 (defn request-to-join-with-signatures
   [_ [community-id addresses-to-reveal signatures]]
   {:fx [[:json-rpc/call
@@ -92,3 +107,23 @@
            :on-error    [:communities/requested-to-join-error community-id]}]]]})
 
 (rf/reg-event-fx :communities/request-to-join-with-signatures request-to-join-with-signatures)
+
+(rf/reg-event-fx :communities/toggled-collapsed-category-success
+ (fn [{:keys [db]} [community-id category-id collapsed?]]
+   {:db (assoc-in db [:communities/collapsed-categories community-id category-id] collapsed?)}))
+
+(rf/reg-event-fx :communities/toggle-collapsed-category
+ (fn [_ [community-id category-id collapse?]]
+   {:json-rpc/call
+    [{:method     "wakuext_toggleCollapsedCommunityCategory"
+      :params     [{:communityId community-id
+                    :categoryId  category-id
+                    :collapsed   collapse?}]
+      :on-success #(rf/dispatch
+                    [:communities/toggled-collapsed-category-success community-id category-id collapse?])
+      :on-error   #(log/error "failed to toggle collapse category"
+                              {:error        %
+                               :community-id community-id
+                               :event        :communities/toggle-collapsed-category
+                               :category-id  category-id
+                               :collapse?    collapse?})}]}))
