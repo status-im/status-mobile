@@ -43,14 +43,12 @@
    {}))
 
 (defn community-resolved
-  [{:keys [db]} [community-id {token-permissions :tokenPermissions :keys [joined] :as community}]]
+  [{:keys [db]} [community-id community]]
   (when community
-    (cond-> {:db (update db :communities/resolve-community-info dissoc community-id)
-             :fx [[:dispatch [:communities/handle-community community]]
-                  [:dispatch
-                   [:chat.ui/cache-link-preview-data (community-link community-id) community]]]}
-      (and (not joined) (not (seq token-permissions)))
-      (update :fx conj [:dispatch [:chat.ui/spectate-community community-id]]))))
+    {:db (update db :communities/resolve-community-info dissoc community-id)
+     :fx [[:dispatch [:communities/handle-community community]]
+          [:dispatch
+           [:chat.ui/cache-link-preview-data (community-link community-id) community]]]}))
 
 (rf/reg-event-fx :chat.ui/community-resolved community-resolved)
 

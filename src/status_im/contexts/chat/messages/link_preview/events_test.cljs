@@ -48,8 +48,7 @@
                  {:fx [[:dispatch [:communities/handle-community {:id "community-id"}]]
                        [:dispatch
                         [:chat.ui/cache-link-preview-data "community-link+community-id"
-                         {:id "community-id"}]]
-                       [:dispatch [:chat.ui/spectate-community "community-id"]]]}
+                         {:id "community-id"}]]]}
                  (sut/community-resolved cofx arg))))))
     (t/testing "given a joined community"
       (let [cofx {:db {:communities/resolve-community-info {"community-id" true}}}
