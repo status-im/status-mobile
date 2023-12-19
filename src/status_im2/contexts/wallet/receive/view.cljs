@@ -12,7 +12,8 @@
     [status-im2.contexts.wallet.receive.style :as style]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im2.contexts.wallet.common.utils :as utils]))
 
 (def id-to-network
   {constants/mainnet-chain-id  :ethereum
@@ -56,12 +57,9 @@
     (fn []
       (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])
             share-title         (str (:name account) " " (i18n/label :t/address))
-            qr-url              (if (= @wallet-type :wallet-multichain)
-                                  (as-> @selected-networks $
-                                        (map qr-codes/get-network-short-name-url $)
-                                        (apply str $)
-                                        (str $ address))
-                                  address)
+            qr-url               (utils/get-wallet-qr {:wallet-type @wallet-type
+                                                       :selected-networks @selected-networks
+                                                       :address address})
             qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                                   {:url         qr-url
                                    :port        (rf/sub [:mediaserver/port])
