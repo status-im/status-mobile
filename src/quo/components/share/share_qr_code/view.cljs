@@ -19,14 +19,8 @@
 (defn- line [] [rn/view {:style style/line}])
 (defn- space [] [rn/view {:style style/line-space}])
 
-(defn- dashed-line
-  [width]
-  (into [rn/view {:style style/dashed-line}]
-        (take (style/number-lines-and-spaces-to-fill width))
-        (cycle [[line] [space]])))
-
 (defn- header
-  [{:keys [share-qr-type on-info-press on-legacy-press on-multichain-press]}]
+  [{:keys [share-qr-type on-legacy-press on-multichain-press]}]
   [rn/view {:style style/header-container}
    [tab/view
     {:accessibility-label         :share-qr-code-legacy-tab
@@ -114,12 +108,6 @@
     :on-long-press on-text-long-press}
    qr-data])
 
-(def ^:private known-networks #{:ethereum :optimism :arbitrum})
-
-(defn- get-network-image-source
-  [network]
-  {:source (quo.resources/get-network (get known-networks network :unknown))})
-
 (defn wallet-multichain-bottom
   [{:keys [component-width qr-data on-text-press on-text-long-press on-settings-press]}]
   [rn/view
@@ -193,14 +181,12 @@
      - profile-picture: map ({:source image-source}) or any image source.
    `:wallet-legacy`
      - emoji:               Emoji in a string to show in the QR code.
-     - on-info-press:       Callback for the info icon.
      - on-legacy-press:     Callback for the legacy tab.
      - on-multichain-press: Callback for the multichain tab.
    `:wallet-multichain`
      - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
      - on-settings-press:   Callback for the settings button.
      - emoji:               Emoji in a string to show in the QR code.
-     - on-info-press:       Callback for the info icon.
      - on-legacy-press:     Callback for the legacy tab.
      - on-multichain-press: Callback for the multichain tab.
 
