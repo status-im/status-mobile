@@ -302,11 +302,6 @@
    {:clamp     nil
     :withPause (fn [])})
 
-(def react-native-intersection-observer
-  #js
-   {:InView     #js {}
-    :IOFlatList #js {}})
-
 (def react-native-languages
   (clj->js {:default {:language            "en"
                       :addEventListener    (fn [])
@@ -421,7 +416,6 @@
     "react-native-transparent-video"                 react-native-transparent-video
     "react-native-orientation-locker"                react-native-orientation-locker
     "react-native-gifted-charts"                     react-native-gifted-charts
-    "react-native-intersection-observer"             react-native-intersection-observer
     "../resources/data/emojis/en.json"               (js/JSON.parse (slurp
                                                                      "./resources/data/emojis/en.json"))
     "../src/js/worklets/core.js"                     worklet-factory
