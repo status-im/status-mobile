@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.ui.screens.wallet.components.styles :as styles]
     [status-im2.common.home.top-nav.view :as common.top-nav]
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
@@ -55,7 +54,7 @@
            :content-container-style           style/accounts-list-container
            :data                              cards
            :horizontal                        true
-           :separator                         [rn/view {:style styles/separator}]
+           :separator                         [rn/view {:style style/separator}]
            :render-fn                         quo/account-card
            :shows-horizontal-scroll-indicator false}]
          [quo/tabs

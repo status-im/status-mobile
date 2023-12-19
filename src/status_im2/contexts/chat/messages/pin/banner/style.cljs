@@ -1,41 +1,17 @@
 (ns status-im2.contexts.chat.messages.pin.banner.style
   (:require
-    [quo.foundations.colors :as colors]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.messages.constants :as messages.constants]))
 
-(defonce ^:const pinned-banner-height 40)
-
-(defn blur-container-style
-  [top-offset opacity-animation enabled?]
-  (reanimated/apply-animations-to-style
-   {:opacity opacity-animation}
-   {:position :absolute
-    :display  (if enabled? :flex :none)
-    :top      top-offset
-    :left     0
-    :right    0
-    :bottom   0
-    :height   pinned-banner-height
-    :overflow :hidden}))
-
-(defn blur-view-style
-  []
-  {:style       {:flex 1}
-   :blur-radius (if platform/ios? 20 10)
-   :blur-type   (colors/theme-colors :light :dark)
-   :blur-amount 20})
-
-(defn pinned-banner
-  [top-offset]
+(def container
   {:position :absolute
+   :overflow :hidden
    :left     0
    :right    0
-   :top      top-offset})
+   :height   messages.constants/pinned-banner-height})
 
-(defn animated-pinned-banner
-  [top-offset enabled? animation]
+(defn container-animated-style
+  [top-offset banner-opacity]
   (reanimated/apply-animations-to-style
-   (when enabled?
-     {:opacity animation})
-   (pinned-banner top-offset)))
+   {:opacity banner-opacity}
+   (assoc container :top top-offset)))

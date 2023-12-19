@@ -73,7 +73,7 @@
              colors/white-opa-40
              (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
 
-(def keycard-icon-container
+(def title-icon-container
   {:margin-left 4})
 
 (def token-tag-container

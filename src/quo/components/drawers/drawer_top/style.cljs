@@ -30,3 +30,10 @@
 
 (def keycard-icon
   {:margin-left 4})
+
+(def title-container
+  {:flex-direction :row
+   :align-items    :center})
+
+(def title-icon
+  {:margin-left 4})

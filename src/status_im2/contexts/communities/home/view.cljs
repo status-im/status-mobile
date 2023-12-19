@@ -49,21 +49,15 @@
                    (i18n/label :t/no-communities-description-strikethrough)]
                   " "
                   (i18n/label :t/no-communities-description)]
-    :image       (resources/get-image (quo.theme/theme-value :no-communities-light
-                                                             :no-communities-dark
-                                                             theme))}
+    :image       (resources/get-themed-image :no-communities theme)}
    :pending
    {:title       (i18n/label :t/no-pending-communities)
     :description (i18n/label :t/no-pending-communities-description)
-    :image       (resources/get-image (quo.theme/theme-value :no-pending-communities-light
-                                                             :no-pending-communities-dark
-                                                             theme))}
+    :image       (resources/get-themed-image :no-pending-communities theme)}
    :opened
    {:title       (i18n/label :t/no-opened-communities)
     :description (i18n/label :t/no-opened-communities-description)
-    :image       (resources/get-image (quo.theme/theme-value :no-opened-communities-light
-                                                             :no-opened-communities-dark
-                                                             theme))}})
+    :image       (resources/get-themed-image :no-opened-communities theme)}})
 
 (def ^:private banner-data
   {:title-props

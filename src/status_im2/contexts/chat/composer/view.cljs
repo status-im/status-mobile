@@ -23,7 +23,10 @@
     [status-im2.contexts.chat.composer.style :as style]
     [status-im2.contexts.chat.composer.sub-view :as sub-view]
     [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.i18n :as i18n]))
+    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer.view :as
+     contact-requests.bottom-drawer]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn sheet-component
   [{:keys [insets
@@ -35,8 +38,7 @@
            background-y
            theme
            messages-list-on-layout-finished?]} props state]
-  (let [{:keys [chat-screen-loaded?]
-         :as   subscriptions}    (utils/init-subs)
+  (let [subscriptions            (utils/init-subs)
         content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
                                                    constants/input-height))
@@ -80,12 +82,11 @@
     (effects/link-previews props state animations subscriptions)
     (effects/use-images props state animations subscriptions)
     [:<>
-     (when chat-screen-loaded?
-       [mentions/view props state animations max-height cursor-pos
-        (:images subscriptions)
-        (:link-previews? subscriptions)
-        (:reply subscriptions)
-        (:edit subscriptions)])
+     [mentions/view props state animations max-height cursor-pos
+      (:images subscriptions)
+      (:link-previews? subscriptions)
+      (:reply subscriptions)
+      (:edit subscriptions)]
      [rn/view
       {:style style/composer-sheet-and-jump-to-container}
       [sub-view/shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?]
@@ -96,12 +97,11 @@
         {:style     (style/sheet-container insets state animations theme)
          :on-layout #(handler/layout % state blur-height)}
         [sub-view/bar]
-        (when chat-screen-loaded?
-          [:<>
-           [reply/view state (:input-ref props)]
-           [edit/view
-            {:text-value (:text-value state)
-             :input-ref  (:input-ref props)}]])
+        [:<>
+         [reply/view state (:input-ref props)]
+         [edit/view
+          {:text-value (:text-value state)
+           :input-ref  (:input-ref props)}]]
         [reanimated/touchable-opacity
          {:active-opacity      1
           :on-press            (fn []
@@ -140,15 +140,14 @@
                                       :theme      theme})
             :max-length constants/max-text-size
             :accessibility-label :chat-message-input}]]]
-        (when chat-screen-loaded?
-          [:<>
-           [gradients/view props state animations show-bottom-gradient?]
-           [link-preview/view]
-           [images/images-list]])
+        [:<>
+         [gradients/view props state animations show-bottom-gradient?]
+         [link-preview/view]
+         [images/images-list]]
         [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
          subscriptions]]]]]))
 
-(defn composer
+(defn f-composer
   [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?
            messages-list-on-layout-finished?]}]
   (let [window-height (:height (rn/get-window))
@@ -177,3 +176,15 @@
        :focused?      (:focused? state)
        :theme         theme}]
      [:f> sheet-component extra-params props state]]))
+
+(defn composer
+  [props]
+  (let [{:keys [chat-id
+                contact-request-state
+                group-chat
+                able-to-send-message?]
+         :as   chat} (rf/sub [:chats/current-chat-chat-view])]
+    (when (seq chat)
+      (if able-to-send-message?
+        [:f> f-composer props]
+        [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]))))

@@ -1,56 +1,46 @@
 (ns status-im2.contexts.chat.messages.list.style
   (:require
     [quo.foundations.colors :as colors]
-    [react-native.reanimated :as reanimated]))
-
-(defonce ^:const cover-height 168)
-(defonce ^:const overscroll-cover-height 2000)
-(defonce ^:const header-avatar-top-offset -36)
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.messages.constants :as messages.constants]))
 
 (def keyboard-avoiding-container
-  {:flex 1})
+  {:flex    1
+   :z-index 2})
 
 (def list-container
   {:padding-vertical 16})
 
-(defn header-container
-  [show? theme]
-  {:display          (if show? :flex :none)
-   :background-color (colors/theme-colors colors/white colors/neutral-100 theme)
-   :top              (- overscroll-cover-height)
-   :margin-bottom    (- overscroll-cover-height)})
-
-(defn header-cover
-  [cover-bg-color theme]
-  {:flex             1
-   :height           (+ overscroll-cover-height cover-height)
-   :background-color (colors/theme-colors
-                      (colors/custom-color cover-bg-color 50 20)
-                      (colors/custom-color cover-bg-color 50 40)
-                      theme)})
+(defn background-container
+  [background-color background-opacity top-margin]
+  (reanimated/apply-animations-to-style
+   {:opacity background-opacity}
+   {:background-color background-color
+    :position         :absolute
+    :top              0
+    :left             0
+    :right            0
+    :height           (+ top-margin messages.constants/header-container-radius)}))
 
 (defn header-bottom-part
-  [animation theme]
+  [border-radius theme top-margin]
   (reanimated/apply-animations-to-style
-   {:border-top-right-radius animation
-    :border-top-left-radius  animation}
-   {:top              -16
-    :margin-bottom    -16
-    :padding-bottom   24
-    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)}))
-
-(def header-avatar
-  {:top               header-avatar-top-offset
-   :margin-horizontal 20
-   :margin-bottom     header-avatar-top-offset})
+   {:border-top-left-radius  border-radius
+    :border-top-right-radius border-radius}
+   {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
+    :padding-horizontal 20
+    :margin-top         top-margin}))
 
 (defn header-image
-  [scale-animation side-animation bottom-animation]
+  [scale top left theme]
   (reanimated/apply-animations-to-style
-   {:transform [{:scale scale-animation}
-                {:translate-x side-animation}
-                {:translate-y bottom-animation}]}
-   {:align-items :flex-start}))
+   {:transform [{:scale scale}]
+    :top       top
+    :left      left}
+   {:position      :absolute
+    :border-width  4
+    :border-radius 50
+    :border-color  (colors/theme-colors colors/white colors/neutral-95 theme)}))
 
 (def bio
   {:margin-top 8})

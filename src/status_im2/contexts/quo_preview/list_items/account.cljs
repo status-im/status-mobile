@@ -44,7 +44,8 @@
              :blur-dark-only?       true}
             [quo/account-item
              (merge @state
-                    {:account-props {:name                (:title @state)
+                    {:title-icon    (when (:title-icon? @state) :i/keycard)
+                     :account-props {:name                (:title @state)
                                      :address             (:address @state)
                                      :emoji               (:emoji @state)
                                      :customization-color (:account-color @state)}})]])))

@@ -49,11 +49,11 @@
 
   (h/test "renders keycard icon if title-icon? is true"
     (h/render [account/view {:title-icon? true}])
-    (h/is-truthy (h/query-by-label-text :keycard-icon)))
+    (h/is-truthy (h/query-by-label-text :title-icon)))
 
   (h/test "doesn't render keycard icon if title-icon? is false"
     (h/render [account/view])
-    (h/is-falsy (h/query-by-label-text :keycard-icon)))
+    (h/is-falsy (h/query-by-label-text :title-icon)))
 
   (h/test "renders balance container but not arrow icon if type :balance-neutral"
     (h/render [account/view {:type :balance-neutral}])

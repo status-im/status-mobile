@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.empty-state.empty-state
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -12,10 +13,8 @@
     :type :text}
    {:key     :image
     :type    :select
-    :options [{:key :no-contacts-light}
-              {:key :no-contacts-dark}
-              {:key :no-messages-light}
-              {:key :no-messages-dark}]}
+    :options [{:key :cat-in-box}
+              {:key :no-contacts}]}
    {:key  :upper-button-text
     :type :text}
    {:key  :lower-button-text
@@ -23,9 +22,9 @@
    {:key  :blur?
     :type :boolean}])
 
-(defn view
-  []
-  (let [state (reagent/atom {:image             :no-messages-light
+(defn view-internal
+  [{:keys [theme]}]
+  (let [state (reagent/atom {:image             :no-contacts
                              :title             "A big friendly title"
                              :description       "Some cool description will be here"
                              :blur?             false
@@ -46,4 +45,6 @@
             (assoc :lower-button
                    {:text     (:lower-button-text @state)
                     :on-press #(js/alert "Lower button")})
-            (update :image resources/get-image))]])))
+            (assoc :image (resources/get-themed-image (:image @state) theme)))]])))
+
+(def view (quo.theme/with-theme view-internal))
