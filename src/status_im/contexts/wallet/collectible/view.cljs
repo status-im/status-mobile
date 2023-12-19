@@ -13,7 +13,7 @@
     [utils.re-frame :as rf]))
 
 (defn header
-  [collectible-name description collection-image-url]
+  [collectible-name collection-name collection-image-url]
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
@@ -24,7 +24,7 @@
     [quo/text
      {:weight :semi-bold
       :size   :paragraph-1}
-     description]]])
+     collection-name]]])
 
 (defn cta-buttons
   []
@@ -42,7 +42,7 @@
      :icon-left       :i/opensea}
     (i18n/label :t/opensea)]])
 
-(def tabs-data
+(def activity-tabs-data
   [{:id                  :overview
     :label               (i18n/label :t/overview)
     :accessibility-label :overview-tab}
@@ -83,9 +83,7 @@
   [item]
   [:<>
    [quo/divider-date (:timestamp item)]
-   [quo/wallet-activity
-    (merge {:on-press #(js/alert "Item pressed")}
-           item)]])
+   [quo/wallet-activity item]])
 
 (defn activity-section
   []
@@ -126,7 +124,7 @@
 
 (defn tabs
   [_]
-  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
+  (let [selected-tab (reagent/atom (:id (first activity-tabs-data)))]
     (fn [{:keys [traits chain-id] :as _props}]
       [:<>
        [quo/tabs
@@ -134,14 +132,14 @@
          :style          style/tabs
          :scrollable?    true
          :default-active @selected-tab
-         :data           tabs-data
+         :data           activity-tabs-data
          :on-change      #(reset! selected-tab %)}]
        (condp = @selected-tab
          :overview [:<>
                     [info chain-id]
                     [traits-section traits]]
          :activity [activity-section]
-         [rn/view])])))
+         nil)])))
 
 (defn collectible-actions-sheet
   []
@@ -164,19 +162,20 @@
 
 (defn view-internal
   [{:keys [theme] :as _props}]
-  (let [collectible                     (rf/sub [:wallet/last-collectible-details])
+  (let [collectible               (rf/sub [:wallet/last-collectible-details])
         {:keys [collectible-data preview-url
-                collection-data]}       collectible
+                collection-data]} collectible
         {traits           :traits
-         collectible-name :name
-         description      :description} collectible-data
-        chain-id                        (rf/sub [:wallet/last-collectible-chain-id])]
+         collectible-name :name}  collectible-data
+        {collection-image :image-url
+         collection-name  :name}  collection-data
+        chain-id                  (rf/sub [:wallet/last-collectible-chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
       :page-nav-props {:type        :title-description
                        :title       collectible-name
-                       :description description
+                       :description collection-name
                        :right-side  [{:icon-name :i/options
                                       :on-press  #(rf/dispatch
                                                    [:show-bottom-sheet
@@ -188,7 +187,7 @@
        [rn/image
         {:source preview-url
          :style  style/preview}]]
-      [header collectible-name description (:image-url collection-data)]
+      [header collectible-name collection-name collection-image]
       [cta-buttons]
       [tabs
        {:traits   traits

@@ -84,8 +84,7 @@
     :fourth-tag        {:size         24
                         :type         :network
                         :network-logo (quo.resources/get-network :ethereum)
-                        :network-name "Mainnet"}
-   }
+                        :network-name "Mainnet"}}
    {:transaction :mint
     :timestamp "Yesterday"
     :status :finalised
