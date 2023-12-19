@@ -8,16 +8,12 @@
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
-            [quo.foundations.resources :as quo.resources]
             [quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
-
-(defn- line [] [rn/view {:style style/line}])
-(defn- space [] [rn/view {:style style/line-space}])
 
 (defn- header
   [{:keys [share-qr-type on-legacy-press on-multichain-press]}]
