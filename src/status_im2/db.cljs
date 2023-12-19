@@ -1,8 +1,8 @@
 (ns status-im2.db
   (:require
+    [legacy.status-im.fleet.core :as fleet]
+    [legacy.status-im.wallet.db :as wallet.db]
     [react-native.core :as rn]
-    [status-im.fleet.core :as fleet]
-    [status-im.wallet.db :as wallet.db]
     [status-im2.contexts.shell.activity-center.events :as activity-center]))
 
 ;; initial state of app-db

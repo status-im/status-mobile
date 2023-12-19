@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require
+    [legacy.status-im.ui.screens.chat.group :as chat.group]
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -10,7 +11,6 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [status-im.ui.screens.chat.group :as chat.group]
     [status-im2.common.home.actions.view :as home.actions]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]

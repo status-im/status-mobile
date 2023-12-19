@@ -1,10 +1,10 @@
 (ns status-im2.subs.contact
   (:require
     [clojure.string :as string]
+    [legacy.status-im.contact.db :as contact.db]
+    [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
-    [status-im.contact.db :as contact.db]
-    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [status-im2.constants :as constants]
     [status-im2.contexts.profile.utils :as profile.utils]
     [utils.address :as address]

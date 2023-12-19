@@ -1,9 +1,9 @@
 (ns status-im2.common.signals.events
   (:require
-    [status-im.chat.models.message :as models.message]
-    [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-    [status-im.mailserver.core :as mailserver]
-    [status-im.visibility-status-updates.core :as visibility-status-updates]
+    [legacy.status-im.chat.models.message :as models.message]
+    [legacy.status-im.ethereum.subscriptions :as ethereum.subscriptions]
+    [legacy.status-im.mailserver.core :as mailserver]
+    [legacy.status-im.visibility-status-updates.core :as visibility-status-updates]
     [status-im2.common.pairing.events :as pairing]
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.chat.messages.transport.events :as messages.transport]

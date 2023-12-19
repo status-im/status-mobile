@@ -1,7 +1,7 @@
 (ns status-im2.contexts.communities.events
   (:require [clojure.set :as set]
             [clojure.walk :as walk]
-            [status-im.ui.components.colors :as colors]
+            [legacy.status-im.ui.components.colors :as colors]
             [status-im2.constants :as constants]
             status-im2.contexts.communities.actions.community-options.events
             status-im2.contexts.communities.actions.leave.events

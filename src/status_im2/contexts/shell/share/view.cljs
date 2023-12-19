@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.share.view
   (:require
     [clojure.string :as string]
+    [legacy.status-im.ui.components.list-selection :as list-selection]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
@@ -8,7 +9,6 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.ui.components.list-selection :as list-selection]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.contexts.shell.share.style :as style]

@@ -1,15 +1,15 @@
 (ns status-im2.navigation.view
   (:require
+    [legacy.status-im.bottom-sheet.sheets :as bottom-sheets-old]
+    [legacy.status-im.ui.screens.popover.views :as popover]
+    [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
+    [legacy.status-im.ui.screens.signing.views :as signing]
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     schema.view
-    [status-im.bottom-sheet.sheets :as bottom-sheets-old]
-    [status-im.ui.screens.popover.views :as popover]
-    [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
-    [status-im.ui.screens.signing.views :as signing]
     [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [status-im2.common.bottom-sheet.view :as bottom-sheet]
     [status-im2.common.toasts.view :as toasts]

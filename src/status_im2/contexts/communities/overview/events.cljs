@@ -1,7 +1,7 @@
 (ns status-im2.contexts.communities.overview.events
   (:require
-    [status-im.data-store.communities :as data-store]
-    [status-im.ui.components.colors :as colors]
+    [legacy.status-im.data-store.communities :as data-store]
+    [legacy.status-im.ui.components.colors :as colors]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

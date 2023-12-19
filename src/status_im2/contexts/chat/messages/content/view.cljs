@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require
+    [legacy.status-im.ui.screens.chat.message.legacy-view :as old-message]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -7,7 +8,6 @@
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [status-im.ui.screens.chat.message.legacy-view :as old-message]
     [status-im2.common.not-implemented :as not-implemented]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.reply.view :as reply]

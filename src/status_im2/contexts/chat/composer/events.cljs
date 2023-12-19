@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.composer.events
   (:require [clojure.string :as string]
-            [status-im.chat.models.mentions :as mentions]
-            [status-im.data-store.messages :as data-store-messages]
+            [legacy.status-im.chat.models.mentions :as mentions]
+            [legacy.status-im.data-store.messages :as data-store-messages]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
             [status-im2.contexts.chat.messages.transport.events :as messages.transport]

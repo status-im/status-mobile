@@ -1,7 +1,7 @@
 (ns status-im2.contexts.add-new-contact.effects
   (:require
+    [legacy.status-im.ethereum.ens :as ens]
     [native-module.core :as native-module]
-    [status-im.ethereum.ens :as ens]
     [status-im2.constants :as constants]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))

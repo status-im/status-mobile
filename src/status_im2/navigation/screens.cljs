@@ -1,6 +1,6 @@
 (ns status-im2.navigation.screens
   (:require
-    [status-im.ui.screens.screens :as old-screens]
+    [legacy.status-im.ui.screens.screens :as old-screens]
     [status-im2.config :as config]
     [status-im2.contexts.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]

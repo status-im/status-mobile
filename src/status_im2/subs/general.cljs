@@ -1,11 +1,11 @@
 (ns status-im2.subs.general
   (:require
     [clojure.string :as string]
+    [legacy.status-im.ethereum.tokens :as tokens]
+    [legacy.status-im.multiaccounts.model :as multiaccounts.model]
+    [legacy.status-im.utils.build :as build]
+    [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
     [re-frame.core :as re-frame]
-    [status-im.ethereum.tokens :as tokens]
-    [status-im.multiaccounts.model :as multiaccounts.model]
-    [status-im.utils.build :as build]
-    [status-im.utils.mobile-sync :as mobile-network-utils]
     [status-im2.constants :as constants]
     [utils.ethereum.chain :as chain]))
 
