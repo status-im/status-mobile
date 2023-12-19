@@ -157,7 +157,6 @@
              :size   :paragraph-2
              :style  (style/description theme blur?)}
             label]
-<<<<<<< HEAD
     [rn/view {:style style/title-container}
      [text/text
       {:size   :heading-2
@@ -170,13 +169,6 @@
          :color           (if blur?
                             colors/white-opa-40
                             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])]))
-=======
-    [text/text
-     {:size   :heading-2
-      :weight :semi-bold
-      :style  {:color (when blur? colors/white)}}
-     title]))
->>>>>>> d72354c33 (wallet: receive screen)
 
 (defn- view-internal
   [{:keys [title title-icon type theme description blur? community-name community-logo button-icon
