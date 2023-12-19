@@ -25,8 +25,8 @@ nix_purge_darwin_multi_user_service() {
     cd /Library/LaunchDaemons
     NIX_SERVICES=(org.nixos.darwin-store.plist org.nixos.nix-daemon.plist)
     for NIX_SERVICE in "${NIX_SERVICES[@]}"; do
-        sudo launchctl unload "${NIX_SERVICE}"
-        sudo launchctl remove "${NIX_SERVICE}"
+        sudo launchctl unload "${NIX_SERVICE}" || true
+        sudo launchctl remove "${NIX_SERVICE}" || true
     done
 }
 
@@ -41,15 +41,39 @@ nix_purge_darwin_multi_user_users() {
 nix_purge_darwin_multi_user_volumes() {
     sudo sed -i.bkp '/nix/d' /etc/synthetic.conf
     sudo sed -i.bkp '/nix/d' /etc/fstab
-    sudo diskutil apfs deleteVolume /nix
+
+    # Attempt to delete the volume
+    if ! sudo diskutil apfs deleteVolume /nix; then
+        echo "Failed to unmount /nix because it is in use."
+
+        # Identify the process using the volume
+        local pid=$(lsof +D /nix | awk 'NR==2{print $2}')
+        if [ -n "$pid" ]; then
+            echo "The volume /nix is in use by process ID $pid."
+
+            # Ask the user whether to terminate the process
+            read -p "Do you want to terminate this process? (y/n): " choice
+            if [[ $choice == "y" ]]; then
+                sudo kill $pid
+                echo "Process $pid terminated."
+            else
+                echo "Process not terminated. Please close it manually and retry."
+                return 1
+            fi
+        else
+            echo "No process found using /nix. Manual intervention required."
+            return 1
+        fi
+    fi
+
     echo -e "${YLW}You will need to reboot your system!${RST}" >&2
 }
 
 nix_purge_multi_user() {
     if [[ $(uname -s) == "Darwin" ]]; then
-        nix_purge_darwin_multi_user_service
-        nix_purge_darwin_multi_user_users
-        nix_purge_darwin_multi_user_volumes
+        nix_purge_darwin_multi_user_service || true
+        nix_purge_darwin_multi_user_users || true
+        nix_purge_darwin_multi_user_volumes || true
     else
         nix_purge_linux_multi_user_service
         nix_purge_linux_multi_user_users
