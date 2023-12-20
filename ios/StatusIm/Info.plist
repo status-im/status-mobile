@@ -62,15 +62,9 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
+		<false/>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Status uses camera to take pictures and scan QR codes.</string>

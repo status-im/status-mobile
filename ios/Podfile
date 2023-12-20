@@ -32,8 +32,8 @@ abstract_target 'Status' do
 
   use_react_native!(
     :path => config[:reactNativePath],
+    :fabric_enabled => false,
     :hermes_enabled => false,
-    :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

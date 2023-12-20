@@ -3,11 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* StatusImTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* StatusImTests.m */; };
+		0AF214947D1833344DDE0E4C /* libPods-Status-StatusImPR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 711C356ED3C6A9765BA49DC8 /* libPods-Status-StatusImPR.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
@@ -35,6 +36,7 @@
 		3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */; };
 		3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
 		3ABC7AF8245FF85900612C45 /* InterStatus-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */; };
+		471F945C35C3606C95185A72 /* libPods-Status-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 946A3C4604EB8F60BA7A624D /* libPods-Status-StatusIm.a */; };
 		57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */; };
 		65F6941925780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
 		65F6941A25780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
@@ -44,8 +46,7 @@
 		715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
 		8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
-		8BE7C1BD90A0AB68254988BD /* libPods-Status-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 28A248DF828DD5505CABC707 /* libPods-Status-StatusIm.a */; };
-		9930D2C5DF7BE851C6CE54A1 /* libPods-Status-StatusImPR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B792BBAE71EAA1C3F2C9C47 /* libPods-Status-StatusImPR.a */; };
+		9C04262EB36FCAD7E5FADDE8 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E272E8CA7D835E166E855F2 /* libPods-Status-StatusIm-StatusImTests.a */; };
 		B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FC1DE7195700D694FF /* Social.framework */; };
 		B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
 		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
@@ -60,7 +61,6 @@
 		D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */; };
 		D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */; };
 		D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B321D25F4493470980039457 /* Inter-BoldItalic.otf */; };
-		E6794203DEE6BE3C85F205F8 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9305FC57D289E57F96162DD2 /* libPods-Status-StatusIm-StatusImTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,14 +108,15 @@
 		00E356EE1AD99517003FC87E /* StatusImTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StatusImTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* StatusImTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusImTests.m; sourceTree = "<group>"; };
-		1130DCD9CBDCA3CA461F55B4 /* Pods-Status-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
+		08CEF2BF868715B465FE45FD /* Pods-Status-StatusImPR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusImPR.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* StatusIm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StatusIm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = StatusIm/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = StatusIm/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = StatusIm/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = StatusIm/main.m; sourceTree = "<group>"; };
 		1426DF592BA248FC81D955CB /* Inter-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.otf"; path = "../resources/fonts/Inter-Regular.otf"; sourceTree = "<group>"; };
-		28A248DF828DD5505CABC707 /* libPods-Status-StatusIm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		15A1D90DC1550147D081031E /* Pods-Status-StatusImPR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusImPR.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR.release.xcconfig"; sourceTree = "<group>"; };
+		2179B47E9A7DDE0BE7D3E9C5 /* Pods-Status-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
 		3A2626CE245C3F2200D5F94B /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		3A6406FB24A3ADF90046ED37 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3A8F8EA924A4D31600BF206D /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
@@ -123,24 +124,24 @@
 		3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusIm-Bridging-Header.h"; sourceTree = "<group>"; };
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		59C9C002A09CA7F40E69C6CB /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5B792BBAE71EAA1C3F2C9C47 /* libPods-Status-StatusImPR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusImPR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		65F693BD2578002500A45E76 /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = System/Library/Frameworks/CoreNFC.framework; sourceTree = SDKROOT; };
 		65F693BF2578003600A45E76 /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/iOSSupport/System/Library/Frameworks/CoreNFC.framework; sourceTree = DEVELOPER_DIR; };
 		65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusImTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		65F6941825780A4F00A45E76 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
-		668C1A2ADF1899973DAA1AB7 /* Pods-Status-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
 		693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../resources/fonts/Inter-SemiBold.otf"; sourceTree = "<group>"; };
+		711C356ED3C6A9765BA49DC8 /* libPods-Status-StatusImPR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusImPR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		715D8131290BE850006F5C88 /* UbuntuMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "UbuntuMono-Regular.ttf"; path = "../resources/fonts/UbuntuMono-Regular.ttf"; sourceTree = "<group>"; };
 		74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "launch-image-universal.storyboard"; sourceTree = "<group>"; };
+		88B417078658F8E809A68DC6 /* Pods-Status-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
 		8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		8E272E8CA7D835E166E855F2 /* libPods-Status-StatusIm-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		922C4CA61F4D5F8B0033C753 /* StatusIm.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = StatusIm.entitlements; path = StatusIm/StatusIm.entitlements; sourceTree = "<group>"; };
-		9305FC57D289E57F96162DD2 /* libPods-Status-StatusIm-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9292C4ECF296C831623EA179 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
+		946A3C4604EB8F60BA7A624D /* libPods-Status-StatusIm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		95F1E3BDBD171EE6CC3C0B24 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "InterStatus-Regular.otf"; path = "../resources/fonts/InterStatus-Regular.otf"; sourceTree = "<group>"; };
 		9EC0135C1E06FB1900155B5C /* RCTWKWebView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWKWebView.xcodeproj; path = "../node_modules/react-native-wkwebview-reborn/ios/RCTWKWebView.xcodeproj"; sourceTree = "<group>"; };
-		A18E846035BD6544591E45B9 /* Pods-Status-StatusImPR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusImPR.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR.release.xcconfig"; sourceTree = "<group>"; };
 		A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBoldItalic.otf"; path = "../resources/fonts/Inter-SemiBoldItalic.otf"; sourceTree = "<group>"; };
-		ACFD5EEA905CF67FD6F8C2CC /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.release.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 		B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.otf"; path = "../resources/fonts/Inter-Italic.otf"; sourceTree = "<group>"; };
 		B24FC7FC1DE7195700D694FF /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		B24FC7FE1DE7195F00D694FF /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -153,7 +154,6 @@
 		C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../resources/fonts/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
 		CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../resources/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
 		CE4E31B21D8695250033ED64 /* Statusgo.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Statusgo.xcframework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.xcframework"; sourceTree = "<group>"; };
-		D0D6FCD821497D4A6D28C82E /* Pods-Status-StatusImPR.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusImPR.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,7 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E6794203DEE6BE3C85F205F8 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */,
+				9C04262EB36FCAD7E5FADDE8 /* libPods-Status-StatusIm-StatusImTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,7 +174,7 @@
 				CE4E31B31D8695250033ED64 /* Statusgo.xcframework in Frameworks */,
 				25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */,
 				BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
-				8BE7C1BD90A0AB68254988BD /* libPods-Status-StatusIm.a in Frameworks */,
+				471F945C35C3606C95185A72 /* libPods-Status-StatusIm.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,7 +188,7 @@
 				3AAD2AC224A3A60E0075D594 /* Statusgo.xcframework in Frameworks */,
 				3AAD2AC524A3A60E0075D594 /* libc++.tbd in Frameworks */,
 				3AAD2AC624A3A60E0075D594 /* libz.tbd in Frameworks */,
-				9930D2C5DF7BE851C6CE54A1 /* libPods-Status-StatusImPR.a in Frameworks */,
+				0AF214947D1833344DDE0E4C /* libPods-Status-StatusImPR.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,9 +314,9 @@
 				CE4E31B21D8695250033ED64 /* Statusgo.xcframework */,
 				8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */,
 				4E586E1B0E544F64AA9F5BD1 /* libz.tbd */,
-				28A248DF828DD5505CABC707 /* libPods-Status-StatusIm.a */,
-				9305FC57D289E57F96162DD2 /* libPods-Status-StatusIm-StatusImTests.a */,
-				5B792BBAE71EAA1C3F2C9C47 /* libPods-Status-StatusImPR.a */,
+				946A3C4604EB8F60BA7A624D /* libPods-Status-StatusIm.a */,
+				8E272E8CA7D835E166E855F2 /* libPods-Status-StatusIm-StatusImTests.a */,
+				711C356ED3C6A9765BA49DC8 /* libPods-Status-StatusImPR.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -324,12 +324,12 @@
 		D0D5C8D06825D33BA2D2121E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				1130DCD9CBDCA3CA461F55B4 /* Pods-Status-StatusIm.debug.xcconfig */,
-				668C1A2ADF1899973DAA1AB7 /* Pods-Status-StatusIm.release.xcconfig */,
-				59C9C002A09CA7F40E69C6CB /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */,
-				ACFD5EEA905CF67FD6F8C2CC /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */,
-				D0D6FCD821497D4A6D28C82E /* Pods-Status-StatusImPR.debug.xcconfig */,
-				A18E846035BD6544591E45B9 /* Pods-Status-StatusImPR.release.xcconfig */,
+				88B417078658F8E809A68DC6 /* Pods-Status-StatusIm.debug.xcconfig */,
+				2179B47E9A7DDE0BE7D3E9C5 /* Pods-Status-StatusIm.release.xcconfig */,
+				95F1E3BDBD171EE6CC3C0B24 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */,
+				9292C4ECF296C831623EA179 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */,
+				08CEF2BF868715B465FE45FD /* Pods-Status-StatusImPR.debug.xcconfig */,
+				15A1D90DC1550147D081031E /* Pods-Status-StatusImPR.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -341,11 +341,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "StatusImTests" */;
 			buildPhases = (
-				CA339D1D94763C013F2794AD /* [CP] Check Pods Manifest.lock */,
+				8333A7EEF8919336CDA07F55 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				D737FA0B0E9D346092C626FB /* [CP] Copy Pods Resources */,
+				5115EED109DD578B2E183114 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -361,14 +361,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "StatusIm" */;
 			buildPhases = (
-				523CD6BCB20FD78FBF3564AD /* [CP] Check Pods Manifest.lock */,
+				43C56FE7F092B763B6D8F379 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				20B6B6891D92C42700CC5C6A /* Embed Frameworks */,
 				E3914A731DF919ED00EBB515 /* Run Script */,
-				28606042DA81A750949525E4 /* [CP] Copy Pods Resources */,
+				1BA881991439D188AAD0BC39 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -383,14 +383,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3AAD2AD924A3A60E0075D594 /* Build configuration list for PBXNativeTarget "StatusImPR" */;
 			buildPhases = (
-				BDAFF7E8D7D1C97E92C1F9B0 /* [CP] Check Pods Manifest.lock */,
+				DEAC4F24048BB100ED348B5C /* [CP] Check Pods Manifest.lock */,
 				3AAD2ABB24A3A60E0075D594 /* Sources */,
 				3AAD2ABF24A3A60E0075D594 /* Frameworks */,
 				3AAD2AC924A3A60E0075D594 /* Resources */,
 				3AAD2AD524A3A60E0075D594 /* Bundle React Native code and images */,
 				3AAD2AD624A3A60E0075D594 /* Embed Frameworks */,
 				3AAD2AD724A3A60E0075D594 /* Run Script */,
-				BB1D92AA7446228787D6925C /* [CP] Copy Pods Resources */,
+				317EFE1D9E4990D170219B16 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -544,7 +544,7 @@
 			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\"${NODE_ARGS:- --max-old-space-size=16384 }\"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
 		};
-		28606042DA81A750949525E4 /* [CP] Copy Pods Resources */ = {
+		1BA881991439D188AAD0BC39 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -552,18 +552,40 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		317EFE1D9E4990D170219B16 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		3AAD2AD524A3A60E0075D594 /* Bundle React Native code and images */ = {
@@ -594,7 +616,7 @@
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
 		};
-		523CD6BCB20FD78FBF3564AD /* [CP] Check Pods Manifest.lock */ = {
+		43C56FE7F092B763B6D8F379 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -616,51 +638,29 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BB1D92AA7446228787D6925C /* [CP] Copy Pods Resources */ = {
+		5115EED109DD578B2E183114 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BDAFF7E8D7D1C97E92C1F9B0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Status-StatusImPR-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CA339D1D94763C013F2794AD /* [CP] Check Pods Manifest.lock */ = {
+		8333A7EEF8919336CDA07F55 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -682,26 +682,26 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D737FA0B0E9D346092C626FB /* [CP] Copy Pods Resources */ = {
+		DEAC4F24048BB100ED348B5C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNImageCropPicker/QBImagePicker.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/TOCropViewController/TOCropViewControllerBundle.bundle",
+			inputFileListPaths = (
 			);
-			name = "[CP] Copy Pods Resources";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TOCropViewControllerBundle.bundle",
+				"$(DERIVED_FILE_DIR)/Pods-Status-StatusImPR-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E3914A731DF919ED00EBB515 /* Run Script */ = {
@@ -765,7 +765,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 59C9C002A09CA7F40E69C6CB /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */;
+			baseConfigurationReference = 95F1E3BDBD171EE6CC3C0B24 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_ID_SUFFIX = .debug;
@@ -782,7 +782,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = StatusImTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -802,7 +802,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ACFD5EEA905CF67FD6F8C2CC /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */;
+			baseConfigurationReference = 9292C4ECF296C831623EA179 /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_ID_SUFFIX = "";
@@ -816,7 +816,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = StatusImTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -835,11 +835,11 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1130DCD9CBDCA3CA461F55B4 /* Pods-Status-StatusIm.debug.xcconfig */;
+			baseConfigurationReference = 88B417078658F8E809A68DC6 /* Pods-Status-StatusIm.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = .debug;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -879,7 +879,7 @@
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -894,6 +894,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -915,11 +916,11 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 668C1A2ADF1899973DAA1AB7 /* Pods-Status-StatusIm.release.xcconfig */;
+			baseConfigurationReference = 2179B47E9A7DDE0BE7D3E9C5 /* Pods-Status-StatusIm.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = "";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -953,7 +954,7 @@
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -968,6 +969,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -988,11 +990,11 @@
 		};
 		3AAD2ADA24A3A60E0075D594 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D0D6FCD821497D4A6D28C82E /* Pods-Status-StatusImPR.debug.xcconfig */;
+			baseConfigurationReference = 08CEF2BF868715B465FE45FD /* Pods-Status-StatusImPR.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = .debug;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusImPR/StatusImPR.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -1031,7 +1033,7 @@
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 				);
 				INFOPLIST_FILE = StatusImPR/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1046,6 +1048,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1065,11 +1068,11 @@
 		};
 		3AAD2ADB24A3A60E0075D594 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A18E846035BD6544591E45B9 /* Pods-Status-StatusImPR.release.xcconfig */;
+			baseConfigurationReference = 15A1D90DC1550147D081031E /* Pods-Status-StatusImPR.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIconPR$(BUNDLE_ID_SUFFIX)";
 				BUNDLE_ID_SUFFIX = "";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = StatusImPR/StatusImPR.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1102,7 +1105,7 @@
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS",
 				);
 				INFOPLIST_FILE = StatusImPR/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1117,6 +1120,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1139,7 +1143,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1203,7 +1207,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 					"$(SRCROOT)/../node_modules/react-native-lottie-splash-screen/ios/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
@@ -1215,6 +1219,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				SDKROOT = iphoneos;
@@ -1229,7 +1234,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1284,7 +1289,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 					"$(SRCROOT)/../node_modules/react-native-lottie-splash-screen/ios/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
@@ -1296,6 +1301,7 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				SDKROOT = iphoneos;
