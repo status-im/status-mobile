@@ -27,14 +27,18 @@
   (let [selected              (reagent/atom default-selected)
         {window-width :width} (rn/get-window)
         ref                   (atom nil)]
-    (rn/use-effect #(js/setTimeout (fn []
-                                     (.scrollToIndex ^js @ref
-                                                     #js
-                                                      {:animated     true
-                                                       :index        (.indexOf colors/account-colors
-                                                                               default-selected)
-                                                       :viewPosition 0.5}))
-                                   50))
+    (rn/use-effect
+     (fn []
+       (js/setTimeout
+        (fn []
+          (let [index (.indexOf colors/account-colors default-selected)]
+            (when (and @ref (>= index 0))
+              (some-> ^js @ref
+                      (.scrollToIndex #js
+                                       {:animated     true
+                                        :index        index
+                                        :viewPosition 0.5})))))
+        50)))
     [rn/flat-list
      {:ref                               #(reset! ref %)
       ;; TODO: using :feng-shui? temporarily while b & w is being developed.

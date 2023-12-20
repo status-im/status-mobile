@@ -71,7 +71,7 @@
                 :icon-avatar :i/placeholder
                 :type        :keypair}])
     (h/is-truthy (h/get-by-text "Title"))
-    (-> (h/expect (h/get-by-translation-text :on-device))
+    (-> (h/expect (h/get-by-translation-text :t/on-device))
         (.toBeTruthy)))
 
   (h/test "component renders in keypair type when keycard? is true"
@@ -81,7 +81,7 @@
                 :icon-avatar :i/placeholder
                 :type        :keypair}])
     (h/is-truthy (h/get-by-text "Title"))
-    (-> (h/expect (h/get-by-translation-text :on-keycard))
+    (-> (h/expect (h/get-by-translation-text :t/on-keycard))
         (.toBeTruthy)))
 
   (h/test "component renders in default-keypair type"

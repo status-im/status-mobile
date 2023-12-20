@@ -6,14 +6,7 @@
     [test-helpers.component :as h]))
 
 (h/describe "drawer-buttons"
-  (h/before-each
-   (fn []
-     (h/use-fake-timers)))
-
-  (h/after-each
-   (fn []
-     (h/clear-all-timers)
-     (h/use-real-timers)))
+  (h/setup-fake-timers)
 
   (h/test "the top heading and subheading render"
     (h/render [drawer-buttons/view
@@ -36,7 +29,6 @@
         (.toBeTruthy))
     (-> (js/expect (h/get-by-text "bottom-sub-heading"))
         (.toBeTruthy)))
-
 
   (h/test "it clicks the top card"
     (let [event (h/mock-fn)]

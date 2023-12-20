@@ -327,7 +327,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs$$" clean-ns && \
+	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs|.*/src/test_helpers/component_tests_preload\.cljs$$" clean-ns && \
 	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
@@ -364,6 +364,7 @@ android-test:
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test
+component-test-watch: export JEST_USE_SILENT_REPORTER := false
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	@@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
@@ -373,6 +374,7 @@ component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
 component-test: export BABEL_ENV := test
+component-test: export JEST_USE_SILENT_REPORTER := false
 component-test: ##@test Run component tests once in NodeJS
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
