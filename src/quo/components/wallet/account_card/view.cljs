@@ -129,7 +129,7 @@
               {:size   :paragraph-2
                :weight :medium
                :number-of-lines 1
-               :ellipis-mode "tail"
+               :ellipis-mode :tail
                :style  (style/account-name type theme)}
               name]
              (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])
