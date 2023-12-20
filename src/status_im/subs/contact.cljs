@@ -64,7 +64,7 @@
                  {:thumbnail
                   {:fn (image-server/get-initials-avatar-uri-fn
                         {:port            port
-                         :ratio           status-im.common.pixel-ratio/ratio
+                         :ratio           pixel-ratio/ratio
                          :public-key      public-key
                          :override-ring?  (when ens-name false)
                          :uppercase-ratio (:uppercase-ratio constants/initials-avatar-font-conf)

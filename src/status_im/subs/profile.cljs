@@ -68,13 +68,13 @@
        {:fn
         (if image-name
           (image-server/get-account-image-uri-fn {:port           port
-                                                  :ratio          status-im.common.pixel-ratio/ratio
+                                                  :ratio          pixel-ratio/ratio
                                                   :image-name     image-name
                                                   :key-uid        target-key-uid
                                                   :theme          (theme/get-theme)
                                                   :override-ring? override-ring?})
           (image-server/get-initials-avatar-uri-fn {:port           port
-                                                    :ratio          status-im.common.pixel-ratio/ratio
+                                                    :ratio          pixel-ratio/ratio
                                                     :key-uid        target-key-uid
                                                     :theme          (theme/get-theme)
                                                     :override-ring? override-ring?
@@ -293,12 +293,11 @@
         images-with-uri                    (mapv (fn [{key-uid :keyUid image-name :type :as image}]
                                                    (let [uri-fn (image-server/get-account-image-uri-fn
                                                                  (merge
-                                                                  {:port port
-                                                                   :ratio
-                                                                   status-im.common.pixel-ratio/ratio
+                                                                  {:port       port
+                                                                   :ratio      pixel-ratio/ratio
                                                                    :image-name image-name
-                                                                   :key-uid key-uid
-                                                                   :theme theme}
+                                                                   :key-uid    key-uid
+                                                                   :theme      theme}
                                                                   avatar-opts))]
                                                      (assoc image :fn uri-fn)))
                                                  images)
@@ -306,7 +305,7 @@
                                              images-with-uri
                                              [{:fn (image-server/get-initials-avatar-uri-fn
                                                     (merge {:port port
-                                                            :ratio status-im.common.pixel-ratio/ratio
+                                                            :ratio pixel-ratio/ratio
                                                             :uppercase-ratio
                                                             (:uppercase-ratio
                                                              constants/initials-avatar-font-conf)
