@@ -66,7 +66,7 @@
       [quo/page-nav
        {:background :blur
         :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back-within-stack :settings])}]]
+        :on-press   #(rf/dispatch [:navigate-back])}]]
      [rn/view
       {:style {:padding-horizontal 20
                :padding-bottom     8
