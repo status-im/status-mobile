@@ -48,9 +48,6 @@
    {:id                  :activity
     :label               (i18n/label :t/activity)
     :accessibility-label :activity-tab}
-   {:id                  :permissions
-    :label               (i18n/label :t/permissions)
-    :accessibility-label :permissions-tab}
    {:id                  :about
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
