@@ -10,7 +10,6 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
-    [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.wallet.account-settings.views :as account-settings]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
@@ -127,28 +126,9 @@
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])
            (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}]])])
 
-(defview pin
+(defn pin
   []
-  (letsubs [card-pin      [:keycard/pin]
-            status        [:keycard/pin-status]
-            error-label   [:keycard/pin-error-label]
-            retry-counter [:keycard/retry-counter]]
-    [react/keyboard-avoiding-view
-     {:style         {:flex 1}
-      :ignore-offset true}
-     [topbar/topbar
-      {:navigation :none
-       :right-accessories
-       [{:label    (i18n/label :t/cancel)
-         :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
-     [pin.views/pin-view
-      {:pin               card-pin
-       :status            status
-       :retry-counter     retry-counter
-       :title-label       :t/current-pin
-       :description-label :t/current-pin-description
-       :error-label       error-label
-       :step              :export-key}]]))
+  [react/view])
 
 (defview add-account-view
   []

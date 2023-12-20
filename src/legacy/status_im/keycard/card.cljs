@@ -1,11 +1,15 @@
 (ns legacy.status-im.keycard.card
   (:require
-    [legacy.status-im.keycard.keycard :as keycard]
-    [legacy.status-im.keycard.real-keycard :as real-keycard]
+    [clojure.string :as string]
+    [keycard.keycard :as keycard]
+    [keycard.real-keycard :as real-keycard]
     [legacy.status-im.keycard.simulated-keycard :as simulated-keycard]
+    [legacy.status-im.node.core :as node]
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.config :as config]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [utils.transforms :as types]))
 
 (defonce card
   (if config/keycard-test-menu-enabled?
@@ -523,16 +527,37 @@
         (error-object->map response)]))}))
 
 (defn save-multiaccount-and-login
-  [args]
-  (keycard/save-multiaccount-and-login card args))
+  [{:keys [key-uid multiaccount-data password settings node-config accounts-data chat-key]}]
+  (if config/keycard-test-menu-enabled?
+    (native-module/save-account-and-login
+     key-uid
+     (types/clj->json multiaccount-data)
+     password
+     (types/clj->json settings)
+     node-config
+     (types/clj->json accounts-data))
+    (native-module/save-multiaccount-and-login-with-keycard
+     key-uid
+     (types/clj->json multiaccount-data)
+     password
+     (types/clj->json settings)
+     node-config
+     (types/clj->json accounts-data)
+     chat-key)))
 
 (defn login
-  [args]
-  (keycard/login card args))
+  [{:keys [key-uid multiaccount-data password] :as args}]
+  (if config/keycard-test-menu-enabled?
+    (native-module/login-with-config key-uid multiaccount-data password node/login-node-config)
+    (native-module/login-with-keycard (assoc args :node-config {:ProcessBackedupMessages false}))))
+
+(def account-password (native-module/sha3 "no password"))
 
 (defn send-transaction-with-signature
-  [args]
-  (keycard/send-transaction-with-signature card args))
+  [{:keys [transaction signature on-completed]}]
+  (if config/keycard-test-menu-enabled?
+    (native-module/send-transaction transaction account-password on-completed)
+    (native-module/send-transaction-with-signature transaction signature on-completed)))
 
 (defn start-nfc
   [args]
@@ -547,5 +572,13 @@
   (keycard/set-nfc-message card args))
 
 (defn delete-multiaccount-before-migration
-  [args]
-  (keycard/delete-multiaccount-before-migration card args))
+  [{:keys [key-uid on-success on-error]}]
+  (if config/keycard-test-menu-enabled?
+    (on-success)
+    (native-module/delete-multiaccount
+     key-uid
+     (fn [result]
+       (let [{:keys [error]} (types/json->clj result)]
+         (if-not (string/blank? error)
+           (on-error error)
+           (on-success)))))))

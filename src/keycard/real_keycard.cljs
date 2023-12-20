@@ -1,11 +1,8 @@
-(ns legacy.status-im.keycard.real-keycard
+(ns keycard.real-keycard
   (:require
     ["react-native" :as rn]
     ["react-native-status-keycard" :default status-keycard]
-    [clojure.string :as string]
-    [legacy.status-im.keycard.keycard :as keycard]
-    [legacy.status-im.utils.deprecated-types :as types]
-    [native-module.core :as native-module]
+    [keycard.keycard :as keycard]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]
     [utils.address :as address]))
@@ -275,7 +272,6 @@
 
 (defn sign
   [{pin :pin path :path card-hash :hash on-success :on-success on-failure :on-failure}]
-  (log/debug "keycard sign" "path" path)
   (when (and pin card-hash)
     (if path
       (.. status-keycard
@@ -294,35 +290,6 @@
         (signPinless card-hash)
         (then on-success)
         (catch on-failure))))
-
-(defn save-multiaccount-and-login
-  [{:keys [key-uid multiaccount-data password settings node-config accounts-data chat-key]}]
-  (native-module/save-multiaccount-and-login-with-keycard
-   key-uid
-   (types/clj->json multiaccount-data)
-   password
-   (types/clj->json settings)
-   node-config
-   (types/clj->json accounts-data)
-   chat-key))
-
-(defn login
-  [args]
-  (native-module/login-with-keycard (assoc args :node-config {:ProcessBackedupMessages false})))
-
-(defn send-transaction-with-signature
-  [{:keys [transaction signature on-completed]}]
-  (native-module/send-transaction-with-signature transaction signature on-completed))
-
-(defn delete-multiaccount-before-migration
-  [{:keys [key-uid on-success on-error]}]
-  (native-module/delete-multiaccount
-   key-uid
-   (fn [result]
-     (let [{:keys [error]} (types/json->clj result)]
-       (if-not (string/blank? error)
-         (on-error error)
-         (on-success))))))
 
 (defrecord RealKeycard []
   keycard/Keycard
@@ -395,12 +362,4 @@
     (keycard/sign [_this args]
       (sign args))
     (keycard/sign-typed-data [_this args]
-      (sign-typed-data args))
-    (keycard/save-multiaccount-and-login [_this args]
-      (save-multiaccount-and-login args))
-    (keycard/login [_this args]
-      (login args))
-    (keycard/send-transaction-with-signature [_this args]
-      (send-transaction-with-signature args))
-    (keycard/delete-multiaccount-before-migration [_ args]
-      (delete-multiaccount-before-migration args)))
+      (sign-typed-data args)))
