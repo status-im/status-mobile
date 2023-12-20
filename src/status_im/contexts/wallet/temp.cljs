@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.temp
   (:require [clojure.string :as string]
+            [quo.foundations.resources :as quo.resources]
             [status-im.common.resources :as resources]
             [status-im.contexts.wallet.item-types :as types]))
 
@@ -57,3 +58,50 @@
   (let [all-addresses [address-local-suggestion-saved-address-mock
                        address-local-suggestion-mock]]
     (vec (filter #(string/starts-with? (:address %) substring) all-addresses))))
+
+(def collectible-activities
+  [{:transaction       :receive
+    :timestamp         "Today 22:20"
+    :status            :finalised
+    :counter           1
+    :first-tag         {:size               24
+                        :type               :collectible
+                        :collectible        (resources/mock-images :collectible)
+                        :collectible-name   "Collectible"
+                        :collectible-number "123"}
+    :second-tag-prefix :t/from
+    :second-tag        {:size            24
+                        :type            :default
+                        :full-name       "Aretha Gosling"
+                        :profile-picture (resources/mock-images :user-picture-female2)}
+    :third-tag-prefix  :t/to
+    :third-tag         {:size         24
+                        :type         :account
+                        :account-name "Piggy bank"
+                        :emoji        "🐷"}
+
+    :fourth-tag-prefix :t/via
+    :fourth-tag        {:size         24
+                        :type         :network
+                        :network-logo (quo.resources/get-network :ethereum)
+                        :network-name "Mainnet"}}
+   {:transaction :mint
+    :timestamp "Yesterday"
+    :status :finalised
+    :counter 1
+    :first-tag {:size               24
+                :type               :collectible
+                :collectible        (resources/mock-images :collectible)
+                :collectible-name   "Collectible"
+                :collectible-number "123"}
+    :second-tag-prefix :t/at
+    :second-tag
+    {:size 24
+     :type :address
+     :address
+     "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917"}
+    :third-tag-prefix :t/on
+    :third-tag {:size         24
+                :type         :network
+                :network-logo (quo.resources/get-network :ethereum)
+                :network-name "Mainnet"}}])

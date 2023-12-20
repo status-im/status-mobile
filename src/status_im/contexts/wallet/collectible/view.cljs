@@ -5,13 +5,15 @@
     [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
+    [status-im.contexts.wallet.temp :as temp]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn header
-  [collectible-name description collection-image-url]
+  [collectible-name collection-name collection-image-url]
   [rn/view {:style style/header}
    [quo/text
     {:weight :semi-bold
@@ -22,7 +24,7 @@
     [quo/text
      {:weight :semi-bold
       :size   :paragraph-1}
-     description]]])
+     collection-name]]])
 
 (defn cta-buttons
   []
@@ -40,24 +42,19 @@
      :icon-left       :i/opensea}
     (i18n/label :t/opensea)]])
 
-(defn tabs
-  []
-  [quo/tabs
-   {:size        32
-    :style       style/tabs
-    :scrollable? true
-    :data        [{:id                  :overview
-                   :label               (i18n/label :t/overview)
-                   :accessibility-label :overview-tab}
-                  {:id                  :activity
-                   :label               (i18n/label :t/activity)
-                   :accessibility-label :activity-tab}
-                  {:id                  :permissions
-                   :label               (i18n/label :t/permissions)
-                   :accessibility-label :permissions-tab}
-                  {:id                  :about
-                   :label               (i18n/label :t/about)
-                   :accessibility-label :about-tab}]}])
+(def activity-tabs-data
+  [{:id                  :overview
+    :label               (i18n/label :t/overview)
+    :accessibility-label :overview-tab}
+   {:id                  :activity
+    :label               (i18n/label :t/activity)
+    :accessibility-label :activity-tab}
+   {:id                  :permissions
+    :label               (i18n/label :t/permissions)
+    :accessibility-label :permissions-tab}
+   {:id                  :about
+    :label               (i18n/label :t/about)
+    :accessibility-label :about-tab}])
 
 (defn traits-section
   [traits]
@@ -81,6 +78,19 @@
        :key-fn                  :id
        :num-columns             2
        :content-container-style style/traits-container}]]))
+
+(defn activity-item
+  [item]
+  [:<>
+   [quo/divider-date (:timestamp item)]
+   [quo/wallet-activity item]])
+
+(defn activity-section
+  []
+  [rn/flat-list
+   {:data      temp/collectible-activities
+    :style     {:flex 1}
+    :render-fn activity-item}])
 
 (defn info
   [chain-id]
@@ -112,6 +122,25 @@
         :subtitle      network-name
         :subtitle-type :network}]]]))
 
+(defn tabs
+  [_]
+  (let [selected-tab (reagent/atom (:id (first activity-tabs-data)))]
+    (fn [{:keys [traits chain-id] :as _props}]
+      [:<>
+       [quo/tabs
+        {:size           32
+         :style          style/tabs
+         :scrollable?    true
+         :default-active @selected-tab
+         :data           activity-tabs-data
+         :on-change      #(reset! selected-tab %)}]
+       (condp = @selected-tab
+         :overview [:<>
+                    [info chain-id]
+                    [traits-section traits]]
+         :activity [activity-section]
+         nil)])))
+
 (defn collectible-actions-sheet
   []
   [quo/action-drawer
@@ -133,19 +162,20 @@
 
 (defn view-internal
   [{:keys [theme] :as _props}]
-  (let [collectible                     (rf/sub [:wallet/last-collectible-details])
+  (let [collectible               (rf/sub [:wallet/last-collectible-details])
         {:keys [collectible-data preview-url
-                collection-data]}       collectible
+                collection-data]} collectible
         {traits           :traits
-         collectible-name :name
-         description      :description} collectible-data
-        chain-id                        (rf/sub [:wallet/last-collectible-chain-id])]
+         collectible-name :name}  collectible-data
+        {collection-image :image-url
+         collection-name  :name}  collection-data
+        chain-id                  (rf/sub [:wallet/last-collectible-chain-id])]
     [scroll-page/scroll-page
      {:navigate-back? true
       :height         148
       :page-nav-props {:type        :title-description
                        :title       collectible-name
-                       :description description
+                       :description collection-name
                        :right-side  [{:icon-name :i/options
                                       :on-press  #(rf/dispatch
                                                    [:show-bottom-sheet
@@ -157,10 +187,10 @@
        [rn/image
         {:source preview-url
          :style  style/preview}]]
-      [header collectible-name description (:image-url collection-data)]
+      [header collectible-name collection-name collection-image]
       [cta-buttons]
-      [tabs]
-      [info chain-id]
-      [traits-section traits]]]))
+      [tabs
+       {:traits   traits
+        :chain-id chain-id}]]]))
 
 (def view (quo.theme/with-theme view-internal))
