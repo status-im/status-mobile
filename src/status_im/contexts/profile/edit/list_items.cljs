@@ -1,0 +1,52 @@
+(ns status-im.contexts.profile.edit.list-items
+  (:require [status-im.common.not-implemented :as not-implemented]
+            [status-im.contexts.profile.utils :as profile.utils]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
+
+(defn items
+  []
+  (let [profile             (rf/sub [:profile/profile-with-image])
+        customization-color (rf/sub [:profile/customization-color])
+        full-name           (profile.utils/displayed-name profile)]
+    [{:label (i18n/label :t/profile)
+      :items [{:title       (i18n/label :t/name)
+               :on-press    not-implemented/alert
+               :blur?       true
+               :label       :text
+               :label-props full-name
+               :action      :arrow}
+              {:title    (i18n/label :t/bio)
+               :on-press not-implemented/alert
+               :blur?    true
+               :action   :arrow}
+              {:title       (i18n/label :t/accent-colour)
+               :on-press    not-implemented/alert
+               :label       :color
+               :label-props customization-color
+               :blur?       true
+               :action      :arrow}]}
+
+     {:label (i18n/label :t/showcase)
+      :items [{:title    (i18n/label :t/communities)
+               :on-press not-implemented/alert
+               :blur?    true
+               :action   :arrow}
+              {:title    (i18n/label :t/accounts)
+               :on-press not-implemented/alert
+               :blur?    true
+               :action   :arrow}
+              {:title    (i18n/label :t/collectibles)
+               :on-press not-implemented/alert
+               :blur?    true
+               :action   :arrow}
+              {:title    (i18n/label :t/assets)
+               :on-press not-implemented/alert
+               :blur?    true
+               :action   :arrow}]}
+
+     {:label (i18n/label :t/on-the-web)
+      :items [{:title    (i18n/label :t/links)
+               :on-press not-implemented/alert
+               :blur?    true
+               :action   :arrow}]}]))

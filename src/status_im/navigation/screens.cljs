@@ -34,6 +34,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -164,6 +165,10 @@
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}
+
+    {:name      :edit-profile
+     :options   options/transparent-screen-options
+     :component edit-profile/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
