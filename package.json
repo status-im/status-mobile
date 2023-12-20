@@ -48,7 +48,6 @@
     "react-native-image-crop-picker": "0.40.0",
     "react-native-image-resizer": "^1.2.3",
     "react-native-image-viewing": "git+https://github.com/status-im/react-native-image-viewing.git#refs/tags/v0.2.1.status",
-    "react-native-intersection-observer": "^0.2.0",
     "react-native-keychain": "8.1.2",
     "react-native-languages": "^3.0.2",
     "react-native-linear-gradient": "^2.8.0",
