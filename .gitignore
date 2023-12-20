@@ -36,6 +36,10 @@ project.xcworkspace
 **/android/.project
 **/android/.settings/org.eclipse.buildship.core.prefs
 local.properties
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
 
 # Atom
 .tags*
@@ -194,3 +198,4 @@ lefthook.yml
 ## clj-kondo
 /.clj-kondo/taoensso/*
 /.clj-kondo/babashka/*
+/.clj-kondo/rewrite-clj/rewrite-clj/config.edn

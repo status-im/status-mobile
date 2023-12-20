@@ -222,9 +222,12 @@ class ChatElementByText(Text):
                 break
             else:
                 Text(self.driver, xpath=self.locator).click()
-                if status_element.is_element_displayed(2):
-                    status = status_element.text
-                    break
+                try:
+                    if status_element.is_element_displayed(2):
+                        status = status_element.text
+                        break
+                except StaleElementReferenceException:
+                    pass
                 time.sleep(2)
         return status
 
@@ -291,7 +294,8 @@ class ChatElementByText(Text):
         try:
             self.driver.info("Trying to access image inside message with text '%s'" % self.message_text)
             ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
-            return Button(self.driver, xpath="%s//*[@content-desc='image-message']" % self.locator)
+            return Button(self.driver,
+                          xpath="%s//android.widget.ImageView[@content-desc='image-message']" % self.locator)
         except NoSuchElementException:
             self.driver.fail("No image is found in message!")
 
@@ -320,10 +324,6 @@ class ChatElementByText(Text):
                                  xpath="/../..//android.view.ViewGroup[@content-desc='pinned-by']")
 
         return PinnedByLabelText(self.driver, self.locator)
-
-    @property
-    def view_community_button(self):
-        return BaseElement(self.driver, xpath=self.locator + "//*[@text='View']")
 
 
 class UsernameOptions(Button):
@@ -424,6 +424,7 @@ class CommunityView(HomeView):
 
     def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
+        ChatView(self.driver).chat_element_by_text("https://status.app/c/").click_on_link_inside_message_body()
         self.join_button.click()
         self.join_community_button.scroll_and_click()
         self.password_input.send_keys(password)
@@ -763,7 +764,7 @@ class ChatView(BaseView):
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)
-        self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
+        self.delete_chat_button = Button(self.driver, translation_id="close-chat")
         self.clear_history_button = Button(self.driver, translation_id="clear-history")
         self.reply_message_button = Button(self.driver, translation_id="message-reply")
         self.share_chat_button = Button(self.driver, accessibility_id="share-chat-button")
@@ -1046,7 +1047,8 @@ class ChatView(BaseView):
             delete_button = self.element_by_translation_id("delete-for-everyone")
         else:
             delete_button = self.element_by_translation_id("delete-for-me")
-        self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
+        # self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
+        self.chat_element_by_text(message).message_body.long_press_element()
         delete_button.click()
 
     def copy_message_text(self, message_text):
@@ -1229,6 +1231,7 @@ class ChatView(BaseView):
             indexes = [0]
         self.show_images_button.click()
         self.allow_button.click_if_shown()
+        self.allow_all_button.click_if_shown()
         [self.get_image_by_index(i).click() for i in indexes]
         self.images_confirm_selection_button.click()
         self.chat_message_input.send_keys(description)

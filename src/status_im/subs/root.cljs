@@ -1,129 +1,162 @@
 (ns status-im.subs.root
   (:require
     [re-frame.core :as re-frame]
-    status-im.subs.bootnodes
-    status-im.subs.browser
-    status-im.subs.ens
-    status-im.subs.keycard
-    status-im.subs.mailservers
-    status-im.subs.networks
-    status-im.subs.stickers
-    status-im.subs.wallet.search
-    status-im.subs.wallet.signing
-    status-im.subs.wallet.transactions
+    status-im.subs.activity-center
+    status-im.subs.chats
+    status-im.subs.communities
+    status-im.subs.contact
+    status-im.subs.general
+    status-im.subs.messages
+    status-im.subs.onboarding
+    status-im.subs.pairing
+    status-im.subs.profile
+    status-im.subs.shell
+    status-im.subs.wallet.collectibles
+    status-im.subs.wallet.networks
+    status-im.subs.wallet.send
     status-im.subs.wallet.wallet))
 
 (defn reg-root-key-sub
   [sub-name db-key]
   (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
 
+;;view
+(reg-root-key-sub :view-id :view-id)
+(reg-root-key-sub :screen-params :navigation/screen-params)
+(reg-root-key-sub :shared-element-id :shared-element-id)
+
+;;bottom sheet
+(reg-root-key-sub :bottom-sheet :bottom-sheet)
+
+;;media-server
+(reg-root-key-sub :mediaserver/port :mediaserver/port)
+
+;;push notifications
+(reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
+
 ;;general
-(reg-root-key-sub :visibility-status-popover/popover :visibility-status-popover/popover)
-(reg-root-key-sub :visibility-status-updates :visibility-status-updates)
-(reg-root-key-sub :fleets/custom-fleets :custom-fleets)
-(reg-root-key-sub :ui/search :ui/search)
-(reg-root-key-sub :network/type :network/type)
-(reg-root-key-sub :network-status :network-status)
-(reg-root-key-sub :peers-count :peers-count)
-(reg-root-key-sub :peers-summary :peers-summary)
-(reg-root-key-sub :web3-node-version :web3-node-version)
+(reg-root-key-sub :messenger/started? :messenger/started?)
+(reg-root-key-sub :animations :animations)
+(reg-root-key-sub :toasts :toasts)
+(reg-root-key-sub :popover/popover :popover/popover)
+(reg-root-key-sub :auth-method :auth-method)
+(reg-root-key-sub :syncing :syncing)
+(reg-root-key-sub :sync-state :sync-state)
+(reg-root-key-sub :dimensions/window :dimensions/window)
+(reg-root-key-sub :sync-data :sync-data)
+(reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
+(reg-root-key-sub :qr-modal :qr-modal)
+(reg-root-key-sub :bootnodes/manage :bootnodes/manage)
+(reg-root-key-sub :wakuv2-nodes/manage :wakuv2-nodes/manage)
+(reg-root-key-sub :wakuv2-nodes/list :wakuv2-nodes/list)
+(reg-root-key-sub :networks/current-network :networks/current-network)
+(reg-root-key-sub :networks/networks :networks/networks)
+(reg-root-key-sub :networks/manage :networks/manage)
+(reg-root-key-sub :get-pairing-installations :pairing/installations)
+(reg-root-key-sub :tooltips :tooltips)
+(reg-root-key-sub :biometric/supported-type :biometric/supported-type)
+(reg-root-key-sub :app-state :app-state)
+(reg-root-key-sub :home-items-show-number :home-items-show-number)
+(reg-root-key-sub :waku/v2-peer-stats :peer-stats)
+(reg-root-key-sub :password-authentication :password-authentication)
+(reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
 
-;;keycard
-(reg-root-key-sub :keycard :keycard)
-(reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
+;;onboarding
+(reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)
+(reg-root-key-sub :onboarding/new-account? :onboarding/new-account?)
+(reg-root-key-sub :onboarding/profile :onboarding/profile)
 
-;;bottom sheet old
-(reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
-(reg-root-key-sub :bottom-sheet/view :bottom-sheet/view)
-(reg-root-key-sub :bottom-sheet/options :bottom-sheet/options)
+;;shell
+(reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
+(reg-root-key-sub :shell/floating-screens :shell/floating-screens)
+(reg-root-key-sub :shell/loaded-screens :shell/loaded-screens)
 
-;;browser
-(reg-root-key-sub :browsers :browser/browsers)
-(reg-root-key-sub :browser/options :browser/options)
-(reg-root-key-sub :dapps/permissions :dapps/permissions)
-(reg-root-key-sub :bookmarks :bookmarks/bookmarks)
-(reg-root-key-sub :browser/screen-id :browser/screen-id)
+;;my profile
+(reg-root-key-sub :my-profile/seed :my-profile/seed)
+;;profiles
+(reg-root-key-sub :profile/profiles-overview :profile/profiles-overview)
+(reg-root-key-sub :profile/login :profile/login)
+(reg-root-key-sub :profile/profile :profile/profile)
+(reg-root-key-sub :profile/wallet-accounts :profile/wallet-accounts)
 
-;;stickers
-(reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)
-(reg-root-key-sub :stickers/packs :stickers/packs)
-(reg-root-key-sub :stickers/recent-stickers :stickers/recent-stickers)
+(reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
+(reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
+(reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
+;;delete profile
+(reg-root-key-sub :delete-profile/error :delete-profile/error)
+(reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
-;;mailserver
-(reg-root-key-sub :mailserver/current-id :mailserver/current-id)
-(reg-root-key-sub :mailserver/mailservers :mailserver/mailservers)
-(reg-root-key-sub :mailserver.edit/mailserver :mailserver.edit/mailserver)
-(reg-root-key-sub :mailserver/state :mailserver/state)
-(reg-root-key-sub :mailserver/pending-requests :mailserver/pending-requests)
-(reg-root-key-sub :mailserver/request-error? :mailserver/request-error)
-(reg-root-key-sub :mailserver/fetching-gaps-in-progress :mailserver/fetching-gaps-in-progress)
+;;chat
+(reg-root-key-sub :chats/cooldown-enabled? :chat/cooldown-enabled?)
+(reg-root-key-sub :chats/chats :chats)
+(reg-root-key-sub :chats/current-chat-id :current-chat-id)
+(reg-root-key-sub :public-group-topic :public-group-topic)
+(reg-root-key-sub :chats/loading? :chats/loading?)
+(reg-root-key-sub :new-chat-name :new-chat-name)
+(reg-root-key-sub :chat/inputs :chat/inputs)
+(reg-root-key-sub :chat/memberships :chat/memberships)
+(reg-root-key-sub :group-chat/invitations :group-chat/invitations)
+(reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
+(reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
+(reg-root-key-sub :chats-home-list :chats-home-list)
+(reg-root-key-sub :chats/recording? :chats/recording?)
+(reg-root-key-sub :reactions/authors :reactions/authors)
 
-;;contacts
-(reg-root-key-sub :contacts/contacts-raw :contacts/contacts)
-(reg-root-key-sub :contacts/current-contact-identity :contacts/identity)
-(reg-root-key-sub :contacts/current-contact-ens-name :contacts/ens-name)
-(reg-root-key-sub :contacts/new-identity :contacts/new-identity)
-(reg-root-key-sub :group/selected-contacts :group/selected-contacts)
-(reg-root-key-sub :contacts/search-query :contacts/search-query)
+;;chat images lightbox
+(reg-root-key-sub :lightbox/exit-signal :lightbox/exit-signal)
+(reg-root-key-sub :lightbox/zoom-out-signal :lightbox/zoom-out-signal)
+(reg-root-key-sub :lightbox/orientation :lightbox/orientation)
+(reg-root-key-sub :lightbox/scale :lightbox/scale)
+
+;;chat images camera roll
+(reg-root-key-sub :camera-roll/photos :camera-roll/photos)
+(reg-root-key-sub :camera-roll/end-cursor :camera-roll/end-cursor)
+(reg-root-key-sub :camera-roll/has-next-page :camera-roll/has-next-page)
+(reg-root-key-sub :camera-roll/loading-more :camera-roll/loading-more)
+(reg-root-key-sub :camera-roll/albums :camera-roll/albums)
+(reg-root-key-sub :camera-roll/selected-album :camera-roll/selected-album)
+
+;;group chat
+(reg-root-key-sub :group-chat-profile/editing? :group-chat-profile/editing?)
+(reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
+(reg-root-key-sub :group-chat/selected-participants :group-chat/selected-participants)
+(reg-root-key-sub :group-chat/deselected-members :group-chat/deselected-members)
+
+;;messages
+(reg-root-key-sub :messages/messages :messages)
+(reg-root-key-sub :messages/reactions :reactions)
+(reg-root-key-sub :messages/message-lists :message-lists)
+(reg-root-key-sub :messages/pagination-info :pagination-info)
+(reg-root-key-sub :messages/pin-message-lists :pin-message-lists)
+(reg-root-key-sub :messages/pin-messages :pin-messages)
+(reg-root-key-sub :messages/pin-modal :pin-modal)
+
+(reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)
+
+;;communities
+(reg-root-key-sub :communities :communities)
+(reg-root-key-sub :communities/create :communities/create)
+(reg-root-key-sub :communities/create-channel :communities/create-channel)
+(reg-root-key-sub :communities/channels-permissions :community-channels-permissions)
+(reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
+(reg-root-key-sub :communities/community-id-input :communities/community-id-input)
+(reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
+(reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
+(reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
+(reg-root-key-sub :communities/selected-tab :communities/selected-tab)
+(reg-root-key-sub :contract-communities :contract-communities)
+
+;;activity center
+(reg-root-key-sub :activity-center :activity-center)
 
 ;;wallet
-(reg-root-key-sub :prices :prices)
-(reg-root-key-sub :prices-loading? :prices-loading?)
-(reg-root-key-sub :add-account :add-account)
-(reg-root-key-sub :buy-crypto/on-ramps :buy-crypto/on-ramps)
+(reg-root-key-sub :wallet :wallet)
+(reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
+(reg-root-key-sub :wallet/create-account :wallet/create-account)
+(reg-root-key-sub :wallet/networks :wallet/networks)
+(reg-root-key-sub :wallet/local-suggestions :wallet/local-suggestions)
+(reg-root-key-sub :wallet/valid-ens-or-address? :wallet/valid-ens-or-address?)
 
-(reg-root-key-sub :wallet-legacy :wallet-legacy)
-(reg-root-key-sub :wallet-legacy.transactions :wallet-legacy.transactions)
-(reg-root-key-sub :wallet-legacy/custom-token-screen :wallet-legacy/custom-token-screen)
-(reg-root-key-sub :wallet-legacy/prepare-transaction :wallet-legacy/prepare-transaction)
-(reg-root-key-sub :wallet-legacy/recipient :wallet-legacy/recipient)
-(reg-root-key-sub :wallet-legacy/favourites :wallet-legacy/favourites)
-(reg-root-key-sub :wallet-legacy/refreshing-history? :wallet-legacy/refreshing-history?)
-(reg-root-key-sub :wallet-legacy/fetching-error :wallet-legacy/fetching-error)
-(reg-root-key-sub :wallet-legacy/non-archival-node :wallet-legacy/non-archival-node)
-(reg-root-key-sub :wallet-legacy/current-base-fee :wallet-legacy/current-base-fee)
-(reg-root-key-sub :wallet-legacy/slow-base-fee :wallet-legacy/slow-base-fee)
-(reg-root-key-sub :wallet-legacy/normal-base-fee :wallet-legacy/normal-base-fee)
-(reg-root-key-sub :wallet-legacy/fast-base-fee :wallet-legacy/fast-base-fee)
-(reg-root-key-sub :wallet-legacy/current-priority-fee :wallet-legacy/current-priority-fee)
-(reg-root-key-sub :wallet-legacy/transactions-management-enabled?
-                  :wallet-legacy/transactions-management-enabled?)
-(reg-root-key-sub :wallet-legacy/all-tokens :wallet-legacy/all-tokens)
-(reg-root-key-sub :wallet-legacy/collectible-collections :wallet-legacy/collectible-collections)
-(reg-root-key-sub :wallet-legacy/fetching-collection-assets :wallet-legacy/fetching-collection-assets)
-(reg-root-key-sub :wallet-legacy/collectible-assets :wallet-legacy/collectible-assets)
-(reg-root-key-sub :wallet-legacy/selected-collectible :wallet-legacy/selected-collectible)
-(reg-root-key-sub :wallet-legacy/modal-selecting-source-token?
-                  :wallet-legacy/modal-selecting-source-token?)
-(reg-root-key-sub :wallet-legacy/swap-from-token :wallet-legacy/swap-from-token)
-(reg-root-key-sub :wallet-legacy/swap-to-token :wallet-legacy/swap-to-token)
-(reg-root-key-sub :wallet-legacy/swap-from-token-amount :wallet-legacy/swap-from-token-amount)
-(reg-root-key-sub :wallet-legacy/swap-to-token-amount :wallet-legacy/swap-to-token-amount)
-(reg-root-key-sub :wallet-legacy/swap-advanced-mode? :wallet-legacy/swap-advanced-mode?)
-
-;;; Link previews
-(reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
-(reg-root-key-sub :chat/link-previews :chat/link-previews)
-
-;;commands
-(reg-root-key-sub :commands/select-account :commands/select-account)
-
-;;ethereum
-(reg-root-key-sub :ethereum/current-block :ethereum/current-block)
-
-;;ens
-(reg-root-key-sub :ens/registration :ens/registration)
-(reg-root-key-sub :ens/registrations :ens/registrations)
-(reg-root-key-sub :ens/names :ens/names)
-
-;;signing
-(reg-root-key-sub :signing/sign :signing/sign)
-(reg-root-key-sub :signing/tx :signing/tx)
-(reg-root-key-sub :signing/edit-fee :signing/edit-fee)
-
-(reg-root-key-sub :contact-requests/pending :contact-requests/pending)
-
-(reg-root-key-sub :bug-report/description-error :bug-report/description-error)
-(reg-root-key-sub :bug-report/details :bug-report/details)
-
-(reg-root-key-sub :backup/performing-backup :backup/performing-backup)
+;;debug
+(when js/goog.DEBUG
+  (reg-root-key-sub :dev/previewed-component :dev/previewed-component))

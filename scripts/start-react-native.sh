@@ -14,4 +14,4 @@ if [ ! -z "$METRO_PID" ]; then
   [[ $term == 'y' ]] && kill $METRO_PID
 fi
 
-react-native start
+react-native start --reset-cache

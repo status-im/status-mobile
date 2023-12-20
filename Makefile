@@ -327,7 +327,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	clojure-lsp --ns-exclude-regex ".*/src/status_im2/core\.cljs$$" clean-ns && \
+	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs$$" clean-ns && \
 	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
@@ -368,7 +368,7 @@ component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	@@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
 	yarn install
-	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
+	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
 
 component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
@@ -378,7 +378,7 @@ component-test: ##@test Run component tests once in NodeJS
 	rm -rf ./component-spec
 	yarn install
 	yarn shadow-cljs compile component-test && \
-	jest --config=test/jest/jest.config.js
+	jest --clearCache && jest --config=test/jest/jest.config.js --testEnvironment node
 
 #--------------
 # Other

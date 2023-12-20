@@ -1,0 +1,77 @@
+(ns status-im.contexts.chat.lightbox.bottom-view
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im.contexts.chat.lightbox.animations :as anim]
+    [status-im.contexts.chat.lightbox.constants :as c]
+    [status-im.contexts.chat.lightbox.style :as style]
+    [status-im.contexts.chat.lightbox.text-sheet.view :as text-sheet]
+    [utils.re-frame :as rf]))
+
+(defn get-small-item-layout
+  [_ index]
+  #js
+   {:length c/small-image-size
+    :offset (* (+ c/small-image-size 8) index)
+    :index  index})
+
+(defn- f-small-image
+  [item index _ {:keys [scroll-index props]}]
+  (let [size (if (= @scroll-index index) c/focused-image-size c/small-image-size)
+        size-value (anim/use-val size)
+        {:keys [scroll-index-lock? small-list-ref flat-list-ref]}
+        props]
+    (anim/animate size-value size)
+    [rn/touchable-opacity
+     {:active-opacity 1
+      :on-press       (fn []
+                        (rf/dispatch [:chat.ui/zoom-out-signal @scroll-index])
+                        (reset! scroll-index-lock? true)
+                        (js/setTimeout #(reset! scroll-index-lock? false) 500)
+                        (js/setTimeout
+                         (fn []
+                           (reset! scroll-index index)
+                           (.scrollToIndex ^js @small-list-ref
+                                           #js {:animated true :index index})
+                           (.scrollToIndex ^js @flat-list-ref
+                                           #js {:animated true :index index}))
+                         (if platform/ios? 50 150))
+                        (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)]))}
+     [reanimated/fast-image
+      {:source {:uri (:image (:content item))}
+       :style  (reanimated/apply-animations-to-style {:width  size-value
+                                                      :height size-value}
+                                                     {:border-radius 10})}]]))
+
+(defn small-image
+  [item index _ render-data]
+  [:f> f-small-image item index _ render-data])
+
+(defn bottom-view
+  [messages index scroll-index insets animations derived item-width props state transparent?]
+  (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
+    [reanimated/linear-gradient
+     {:colors   [colors/neutral-100-opa-100 colors/neutral-100-opa-80 colors/neutral-100-opa-0]
+      :location [0.2 0.9]
+      :start    {:x 0 :y 1}
+      :end      {:x 0 :y 0}
+      :style    (style/gradient-container insets animations derived transparent?)}
+     [text-sheet/view messages animations state props]
+     [rn/flat-list
+      {:ref                               #(reset! (:small-list-ref props) %)
+       :key-fn                            :message-id
+       :style                             {:height c/small-list-height}
+       :data                              messages
+       :render-fn                         small-image
+       :render-data                       {:scroll-index scroll-index
+                                           :props        props}
+       :horizontal                        true
+       :shows-horizontal-scroll-indicator false
+       :get-item-layout                   get-small-item-layout
+       :separator                         [rn/view {:style {:width 8}}]
+       :initial-scroll-index              index
+       :content-container-style           (style/content-container padding-horizontal)}]
+     ;; This is needed so that text does not show in the bottom inset part as it is transparent
+     [rn/view {:style (style/bottom-inset-cover-up insets)}]]))

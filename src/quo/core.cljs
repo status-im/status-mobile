@@ -105,6 +105,7 @@
     quo.components.overlay.view
     quo.components.password.tips.view
     quo.components.profile.collectible.view
+    quo.components.profile.link-card.view
     quo.components.profile.profile-card.view
     quo.components.profile.select-profile.view
     quo.components.profile.showcase-nav.view
@@ -155,6 +156,7 @@
     quo.components.wallet.network-link.view
     quo.components.wallet.network-routing.view
     quo.components.wallet.progress-bar.view
+    quo.components.wallet.required-tokens.view
     quo.components.wallet.summary-info.view
     quo.components.wallet.token-input.view
     quo.components.wallet.transaction-progress.view
@@ -334,6 +336,7 @@
 
 ;;;; Profile
 (def collectible quo.components.profile.collectible.view/collectible)
+(def link-card quo.components.profile.link-card.view/view)
 (def profile-card quo.components.profile.profile-card.view/profile-card)
 (def select-profile quo.components.profile.select-profile.view/view)
 (def showcase-nav quo.components.profile.showcase-nav.view/view)
@@ -403,6 +406,7 @@
 (def network-bridge quo.components.wallet.network-bridge.view/view)
 (def network-routing quo.components.wallet.network-routing.view/view)
 (def progress-bar quo.components.wallet.progress-bar.view/view)
+(def required-tokens quo.components.wallet.required-tokens.view/view)
 (def summary-info quo.components.wallet.summary-info.view/view)
 (def network-link quo.components.wallet.network-link.view/view)
 (def token-input quo.components.wallet.token-input.view/view)

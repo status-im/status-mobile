@@ -59,7 +59,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         profile_1 = self.home_1.profile_button.click()
 
         profile_1.just_fyi("Set user Profile image from Gallery")
-        profile_1.edit_profile_picture(file_name=logo_default)
+        profile_1.edit_profile_picture(image_index=2)
         self.home_1.profile_button.click()
         profile_1.swipe_down()
 

@@ -1,152 +1,442 @@
 (ns status-im.subs.wallet.wallet-test
-  (:require
-    [cljs.test :refer [deftest is testing]]
-    [re-frame.db :as rf-db]
-    [status-im.subs.wallet.transactions :as wallet.transactions]
-    [status-im.subs.wallet.wallet :as wallet]
-    [test-helpers.unit :as h]
-    [utils.money :as money]
-    [utils.re-frame :as rf]))
+  (:require [cljs.test :refer [is testing use-fixtures]]
+            [re-frame.db :as rf-db]
+            [status-im.subs.root]
+            [test-helpers.unit :as h]
+            [utils.money :as money]
+            [utils.re-frame :as rf]))
 
-(def money-zero (money/bignumber 0))
-(def money-eth (money/bignumber 8000000000000000000))
-(def money-snt (money/bignumber 756000000000000000000))
-(def main-account-id "0x0Fbd")
+(use-fixtures :each
+              {:before #(reset! rf-db/app-db {})})
+
+(def tokens-0x1
+  [{:decimals                   1
+    :symbol                     "ETH"
+    :name                       "Ether"
+    :balances-per-chain         {1 {:raw-balance (money/bignumber "20") :has-error false}
+                                 2 {:raw-balance (money/bignumber "10") :has-error false}}
+    :market-values-per-currency {:usd {:price 1000}}}
+   {:decimals                   2
+    :symbol                     "DAI"
+    :name                       "Dai Stablecoin"
+    :balances-per-chain         {1 {:raw-balance (money/bignumber "100") :has-error false}
+                                 2 {:raw-balance (money/bignumber "150") :has-error false}
+                                 3 {:raw-balance nil :has-error false}}
+    :market-values-per-currency {:usd {:price 100}}}])
+
+(def tokens-0x2
+  [{:decimals                   3
+    :symbol                     "ETH"
+    :name                       "Ether"
+    :balances-per-chain         {1 {:raw-balance (money/bignumber "2500") :has-error false}
+                                 2 {:raw-balance (money/bignumber "3000") :has-error false}
+                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :market-values-per-currency {:usd {:price 200}}}
+   {:decimals                   10
+    :symbol                     "DAI"
+    :name                       "Dai Stablecoin"
+    :balances-per-chain         {1 {:raw-balance (money/bignumber "10000000000") :has-error false}
+                                 2 {:raw-balance (money/bignumber "0") :has-error false}
+                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :market-values-per-currency {:usd {:price 1000}}}])
+
+(def tokens-0x3
+  [{:decimals                   3
+    :symbol                     "ETH"
+    :name                       "Ether"
+    :balances-per-chain         {1 {:raw-balance (money/bignumber "5000") :has-error false}
+                                 2 {:raw-balance (money/bignumber "2000") :has-error false}
+                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :market-values-per-currency {:usd {:price 200}}}
+   {:decimals                   10
+    :symbol                     "DAI"
+    :name                       "Dai Stablecoin"
+    :balances-per-chain         {1 {:raw-balance (money/bignumber "10000000000") :has-error false}
+                                 2 {:raw-balance (money/bignumber "0") :has-error false}
+                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :market-values-per-currency {:usd {:price 1000}}}])
 
 (def accounts
-  [{:address "0x0Fbd"
-    :name    "Main account"
-    :hidden  false
-    :removed false}
-   {:address "0x5B03"
-    :name    "Secondary account"
-    :hidden  false
-    :removed false}])
+  {"0x1" {:path                     "m/44'/60'/0'/0/0"
+          :emoji                    "😃"
+          :key-uid                  "0x2f5ea39"
+          :address                  "0x1"
+          :wallet                   false
+          :name                     "Account One"
+          :type                     :generated
+          :watch-only?              false
+          :chat                     false
+          :test-preferred-chain-ids #{5 420 421613}
+          :color                    :blue
+          :hidden                   false
+          :prod-preferred-chain-ids #{1 10 42161}
+          :position                 0
+          :clock                    1698945829328
+          :created-at               1698928839000
+          :operable                 "fully"
+          :mixedcase-address        "0x7bcDfc75c431"
+          :public-key               "0x04371e2d9d66b82f056bc128064"
+          :removed                  false
+          :tokens                   tokens-0x1}
+   "0x2" {:path                     "m/44'/60'/0'/0/1"
+          :emoji                    "💎"
+          :key-uid                  "0x2f5ea39"
+          :address                  "0x2"
+          :wallet                   false
+          :name                     "Account Two"
+          :type                     :generated
+          :watch-only?              false
+          :chat                     false
+          :test-preferred-chain-ids #{5 420 421613}
+          :color                    :purple
+          :hidden                   false
+          :prod-preferred-chain-ids #{1 10 42161}
+          :position                 1
+          :clock                    1698945829328
+          :created-at               1698928839000
+          :operable                 "fully"
+          :mixedcase-address        "0x7bcDfc75c431"
+          :public-key               "0x04371e2d9d66b82f056bc128064"
+          :removed                  false
+          :tokens                   tokens-0x2}
+   "0x3" {:path                     ""
+          :emoji                    "🎉"
+          :key-uid                  "0x2f5ea39"
+          :address                  "0x3"
+          :wallet                   false
+          :name                     "Watched Account 1"
+          :type                     :watch
+          :watch-only?              true
+          :chat                     false
+          :test-preferred-chain-ids #{0}
+          :color                    :magenta
+          :hidden                   false
+          :prod-preferred-chain-ids #{0}
+          :position                 2
+          :clock                    1698945829328
+          :created-at               1698928839000
+          :operable                 "fully"
+          :mixedcase-address        "0x7bcDfc75c431"
+          :public-key               "0x"
+          :removed                  false
+          :tokens                   tokens-0x3}})
 
-(def wallet
-  {:accounts {main-account-id
-              {:balance      {:ETH money-eth :SNT money-snt}
-               :transactions {}
-               :max-block    0}
-              "0x5B03"
-              {:balance      {:ETH money-eth :SNT money-snt}
-               :transactions {}
-               :max-block    10}}})
+(def network-data
+  {:test [{:test?            true
+           :short-name       "eth"
+           :network-name     :ethereum
+           :related-chain-id 1
+           :layer            1}
+          {:test?            true
+           :short-name       "arb1"
+           :related-chain-id 42161
+           :layer            2}
+          {:test?            true
+           :short-name       "opt"
+           :related-chain-id 10
+           :layer            2}]
+   :prod [{:test?      false
+           :short-name "eth"
+           :chain-id   1
+           :layer      1}
+          {:test?      false
+           :short-name "arb1"
+           :chain-id   42161
+           :layer      2}
+          {:test?      false
+           :short-name "opt"
+           :chain-id   10
+           :layer      2}]})
 
-(def prices
-  {:ETH {:USD 1282.23}
-   :SNT {:USD 0.0232}})
-
-(def tokens
-  {"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-   {:address  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-    :name     "Ether"
-    :symbol   :ETH
-    :decimals 18
-    :chainId  1}
-   "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-   {:address  "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
-    :name     "Status Network Token"
-    :symbol   :SNT
-    :decimals 18
-    :chainId  1}})
-
-(h/deftest-sub :balances
+(h/deftest-sub :wallet/balances
   [sub-name]
-  (swap! rf-db/app-db assoc
-    :profile/wallet-accounts accounts
-    :wallet-legacy           wallet)
-  (is (= [{:ETH money-eth
-           :SNT money-snt}
-          {:ETH money-eth
-           :SNT money-snt}]
-         (rf/sub [sub-name]))))
+  (testing "a map: address->balance"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+    (let [result      (rf/sub [sub-name])
+          balance-0x1 (money/bignumber 3250)
+          balance-0x2 (money/bignumber 2100)
+          balance-0x3 (money/bignumber 2400)]
 
-(h/deftest-sub :wallet-legacy/token->decimals
+      (is (money/equal-to balance-0x1 (get result "0x1")))
+      (is (money/equal-to balance-0x2 (get result "0x2")))
+      (is (money/equal-to balance-0x3 (get result "0x3"))))))
+
+(h/deftest-sub :wallet/accounts
   [sub-name]
-  (swap! rf-db/app-db assoc :wallet-legacy/all-tokens tokens)
-  (is (= {:SNT 18 :ETH 18}
-         (rf/sub [sub-name]))))
+  (testing "returns all accounts without balance"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc :wallet/networks network-data)))
+    (is
+     (=
+      (list {:path                      "m/44'/60'/0'/0/0"
+             :emoji                     "😃"
+             :key-uid                   "0x2f5ea39"
+             :address                   "0x1"
+             :wallet                    false
+             :name                      "Account One"
+             :type                      :generated
+             :watch-only?               false
+             :chat                      false
+             :test-preferred-chain-ids  #{5 420 421613}
+             :color                     :blue
+             :hidden                    false
+             :prod-preferred-chain-ids  #{1 10 42161}
+             :network-preferences-names #{:ethereum :arbitrum :optimism}
+             :position                  0
+             :clock                     1698945829328
+             :created-at                1698928839000
+             :operable                  "fully"
+             :mixedcase-address         "0x7bcDfc75c431"
+             :public-key                "0x04371e2d9d66b82f056bc128064"
+             :removed                   false
+             :tokens                    tokens-0x1}
+            {:path                      "m/44'/60'/0'/0/1"
+             :emoji                     "💎"
+             :key-uid                   "0x2f5ea39"
+             :address                   "0x2"
+             :wallet                    false
+             :name                      "Account Two"
+             :type                      :generated
+             :watch-only?               false
+             :chat                      false
+             :test-preferred-chain-ids  #{5 420 421613}
+             :color                     :purple
+             :hidden                    false
+             :prod-preferred-chain-ids  #{1 10 42161}
+             :network-preferences-names #{:ethereum :arbitrum :optimism}
+             :position                  1
+             :clock                     1698945829328
+             :created-at                1698928839000
+             :operable                  "fully"
+             :mixedcase-address         "0x7bcDfc75c431"
+             :public-key                "0x04371e2d9d66b82f056bc128064"
+             :removed                   false
+             :tokens                    tokens-0x2}
+            {:path                      ""
+             :emoji                     "🎉"
+             :key-uid                   "0x2f5ea39"
+             :address                   "0x3"
+             :wallet                    false
+             :name                      "Watched Account 1"
+             :type                      :watch
+             :watch-only?               true
+             :chat                      false
+             :test-preferred-chain-ids  #{0}
+             :color                     :magenta
+             :hidden                    false
+             :prod-preferred-chain-ids  #{0}
+             :network-preferences-names #{}
+             :position                  2
+             :clock                     1698945829328
+             :created-at                1698928839000
+             :operable                  "fully"
+             :mixedcase-address         "0x7bcDfc75c431"
+             :public-key                "0x"
+             :removed                   false
+             :tokens                    tokens-0x3})
+      (rf/sub [sub-name])))))
 
-(deftest get-balance-total-value-test
-  (is (= 697.53
-         (wallet/get-balance-total-value
-          {:ETH (money/bignumber 1000000000000000000)
-           :SNT (money/bignumber 100000000000000000000)
-           :AST (money/bignumber 10000)}
-          {:ETH {:USD 677.91}
-           :SNT {:USD 0.1562}
-           :AST {:USD 4}}
-          :USD
-          {:ETH 18
-           :SNT 18
-           :AST 4}))))
-
-(h/deftest-sub :portfolio-value
+(h/deftest-sub :wallet/current-viewing-account-address
   [sub-name]
-  (testing "returns fallback value when balances and prices are not available"
-    (is (= "..." (rf/sub [sub-name]))))
+  (testing "returns the address of the current viewing account"
+    (let [viewing-address "0x1"]
+      (swap! rf-db/app-db #(assoc-in % [:wallet :current-viewing-account-address] viewing-address))
+      (is (match? viewing-address (rf/sub [sub-name]))))))
 
-  (testing "returns zero when balance is not positive"
-    (let [empty-wallet {:accounts {main-account-id
-                                   {:balance {:ETH money-zero
-                                              :SNT money-zero}}}}]
-      (swap! rf-db/app-db assoc
-        :profile/wallet-accounts  accounts
-        :prices                   prices
-        :wallet-legacy            empty-wallet
-        :wallet-legacy/all-tokens tokens)
-      (is (= "0" (rf/sub [sub-name])))))
-
-  (testing "returns formatted value in the default USD currency"
-    (swap! rf-db/app-db assoc
-      :profile/wallet-accounts  accounts
-      :prices                   prices
-      :wallet-legacy            wallet
-      :wallet-legacy/all-tokens tokens)
-    (is (= "20,550.76" (rf/sub [sub-name])))))
-
-(h/deftest-sub :account-portfolio-value
+(h/deftest-sub :wallet/current-viewing-account
   [sub-name]
-  (testing "returns fallback value when balances and prices are not available"
-    (is (= "..." (rf/sub [sub-name]))))
+  (testing "returns current account with balance base"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")
+           (assoc :wallet/networks network-data)))
 
-  (testing "returns zero when balance is not positive"
-    (let [empty-wallet {:accounts {main-account-id
-                                   {:balance {:ETH money-zero
-                                              :SNT money-zero}}}}]
-      (swap! rf-db/app-db assoc
-        :profile/wallet-accounts  accounts
-        :prices                   prices
-        :wallet-legacy            empty-wallet
-        :wallet-legacy/all-tokens tokens)
-      (is (= "0" (rf/sub [sub-name main-account-id])))))
+    (let [result (rf/sub [sub-name])]
+      (is
+       (= {:path                      "m/44'/60'/0'/0/0"
+           :emoji                     "😃"
+           :key-uid                   "0x2f5ea39"
+           :address                   "0x1"
+           :wallet                    false
+           :name                      "Account One"
+           :type                      :generated
+           :watch-only?               false
+           :chat                      false
+           :test-preferred-chain-ids  #{5 420 421613}
+           :color                     :blue
+           :hidden                    false
+           :prod-preferred-chain-ids  #{1 10 42161}
+           :network-preferences-names #{:ethereum :arbitrum :optimism}
+           :position                  0
+           :clock                     1698945829328
+           :created-at                1698928839000
+           :operable                  "fully"
+           :mixedcase-address         "0x7bcDfc75c431"
+           :public-key                "0x04371e2d9d66b82f056bc128064"
+           :removed                   false
+           :tokens                    tokens-0x1}
+          (dissoc result :balance)))
 
-  (testing "returns formatted value in the default USD currency"
-    (swap! rf-db/app-db assoc
-      :profile/wallet-accounts  accounts
-      :prices                   prices
-      :wallet-legacy            wallet
-      :wallet-legacy/all-tokens tokens)
-    (is (= "10,275.38" (rf/sub [sub-name main-account-id])))))
+      (is (money/equal-to (:balance result) (money/bignumber 3250))))))
 
-(def transactions
-  [{:timestamp "1505912551000"}
-   {:timestamp "1505764322000"}
-   {:timestamp "1505750000000"}])
+(h/deftest-sub :wallet/addresses
+  [sub-name]
+  (testing "returns all addresses"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+    (is (match? #{"0x1" "0x2" "0x3"}
+                (rf/sub [sub-name])))))
 
-(def grouped-transactions
-  '({:title "20 Sep"
-     :key :20170920
-     :data
-     ({:timestamp "1505912551000"})}
-    {:title "18 Sep"
-     :key :20170918
-     :data
-     ({:timestamp "1505764322000"}
-      {:timestamp "1505750000000"})}))
+(h/deftest-sub :wallet/watch-address-activity-state
+  [sub-name]
+  (testing "watch address activity state with nil value"
+    (is (nil? (rf/sub [sub-name]))))
 
-(deftest group-transactions-by-date
-  (testing "Check if transactions are sorted by date"
-    (is (= (wallet.transactions/group-transactions-by-date transactions)
-           grouped-transactions))))
+  (testing "watch address activity state with no-activity value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :no-activity))
+    (is (match? :no-activity (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with has-activity value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :has-activity))
+    (is (match? :has-activity (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/accounts-without-current-viewing-account
+  [sub-name]
+  (testing "returns the accounts list without the current viewing account in it"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x2")
+           (assoc :wallet/networks network-data)))
+    (is
+     (= (list
+         {:path                      "m/44'/60'/0'/0/0"
+          :emoji                     "😃"
+          :key-uid                   "0x2f5ea39"
+          :address                   "0x1"
+          :wallet                    false
+          :name                      "Account One"
+          :type                      :generated
+          :watch-only?               false
+          :chat                      false
+          :test-preferred-chain-ids  #{5 420 421613}
+          :color                     :blue
+          :hidden                    false
+          :prod-preferred-chain-ids  #{1 10 42161}
+          :network-preferences-names #{:ethereum :arbitrum :optimism}
+          :position                  0
+          :clock                     1698945829328
+          :created-at                1698928839000
+          :operable                  "fully"
+          :mixedcase-address         "0x7bcDfc75c431"
+          :public-key                "0x04371e2d9d66b82f056bc128064"
+          :removed                   false
+          :tokens                    tokens-0x1}
+         {:path                      ""
+          :emoji                     "🎉"
+          :key-uid                   "0x2f5ea39"
+          :address                   "0x3"
+          :wallet                    false
+          :name                      "Watched Account 1"
+          :type                      :watch
+          :watch-only?               true
+          :chat                      false
+          :test-preferred-chain-ids  #{0}
+          :color                     :magenta
+          :hidden                    false
+          :prod-preferred-chain-ids  #{0}
+          :network-preferences-names #{}
+          :position                  2
+          :clock                     1698945829328
+          :created-at                1698928839000
+          :operable                  "fully"
+          :mixedcase-address         "0x7bcDfc75c431"
+          :public-key                "0x"
+          :removed                   false
+          :tokens                    tokens-0x3})
+        (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/accounts-without-watched-accounts
+  [sub-name]
+  (testing "returns the accounts list without the watched accounts in it"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc :wallet/networks network-data)))
+    (is
+     (= (list
+         {:path                      "m/44'/60'/0'/0/0"
+          :emoji                     "😃"
+          :key-uid                   "0x2f5ea39"
+          :address                   "0x1"
+          :wallet                    false
+          :name                      "Account One"
+          :type                      :generated
+          :watch-only?               false
+          :chat                      false
+          :test-preferred-chain-ids  #{5 420 421613}
+          :color                     :blue
+          :hidden                    false
+          :prod-preferred-chain-ids  #{1 10 42161}
+          :network-preferences-names #{:ethereum :arbitrum :optimism}
+          :position                  0
+          :clock                     1698945829328
+          :created-at                1698928839000
+          :operable                  "fully"
+          :mixedcase-address         "0x7bcDfc75c431"
+          :public-key                "0x04371e2d9d66b82f056bc128064"
+          :removed                   false
+          :tokens                    tokens-0x1}
+         {:path                      "m/44'/60'/0'/0/1"
+          :emoji                     "💎"
+          :key-uid                   "0x2f5ea39"
+          :address                   "0x2"
+          :wallet                    false
+          :name                      "Account Two"
+          :type                      :generated
+          :watch-only?               false
+          :chat                      false
+          :test-preferred-chain-ids  #{5 420 421613}
+          :color                     :purple
+          :hidden                    false
+          :prod-preferred-chain-ids  #{1 10 42161}
+          :network-preferences-names #{:ethereum :arbitrum :optimism}
+          :position                  1
+          :clock                     1698945829328
+          :created-at                1698928839000
+          :operable                  "fully"
+          :mixedcase-address         "0x7bcDfc75c431"
+          :public-key                "0x04371e2d9d66b82f056bc128064"
+          :removed                   false
+          :tokens                    tokens-0x2})
+        (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/network-preference-details
+  [sub-name]
+  (testing "returns current viewing account address"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")
+           (assoc :wallet/networks network-data)))
+    (is
+     (match? [{:short-name       "eth"
+               :network-name     :ethereum
+               :chain-id         1
+               :related-chain-id nil
+               :layer            1}
+              {:short-name       "arb1"
+               :network-name     :arbitrum
+               :chain-id         42161
+               :related-chain-id nil
+               :layer            2}
+              {:short-name       "opt"
+               :network-name     :optimism
+               :chain-id         10
+               :related-chain-id nil
+               :layer            2}]
+             (->> (rf/sub [sub-name])
+                  ;; Removed `#js source` property for correct compare
+                  (map #(dissoc % :source)))))))

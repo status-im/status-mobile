@@ -1184,6 +1184,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
+    public String fleets() {
+        return Statusgo.fleets();
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public String backupDisabledDataDir() {
         return this.getNoBackupDirectory();
     }

@@ -1,8 +1,11 @@
 (ns quo.components.utilities.token.view
-  (:require [quo.components.utilities.token.loader :as token-loader]
-            [react-native.core :as rn]
-            [schema.core :as schema]
-            [utils.number]))
+  (:require
+    [clojure.string :as string]
+    [quo.components.markdown.text :as quo]
+    [quo.components.utilities.token.loader :as token-loader]
+    [react-native.core :as rn]
+    [schema.core :as schema]
+    [utils.number]))
 
 (def ?schema
   [:=>
@@ -12,7 +15,7 @@
      [:token {:optional true} [:or keyword? string?]]
      [:style {:optional true} map?]
      ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
-     [:image-source {:optional true} [:or string? map?]]
+     [:image-source {:optional true} [:or :schema.common/image-source :string]]
      ;; If true, adds `data:image/png;base64,` as prefix to the string passed as `image-source`
      [:add-b64-prefix? {:optional true} boolean?]]]
    :any])
@@ -33,6 +36,18 @@
 
 (def ^:private b64-png-image-prefix "data:image/png;base64,")
 
+(defn temp-empty-symbol
+  [token size]
+  [rn/view
+   {:style (token-style {:justify-content :center
+                         :align-items     :center
+                         :border-radius   20
+                         :border-width    1
+                         :border-color    :grey}
+                        size)}
+   [quo/text {:style {:color :grey}}
+    (string/capitalize (first (name token)))]])
+
 (defn view-internal
   "Render a token image.
    Props:
@@ -51,8 +66,10 @@
                      (str b64-png-image-prefix image-source)
                      image-source)
         source     (or b64-string (token-loader/get-token-image token))]
-    [rn/image
-     {:style  (token-style style size)
-      :source source}]))
+    (if source
+      [rn/image
+       {:style  (token-style style size)
+        :source source}]
+      [temp-empty-symbol token size])))
 
 (def view (schema/instrument #'view-internal ?schema))

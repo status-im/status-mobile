@@ -1,8 +1,8 @@
 (ns mocks.js-dependencies
-  (:require-macros [status-im.utils.slurp :refer [slurp]])
+  (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require
-    [status-im.fleet.default-fleet :refer (default-fleets)])
-  (:require [status-im.utils.test :as utils.test]))
+    [legacy.status-im.fleet.default-fleet :refer (default-fleets)])
+  (:require [legacy.status-im.utils.test :as utils.test]))
 
 ;; to generate a js Proxy at js/__STATUS_MOBILE_JS_IDENTITY_PROXY__ that accept any (.xxx) call and
 ;; return itself
@@ -251,6 +251,7 @@
                               :onChange                nil
                               :View                    #js {}
                               :Image                   #js {}
+                              :FlatList                #js {}
                               :ScrollView              #js {}
                               :Text                    #js {}
                               :Extrapolate             #js {:CLAMP nil}
@@ -300,11 +301,6 @@
   #js
    {:clamp     nil
     :withPause (fn [])})
-
-(def react-native-intersection-observer
-  #js
-   {:InView     #js {}
-    :IOFlatList #js {}})
 
 (def react-native-languages
   (clj->js {:default {:language            "en"
@@ -385,7 +381,6 @@
                                                                :getBottomSpace     (fn [])})
     "react-native-screens"                           (clj->js {})
     "react-native-reanimated"                        react-native-reanimated
-    "react-native-redash/lib/module/v1"              react-native-redash
     "react-native-redash"                            react-native-redash
     "react-native-fetch-polyfill"                    fetch
     "react-native-status-keycard"                    status-keycard
@@ -421,7 +416,6 @@
     "react-native-transparent-video"                 react-native-transparent-video
     "react-native-orientation-locker"                react-native-orientation-locker
     "react-native-gifted-charts"                     react-native-gifted-charts
-    "react-native-intersection-observer"             react-native-intersection-observer
     "../resources/data/emojis/en.json"               (js/JSON.parse (slurp
                                                                      "./resources/data/emojis/en.json"))
     "../src/js/worklets/core.js"                     worklet-factory
@@ -432,7 +426,8 @@
     "../src/js/worklets/record_audio.js"             #js {}
     "../src/js/worklets/scroll_view.js"              #js {}
     "../src/js/worklets/onboarding_carousel.js"      #js {}
-    "../src/js/worklets/lightbox.js"                 #js {}
+    "../src/js/worklets/chat/lightbox.js"            #js {}
+    "../src/js/worklets/chat/messages.js"            #js {}
     "../src/js/worklets/parallax.js"                 #js {}
     "../src/js/worklets/identifiers_highlighting.js" #js {}
     "./fleets.js"                                    default-fleets

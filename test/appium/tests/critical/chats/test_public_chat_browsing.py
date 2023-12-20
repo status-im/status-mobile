@@ -71,7 +71,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702846)
-    @marks.xfail(reason="Issue #18075", run=False)
     def test_community_navigate_to_channel_when_relaunch(self):
         text_message = 'some_text'
         if not self.channel.chat_message_input.is_element_displayed():
@@ -318,7 +317,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
-        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
         self.channel_2.chat_message_input.wait_for_visibility_of_element(20)
@@ -460,7 +458,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel_1.just_fyi("Check that image is saved in gallery")
         self.channel_1.show_images_button.click()
-        self.channel_1.allow_button.click_if_shown()
+        self.channel_1.allow_all_button.click_if_shown()
         if not self.channel_1.get_image_by_index(0).is_element_image_similar_to_template(
                 "sauce_dark_image_gallery.png"):
             self.errors.append('Saved image is not shown in Recent')
@@ -469,9 +467,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi('Check share option on opened image')
         self.channel_2.chat_element_by_text(image_description).image_in_message.click()
         self.channel_2.share_image_icon_button.click()
-        self.channel_2.element_starts_with_text("Gmail").click()
+        self.channel_2.element_starts_with_text("Drive").click()
         try:
-            self.channel_2.wait_for_current_package_to_be('com.google.android.gm')
+            self.channel_2.wait_for_current_package_to_be('com.google.android.apps.docs')
         except TimeoutException:
             self.errors.append("Can't share image")
         self.channel_2.navigate_back_to_chat_view()
@@ -663,20 +661,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.chats_tab.click()
         if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
-        self.chat_1.toggle_airplane_mode()
-
-        # workaround for app closed after airplane mode
-        if not self.home_1.chats_tab.is_element_displayed() and \
-                not self.chat_1.chat_floating_screen.is_element_displayed():
-            self.device_1.driver.activate_app(app_package)
-            self.device_1.sign_in()
+        self.chat_1.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')
         message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
         self.channel_2.send_message(message_blocked)
 
         self.chat_1.just_fyi('Check that new messages from blocked user are not delivered')
-        self.chat_1.toggle_airplane_mode()
+        self.chat_1.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
         # self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.home_1.communities_tab.click()
         self.home_1.get_chat(self.community_name, community=True).click()
@@ -839,7 +831,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
-        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
@@ -1015,7 +1006,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_2.get_chat(self.username_1).click()
         control_message_1_1_chat = "it is just a message text"
         self.chat_2.send_message(control_message_1_1_chat)
-        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
         self.community_2.join_community(open_community=False)
 
         self.home_1.just_fyi("Device 1 accepts the community request")
@@ -1026,7 +1016,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Unread indicator is not shown in notifications on membership request")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
-        reply_element.swipe_right_on_element()
+        reply_element.title.swipe_right_on_element(width_percentage=2.5)
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
 
@@ -1099,7 +1089,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Device 2 requests to join the community")
         self.home_2.jump_to_messages_home()
         self.home_2.get_chat(self.username_1).click()
-        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
         self.community_2.join_community(open_community=False)
         exp_text = "You requested to join “%s”" % community_name
         if self.community_2.toast_content_element.is_element_displayed(10):

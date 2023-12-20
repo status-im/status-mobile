@@ -295,7 +295,7 @@ class BaseElement(object):
         width, height = size['width'], size['height']
         self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
 
-    def swipe_right_on_element(self, width_percentage=0.75):
+    def swipe_right_on_element(self, width_percentage=0.9):
         self.driver.info("Swiping right on element %s" % self.name)
         location, size = self.get_element_coordinates()
         x, y = location['x'], location['y']

@@ -71,6 +71,7 @@
 (def system-message-contact-request-account-wrapper
   {:flex-direction :row
    :align-items    :center
+   :margin-left    4
    :flex-shrink    1})
 
 (def system-message-contact-request-account-name
