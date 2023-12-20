@@ -8,6 +8,7 @@
     [legacy.status-im.wallet.utils :as wallet.utils]
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
+    [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
     [utils.address :as address]
     [utils.image-server :as image-server]
@@ -39,14 +40,20 @@
  (fn [[port font-file] [_ profile-pic]]
    {:fn
     (if profile-pic
-      (image-server/get-account-image-uri-fn {:port           port
-                                              :image-name     profile-pic
-                                              :override-ring? false
-                                              :theme          (theme/get-theme)})
-      (image-server/get-initials-avatar-uri-fn {:port           port
-                                                :theme          (theme/get-theme)
-                                                :override-ring? false
-                                                :font-file      font-file}))}))
+      (image-server/get-account-image-uri-fn {:port            port
+                                              :ratio           pixel-ratio/ratio
+                                              :image-name      profile-pic
+                                              :override-ring?  false
+                                              :uppercase-ratio (:uppercase-ratio
+                                                                constants/initials-avatar-font-conf)
+                                              :theme           (theme/get-theme)})
+      (image-server/get-initials-avatar-uri-fn {:port            port
+                                                :ratio           pixel-ratio/ratio
+                                                :theme           (theme/get-theme)
+                                                :override-ring?  false
+                                                :uppercase-ratio (:uppercase-ratio
+                                                                  constants/initials-avatar-font-conf)
+                                                :font-file       font-file}))}))
 
 (re-frame/reg-sub
  :profile/login-profiles-picture
@@ -61,11 +68,13 @@
        {:fn
         (if image-name
           (image-server/get-account-image-uri-fn {:port           port
+                                                  :ratio          status-im.common.pixel-ratio/ratio
                                                   :image-name     image-name
                                                   :key-uid        target-key-uid
                                                   :theme          (theme/get-theme)
                                                   :override-ring? override-ring?})
           (image-server/get-initials-avatar-uri-fn {:port           port
+                                                    :ratio          status-im.common.pixel-ratio/ratio
                                                     :key-uid        target-key-uid
                                                     :theme          (theme/get-theme)
                                                     :override-ring? override-ring?
@@ -283,19 +292,26 @@
         avatar-opts                        (assoc avatar-opts :override-ring? (when ens-name? false))
         images-with-uri                    (mapv (fn [{key-uid :keyUid image-name :type :as image}]
                                                    (let [uri-fn (image-server/get-account-image-uri-fn
-                                                                 (merge {:port       port
-                                                                         :image-name image-name
-                                                                         :key-uid    key-uid
-                                                                         :theme      theme}
-                                                                        avatar-opts))]
+                                                                 (merge
+                                                                  {:port port
+                                                                   :ratio
+                                                                   status-im.common.pixel-ratio/ratio
+                                                                   :image-name image-name
+                                                                   :key-uid key-uid
+                                                                   :theme theme}
+                                                                  avatar-opts))]
                                                      (assoc image :fn uri-fn)))
                                                  images)
         new-images                         (if (seq images-with-uri)
                                              images-with-uri
                                              [{:fn (image-server/get-initials-avatar-uri-fn
-                                                    (merge {:port      port
-                                                            :key-uid   key-uid
-                                                            :theme     theme
+                                                    (merge {:port port
+                                                            :ratio status-im.common.pixel-ratio/ratio
+                                                            :uppercase-ratio
+                                                            (:uppercase-ratio
+                                                             constants/initials-avatar-font-conf)
+                                                            :key-uid key-uid
+                                                            :theme theme
                                                             :font-file font-file}
                                                            avatar-opts))}])]
     (assoc profile :images new-images)))

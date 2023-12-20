@@ -5,6 +5,7 @@
     [legacy.status-im.ethereum.ens :as ens]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im.common.validators :as validators]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
     [taoensso.timbre :as log]
@@ -15,8 +16,7 @@
     [utils.ethereum.eip.eip681 :as eip681]
     [utils.security.core :as security]
     [utils.transforms :as transforms]
-    [utils.url :as url]
-    [utils.validators :as validators]))
+    [utils.url :as url]))
 
 (def ethereum-scheme "ethereum:")
 

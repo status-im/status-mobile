@@ -2,8 +2,6 @@
   (:require
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
-    status-im.common.pixel-ratio
-    [status-im.constants :as constants]
     [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
@@ -19,10 +17,10 @@
   for ios, it's located at main-bundle-path
   for android, it's located in the assets dir which can not be accessed by status-go
                so we copy one to the cache directory"
-  [callback]
+  [font-file-name callback]
   (if platform/android?
     (let [cache-dir      (utils.fs/cache-dir)
-          font-file-name (:android constants/initials-avatar-font-conf)
+          font-file-name font-file-name
           src            (str "fonts/" font-file-name)
           dest           (str cache-dir "/" font-file-name)
           copy           #(utils.fs/copy-assets src dest)
@@ -34,7 +32,7 @@
                  (.then (copy) cb)))))
     (callback (str (utils.fs/main-bundle-path)
                    "/"
-                   (:ios constants/initials-avatar-font-conf)))))
+                   font-file-name))))
 
 (defn timestamp [] (datetime/timestamp))
 
@@ -70,7 +68,7 @@
   `indicator-size` - `indicator-border` is inner indicator radius"
   [{:keys [port public-key image-name key-uid size theme indicator-size
            indicator-border indicator-center-to-edge indicator-color ring?
-           ring-width]}]
+           ring-width ratio]}]
   (str
    image-server-uri-prefix
    port
@@ -82,7 +80,7 @@
    "&imageName="
    image-name
    "&size="
-   (Math/round (* size status-im.common.pixel-ratio/ratio))
+   (Math/round (* size ratio))
    "&theme="
    (current-theme-index theme)
    "&clock="
@@ -90,15 +88,15 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im.common.pixel-ratio/ratio)
+   (* indicator-size ratio)
    "&indicatorBorder="
-   (* indicator-border status-im.common.pixel-ratio/ratio)
+   (* indicator-border ratio)
    "&indicatorCenterToEdge="
-   (* indicator-center-to-edge status-im.common.pixel-ratio/ratio)
+   (* indicator-center-to-edge ratio)
    "&addRing="
    (if ring? 1 0)
    "&ringWidth="
-   (* ring-width status-im.common.pixel-ratio/ratio)))
+   (* ring-width ratio)))
 
 (defn get-account-image-uri-fn
   "pass the result fn to user-avatar component as `:profile-picture`
@@ -113,12 +111,13 @@
   check `get-account-image-uri` for color formats"
   [{:keys [port public-key key-uid image-name theme override-ring?]}]
   (fn [{:keys [size indicator-size indicator-border indicator-center-to-edge
-               indicator-color ring? ring-width override-theme]}]
+               indicator-color ring? ring-width override-theme ratio]}]
     (get-account-image-uri
      {:port                     port
       :image-name               image-name
       :size                     size
       :public-key               public-key
+      :ratio                    ratio
       :key-uid                  key-uid
       :theme                    (if (nil? override-theme) theme override-theme)
       :indicator-size           indicator-size
@@ -141,7 +140,7 @@
   `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
   [{:keys [port public-key key-uid theme ring? length size background-color color
            font-size font-file uppercase-ratio indicator-size indicator-border
-           indicator-center-to-edge indicator-color full-name ring-width]}]
+           indicator-center-to-edge indicator-color full-name ring-width ratio]}]
   (str
    image-server-uri-prefix
    port
@@ -153,13 +152,13 @@
    "&length="
    length
    "&size="
-   (Math/round (* size status-im.common.pixel-ratio/ratio))
+   (Math/round (* size ratio))
    "&bgColor="
    (js/encodeURIComponent background-color)
    "&color="
    (js/encodeURIComponent color)
    "&fontSize="
-   (* font-size status-im.common.pixel-ratio/ratio)
+   (* font-size ratio)
    "&fontFile="
    (js/encodeURIComponent font-file)
    "&uppercaseRatio="
@@ -173,15 +172,15 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im.common.pixel-ratio/ratio)
+   (* indicator-size ratio)
    "&indicatorBorder="
-   (* indicator-border status-im.common.pixel-ratio/ratio)
+   (* indicator-border ratio)
    "&indicatorCenterToEdge="
-   (* indicator-center-to-edge status-im.common.pixel-ratio/ratio)
+   (* indicator-center-to-edge ratio)
    "&addRing="
    (if ring? 1 0)
    "&ringWidth="
-   (* ring-width status-im.common.pixel-ratio/ratio)))
+   (* ring-width ratio)))
 
 (defn get-initials-avatar-uri-fn
   "return a fn that calls `get-account-initials-uri`
@@ -194,10 +193,11 @@
   [{:keys [port public-key key-uid theme override-ring? font-file]}]
   (fn [{:keys [full-name length size background-color font-size color
                indicator-size indicator-border indicator-color indicator-center-to-edge
-               ring? ring-width override-theme]}]
+               ring? ring-width override-theme uppercase-ratio ratio]}]
     (get-initials-avatar-uri
      {:port                     port
       :public-key               public-key
+      :ratio                    ratio
       :key-uid                  key-uid
       :full-name                full-name
       :length                   length
@@ -209,7 +209,7 @@
       :font-size                font-size
       :color                    color
       :font-file                font-file
-      :uppercase-ratio          (:uppercase-ratio constants/initials-avatar-font-conf)
+      :uppercase-ratio          uppercase-ratio
       :indicator-size           indicator-size
       :indicator-border         indicator-border
       :indicator-center-to-edge indicator-center-to-edge
@@ -217,7 +217,7 @@
 
 (defn get-contact-image-uri
   [{:keys [port public-key image-name clock theme indicator-size indicator-border
-           indicator-center-to-edge indicator-color size ring? ring-width]}]
+           indicator-center-to-edge indicator-color size ring? ring-width ratio]}]
   (str
    image-server-uri-prefix
    port
@@ -227,7 +227,7 @@
    "&imageName="
    image-name
    "&size="
-   (Math/round (* size status-im.common.pixel-ratio/ratio))
+   (Math/round (* size ratio))
    "&theme="
    (current-theme-index theme)
    "&clock="
@@ -235,21 +235,22 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im.common.pixel-ratio/ratio)
+   (* indicator-size ratio)
    "&indicatorBorder="
-   (* indicator-border status-im.common.pixel-ratio/ratio)
+   (* indicator-border ratio)
    "&indicatorCenterToEdge="
-   (* indicator-center-to-edge status-im.common.pixel-ratio/ratio)
+   (* indicator-center-to-edge ratio)
    "&addRing="
    (if ring? 1 0)
    "&ringWidth="
-   (* ring-width status-im.common.pixel-ratio/ratio)))
+   (* ring-width ratio)))
 
 (defn get-contact-image-uri-fn
-  [{:keys [port public-key image-name theme override-ring? clock]}]
+  [{:keys [port public-key image-name theme override-ring? clock ratio]}]
   (fn [{:keys [size indicator-size indicator-border indicator-center-to-edge
                indicator-color ring? ring-width override-theme]}]
     (get-contact-image-uri {:port                     port
+                            :ratio                    ratio
                             :image-name               image-name
                             :public-key               public-key
                             :size                     size
