@@ -2,12 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleBuildUrl</key>
 	<string>????</string>
 	<key>CFBundleCommitHash</key>
 	<string>unknown</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -59,31 +59,29 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>Enable Keycard</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
 		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Status uses camera to take pictures and scan QR codes.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photos access is required to give you the ability to send images.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Photos access is required to give you the ability to save images.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Need microphone access for sending audio messages.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Photos access is required to give you the ability to save images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photos access is required to give you the ability to send images.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Bold.otf</string>
@@ -140,8 +138,5 @@
 		<string>A00000080400010301</string>
 		<string>A000000151000000</string>
 	</array>
-	<key>NFCReaderUsageDescription</key>
-	<string>Enable Keycard</string>
-	<key>CADisableMinimumFrameDurationOnPhone</key><true/>
 </dict>
 </plist>

@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchGlogPhase"
-    "patchBoostPodSpec"
+    "patchRNScriptPhase"
     "installPhase"
   ];
 
@@ -78,12 +78,10 @@ stdenv.mkDerivation {
     --replace 'export CXX="' '#export CXX="'
   '';
 
-  # to fix pod checksum issue : https://github.com/facebook/react-native/issues/42180
-  # TODO remove this patch after upgrading to react-native 0.73.2
-  patchBoostPodSpec = ''
-   substituteInPlace ./node_modules/react-native/third-party-podspecs/boost.podspec \
-      --replace 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2' \
-      'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' \
+  # to fix https://github.com/status-im/status-mobile/issues/18548
+  patchRNScriptPhase = ''
+   substituteInPlace ./node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh \
+        --replace 'cp -R -X' 'cp -R'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

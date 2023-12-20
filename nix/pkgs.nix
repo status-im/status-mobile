@@ -4,12 +4,12 @@
 
 let
   # For testing local version of nixpkgs
-  #nixpkgsSrc = (import <nixpkgs> { }).lib.cleanSource "/home/jakubgs/work/nixpkgs";
+#  nixpkgsSrc = (import <nixpkgs> { }).lib.cleanSource "/Users/siddarthkumar/code/status-im/nixpkgs";
 
   # We follow the master branch of official nixpkgs.
   nixpkgsSrc = builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/e7603eba51f2c7820c0a182c6bbb351181caa8e7.tar.gz";
-    sha256 = "sha256:0mwck8jyr74wh1b7g6nac1mxy6a0rkppz8n12andsffybsipz5jw";
+    url = "https://github.com/status-im/nixpkgs/archive/c98aece0ad1fb23e277d2c6eccf3ff5a582cacb3.tar.gz";
+    sha256 = "sha256:0avkxl93r4nh754mrrgs2wvjd6fnwjnf49gf1qk5x89nypb86659";
   };
 
   # Status specific configuration defaults
