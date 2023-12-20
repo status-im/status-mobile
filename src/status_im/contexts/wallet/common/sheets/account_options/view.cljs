@@ -70,9 +70,8 @@
          :label               (i18n/label :t/copy-address)
          :on-press            (fn []
                                 (rf/dispatch [:toasts/upsert
-                                              {:icon       :i/correct
-                                               :icon-color (colors/resolve-color :success theme)
-                                               :text       (i18n/label :t/address-copied)}])
+                                              {:type :positive
+                                               :text (i18n/label :t/address-copied)}])
                                 (clipboard/set-string address))}
         {:icon                :i/share
          :accessibility-label :share-account

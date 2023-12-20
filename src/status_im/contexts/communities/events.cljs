@@ -1,7 +1,6 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
             [clojure.walk :as walk]
-            [legacy.status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
@@ -93,10 +92,9 @@
           (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
           (and (= constants/community-request-to-join-state-accepted state) (not deleted))
           (do (rf/dispatch [:toasts/upsert
-                            {:icon       :i/correct
-                             :id         :joined-community
-                             :icon-color (:positive-01 @colors/theme)
-                             :text       (i18n/label :t/joined-community {:community name})}])
+                            {:id   :joined-community
+                             :type :positive
+                             :text (i18n/label :t/joined-community {:community name})}])
               (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))
           :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))))
 

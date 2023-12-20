@@ -1,6 +1,5 @@
 (ns status-im.common.pairing.events
   (:require
-    [quo.foundations.colors :as colors]
     [status-im.constants :as constants]
     [status-im.contexts.communities.discover.events]
     [taoensso.timbre :as log]
@@ -63,6 +62,5 @@
 
              (and error-on-pairing? (some? error))
              {:dispatch [:toasts/upsert
-                         {:icon       :i/alert
-                          :icon-color colors/danger-50
-                          :text       error}]}))))
+                         {:type :negative
+                          :text error}]}))))

@@ -36,7 +36,7 @@
     :undo-duration 4
     :undo-on-press #(do
                       (rf/dispatch [:toasts/upsert
-                                    {:type :success
+                                    {:type :positive
                                      :text "Undo pressed"}])
                       (rf/dispatch [:toasts/close
                                     "Toast: with undo action"]))}])

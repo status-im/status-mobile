@@ -1,6 +1,5 @@
 (ns status-im.contexts.communities.actions.community-options.events
-  (:require [quo.foundations.colors :as quo.colors]
-            [status-im.common.muting.helpers :as muting.helpers]
+  (:require [status-im.common.muting.helpers :as muting.helpers]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -26,13 +25,12 @@
      {:db         (assoc-in db [:communities community-id :muted-till] muted-till)
       :dispatch-n [[:community/update-community-chats-mute-status community-id muted? muted-till]
                    [:toasts/upsert
-                    {:icon       :correct
-                     :icon-color (quo.colors/theme-colors quo.colors/success-60 quo.colors/success-50)
-                     :text       (if muted?
-                                   (when (some? muted-till)
-                                     (time-string :t/muted-until
-                                                  (muting.helpers/format-mute-till muted-till)))
-                                   (i18n/label :t/community-unmuted))}]]})))
+                    {:type :positive
+                     :text (if muted?
+                             (when (some? muted-till)
+                               (time-string :t/muted-until
+                                            (muting.helpers/format-mute-till muted-till)))
+                             (i18n/label :t/community-unmuted))}]]})))
 
 (rf/reg-event-fx :community/set-muted
  (fn [{:keys [db]} [community-id muted? muted-type]]

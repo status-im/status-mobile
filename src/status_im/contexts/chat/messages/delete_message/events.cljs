@@ -1,6 +1,5 @@
 (ns status-im.contexts.chat.messages.delete-message.events
   (:require
-    [quo.foundations.colors :as colors]
     [status-im.contexts.chat.messages.list.events :as message-list]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -106,8 +105,7 @@
        [[:toasts/close :delete-message-for-everyone]
         [:toasts/upsert
          {:id                                 :delete-message-for-everyone
-          :icon                               :i/info
-          :icon-color                         colors/danger-50-opa-40
+          :type                               :negative
           :message-deleted-for-everyone-count toast-count
           :message-deleted-for-everyone-undos existing-undos
           :text                               (i18n/label-pluralize

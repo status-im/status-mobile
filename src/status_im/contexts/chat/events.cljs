@@ -3,7 +3,6 @@
     [clojure.set :as set]
     [legacy.status-im.chat.models.loading :as loading]
     [legacy.status-im.data-store.chats :as chats-store]
-    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.common.muting.helpers :refer [format-mute-till]]
@@ -350,11 +349,9 @@
                           :t/channel-unmuted-successfully))))]
     {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
-                {:icon       :i/correct
-                 :icon-color (colors/theme-colors colors/success-60
-                                                  colors/success-50)
-                 :text       (mute-duration-text (when (some? muted-till)
-                                                   (str (format-mute-till muted-till))))}]}))
+                {:type :positive
+                 :text (mute-duration-text (when (some? muted-till)
+                                             (str (format-mute-till muted-till))))}]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
