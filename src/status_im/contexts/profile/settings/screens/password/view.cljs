@@ -1,13 +1,12 @@
-
-(ns status-im2.contexts.profile.settings.screens.password.view
+(ns status-im.contexts.profile.settings.screens.password.view
   (:require [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im2.common.biometric.events :as biometric]
-            [status-im2.common.not-implemented :as not-implemented]
-            [status-im2.common.standard-authentication.standard-auth.authorize :as authorize]
-            [status-im2.constants :as constants]
+            [status-im.common.biometric.events :as biometric]
+            [status-im.common.not-implemented :as not-implemented]
+            [status-im.common.standard-authentication.standard-auth.authorize :as authorize]
+            [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
