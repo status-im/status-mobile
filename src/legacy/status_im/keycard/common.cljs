@@ -171,16 +171,6 @@
            (assoc-in [:keycard :on-card-read] nil)
            (assoc-in [:keycard :last-on-card-read] nil))})
 
-(defn keycard-sheet-content
-  [_ _ _]
-  (fn []
-    #_[keycard-sheet/connect-keycard
-       {:on-cancel     #(re-frame/dispatch on-cancel)
-        :connected?    connected?
-        :params        params
-        :on-connect    ::on-card-connected
-        :on-disconnect ::on-card-disconnected}]))
-
 (rf/defn show-connection-sheet-component
   [{:keys [db] :as cofx}
    {:keys [on-card-connected on-card-read handler]
@@ -200,8 +190,7 @@
               :show-handle?       false
               :backdrop-dismiss?  false
               :disable-drag?      true
-              :back-button-cancel false
-              :content            (keycard-sheet-content on-cancel connected? nil)}})
+              :back-button-cancel false}})
      (when on-card-read
        (set-on-card-read on-card-read))
      (set-on-card-connected on-card-connected)

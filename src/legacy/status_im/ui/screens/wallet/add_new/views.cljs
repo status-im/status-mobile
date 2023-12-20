@@ -126,28 +126,9 @@
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])
            (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}]])])
 
-(defview pin
+(defn pin
   []
-  (letsubs [_ [:keycard/pin]
-            _ [:keycard/pin-status]
-            _ [:keycard/pin-error-label]
-            _ [:keycard/retry-counter]]
-    [react/keyboard-avoiding-view
-     {:style         {:flex 1}
-      :ignore-offset true}
-     [topbar/topbar
-      {:navigation :none
-       :right-accessories
-       [{:label    (i18n/label :t/cancel)
-         :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
-     #_[pin.views/pin-view
-        {:pin               card-pin
-         :status            status
-         :retry-counter     retry-counter
-         :title-label       :t/current-pin
-         :description-label :t/current-pin-description
-         :error-label       error-label
-         :step              :export-key}]]))
+  [react/view])
 
 (defview add-account-view
   []
