@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.collectible.tabs.overview.style)
+(ns status-im.contexts.wallet.collectible.tabs.overview.style)
 
 (def info-container
   {:flex-direction    :row

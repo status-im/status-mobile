@@ -1,24 +1,24 @@
-(ns status-im2.contexts.wallet.collectible.tabs.about.view
+(ns status-im.contexts.wallet.collectible.tabs.about.view
   (:require [quo.core :as quo]
             [quo.theme]
             [react-native.core :as rn] 
-            [status-im2.contexts.wallet.collectible.tabs.about.style :as style]))
+            [status-im.contexts.wallet.collectible.tabs.about.style :as style]))
 
 (def link-cards
   [{:title "BAYC"
     :icon  :social/link
     :address "boredapeyachtclub"
-    :customization-color :link
+    :customization-color :social/link
     :on-press #(js/alert "pressed")}
    {:title "Twitter"
     :icon  :social/twitter
     :address "@BoredApeYC"
-    :customization-color :twitter
+    :customization-color :social/twitter
     :on-press #(js/alert "pressed")}
    {:title "Opensea"
     :icon  :social/opensea
     :address "Bored Ape Yacht Club"
-    :customization-color :opensea
+    :customization-color :social/opensea
     :on-press #(js/alert "pressed")}])
 
 (defn- view-internal
@@ -37,6 +37,7 @@
                         :section         "On the web"}]
    [rn/view {:style style/link-cards-container}
     (for [item link-cards]
-      (quo/link-card (assoc item :container-style style/link-card)))]])
+      ^{:key (:title item)}
+      [quo/link-card (assoc item :container-style style/link-card)])]])
 
 (def view (quo.theme/with-theme view-internal))

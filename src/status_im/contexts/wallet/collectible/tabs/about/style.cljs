@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.collectible.tabs.about.style)
+(ns status-im.contexts.wallet.collectible.tabs.about.style)
 
 (def title
   {:padding-horizontal 20

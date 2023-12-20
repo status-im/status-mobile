@@ -6,8 +6,8 @@
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
-    [status-im.contexts.wallet.temp :as temp]
-    [status-im2.contexts.wallet.collectible.tabs.view :as tabs]
+    [status-im.contexts.wallet.collectible.tabs.view :as tabs] 
+    [status-im.contexts.wallet.temp :as temp] 
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -89,43 +89,44 @@
 
 (defn view-internal
   [{:keys [theme] :as _props}]
-  (let [collectible               (rf/sub [:wallet/last-collectible-details])
-        {:keys [collectible-data preview-url
-                collection-data]} collectible
-        {traits           :traits
-         collectible-name :name}  collectible-data
-        {collection-image :image-url
-         collection-name  :name}  collection-data
-        chain-id                  (rf/sub [:wallet/last-collectible-chain-id])
-        {collectible-name :name
-         description      :description} collectible-data
-        selected-tab                    (reagent/atom :overview)]
-    [scroll-page/scroll-page
-     {:navigate-back? true
-      :height         148
-      :page-nav-props {:type        :title-description
-                       :title       collectible-name
-                       :description collection-name
-                       :right-side  [{:icon-name :i/options
-                                      :on-press  #(rf/dispatch
-                                                   [:show-bottom-sheet
-                                                    {:content collectible-actions-sheet
-                                                     :theme   theme}])}]
-                       :picture     preview-url}}
-     [rn/view {:style style/container}
-      [rn/view {:style style/preview-container}
-       [rn/image
-        {:source preview-url
-         :style  style/preview}]]
-      [header collectible-name collection-name collection-image]
-      [cta-buttons]
-      [quo/tabs
-       {:size        32
-        :style       style/tabs
-        :scrollable? true
-        :default-active   @selected-tab
-        :on-change        #(reset! selected-tab %)
-        :data        tabs-data}]
-      [tabs/view {:selected-tab @selected-tab}]]]))
+  (let [selected-tab                    (reagent/atom :overview)]
+    (fn []
+      (let [collectible               (rf/sub [:wallet/last-collectible-details])
+            {:keys [collectible-data preview-url
+                    collection-data]} collectible
+            {traits           :traits
+             collectible-name :name}  collectible-data
+            {collection-image :image-url
+             collection-name  :name}  collection-data
+            chain-id                  (rf/sub [:wallet/last-collectible-chain-id])
+            {collectible-name :name
+             description      :description} collectible-data]
+        [scroll-page/scroll-page
+         {:navigate-back? true
+          :height         148
+          :page-nav-props {:type        :title-description
+                           :title       collectible-name
+                           :description collection-name
+                           :right-side  [{:icon-name :i/options
+                                          :on-press  #(rf/dispatch
+                                                       [:show-bottom-sheet
+                                                        {:content collectible-actions-sheet
+                                                         :theme   theme}])}]
+                           :picture     preview-url}}
+         [rn/view {:style style/container}
+          [rn/view {:style style/preview-container}
+           [rn/image
+            {:source preview-url
+             :style  style/preview}]]
+          [header collectible-name collection-name collection-image]
+          [cta-buttons]
+          [quo/tabs
+           {:size        32
+            :style       style/tabs
+            :scrollable? true
+            :default-active   @selected-tab
+            :on-change        #(reset! selected-tab %)
+            :data        tabs-data}]
+          [tabs/view {:selected-tab @selected-tab}]]]))))
 
 (def view (quo.theme/with-theme view-internal))
