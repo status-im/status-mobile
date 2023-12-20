@@ -3,11 +3,13 @@
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]))
 
-(def container
-  {:min-height         40
-   :flex               1
-   :padding-vertical   4
-   :padding-horizontal 20})
+(defn container
+  [container-style]
+  (merge {:min-height         40
+          :flex               1
+          :padding-vertical   4
+          :padding-horizontal 20}
+         container-style))
 
 (defn input
   []

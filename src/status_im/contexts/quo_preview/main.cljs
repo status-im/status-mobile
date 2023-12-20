@@ -162,10 +162,9 @@
     [status-im.contexts.quo-preview.tags.tags :as tags]
     [status-im.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im.contexts.quo-preview.tags.token-tag :as token-tag]
-    [status-im.contexts.quo-preview.text-combinations.channel-name :as
-     channel-name]
-    [status-im.contexts.quo-preview.text-combinations.preview :as
-     text-combinations]
+    [status-im.contexts.quo-preview.text-combinations.channel-name :as channel-name]
+    [status-im.contexts.quo-preview.text-combinations.page-top :as page-top]
+    [status-im.contexts.quo-preview.text-combinations.preview :as text-combinations]
     [status-im.contexts.quo-preview.text-combinations.standard-title :as standard-title]
     [status-im.contexts.quo-preview.text-combinations.username :as username]
     [status-im.contexts.quo-preview.wallet.account-card :as account-card]
@@ -466,6 +465,8 @@
                         :component text-combinations/view}
                        {:name      :channel-name
                         :component channel-name/view}
+                       {:name      :page-top
+                        :component page-top/view}
                        {:name      :standard-title
                         :component standard-title/view}
                        {:name      :username

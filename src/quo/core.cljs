@@ -142,6 +142,7 @@
     quo.components.tags.tiny-tag.view
     quo.components.tags.token-tag.view
     quo.components.text-combinations.channel-name.view
+    quo.components.text-combinations.page-top.view
     quo.components.text-combinations.standard-title.view
     quo.components.text-combinations.username.view
     quo.components.text-combinations.view
@@ -391,6 +392,7 @@
 
 ;;;; Text combinations
 (def channel-name quo.components.text-combinations.channel-name.view/view)
+(def page-top quo.components.text-combinations.page-top.view/view)
 (def standard-title quo.components.text-combinations.standard-title.view/view)
 (def text-combinations quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)

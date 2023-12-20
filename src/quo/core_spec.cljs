@@ -80,6 +80,7 @@
     [quo.components.tags.summary-tag.component-spec]
     [quo.components.tags.tiny-tag.component-spec]
     [quo.components.text-combinations.channel-name.component-spec]
+    [quo.components.text-combinations.page-top.component-spec]
     [quo.components.text-combinations.username.component-spec]
     [quo.components.wallet.account-card.component-spec]
     [quo.components.wallet.account-origin.component-spec]
