@@ -1,4 +1,4 @@
-(ns legacy.status-im.keycard.keycard)
+(ns keycard.keycard)
 
 (defprotocol Keycard
   (start-nfc [this args])
@@ -35,8 +35,4 @@
   (import-keys [this args])
   (get-keys [this args])
   (sign [this args])
-  (sign-typed-data [this args])
-  (save-multiaccount-and-login [this args])
-  (login [this args])
-  (send-transaction-with-signature [this args])
-  (delete-multiaccount-before-migration [this args]))
+  (sign-typed-data [this args]))

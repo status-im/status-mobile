@@ -4,7 +4,6 @@
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     [legacy.status-im.keycard.nfc :as nfc]
     [legacy.status-im.popover.core :as popover]
-    [legacy.status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.keychain.core :as keychain]
     [re-frame.core :as re-frame]
@@ -173,14 +172,14 @@
            (assoc-in [:keycard :last-on-card-read] nil))})
 
 (defn keycard-sheet-content
-  [on-cancel connected? params]
+  [_ _ _]
   (fn []
-    [keycard-sheet/connect-keycard
-     {:on-cancel     #(re-frame/dispatch on-cancel)
-      :connected?    connected?
-      :params        params
-      :on-connect    ::on-card-connected
-      :on-disconnect ::on-card-disconnected}]))
+    #_[keycard-sheet/connect-keycard
+       {:on-cancel     #(re-frame/dispatch on-cancel)
+        :connected?    connected?
+        :params        params
+        :on-connect    ::on-card-connected
+        :on-disconnect ::on-card-disconnected}]))
 
 (rf/defn show-connection-sheet-component
   [{:keys [db] :as cofx}

@@ -5,8 +5,6 @@
     [legacy.status-im.ui.components.animation :as anim]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
-    [legacy.status-im.ui.screens.keycard.views :as keycard.views]
     [legacy.status-im.ui.screens.profile.user.views :as profile.user]
     [legacy.status-im.ui.screens.reset-password.views :as reset-password.views]
     [legacy.status-im.ui.screens.signing.sheets :as signing-sheets]
@@ -144,12 +142,6 @@
 
                   (= :transaction-data view)
                   [signing/transaction-data]
-
-                  (= :frozen-card view)
-                  [frozen-card/frozen-card]
-
-                  (= :blocked-card view)
-                  [keycard.views/blocked-card-popover]
 
                   (= :password-reset-popover view)
                   [reset-password.views/reset-password-popover]

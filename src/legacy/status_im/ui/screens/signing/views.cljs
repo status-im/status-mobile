@@ -3,7 +3,6 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ethereum.tokens :as tokens]
-    [legacy.status-im.keycard.common :as keycard.common]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.signing.eip1559 :as eip1559]
     [legacy.status-im.ui.components.bottom-panel.views :as bottom-panel]
@@ -14,8 +13,6 @@
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-    [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.signing.sheets :as sheets]
     [legacy.status-im.ui.screens.signing.styles :as styles]
     [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
@@ -23,7 +20,6 @@
     [legacy.status-im.utils.utils :as utils]
     [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
-    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
@@ -106,24 +102,25 @@
             (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}))
      (i18n/label :t/cancel)]]])
 
-(views/defview keycard-pin-view
+(defn keycard-pin-view
   []
-  (views/letsubs [pin           [:keycard/pin]
-                  small-screen? [:dimensions/small-screen?]
-                  error-label   [:keycard/pin-error-label]
-                  enter-step    [:keycard/pin-enter-step]
-                  status        [:keycard/pin-status]
-                  retry-counter [:keycard/retry-counter]]
-    (let [enter-step    (or enter-step :sign)
-          margin-bottom (if platform/ios? 40 0)]
-      [react/view {:margin-bottom margin-bottom}
-       [pin.views/pin-view
-        {:pin           pin
-         :retry-counter retry-counter
-         :step          enter-step
-         :small-screen? small-screen?
-         :status        status
-         :error-label   error-label}]])))
+  [react/view]
+  #_(views/letsubs [pin           [:keycard/pin]
+                    small-screen? [:dimensions/small-screen?]
+                    error-label   [:keycard/pin-error-label]
+                    enter-step    [:keycard/pin-enter-step]
+                    status        [:keycard/pin-status]
+                    retry-counter [:keycard/retry-counter]]
+      (let [enter-step    (or enter-step :sign)
+            margin-bottom (if platform/ios? 40 0)]
+        [react/view {:margin-bottom margin-bottom}
+         #_[pin.views/pin-view
+            {:pin           pin
+             :retry-counter retry-counter
+             :step          enter-step
+             :small-screen? small-screen?
+             :status        status
+             :error-label   error-label}]])))
 
 (defn sign-with-keycard-button
   [amount-error gas-error]
@@ -233,43 +230,41 @@
        (i18n/label :t/show-transaction-data)]]]))
 
 (defn signature-request
-  [{:keys [formatted-data account fiat-amount fiat-currency keycard-step]}
-   connected?
-   small-screen?]
-  (let [message (:message formatted-data)]
+  [{:keys [formatted-data]}]
+  (let [_ (:message formatted-data)]
     [react/view (assoc (styles/message) :padding-vertical 16)
-     [keycard-sheet/connect-keycard
-      {:on-connect ::keycard.common/on-card-connected
-       :on-disconnect ::keycard.common/on-card-disconnected
-       :connected? connected?
-       :on-cancel #(re-frame/dispatch [:signing.ui/cancel-is-pressed])
-       :params
-       (cond
-         (:receiver message) {:title              (i18n/label :t/confirmation-request)
-                              :header             (redeem-tx-header account
-                                                                    (:receiver message)
-                                                                    small-screen?)
-                              :footer             (signature-request-footer keycard-step small-screen?)
-                              :small-screen?      small-screen?
-                              :state-translations {:init {:title       :t/keycard-redeem-tx
-                                                          :description :t/keycard-redeem-tx-desc}}}
-         (:currency message) {:title         (i18n/label :t/confirmation-request)
-                              :header        (signature-request-header (:formatted-amount message)
-                                                                       (:formatted-currency message)
-                                                                       small-screen?
-                                                                       fiat-amount
-                                                                       fiat-currency)
-                              :footer        (signature-request-footer keycard-step small-screen?)
-                              :small-screen? small-screen?}
-         :else               {:title         (i18n/label :t/confirmation-request)
-                              :header        (signature-request-header (:formatted-amount message)
-                                                                       (:formatted-currency message)
+     #_[keycard-sheet/connect-keycard
+        {:on-connect :keycard.common/on-card-connected
+         :on-disconnect :keycard.common/on-card-disconnected
+         :connected? connected?
+         :on-cancel #(re-frame/dispatch [:signing.ui/cancel-is-pressed])
+         :params
+         (cond
+           (:receiver message) {:title              (i18n/label :t/confirmation-request)
+                                :header             (redeem-tx-header account
+                                                                      (:receiver message)
+                                                                      small-screen?)
+                                :footer             (signature-request-footer keycard-step small-screen?)
+                                :small-screen?      small-screen?
+                                :state-translations {:init {:title       :t/keycard-redeem-tx
+                                                            :description :t/keycard-redeem-tx-desc}}}
+           (:currency message) {:title         (i18n/label :t/confirmation-request)
+                                :header        (signature-request-header (:formatted-amount message)
+                                                                         (:formatted-currency message)
+                                                                         small-screen?
+                                                                         fiat-amount
+                                                                         fiat-currency)
+                                :footer        (signature-request-footer keycard-step small-screen?)
+                                :small-screen? small-screen?}
+           :else               {:title         (i18n/label :t/confirmation-request)
+                                :header        (signature-request-header (:formatted-amount message)
+                                                                         (:formatted-currency message)
 
-                                                                       small-screen?
-                                                                       fiat-amount
-                                                                       fiat-currency)
-                              :footer        (signature-request-footer keycard-step small-screen?)
-                              :small-screen? small-screen?})}]]))
+                                                                         small-screen?
+                                                                         fiat-amount
+                                                                         fiat-currency)
+                                :footer        (signature-request-footer keycard-step small-screen?)
+                                :small-screen? small-screen?})}]]))
 
 (defn- transaction-data-item
   [data]

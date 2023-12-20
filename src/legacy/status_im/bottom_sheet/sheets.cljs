@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.bottom-sheet.view :as bottom-sheet]
     [legacy.status-im.ui.screens.about-app.views :as about-app]
-    [legacy.status-im.ui.screens.keycard.views :as keycard]
     [legacy.status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
     [quo.theme :as theme]
     [react-native.core :as rn]
@@ -22,9 +21,6 @@
 
           (= view :mobile-network-offline)
           (merge mobile-network-settings/offline-sheet)
-
-          (= view :keycard.login/more)
-          (merge keycard/more-sheet)
 
           (= view :learn-more)
           (merge about-app/learn-more))

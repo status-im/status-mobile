@@ -10,7 +10,6 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
-    [legacy.status-im.ui.screens.keycard.pin.views :as pin.views]
     [legacy.status-im.ui.screens.wallet.account-settings.views :as account-settings]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
@@ -129,10 +128,10 @@
 
 (defview pin
   []
-  (letsubs [card-pin      [:keycard/pin]
-            status        [:keycard/pin-status]
-            error-label   [:keycard/pin-error-label]
-            retry-counter [:keycard/retry-counter]]
+  (letsubs [_ [:keycard/pin]
+            _ [:keycard/pin-status]
+            _ [:keycard/pin-error-label]
+            _ [:keycard/retry-counter]]
     [react/keyboard-avoiding-view
      {:style         {:flex 1}
       :ignore-offset true}
@@ -141,14 +140,14 @@
        :right-accessories
        [{:label    (i18n/label :t/cancel)
          :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
-     [pin.views/pin-view
-      {:pin               card-pin
-       :status            status
-       :retry-counter     retry-counter
-       :title-label       :t/current-pin
-       :description-label :t/current-pin-description
-       :error-label       error-label
-       :step              :export-key}]]))
+     #_[pin.views/pin-view
+        {:pin               card-pin
+         :status            status
+         :retry-counter     retry-counter
+         :title-label       :t/current-pin
+         :description-label :t/current-pin-description
+         :error-label       error-label
+         :step              :export-key}]]))
 
 (defview add-account-view
   []

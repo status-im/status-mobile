@@ -1,18 +1,16 @@
 (ns legacy.status-im.keycard.simulated-keycard
   (:require
     [clojure.string :as string]
-    [legacy.status-im.keycard.keycard :as keycard]
+    [keycard.keycard :as keycard]
     [legacy.status-im.multiaccounts.create.core :as multiaccounts.create]
-    [legacy.status-im.node.core :as node]
     [legacy.status-im.utils.deprecated-types :as types]
-    [legacy.status-im.utils.utils :as utils]
     [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [re-frame.db :as re-frame.db]
+    re-frame.db
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.address :as address]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as re-frame]))
 
 (def kk1-password "000000")
 (def default-pin "111111")
@@ -82,8 +80,7 @@
 
 (defn- later
   [f]
-  (when f
-    (utils/set-timeout f 500)))
+  (when f (js/setTimeout f 500)))
 
 (defn pin-error
   []
@@ -488,28 +485,6 @@
   [args]
   (log/warn "sign-typed-data not implemented" args))
 
-(defn save-multiaccount-and-login
-  [{:keys [key-uid multiaccount-data password settings node-config accounts-data]}]
-  (native-module/save-account-and-login
-   key-uid
-   (types/clj->json multiaccount-data)
-   password
-   (types/clj->json settings)
-   node-config
-   (types/clj->json accounts-data)))
-
-(defn login
-  [{:keys [key-uid multiaccount-data password]}]
-  (native-module/login-with-config key-uid multiaccount-data password node/login-node-config))
-
-(defn send-transaction-with-signature
-  [{:keys [transaction on-completed]}]
-  (native-module/send-transaction transaction account-password on-completed))
-
-(defn delete-multiaccount-before-migration
-  [{:keys [on-success]}]
-  (on-success))
-
 (defrecord SimulatedKeycard []
   keycard/Keycard
     (keycard/start-nfc [_this args]
@@ -610,16 +585,4 @@
       (get-keys args))
     (keycard/sign [_this args]
       (log/debug "simulated card sign")
-      (sign args))
-    (keycard/save-multiaccount-and-login [_this args]
-      (log/debug "simulated card save-multiaccount-and-login")
-      (save-multiaccount-and-login args))
-    (keycard/login [_this args]
-      (log/debug "simulated card login")
-      (login args))
-    (keycard/send-transaction-with-signature [_this args]
-      (log/debug "simulated card send-transaction-with-signature")
-      (send-transaction-with-signature args))
-    (keycard/delete-multiaccount-before-migration [_ args]
-      (log/debug "simulated card delete-multiaccount-before-migration")
-      (delete-multiaccount-before-migration args)))
+      (sign args)))
