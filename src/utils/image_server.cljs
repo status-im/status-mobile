@@ -109,9 +109,9 @@
   hide ring for account with ens name
 
   check `get-account-image-uri` for color formats"
-  [{:keys [port public-key key-uid image-name theme override-ring?]}]
+  [{:keys [port public-key key-uid image-name theme override-ring? ratio]}]
   (fn [{:keys [size indicator-size indicator-border indicator-center-to-edge
-               indicator-color ring? ring-width override-theme ratio]}]
+               indicator-color ring? ring-width override-theme]}]
     (get-account-image-uri
      {:port                     port
       :image-name               image-name
