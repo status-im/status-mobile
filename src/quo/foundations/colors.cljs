@@ -250,6 +250,25 @@
    :polygon  "#AD71F3"
    :unknown  "#EEF2F5"})
 
+(def socials
+  {:social/link      "#647084"
+   :social/facebook  "#1877F2"
+   :social/github    "#000000"
+   :social/instagram "#D8408E0F"
+   :social/lens      "#00501E"
+   :social/linkedin  "#0B86CA"
+   :social/mirror    "#3E7EF7"
+   :social/opensea   "#2081E2"
+   :social/pinterest "#CB2027"
+   :social/rarible   "#FEDA03"
+   :social/snapchat  "#FFFC00"
+   :social/spotify   "#00DA5A"
+   :social/superrare "#000000"
+   :social/tumblr    "#37474F"
+   :social/twitch    "#673AB7"
+   :social/twitter   "#262E35"
+   :social/youtube   "#FF3000"})
+
 (def ^:private colors-map
   (merge {:primary {50 primary-50
                     60 primary-60}
@@ -270,7 +289,8 @@
           :warning {50 warning-50
                     60 warning-60}}
          customization
-         networks))
+         networks
+         socials))
 
 (defn hex-string?
   [s]

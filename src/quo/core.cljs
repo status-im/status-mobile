@@ -105,6 +105,7 @@
     quo.components.overlay.view
     quo.components.password.tips.view
     quo.components.profile.collectible.view
+    quo.components.profile.link-card.view
     quo.components.profile.profile-card.view
     quo.components.profile.select-profile.view
     quo.components.profile.showcase-nav.view
@@ -335,6 +336,7 @@
 
 ;;;; Profile
 (def collectible quo.components.profile.collectible.view/collectible)
+(def link-card quo.components.profile.link-card.view/view)
 (def profile-card quo.components.profile.profile-card.view/profile-card)
 (def select-profile quo.components.profile.select-profile.view/view)
 (def showcase-nav quo.components.profile.showcase-nav.view/view)
