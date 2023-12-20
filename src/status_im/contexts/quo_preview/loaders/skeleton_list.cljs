@@ -9,7 +9,8 @@
     :type    :select
     :options [{:key :list-items}
               {:key :notifications}
-              {:key :messages}]}
+              {:key :messages}
+              {:key :assets}]}
    {:key :blur? :type :boolean}
    {:key :animated? :type :boolean}])
 
