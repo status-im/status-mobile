@@ -24,7 +24,8 @@ class AddNewContactButton(Button):
 
 class LogoutButton(SilentButton):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="log-out-button")
+        super().__init__(driver, translation_id="logout")
+        # super().__init__(driver, accessibility_id="log-out-button")
 
     def click(self):
         self.scroll_to_element().click()
@@ -287,7 +288,7 @@ class ProfileView(BaseView):
                                                     uppercase=True)
         self.advertise_device_button = Button(self.driver, accessibility_id="advertise-device")
         self.sync_all_button = Button(self.driver, translation_id="sync-all-devices")
-        self.syncing_button = Button(self.driver, accessibility_id="syncing")
+        self.syncing_button = Button(self.driver, accessibility_id="icon, Syncing, label-component, icon")
         self.sync_plus_button = Button(self.driver,
                                        xpath="//*[@text='Syncing']/following-sibling::android.view.ViewGroup[1]")
         self.slide_button_track = Button(self.driver, xpath="//*[@resource-id='slide-button-track']")
@@ -347,10 +348,15 @@ class ProfileView(BaseView):
         self.node_version_text = Text(self.driver,
                                       xpath="//*[@content-desc='node-version']//android.widget.TextView[2]")
 
+
         # Logout
         self.logout_button = LogoutButton(self.driver)
         self.logout_dialog = LogoutDialog(self.driver)
         self.confirm_logout_button = Button(self.driver, translation_id="logout", uppercase=True)
+
+        # New profile
+        self.profile_password_button = Button(self.driver, accessibility_id="icon, Password, label-component, icon")
+        self.profile_legacy_button = Button(self.driver, accessibility_id="icon, Legacy settings, label-component, icon")
 
     def switch_network(self, network='Mainnet with upstream RPC'):
         self.driver.info("## Switch network to '%s'" % network, device=False)
@@ -432,6 +438,8 @@ class ProfileView(BaseView):
         self.driver.info("## Setting custom profile image", device=False)
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
+        ## pointing to legacy profile until new feature is implemented
+        self.profile_legacy_button.scroll_and_click()
         self.profile_picture.click()
         if update_by == "Gallery":
             self.select_from_gallery_button.click()
@@ -527,6 +535,7 @@ class ProfileView(BaseView):
         return self.active_network_name.text
 
     def get_sync_code(self):
+        # Pointing to legacy profile until feature is
         self.syncing_button.scroll_and_click()
         self.sync_plus_button.click()
         self.slide_button_track.swipe_right_on_element(width_percentage=1.3)
