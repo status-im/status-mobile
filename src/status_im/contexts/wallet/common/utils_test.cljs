@@ -1,6 +1,6 @@
-(ns status-im2.contexts.wallet.common.utils-test
+(ns status-im.contexts.wallet.common.utils-test
   (:require [cljs.test :refer [deftest is testing]]
-            [status-im2.contexts.wallet.common.utils :as utils]))
+            [status-im.contexts.wallet.common.utils :as utils]))
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"

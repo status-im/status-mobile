@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.receive.view
+(ns status-im.contexts.wallet.receive.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
@@ -6,20 +6,14 @@
     [react-native.safe-area :as safe-area]
     [react-native.share :as share]
     [reagent.core :as reagent]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
-    [status-im2.contexts.wallet.common.utils :as utils]
-    [status-im2.contexts.wallet.receive.style :as style]
+    [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.receive.style :as style]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
 (def qr-size 500)
-
-(def id-to-network
-  {constants/mainnet-chain-id  :ethereum
-   constants/optimism-chain-id :optimism
-   constants/arbitrum-chain-id :arbitrum})
 
 (defn- share-action
   [address share-title]
@@ -45,7 +39,7 @@
                      :selected-networks (set @selected-networks)
                      :on-save           (fn [chain-ids]
                                           (rf/dispatch [:hide-bottom-sheet])
-                                          (reset! selected-networks (map #(get id-to-network %)
+                                          (reset! selected-networks (map #(get utils/id-to-network %)
                                                                          chain-ids)))}])}]))
 
 

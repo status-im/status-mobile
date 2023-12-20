@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.receive.style)
+(ns status-im.contexts.wallet.receive.style)
 
 (def header-container
   {:padding-horizontal 20

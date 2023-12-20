@@ -1,11 +1,7 @@
 (ns status-im.contexts.wallet.common.utils
   (:require [clojure.string :as string]
-<<<<<<< HEAD:src/status_im/contexts/wallet/common/utils.cljs
+            [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
-=======
-            [status-im2.common.qr-codes.view :as qr-codes]
-            [status-im2.constants :as constants]
->>>>>>> fab4f79a4 (review):src/status_im2/contexts/wallet/common/utils.cljs
             [utils.money :as money]
             [utils.number]))
 
@@ -112,3 +108,8 @@
       (apply str $)
       (str $ address))
     address))
+
+(def id-to-network
+  {constants/mainnet-chain-id  :ethereum
+   constants/optimism-chain-id :optimism
+   constants/arbitrum-chain-id :arbitrum})

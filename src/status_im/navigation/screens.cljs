@@ -51,11 +51,11 @@
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.create-account.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
-<<<<<<< HEAD:src/status_im/navigation/screens.cljs
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
+    [status-im.contexts.wallet.receive.view :as wallet-receive]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as scan-address]
     [status-im.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
@@ -65,21 +65,6 @@
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
-=======
-    [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
-    [status-im2.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
-    [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
-    [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
-    [status-im2.contexts.wallet.receive.view :as wallet-receive]
-    [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
-    [status-im2.contexts.wallet.scan-account.view :as scan-address]
-    [status-im2.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
-    [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
-    [status-im2.contexts.wallet.send.select-asset.view :as wallet-select-asset]
-    [status-im2.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
-    [status-im2.navigation.options :as options]
-    [status-im2.navigation.transitions :as transitions]))
->>>>>>> 93899c1c6 (wallet: receive screen):src/status_im2/navigation/screens.cljs
 
 (defn screens
   []
