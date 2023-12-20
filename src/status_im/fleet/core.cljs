@@ -1,11 +1,10 @@
 (ns status-im.fleet.core
   (:require
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im.node.core :as node]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
-    [native-module.core :as native-module]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))

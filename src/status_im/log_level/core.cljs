@@ -2,7 +2,6 @@
   (:require
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [status-im.node.core :as node]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

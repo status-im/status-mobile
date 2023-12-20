@@ -2,10 +2,8 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [taoensso.timbre :as log]
-    [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [status-im.node.core :as node]
     [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

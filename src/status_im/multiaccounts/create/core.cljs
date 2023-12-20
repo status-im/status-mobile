@@ -2,17 +2,10 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.data-store.settings :as data-store.settings]
-    [status-im.node.core :as node]
-    [status-im.ui.components.colors :as colors]
     [status-im.utils.deprecated-types :as types]
     [status-im.utils.signing-phrase.core :as signing-phrase]
-    [status-im2.config :as config]
     [status-im2.constants :as constants]
-    [utils.ethereum.eip.eip55 :as eip55]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn normalize-derived-data-keys
   [derived-data]

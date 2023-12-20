@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.node.core :as node]
     [status-im2.navigation.events :as navigation]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]

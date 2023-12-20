@@ -3,9 +3,9 @@
     [quo.core :as quo]
     [status-im2.common.mute-drawer.view :as mute-drawer]
     [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.common.not-implemented :as not-implemented]
     [status-im2.config :as config]
     [status-im2.contexts.chat.actions.view :as chat-actions]
-    [status-im2.common.not-implemented :as not-implemented]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
