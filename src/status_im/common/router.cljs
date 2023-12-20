@@ -35,11 +35,9 @@
                       "/" :group-chat}})
 
 (def eip-extractor
-  {#{[:prefix "-" :address]
-     [:address]}
+  {#{[:prefix "-" :address] [:address]}
    {#{["@" :chain-id] ""}
-    {#{["/" :function] ""}
-     :ethereum}}})
+    {#{["/" :function] ""} :ethereum}}})
 
 (def routes
   [""
@@ -82,6 +80,7 @@
         ;; fragment is the one after `#`, usually user-id, ens-name, community-id
         fragment (parse-fragment uri)
         ens? (utils.ens/is-valid-eth-name? fragment)
+        compressed-key? (validators/valid-compressed-key? fragment)
 
         {:keys [handler route-params] :as parsed}
         (assoc (bidi/match-route routes uri-without-equal-in-path)
@@ -91,7 +90,7 @@
       ens?
       (assoc-in [:route-params :ens-name] fragment)
 
-      (and (or (= handler :community) (= handler :community-chat)) fragment)
+      (and (or (= handler :community) (= handler :community-chat)) compressed-key?)
       (assoc-in [:route-params :community-id] fragment)
 
       (and equal-end-of-base64url (= handler :community) (:community-data route-params))
@@ -100,7 +99,7 @@
       (and equal-end-of-base64url (= handler :community-chat) (:community-data route-params))
       (update-in [:route-params :community-data] #(str % equal-end-of-base64url))
 
-      (and fragment (= handler :community-chat) (:community-data route-params))
+      (and compressed-key? (= handler :community-chat) (:community-data route-params))
       (assoc-in [:route-params :community-id] fragment)
 
       (and fragment
@@ -113,7 +112,7 @@
       (and equal-end-of-base64url (= handler :user) (:user-data route-params))
       (update-in [:route-params :user-data] #(str % equal-end-of-base64url))
 
-      (and (= handler :user) fragment)
+      (and (= handler :user) compressed-key?)
       (assoc-in [:route-params :user-id] fragment))))
 
 (defn match-contact-async
