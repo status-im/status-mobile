@@ -51,10 +51,11 @@
 (defn- f-view-internal
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
-        {:keys [currency]}        (rf/sub [:profile/profile])
+        {:keys [currency]} (rf/sub [:profile/profile])
         networks                  (rf/sub [:wallet/network-details])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        suggested-routes          (rf/sub [:wallet/wallet-send-suggested-routes])
         token-symbol              (:symbol token)
         limit-crypto              (or (:total-balance token) limit)
         conversion-rate           (or rate 10)
@@ -91,6 +92,7 @@
                                           (reset! input-value (str current-limit-amount))
                                           (reset! input-value v))
                                         (reagent/flush))))]
+    (println "qqqxxx" suggested-routes)
     (fn [{:keys [on-confirm]
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
                                            {:amount   @input-value
@@ -100,21 +102,21 @@
             route                     (rf/sub [:wallet/wallet-send-route])
             loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
             confirm-disabled?         (or
-                                       (nil? route)
-                                       (empty? @input-value)
-                                       (<= input-num-value 0)
-                                       (> input-num-value (:amount @current-limit)))]
+                                        (nil? route)
+                                        (empty? @input-value)
+                                        (<= input-num-value 0)
+                                        (> input-num-value (:amount @current-limit)))]
         (rn/use-effect
-         (fn []
-           (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
-                 app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
-             #(.remove app-keyboard-listener))))
+          (fn []
+            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
+                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
+              #(.remove app-keyboard-listener))))
         (rn/use-effect (fn []
                          (rf/dispatch [:wallet/clean-suggested-routes])
                          (when-not (or
-                                    (empty? @input-value)
-                                    (<= input-num-value 0)
-                                    (> input-num-value (:amount @current-limit)))
+                                     (empty? @input-value)
+                                     (<= input-num-value 0)
+                                     (> input-num-value (:amount @current-limit)))
                            (debounce/debounce-and-dispatch [:wallet/get-suggested-routes @input-value]
                                                            100)))
                        [@input-value])

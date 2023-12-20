@@ -81,6 +81,7 @@
       :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
                        :params     request-params
                        :on-success (fn [suggested-routes]
+                                     (println "sss" suggested-routes)
                                      (rf/dispatch [:wallet/suggested-routes-success suggested-routes
                                                    now]))
                        :on-error   (fn [error]
