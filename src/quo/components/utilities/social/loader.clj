@@ -1,6 +1,5 @@
 (ns quo.components.utilities.social.loader
-  (:require [clojure.core]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
             [clojure.string :as string]))
 
 (def ^:private icon-path "./resources/images/socials/")

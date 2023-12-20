@@ -24,7 +24,7 @@
        :social              icon}]]
     [text/text
      {:accessibility-label :title
-      :numberOfLines       1
+      :number-of-lines     1
       :weight              :semi-bold}
      title]
     [text/text
