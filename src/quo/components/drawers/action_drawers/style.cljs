@@ -12,11 +12,24 @@
    :flex-direction   :row})
 
 (defn container
-  [sub-label disabled?]
-  {:border-radius     12
-   :height            (if sub-label 56 48)
-   :opacity           (when disabled? 0.3)
-   :margin-horizontal 8})
+  [{:keys [sub-label disabled? state customization-color blur? theme]}]
+  (cond-> {:border-radius     12
+           :margin-horizontal 8}
+
+    sub-label
+    (assoc :height 56)
+
+    (not sub-label)
+    (assoc :height 48)
+
+    disabled?
+    (assoc :opacity 0.3)
+
+    (= state :selected)
+    (assoc :background-color
+           (if blur?
+             colors/white-opa-5
+             (colors/resolve-color customization-color theme 5)))))
 
 (defn row-container
   [sub-label]

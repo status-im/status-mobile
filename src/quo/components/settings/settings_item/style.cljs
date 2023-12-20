@@ -2,12 +2,12 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(defn container
-  [{:keys [container-style]}]
-  (merge {:padding         12
-          :flex-direction  :row
-          :justify-content :space-between}
-         container-style))
+(def container
+  {:padding-horizontal 12
+   :padding-top        12
+   :padding-bottom     14
+   :flex-direction     :row
+   :justify-content    :space-between})
 
 (defn left-sub-container
   [{:keys [tag description]}]

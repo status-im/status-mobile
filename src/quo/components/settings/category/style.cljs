@@ -17,7 +17,7 @@
    :background-color (if blur?
                        colors/white-opa-5
                        (colors/theme-colors colors/white colors/neutral-95 theme))
-   :border-width     1
+   :border-width     (if blur? 0 1)
    :border-color     (if blur?
                        colors/white-opa-5
                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})

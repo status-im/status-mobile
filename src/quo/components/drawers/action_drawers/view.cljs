@@ -38,13 +38,22 @@
            add-divider?
            theme
            accessibility-label
-           icon-color]}]
+           icon-color
+           no-icon-color?
+           state
+           customization-color
+           blur?]}]
   [:<>
    (when add-divider?
      [divider theme])
    [maybe-pressable disabled?
     {:accessibility-label accessibility-label
-     :style               (style/container sub-label disabled?)
+     :style               (style/container {:sub-label           sub-label
+                                            :disabled?           disabled?
+                                            :state               state
+                                            :customization-color customization-color
+                                            :blur?               blur?
+                                            :theme               theme})
      :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)
      :on-press            on-press}
     [rn/view
@@ -54,8 +63,9 @@
        :accessible          true
        :style               (style/left-icon sub-label)}
       [icon/icon icon
-       {:color (or icon-color (get-icon-color danger? theme))
-        :size  20}]]
+       {:color    (or icon-color (get-icon-color danger? theme))
+        :no-color no-icon-color?
+        :size     20}]]
      [rn/view
       {:style style/text-container}
       [text/text
@@ -72,7 +82,7 @@
           :style {:color
                   (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
          sub-label])]
-     (when (or right-text right-icon)
+     (when (or right-text right-icon (= state :selected))
        [rn/view {:style style/right-side-container}
         (when right-text
           [text/text
@@ -87,6 +97,13 @@
             :accessibility-label :right-icon-for-action}
            [icon/icon right-icon
             {:color (get-icon-color danger? theme)
+             :size  20}]])
+        (when (= state :selected)
+          [rn/view {:style style/right-icon}
+           [icon/icon :i/check
+            {:color (if blur?
+                      colors/white
+                      (colors/resolve-color customization-color theme))
              :size  20}]])])]]])
 
 (def ^:private action (quo.theme/with-theme action-internal))
