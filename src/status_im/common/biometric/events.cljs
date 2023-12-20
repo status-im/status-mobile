@@ -5,8 +5,8 @@
     [react-native.async-storage :as async-storage]
     [react-native.platform :as platform]
     [react-native.touch-id :as touch-id]
-    [status-im2.common.keychain.events :as keychain]
-    [status-im2.constants :as constants]
+    [status-im.common.keychain.events :as keychain]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
