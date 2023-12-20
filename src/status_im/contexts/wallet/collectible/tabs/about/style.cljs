@@ -17,10 +17,11 @@
 (def link-cards-container
   {:margin-horizontal 20
    :margin-top        12
-   :flex-direction :row
-   :flex-wrap :wrap
-   :justify-content :space-between})
+   :flex-direction    :row
+   :justify-content   :space-between
+   :flex-wrap         :wrap})
 
-(def link-card
+(defn link-card
+  [item-width]
   {:margin-bottom 16
-   :width         "100%"})
+   :width         item-width})

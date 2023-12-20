@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.collectible.tabs.overview.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo] 
-   [quo.foundations.resources :as quo.resources]
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.contexts.wallet.collectible.tabs.overview.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.contexts.wallet.collectible.tabs.overview.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- traits-section
   [traits]
@@ -63,11 +63,11 @@
 
 (defn- view-internal
   []
-  (let [collectible-details                              (rf/sub [:wallet/last-collectible-details])
+  (let [collectible-details (rf/sub [:wallet/last-collectible-details])
         {:keys [traits id]} collectible-details
-        chain-id                                         (get-in id [:contract-id :chain-id])]
-  [:<>
-   [info chain-id]
-   [traits-section traits]]))
+        chain-id            (get-in id [:contract-id :chain-id])]
+    [:<>
+     [info chain-id]
+     [traits-section traits]]))
 
 (def view (quo.theme/with-theme view-internal))
