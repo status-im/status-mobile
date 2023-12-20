@@ -149,6 +149,7 @@
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
     quo.components.wallet.account-overview.view
+    quo.components.wallet.account-permissions.view
     quo.components.wallet.address-text.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
@@ -401,6 +402,7 @@
 (def account-card quo.components.wallet.account-card.view/view)
 (def account-origin quo.components.wallet.account-origin.view/view)
 (def account-overview quo.components.wallet.account-overview.view/view)
+(def account-permissions quo.components.wallet.account-permissions.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
 (def confirmation-propgress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
