@@ -1,4 +1,4 @@
-w(ns status-im.contexts.quo-preview.preview
+(ns status-im.contexts.quo-preview.preview
   (:require
     [camel-snake-kebab.core :as camel-snake-kebab]
     [clojure.string :as string]
