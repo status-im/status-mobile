@@ -27,7 +27,7 @@
   (rf/dispatch [:set-in [:profile/login :error] ""]))
 
 (defn- view-internal
-  [{:keys [default-password theme shell? on-press-biometrics]}]
+  [{:keys [default-password theme shell? on-press-biometrics blur?]}]
   (let [{:keys [error processing]} (rf/sub [:profile/login])
         error-message              (get-error-message error)
         error?                     (boolean (seq error-message))]
@@ -36,7 +36,7 @@
       [quo/input
        {:container-style {:flex 1}
         :type            :password
-        :blur?           true
+        :blur?           blur?
         :disabled?       processing
         :placeholder     (i18n/label :t/type-your-password)
         :auto-focus      true
@@ -49,6 +49,7 @@
          {:container-style style/auth-button
           :on-press        on-press-biometrics
           :icon-only?      true
+          :background      (when blur? :blur)
           :type            :outline}
          :i/face-id])]
      (when error?

@@ -172,6 +172,7 @@
     [status-im.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im.contexts.quo-preview.wallet.account-overview :as
      account-overview]
+    [status-im.contexts.quo-preview.wallet.account-permissions :as account-permissions]
     [status-im.contexts.quo-preview.wallet.confirmation-progress :as confirmation-progress]
     [status-im.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im.contexts.quo-preview.wallet.network-amount :as network-amount]
@@ -473,6 +474,8 @@
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/view}
+                       {:name      :account-permissions
+                        :component account-permissions/view}
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
