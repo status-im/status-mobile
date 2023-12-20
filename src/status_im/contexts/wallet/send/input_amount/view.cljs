@@ -55,6 +55,7 @@
         networks                  (rf/sub [:wallet/network-details])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        suggested-routes          (rf/sub [:wallet/wallet-send-suggested-routes])
         token-symbol              (:symbol token)
         limit-crypto              (or (:total-balance token) limit)
         conversion-rate           (or rate 10)
@@ -91,6 +92,7 @@
                                           (reset! input-value (str current-limit-amount))
                                           (reset! input-value v))
                                         (reagent/flush))))]
+    (println "sss" suggested-routes)
     (fn [{:keys [on-confirm]
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
                                            {:amount   @input-value
