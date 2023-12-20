@@ -298,6 +298,7 @@ void _MultiAccountStoreAccount(const FunctionCallbackInfo<Value>& args) {
 	delete c;
 }
 
+
 void _InitKeystore(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -561,6 +562,17 @@ void _CheckAddressChecksum(const FunctionCallbackInfo<Value>& args) {
 	delete c;
 
 }
+
+void _Fleets(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+	// Call exported Go function, which returns a C string
+	char *c = Fleets();
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+}
+
 
 void _IsAddress(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
@@ -1888,6 +1900,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountStoreDerivedAccounts", _MultiAccountStoreDerivedAccounts);
 	NODE_SET_METHOD(exports, "multiAccountStoreAccount", _MultiAccountStoreAccount);
 	NODE_SET_METHOD(exports, "initKeystore", _InitKeystore);
+	NODE_SET_METHOD(exports, "fleets", _Fleets);
 	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
 	NODE_SET_METHOD(exports, "encodeTransfer", _EncodeTransfer);
 	NODE_SET_METHOD(exports, "encodeFunctionCall", _EncodeFunctionCall);

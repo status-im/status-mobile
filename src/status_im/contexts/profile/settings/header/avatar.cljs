@@ -13,7 +13,7 @@
   [{:keys [scroll-y full-name online? profile-picture customization-color]}]
   (let [image-scale-animation       (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range
-                                                            [1 0.5]
+                                                            [1 0.4]
                                                             header-extrapolation-option)
         image-top-margin-animation  (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range

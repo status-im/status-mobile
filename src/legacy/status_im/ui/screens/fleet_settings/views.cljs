@@ -1,6 +1,6 @@
 (ns legacy.status-im.ui.screens.fleet-settings.views
   (:require
-    [legacy.status-im.node.core :as node]
+    [legacy.status-im.fleet.core :as fleets]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
@@ -30,16 +30,11 @@
        [react/text {:style styles/fleet-item-name-text}
         fleet]]]]))
 
-(defn fleets
-  [custom-fleets]
-  (map name (keys (node/fleets {:custom-fleets custom-fleets}))))
-
 (views/defview fleet-settings
   []
-  (views/letsubs [custom-fleets [:fleets/custom-fleets]
-                  current-fleet [:fleets/current-fleet]]
+  (views/letsubs [current-fleet [:fleets/current-fleet]]
     [list/flat-list
-     {:data               (fleets custom-fleets)
+     {:data               fleets/fleets
       :default-separator? false
       :key-fn             identity
       :render-data        (name current-fleet)

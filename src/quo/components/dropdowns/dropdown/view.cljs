@@ -11,7 +11,7 @@
 
 (defn- view-internal
   [{:keys [type size state background customization-color theme on-press icon-name icon? emoji?
-           accessibility-label]
+           accessibility-label no-icon-color?]
     :or   {type      :grey
            size      :size-40
            state     :default
@@ -58,6 +58,7 @@
            icon-name
            {:accessibility-label :left-icon
             :color               left-icon-color
+            :no-color            no-icon-color?
             :size                icon-size
             :container-style     style/left-icon}])
         [text/text
@@ -75,14 +76,15 @@
 
 (def view
   "Props:
-    - type:       :outline |:grey (default) | :ghost | :customization
-    - size:       :size-40 (default) | :size-32 | :size-24
-    - state:      :default (default) | :active | :disabled
-    - emoji?:     boolean
-    - icon?:      boolean
-    - background: :blur | :photo (optional)
-    - icon-name:  keyword
-    - on-press:   function
-   
+    - type:           :outline |:grey (default) | :ghost | :customization
+    - size:           :size-40 (default) | :size-32 | :size-24
+    - state:          :default (default) | :active | :disabled
+    - emoji?:         boolean
+    - icon?:          boolean
+    - no-icon-color?: boolean
+    - background:     :blur | :photo (optional)
+    - icon-name:      keyword
+    - on-press:       function
+
     Child: string - used as label or emoji (for emoji only)"
   (theme/with-theme view-internal))

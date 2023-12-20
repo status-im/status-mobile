@@ -14,6 +14,7 @@
     quo.components.buttons.button.view
     quo.components.buttons.composer-button.view
     quo.components.buttons.dynamic-button.view
+    quo.components.buttons.logout-button.view
     quo.components.buttons.predictive-keyboard.view
     quo.components.buttons.slide-button.view
     quo.components.buttons.wallet-button.view
@@ -182,6 +183,7 @@
 (def button quo.components.buttons.button.view/button)
 (def composer-button quo.components.buttons.composer-button.view/view)
 (def dynamic-button quo.components.buttons.dynamic-button.view/view)
+(def logout-button quo.components.buttons.logout-button.view/view)
 (def predictive-keyboard quo.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo.components.buttons.slide-button.view/view)
 (def wallet-button quo.components.buttons.wallet-button.view/view)

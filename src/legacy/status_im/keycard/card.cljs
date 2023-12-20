@@ -527,23 +527,7 @@
         (error-object->map response)]))}))
 
 (defn save-multiaccount-and-login
-  [{:keys [key-uid multiaccount-data password settings node-config accounts-data chat-key]}]
-  (if config/keycard-test-menu-enabled?
-    (native-module/save-account-and-login
-     key-uid
-     (types/clj->json multiaccount-data)
-     password
-     (types/clj->json settings)
-     node-config
-     (types/clj->json accounts-data))
-    (native-module/save-multiaccount-and-login-with-keycard
-     key-uid
-     (types/clj->json multiaccount-data)
-     password
-     (types/clj->json settings)
-     node-config
-     (types/clj->json accounts-data)
-     chat-key)))
+  [_])
 
 (defn login
   [{:keys [key-uid multiaccount-data password] :as args}]

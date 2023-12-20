@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer-macros [deftest is testing]]
     [legacy.status-im.browser.core :as browser]
+    [utils.i18n :as i18n]
     [utils.url :as url]))
 
 (defn has-wrong-properties?
@@ -35,7 +36,7 @@
                                          :history-index 0
                                          :history       ["https://cryptokitties.co"]
                                          :dapp?         false
-                                         :name          "Browser"}))
+                                         :name          (i18n/label :t/browser)}))
             "some properties of the browser are not correct")
 
         (testing "then a second dapp"
@@ -70,7 +71,7 @@
                                              :history-index 0
                                              :history       ["https://cryptokitties.co"]
                                              :dapp?         false
-                                             :name          "Browser"}))
+                                             :name          (i18n/label :t/browser)}))
                 "some properties of the browser are not correct")
             (is (nil? (browser/navigate-to-next-page result-open-existing))
                 "nothing should happen if user tries to navigate to next page")
@@ -90,7 +91,7 @@
                                                  :history-index 1
                                                  :history       ["https://cryptokitties.co" dapp1-url2]
                                                  :dapp?         false
-                                                 :name          "Browser"}))
+                                                 :name          (i18n/label :t/browser)}))
                     "some properties of the browser are not correct")
 
                 (testing "then navigates to previous page"
@@ -103,7 +104,7 @@
                                                   :history-index 0
                                                   :history       ["https://cryptokitties.co" dapp1-url2]
                                                   :dapp?         false
-                                                  :name          "Browser"}))
+                                                  :name          (i18n/label :t/browser)}))
                      "some properties of the browser are not correct")
 
                     (testing "then navigates to next page")
@@ -116,5 +117,5 @@
                                                    :history-index 1
                                                    :history       ["https://cryptokitties.co" dapp1-url2]
                                                    :dapp?         false
-                                                   :name          "Browser"}))
+                                                   :name          (i18n/label :t/browser)}))
                           "some properties of the browser are not correct"))))))))))))

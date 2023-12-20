@@ -6,6 +6,7 @@
     [quo.components.browser.browser-input.component-spec]
     [quo.components.buttons.button.component-spec]
     [quo.components.buttons.composer-button.component-spec]
+    [quo.components.buttons.logout-button.component-spec]
     [quo.components.buttons.predictive-keyboard.component-spec]
     [quo.components.buttons.slide-button.component-spec]
     [quo.components.buttons.wallet-button.component-spec]
