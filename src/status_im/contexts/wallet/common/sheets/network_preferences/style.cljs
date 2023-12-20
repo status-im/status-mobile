@@ -7,7 +7,7 @@
    :left          0
    :right         0
    :bottom        0
-   :overlay-color colors/neutral-80-opa-80-blur})
+   :overlay-color colors/neutral-100-opa-70-blur})
 
 (def data-item
   {:margin-horizontal 20

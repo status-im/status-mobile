@@ -61,7 +61,7 @@
            [blur/view
             {:style       style/blur
              :blur-amount 20
-             :blur-radius (if platform/android? 25 10)}])
+             :blur-radius 25}])
          [quo/drawer-top
           {:title       (i18n/label :t/network-preferences)
            :description (i18n/label :t/network-preferences-desc)
@@ -109,7 +109,7 @@
                                                                                          network))}))
                             layer-2-networks)}]
          [quo/bottom-actions
-          {:button-one-label (i18n/label :t/confirm)
+          {:button-one-label (i18n/label :t/update)
            :button-one-props {:disabled?           (= @state :default)
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]

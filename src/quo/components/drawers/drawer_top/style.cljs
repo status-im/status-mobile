@@ -14,7 +14,8 @@
   [theme blur?]
   {:color (if blur?
             colors/white-opa-40
-            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
+            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
+   :margin-top 2})
 
 (def left-container
   {:margin-right    8
