@@ -56,6 +56,7 @@
                                                   (:network-name network)))
                                      network-details)]
         [:<>
+         ;; quo/overlay isn't compatible with sheets
          (when blur?
            [blur/view
             {:style       style/blur
