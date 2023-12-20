@@ -1,10 +1,10 @@
 {
   "include": [
-    "target/test/status_im/**"
+    "target/test/legacy/status_im/**"
   ],
   "exclude": [
-    "target/test/status_im/test/**",
-    "target/test/status_im/ui/**"
+    "target/test/legacy/status_im/test/**",
+    "target/test/legacy/status_im/ui/**"
   ],
   "report-dir": "./coverage-report",
   "all": true,

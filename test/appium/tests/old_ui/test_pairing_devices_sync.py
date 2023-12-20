@@ -144,7 +144,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi('Add profile picture')
         self.home_1.profile_button.double_click()
-        self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.edit_profile_picture(image_index=2)
 
         self.home_1.just_fyi("Main device adds a website to bookmarks")
         dapp = self.home_1.dapp_tab_button.click()

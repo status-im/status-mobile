@@ -1,5 +1,7 @@
 import time
 
+from selenium.common import NoSuchElementException
+
 from tests import common_password
 from tests.base_test_case import AbstractTestCase
 from views.base_element import Text, Button, EditBox, SilentButton
@@ -205,8 +207,8 @@ class ProfileView(BaseView):
         self.accept_photo_button = Button(self.driver, accessibility_id="Done")
 
         # ENS
-        self.username_in_ens_chat_settings_text = EditBox(self.driver,
-                                                          xpath="//*[@content-desc='chat-icon']/../../android.widget.TextView[2]")
+        self.username_in_ens_chat_settings_text = EditBox(
+            self.driver, xpath="//*[@content-desc='chat-icon']/../../android.widget.TextView[2]")
         self.ens_usernames_button = ENSusernames(self.driver)
         self.ens_name_in_share_chat_key_text = Text(self.driver, accessibility_id="ens-username")
 
@@ -247,8 +249,8 @@ class ProfileView(BaseView):
         self.profile_notifications_button = Button(self.driver, accessibility_id="notifications-settings-button")
         self.profile_notifications_toggle_button = Button(self.driver,
                                                           accessibility_id="local-notifications-settings-button")
-        self.push_notification_toggle = Button(self.driver,
-                                               xpath="//*[@content-desc='notifications-button']//*[@content-desc='switch']")
+        self.push_notification_toggle = Button(
+            self.driver, xpath="//*[@content-desc='notifications-button']//*[@content-desc='switch']")
         self.wallet_push_notifications = Button(self.driver, accessibility_id="notifications-button")
 
         # Sync settings
@@ -426,15 +428,14 @@ class ProfileView(BaseView):
         self.driver.info("## Seed phrase is backed up!", device=False)
         return recovery_phrase
 
-    def edit_profile_picture(self, file_name: str, update_by="Gallery"):
+    def edit_profile_picture(self, image_index: int, update_by="Gallery"):
         self.driver.info("## Setting custom profile image", device=False)
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         self.profile_picture.click()
-        self.profile_picture.template = file_name
         if update_by == "Gallery":
             self.select_from_gallery_button.click()
-            self.select_photo_from_gallery(file_name)
+            self.select_photo_from_gallery_by_index(image_index)
         else:
             ## take by Photo
             self.take_photo()
@@ -455,15 +456,14 @@ class ProfileView(BaseView):
             self.element_by_text("NEXT").click()
         self.shutter_button.click()
 
-    def select_photo_from_gallery(self, file_name: str):
-        if self.allow_button.is_element_displayed(sec=5):
-            self.allow_button.click()
-        image_full_content = self.get_image_in_storage_by_name(file_name)
-        if not image_full_content.is_element_displayed(2):
-            self.show_roots_button.click()
-            for element_text in 'Images', 'DCIM':
-                self.element_by_text(element_text).click()
-        image_full_content.click()
+    def select_photo_from_gallery_by_index(self, image_index: int):
+        self.allow_button.click_if_shown()
+        self.allow_all_button.click_if_shown()
+        image_element = Button(self.driver, class_name="androidx.cardview.widget.CardView")
+        try:
+            image_element.find_elements()[image_index].click()
+        except IndexError:
+            raise NoSuchElementException("Image with index %s was not found" % image_index) from None
 
     def logout(self):
         self.driver.info("Logging out")
@@ -474,13 +474,11 @@ class ProfileView(BaseView):
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)
 
-    def get_image_in_storage_by_name(self, image_name=str()):
-        return SilentButton(self.driver, xpath="//*[contains(@content-desc,'%s')]" % image_name)
-
     def get_toggle_device_by_name(self, device_name):
         self.driver.info("Selecting device '%s' for sync" % device_name)
-        return SilentButton(self.driver,
-                            xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
+        return SilentButton(
+            self.driver,
+            xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
 
     def discover_and_advertise_device(self, device_name):
         self.driver.info("Discovering and advertising '%s'" % device_name)

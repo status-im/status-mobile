@@ -2,7 +2,7 @@ module.exports = {
   preset: 'react-native',
   setupFilesAfterEnv: [
     '@testing-library/jest-native/extend-expect',
-    '../component-spec/status_im2.setup.schema_preload.js',
+    '../component-spec/status_im.setup.schema_preload.js',
     '../test/jest/jestSetup.js',
   ],
   setupFiles: [],

@@ -1,295 +1,200 @@
 (ns status-im.subs.wallet.wallet
-  (:require
-    [clojure.string :as string]
-    [re-frame.core :as re-frame]
-    [status-im.ethereum.tokens :as tokens]
-    [status-im.utils.currency :as currency]
-    [status-im.wallet.utils :as wallet.utils]
-    [status-im2.config :as config]
-    [utils.i18n :as i18n]
-    [utils.money :as money]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
+            [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils :as utils]
+            [utils.number]))
 
-(re-frame/reg-sub
- :balance
- :<- [:wallet-legacy]
- (fn [wallet [_ address]]
-   (get-in wallet [:accounts address :balance])))
+(defn- filter-networks
+  [chain-ids network-details]
+  (filter (fn [{:keys [chain-id]}]
+            (contains? chain-ids chain-id))
+          network-details))
 
-(re-frame/reg-sub
- :balance-default
- :<- [:wallet-legacy]
- :<- [:profile/wallet-accounts]
- (fn [[wallet accounts]]
-   (get-in wallet [:accounts (:address (wallet.utils/get-default-account accounts)) :balance])))
+(defn- assoc-network-preferences-names
+  [network-details account testnet?]
+  (let [{:keys [prod-preferred-chain-ids
+                test-preferred-chain-ids]} account
+        current-chain-ids                  (if testnet?
+                                             test-preferred-chain-ids
+                                             prod-preferred-chain-ids)
+        network-preferences-names          (->> network-details
+                                                (filter-networks current-chain-ids)
+                                                (map :network-name)
+                                                (set))]
+    (assoc account :network-preferences-names network-preferences-names)))
 
-(re-frame/reg-sub
- :balances
- :<- [:wallet-legacy]
- :<- [:multiaccount/visible-accounts]
- (fn [[wallet accounts]]
-   (let [accounts (map :address accounts)]
-     (map :balance (vals (select-keys (:accounts wallet) accounts))))))
+(rf/reg-sub
+ :wallet/ui
+ :<- [:wallet]
+ :-> :ui)
 
-(re-frame/reg-sub
- :empty-balances?
- :<- [:balances]
- (fn [balances]
-   (every?
-    (fn [balance]
-      (every?
-       (fn [^js asset]
-         (or (nil? asset) (.isZero asset)))
-       (vals balance)))
-    balances)))
+(rf/reg-sub
+ :wallet/wallet-send
+ :<- [:wallet/ui]
+ :-> :send)
 
-(re-frame/reg-sub
- :price
- :<- [:prices]
- (fn [prices [_ fsym tsym]]
-   (get-in prices [fsym tsym])))
+(rf/reg-sub
+ :wallet/tokens-loading?
+ :<- [:wallet/ui]
+ :-> :tokens-loading?)
 
-(re-frame/reg-sub
- :last-day
- :<- [:prices]
- (fn [prices [_ fsym tsym]]
-   (get-in prices [fsym tsym :last-day])))
 
-(re-frame/reg-sub
- :wallet-legacy/settings-currency
- :<- [:profile/profile]
- (fn [settings]
-   (or (get settings :currency) :usd)))
+(rf/reg-sub
+ :wallet/current-viewing-account-address
+ :<- [:wallet]
+ :-> :current-viewing-account-address)
 
-(defn get-balance-total-value
-  [balance prices currency token->decimals]
-  (reduce-kv (fn [acc sym value]
-               (if-let [price (get-in prices [sym currency])]
-                 (+ acc
-                    (or (some-> (money/internal->formatted value sym (token->decimals sym))
-                                ^js (money/crypto->fiat price)
-                                .toNumber)
-                        0))
-                 acc))
-             0
-             balance))
+(rf/reg-sub
+ :wallet/wallet-send-to-address
+ :<- [:wallet/wallet-send]
+ :-> :to-address)
 
-(re-frame/reg-sub
- :wallet-legacy/token->decimals
- :<- [:wallet-legacy/all-tokens]
- (fn [all-tokens]
-   (into {} (map #(vector (:symbol %) (:decimals %)) (vals all-tokens)))))
+(rf/reg-sub
+ :wallet/wallet-send-route
+ :<- [:wallet/wallet-send]
+ :-> :route)
 
-(re-frame/reg-sub
- :portfolio-value
- :<- [:balances]
- :<- [:prices]
- :<- [:wallet-legacy/currency]
- :<- [:wallet-legacy/token->decimals]
- (fn [[balances prices currency token->decimals]]
-   (if (and balances prices)
-     (let [currency-key        (-> currency :code keyword)
-           balance-total-value (apply
-                                +
-                                (map #(get-balance-total-value % prices currency-key token->decimals)
-                                     balances))]
-       (if (pos? balance-total-value)
-         (-> balance-total-value
-             (money/with-precision 2)
-             str
-             (i18n/format-currency (:code currency)))
-         "0"))
-     "...")))
+(rf/reg-sub
+ :wallet/wallet-send-token
+ :<- [:wallet/wallet-send]
+ :-> :token)
 
-(re-frame/reg-sub
- :account-portfolio-value
- (fn [[_ address] _]
-   [(re-frame/subscribe [:balance address])
-    (re-frame/subscribe [:prices])
-    (re-frame/subscribe [:wallet-legacy/currency])
-    (re-frame/subscribe [:wallet-legacy/token->decimals])])
- (fn [[balance prices currency token->decimals]]
-   (if (and balance prices)
-     (let [currency-key        (-> currency :code keyword)
-           balance-total-value (get-balance-total-value balance prices currency-key token->decimals)]
-       (if (pos? balance-total-value)
-         (-> balance-total-value
-             (money/with-precision 2)
-             str
-             (i18n/format-currency (:code currency)))
-         "0"))
-     "...")))
+(rf/reg-sub
+ :wallet/wallet-send-amount
+ :<- [:wallet/wallet-send]
+ :-> :amount)
 
-(re-frame/reg-sub
- :wallet-legacy/sorted-tokens
- :<- [:wallet-legacy/all-tokens]
- (fn [all-tokens]
-   (tokens/sorted-tokens-for all-tokens)))
+(rf/reg-sub
+ :wallet/wallet-send-loading-suggested-routes?
+ :<- [:wallet/wallet-send]
+ :-> :loading-suggested-routes?)
 
-(re-frame/reg-sub
- :wallet-legacy/grouped-chain-tokens
- :<- [:wallet-legacy/sorted-tokens]
- :<- [:wallet-legacy/visible-tokens-symbols]
- (fn [[all-tokens visible-tokens]]
-   (let [vt-set (set visible-tokens)]
-     (group-by :custom?
-               (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
+(rf/reg-sub
+ :wallet/watch-address-activity-state
+ :<- [:wallet/ui]
+ :-> :watch-address-activity-state)
 
-(re-frame/reg-sub
- :wallet-legacy/fetching-tx-history?
- :<- [:wallet-legacy]
- (fn [wallet [_ address]]
-   (get-in wallet [:fetching address :history?])))
+(rf/reg-sub
+ :wallet/accounts
+ :<- [:wallet]
+ :<- [:wallet/network-details]
+ (fn [[wallet network-details]]
+   ;; TODO(@rende11): `testnet?` value would be relevant after this implementation,
+   ;; https://github.com/status-im/status-mobile/issues/17826
+   (let [testnet? false]
+     (->> wallet
+          :accounts
+          vals
+          (map #(assoc-network-preferences-names network-details % testnet?))
+          (sort-by :position)))))
 
-(re-frame/reg-sub
- :wallet-legacy/fetching-recent-tx-history?
- :<- [:wallet-legacy]
- (fn [wallet [_ address]]
-   (get-in wallet [:fetching address :recent?])))
+(rf/reg-sub
+ :wallet/addresses
+ :<- [:wallet]
+ :-> #(->> %
+           :accounts
+           keys
+           set))
 
-(re-frame/reg-sub
- :wallet-legacy/tx-history-fetched?
- :<- [:wallet-legacy]
- (fn [wallet [_ address]]
-   (get-in wallet [:fetching address :all-fetched?])))
+(rf/reg-sub
+ :wallet/balances
+ :<- [:wallet/accounts]
+ :<- [:profile/currency]
+ (fn [[accounts currency]]
+   (zipmap (map :address accounts)
+           (map #(utils/calculate-balance-for-account currency %) accounts))))
 
-(re-frame/reg-sub
- :wallet-legacy/chain-explorer-link
- (fn [db [_ address]]
-   (let [network (:networks/current-network db)
-         link    (get-in config/default-networks-by-id
-                         [network :chain-explorer-link])]
-     (when link
-       (str link address)))))
+(rf/reg-sub
+ :wallet/account-cards-data
+ :<- [:wallet/accounts]
+ :<- [:wallet/balances]
+ :<- [:wallet/tokens-loading?]
+ :<- [:profile/currency-symbol]
+ (fn [[accounts balances tokens-loading? currency-symbol]]
+   (mapv (fn [{:keys [color address watch-only?] :as account}]
+           (assoc account
+                  :customization-color color
+                  :type                (if watch-only? :watch-only :empty)
+                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
+                  :loading?            tokens-loading?
+                  :balance             (utils/prettify-balance currency-symbol (get balances address))))
+         accounts)))
 
-(re-frame/reg-sub
- :wallet-legacy/error-message
- :<- [:wallet-legacy]
- (fn [wallet]
-   (or (get-in wallet [:errors :balance-update])
-       (get-in wallet [:errors :prices-update]))))
+(rf/reg-sub
+ :wallet/current-viewing-account
+ :<- [:wallet/accounts]
+ :<- [:wallet/current-viewing-account-address]
+ :<- [:wallet/balances]
+ (fn [[accounts current-viewing-account-address balances]]
+   (let [current-viewing-account (utils/get-account-by-address accounts current-viewing-account-address)]
+     (-> current-viewing-account
+         (assoc :balance (get balances current-viewing-account-address))))))
 
-(re-frame/reg-sub
- :wallet-legacy/visible-tokens-symbols
- :<- [:ethereum/chain-keyword]
- :<- [:profile/profile]
- (fn [[chain current-multiaccount]]
-   (get-in current-multiaccount [:wallet-legacy/visible-tokens chain])))
+(rf/reg-sub
+ :wallet/tokens-filtered
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/network-details]
+ (fn [[account networks] [_ query]]
+   (let [tokens          (map (fn [token]
+                                (assoc token
+                                       :networks           (utils/network-list token networks)
+                                       :total-balance      (utils/total-token-units-in-all-chains token)
+                                       :total-balance-fiat (utils/calculate-balance-for-token token)))
+                              (:tokens account))
+         sorted-tokens   (sort-by :name compare tokens)
+         filtered-tokens (filter #(or (string/starts-with? (string/lower-case (:name %))
+                                                           (string/lower-case query))
+                                      (string/starts-with? (string/lower-case (:symbol %))
+                                                           (string/lower-case query)))
+                                 sorted-tokens)]
+     filtered-tokens)))
 
-(re-frame/reg-sub
- :wallet-legacy/visible-assets
- :<- [:current-network]
- :<- [:wallet-legacy/visible-tokens-symbols]
- :<- [:wallet-legacy/sorted-tokens]
- (fn [[network visible-tokens-symbols all-tokens-sorted]]
-   (conj (filter #(contains? visible-tokens-symbols (:symbol %)) all-tokens-sorted)
-         (tokens/native-currency network))))
+(rf/reg-sub
+ :wallet/accounts-without-current-viewing-account
+ :<- [:wallet/accounts]
+ :<- [:wallet/current-viewing-account-address]
+ (fn [[accounts current-viewing-account-address]]
+   (remove #(= (:address %) current-viewing-account-address) accounts)))
 
-(re-frame/reg-sub
- :wallet-legacy/visible-assets-with-amount
- (fn [[_ address] _]
-   [(re-frame/subscribe [:balance address])
-    (re-frame/subscribe [:wallet-legacy/visible-assets])])
- (fn [[balance visible-assets]]
-   (map #(assoc % :amount (get balance (:symbol %))) visible-assets)))
+(rf/reg-sub
+ :wallet/accounts-without-watched-accounts
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (remove #(:watch-only? %) accounts)))
 
-(defn update-value
-  [prices currency]
-  (fn [{:keys [decimals amount] :as token}]
-    (let [sym         (:symbol token)
-          currency-kw (-> currency :code keyword)
-          price       (get-in prices [sym currency-kw])]
-      (assoc token
-             :price price
-             :value (when (and amount price)
-                      (-> (money/internal->formatted amount sym decimals)
-                          (money/crypto->fiat price)
-                          (money/with-precision 2)
-                          str
-                          (i18n/format-currency (:code currency))))))))
+(defn- calc-token-value
+  [{:keys [market-values-per-currency] :as token} color currency currency-symbol]
+  (let [token-units                 (utils/total-token-units-in-all-chains token)
+        fiat-value                  (utils/total-token-fiat-value currency token)
+        market-values               (get market-values-per-currency
+                                         currency
+                                         (get market-values-per-currency
+                                              constants/profile-default-currency))
+        {:keys [change-pct-24hour]} market-values]
+    {:token               (:symbol token)
+     :token-name          (:name token)
+     :state               :default
+     :status              (cond
+                            (pos? change-pct-24hour) :positive
+                            (neg? change-pct-24hour) :negative
+                            :else                    :empty)
+     :customization-color color
+     :values              {:crypto-value token-units
+                           :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
 
-(re-frame/reg-sub
- :wallet-legacy/visible-assets-with-values
- (fn [[_ address] _]
-   [(re-frame/subscribe [:wallet-legacy/visible-assets-with-amount address])
-    (re-frame/subscribe [:prices])
-    (re-frame/subscribe [:wallet-legacy/currency])])
- (fn [[assets prices currency]]
-   (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
-         tokens-with-values    (map (update-value prices currency) tokens)]
-     {:tokens tokens-with-values
-      :nfts   nfts})))
+(rf/reg-sub
+ :wallet/account-token-values
+ :<- [:wallet/current-viewing-account]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[{:keys [tokens color]} currency currency-symbol]]
+   (mapv #(calc-token-value % color currency currency-symbol) tokens)))
 
-(defn get-asset-amount
-  [balances sym]
-  (reduce #(if-let [^js bl (get %2 sym)]
-             (.plus ^js (or ^js %1 ^js (money/bignumber 0)) bl)
-             %1)
-          nil
-          balances))
-
-(re-frame/reg-sub
- :wallet-legacy/all-visible-assets-with-amount
- :<- [:balances]
- :<- [:wallet-legacy/visible-assets]
- (fn [[balances visible-assets]]
-   (map #(assoc % :amount (get-asset-amount balances (:symbol %))) visible-assets)))
-
-(re-frame/reg-sub
- :wallet-legacy/all-visible-assets-with-values
- :<- [:wallet-legacy/all-visible-assets-with-amount]
- :<- [:prices]
- :<- [:wallet-legacy/currency]
- (fn [[assets prices currency]]
-   (let [{:keys [tokens nfts]} (group-by #(if (:nft? %) :nfts :tokens) assets)
-         tokens-with-values    (map (update-value prices currency) tokens)]
-     {:tokens tokens-with-values
-      :nfts   nfts})))
-
-(re-frame/reg-sub
- :wallet-legacy/transferrable-assets-with-amount
- (fn [[_ address]]
-   (re-frame/subscribe [:wallet-legacy/visible-assets-with-amount address]))
- (fn [all-assets]
-   (filter #(not (:nft? %)) all-assets)))
-
-(re-frame/reg-sub
- :wallet-legacy/currency
- :<- [:wallet-legacy/settings-currency]
- (fn [currency-id]
-   (get currency/currencies currency-id (get currency/currencies :usd))))
-
-(defn filter-recipient-favs
-  [search-filter {:keys [name]}]
-  (string/includes? (string/lower-case (str name)) search-filter))
-
-(re-frame/reg-sub
- :wallet-legacy/favourites-filtered
- :<- [:wallet-legacy/favourites]
- :<- [:wallet-legacy/search-recipient-filter]
- (fn [[favs search-filter]]
-   (let [favs (vals favs)]
-     (if (string/blank? search-filter)
-       favs
-       (filter (partial filter-recipient-favs
-                        (string/lower-case search-filter))
-               favs)))))
-
-(re-frame/reg-sub
- :wallet-legacy/collectible-collection
- :<- [:wallet-legacy/collectible-collections]
- (fn [all-collections [_ address]]
-   (when address
-     (let [all-collections (get all-collections (string/lower-case address) [])]
-       (sort-by :name all-collections)))))
-
-(re-frame/reg-sub
- :wallet-legacy/collectible-assets-by-collection-and-address
- :<- [:wallet-legacy/collectible-assets]
- (fn [all-assets [_ address collectible-slug]]
-   (get-in all-assets [address collectible-slug] [])))
-
-(re-frame/reg-sub
- :wallet-legacy/fetching-assets-by-collectible-slug
- :<- [:wallet-legacy/fetching-collection-assets]
- (fn [fetching-collection-assets [_ collectible-slug]]
-   (get fetching-collection-assets collectible-slug false)))
+(rf/reg-sub
+ :wallet/network-preference-details
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/network-details]
+ (fn [[current-viewing-account network-details]]
+   (let [network-preferences-names (:network-preferences-names current-viewing-account)]
+     (filter #(contains? network-preferences-names (:network-name %)) network-details))))

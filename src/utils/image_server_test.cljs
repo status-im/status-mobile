@@ -1,14 +1,14 @@
 (ns utils.image-server-test
   (:require
     [cljs.test :as t]
-    status-im2.common.pixel-ratio
+    status-im.common.pixel-ratio
     [utils.image-server :as sut]))
 
 (t/deftest get-account-image-uri
   (with-redefs
-    [sut/current-theme-index             identity
-     status-im2.common.pixel-ratio/ratio 2
-     sut/timestamp                       (constantly "timestamp")]
+    [sut/current-theme-index            identity
+     status-im.common.pixel-ratio/ratio 2
+     sut/timestamp                      (constantly "timestamp")]
     (t/is
      (=
       (sut/get-account-image-uri {:port                     "port"
@@ -25,9 +25,9 @@
 
 (t/deftest get-account-initials-uri
   (with-redefs
-    [sut/current-theme-index             identity
-     status-im2.common.pixel-ratio/ratio 2
-     sut/timestamp                       (constantly "timestamp")]
+    [sut/current-theme-index            identity
+     status-im.common.pixel-ratio/ratio 2
+     sut/timestamp                      (constantly "timestamp")]
     (t/is
      (=
       (sut/get-initials-avatar-uri

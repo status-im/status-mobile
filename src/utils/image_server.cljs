@@ -2,8 +2,8 @@
   (:require
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
-    status-im2.common.pixel-ratio
-    [status-im2.constants :as constants]
+    status-im.common.pixel-ratio
+    [status-im.constants :as constants]
     [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
@@ -82,7 +82,7 @@
    "&imageName="
    image-name
    "&size="
-   (Math/round (* size status-im2.common.pixel-ratio/ratio))
+   (Math/round (* size status-im.common.pixel-ratio/ratio))
    "&theme="
    (current-theme-index theme)
    "&clock="
@@ -90,15 +90,15 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im2.common.pixel-ratio/ratio)
+   (* indicator-size status-im.common.pixel-ratio/ratio)
    "&indicatorBorder="
-   (* indicator-border status-im2.common.pixel-ratio/ratio)
+   (* indicator-border status-im.common.pixel-ratio/ratio)
    "&indicatorCenterToEdge="
-   (* indicator-center-to-edge status-im2.common.pixel-ratio/ratio)
+   (* indicator-center-to-edge status-im.common.pixel-ratio/ratio)
    "&addRing="
    (if ring? 1 0)
    "&ringWidth="
-   (* ring-width status-im2.common.pixel-ratio/ratio)))
+   (* ring-width status-im.common.pixel-ratio/ratio)))
 
 (defn get-account-image-uri-fn
   "pass the result fn to user-avatar component as `:profile-picture`
@@ -153,13 +153,13 @@
    "&length="
    length
    "&size="
-   (Math/round (* size status-im2.common.pixel-ratio/ratio))
+   (Math/round (* size status-im.common.pixel-ratio/ratio))
    "&bgColor="
    (js/encodeURIComponent background-color)
    "&color="
    (js/encodeURIComponent color)
    "&fontSize="
-   (* font-size status-im2.common.pixel-ratio/ratio)
+   (* font-size status-im.common.pixel-ratio/ratio)
    "&fontFile="
    (js/encodeURIComponent font-file)
    "&uppercaseRatio="
@@ -173,15 +173,15 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im2.common.pixel-ratio/ratio)
+   (* indicator-size status-im.common.pixel-ratio/ratio)
    "&indicatorBorder="
-   (* indicator-border status-im2.common.pixel-ratio/ratio)
+   (* indicator-border status-im.common.pixel-ratio/ratio)
    "&indicatorCenterToEdge="
-   (* indicator-center-to-edge status-im2.common.pixel-ratio/ratio)
+   (* indicator-center-to-edge status-im.common.pixel-ratio/ratio)
    "&addRing="
    (if ring? 1 0)
    "&ringWidth="
-   (* ring-width status-im2.common.pixel-ratio/ratio)))
+   (* ring-width status-im.common.pixel-ratio/ratio)))
 
 (defn get-initials-avatar-uri-fn
   "return a fn that calls `get-account-initials-uri`
@@ -227,7 +227,7 @@
    "&imageName="
    image-name
    "&size="
-   (Math/round (* size status-im2.common.pixel-ratio/ratio))
+   (Math/round (* size status-im.common.pixel-ratio/ratio))
    "&theme="
    (current-theme-index theme)
    "&clock="
@@ -235,15 +235,15 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im2.common.pixel-ratio/ratio)
+   (* indicator-size status-im.common.pixel-ratio/ratio)
    "&indicatorBorder="
-   (* indicator-border status-im2.common.pixel-ratio/ratio)
+   (* indicator-border status-im.common.pixel-ratio/ratio)
    "&indicatorCenterToEdge="
-   (* indicator-center-to-edge status-im2.common.pixel-ratio/ratio)
+   (* indicator-center-to-edge status-im.common.pixel-ratio/ratio)
    "&addRing="
    (if ring? 1 0)
    "&ringWidth="
-   (* ring-width status-im2.common.pixel-ratio/ratio)))
+   (* ring-width status-im.common.pixel-ratio/ratio)))
 
 (defn get-contact-image-uri-fn
   [{:keys [port public-key image-name theme override-ring? clock]}]

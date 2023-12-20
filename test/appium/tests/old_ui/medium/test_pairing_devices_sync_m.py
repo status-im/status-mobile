@@ -47,7 +47,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi('Edit profile picture')
         self.home_1.profile_button.double_click()
-        self.profile_1.edit_profile_picture('sauce_logo.png')
+        self.profile_1.edit_profile_picture(image_index=2)
 
         self.profile_1.privacy_and_security_button.click()
 
