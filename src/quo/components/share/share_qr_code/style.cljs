@@ -33,7 +33,7 @@
 (def share-qr-container
   {:flex-direction  :row
    :justify-content :space-between
-   :margin-bottom   12})
+   :margin-bottom   20})
 
 (def share-qr-inner-container
   {:flex-direction :row
