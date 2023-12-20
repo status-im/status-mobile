@@ -44,7 +44,7 @@
       (let [networks           (rf/sub [:wallet/network-details])
             account-cards-data (rf/sub [:wallet/account-cards-data])
             cards              (conj account-cards-data (new-account-card-data))]
-        [rn/view {:style style/home-container}
+        [rn/view {:style (style/home-container)}
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
           [quo/wallet-overview (temp/wallet-overview-state networks)]]
