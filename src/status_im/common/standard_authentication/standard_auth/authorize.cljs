@@ -53,10 +53,12 @@
                                               (password-login {:on-press-biometrics
                                                                #(on-press-biometrics
                                                                  on-press-biometrics)}))}))]
-    (biometric/get-supported-type
-     (fn [biometric-type]
-       (if (and biometric-auth? biometric-type)
-         (biometrics-login biometrics-login)
-         (do
-           (reset-password)
-           (password-login {})))))))
+    (if biometric-auth?
+      (biometric/get-supported-type
+       (fn [biometric-type]
+         (if biometric-type
+           (biometrics-login biometrics-login)
+           (do
+             (reset-password)
+             (password-login {})))))
+      (password-login {}))))

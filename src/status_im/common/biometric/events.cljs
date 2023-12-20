@@ -6,6 +6,7 @@
     [react-native.platform :as platform]
     [react-native.touch-id :as touch-id]
     [status-im.common.keychain.events :as keychain]
+    [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -27,6 +28,12 @@
     :fingerprint (i18n/label :t/biometric-fingerprint)
     :FaceID      (i18n/label :t/biometric-faceid)
     (i18n/label :t/biometric-touchid)))
+
+(defn get-icon-by-type
+  [biometric-type]
+  (case biometric-type
+    :FaceID :i/face-id
+    :i/touch-id))
 
 (re-frame/reg-fx
  :biometric/get-supported-biometric-type
@@ -121,3 +128,26 @@
   {:events [:biometric/authenticate]}
   [_ opts]
   {:biometric/authenticate opts})
+
+(rf/reg-event-fx
+ :biometric/on-enable-success
+ (fn [{:keys [db]} [password]]
+   (let [key-uid (get-in db [:profile/profile :key-uid])]
+     {:db       (assoc db :auth-method constants/auth-method-biometric)
+      :dispatch [:keychain/save-password-and-auth-method
+                 {:key-uid         key-uid
+                  :masked-password password}]})))
+
+(rf/reg-event-fx
+ :biometric/enable
+ (fn [_ [password]]
+   {:dispatch [:biometric/authenticate
+               {:on-success #(rf/dispatch [:biometric/on-enable-success password])
+                :on-fail    #(rf/dispatch [:biometric/show-message %])}]}))
+
+(rf/reg-event-fx
+ :biometric/disable
+ (fn [{:keys [db]}]
+   (let [key-uid (get-in db [:profile/profile :key-uid])]
+     {:db                           (assoc db :auth-method constants/auth-method-none)
+      :keychain/clear-user-password key-uid})))

@@ -142,6 +142,11 @@
        (.then #(when on-success (on-success)))
        (.catch #(when on-error (on-error %))))))
 
+(re-frame/reg-event-fx
+ :keychain/save-password-and-auth-method
+ (fn [_ [opts]]
+   {:keychain/save-password-and-auth-method opts}))
+
 ;; NOTE: migrating the plaintext password in the keychain
 ;; with the hashed one. Added due to the sync onboarding
 ;; flow, where the password arrives already hashed.

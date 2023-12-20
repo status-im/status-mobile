@@ -31,6 +31,7 @@
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im.contexts.onboarding.welcome.view :as welcome]
     [status-im.contexts.profile.profiles.view :as profiles]
+    [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im.contexts.quo-preview.main :as quo.preview]
@@ -340,7 +341,13 @@
      :options   (merge
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
-     :component scan-profile-qr-page/view}]
+     :component scan-profile-qr-page/view}
+
+    ;; Settings
+
+    {:name      :settings-password
+     :options   options/transparent-screen-options
+     :component settings-password/view}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview

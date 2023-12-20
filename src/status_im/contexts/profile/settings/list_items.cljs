@@ -11,7 +11,7 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/password)
-     :on-press    not-implemented/alert
+     :on-press    #(rf/dispatch [:navigate-to-within-stack [:settings-password :settings]])
      :image-props :i/password
      :image       :icon
      :blur?       true
