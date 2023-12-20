@@ -59,8 +59,9 @@
       description])
    (when emoji-hash
      [text/text
-      {:number-of-lines 1
-       :style           style/emoji-hash}
+      {:number-of-lines     1
+       :accessibility-label :emoji-hash
+       :style               style/emoji-hash}
       emoji-hash])])
 
 (def view (theme/with-theme view-internal))
