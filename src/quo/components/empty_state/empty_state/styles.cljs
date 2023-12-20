@@ -21,8 +21,8 @@
 
 (defn description
   [blur?]
-  (when blur?
-    {:color colors/white}))
+  (cond-> {:text-align :center}
+    blur? (assoc :color colors/white)))
 
 (def button-container {:margin-top 20})
 
