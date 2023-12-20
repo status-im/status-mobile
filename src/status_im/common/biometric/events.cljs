@@ -24,14 +24,14 @@
 
 (defn get-label-by-type
   [biometric-type]
-  (case biometric-type
+  (condp = biometric-type
     :fingerprint (i18n/label :t/biometric-fingerprint)
     :FaceID      (i18n/label :t/biometric-faceid)
     (i18n/label :t/biometric-touchid)))
 
 (defn get-icon-by-type
   [biometric-type]
-  (case biometric-type
+  (condp = biometric-type
     :FaceID :i/face-id
     :i/touch-id))
 

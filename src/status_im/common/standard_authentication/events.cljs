@@ -10,4 +10,4 @@
 (rf/reg-event-fx
  :standard-auth/reset-login-password
  (fn [{:keys [db]}]
-   {:db (update-in db [:profile/login] dissoc :password :error)}))
+   {:db (update db :profile/login dissoc :password :error)}))
