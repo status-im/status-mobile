@@ -27,8 +27,7 @@
      title]
     [text/text
      {:style           (styles/description blur?)
-      :number-of-lines 1
-      :text-align      :center
+      :number-of-lines 2
       :weight          :regular
       :size            :paragraph-2}
      description]]
