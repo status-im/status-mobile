@@ -2,7 +2,7 @@
   (:require-macros [quo.components.utilities.social.loader :as loader])
   (:require [taoensso.timbre :as log]))
 
-(def socials (loader/resolve-socials))
+(def ^:private socials (loader/resolve-socials))
 
 (defn get-social-image
   [social]
