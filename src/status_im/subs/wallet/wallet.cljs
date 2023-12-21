@@ -163,6 +163,17 @@
  (fn [accounts]
    (remove #(:watch-only? %) accounts)))
 
+(defn count-trailing-zeroes
+  [num]
+  (let [str-representation (str num)
+        decimal-part       (second (clojure.string/split str-representation #"\."))
+        count              (count (take-while #(= \0 %) decimal-part))]
+    (if-let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+      (if (= \1 first-non-zero-digit)
+        (inc count)
+        count)
+      count)))
+
 (defn- calc-token-value
   [{:keys [market-values-per-currency] :as token} color currency currency-symbol]
   (let [token-units                 (utils/total-token-units-in-all-chains token)
@@ -180,7 +191,7 @@
                             (neg? change-pct-24hour) :negative
                             :else                    :empty)
      :customization-color color
-     :values              {:crypto-value token-units
+     :values              {:crypto-value (utils/prettify-crypto market-values-per-currency token-units)
                            :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
 
 (rf/reg-sub

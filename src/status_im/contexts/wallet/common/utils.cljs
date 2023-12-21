@@ -37,6 +37,24 @@
        (map (comp :raw-balance val))
        (reduce money/add)))
 
+(defn calc-max-crypto-decimals
+  [value]
+  (let [str-representation (str value)
+        decimal-part       (second (clojure.string/split str-representation #"\."))
+        count              (count (take-while #(= \0 %) decimal-part))]
+    (if-let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+      (if (= \1 first-non-zero-digit)
+        (inc count)
+        count)
+      count)))
+
+(defn prettify-crypto
+  [market-values-per-currency token-units]
+  (let [price          (get-in market-values-per-currency [:usd :price])
+        one-cent-value (/ 0.01 price)
+        count          (calc-max-crypto-decimals one-cent-value)]
+    (.toFixed token-units count)))
+
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
   (-> balances-per-chain
