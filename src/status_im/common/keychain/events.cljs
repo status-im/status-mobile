@@ -131,6 +131,7 @@
  :keychain/clear-user-password
  (fn [key-uid]
    (keychain/reset-credentials (password-migration-key-name key-uid))
+   (keychain/reset-credentials (str key-uid "-auth"))
    (keychain/reset-credentials key-uid)))
 
 (re-frame/reg-fx
