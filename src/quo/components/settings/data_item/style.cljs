@@ -10,6 +10,9 @@
    :padding-horizontal (when (= size :default) 12)
    :border-radius      16
    :border-width       (when (and card? (not= size :small)) 1)
+   :background-color   (if blur?
+                         colors/white-opa-5
+                         (colors/theme-colors colors/white colors/neutral-95 theme))
    :border-color       (if blur?
                          colors/white-opa-10
                          (colors/theme-colors colors/neutral-10
@@ -42,10 +45,12 @@
    :justify-content :center})
 
 (defn title
-  [theme]
-  {:color        (colors/theme-colors colors/neutral-50
-                                      colors/neutral-40
-                                      theme)
+  [blur? theme]
+  {:color        (if blur?
+                   colors/white-opa-40
+                   (colors/theme-colors colors/neutral-50
+                                        colors/neutral-40
+                                        theme))
    :margin-right 4})
 
 (def title-container
