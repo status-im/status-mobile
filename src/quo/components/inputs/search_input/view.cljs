@@ -48,12 +48,14 @@
         scroll-view-ref (atom nil)
         use-value?      (boolean value)]
     (fn [{:keys [value tags disabled? blur? on-change-text customization-color
-                 on-clear on-focus on-blur override-theme]
+                 on-clear on-focus on-blur override-theme container-style]
           :or   {customization-color :blue}
           :as   props}
          & children]
       (let [clean-props (apply dissoc props props-to-remove)]
-        [rn/view {:style style/container}
+        [rn/view
+         {:accessibility-label :search-input
+          :style               (style/container container-style)}
          [rn/scroll-view
           {:ref                               #(reset! scroll-view-ref %)
            :style                             style/scroll-container

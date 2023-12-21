@@ -16,12 +16,12 @@
     (h/is-truthy (h/get-by-label-text rendered accessibility-text))))
 
 (h/describe "Skeleton tests"
-  (doseq [content   [:messages :notifications :list-items]
-          animated? [true false]]
-    (let [content-str (name content)]
-      (h/test (str "Skeleton :"
-                   content-str
-                   " is "
-                   (if animated? "animated" "static")
-                   " based on animated? " animated?)
-        (test-skeleton content animated?)))))
+  (doseq [content   [:messages :notifications :list-items :assets]
+          animated? [true false]
+          :let      [content-str (name content)]]
+    (h/test (str "Skeleton :"
+                 content-str
+                 " is "
+                 (if animated? "animated" "static")
+                 " based on animated? " animated?)
+      (test-skeleton content animated?))))

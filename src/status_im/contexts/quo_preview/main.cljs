@@ -162,16 +162,16 @@
     [status-im.contexts.quo-preview.tags.tags :as tags]
     [status-im.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im.contexts.quo-preview.tags.token-tag :as token-tag]
-    [status-im.contexts.quo-preview.text-combinations.channel-name :as
-     channel-name]
-    [status-im.contexts.quo-preview.text-combinations.preview :as
-     text-combinations]
+    [status-im.contexts.quo-preview.text-combinations.channel-name :as channel-name]
+    [status-im.contexts.quo-preview.text-combinations.page-top :as page-top]
+    [status-im.contexts.quo-preview.text-combinations.preview :as text-combinations]
     [status-im.contexts.quo-preview.text-combinations.standard-title :as standard-title]
     [status-im.contexts.quo-preview.text-combinations.username :as username]
     [status-im.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im.contexts.quo-preview.wallet.account-overview :as
      account-overview]
+    [status-im.contexts.quo-preview.wallet.account-permissions :as account-permissions]
     [status-im.contexts.quo-preview.wallet.confirmation-progress :as confirmation-progress]
     [status-im.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im.contexts.quo-preview.wallet.network-amount :as network-amount]
@@ -465,6 +465,8 @@
                         :component text-combinations/view}
                        {:name      :channel-name
                         :component channel-name/view}
+                       {:name      :page-top
+                        :component page-top/view}
                        {:name      :standard-title
                         :component standard-title/view}
                        {:name      :username
@@ -473,6 +475,8 @@
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/view}
+                       {:name      :account-permissions
+                        :component account-permissions/view}
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}

@@ -4,10 +4,8 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
-    [status-im.contexts.wallet.common.activity-tab.view :as activity]
-    [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles]
-    [status-im.contexts.wallet.common.temp :as temp]
     [status-im.contexts.wallet.home.style :as style]
+    [status-im.contexts.wallet.home.tabs.view :as tabs]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -41,13 +39,19 @@
   []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [networks           (rf/sub [:wallet/network-details])
+      (let [tokens-loading?    (rf/sub [:wallet/tokens-loading?])
+            networks           (rf/sub [:wallet/network-details])
             account-cards-data (rf/sub [:wallet/account-cards-data])
             cards              (conj account-cards-data (new-account-card-data))]
-        [rn/view {:style style/home-container}
+        [rn/view {:style (style/home-container)}
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
-          [quo/wallet-overview (temp/wallet-overview-state networks)]]
+          [quo/wallet-overview
+           {:state      (if tokens-loading? :loading :default)
+            :time-frame :none
+            :metrics    :none
+            :balance    "€0.00"
+            :networks   networks}]]
          [quo/wallet-graph {:time-frame :empty}]
          [rn/flat-list
           {:style                             style/accounts-list
@@ -63,11 +67,4 @@
            :default-active @selected-tab
            :data           tabs-data
            :on-change      #(reset! selected-tab %)}]
-         (case @selected-tab
-           :assets       [rn/flat-list
-                          {:render-fn               quo/token-value
-                           :data                    temp/tokens
-                           :key                     :assets-list
-                           :content-container-style style/selected-tab-container}]
-           :collectibles [collectibles/view]
-           [activity/view])]))))
+         [tabs/view {:selected-tab @selected-tab}]]))))

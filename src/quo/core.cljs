@@ -14,6 +14,7 @@
     quo.components.buttons.button.view
     quo.components.buttons.composer-button.view
     quo.components.buttons.dynamic-button.view
+    quo.components.buttons.logout-button.view
     quo.components.buttons.predictive-keyboard.view
     quo.components.buttons.slide-button.view
     quo.components.buttons.wallet-button.view
@@ -141,6 +142,7 @@
     quo.components.tags.tiny-tag.view
     quo.components.tags.token-tag.view
     quo.components.text-combinations.channel-name.view
+    quo.components.text-combinations.page-top.view
     quo.components.text-combinations.standard-title.view
     quo.components.text-combinations.username.view
     quo.components.text-combinations.view
@@ -148,6 +150,7 @@
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
     quo.components.wallet.account-overview.view
+    quo.components.wallet.account-permissions.view
     quo.components.wallet.address-text.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
@@ -182,6 +185,7 @@
 (def button quo.components.buttons.button.view/button)
 (def composer-button quo.components.buttons.composer-button.view/view)
 (def dynamic-button quo.components.buttons.dynamic-button.view/view)
+(def logout-button quo.components.buttons.logout-button.view/view)
 (def predictive-keyboard quo.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo.components.buttons.slide-button.view/view)
 (def wallet-button quo.components.buttons.wallet-button.view/view)
@@ -388,6 +392,7 @@
 
 ;;;; Text combinations
 (def channel-name quo.components.text-combinations.channel-name.view/view)
+(def page-top quo.components.text-combinations.page-top.view/view)
 (def standard-title quo.components.text-combinations.standard-title.view/view)
 (def text-combinations quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)
@@ -399,6 +404,7 @@
 (def account-card quo.components.wallet.account-card.view/view)
 (def account-origin quo.components.wallet.account-origin.view/view)
 (def account-overview quo.components.wallet.account-overview.view/view)
+(def account-permissions quo.components.wallet.account-permissions.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
 (def confirmation-propgress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)

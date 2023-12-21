@@ -4,13 +4,15 @@
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))
 
-(def container
-  {:padding-horizontal 20
-   :padding-top        8
-   :padding-bottom     16
-   :height             48
-   :flex-direction     :row
-   :align-items        :flex-start})
+(defn container
+  [container-style]
+  (merge {:padding-horizontal 20
+          :padding-top        8
+          :padding-bottom     16
+          :height             48
+          :flex-direction     :row
+          :align-items        :flex-start}
+         container-style))
 
 (def buttons-container
   {:flex-direction :row

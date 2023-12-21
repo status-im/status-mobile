@@ -43,10 +43,12 @@
   {:flex-direction :row
    :margin-right   8})
 
-(def container
-  {:flex           1
-   :flex-direction :row
-   :align-items    :center})
+(defn container
+  [container-style]
+  (merge {:flex           1
+          :flex-direction :row
+          :align-items    :center}
+         container-style))
 
 (def scroll-container
   {:flex-direction :row

@@ -16,6 +16,7 @@
     [status-im.common.log :as logging]
     [status-im.common.universal-links :as universal-links]
     [status-im.config :as config]
+    [status-im.constants :as constants]
     [status-im.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im.contexts.contacts.events :as contacts]
     [status-im.contexts.profile.config :as profile.config]
@@ -220,8 +221,7 @@
  (fn [{:keys [db]} [code]]
    (let [key-uid (get-in db [:profile/login :key-uid])]
      {:db db
-      :fx [[:dispatch [:init-root :profiles]]
-           (if (= code "NOT_ENROLLED")
+      :fx [(if (= code constants/biometric-error-not-enrolled)
              [:biometric/supress-not-enrolled-error
               [key-uid
                [:biometric/show-message code]]]

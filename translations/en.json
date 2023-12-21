@@ -180,6 +180,7 @@
     "address-to-share": "Addresses to share",
     "addresses-for-permissions": "Addresses for permissions",
     "confirm-changes": "Confirm changes",
+    "airdrop-addresses": "Address for airdrops",
     "join-as-a-member": "Join as a Member",
     "all-addresses": "All addresses",
     "for-airdrops": "For airdrops",
@@ -2383,6 +2384,7 @@
     "edit-derivation-path": "Edit derivation path",
     "path-format": "Path format",
     "reset": "Reset",
+    "light-client-enabled": "Light client",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
     "sign transactions": "sign transactions",
@@ -2436,5 +2438,6 @@
     "save-image-to-photos": "Save image to Photos",
     "copy-all-details": "Copy all details",
     "share-details": "Share details",
-    "what-are-you-waiting-for": "What are you waiting for?"
+    "what-are-you-waiting-for": "What are you waiting for?",
+    "no-relevant-tokens": "No relevant tokens"
 }

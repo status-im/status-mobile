@@ -242,6 +242,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.home.just_fyi("Perform back up")
             self.home.navigate_back_to_home_view()
             self.home.profile_button.click()
+            profile.profile_legacy_button.scroll_and_click()
             profile.sync_settings_button.click()
             profile.backup_settings_button.click()
             profile.perform_backup_button.click()

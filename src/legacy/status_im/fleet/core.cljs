@@ -2,16 +2,25 @@
   (:require
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.node.core :as node]
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.config :as config]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
+
+(def ^:private default-fleets (transforms/json->clj (native-module/fleets)))
+(def ^:private default-fleet (:defaultFleet default-fleets))
+(def fleets
+  (->> default-fleets
+       :fleets
+       keys
+       (map name)))
 
 (defn current-fleet-sub
   [multiaccount]
   (keyword (or (get multiaccount :fleet)
-               config/fleet)))
+               default-fleet)))
 
 (defn format-mailserver
   [mailserver address]
@@ -78,10 +87,9 @@
   [{:keys [db now] :as cofx} fleet]
   (let [old-fleet (get-in db [:profile/profile :fleet])]
     (when (not= fleet old-fleet)
-      (rf/merge
+      (multiaccounts.update/multiaccount-update
        cofx
-       (multiaccounts.update/multiaccount-update :fleet fleet {})
-       (node/prepare-new-config
-        {:on-success
-         #(re-frame/dispatch
-           [:multiaccounts.update.callback/save-settings-success])})))))
+       :fleet
+       fleet
+       {:on-success
+        #(re-frame/dispatch [:logout])}))))

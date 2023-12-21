@@ -124,6 +124,8 @@
       :on-card-press        (fn []
                               (rf/dispatch
                                [:profile/profile-selected key-uid])
+                              (rf/dispatch
+                               [:profile.login/login-with-biometric-if-available key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
 (defn- f-profiles-section
@@ -171,6 +173,7 @@
         {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
         profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
+        auth-method                                (rf/sub [:auth-method])
         login-multiaccount                         #(rf/dispatch [:profile.login/login])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
@@ -206,8 +209,17 @@
         :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
       [standard-authentication/password-input
-       {:shell?           true
-        :default-password password}]]
+       {:shell?              true
+        :blur?               true
+        :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
+                               (fn []
+                                 (rf/dispatch [:biometric/authenticate
+                                               {:on-success #(rf/dispatch
+                                                              [:profile.login/biometric-success])
+                                                :on-fail    #(rf/dispatch
+                                                              [:profile.login/biometric-auth-fail
+                                                               %])}])))
+        :default-password    password}]]
      [quo/button
       {:size                40
        :type                :primary

@@ -17,13 +17,13 @@
    [rn/view {:style style/content-container}
     [rn/view
      {:style (style/content-view
-              {:type    (if (= content :list-items) :message :author)
+              {:type    :author
                :index   index
                :content content
                :color   color})}]
     [rn/view
      {:style (style/content-view
-              {:type    (if (= content :list-items) :author :message)
+              {:type    :message
                :index   index
                :content content
                :color   color})}]
@@ -32,7 +32,29 @@
        {:style (style/content-view {:type    :message2
                                     :index   index
                                     :content content
-                                    :color   color})}])]])
+                                    :color   color})}])]
+   (when (= content :assets)
+     [rn/view {:style style/right-content-container}
+      [rn/view
+       {:style (style/content-view
+                {:type    :author2
+                 :index   index
+                 :content content
+                 :color   color})}]
+      [rn/view {:style style/right-bottom-content-container}
+       [rn/view
+        {:style (style/content-view
+                 {:type    :message2
+                  :index   index
+                  :content content
+                  :color   color})}]
+       [rn/view
+        {:style (style/content-view
+                 {:type    :message3
+                  :index   index
+                  :content content
+                  :color   color})}]
+       [rn/view {:style (style/author color)}]]])])
 
 (defn- f-animated-skeleton-view
   [{:keys [style color skeleton-height animated? translate-x window-width theme] :as data}]

@@ -12,5 +12,6 @@
 
 (def emoji-hash
   {:margin-top     8
-   :letter-spacing 0.5
+   :letter-spacing 2
+   :font-size      13
    :line-height    20.5})
