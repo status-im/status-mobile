@@ -38,30 +38,32 @@
        (reduce money/add)))
 
 (defn extract-exponent
-  [s]
+  [s decimal-part]
   (if-let [index (string/index-of s "e")]
-    (subs s (+ index 2))
+    (let [exponent (js/parseInt (subs s (+ index 2)))
+          first-non-zero-is-one? (= (first decimal-part) \1)]
+      (if first-non-zero-is-one?
+        (inc exponent)
+        exponent))
     nil))
 
 (defn calc-max-crypto-decimals
   [value]
   (let [str-representation (str value)
-        exponent           (extract-exponent str-representation)
         decimal-part       (second (clojure.string/split str-representation #"\."))
+        exponent           (extract-exponent str-representation decimal-part)
         count              (count (take-while #(= \0 %) decimal-part))]
     (or exponent
-        (if-let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+        (let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
           (if (= \1 first-non-zero-digit)
             (inc count)
-            count)
-          count))))
+            count)))))
 
 (defn prettify-crypto
   [{:keys [market-values-per-currency symbol]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (/ 0.01 price)
         count          (calc-max-crypto-decimals one-cent-value)]
-    (println symbol one-cent-value count)
     (.toFixed token-units count)))
 
 (defn total-token-units-in-all-chains
