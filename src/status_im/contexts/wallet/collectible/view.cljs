@@ -6,7 +6,7 @@
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
-    [status-im.contexts.wallet.collectible.tabs.view :as tabs] 
+    [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -79,7 +79,7 @@
                     collection-data]} collectible
             {collection-image :image-url
              collection-name  :name}  collection-data
-            {collectible-name :name} collectible-data]
+            {collectible-name :name}  collectible-data]
         [scroll-page/scroll-page
          {:navigate-back? true
           :height         148
@@ -100,12 +100,12 @@
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs
-           {:size        32
-            :style       style/tabs
-            :scrollable? true
-            :default-active   @selected-tab
-            :on-change        #(reset! selected-tab %)
-            :data        tabs-data}]
+           {:size           32
+            :style          style/tabs
+            :scrollable?    true
+            :default-active @selected-tab
+            :on-change      #(reset! selected-tab %)
+            :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
 
 (def view (quo.theme/with-theme view-internal))

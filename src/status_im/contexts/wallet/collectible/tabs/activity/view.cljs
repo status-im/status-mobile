@@ -1,6 +1,6 @@
-(ns status-im.contexts.wallet.collectible.tabs.activity.view 
+(ns status-im.contexts.wallet.collectible.tabs.activity.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn] 
+            [react-native.core :as rn]
             [status-im.contexts.wallet.temp :as temp]))
 
 (defn activity-item
