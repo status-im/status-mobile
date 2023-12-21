@@ -415,12 +415,12 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError):
-                    pass
+                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError) as e:
+                    raise e
                 try:
                     driver.quit()
-                except WebDriverException:
-                    pass
+                except WebDriverException as e:
+                    raise e
                 url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
                 try:
                     WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
@@ -433,10 +433,10 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                                         test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
                         except KeyError:
                             continue
-                except (RemoteDisconnected, requests.exceptions.ConnectionError, TimeoutException):
-                    pass
-        except AttributeError:
-            pass
+                except (RemoteDisconnected, requests.exceptions.ConnectionError, TimeoutException) as e:
+                    raise e
+        except AttributeError as e:
+            raise e
         finally:
             try:
                 cls.loop.close()
