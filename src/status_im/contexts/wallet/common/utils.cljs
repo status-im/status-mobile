@@ -14,9 +14,9 @@
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
-      (if valid-balance? $ 0)
-      (.toFixed $ 2)
-      (str currency-symbol $))))
+          (if valid-balance? $ 0)
+          (.toFixed $ 2)
+          (str currency-symbol $))))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -38,29 +38,25 @@
        (reduce money/add)))
 
 (defn extract-exponent
-  [s decimal-part]
+  [s]
   (if-let [index (string/index-of s "e")]
-    (let [exponent (js/parseInt (subs s (+ index 2)))
-          first-non-zero-is-one? (= (first decimal-part) \1)]
-      (if first-non-zero-is-one?
-        (inc exponent)
-        exponent))
+    (subs s (+ index 2))
     nil))
 
 (defn calc-max-crypto-decimals
   [value]
   (let [str-representation (str value)
         decimal-part       (second (clojure.string/split str-representation #"\."))
-        exponent           (extract-exponent str-representation decimal-part)
-        count              (count (take-while #(= \0 %) decimal-part))]
-    (or exponent
-        (let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
-          (if (= \1 first-non-zero-digit)
-            (inc count)
-            count)))))
+        exponent           (extract-exponent str-representation)
+        count              (count (take-while #(= \0 %) decimal-part))
+        max-decimals       (or exponent count)]
+    (let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+      (if (= \1 first-non-zero-digit)
+        (inc max-decimals)
+        max-decimals))))
 
 (defn prettify-crypto
-  [{:keys [market-values-per-currency symbol]} token-units]
+  [{:keys [market-values-per-currency]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (/ 0.01 price)
         count          (calc-max-crypto-decimals one-cent-value)]
@@ -107,8 +103,8 @@
 (defn calculate-balance-for-token
   [token]
   (money/bignumber
-   (money/mul (total-token-units-in-all-chains token)
-              (-> token :market-values-per-currency :usd :price))))
+    (money/mul (total-token-units-in-all-chains token)
+               (-> token :market-values-per-currency :usd :price))))
 
 (defn calculate-balance
   [tokens-in-account]
