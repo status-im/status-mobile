@@ -89,7 +89,7 @@
                       js/undefined)
                    [scroll-height])
     [reanimated/view
-     {:style (style/display-picture-container animation)}
+     {:style (style/display-picture-container animation theme)}
      [rn/image
       {:source cover
        :style  (style/display-picture theme)}]]))
