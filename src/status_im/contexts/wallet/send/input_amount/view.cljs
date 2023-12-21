@@ -7,6 +7,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
@@ -48,6 +49,34 @@
     (normalize-input current v)
     current))
 
+(defn- routes
+  [{:keys [amount from-network to-network]}]
+  [rn/view {:style style/routes-container}
+   [rn/view {:style style/routes-header-container}
+    [quo/section-label
+     {:section         (i18n/label :t/from-label)
+      :container-style {:flex 0.5}}]
+    [quo/section-label
+     {:section         (i18n/label :t/to-label)
+      :container-style {:flex        0.5
+                        :margin-left 64}}]]
+   [rn/view {:style style/routes-inner-container}
+    [quo/network-bridge
+     {:amount  amount
+      :network from-network
+      :status  :default}]
+    [quo/network-link
+     {:shape           :linear
+      :source          from-network
+      :destination     to-network
+      :container-style {:right   6
+                        :z-index 1}}]
+    [quo/network-bridge
+     {:amount          amount
+      :network         to-network
+      :status          :default
+      :container-style {:right 12}}]]])
+
 (defn- f-view-internal
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
@@ -55,7 +84,6 @@
         networks                  (rf/sub [:wallet/network-details])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-        suggested-routes          (rf/sub [:wallet/wallet-send-suggested-routes])
         token-symbol              (:symbol token)
         limit-crypto              (or (:total-balance token) limit)
         conversion-rate           (or rate 10)
@@ -92,7 +120,6 @@
                                           (reset! input-value (str current-limit-amount))
                                           (reset! input-value v))
                                         (reagent/flush))))]
-    (println "sss" suggested-routes)
     (fn [{:keys [on-confirm]
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
                                            {:amount   @input-value
@@ -105,7 +132,10 @@
                                        (nil? route)
                                        (empty? @input-value)
                                        (<= input-num-value 0)
-                                       (> input-num-value (:amount @current-limit)))]
+                                       (> input-num-value (:amount @current-limit)))
+            from-network              (utils/id-to-network (get-in route [:From :chainId]))
+            to-network                (utils/id-to-network (get-in route [:To :chainId]))
+            amount                    (str @input-value " " token-symbol)]
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -146,7 +176,10 @@
           (cond loading-suggested-routes?
                 [quo/text "Loading routes"]
                 (and (not loading-suggested-routes?) route)
-                [quo/text "Route found"]
+                [routes
+                 {:amount       amount
+                  :from-network from-network
+                  :to-network   to-network}]
                 (and (not loading-suggested-routes?) (nil? route))
                 [quo/text "Route not found"])]
          [quo/bottom-actions

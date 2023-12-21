@@ -16,12 +16,12 @@
    [icon/icon :i/add-circle {:size 12 :no-color true}]])
 
 (defn view-internal
-  [{:keys [theme network status amount] :as args}]
+  [{:keys [theme network status amount container-style] :as args}]
   (let [network-text (if (= network :ethereum) "Mainnet" (string/capitalize (name network)))]
     (if (= status :add)
       [network-bridge-add args]
       [rn/view
-       {:style               (style/container network status theme)
+       {:style               (merge (style/container network status theme) container-style)
         :accessible          true
         :accessibility-label :container}
        (if (= status :loading)
