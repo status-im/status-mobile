@@ -26,3 +26,10 @@
    :flex-direction  :row
    :align-items     :center
    :justify-content :space-between})
+
+(def section-label
+  {:flex 0.5})
+
+(def network-link
+  {:right   6
+   :z-index 1})

@@ -55,11 +55,10 @@
    [rn/view {:style style/routes-header-container}
     [quo/section-label
      {:section         (i18n/label :t/from-label)
-      :container-style {:flex 0.5}}]
+      :container-style style/section-label}]
     [quo/section-label
      {:section         (i18n/label :t/to-label)
-      :container-style {:flex        0.5
-                        :margin-left 64}}]]
+      :container-style (merge style/section-label {:margin-left 64})}]]
    [rn/view {:style style/routes-inner-container}
     [quo/network-bridge
      {:amount  amount
@@ -69,8 +68,7 @@
      {:shape           :linear
       :source          from-network
       :destination     to-network
-      :container-style {:right   6
-                        :z-index 1}}]
+      :container-style style/network-link}]
     [quo/network-bridge
      {:amount          amount
       :network         to-network
