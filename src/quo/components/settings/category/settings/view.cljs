@@ -7,13 +7,8 @@
     [react-native.core :as rn]))
 
 (defn- category-internal
-<<<<<<< HEAD
-  [{:keys [label data blur? container-style theme]}]
-  [rn/view {:style (merge (style/container label) container-style)}
-=======
   [{:keys [label data] :as props}]
   [rn/view {:style (style/container label)}
->>>>>>> 5007b27b2 (review)
    (when label
      [text/text
       {:weight :medium

@@ -102,11 +102,7 @@
      nil)])
 
 (defn- internal-view
-<<<<<<< HEAD
-  [{:keys [title on-press action-props accessibility-label container-style] :as props}]
-=======
-  [{:keys [title on-press action-props accessibility-label blur?] :as props}]
->>>>>>> ccc60001f (wallet: receive screen)
+  [{:keys [title on-press action-props accessibility-label blur? container-style] :as props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            on-press
