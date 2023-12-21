@@ -12,9 +12,9 @@
 
 (defn description
   [theme blur?]
-  {:color (if blur?
-            colors/white-opa-40
-            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
+  {:color      (if blur?
+                 colors/white-opa-40
+                 (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
    :margin-top 2})
 
 (def left-container
