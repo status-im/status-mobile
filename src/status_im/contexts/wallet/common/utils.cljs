@@ -37,22 +37,31 @@
        (map (comp :raw-balance val))
        (reduce money/add)))
 
+(defn extract-exponent
+  [s]
+  (if-let [index (string/index-of s "e")]
+    (subs s (+ index 2))
+    nil))
+
 (defn calc-max-crypto-decimals
   [value]
   (let [str-representation (str value)
+        exponent           (extract-exponent str-representation)
         decimal-part       (second (clojure.string/split str-representation #"\."))
         count              (count (take-while #(= \0 %) decimal-part))]
-    (if-let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
-      (if (= \1 first-non-zero-digit)
-        (inc count)
-        count)
-      count)))
+    (or exponent
+        (if-let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+          (if (= \1 first-non-zero-digit)
+            (inc count)
+            count)
+          count))))
 
 (defn prettify-crypto
-  [market-values-per-currency token-units]
+  [{:keys [market-values-per-currency symbol]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (/ 0.01 price)
         count          (calc-max-crypto-decimals one-cent-value)]
+    (println symbol one-cent-value count)
     (.toFixed token-units count)))
 
 (defn total-token-units-in-all-chains

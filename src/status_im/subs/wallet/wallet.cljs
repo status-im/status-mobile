@@ -191,7 +191,7 @@
                             (neg? change-pct-24hour) :negative
                             :else                    :empty)
      :customization-color color
-     :values              {:crypto-value (utils/prettify-crypto market-values-per-currency token-units)
+     :values              {:crypto-value (utils/prettify-crypto token token-units)
                            :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
 
 (rf/reg-sub
