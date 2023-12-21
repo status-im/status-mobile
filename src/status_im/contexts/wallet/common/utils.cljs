@@ -48,8 +48,8 @@
   (let [str-representation (str value)
         decimal-part       (second (clojure.string/split str-representation #"\."))
         exponent           (extract-exponent str-representation)
-        count              (count (take-while #(= \0 %) decimal-part))
-        max-decimals       (or exponent count)]
+        zeroes-count       (count (take-while #(= \0 %) decimal-part))
+        max-decimals       (or exponent zeroes-count)]
     (let [first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
       (if (= \1 first-non-zero-digit)
         (inc max-decimals)
