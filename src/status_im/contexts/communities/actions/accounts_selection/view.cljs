@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
@@ -58,7 +57,6 @@
          :weight              :semi-bold
          :size                :paragraph-1}
         (i18n/label :t/address-to-share)]
-
        [quo/category
         {:list-type :settings
          :data      [{:title             (i18n/label :t/join-as-a-member)
@@ -71,14 +69,14 @@
                                           :data accounts}
                       :description-props {:text (i18n/label :t/all-addresses)}}
                      {:title             (i18n/label :t/for-airdrops)
-                      :on-press          not-implemented/alert
+                      :on-press          #(rf/dispatch [:open-modal :airdrop-addresses
+                                                        {:community-id id}])
                       :description       :text
                       :action            :arrow
                       :label             :preview
                       :label-props       {:type :accounts
-                                          :data (take 1 accounts)}
+                                          :data [(first accounts)]}
                       :description-props {:text (-> accounts first :name)}}]}]
-
        [quo/text
         {:style               style/section-title
          :accessibility-label :community-rules-title
