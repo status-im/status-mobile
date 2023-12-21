@@ -7,7 +7,6 @@
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs] 
-    [status-im.contexts.wallet.temp :as temp] 
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -52,19 +51,6 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(defn activity-item
-  [item]
-  [:<>
-   [quo/divider-date (:timestamp item)]
-   [quo/wallet-activity item]])
-
-(defn activity-section
-  []
-  [rn/flat-list
-   {:data      temp/collectible-activities
-    :style     {:flex 1}
-    :render-fn activity-item}])
-
 (defn collectible-actions-sheet
   []
   [quo/action-drawer
@@ -91,13 +77,9 @@
       (let [collectible               (rf/sub [:wallet/last-collectible-details])
             {:keys [collectible-data preview-url
                     collection-data]} collectible
-            {traits           :traits
-             collectible-name :name}  collectible-data
             {collection-image :image-url
              collection-name  :name}  collection-data
-            chain-id                  (rf/sub [:wallet/last-collectible-chain-id])
-            {collectible-name :name
-             description      :description} collectible-data]
+            {collectible-name :name} collectible-data]
         [scroll-page/scroll-page
          {:navigate-back? true
           :height         148
