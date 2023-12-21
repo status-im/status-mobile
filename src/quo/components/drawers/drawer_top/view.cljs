@@ -160,7 +160,8 @@
     [rn/view {:style style/title-container}
      [text/text
       {:size   :heading-2
-       :weight :semi-bold}
+       :weight :semi-bold
+       :style  {:color (when blur? colors/white)}}
       title]
      (when title-icon
        [icons/icon title-icon

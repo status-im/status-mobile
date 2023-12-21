@@ -28,16 +28,20 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(704613)
     def test_links_open_universal_links_from_chat(self):
-        profile_urls = [
-            "https://status.app/u/G10A4B0JdgwyRww90WXtnP1oNH1ZLQNM0yX0Ja9YyAMjrqSZIYINOHCbFhrnKRAcPGStPxCMJDSZlGCKzmZrJcimHY8BbcXlORrElv_BbQEegnMDPx1g9C5VVNl0fE4y#zQ3shwQPhRuDJSjVGVBnTjCdgXy5i9WQaeVPdGJD6yTarJQSj",
-            "https://status.app/u#zQ3shVVxZMwLVEQvuu1KF6h4D2mzVyCC4F4mHLZm5dz5XU1aa"]
+        profile_urls = {
+            "https://status.app/u/G10A4B0JdgwyRww90WXtnP1oNH1ZLQNM0yX0Ja9YyAMjrqSZIYINOHCbFhrnKRAcPGStPxCMJDSZlGCKzmZrJcimHY8BbcXlORrElv_BbQEegnMDPx1g9C5VVNl0fE4y#zQ3shwQPhRuDJSjVGVBnTjCdgXy5i9WQaeVPdGJD6yTarJQSj": "zQ3...arJQSj",
+            "https://status.app/u#zQ3shVVxZMwLVEQvuu1KF6h4D2mzVyCC4F4mHLZm5dz5XU1aa": "zQ3...5XU1aa",
+            "https://status.app/u/CweACg0KC1Rlc3RVc2VyRTJFAw==#zQ3shcFXYnGXxJZnsMThziUNMwyA5uGLp58bLGmfb3qaWD1F6": "TestUserE2E"}
 
-        for url in profile_urls:
+        for url, text in profile_urls.items():
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
-            if not self.channel.profile_add_to_contacts_button.is_element_displayed(
-                    10) or not self.profile_view.default_username_text.text.endswith(url[-6:]):
+            if self.channel.profile_add_to_contacts_button.is_element_displayed(10):
+                username_text = self.profile_view.default_username_text.text
+                if not (username_text.endswith(url[-6:]) or username_text == text):
+                    self.errors.append("Incorrect username is shown for profile url %s" % url)
+            else:
                 self.errors.append("Profile was not opened by the profile url %s" % url)
             self.home.navigate_back_to_chat_view()
 
@@ -45,6 +49,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             "https://status.app/c/G8EAAGTiXKuwNbVVAu0GNLD-XzX4oz_E8oC1-7qSLikaTnCuG9Ag13ZgQKrMd8En9Qcpuaj3Qx3mfZ1atZzH8Zw-x_sFJ_MDv0P_7YfqoV-pNr3V4dsza-jVk41GaCGWasJb92Oer8qggaoNWf0tYCgSH19VonXciKPUz3ITdgke#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
             "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
             "https://status.app/c#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
+            "https://status.app/c/ixiACjAKCHRlc3RDb21tEhZkemZ4Z2Nodmpra2xra2xrbCAgbGxsGAYiByM4OEIwRkYqARQD#zQ3shuK3RAMBGtNWJ5QAKtuGeyEhiwko5gXhyGg6T89Q2xrHq"
         ]
         for url in closed_community_urls:
             self.channel.chat_message_input.clear()
@@ -65,15 +70,16 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         profile_links = {
             "status-app://u/G10A4B0JdgwyRww90WXtnP1oNH1ZLQNM0yX0Ja9YyAMjrqSZIYINOHCbFhrnKRAcPGStPxCMJDSZlGCKzmZrJcimHY8BbcXlORrElv_BbQEegnMDPx1g9C5VVNl0fE4y#zQ3shwQPhRuDJSjVGVBnTjCdgXy5i9WQaeVPdGJD6yTarJQSj": None,
             "status-app://u#zQ3shVVxZMwLVEQvuu1KF6h4D2mzVyCC4F4mHLZm5dz5XU1aa": None,
-            "status-app://u/Ow==#zQ3shsKnV5HJMWJR61c6dssWzHszdbLfBoMF1gcLtSQAYdw2d": "Restored desktop"
+            "status-app://u/Ow==#zQ3shsKnV5HJMWJR61c6dssWzHszdbLfBoMF1gcLtSQAYdw2d": "Restored desktop",
+            "status-app://u/CweACg0KC1Rlc3RVc2VyRTJFAw==#zQ3shcFXYnGXxJZnsMThziUNMwyA5uGLp58bLGmfb3qaWD1F6": "TestUserE2E"
         }
         for link, text in profile_links.items():
             self.browser_view.open_url(link)
+            shown_name_text = self.profile_view.default_username_text.text
             if text:
-                name_is_shown = self.profile_view.default_username_text.text == text \
-                                or self.profile_view.default_username_text.text.endswith(link[-6:])
+                name_is_shown = shown_name_text == text or shown_name_text.endswith(link[-6:])
             else:
-                name_is_shown = self.profile_view.default_username_text.text.endswith(link[-6:])
+                name_is_shown = shown_name_text.endswith(link[-6:])
             if not self.channel.profile_add_to_contacts_button.is_element_displayed(10) or not name_is_shown:
                 self.errors.append("Profile was not opened by the profile deep link %s" % link)
             self.browser_view.click_system_back_button()
@@ -81,7 +87,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         community_links = [
             "status-app://c/G8EAAGTiXKuwNbVVAu0GNLD-XzX4oz_E8oC1-7qSLikaTnCuG9Ag13ZgQKrMd8En9Qcpuaj3Qx3mfZ1atZzH8Zw-x_sFJ_MDv0P_7YfqoV-pNr3V4dsza-jVk41GaCGWasJb92Oer8qggaoNWf0tYCgSH19VonXciKPUz3ITdgke#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
             "status-app://c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "status-app://c#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
+            "status-app://c#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
+            "status-app://c/ixiACjAKCHRlc3RDb21tEhZkemZ4Z2Nodmpra2xra2xrbCAgbGxsGAYiByM4OEIwRkYqARQD#zQ3shuK3RAMBGtNWJ5QAKtuGeyEhiwko5gXhyGg6T89Q2xrHq"
         ]
         for link in community_links:
             self.browser_view.open_url(link)

@@ -1,14 +1,14 @@
 (ns status-im.contexts.add-new-contact.events
   (:require
     [clojure.string :as string]
+    [status-im.common.validators :as validators]
     status-im.contexts.add-new-contact.effects
     [status-im.contexts.contacts.events :as data-store.contacts]
     [status-im.navigation.events :as navigation]
     [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]
-    [utils.string :as utils.string]
-    [utils.validators :as validators]))
+    [utils.string :as utils.string]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).

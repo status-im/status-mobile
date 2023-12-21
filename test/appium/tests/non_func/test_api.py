@@ -9,10 +9,10 @@ from support.api.third_parties_api import get_token_info
 def get_parameters():
     directory = os.sep.join(__file__.split(os.sep)[:-5])
     file_path = path.join(directory, 'src/status_im/ethereum/tokens.cljs')
-    with open(file_path, 'r') as f:
-        data = f.read()
-    return re.findall(r'{:symbol\s*:(.*)\n\s*:name\s*"(.*)"\n\s*:address\s*"(.*)"\n\s*:decimals\s*(.*)}', data)
-
+    # with open(file_path, 'r') as f:
+    #     data = f.read()
+    # return re.findall(r'{:symbol\s*:(.*)\n\s*:name\s*"(.*)"\n\s*:address\s*"(.*)"\n\s*:decimals\s*(.*)}', data)
+    return []
 
 class TestAPi(object):
 

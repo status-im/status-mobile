@@ -37,7 +37,7 @@
                               :error-level :highest})]
     [quo/qr-code (assoc props :qr-image-uri qr-media-server-uri)]))
 
-(defn- get-network-short-name-url
+(defn get-network-short-name-url
   [network]
   (case network
     :ethereum "eth:"

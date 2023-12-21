@@ -44,18 +44,18 @@
     subtitle]])
 
 (defn- left-title
-  [{:keys [title label size theme]}]
+  [{:keys [title label size blur? theme]}]
   [rn/view {:style style/title-container}
    [text/text
     {:weight :regular
      :size   :paragraph-2
-     :style  (style/title theme)}
+     :style  (style/title blur? theme)}
     title]
    (when (and (= :graph label) (not= :small size))
      [text/text
       {:weight :regular
        :size   :label
-       :style  (style/title theme)}
+       :style  (style/title blur? theme)}
       (i18n/label :t/days)])])
 
 (defn- left-side
@@ -68,6 +68,7 @@
     {:title title
      :label label
      :size  size
+     :blur? blur?
      :theme theme}]
    (if (= status :loading)
      [left-loading

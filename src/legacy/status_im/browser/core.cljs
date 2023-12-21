@@ -16,6 +16,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
+    [status-im.common.universal-links :as links]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
     [status-im.navigation.events :as navigation]
@@ -27,7 +28,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.universal-links :as links]
     [utils.url :as url]))
 
 (rf/defn update-browser-option
