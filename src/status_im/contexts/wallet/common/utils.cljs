@@ -14,9 +14,9 @@
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
-          (if valid-balance? $ 0)
-          (.toFixed $ 2)
-          (str currency-symbol $))))
+      (if valid-balance? $ 0)
+      (.toFixed $ 2)
+      (str currency-symbol $))))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -103,8 +103,8 @@
 (defn calculate-balance-for-token
   [token]
   (money/bignumber
-    (money/mul (total-token-units-in-all-chains token)
-               (-> token :market-values-per-currency :usd :price))))
+   (money/mul (total-token-units-in-all-chains token)
+              (-> token :market-values-per-currency :usd :price))))
 
 (defn calculate-balance
   [tokens-in-account]
