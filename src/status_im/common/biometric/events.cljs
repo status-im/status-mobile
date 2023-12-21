@@ -53,8 +53,12 @@
   {:events [:biometric/show-message]}
   [_ code]
   (let [handle-error? (and code
-                           (not (contains? #{"USER_CANCELED" "USER_FALLBACK"} code)))
-        content       (if (#{"NOT_AVAILABLE" "NOT_ENROLLED"} code)
+                           (not (contains? #{constants/biometric-error-user-canceled
+                                             constants/biometric-error-user-fallback}
+                                           code)))
+        content       (if (#{constants/biometric-error-not-available
+                             constants/biometric-error-not-enrolled}
+                           code)
                         (i18n/label :t/grant-face-id-permissions)
                         (i18n/label :t/biometric-auth-error {:code code}))]
     (when handle-error?

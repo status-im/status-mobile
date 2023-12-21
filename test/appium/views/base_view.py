@@ -148,11 +148,13 @@ class ProfileButton(TabButton):
         if not self.is_element_displayed():
             ChatsTab(self.driver).click()
         from views.profile_view import ProfileView
-        if desired_element_text == 'privacy':
-            self.click_until_presence_of_element(ProfileView(self.driver).privacy_and_security_button)
-        else:
-            base_view = BaseView(self.driver)
-            self.click_until_presence_of_element(base_view.element_by_text_part(desired_element_text))
+        ### Profile - legacy
+        # if desired_element_text == 'privacy':
+        #     self.click_until_presence_of_element(ProfileView(self.driver).privacy_and_security_button)
+        # else:
+        #     base_view = BaseView(self.driver)
+        #     self.click_until_presence_of_element(base_view.element_by_text_part(desired_element_text))
+        self.click_until_presence_of_element(ProfileView(self.driver).profile_password_button)
         return self.navigate()
 
 
@@ -307,6 +309,10 @@ class BaseView(object):
         self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
         self.sign_in_phrase = SignInPhraseText(self.driver)
         self.toast_content_element = BaseElement(self.driver, accessibility_id="toast-content")
+
+        # share contact screen
+        self.show_qr_button = Button(self.driver, accessibility_id="show-qr-button")
+        self.link_to_profile_button = Button(self.driver, accessibility_id="share-qr-code-info-text")
 
         # checkboxes and toggles
         self.checkbox_button = CheckBox(self.driver, accessibility_id="checkbox-off")
@@ -670,12 +676,17 @@ class BaseView(object):
         time.sleep(3)
 
     def get_public_key(self):
-        self.driver.info("Get public key")
-        profile_view = self.get_profile_view()
-        self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
-        profile_view.share_my_profile_button.click()
-        profile_view.public_key_text.wait_for_visibility_of_element(20)
-        public_key = profile_view.public_key_text.text
+        self.driver.info("Get public key via Share QR button")
+
+        self.show_qr_button.click_until_presence_of_element(self.link_to_profile_button)
+        self.link_to_profile_button.click()
+        public_key = self.driver.get_clipboard_text()
+        # Legacy profile view
+        # profile_view = self.get_profile_view()
+        # self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
+        # profile_view.share_my_profile_button.click()
+        # profile_view.public_key_text.wait_for_visibility_of_element(20)
+        # public_key = profile_view.public_key_text.text
         self.click_system_back_button()
         return public_key
 

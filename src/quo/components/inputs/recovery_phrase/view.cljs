@@ -44,7 +44,8 @@
         set-focused #(reset! state :focused)
         set-default #(reset! state :default)]
     (fn [{:keys [customization-color theme blur? on-focus on-blur mark-errors?
-                 error-pred-current-word error-pred-written-words word-limit]
+                 error-pred-current-word error-pred-written-words word-limit
+                 container-style]
           :or   {customization-color      :blue
                  word-limit               ##Inf
                  error-pred-current-word  (constantly false)
@@ -52,7 +53,7 @@
           :as   props}
          text]
       (let [extra-props (apply dissoc props custom-props)]
-        [rn/view {:style style/container}
+        [rn/view {:style (style/container container-style)}
          [rn/text-input
           (merge {:accessibility-label    :recovery-phrase-input
                   :style                  (style/input)
