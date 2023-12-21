@@ -100,7 +100,6 @@
   [fiat-value change-pct-24hour]
   (money/bignumber (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour)))))
 
-<<<<<<< HEAD
 (defn get-wallet-qr
   [{:keys [wallet-type selected-networks address]}]
   (if (= wallet-type :wallet-multichain)
@@ -110,8 +109,6 @@
       (str $ address))
     address))
 
-=======
->>>>>>> c7e005860 (wallet: best route)
 (def id-to-network
   {constants/mainnet-chain-id  :ethereum
    constants/optimism-chain-id :optimism

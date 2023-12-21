@@ -2439,9 +2439,12 @@
     "copy-all-details": "Copy all details",
     "share-details": "Share details",
     "what-are-you-waiting-for": "What are you waiting for?",
+<<<<<<< HEAD
     "sending-with-elipsis": "Sending...",
     "transaction-confirmed": "Transaction confirmed!",
     "transacation-finalised": "Transaction finalised!",
+=======
+>>>>>>> 97263b3a0 (rebase)
     "no-relevant-tokens": "No relevant tokens",
     "from-label": "From",
     "to-label": "To"
