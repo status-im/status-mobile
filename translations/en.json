@@ -180,6 +180,7 @@
     "address-to-share": "Addresses to share",
     "addresses-for-permissions": "Addresses for permissions",
     "confirm-changes": "Confirm changes",
+    "airdrop-addresses": "Address for airdrops",
     "join-as-a-member": "Join as a Member",
     "all-addresses": "All addresses",
     "for-airdrops": "For airdrops",
@@ -2438,5 +2439,8 @@
     "copy-all-details": "Copy all details",
     "share-details": "Share details",
     "what-are-you-waiting-for": "What are you waiting for?",
-    "no-relevant-tokens": "No relevant tokens"
+    "no-relevant-tokens": "No relevant tokens",
+    "sending-with-elipsis": "Sending...",
+    "transaction-confirmed": "Transaction confirmed!",
+    "transacation-finalised": "Transaction finalised!"
 }

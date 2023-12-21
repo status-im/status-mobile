@@ -1,3 +1,6 @@
+import base64
+import re
+
 import pytest
 from selenium.common.exceptions import TimeoutException
 
@@ -21,7 +24,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_1 = self.home_1.get_public_key()
-        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
+        self.profile_link_2 = self.home_2.get_link_to_profile()
+        self.home_2.close_share_tab_button.click_until_absense_of_element(self.home_2.link_to_profile_text)
         [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
 
@@ -88,9 +92,9 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
     @marks.testrail_id(702851)
     def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
         self.device_2.just_fyi('Creating a new user on Device2')
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.profile_button.click()
-        self.profile_2.logout()
+        # self.home_2.navigate_back_to_home_view()
+        # self.home_2.profile_button.click()
+        self.home_2.reopen_app(sign_in=False)
         new_username = "new user"
         self.device_2.create_user(username=new_username, first_user=False)
 
@@ -139,66 +143,72 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
     @marks.testrail_id(702777)
     def test_add_contact_field_validation(self):
-        self.home_2.just_fyi("Device 2 creates a new user")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.profile_button.click()
-        self.profile_2.logout()
-        new_username_2 = "test user 123"
-        self.device_2.create_user(username=new_username_2, first_user=False)
+        # Profile link encoded data validation
+        encoded_data = re.findall("u/(.*)#", self.profile_link_2)[0]
+        decoded_string = base64.b64decode(encoded_data).decode("utf-8", "ignore")
+        decoded_username = re.sub('[^A-Za-z0-9]+', '', decoded_string)
+        if decoded_username != self.username_2:
+            self.errors.append(
+                "Can't find username '%s' in data which profile link '%s' contains. String '%s' is found instead" % (
+                    self.username_2, self.profile_link_2, decoded_username))
+        public_key_2 = self.profile_link_2.split("#")[-1]
 
-        self.device_2.just_fyi('Device2 sends a contact request to Device1 using his profile link')
-        self.home_2.chats_tab.click()
-        self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
-        self.home_2.add_a_contact_chat_bottom_sheet_button.click()
-        self.home_2.driver.set_clipboard_text("https://status.app/u#" + self.public_key_1)
-        self.home_2.element_by_translation_id("paste").click()
-        self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
-        if self.home_2.user_name_text.is_element_displayed(30):
-            text_name = self.home_2.user_name_text.text
-            if text_name != self.username_1 and text_name != "%s...%s" % (
-                    self.public_key_1[:3], self.public_key_1[-6:]):
+        self.home_1.just_fyi("Device 1 creates a new user")
+        self.profile_1.driver.reset()
+        new_username_1 = "test user 123"
+        self.device_1.create_user(username=new_username_1)
+
+        self.device_1.just_fyi('Device1 sends a contact request to Device2 using his profile link')
+        self.home_1.chats_tab.click()
+        self.home_1.new_chat_button.click_until_presence_of_element(self.home_1.add_a_contact_chat_bottom_sheet_button)
+        self.home_1.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_1.driver.set_clipboard_text(self.profile_link_2)
+        self.home_1.element_by_translation_id("paste").click()
+        self.home_1.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
+        if self.home_1.user_name_text.is_element_displayed(30):
+            text_name = self.home_1.user_name_text.text
+            if text_name != self.username_2 and text_name != "%s...%s" % (public_key_2[:3], public_key_2[-6:]):
                 self.errors.append(
                     "Neither username nor public key is shown on 'Add contact' page after entering valid profile link")
         else:
             self.errors.append("User is not found on 'Add contact' page after entering valid public key")
-        chat_2 = self.home_2.get_chat_view()
-        chat_2.view_profile_new_contact_button.click_until_presence_of_element(chat_2.profile_block_contact_button)
-        chat_2.profile_add_to_contacts_button.click()
+        chat_1 = self.home_1.get_chat_view()
+        chat_1.view_profile_new_contact_button.click_until_presence_of_element(chat_1.profile_block_contact_button)
+        chat_1.profile_add_to_contacts_button.click()
 
-        self.home_1.just_fyi("Device 1 accepts contact request")
-        self.home_1.handle_contact_request(new_username_2)
+        self.home_2.just_fyi("Device 2 accepts contact request")
+        self.home_2.handle_contact_request(new_username_1)
 
-        self.home_2.just_fyi("Device 2 checks that can find already added contact using public key")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
-        self.home_2.add_a_contact_chat_bottom_sheet_button.click()
-        self.home_2.driver.set_clipboard_text(self.public_key_1)
-        self.home_2.element_by_translation_id("paste").click()
-        self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
-        if self.home_2.user_name_text.is_element_displayed(30):
-            text_name = self.home_2.user_name_text.text
-            if text_name != self.username_1 and text_name != "%s...%s" % (
-                    self.public_key_1[:3], self.public_key_1[-6:]):
+        self.home_1.just_fyi("Device 1 checks that can find already added contact using public key")
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.new_chat_button.click_until_presence_of_element(self.home_1.add_a_contact_chat_bottom_sheet_button)
+        self.home_1.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_1.driver.set_clipboard_text(public_key_2)
+        self.home_1.element_by_translation_id("paste").click()
+        self.home_1.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
+        if self.home_1.user_name_text.is_element_displayed(30):
+            text_name = self.home_1.user_name_text.text
+            if text_name != self.username_2 and text_name != "%s...%s" % (public_key_2[:3], public_key_2[-6:]):
                 self.errors.append(
                     "Neither username nor public key is shown on 'Add contact' page after entering valid public key")
         else:
             self.errors.append("User is not found on 'Add contact' page after entering valid public key")
 
-        self.home_1.just_fyi("Device 1 gets sync code")
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.profile_button.click_until_presence_of_element(self.profile_1.default_username_text)
-        sync_code = self.profile_1.get_sync_code()
+        self.home_2.just_fyi("Device 2 gets sync code")
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.profile_button.click_until_presence_of_element(self.profile_2.default_username_text)
+        sync_code = self.profile_2.get_sync_code()
 
         invalid_values = [self.public_key_1[:-1], "random string 123",
                           '0x' + transaction_senders['ETH_ADI_STT_3']['address'], sync_code]
         for value in invalid_values:
-            self.home_2.just_fyi("Device 2 checks adding a contact with invalid value \"%s\"" % value)
-            chat_2.public_key_edit_box.clear()
-            self.home_2.element_by_translation_id("invalid-ens-or-key").wait_for_invisibility_of_element()
-            self.home_2.driver.set_clipboard_text(value)
-            self.home_2.element_by_translation_id("paste").click()
+            self.home_1.just_fyi("Device 1 checks adding a contact with invalid value \"%s\"" % value)
+            chat_1.public_key_edit_box.clear()
+            self.home_1.element_by_translation_id("invalid-ens-or-key").wait_for_invisibility_of_element()
+            self.home_1.driver.set_clipboard_text(value)
+            self.home_1.element_by_translation_id("paste").click()
             try:
-                self.home_2.element_by_translation_id("invalid-ens-or-key").wait_for_visibility_of_element()
+                self.home_1.element_by_translation_id("invalid-ens-or-key").wait_for_visibility_of_element()
             except TimeoutException:
                 self.errors.append("Error message is not shown for value \"%s\"" % value)
 

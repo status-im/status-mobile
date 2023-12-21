@@ -5,6 +5,7 @@
 (defn container
   [content]
   {:flex-direction :row
+   :align-items    :center
    :padding        12
    :padding-top    (get-in constants/layout-dimensions [content :padding-top])
    :height         (get-in constants/layout-dimensions [content :height])})
@@ -17,14 +18,29 @@
    :background-color color})
 
 (def content-container
-  {:padding-left 8})
+  {:flex         1
+   :padding-left 8})
+
+(def right-content-container
+  {:align-items :flex-end})
+
+(def right-bottom-content-container
+  {:flex-direction :row})
+
+(defn author
+  [color]
+  {:height           10
+   :width            10
+   :border-radius    6
+   :background-color color})
 
 (defn content-view
   [{:keys [type index content color]}]
-  (let [{:keys [width height margin-bottom]}
+  (let [{:keys [width height margin-bottom margin-right]}
         (get-in constants/content-dimensions [content index type])]
     {:height           height
      :width            width
      :border-radius    6
      :background-color color
-     :margin-bottom    margin-bottom}))
+     :margin-bottom    margin-bottom
+     :margin-right     margin-right}))

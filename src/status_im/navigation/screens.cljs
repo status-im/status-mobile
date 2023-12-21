@@ -13,6 +13,7 @@
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as
      addresses-for-permissions]
+    [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
@@ -60,6 +61,7 @@
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
+    [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
 
@@ -103,6 +105,10 @@
     {:name      :addresses-for-permissions
      :options   {:sheet? true}
      :component addresses-for-permissions/view}
+
+    {:name      :airdrop-addresses
+     :options   {:sheet? true}
+     :component airdrop-addresses/view}
 
     {:name      :lightbox
      :options   options/lightbox
@@ -329,6 +335,10 @@
     {:name      :wallet-transaction-confirmation
      :options   {:insets {:bottom? true}}
      :component wallet-transaction-confirmation/view}
+
+    {:name      :wallet-transaction-progress
+     :options   {:insets {:bottom? true}}
+     :component wallet-transaction-progress/view}
 
     {:name      :scan-address
      :options   (merge

@@ -187,9 +187,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703133)
     def test_restore_multiaccount_with_waku_backup_remove_switch(self):
-        self.home.navigate_back_to_home_view()
-        profile = self.home.profile_button.click()
-        profile.logout()
+        self.home.reopen_app(sign_in=False)
         self.home.just_fyi("Restore user with predefined communities and contacts")
         self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
 
@@ -241,7 +239,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         if not pytest_config_global['pr_number']:
             self.home.just_fyi("Perform back up")
             self.home.navigate_back_to_home_view()
-            self.home.profile_button.click()
+            profile = self.home.profile_button.click()
+            profile.profile_legacy_button.scroll_and_click()
             profile.sync_settings_button.click()
             profile.backup_settings_button.click()
             profile.perform_backup_button.click()
