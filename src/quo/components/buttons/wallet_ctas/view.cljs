@@ -15,9 +15,8 @@
    {:style               style/button-container
     :accessibility-label accessibility-label}
    [wallet-button/view
-    {:icon          icon
-     :on-press      on-press
-     :on-long-press #(js/alert "long pressed")}]
+    {:icon     icon
+     :on-press on-press}]
    [text/text
     {:weight :medium
      :size   :paragraph-2
