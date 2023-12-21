@@ -33,6 +33,7 @@
   [selected-networks]
   (rf/dispatch [:show-bottom-sheet
                 {:theme :dark
+                 :shell? true
                  :content
                  (fn []
                    [network-preferences/view
