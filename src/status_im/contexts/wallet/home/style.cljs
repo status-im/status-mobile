@@ -21,9 +21,6 @@
 (def separator
   {:width 12})
 
-(def selected-tab-container
-  {:padding-horizontal 8})
-
 (defn home-container
   []
   {:margin-top (safe-area/get-top)

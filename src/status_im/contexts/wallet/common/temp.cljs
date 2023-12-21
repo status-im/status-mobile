@@ -4,19 +4,6 @@
     [status-im.common.resources :as status.resources]
     [utils.i18n :as i18n]))
 
-(defn wallet-overview-state
-  [networks]
-  {:state             :default
-   :time-frame        :none
-   :metrics           :none
-   :balance           "€0.00"
-   :date              "20 Nov 2023"
-   :begin-date        "16 May"
-   :end-date          "25 May"
-   :currency-change   "€0.00"
-   :percentage-change "0.00%"
-   :networks          networks})
-
 (def tokens
   [{:token               :snt
     :token-name          "Status"
