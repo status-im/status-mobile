@@ -1,6 +1,7 @@
 (ns status-im.common.floating-button-page.view
   (:require
     [oops.core :as oops]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
@@ -51,7 +52,8 @@
      :remove-listeners    remove-listeners}))
 
 (defn view
-  [{:keys [header footer]} & children]
+  [{:keys [header footer customization-color gradient-cover?]} &
+   children]
   (reagent/with-let [window-height                (:height (rn/get-window))
                      footer-container-height      (reagent/atom 0)
                      header-height                (reagent/atom 0)
@@ -79,24 +81,25 @@
                                              :content-container-height @content-container-height
                                              :header-height            @header-height
                                              :keyboard-shown?          keyboard-shown?})]
-
-      [rn/view {:style style/page-container}
-       [rn/view {:on-layout set-header-height}
-        header]
-       [rn/scroll-view
-        {:on-scroll               set-content-y-scroll
-         :scroll-event-throttle   64
-         :content-container-style {:flex-grow 1}}
-        (into [rn/view {:on-layout set-content-container-height}]
-              children)]
-       [rn/keyboard-avoiding-view
-        {:style                    style/keyboard-avoiding-view
-         :keyboard-vertical-offset (if platform/ios? (safe-area/get-top) 0)
-         :pointer-events           :box-none}
-        [floating-container/view
-         {:on-layout       set-footer-container-height
-          :keyboard-shown? keyboard-shown?
-          :blur?           show-background?}
-         footer]]])
+      [:<>
+       (when gradient-cover? [quo/gradient-cover {:customization-color customization-color}])
+       [rn/view {:style style/page-container}
+        [rn/view {:on-layout set-header-height}
+         header]
+        [rn/scroll-view
+         {:on-scroll               set-content-y-scroll
+          :scroll-event-throttle   64
+          :content-container-style {:flex-grow 1}}
+         (into [rn/view {:on-layout set-content-container-height}]
+               children)]
+        [rn/keyboard-avoiding-view
+         {:style                    style/keyboard-avoiding-view
+          :keyboard-vertical-offset (if platform/ios? (safe-area/get-top) 0)
+          :pointer-events           :box-none}
+         [floating-container/view
+          {:on-layout       set-footer-container-height
+           :keyboard-shown? keyboard-shown?
+           :blur?           show-background?}
+          footer]]]])
     (finally
      (remove-listeners))))

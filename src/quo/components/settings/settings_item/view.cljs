@@ -10,6 +10,7 @@
     [quo.components.settings.settings-item.style :as style]
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.components.tags.status-tags :as status-tags]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
@@ -101,7 +102,7 @@
      nil)])
 
 (defn- internal-view
-  [{:keys [title on-press action-props accessibility-label container-style] :as props}]
+  [{:keys [title on-press action-props accessibility-label blur? container-style] :as props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            on-press
@@ -109,7 +110,9 @@
    [rn/view {:style (style/left-sub-container props)}
     [image-component props]
     [rn/view {:style style/left-container}
-     [text/text {:weight :medium} title]
+     [text/text
+      {:weight :medium
+       :style  {:color (when blur? colors/white)}} title]
      [description-component props]
      [tag-component props]]]
    [rn/view {:style (style/sub-container (:alignment action-props))}
