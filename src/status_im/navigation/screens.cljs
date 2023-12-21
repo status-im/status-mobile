@@ -55,6 +55,7 @@
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
+    [status-im.contexts.wallet.receive.view :as wallet-receive]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as scan-address]
     [status-im.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
@@ -314,6 +315,10 @@
     {:name      :wallet-backup-recovery-phrase
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
+
+    {:name      :wallet-receive
+     :options   options/transparent-screen-options
+     :component wallet-receive/view}
 
     {:name      :wallet-saved-addresses
      :component wallet-saved-addresses/view}
