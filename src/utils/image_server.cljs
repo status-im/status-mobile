@@ -190,10 +190,10 @@
   check `get-font-file-ready` for `font-file`
 
   check `get-account-image-uri-fn` for `override-ring?`"
-  [{:keys [port public-key key-uid theme override-ring? font-file]}]
+  [{:keys [port public-key key-uid theme override-ring? font-file ratio uppercase-ratio]}]
   (fn [{:keys [full-name length size background-color font-size color
                indicator-size indicator-border indicator-color indicator-center-to-edge
-               ring? ring-width override-theme uppercase-ratio ratio]}]
+               ring? ring-width override-theme]}]
     (get-initials-avatar-uri
      {:port                     port
       :public-key               public-key
