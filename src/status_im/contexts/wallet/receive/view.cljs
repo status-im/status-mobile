@@ -32,7 +32,8 @@
 (defn- open-preferences
   [selected-networks]
   (rf/dispatch [:show-bottom-sheet
-                {:content
+                {:theme :dark
+                 :content
                  (fn []
                    [network-preferences/view
                     {:blur?             true
