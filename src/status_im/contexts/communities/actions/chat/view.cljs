@@ -1,11 +1,13 @@
 (ns status-im.contexts.communities.actions.chat.view
   (:require
-   [quo.core :as quo]
-   [status-im.common.mute-drawer.view :as mute-drawer]
-   [status-im.common.muting.helpers :refer [format-mute-till]]
-   [status-im.common.not-implemented :as not-implemented]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [status-im.common.mute-drawer.view :as mute-drawer]
+    [status-im.common.muting.helpers :refer [format-mute-till]]
+    [status-im.common.not-implemented :as not-implemented]
+    [status-im.config :as config]
+    [status-im.contexts.chat.actions.view :as chat-actions]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -83,13 +85,6 @@
    :on-press            not-implemented/alert
    :label               (i18n/label :t/pinned-messages)})
 
-(defn- action-fetch-messages
-  []
-  {:icon                :i/download
-   :right-icon          :i/chevron-right
-   :accessibility-label :chat-fetch-messages
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/fetch-messages)})
 
 (defn- action-invite-people
   []
@@ -141,7 +136,8 @@
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
-         (action-fetch-messages)
+         (when config/fetch-messages-enabled?
+           (chat-actions/fetch-messages chat-id))
          (action-invite-people)
          (action-qr-code)
          (action-share chat-id)]]]
