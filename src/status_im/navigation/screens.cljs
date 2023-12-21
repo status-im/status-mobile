@@ -61,6 +61,7 @@
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
+    [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
 
@@ -334,6 +335,10 @@
     {:name      :wallet-transaction-confirmation
      :options   {:insets {:bottom? true}}
      :component wallet-transaction-confirmation/view}
+
+    {:name      :wallet-transaction-progress
+     :options   {:insets {:bottom? true}}
+     :component wallet-transaction-progress/view}
 
     {:name      :scan-address
      :options   (merge
