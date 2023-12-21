@@ -93,7 +93,6 @@
     [quo.components.wallet.wallet-activity.component-spec]
     [quo.components.wallet.wallet-overview.component-spec]))
 
-<<<<<<< HEAD
   ;; [quo.components.inputs.address-input.component-spec]
   ;; [quo.components.inputs.title-input.component-spec]
   ;; [quo.components.list-items.account.component-spec]
@@ -101,12 +100,3 @@
   ;; [quo.components.list-items.saved-address.component-spec]
   ;; [quo.components.list-items.saved-contact-address.component-spec]
   ;; [quo.components.list-items.token-network.component-spec]
-=======
-;; [quo.components.inputs.address-input.component-spec]
-;; [quo.components.inputs.title-input.component-spec]
-;; [quo.components.list-items.account.component-spec]
-;; [quo.components.list-items.address.component-spec]
-;; [quo.components.list-items.saved-address.component-spec]
-;; [quo.components.list-items.saved-contact-address.component-spec]
-;; [quo.components.list-items.token-network.component-spec]
->>>>>>> 63954db3a (lint)
