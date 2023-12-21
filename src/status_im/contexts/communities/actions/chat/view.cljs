@@ -1,11 +1,11 @@
 (ns status-im.contexts.communities.actions.chat.view
   (:require
-    [quo.core :as quo]
-    [status-im.common.mute-drawer.view :as mute-drawer]
-    [status-im.common.muting.helpers :refer [format-mute-till]]
-    [status-im.common.not-implemented :as not-implemented]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [status-im.common.mute-drawer.view :as mute-drawer]
+   [status-im.common.muting.helpers :refer [format-mute-till]]
+   [status-im.common.not-implemented :as not-implemented]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -106,11 +106,11 @@
    :label               (i18n/label :t/show-qr)})
 
 (defn- action-share
-  []
-  {:icon                :i/share
-   :accessibility-label :chat-share
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/share-channel)})
+  [chat-id] 
+      {:icon                :i/share
+       :accessibility-label :chat-share
+       :on-press  #(rf/dispatch [:communities/share-community-channel-url-with-data chat-id]) 
+       :label               (i18n/label :t/share-channel)})
 
 (defn actions
   [{:keys [locked? chat-id]} inside-chat?]
@@ -121,7 +121,7 @@
        [[(action-invite-people)
          (action-token-requirements)
          (action-qr-code)
-         (action-share)]]]
+         (action-share chat-id)]]]
 
       (and (not inside-chat?) (not locked?))
       [quo/action-drawer
@@ -132,7 +132,7 @@
          (action-pinned-messages)
          (action-invite-people)
          (action-qr-code)
-         (action-share)]]]
+         (action-share chat-id)]]]
 
       (and inside-chat? (not locked?))
       [quo/action-drawer
@@ -144,6 +144,6 @@
          (action-fetch-messages)
          (action-invite-people)
          (action-qr-code)
-         (action-share)]]]
+         (action-share chat-id)]]]
 
       :else nil)))

@@ -1,7 +1,8 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
-            [clojure.walk :as walk]
-            [legacy.status-im.ui.components.colors :as colors]
+            [clojure.walk :as walk]  
+            [legacy.status-im.ui.components.colors :as colors] 
+            [react-native.share :as share]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
@@ -177,3 +178,13 @@
                      :params     []
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
+
+
+(rf/reg-event-fx :communities/share-community-channel-url-with-data 
+    (fn [_ [chat-id]]
+      (let [community-id (subs chat-id 0 constants/community-id-length)
+            channel-id (subs chat-id constants/community-id-length)] 
+   {:json-rpc/call [{:method     "wakuext_shareCommunityChannelURLWithData"
+                     :params      [{:CommunityID community-id :ChannelID channel-id}] 
+                     :on-success  #(share/open {:url %}) 
+                     :on-error   #(log/error "failed to retrieve community channel url with data" %)}]})))
