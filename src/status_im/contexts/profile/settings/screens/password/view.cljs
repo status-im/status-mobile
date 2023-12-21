@@ -63,13 +63,15 @@
   (let [insets (safe-area/get-insets)]
     [quo/overlay {:type :shell}
      [rn/view
-      {:style (style/navigation (:top insets))}
+      {:key   :navigation
+       :style (style/navigation (:top insets))}
       [quo/page-nav
        {:background :blur
         :icon-name  :i/arrow-left
         :on-press   #(rf/dispatch [:navigate-back])}]]
      [rn/view
-      {:style style/header}
+      {:key   :header
+       :style style/header}
       [quo/text
        {:accessibility-label :password-settings-label
         :weight              :semi-bold
@@ -77,7 +79,8 @@
         :size                :heading-1}
        (i18n/label :t/password)]]
      [quo/category
-      {:data      [(get-biometric-item theme)
+      {:key       :category
+       :data      [(get-biometric-item theme)
                    (get-change-password-item)]
        :blur?     true
        :list-type :settings}]]))
