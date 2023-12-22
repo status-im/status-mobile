@@ -180,7 +180,7 @@
                             (neg? change-pct-24hour) :negative
                             :else                    :empty)
      :customization-color color
-     :values              {:crypto-value (utils/prettify-crypto token token-units)
+     :values              {:crypto-value (utils/get-standard-crypto-format token token-units)
                            :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
 
 (rf/reg-sub

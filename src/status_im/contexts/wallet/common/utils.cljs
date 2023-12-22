@@ -55,7 +55,8 @@
         (inc max-decimals)
         max-decimals))))
 
-(defn prettify-crypto
+(defn get-standard-crypto-format
+  "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (/ 0.01 price)
