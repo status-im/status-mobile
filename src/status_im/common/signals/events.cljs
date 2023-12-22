@@ -1,7 +1,6 @@
 (ns status-im.common.signals.events
   (:require
     [legacy.status-im.chat.models.message :as models.message]
-    [legacy.status-im.ethereum.subscriptions :as ethereum.subscriptions]
     [legacy.status-im.mailserver.core :as mailserver]
     [legacy.status-im.visibility-status-updates.core :as visibility-status-updates]
     [status-im.common.pairing.events :as pairing]
@@ -70,10 +69,10 @@
       "messages.new"               (messages.transport/sanitize-messages-and-process-response cofx
                                                                                               event-js
                                                                                               true)
-      "wallet"                     (ethereum.subscriptions/new-wallet-event cofx
-                                                                            (js->clj event-js
-                                                                                     :keywordize-keys
-                                                                                     true))
+      "wallet"                     (rf/dispatch [:wallet/signal-fired
+                                                 (js->clj event-js
+                                                          :keywordize-keys
+                                                          true)])
       "local-notifications"        (local-notifications/process cofx
                                                                 (js->clj event-js :keywordize-keys true))
       "community.found"            (link-preview/cache-community-preview-data (js->clj event-js
