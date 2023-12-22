@@ -39,7 +39,6 @@
  :<- [:wallet/ui]
  :-> :tokens-loading?)
 
-
 (rf/reg-sub
  :wallet/current-viewing-account-address
  :<- [:wallet]
@@ -193,7 +192,7 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[{:keys [tokens color]} currency currency-symbol]]
-   (mapv #(calc-token-value % color currency currency-symbol) tokens)))
+   (keep #(calc-token-value % color currency currency-symbol) tokens)))
 
 (rf/reg-sub
  :wallet/network-preference-details
