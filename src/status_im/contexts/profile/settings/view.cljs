@@ -16,11 +16,12 @@
 
 (defn- settings-item-view
   [data]
-  [quo/category
-   {:list-type       :settings
-    :container-style {:padding-bottom 0}
-    :blur?           true
-    :data            data}])
+  [rf/delay-render
+   [quo/category
+    {:list-type       :settings
+     :container-style {:padding-bottom 0}
+     :blur?           true
+     :data            data}]])
 
 (defn scroll-handler
   [event scroll-y]
@@ -29,12 +30,13 @@
 
 (defn- footer
   [logout-press]
-  [rn/view {:style style/footer-container}
-   [quo/logout-button {:on-press logout-press}]])
+  [rf/delay-render
+   [rn/view {:style style/footer-container}
+    [quo/logout-button {:on-press logout-press}]]])
 
 (defn- get-item-layout
   [_ index]
-  #js {:length 48 :offset (* 48 index) :index index})
+  #js {:length 100 :offset (* 100 index) :index index})
 
 (defn- settings-view
   [theme]
@@ -60,12 +62,9 @@
       {:key                             :list
        :header                          [settings.header/view {:scroll-y scroll-y}]
        :data                            settings.items/items
-       :key-fn                          :title
-       :get-item-layout                 get-item-layout
-       :initial-num-to-render           6
-       :max-to-render-per-batch         6
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-item-view
+       :get-item-layout                 get-item-layout
        :footer                          [footer logout-press]
        :scroll-event-throttle           16
        :on-scroll                       #(scroll-handler % scroll-y)
