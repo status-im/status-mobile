@@ -85,7 +85,7 @@
 (def ^:private categorized-and-partitioned
   (->> emoji-data
        (reduce (fn [acc {:keys [group] :as emoji}]
-                 (update-in acc [(-> (emoji-group->category group) :index) :data] conj emoji))
+                 (update-in acc [(-> group emoji-group->category :index) :data] conj emoji))
                categories)
        (reduce (fn [acc {:keys [data] :as item}]
                  (conj acc (assoc item :data (partition-all constants/emojis-per-row data))))

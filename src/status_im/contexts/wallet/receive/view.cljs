@@ -41,7 +41,7 @@
                      :selected-networks (set @selected-networks)
                      :on-save           (fn [chain-ids]
                                           (rf/dispatch [:hide-bottom-sheet])
-                                          (reset! selected-networks (map #(get utils/id-to-network %)
+                                          (reset! selected-networks (map #(get utils/id->network %)
                                                                          chain-ids)))}])}]))
 
 
