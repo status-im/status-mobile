@@ -16,8 +16,7 @@
     [status-im.contexts.emoji-picker.utils :as emoji-picker.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.transforms :as transforms]))
+    [utils.re-frame :as rf]))
 
 (defn- on-press-category
   [{:keys [id index active-category scroll-ref]}]
@@ -30,16 +29,14 @@
 (defn- handle-on-viewable-items-changed
   [{:keys [event active-category should-update-active-category?]}]
   (when should-update-active-category?
-    (let [viewable-item (-> (oops/oget event "viewableItems")
-                            transforms/js->clj
-                            first
-                            :item)
+    (let [viewable-item (some-> event
+                                (oops/oget "viewableItems")
+                                (aget 0)
+                                (oops/oget "item"))
           header?       (and (map? viewable-item) (:header? viewable-item))
           section-key   (if header?
                           (:id viewable-item)
-                          (:id (emoji-picker.data/emoji-group->category (-> viewable-item
-                                                                            first
-                                                                            :group))))]
+                          (-> viewable-item first :group emoji-picker.data/emoji-group->category :id))]
       (when (and (some? section-key) (not= @active-category section-key))
         (reset! active-category section-key)))))
 
@@ -77,11 +74,10 @@
 (defn- emoji-row
   [row-data {:keys [on-select close]}]
   (into [rn/view {:style style/emoji-row-container}]
-        (map-indexed
-         (fn [col-index {:keys [hexcode] :as emoji}]
-           ^{:key hexcode}
-           [emoji-item emoji col-index on-select close])
-         row-data)))
+        (map-indexed (fn [col-index {:keys [hexcode] :as emoji}]
+                       ^{:key hexcode}
+                       [emoji-item emoji col-index on-select close]))
+        row-data))
 
 (defn- render-item
   [item _ _ render-data]
@@ -98,30 +94,30 @@
     :container-style style/empty-results}])
 
 (defn- render-list
-  [{:keys [theme filtered-data on-viewable-items-changed scroll-enabled on-scroll on-select
-           set-scroll-ref close]}]
-  (let [data (if filtered-data filtered-data emoji-picker.data/flatten-data)]
-    [gesture/flat-list
-     {:ref                             set-scroll-ref
-      :scroll-enabled                  @scroll-enabled
-      :data                            data
-      :initial-num-to-render           20
-      :max-to-render-per-batch         20
-      :render-fn                       render-item
-      :get-item-layout                 get-item-layout
-      :keyboard-dismiss-mode           :on-drag
-      :keyboard-should-persist-taps    :handled
-      :shows-vertical-scroll-indicator false
-      :on-scroll-to-index-failed       identity
-      :empty-component                 [empty-result]
-      :on-scroll                       on-scroll
-      :render-data                     {:close     close
-                                        :theme     theme
-                                        :on-select on-select}
-      :content-container-style         style/list-container
-      :viewability-config              {:item-visible-percent-threshold 100
-                                        :minimum-view-time              200}
-      :on-viewable-items-changed       on-viewable-items-changed}]))
+  [{:keys [theme filtered-data on-viewable-items-changed scroll-enabled on-scroll
+           on-select set-scroll-ref close sheet-animating?]}]
+  [gesture/flat-list
+   {:ref                             set-scroll-ref
+    :scroll-enabled                  @scroll-enabled
+    :data                            (or filtered-data emoji-picker.data/flatten-data)
+    :initial-num-to-render           14
+    :max-to-render-per-batch         10
+    :render-fn                       render-item
+    :get-item-layout                 get-item-layout
+    :keyboard-dismiss-mode           :on-drag
+    :keyboard-should-persist-taps    :handled
+    :shows-vertical-scroll-indicator false
+    :on-scroll-to-index-failed       identity
+    :empty-component                 [empty-result]
+    :on-scroll                       on-scroll
+    :render-data                     {:close     close
+                                      :theme     theme
+                                      :on-select on-select}
+    :content-container-style         style/list-container
+    :viewability-config              {:item-visible-percent-threshold 100
+                                      :minimum-view-time              200}
+    :on-viewable-items-changed       on-viewable-items-changed
+    :window-size                     (if @sheet-animating? 1 10)}])
 
 (defn- footer
   [{:keys [theme active-category scroll-ref]}]
@@ -152,12 +148,9 @@
   (reset! search-text ""))
 
 (defn f-view
-  [{:keys [render-emojis? search-text on-change-text clear-states active-category scroll-ref theme]
+  [{:keys [search-text on-change-text clear-states active-category scroll-ref theme]
     :as   sheet-opts}]
   (let [search-active? (pos? (count @search-text))]
-    ;; rendering emojis is heavy on the UI thread, we need to delay rendering until the navigation
-    ;; animation completes. 250 is based on the default 300ms navigation duration.
-    (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis? true)) 250))
     [rn/keyboard-avoiding-view
      {:style                    style/flex-spacer
       :keyboard-vertical-offset 8}
@@ -171,8 +164,7 @@
          :on-change-text on-change-text
          :clearable?     search-active?
          :on-clear       clear-states}]]
-      (when @render-emojis?
-        [render-list sheet-opts])
+      [render-list sheet-opts]
       (when-not search-active?
         [footer
          {:theme           theme
@@ -186,7 +178,6 @@
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")
         filtered-data             (reagent/atom nil)
-        render-emojis?            (reagent/atom false)
         active-category           (reagent/atom constants/default-category)
         clear-states              #(clear {:active-category active-category
                                            :filtered-data   filtered-data
@@ -210,17 +201,15 @@
                                       :should-update-active-category? (nil? @filtered-data)}))]
     (fn [sheet-opts]
       [:f> f-view
-       (merge sheet-opts
-              {:render-emojis?            render-emojis?
-               :search-text               search-text
-               :on-change-text            on-change-text
-               :clear-states              clear-states
-               :filtered-data             @filtered-data
-               :set-scroll-ref            set-scroll-ref
-               :on-select                 on-select
-               :on-viewable-items-changed on-viewable-items-changed
-               :active-category           active-category
-               :scroll-ref                scroll-ref})])))
+       (assoc sheet-opts
+              :search-text               search-text
+              :on-change-text            on-change-text
+              :clear-states              clear-states
+              :filtered-data             @filtered-data
+              :set-scroll-ref            set-scroll-ref
+              :on-select                 on-select
+              :on-viewable-items-changed on-viewable-items-changed
+              :active-category           active-category
+              :scroll-ref                scroll-ref)])))
 
 (def view (quo.theme/with-theme view-internal))
-

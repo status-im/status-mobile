@@ -2443,5 +2443,8 @@
     "on-the-web": "On the web",
     "sending-with-elipsis": "Sending...",
     "transaction-confirmed": "Transaction confirmed!",
-    "transacation-finalised": "Transaction finalised!"
+    "transacation-finalised": "Transaction finalised!",
+    "no-relevant-tokens": "No relevant tokens",
+    "from-label": "From",
+    "to-label": "To"
 }

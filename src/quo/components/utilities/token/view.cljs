@@ -46,7 +46,10 @@
                          :border-color    :grey}
                         size)}
    [quo/text {:style {:color :grey}}
-    (string/capitalize (first (name token)))]])
+    (some-> token
+            name
+            first
+            string/capitalize)]])
 
 (defn view-internal
   "Render a token image.
