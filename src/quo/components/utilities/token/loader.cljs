@@ -8,7 +8,7 @@
   [token]
   (let [token-symbol (cond-> token
                        (keyword? token) name
-                       :always          (comp string/lower-case str))]
+                       :always          string/lower-case)]
     (get tokens token-symbol)))
 
 (def get-token-image (memoize get-token-image*))

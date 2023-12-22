@@ -7,7 +7,6 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [utils.debounce :as debounce]
@@ -54,7 +53,6 @@
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
         {:keys [currency]}        (rf/sub [:profile/profile])
-        networks                  (rf/sub [:wallet/network-details])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         token-symbol              (:symbol token)
@@ -97,18 +95,16 @@
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
                                            {:amount   @input-value
                                             :stack-id :wallet-send-input-amount}])}}]
-      (let [limit-label               (make-limit-label @current-limit)
-            input-num-value           (parse-double @input-value)
-            route                     (rf/sub [:wallet/wallet-send-route])
-            loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-            confirm-disabled?         (or
-                                       (nil? route)
-                                       (empty? @input-value)
-                                       (<= input-num-value 0)
-                                       (> input-num-value (:amount @current-limit)))
-            from-network              (utils/id->network (get-in route [:From :chainId]))
-            to-network                (utils/id->network (get-in route [:To :chainId]))
-            amount                    (str @input-value " " token-symbol)]
+      (let [limit-label       (make-limit-label @current-limit)
+            input-num-value   (parse-double @input-value)
+            token             (rf/sub [:wallet/wallet-send-token])
+            route             (rf/sub [:wallet/wallet-send-route])
+            confirm-disabled? (or
+                               (nil? route)
+                               (empty? @input-value)
+                               (<= input-num-value 0)
+                               (> input-num-value (:amount @current-limit)))
+            amount            (str @input-value " " token-symbol)]
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -133,7 +129,7 @@
           {:container-style style/input-container
            :token           token-symbol
            :currency        currency
-           :networks        networks
+           :networks        (:networks token)
            :title           (i18n/label :t/send-limit {:limit limit-label})
            :conversion      conversion-rate
            :show-keyboard?  false
@@ -141,20 +137,9 @@
            :on-swap         handle-swap
            :on-change-text  (fn [text]
                               (handle-on-change text))}]
-         ;; Network routing content to be added
-         [rn/scroll-view
-          {:content-container-style {:flex-grow       1
-                                     :align-items     :center
-                                     :justify-content :center}}
-          (cond loading-suggested-routes?
-                [quo/text "Loading routes"]
-                (and (not loading-suggested-routes?) route)
-                [routes/view
-                 {:amount       amount
-                  :from-network from-network
-                  :to-network   to-network}]
-                (and (not loading-suggested-routes?) (nil? route))
-                [quo/text "Route not found"])]
+         [routes/view
+          {:amount amount
+           :route  route}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)
