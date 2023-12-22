@@ -126,14 +126,14 @@
              [text/text {:style style/emoji} emoji]]
             [rn/view {:style style/watch-only-container}
              [text/text
-              {:size   :paragraph-2
-               :weight :medium
+              {:size            :paragraph-2
+               :weight          :medium
                :number-of-lines 1
-               :max-width 110
-               :margin-right 4
-               :ellipis-mode :tail
-               :style  (style/account-name type theme)}
-              name] 
+               :max-width       110
+               :margin-right    4
+               :ellipis-mode    :tail
+               :style           (style/account-name type theme)}
+              name]
              (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])
              (when missing-keypair?
                [icon/icon :i/alert {:color (properties/alert-icon-color theme) :size 12}])]]
