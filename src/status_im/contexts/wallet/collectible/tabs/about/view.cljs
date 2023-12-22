@@ -11,18 +11,19 @@
 
 (defn- view-internal
   []
-  (let [window-width (rf/sub [:dimensions/window-width])
-        item-width   (- (/ window-width 2) link-card-space)]
+  (let [window-width               (rf/sub [:dimensions/window-width])
+        item-width                 (- (/ window-width 2) link-card-space)
+        {:keys [collectible-data]} (rf/sub [:wallet/last-collectible-details]) ]
     [:<>
      [rn/view {:style style/title}
       [quo/text
        {:size   :heading-2
         :weight :semi-bold}
-       (:title temp/collectible-about)]]
+       (:name collectible-data)]]
      [rn/view {:style style/description}
       [quo/text
        {:size :paragraph-2}
-       (:description temp/collectible-about)]]
+       (:description collectible-data)]]
      [quo/section-label
       {:container-style style/section-label
        :section         (i18n/label :t/on-the-web)}]
