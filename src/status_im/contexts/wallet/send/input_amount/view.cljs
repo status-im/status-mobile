@@ -9,6 +9,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
+    [status-im.contexts.wallet.send.routes.view :as routes]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -48,32 +49,6 @@
   (if (valid-input? current v)
     (normalize-input current v)
     current))
-
-(defn- routes
-  [{:keys [amount from-network to-network]}]
-  [rn/view {:style style/routes-container}
-   [rn/view {:style style/routes-header-container}
-    [quo/section-label
-     {:section         (i18n/label :t/from-label)
-      :container-style style/section-label}]
-    [quo/section-label
-     {:section         (i18n/label :t/to-label)
-      :container-style (merge style/section-label {:margin-left 64})}]]
-   [rn/view {:style style/routes-inner-container}
-    [quo/network-bridge
-     {:amount  amount
-      :network from-network
-      :status  :default}]
-    [quo/network-link
-     {:shape           :linear
-      :source          from-network
-      :destination     to-network
-      :container-style style/network-link}]
-    [quo/network-bridge
-     {:amount          amount
-      :network         to-network
-      :status          :default
-      :container-style {:right 12}}]]])
 
 (defn- f-view-internal
   [{:keys [rate limit]}]
@@ -131,8 +106,8 @@
                                        (empty? @input-value)
                                        (<= input-num-value 0)
                                        (> input-num-value (:amount @current-limit)))
-            from-network              (utils/id-to-network (get-in route [:From :chainId]))
-            to-network                (utils/id-to-network (get-in route [:To :chainId]))
+            from-network              (utils/id->network (get-in route [:From :chainId]))
+            to-network                (utils/id->network (get-in route [:To :chainId]))
             amount                    (str @input-value " " token-symbol)]
         (rn/use-effect
          (fn []
@@ -174,7 +149,7 @@
           (cond loading-suggested-routes?
                 [quo/text "Loading routes"]
                 (and (not loading-suggested-routes?) route)
-                [routes
+                [routes/view
                  {:amount       amount
                   :from-network from-network
                   :to-network   to-network}]
