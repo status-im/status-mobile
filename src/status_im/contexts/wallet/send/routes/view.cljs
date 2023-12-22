@@ -2,10 +2,12 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.routes.style :as style]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
-(defn view
+(defn loaded-routes
   [{:keys [amount from-network to-network]}]
   [rn/view {:style style/routes-container}
    [rn/view {:style style/routes-header-container}
@@ -30,3 +32,22 @@
       :network         to-network
       :status          :default
       :container-style {:right 12}}]]])
+
+(defn view
+  [{:keys [amount route]}]
+  (let [loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        from-network              (utils/id->network (get-in route [:From :chainId]))
+        to-network                (utils/id->network (get-in route [:To :chainId]))]
+    [rn/scroll-view
+     {:content-container-style {:flex-grow       1
+                                :align-items     :center
+                                :justify-content :center}}
+     (cond loading-suggested-routes?
+           [quo/text "Loading routes"]
+           (and (not loading-suggested-routes?) route)
+           [loaded-routes
+            {:amount       amount
+             :from-network from-network
+             :to-network   to-network}]
+           (and (not loading-suggested-routes?) (nil? route))
+           [quo/text "Route not found"])]))

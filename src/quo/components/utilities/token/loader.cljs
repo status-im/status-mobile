@@ -9,7 +9,11 @@
   [token]
   (let [token-symbol (cond-> token
                        (keyword? token) name
+<<<<<<< HEAD
                        :always          safe-lower-case)]
+=======
+                       :always          string/lower-case)]
+>>>>>>> dca438344 (wallet: loading routes)
     (get tokens token-symbol)))
 
 (def get-token-image (memoize get-token-image*))
