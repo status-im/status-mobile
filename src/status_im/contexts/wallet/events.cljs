@@ -1,20 +1,20 @@
 (ns status-im.contexts.wallet.events
   (:require
-   [camel-snake-kebab.core :as csk]
-   [camel-snake-kebab.extras :as cske]
-   [clojure.string :as string]
-   [react-native.background-timer :as background-timer]
-   [status-im.contexts.wallet.data-store :as data-store]
-   [status-im.contexts.wallet.events.collectibles]
-   [status-im.contexts.wallet.item-types :as item-types]
-   [status-im.contexts.wallet.temp :as temp]
-   [taoensso.timbre :as log]
-   [utils.ethereum.chain :as chain]
-   [utils.ethereum.eip.eip55 :as eip55]
-   [utils.i18n :as i18n]
-   [utils.money :as money]
-   [utils.number]
-   [utils.re-frame :as rf]))
+    [camel-snake-kebab.core :as csk]
+    [camel-snake-kebab.extras :as cske]
+    [clojure.string :as string]
+    [react-native.background-timer :as background-timer]
+    [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.events.collectibles]
+    [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.temp :as temp]
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.i18n :as i18n]
+    [utils.money :as money]
+    [utils.number]
+    [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
