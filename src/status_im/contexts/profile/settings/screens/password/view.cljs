@@ -9,8 +9,7 @@
             [status-im.constants :as constants]
             [status-im.contexts.profile.settings.screens.password.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.security.core :as security]))
+            [utils.re-frame :as rf]))
 
 (defn- on-press-biometric-enable
   [button-label theme]
@@ -24,8 +23,7 @@
       :on-auth-success   (fn [password]
                            (rf/dispatch [:hide-bottom-sheet])
                            (rf/dispatch [:standard-auth/reset-login-password])
-                           (rf/dispatch [:biometric/enable
-                                         (security/mask-data password)]))})))
+                           (rf/dispatch [:biometric/enable password]))})))
 
 (defn- get-biometric-item
   [theme]

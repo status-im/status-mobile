@@ -12,6 +12,7 @@
     [status-im.contexts.syncing.utils :as sync-utils]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
+    [utils.security.core :as security]
     [utils.transforms :as transforms]))
 
 (rf/defn local-pairing-update-role
@@ -108,7 +109,8 @@
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID       key-uid
                                                             :keystorePath ""
-                                                            :password     sha3-pwd
+                                                            :password     (security/safe-unmask-data
+                                                                           sha3-pwd)
                                                             :deviceType   platform/os}
                                              :serverConfig {:timeout 0}}))]
         (native-module/get-connection-string-for-bootstrapping-another-device

@@ -15,6 +15,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
+    [utils.security.core :as security]
     [utils.string]))
 
 (defn keypair-string
@@ -119,9 +120,8 @@
          :track-text          (i18n/label :t/slide-to-create-account)
          :customization-color @account-color
          :on-auth-success     (fn [entered-password]
-                                (prn entered-password)
                                 (rf/dispatch [:wallet/derive-address-and-add-account
-                                              {:sha3-pwd     entered-password
+                                              {:sha3-pwd     (security/safe-unmask-data entered-password)
                                                :emoji        @emoji
                                                :color        @account-color
                                                :path         @derivation-path
