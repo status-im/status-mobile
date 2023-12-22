@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.composer.actions.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
@@ -161,8 +160,7 @@
   []
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
-                 :icon            :info
-                 :icon-color      colors/danger-50-opa-40
+                 :type            :negative
                  :container-style {:top (when platform/ios? 20)}
                  :text            (i18n/label :t/only-6-images)}]))
 

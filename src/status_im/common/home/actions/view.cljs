@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.common.mute-drawer.view :as mute-drawer]
     [status-im.common.muting.helpers :refer [format-mute-till]]
@@ -221,13 +220,11 @@
                                (do
                                  (rf/dispatch [:hide-bottom-sheet])
                                  (rf/dispatch [:toasts/upsert
-                                               {:id         :remove-nickname
-                                                :icon       :i/correct
-                                                :icon-color (colors/theme-colors colors/success-60
-                                                                                 colors/success-50)
-                                                :text       (i18n/label
-                                                             :t/remove-nickname-toast
-                                                             {:secondary-name secondary-name})}])
+                                               {:id   :remove-nickname
+                                                :type :positive
+                                                :text (i18n/label
+                                                       :t/remove-nickname-toast
+                                                       {:secondary-name secondary-name})}])
                                  (rf/dispatch [:contacts/update-nickname public-key ""]))))
       :danger?             false
       :accessibility-label :add-nickname

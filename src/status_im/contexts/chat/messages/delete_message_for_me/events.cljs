@@ -1,6 +1,5 @@
 (ns status-im.contexts.chat.messages.delete-message-for-me.events
   (:require
-    [quo.foundations.colors :as colors]
     [status-im.contexts.chat.messages.list.events :as message-list]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -62,8 +61,7 @@
        :dispatch-n           [[:toasts/close :delete-message-for-me]
                               [:toasts/upsert
                                {:id :delete-message-for-me
-                                :icon :i/info
-                                :icon-color colors/danger-50-opa-40
+                                :type :negative
                                 :message-deleted-for-me-count toast-count
                                 :message-deleted-for-me-undos existing-undos
                                 :text (i18n/label-pluralize toast-count

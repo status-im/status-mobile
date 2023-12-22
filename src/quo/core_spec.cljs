@@ -1,5 +1,10 @@
 (ns quo.core-spec
-  (:require
+  (:require ;; [quo.components.list-items.account.component-spec]
+    ;; [quo.components.list-items.address.component-spec]
+    ;; [quo.components.list-items.saved-address.component-spec]
+    ;; [quo.components.list-items.saved-contact-address.component-spec]
+    ;; [quo.components.list-items.saved-contact-address.component-spec]
+    ;; [quo.components.list-items.token-network.component-spec]
     [quo.components.avatars.account-avatar.component-spec]
     [quo.components.avatars.user-avatar.component-spec]
     [quo.components.banners.banner.component-spec]

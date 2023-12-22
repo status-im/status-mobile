@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.data-store.messages :as data-store.messages]
     [legacy.status-im.data-store.pin-messages :as data-store.pin-messages]
-    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [status-im.common.toasts.events :as toasts]
     [status-im.constants :as constants]
@@ -123,9 +122,8 @@
   {:events [:pin-message/show-pin-limit-modal]}
   [cofx]
   (toasts/upsert cofx
-                 {:icon       :alert
-                  :icon-color colors/danger-50
-                  :text       (i18n/label :t/pin-limit-reached)}))
+                 {:type :negative
+                  :text (i18n/label :t/pin-limit-reached)}))
 
 (rf/defn show-pins-bottom-sheet
   {:events [:pin-message/show-pins-bottom-sheet]}

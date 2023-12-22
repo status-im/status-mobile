@@ -69,9 +69,8 @@
                                       @sync-code-value]
                                      300)
                                     (rf/dispatch [:toasts/upsert
-                                                  {:icon :i/info
-                                                   :icon-color colors/danger-50
+                                                  {:type  :negative
                                                    :theme :dark
-                                                   :text (i18n/label
-                                                          :t/error-this-is-not-a-sync-qr-code)}])))}
+                                                   :text  (i18n/label
+                                                           :t/error-this-is-not-a-sync-qr-code)}])))}
           (i18n/label :t/confirm)]]))))
