@@ -283,9 +283,9 @@ run-ios: export TARGET := ios
 run-ios: export IOS_STATUS_GO_TARGETS := iossimulator/amd64
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
-	npx react-native run-ios --simulator="$(SIMULATOR)"
+	npx react-native run-ios --simulator="$(SIMULATOR)" | xcbeautify
 else
-	npx react-native run-ios
+	npx react-native run-ios | xcbeautify
 endif
 
 show-ios-devices: ##@other shows connected ios device and its name

@@ -96,4 +96,5 @@ in {
   aapt2 = callPackage ./pkgs/aapt2 { };
   patchMavenSources = callPackage ./pkgs/patch-maven-srcs { };
   goMavenResolver = callPackage ./pkgs/go-maven-resolver { };
+  xcbeautify = callPackage ./pkgs/xcbeautify { };
 }
