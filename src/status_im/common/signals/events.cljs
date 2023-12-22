@@ -9,7 +9,7 @@
     [status-im.contexts.chat.messages.transport.events :as messages.transport]
     [status-im.contexts.communities.discover.events]
     [status-im.contexts.profile.login.events :as profile.login]
-    [status-im.contexts.push-notifications.local.events :as local-notifications]
+    [status-im.contexts.profile.push-notifications.local.events :as local-notifications]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
