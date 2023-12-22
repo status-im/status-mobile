@@ -109,7 +109,7 @@
       (str $ address))
     address))
 
-(def id-to-network
+(def id->network
   {constants/mainnet-chain-id  :ethereum
    constants/optimism-chain-id :optimism
    constants/arbitrum-chain-id :arbitrum})

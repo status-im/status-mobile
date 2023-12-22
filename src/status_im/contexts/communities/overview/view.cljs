@@ -212,14 +212,14 @@
 
 (defn add-handlers
   [community-id
-   joined
+   joined-or-spectated
    {:keys [id locked?]
     :or   {locked? false}
     :as   chat}]
   (merge
    chat
    (when (and (not locked?) id)
-     {:on-press      (when joined
+     {:on-press      (when joined-or-spectated
                        (fn []
                          (rf/dispatch [:dismiss-keyboard])
                          (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)]
@@ -231,12 +231,12 @@
       :community-id  community-id})))
 
 (defn add-handlers-to-chats
-  [community-id joined chats]
-  (mapv (partial add-handlers community-id joined) chats))
+  [community-id joined-or-spectated chats]
+  (mapv (partial add-handlers community-id joined-or-spectated) chats))
 
 (defn add-handlers-to-categorized-chats
-  [community-id categorized-chats joined]
-  (let [add-on-press (partial add-handlers-to-chats community-id joined)]
+  [community-id categorized-chats joined-or-spectated]
+  (let [add-on-press (partial add-handlers-to-chats community-id joined-or-spectated)]
     (map (fn [[category v]]
            [category (update v :chats add-on-press)])
          categorized-chats)))
@@ -261,12 +261,13 @@
 (defn community-content
   [community]
   (rf/dispatch [:communities/check-all-community-channels-permissions (:id community)])
-  (fn [{:keys [name description joined images tags color id token-permissions] :as community}
+  (fn [{:keys [name description joined spectated images tags color id token-permissions] :as community}
        pending?
        {:keys [on-category-layout
                collapsed?
                on-first-channel-height-changed]}]
-    (let [chats-by-category (rf/sub [:communities/categorized-channels id])]
+    (let [joined-or-spectated (or joined spectated)
+          chats-by-category   (rf/sub [:communities/categorized-channels id])]
       [:<>
        [rn/view {:style style/community-content-container}
         (when-not collapsed?
@@ -286,7 +287,7 @@
            :community-id                    id
            :community-color                 color
            :on-first-channel-height-changed on-first-channel-height-changed}
-          (add-handlers-to-categorized-chats id chats-by-category joined)])])))
+          (add-handlers-to-categorized-chats id chats-by-category joined-or-spectated)])])))
 
 (defn sticky-category-header
   [_]

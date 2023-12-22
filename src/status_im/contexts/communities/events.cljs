@@ -64,10 +64,21 @@
                      {}
                      (:communityTokensMetadata c)))))
 
-(rf/defn handle-community
-  [{:keys [db]} {:keys [id] :as community}]
-  (when id
-    {:db (assoc-in db [:communities id] (<-rpc community))}))
+(rf/reg-event-fx :communities/handle-community
+ (fn [{:keys [db]}
+      [community-js]]
+   (when community-js
+     (let [{:keys [token-permissions
+                   token-permissions-check joined id]
+            :as   community}      (<-rpc community-js)
+           has-token-permissions? (not (seq token-permissions))]
+       {:db (assoc-in db [:communities id] community)
+        :fx [(when (and has-token-permissions? (not joined))
+               [:dispatch [:chat.ui/spectate-community id]])
+             (when (and has-token-permissions? (nil? token-permissions-check))
+               [:dispatch [:communities/check-permissions-to-join-community id]])
+             (when (and has-token-permissions? (not (get-in db [:community-channels-permissions id])))
+               [:dispatch [:communities/check-all-community-channels-permissions id]])]}))))
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
@@ -110,10 +121,9 @@
 (rf/defn handle-communities
   {:events [:community/fetch-success]}
   [{:keys [db]} communities]
-  {:db (reduce (fn [db {:keys [id] :as community}]
-                 (assoc-in db [:communities id] (<-rpc community)))
-               db
-               communities)})
+  {:fx
+   (->> communities
+        (map #(vector :dispatch [:communities/handle-community %])))})
 
 (rf/reg-event-fx :communities/request-to-join-result
  (fn [{:keys [db]} [community-id request-id response-js]]
@@ -138,7 +148,6 @@
       :js-response true
       :on-success  #(rf/dispatch [:communities/request-to-join-result community-id request-id %])
       :on-error    #(log/error "failed to accept requests-to-join" community-id request-id %)}]}))
-
 
 (rf/reg-event-fx :communities/get-user-requests-to-join-success
  (fn [{:keys [db]} [requests]]
