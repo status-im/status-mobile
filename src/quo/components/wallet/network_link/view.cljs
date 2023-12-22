@@ -2,6 +2,7 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
+    [react-native.core :as rn]
     [react-native.svg :as svg]))
 
 (defn link-linear
@@ -76,10 +77,11 @@
      [svg/stop {:offset "1" :stop-color (colors/resolve-color source theme)}]]]])
 
 (defn- view-internal
-  [{:keys [shape] :as props}]
-  (case shape
-    :linear [link-linear props]
-    :1x     [link-1x props]
-    :2x     [link-2x props]))
+  [{:keys [shape container-style] :as props}]
+  [rn/view {:style container-style}
+   (case shape
+     :linear [link-linear props]
+     :1x     [link-1x props]
+     :2x     [link-2x props])])
 
 (def view (quo.theme/with-theme view-internal))
