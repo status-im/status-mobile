@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.utils
   (:require [clojure.string :as string]
+            [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [utils.money :as money]
             [utils.number]))
@@ -98,3 +99,17 @@
 (defn calculate-fiat-change
   [fiat-value change-pct-24hour]
   (money/bignumber (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour)))))
+
+(defn get-wallet-qr
+  [{:keys [wallet-type selected-networks address]}]
+  (if (= wallet-type :wallet-multichain)
+    (as-> selected-networks $
+      (map qr-codes/get-network-short-name-url $)
+      (apply str $)
+      (str $ address))
+    address))
+
+(def id->network
+  {constants/mainnet-chain-id  :ethereum
+   constants/optimism-chain-id :optimism
+   constants/arbitrum-chain-id :arbitrum})

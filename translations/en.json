@@ -2439,5 +2439,10 @@
     "copy-all-details": "Copy all details",
     "share-details": "Share details",
     "what-are-you-waiting-for": "What are you waiting for?",
-    "no-relevant-tokens": "No relevant tokens"
+    "sending-with-elipsis": "Sending...",
+    "transaction-confirmed": "Transaction confirmed!",
+    "transacation-finalised": "Transaction finalised!",
+    "no-relevant-tokens": "No relevant tokens",
+    "from-label": "From",
+    "to-label": "To"
 }

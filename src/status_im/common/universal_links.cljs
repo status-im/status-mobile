@@ -1,11 +1,13 @@
 (ns status-im.common.universal-links
   (:require
     [clojure.string :as string]
+    [goog.string :as gstring]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [schema.core :as schema]
+    [status-im.constants :as constants]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
@@ -16,6 +18,27 @@
 (def domains
   {:external "https://status.app"
    :internal "status-app:/"})
+
+(def links
+  {:private-chat "%s/p/%s"
+   :user         "%s/u#%s"
+   :browse       "%s/b/%s"})
+
+(defn universal-link?
+  [url]
+  (boolean
+   (re-matches constants/regx-universal-link url)))
+
+(defn deep-link?
+  [url]
+  (boolean
+   (re-matches constants/regx-deep-link url)))
+
+(defn generate-link
+  [link-type domain-type param]
+  (gstring/format (get links link-type)
+                  (get domains domain-type)
+                  param))
 
 (rf/defn handle-browse
   [_ {:keys [url]}]
@@ -63,7 +86,7 @@
   (native-module/deserialize-and-compress-key
    community-id
    (fn [deserialized-key]
-     (rf/dispatch [:chat.ui/resolve-community-info (str deserialized-key)])
+     (rf/dispatch [:chat.ui/fetch-community (str deserialized-key)])
      (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile (str deserialized-key)]))))
 
 (rf/defn handle-community-chat

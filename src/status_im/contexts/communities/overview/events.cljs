@@ -8,41 +8,60 @@
 
 (rf/reg-event-fx :communities/check-all-community-channels-permissions-success
  (fn [{:keys [db]} [community-id response]]
-   {:db (assoc-in db
-         [:community-channels-permissions community-id]
-         (data-store/rpc->channel-permissions (:channels response)))}))
+   {:db (-> db
+            (assoc-in [:community-channels-permissions community-id]
+                      (data-store/rpc->channel-permissions (:channels response)))
+            (assoc-in [:communities community-id :checking-all-channels-permissions?] false))}))
+
+(rf/reg-event-fx :communities/check-all-community-channels-permissions-failed
+ (fn [{:keys [db]} [community-id]]
+   {:db (assoc-in db [:communities community-id :checking-all-channels-permissions?] false)}))
 
 (rf/reg-event-fx :communities/check-all-community-channels-permissions
- (fn [_ [community-id]]
-   {:fx [[:json-rpc/call
-          [{:method     "wakuext_checkAllCommunityChannelsPermissions"
-            :params     [{:CommunityID community-id}]
-            :on-success [:communities/check-all-community-channels-permissions-success community-id]
-            :on-error   (fn [error]
-                          (log/error "failed to check channels permissions"
-                                     {:error error
-                                      :community-id community-id
-                                      :event
-                                      :communities/check-all-community-channels-permissions}))}]]]}))
+ (fn [{:keys [db]} [community-id]]
+   (when (get-in db [:communities community-id])
+     {:db (assoc-in db [:communities community-id :checking-all-channels-permissions?] true)
+      :fx [[:json-rpc/call
+            [{:method     "wakuext_checkAllCommunityChannelsPermissions"
+              :params     [{:CommunityID community-id}]
+              :on-success [:communities/check-all-community-channels-permissions-success community-id]
+              :on-error   (fn [error]
+                            (rf/dispatch [:communities/check-all-community-channels-permissions-failed
+                                          community-id])
+                            (log/error "failed to check channels permissions"
+                                       {:error error
+                                        :community-id community-id
+                                        :event
+                                        :communities/check-all-community-channels-permissions}))}]]]})))
 
-(rf/defn check-permissions-to-join-community-success
-  {:events [:communities/check-permissions-to-join-community-success]}
-  [{:keys [db]} community-id result]
-  {:db (-> db
-           (assoc-in [:communities community-id :checking-permissions?] false)
-           (assoc-in [:communities community-id :token-permissions-check] result))})
+(rf/reg-event-fx :communities/check-permissions-to-join-community-success
+ (fn [{:keys [db]} [community-id result]]
+   {:db (-> db
+            (assoc-in [:communities community-id :checking-permissions?] false)
+            (assoc-in [:communities community-id :token-permissions-check] result))}))
 
-(rf/defn check-permissions-to-join-community
-  {:events [:communities/check-permissions-to-join-community]}
-  [{:keys [db]} community-id]
-  {:db            (-> db
-                      (assoc-in [:communities community-id :checking-permissions?] true)
-                      (assoc-in [:communities community-id :can-request-access?] false))
-   :json-rpc/call [{:method     "wakuext_checkPermissionsToJoinCommunity"
-                    :params     [{:communityId community-id}]
-                    :on-success #(rf/dispatch [:communities/check-permissions-to-join-community-success
-                                               community-id %])
-                    :on-error   #(log/error "failed to request to join community" community-id %)}]})
+(rf/reg-event-fx :communities/check-permissions-to-join-community-failed
+ (fn [{:keys [db]} [community-id]]
+   {:db (assoc-in db [:communities community-id :checking-permissions?] false)}))
+
+(rf/reg-event-fx :communities/check-permissions-to-join-community
+ (fn [{:keys [db]} [community-id]]
+   (when-let [community (get-in db [:communities community-id])]
+     (when-not (:checking-permissions? community)
+       {:db            (-> db
+                           (assoc-in [:communities community-id :checking-permissions?] true)
+                           (assoc-in [:communities community-id :can-request-access?] false))
+        :json-rpc/call [{:method     "wakuext_checkPermissionsToJoinCommunity"
+                         :params     [{:communityId community-id}]
+                         :on-success [:communities/check-permissions-to-join-community-success
+                                      community-id]
+                         :on-error   (fn [err]
+                                       (rf/dispatch
+                                        [:communities/check-permissions-to-join-community-failed
+                                         community-id])
+                                       (log/error "failed to request to join community"
+                                                  community-id
+                                                  err))}]}))))
 
 (defn request-to-join
   [{:keys [db]} [{:keys [community-id password]}]]

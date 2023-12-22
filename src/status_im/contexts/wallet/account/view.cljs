@@ -47,10 +47,11 @@
          [quo/wallet-graph {:time-frame :empty}]
          (when (not watch-only?)
            [quo/wallet-ctas
-            {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])
-             :buy-action    #(rf/dispatch [:show-bottom-sheet
-                                           {:content buy-drawer}])
-             :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}])
+            {:send-action    #(rf/dispatch [:open-modal :wallet-select-address])
+             :receive-action #(rf/dispatch [:open-modal :wallet-receive])
+             :buy-action     #(rf/dispatch [:show-bottom-sheet
+                                            {:content buy-drawer}])
+             :bridge-action  #(rf/dispatch [:open-modal :wallet-bridge])}])
          [quo/tabs
           {:style            style/tabs
            :size             32

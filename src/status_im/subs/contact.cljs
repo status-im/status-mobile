@@ -5,6 +5,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
+    [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.address :as address]
@@ -40,14 +41,20 @@
                   (let [image-name (:type image)
                         clock      (:clock image)
                         uri        (image-server/get-contact-image-uri-fn
-                                    {:port           port
-                                     :public-key     public-key
-                                     :image-name     image-name
+                                    {:port port
+                                     :ratio pixel-ratio/ratio
+                                     :public-key
+                                     public-key
+                                     :image-name
+                                     image-name
                                      ; We pass the clock so that we reload the
                                      ; image if the image is updated
-                                     :clock          clock
-                                     :theme          theme
-                                     :override-ring? (when ens-name false)})]
+                                     :clock
+                                     clock
+                                     :theme
+                                     theme
+                                     :override-ring?
+                                     (when ens-name false)})]
                     (assoc-in acc [(keyword image-name) :fn] uri)))
                 images
                 (vals images))
@@ -56,11 +63,13 @@
                  images
                  {:thumbnail
                   {:fn (image-server/get-initials-avatar-uri-fn
-                        {:port           port
-                         :public-key     public-key
-                         :override-ring? (when ens-name false)
-                         :theme          theme
-                         :font-file      font-file})}})]
+                        {:port            port
+                         :ratio           pixel-ratio/ratio
+                         :public-key      public-key
+                         :override-ring?  (when ens-name false)
+                         :uppercase-ratio (:uppercase-ratio constants/initials-avatar-font-conf)
+                         :theme           theme
+                         :font-file       font-file})}})]
 
     (assoc contact :images images)))
 

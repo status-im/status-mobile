@@ -25,6 +25,7 @@
    :keycard-watermark             (js/require "../resources/images/ui2/keycard-watermark.png")
    :discover                      (js/require "../resources/images/ui2/discover.png")
    :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")
+   :transaction-progress          (js/require "../resources/images/ui2/transaction-progress.png")
    :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")})
 
 (def ui-themed

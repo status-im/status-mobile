@@ -326,6 +326,7 @@ class HomeView(BaseView):
         self.link_to_profile_text = Text(
             self.driver,
             xpath="(//*[@content-desc='link-to-profile']/preceding-sibling::*[1]/android.widget.TextView)[1]")
+        self.close_share_tab_button = Button(self.driver, accessibility_id="close-shell-share-tab")
 
         # Discover communities
         self.community_card_item = BaseElement(self.driver, accessibility_id="community-card-item")
@@ -561,11 +562,14 @@ class HomeView(BaseView):
     def get_contact_rows_count(self):
         return len(ContactDetailsRow(self.driver).find_elements())
 
-    def get_public_key_via_share_profile_tab(self):
-        self.driver.info("Getting public key via Share tab")
+    def get_link_to_profile(self):
         self.show_qr_code_button.click()
         self.link_to_profile_text.wait_for_visibility_of_element()
         self.link_to_profile_text.click()
-        c_text = self.driver.get_clipboard_text()
+        return self.driver.get_clipboard_text()
+
+    def get_public_key_via_share_profile_tab(self):
+        self.driver.info("Getting public key via Share tab")
+        link_to_profile = self.get_link_to_profile()
         self.click_system_back_button()
-        return c_text.split("#")[-1]
+        return link_to_profile.split("#")[-1]

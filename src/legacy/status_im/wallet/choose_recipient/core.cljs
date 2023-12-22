@@ -9,12 +9,12 @@
     [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
     [status-im.common.router :as router]
+    [status-im.common.universal-links :as links]
     [status-im.navigation.events :as navigation]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]
-    [utils.universal-links :as links]
     [utils.url :as url]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet

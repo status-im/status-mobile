@@ -7,7 +7,9 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
+    [status-im.contexts.wallet.send.routes.view :as routes]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -103,7 +105,10 @@
                                        (nil? route)
                                        (empty? @input-value)
                                        (<= input-num-value 0)
-                                       (> input-num-value (:amount @current-limit)))]
+                                       (> input-num-value (:amount @current-limit)))
+            from-network              (utils/id->network (get-in route [:From :chainId]))
+            to-network                (utils/id->network (get-in route [:To :chainId]))
+            amount                    (str @input-value " " token-symbol)]
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -144,7 +149,10 @@
           (cond loading-suggested-routes?
                 [quo/text "Loading routes"]
                 (and (not loading-suggested-routes?) route)
-                [quo/text "Route found"]
+                [routes/view
+                 {:amount       amount
+                  :from-network from-network
+                  :to-network   to-network}]
                 (and (not loading-suggested-routes?) (nil? route))
                 [quo/text "Route not found"])]
          [quo/bottom-actions

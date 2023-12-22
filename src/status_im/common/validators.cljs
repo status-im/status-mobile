@@ -1,4 +1,4 @@
-(ns utils.validators
+(ns status-im.common.validators
   (:require
     [status-im.constants :as constants]))
 
