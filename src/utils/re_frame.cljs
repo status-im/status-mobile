@@ -3,6 +3,7 @@
   (:require
     [re-frame.core :as re-frame]
     [re-frame.interceptor :as interceptor]
+    [reagent.core :as reagent]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime])
   (:refer-clojure :exclude [merge reduce]))
@@ -75,6 +76,14 @@
                              fx-fns)]
     (swap! handler-nesting-level dec)
     res))
+
+(defn delay-render
+  [content]
+  (let [render? (reagent/atom false)]
+    (js/setTimeout #(reset! render? true) 0)
+    (fn []
+      (when @render?
+        content))))
 
 (def sub (comp deref re-frame/subscribe))
 
