@@ -2,9 +2,11 @@
   (:require
     [quo.components.icon :as icon]
     [quo.components.links.internal-link-card.channel.style :as style]
+    [quo.components.links.internal-link-card.schema :as component-schema]
     [quo.components.markdown.text :as text]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- description-comp
   [description]
@@ -85,4 +87,6 @@
       (when banner
         [banner-comp banner])])])
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

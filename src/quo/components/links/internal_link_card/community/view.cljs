@@ -2,9 +2,11 @@
   (:require
     [quo.components.community.community-stat.view :as community-stat]
     [quo.components.links.internal-link-card.community.style :as style]
+    [quo.components.links.internal-link-card.schema :as component-schema]
     [quo.components.markdown.text :as text]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- description-comp
   [description members-count active-members-count]
@@ -68,7 +70,7 @@
     [stat-loading theme]]
    [rn/view {:style (style/loading-thumbnail-box theme)}]])
 
-(defn- internal-view
+(defn- view-internal
   [{:keys [title description loading? icon banner members-count active-members-count
            theme on-press]}]
   [rn/pressable
@@ -87,4 +89,6 @@
       (when banner
         [thumbnail-comp banner])])])
 
-(def view (quo.theme/with-theme internal-view))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

@@ -39,16 +39,17 @@
                                        :i/muted :i/mention :i/mobile :i/close-circle :i/unlocked
                                        :i/locked :i/pin :i/clear :i/check]
                 :active-members-count 12
-                :loading?             true
+                :loading?             false
                 :customization-color  :purple
                 :banner               :light-blur-background
                 :type                 :community
                 :subtitle             "Web 3.0 Designer @ethstatus - DJ, Producer - Dad - YouTuber"})]
     (fn []
       (let [banner (get resources/mock-images (:banner @state) :bored-ape)]
-        [preview/preview-container {:state state :descriptor descriptor}
+        [preview/preview-container {:state      state
+                                    :descriptor descriptor}
          [quo/internal-link-card
           (assoc @state
-                 :banner banner
-                 :icon (resources/get-mock-image :status-logo)
+                 :banner   banner
+                 :icon     (resources/get-mock-image :status-logo)
                  :on-press #(js/alert "You clicked me!"))]]))))

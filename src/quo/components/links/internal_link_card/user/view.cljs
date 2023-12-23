@@ -1,11 +1,13 @@
 (ns quo.components.links.internal-link-card.user.view
   (:require
     [quo.components.icon :as icon]
+    [quo.components.links.internal-link-card.schema :as component-schema]
     [quo.components.links.internal-link-card.user.style :as style]
     [quo.components.markdown.text :as text]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.linear-gradient :as linear-gradient]))
+    [react-native.linear-gradient :as linear-gradient]
+    [schema.core :as schema]))
 
 (defn- subtitle-comp
   [subtitle emojis]
@@ -75,4 +77,6 @@
       (when subtitle
         [subtitle-comp subtitle emojis])]]))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))
