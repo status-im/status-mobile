@@ -69,6 +69,7 @@
     quo.components.inputs.title-input.view
     quo.components.ios.drawer-bar.view
     quo.components.keycard.view
+    quo.components.links.internal-link-card.view
     quo.components.links.link-preview.view
     quo.components.links.url-preview-list.view
     quo.components.links.url-preview.view
@@ -288,6 +289,7 @@
 (def numbered-keyboard quo.components.numbered-keyboard.numbered-keyboard.view/view)
 
 ;;;; Links
+(def internal-link-card quo.components.links.internal-link-card.view/view)
 (def link-preview quo.components.links.link-preview.view/view)
 (def url-preview quo.components.links.url-preview.view/view)
 (def url-preview-list quo.components.links.url-preview-list.view/view)
