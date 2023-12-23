@@ -7,7 +7,5 @@
     <!-- Remove licensing permission since we don't license our app and it blocks F-Droid submissions. -->
     <uses-permission tools:node="remove" android:name="com.android.vending.CHECK_LICENSE"/>
 
-   <application tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" android:usesCleartextTraffic="true" >
-        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false" />
-    </application>
+   <application tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning"  android:usesCleartextTraffic="true" />
 </manifest>
