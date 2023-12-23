@@ -285,7 +285,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                                                                    'username': self.username_1}),
                                                       (self.device_2.create_user, {'username': self.username_2}))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
+        self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
         [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
