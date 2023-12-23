@@ -163,6 +163,11 @@
   #js
    {:MediaStates        {}
     :PlaybackCategories {}})
+
+(def react-native-clipboard
+  #js
+   {:getEnforcing {}})
+
 (def net-info #js {})
 (def touchid #js {})
 (def react-native-image-viewing #js {:default {}})

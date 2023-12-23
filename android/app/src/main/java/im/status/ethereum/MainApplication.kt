@@ -42,9 +42,8 @@ class MainApplication : NavigationApplication() {
         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
     }
 
-    override fun getReactNativeHost(): ReactNativeHost {
-        return mReactNativeHost
-    }
+    override val reactNativeHost: ReactNativeHost
+        get() = mReactNativeHost
 
     override fun onCreate() {
         super.onCreate()
