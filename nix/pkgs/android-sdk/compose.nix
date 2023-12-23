@@ -14,8 +14,8 @@ androidenv.composeAndroidPackages {
   cmdLineToolsVersion = "9.0";
   toolsVersion = "26.1.1";
   platformToolsVersion = "33.0.3";
-  buildToolsVersions = [ "33.0.0" ];
-  platformVersions = [ "33" ];
+  buildToolsVersions = [ "34.0.0" ];
+  platformVersions = [ "34" ];
   cmakeVersions = [ "3.22.1" ];
   ndkVersion = "25.2.9519653";
   includeNDK = true;

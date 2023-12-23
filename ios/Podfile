@@ -32,8 +32,8 @@ abstract_target 'Status' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => false,
     :fabric_enabled => flags[:fabric_enabled],
+    :hermes_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -63,6 +63,21 @@ abstract_target 'Status' do
   end
 
   post_install do |installer|
+    # as per react-native 0.73.2 template
+    # https://github.com/facebook/react-native/blob/c5c0563f209ead8f884204763e02115bd66d1960/packages/react-native/template/ios/Podfile#L49-L52
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+    )
+    # fix code signing error on dependencies
+    installer.pods_project.targets.each do |target|
+      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+        target.build_configurations.each do |config|
+            config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        end
+      end
+    end
     # some of libs wouldn't be build for x86_64 otherwise and that is
     # necessary for ios simulators
     installer.pods_project.targets.each do |target|
