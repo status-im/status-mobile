@@ -12,7 +12,8 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchGlogPhase"
-    "patchBoostPodSpec"
+    "patchNativeNavigationPhase"
+    "patchRNScriptPhase"
     "installPhase"
   ];
 
@@ -78,12 +79,20 @@ stdenv.mkDerivation {
     --replace 'export CXX="' '#export CXX="'
   '';
 
-  # to fix pod checksum issue : https://github.com/facebook/react-native/issues/42180
-  # TODO remove this patch after upgrading to react-native 0.73.2
-  patchBoostPodSpec = ''
-   substituteInPlace ./node_modules/react-native/third-party-podspecs/boost.podspec \
-      --replace 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2' \
-      'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' \
+  # https://github.com/wix/react-native-navigation/issues/7819
+  patchNativeNavigationPhase = ''
+    substituteInPlace ./node_modules/react-native-navigation/lib/android/app/build.gradle \
+      --replace 'JavaVersion.VERSION_1_8' 'JavaVersion.VERSION_17'
+
+    substituteInPlace ./node_modules/react-native-navigation/lib/android/app/src/main/java/com/reactnativenavigation/viewcontrollers/stack/topbar/button/ButtonPresenter.kt \
+      --replace 'host: View?,' 'host: View,' \
+      --replace 'info: AccessibilityNodeInfoCompat?' 'info: AccessibilityNodeInfoCompat'
+  '';
+  
+  # to fix https://github.com/status-im/status-mobile/issues/18548
+  patchRNScriptPhase = ''
+    substituteInPlace ./node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh \
+      --replace 'cp -R -X' 'cp -R'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

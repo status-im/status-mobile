@@ -139,7 +139,7 @@ public class PushNotificationHelper {
     public void registerBroadcastReceiver() {
         this.intentFilter.addAction(ACTION_DELETE_NOTIFICATION);
         this.intentFilter.addAction(ACTION_TAP_STOP);
-        context.registerReceiver(notificationActionReceiver, this.intentFilter);
+        context.registerReceiver(notificationActionReceiver, this.intentFilter, Context.RECEIVER_EXPORTED);
         Log.e(LOG_TAG, "Broadcast Receiver registered");
     }
 
@@ -684,7 +684,7 @@ public class PushNotificationHelper {
 
         return output;
     }
-    
+
     private Person getPerson(Bundle bundle) {
      String name = bundle.getString("name");
 
