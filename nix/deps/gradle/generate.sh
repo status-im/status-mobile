@@ -47,11 +47,14 @@ com.squareup.okio:okio:1.13.0
 com.squareup.okio:okio:1.15.0
 com.squareup.okhttp3:okhttp:3.12.1
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.7.22
-com.android.tools.lint:lint-gradle:30.4.2
-com.android.tools.build:gradle:7.4.2
-com.android.tools.build:aapt2:7.4.2-8841542
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
-org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.9.0' \
+org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.9.0
+org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-resolver-convention.gradle.plugin:0.5.0
+org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.0
+com.android.tools.build:gradle:8.1.1
+com.google.errorprone:error_prone_annotations:2.7.1
+com.android.tools.lint:lint-gradle:31.1.1
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0' \
         >> "${DEPS_LIST}"
 }
 
