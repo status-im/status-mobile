@@ -15,6 +15,8 @@ ext {
     supportLibVersion   = project.supportLibVersion
     gradlePluginVersion = project.gradlePluginVersion
     kotlinVersion       = project.kotlinPluginVersion
+    kotlinPluginVersion = project.kotlinPluginVersion
+    kotlinToolsVersion  = project.kotlinToolsVersion
     ndkVersion = "25.2.9519653"
 }
 
@@ -28,23 +30,11 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinPluginVersion}"
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
 
-subprojects {
-    afterEvaluate {
-        if (project.hasProperty("android")) {
-            android {
-                compileSdkVersion rootProject.ext.compileSdkVersion
-                buildToolsVersion rootProject.ext.buildToolsVersion
-
-                defaultConfig {
-                    targetSdkVersion rootProject.ext.targetSdkVersion
-                }
-            }
-        }
-    }
-}
+apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
     beforeEvaluate {
