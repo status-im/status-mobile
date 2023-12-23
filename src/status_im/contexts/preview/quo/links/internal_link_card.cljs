@@ -46,8 +46,9 @@
                 :subtitle             "Web 3.0 Designer @ethstatus - DJ, Producer - Dad - YouTuber"})]
     (fn []
       (let [banner (get resources/mock-images (:banner @state) :bored-ape)]
-        [preview/preview-container {:state      state
-                                    :descriptor descriptor}
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
          [quo/internal-link-card
           (assoc @state
                  :banner   banner
