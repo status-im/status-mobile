@@ -44,18 +44,18 @@
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
                                (js/setTimeout
-                                 #(share/open
-                                    (if platform/ios?
-                                      {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                                :content address}
-                                                              :item            {:default {:type "text"
-                                                                                          :content
-                                                                                          address}}
-                                                              :linkMetadata    {:title share-title}}]}
-                                      {:title   share-title
-                                       :subject share-title
-                                       :message address}))
-                                 600))}]]]))
+                                #(share/open
+                                  (if platform/ios?
+                                    {:activityItemSources [{:placeholderItem {:type    "text"
+                                                                              :content address}
+                                                            :item            {:default {:type "text"
+                                                                                        :content
+                                                                                        address}}
+                                                            :linkMetadata    {:title share-title}}]}
+                                    {:title   share-title
+                                     :subject share-title
+                                     :message address}))
+                                600))}]]]))
 
 (defn view
   []
