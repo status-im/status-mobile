@@ -8386,10 +8386,10 @@ react-native-touch-id@^4.4.1:
   version "0.1.0"
   resolved "git+https://github.com/status-im/react-native-transparent-video.git#1327fc622f7521269f66299c3aca610494c76fe1"
 
-react-native-webview@13.3.1:
-  version "13.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.3.1.tgz#b368c3fb6a28c81e8ffe74208c899c95ee633ce7"
-  integrity sha512-jTRC7bZB1gedAbZGGzQUnsaU+avZcZrKLT8g+RR0bsGW80tUOvwezwznKvQ+m1xXOpGFTD1B3+AazUP7+jy4mg==
+react-native-webview@13.6.3:
+  version "13.6.3"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.6.3.tgz#f3d26e942ef5cc5a07547f2e47903aa81a68e25e"
+  integrity sha512-IApO0JSj0uAWsBGKWagyfgDYoX29piiMYLmkHtRjKeL1rIVjLoR/bMe7KJ/0X47y86b//a6u3cYQtphyay+F2A==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
