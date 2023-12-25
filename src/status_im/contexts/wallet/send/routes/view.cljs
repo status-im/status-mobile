@@ -7,8 +7,8 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn loaded-routes
-  [{:keys [amount from-network to-network]}]
+(defn routes
+  [{:keys [amount from-network to-network status]}]
   [rn/view {:style style/routes-container}
    [rn/view {:style style/routes-header-container}
     [quo/section-label
@@ -21,7 +21,7 @@
     [quo/network-bridge
      {:amount  amount
       :network from-network
-      :status  :default}]
+      :status  status}]
     [quo/network-link
      {:shape           :linear
       :source          from-network
@@ -30,11 +30,11 @@
     [quo/network-bridge
      {:amount          amount
       :network         to-network
-      :status          :default
+      :status          status
       :container-style {:right 12}}]]])
 
 (defn view
-  [{:keys [amount route]}]
+  [{:keys [amount route networks input-value]}]
   (let [loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         from-network              (utils/id->network (get-in route [:From :chainId]))
         to-network                (utils/id->network (get-in route [:To :chainId]))]
@@ -42,12 +42,14 @@
      {:content-container-style {:flex-grow       1
                                 :align-items     :center
                                 :justify-content :center}}
-     (cond loading-suggested-routes?
-           [quo/text "Loading routes"]
-           (and (not loading-suggested-routes?) route)
-           [loaded-routes
-            {:amount       amount
-             :from-network from-network
-             :to-network   to-network}]
-           (and (not loading-suggested-routes?) (nil? route))
-           [quo/text "Route not found"])]))
+     (when (not (empty? input-value))
+       (if (and (not loading-suggested-routes?) route)
+         [routes
+          {:amount       amount
+           :status       :default
+           :from-network from-network
+           :to-network   to-network}]
+         [routes
+          {:status       :loading
+           :from-network (:network-name (nth (seq networks) 1))
+           :to-network   (:network-name (nth (seq networks) 1))}]))]))

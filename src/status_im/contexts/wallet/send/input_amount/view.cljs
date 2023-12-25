@@ -142,8 +142,10 @@
            :on-change-text  (fn [text]
                               (handle-on-change text))}]
          [routes/view
-          {:amount amount
-           :route  route}]
+          {:amount      amount
+           :route       route
+           :input-value @input-value
+           :networks    (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)
