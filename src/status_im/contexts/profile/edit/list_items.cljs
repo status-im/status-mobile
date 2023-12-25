@@ -11,7 +11,7 @@
         full-name           (profile.utils/displayed-name profile)]
     [{:label (i18n/label :t/profile)
       :items [{:title       (i18n/label :t/name)
-               :on-press    not-implemented/alert
+               :on-press    #(rf/dispatch [:open-modal :edit-name])
                :blur?       true
                :label       :text
                :label-props full-name

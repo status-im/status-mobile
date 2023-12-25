@@ -34,6 +34,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
     [status-im.contexts.profile.settings.view :as settings]
@@ -169,6 +170,10 @@
     {:name      :edit-profile
      :options   options/transparent-screen-options
      :component edit-profile/view}
+
+    {:name      :edit-name
+     :options   options/transparent-screen-options
+     :component edit-name/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
