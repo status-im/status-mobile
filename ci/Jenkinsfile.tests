@@ -52,14 +52,22 @@ pipeline {
             """
           }
         }
-        stage('Tests') {
+        stage('Unit Tests') {
           steps {
             sh """#!/bin/bash
               set -eo pipefail
-              make test 2>&1 | tee -a ${LOG_FILE}
+              make unit-test 2>&1 | tee -a ${LOG_FILE}
             """
           }
         }
+      }
+    }
+    stage('Integration Tests') {
+      steps {
+        sh """#!/bin/bash
+          set -eo pipefail
+          make integration-test 2>&1 | tee -a ${LOG_FILE}
+        """
       }
     }
     stage('Component Tests') {
