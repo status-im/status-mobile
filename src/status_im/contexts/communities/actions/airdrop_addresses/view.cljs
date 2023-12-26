@@ -27,10 +27,7 @@
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name images color]} (rf/sub [:communities/community id])
         logo-uri                    (get-in images [:thumbnail :uri])
-        accounts                    (->> (rf/sub [:wallet])
-                                         :accounts
-                                         vals
-                                         (map #(assoc % :customization-color (:color %))))]
+        accounts                    (rf/sub [:wallet/accounts-with-customization-color])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag

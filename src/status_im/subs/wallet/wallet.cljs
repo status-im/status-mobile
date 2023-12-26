@@ -198,3 +198,11 @@
  (fn [[current-viewing-account network-details]]
    (let [network-preferences-names (:network-preferences-names current-viewing-account)]
      (filter #(contains? network-preferences-names (:network-name %)) network-details))))
+
+(rf/reg-sub
+ :wallet/accounts-with-customization-color
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (map (fn [{:keys [color] :as account}]
+          (assoc account :customization-color color))
+        accounts)))
