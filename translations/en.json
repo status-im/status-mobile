@@ -2468,6 +2468,7 @@
     "transacation-finalised": "Transaction finalised!",
     "from-label": "From",
     "to-label": "To",
+<<<<<<< HEAD
     "oops-wrong-word": "Oops! Wrong word",
     "time-in-mins": "{{minutes}} min",
     "amount-with-currency-symbol": "{{symbol}} {{amount}}",
@@ -2482,9 +2483,21 @@
     "preferred-by-receiver": "Preferred by receiver",
     "not-preferred-by-receiver": "Not preferred by receiver",
     "apply-changes": "Apply changes",
+<<<<<<< HEAD
     "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn't use",
+<<<<<<< HEAD
     "no-routes-found-confirmation": "No routes found. Token type may not be supported or you may don't have enough ETH to cover gas.",
     "watched-account-removed": "Watched address has been removed",
     "account-removed": "Account has been removed",
     "share-address-title": "{{address}} address"
+=======
+    "no-routes-found-confirmation": "No routes found. Token type may not be supported or you may don't have enough ETH to cover gas."
+=======
+    "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn't use"
+=======
+    "check-your-backup": "Check your backup",
+    "confirm-the-position": "Confirm the position of certain words in your recovery phrase"
+>>>>>>> 462646700 (feat: new keypair flow)
+>>>>>>> 2de7b828d (feat: new keypair flow)
+>>>>>>> 60ea8df42 (feat: new keypair flow)
 }
