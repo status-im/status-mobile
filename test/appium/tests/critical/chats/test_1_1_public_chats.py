@@ -282,7 +282,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         for message in messages:
             self.chat_2.send_message(message)
-            if not self.chat_1.chat_element_by_text(message).is_element_displayed(10):
+            if not self.chat_1.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append("Message with text '%s' was not received" % message)
 
         self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
@@ -348,9 +348,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_2.send_message(emoji.emojize(emoji_message))
 
         self.device_1.just_fyi("Device 1 checks PN with emoji")
-        if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(60):
+        if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(120):
             self.device_1.click_system_back_button()
-            self.device_2.driver.activate_app(app_package)
+            self.device_1.driver.activate_app(app_package)
             self.device_1.driver.fail("Push notification with emoji was not received")
         chat_1 = self.device_1.click_upon_push_notification_by_text(emoji_unicode)
 

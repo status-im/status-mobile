@@ -1083,7 +1083,7 @@ class ChatView(BaseView):
         self.driver.info("Adding one more '%s' reaction or removing an added one" % emoji)
         key = emojis[emoji]
         element = Button(self.driver, accessibility_id='emoji-reaction-%s' % key)
-        element.click()
+        element.wait_and_click()
 
     def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()
