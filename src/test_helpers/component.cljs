@@ -5,6 +5,7 @@
             [camel-snake-kebab.core :as camel-snake-kebab]
             [oops.core :as oops]
             [quo.theme :as quo.theme]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
@@ -124,37 +125,49 @@
 (def query-all-by-test-id (with-node-or-screen :query-all-by-test-id))
 (def query-by-test-id (with-node-or-screen :query-by-test-id))
 
-(defn- prepare-translation
-  [translation]
-  (if (exists? js/jest)
-    ;; Translations are treated differently when running with Jest. See
-    ;; test/jest/jestSetup.js for more details.
-    (str "tx:" (name translation))
-    (i18n/label translation)))
-
 (defn get-all-by-translation-text
   ([translation]
-   (get-all-by-translation-text rtl/screen translation))
-  ([^js node translation & args]
-   (apply (with-node-or-screen :get-all-by-text) node (prepare-translation translation) args)))
+   (get-all-by-translation-text rtl/screen translation nil))
+  ([translation translation-opts]
+   (get-all-by-translation-text rtl/screen translation translation-opts))
+  ([^js node translation translation-opts & args]
+   (apply (with-node-or-screen :get-all-by-text)
+          node
+          (i18n/label translation translation-opts)
+          args)))
 
 (defn get-by-translation-text
   ([translation]
-   (get-by-translation-text rtl/screen translation))
-  ([^js node translation & args]
-   (apply (with-node-or-screen :get-by-text) node (prepare-translation translation) args)))
+   (get-by-translation-text rtl/screen translation nil))
+  ([translation translation-opts]
+   (get-by-translation-text rtl/screen translation translation-opts))
+  ([^js node translation translation-opts & args]
+   (apply (with-node-or-screen :get-by-text)
+          node
+          (i18n/label translation translation-opts)
+          args)))
 
 (defn query-by-translation-text
   ([translation]
-   (query-by-translation-text rtl/screen translation))
-  ([^js node translation & args]
-   (apply (with-node-or-screen :query-by-text) node (prepare-translation translation) args)))
+   (query-by-translation-text rtl/screen translation nil))
+  ([translation translation-opts]
+   (query-by-translation-text rtl/screen translation translation-opts))
+  ([^js node translation translation-opts & args]
+   (apply (with-node-or-screen :query-by-text)
+          node
+          (i18n/label translation translation-opts)
+          args)))
 
 (defn query-all-by-translation-text
   ([translation]
-   (query-all-by-translation-text rtl/screen translation))
-  ([^js node translation & args]
-   (apply (with-node-or-screen :query-all-by-text) node (prepare-translation translation) args)))
+   (query-all-by-translation-text rtl/screen translation nil))
+  ([translation translation-opts]
+   (query-all-by-translation-text rtl/screen translation translation-opts))
+  ([^js node translation translation-opts & args]
+   (apply (with-node-or-screen :query-all-by-text)
+          node
+          (i18n/label translation translation-opts)
+          args)))
 
 ;;; Jest utilities
 
@@ -251,3 +264,32 @@
     (let [rerender-fn   (oops/oget component "rerender")
           react-element (reagent/as-element component-updated)]
       (rerender-fn react-element))))
+
+(defn setup-subs
+  "Registers `subscriptions`, a map of key (sub ID) to value (sub computation)."
+  [subscriptions]
+  (doseq [[sub-id v] subscriptions]
+    (re-frame/reg-sub sub-id
+     (fn [_] v))))
+
+(defn setup-restorable-re-frame
+  []
+  (let [restorer (atom nil)]
+    (js/beforeEach
+     (fn []
+       (reset! restorer (re-frame/make-restore-fn))))
+
+    (js/afterEach
+     (fn []
+       (@restorer)))))
+
+(defn setup-fake-timers
+  []
+  (js/beforeEach
+   (fn []
+     (use-fake-timers)))
+
+  (js/afterEach
+   (fn []
+     (clear-all-timers)
+     (use-real-timers))))

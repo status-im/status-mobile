@@ -12,8 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchGlogPhase"
-    "patchJestPhase"
-    "installPhase"    
+    "installPhase"
   ];
 
   # First symlink all modules as is
@@ -54,13 +53,6 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt --replace \
       '-Wl,--build-id' \
       '-Wl,--build-id=none'
-  '';
-
-  # Remove when we upgrade jest to 29
-  patchJestPhase = ''
-    substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
-      'jest.now()' \
-      'Date.now'
   '';
 
   installPhase = ''

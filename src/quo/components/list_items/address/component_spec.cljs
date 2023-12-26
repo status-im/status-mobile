@@ -22,14 +22,14 @@
                               {:backgroundColor colors/white-opa-5})))
 
   (h/test "on-press-out changes state to :active"
-    (h/render [address/view])
+    (h/render [address/view {:active-state? true}])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
                               {:backgroundColor (colors/custom-color :blue 50 10)})))
 
   (h/test "on-press-out changes state to :active with blur? enabled"
-    (h/render [address/view {:blur? true}])
+    (h/render [address/view {:active-state? true :blur? true}])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)

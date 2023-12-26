@@ -150,9 +150,10 @@
                       :source-map    false}}
   :component-test {:target           :npm-module
                    :entries          [;; We need to tell shadow-cljs to compile
-                                      ;; the preloads namespace because it will
-                                      ;; be used directly by Jest in the option
-                                      ;; setupFilesAfterEnv.
+                                      ;; the preloads namespaces because they
+                                      ;; will be used directly by Jest in the
+                                      ;; option setupFilesAfterEnv.
+                                      test-helpers.component-tests-preload
                                       status-im.setup.schema-preload
 
                                       quo.core-spec
@@ -161,5 +162,6 @@
                    :output-dir       "component-spec"
                    :closure-defines  {schema.core/throw-on-error? true}
                    :compiler-options {:warnings-as-errors false
+                                      :warnings           {:fn-deprecated false}
                                       :static-fns         false
                                       :infer-externs      true}}}}
