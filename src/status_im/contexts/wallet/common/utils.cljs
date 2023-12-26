@@ -124,7 +124,6 @@
 (defn- add-balances-per-chain
   [b1 b2]
   {:raw-balance (money/add (:raw-balance b1) (:raw-balance b2))
-   :balance     (money/add (:balance b1) (:balance b2))
    :chain-id    (:chain-id b2)})
 
 (defn- merge-token
@@ -137,13 +136,14 @@
 
 (defn aggregate-tokens-for-all-accounts
   "Receives accounts (seq) and returns aggregated tokens in all accounts"
-  [all-accounts-tokens]
-  (->> all-accounts-tokens
+  [accounts]
+  (->> accounts
+       (map :tokens)
        (reduce
         (fn [result-map tokens-per-account]
           (reduce
            (fn [acc token]
-             (update acc (:symbol token) #(merge-token % token)))
+             (update acc (:symbol token) merge-token token))
            result-map
            tokens-per-account))
         {})
@@ -177,12 +177,10 @@
   [{:keys [token color currency currency-symbol]}]
   (let [token-units                 (total-token-units-in-all-chains token)
         fiat-value                  (total-token-fiat-value currency token)
-        market-values               (get-in token
-                                            [:market-values-per-currency currency]
-                                            (get-in
-                                             token
-                                             [:market-values-per-currency
-                                              constants/profile-default-currency]))
+        market-values               (or (get-in token [:market-values-per-currency currency])
+                                        (get-in token
+                                                [:market-values-per-currency
+                                                 constants/profile-default-currency]))
         {:keys [change-pct-24hour]} market-values
         crypto-value                (get-standard-crypto-format token token-units)
         fiat-value                  (if (string/includes? crypto-value "<")

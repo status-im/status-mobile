@@ -176,7 +176,7 @@
  :wallet/aggregated-tokens
  :<- [:wallet/accounts]
  (fn [accounts]
-   (utils/aggregate-tokens-for-all-accounts (map :tokens accounts))))
+   (utils/aggregate-tokens-for-all-accounts accounts)))
 
 (rf/reg-sub
  :wallet/aggregated-tokens-and-balance

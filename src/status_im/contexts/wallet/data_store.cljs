@@ -54,11 +54,7 @@
 (defn- rpc->balances-per-chain
   [token]
   (-> token
-      (update :balances-per-chain
-              update-vals
-              #(-> %
-                   (update :raw-balance money/bignumber)
-                   (update :balance money/bignumber)))
+      (update :balances-per-chain update-vals #(update % :raw-balance money/bignumber))
       (update :balances-per-chain update-keys (comp utils.number/parse-int name))))
 
 (defn rpc->tokens
