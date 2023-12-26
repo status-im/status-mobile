@@ -36,10 +36,7 @@
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name color images]} (rf/sub [:communities/community id])
-        accounts                    (->> (rf/sub [:wallet])
-                                         :accounts
-                                         vals
-                                         (map #(assoc % :customization-color (:color %))))]
+        accounts                    (rf/sub [:wallet/accounts-with-customization-color])]
     [rn/view {:style style/container}
      [quo/page-nav
       {:text-align          :left
