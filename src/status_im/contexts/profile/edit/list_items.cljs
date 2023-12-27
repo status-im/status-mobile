@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.edit.list-items
-  (:require [status-im.common.not-implemented :as not-implemented]
+  (:require [quo.foundations.colors :as colors]
+            [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -23,7 +24,7 @@
               {:title       (i18n/label :t/accent-colour)
                :on-press    not-implemented/alert
                :label       :color
-               :label-props customization-color
+               :label-props (colors/resolve-color customization-color :dark)
                :blur?       true
                :action      :arrow}]}
 

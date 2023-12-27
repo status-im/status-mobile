@@ -2,11 +2,14 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im.constants :as constants]
             [status-im.contexts.profile.edit.name.style :as style]
+            [status-im.contexts.profile.edit.name.utils :as utils]
             [status-im.contexts.profile.utils :as profile.utils]
+            [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -16,30 +19,50 @@
         profile             (rf/sub [:profile/profile-with-image])
         customization-color (rf/sub [:profile/customization-color])
         display-name        (profile.utils/displayed-name profile)
-        full-name           (reagent/atom display-name)]
-    [quo/overlay {:type :shell}
-     [rn/view
-      {:key   :header
-       :style (style/page-wrapper insets)}
-      [quo/page-nav
-       {:background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])}]
-      [rn/view {:style style/screen-container}
-       [rn/view {:style {:gap 20}}
-        [quo/text-combinations {:title (i18n/label :t/name)}]
-        [quo/input
-         {:default-value  @full-name
-          :auto-focus     true
-          :char-limit     constants/profile-name-max-length
-          :label          (i18n/label :t/name)
-          :on-change-text #(reset! full-name (string/trim %))}]]
-       [quo/button
-        {:accessibility-label :submit-create-profile-button
-         :type                :primary
-         :customization-color customization-color
-         :on-press            (fn []
-                                (rf/dispatch [:onboarding/profile-data-set
-                                              {:display-name @full-name}]))
-         :disabled?           (not (seq @full-name))}
-        (i18n/label :t/save-name)]]]]))
+        full-name           (reagent/atom display-name)
+        error-msg           (reagent/atom nil)
+        validate-name       (debounce/debounce #(reset! error-msg (utils/validation-name
+                                                                   %))
+                                               1000)
+        on-change-text      (fn [s]
+                              (reset! full-name (string/trim s))
+                              (validate-name s))]
+    (fn []
+      [quo/overlay {:type :shell}
+       [rn/view
+        {:key   :header
+         :style (style/page-wrapper insets)}
+        [quo/page-nav
+         {:background :blur
+          :icon-name  :i/arrow-left
+          :on-press   #(rf/dispatch [:navigate-back])}]
+        [rn/keyboard-avoiding-view
+         {:behaviour                (if platform/ios? :padding :height)
+          :keyboard-vertical-offset 12
+          :style                    style/screen-container}
+         [rn/view {:style {:gap 20}}
+          [quo/text-combinations {:title (i18n/label :t/name)}]
+          [quo/input
+           {:theme           :dark
+            :blur?           true
+            :error?          @error-msg
+            :container-style {:margin-bottom -8}
+            :default-value   @full-name
+            :auto-focus      true
+            :char-limit      constants/profile-name-max-length
+            :label           (i18n/label :t/profile-name)
+            :on-change-text  on-change-text}]
+          (when @error-msg
+            [quo/info-message
+             {:type :error
+              :size :default
+              :icon :i/info}
+             @error-msg])]
+         [quo/button
+          {:accessibility-label :submit-create-profile-button
+           :type                :primary
+           :customization-color customization-color
+           :on-press            (fn []
+                                  (rf/dispatch [:profile/edit-name @full-name]))
+           :disabled?           (or (not (seq @full-name)) @error-msg)}
+          (i18n/label :t/save-name)]]]])))
