@@ -203,6 +203,9 @@
 (def danger-50-opa-30 (alpha danger-50 0.3))
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
+;;60 with transparency
+(def danger-60-opa-10 (alpha danger-60 0.1))
+
 ;;;;Warning
 (def warning-50 "#FF7D46")
 (def warning-60 "#CC6438")

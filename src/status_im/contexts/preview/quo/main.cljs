@@ -93,6 +93,7 @@
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.community-list :as
      community-list]
+<<<<<<< HEAD:src/status_im/contexts/preview/quo/main.cljs
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
     [status-im.contexts.preview.quo.list-items.saved-address :as saved-address]
@@ -108,6 +109,23 @@
     [status-im.contexts.preview.quo.messages.gap :as messages-gap]
     [status-im.contexts.preview.quo.messages.system-message :as system-message]
     [status-im.contexts.preview.quo.navigation.bottom-nav-tab :as
+=======
+    [status-im.contexts.quo-preview.list-items.dapp :as dapp]
+    [status-im.contexts.quo-preview.list-items.preview-lists :as preview-lists]
+    [status-im.contexts.quo-preview.list-items.quiz-item :as quiz-item]
+    [status-im.contexts.quo-preview.list-items.saved-address :as saved-address]
+    [status-im.contexts.quo-preview.list-items.saved-contact-address :as saved-contact-address]
+    [status-im.contexts.quo-preview.list-items.token-network :as token-network]
+    [status-im.contexts.quo-preview.list-items.token-value :as token-value]
+    [status-im.contexts.quo-preview.list-items.user-list :as user-list]
+    [status-im.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
+    [status-im.contexts.quo-preview.markdown.list :as markdown-list]
+    [status-im.contexts.quo-preview.markdown.text :as text]
+    [status-im.contexts.quo-preview.messages.author :as messages-author]
+    [status-im.contexts.quo-preview.messages.gap :as messages-gap]
+    [status-im.contexts.quo-preview.messages.system-message :as system-message]
+    [status-im.contexts.quo-preview.navigation.bottom-nav-tab :as
+>>>>>>> 14392545a (quo: quiz item):src/status_im/contexts/quo_preview/main.cljs
      bottom-nav-tab]
     [status-im.contexts.preview.quo.navigation.floating-shell-button :as
      floating-shell-button]
@@ -349,6 +367,8 @@
                         :component dapp/preview}
                        {:name      :preview-lists
                         :component preview-lists/view}
+                       {:name      :quiz-item
+                        :component quiz-item/view}
                        {:name      :saved-address
                         :component saved-address/view}
                        {:name      :saved-contact-address

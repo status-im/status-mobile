@@ -80,6 +80,7 @@
     quo.components.list-items.dapp.view
     quo.components.list-items.menu-item
     quo.components.list-items.preview-list.view
+    quo.components.list-items.quiz-item.view
     quo.components.list-items.saved-address.view
     quo.components.list-items.saved-contact-address.view
     quo.components.list-items.token-network.view
@@ -305,6 +306,7 @@
 (def saved-contact-address quo.components.list-items.saved-contact-address.view/view)
 (def token-network quo.components.list-items.token-network.view/view)
 (def token-value quo.components.list-items.token-value.view/view)
+(def quiz-item quo.components.list-items.quiz-item.view/view)
 
 ;;;; Loaders
 (def skeleton-list quo.components.loaders.skeleton-list.view/view)
