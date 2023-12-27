@@ -7,7 +7,6 @@
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
-
 (defn- view-internal
   [{:keys [state theme number word] :as props}]
   [rn/view {:style (style/container props)}
@@ -17,7 +16,7 @@
        :accessibility-label :number-container}
       [text/text {:weight :semi-bold} number]]
      [text/text {:style (style/text props)}
-      (if (= state :success) word (i18n/label :t/ops))])
+      (if (= state :success) word (i18n/label :t/oops-wrong-word))])
    (when (= state :success)
      [icon/icon :i/check
       {:color               (colors/theme-colors colors/success-50 colors/success-60 theme)

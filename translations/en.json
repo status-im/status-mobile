@@ -2446,5 +2446,5 @@
     "no-relevant-tokens": "No relevant tokens",
     "from-label": "From",
     "to-label": "To",
-    "ops": "Ops! Wrong word"
+    "oops-wrong-word": "Oops! Wrong word"
 }
