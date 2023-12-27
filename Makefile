@@ -335,68 +335,63 @@ shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
 
+_clojure-test:
+	yarn install && \
+	yarn shadow-cljs compile mocks && \
+	yarn shadow-cljs compile test && \
+	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
+
+_clojure-test-watch:
+	yarn install && \
+	yarn shadow-cljs compile mocks && \
+	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
+
 test: export TARGET := clojure
 test: export SHADOW_OUTPUT_TO := target/test/test.js
 test: export SHADOW_NS_REGEXP := .*-test$$
 test: ##@test Run all Clojure tests
-	yarn install
-	yarn shadow-cljs compile mocks && \
-	yarn shadow-cljs compile test && \
-	node --require ./test-resources/override.js target/test/test.js
+test: _clojure-test
 
 test-watch: export TARGET := clojure
 test-watch: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch: export SHADOW_NS_REGEXP := .*-test$$
 test-watch: ##@test Watch all Clojure tests and re-run when files change
-	yarn install
-	yarn shadow-cljs compile mocks && \
-	nodemon --exec 'yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
+test-watch: _clojure-test-watch
 
 test-watch-for-repl: export TARGET := clojure
 test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
+test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
 test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
 	yarn install
 	rm -f target/test/test.js
 	yarn shadow-cljs compile mocks && \
 	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
 		'yarn shadow-cljs watch test --verbose' \
-		'until [ -f ./target/test/test.js ] ; do sleep 1 ; done ; node --require ./test-resources/override.js ./target/test/test.js --repl'
+		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
 unit-test: export TARGET := clojure
 unit-test: export SHADOW_OUTPUT_TO := target/unit_test/test.js
 unit-test: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
 unit-test: ##@test Run unit tests
-	# Here we create the gyp bindings for nodejs
-	yarn install
-	yarn shadow-cljs compile mocks && \
-	yarn shadow-cljs compile test && \
-	node --require ./test-resources/override.js target/unit_test/test.js
+unit-test: _clojure-test
 
 unit-test-watch: export TARGET := clojure
 unit-test-watch: export SHADOW_OUTPUT_TO := target/unit_test/test.js
 unit-test-watch: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
 unit-test-watch: ##@test Watch unit tests and re-run when files change
-	yarn install
-	yarn shadow-cljs compile mocks && \
-	nodemon --exec 'yarn shadow-cljs compile test && node --require ./test-resources/override.js target/unit_test/test.js' -e cljs
+unit-test-watch: _clojure-test-watch
 
 integration-test: export TARGET := clojure
 integration-test: export SHADOW_OUTPUT_TO := target/integration_test/test.js
 integration-test: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
 integration-test: ##@test Run integration tests
-	# Here we create the gyp bindings for nodejs
-	yarn install
-	yarn shadow-cljs compile mocks && \
-	yarn shadow-cljs compile test && \
-	node --require ./test-resources/override.js target/integration_test/test.js
+integration-test: _clojure-test
 
 integration-test-watch: export TARGET := clojure
 integration-test-watch: export SHADOW_OUTPUT_TO := target/integration_test/test.js
 integration-test-watch: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
 integration-test-watch: ##@test Watch integration tests and re-run when files change
-	yarn install
-	yarn shadow-cljs compile mocks && \
-	nodemon --exec 'yarn shadow-cljs compile test && node --require ./test-resources/override.js target/integration_test/test.js' -e cljs
+integration-test-watch: _clojure-test-watch
 
 android-test: jsbundle
 android-test: export TARGET := android
