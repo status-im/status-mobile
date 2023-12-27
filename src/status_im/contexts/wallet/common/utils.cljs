@@ -218,7 +218,7 @@
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
   (if (string/includes? crypto-value "<")
-    "<$0.01"
+    (str "<" currency-symbol "0.01")
     (prettify-balance currency-symbol fiat-value)))
 
 (defn prettify-percentage-change

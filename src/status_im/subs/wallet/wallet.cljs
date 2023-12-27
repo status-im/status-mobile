@@ -161,6 +161,22 @@
      filtered-tokens)))
 
 (rf/reg-sub
+ :wallet/token-by-symbol
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/network-details]
+ (fn [[account networks] [_ token-symbol]]
+   (let [tokens (map (fn [token]
+                       (assoc token
+                              :networks           (utils/network-list token networks)
+                              :total-balance      (utils/total-token-units-in-all-chains token)
+                              :total-balance-fiat (utils/calculate-balance-for-token token)))
+                     (:tokens account))
+         token  (first (filter #(= (string/lower-case (:symbol %))
+                                   (string/lower-case token-symbol))
+                               tokens))]
+     token)))
+
+(rf/reg-sub
  :wallet/accounts-without-current-viewing-account
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
