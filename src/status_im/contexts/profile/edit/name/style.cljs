@@ -2,9 +2,10 @@
 
 (defn page-wrapper
   [insets]
-  {:padding-top    (:top insets)
-   :padding-bottom (:bottom insets)
-   :flex           1})
+  {:padding-top        (:top insets)
+   :padding-bottom     (:bottom insets)
+   :padding-horizontal 1
+   :flex               1})
 
 (def screen-container
   {:flex               1

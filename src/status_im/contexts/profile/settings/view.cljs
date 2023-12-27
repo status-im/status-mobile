@@ -18,10 +18,10 @@
   [data]
   [rf/delay-render
    [quo/category
-    {:list-type       :settings
-     :container-style {:padding-bottom 0}
-     :blur?           true
-     :data            data}]])
+    {:list-type :settings
+     :style     {:padding-bottom 0}
+     :blur?     true
+     :data      data}]])
 
 (defn scroll-handler
   [event scroll-y]

@@ -11,27 +11,28 @@
 (defn- item-view
   [data]
   [quo/category
-   {:list-type :settings
-    :label     (:label data)
+   {:style     {:padding-bottom 9.5}
+    :list-type :settings
     :blur?     true
+    :label     (:label data)
     :data      (:items data)}])
 
 (defn- get-item-layout
   [_ index]
-  #js {:length 48 :offset (* 48 index) :index index})
+  #js {:length 100 :offset (* 100 index) :index index})
 
 (defn view
   []
   (let [insets (safe-area/get-insets)]
-    [quo/overlay {:type :shell}
-     [rn/view
-      {:key   :header
-       :style (style/header-container (:top insets))}
-      [quo/page-nav
-       {:background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])
-        :right-side [{:icon-name :i/reveal :on-press not-implemented/alert}]}]]
+    [quo/overlay
+     {:type            :shell
+      :container-style (style/page-wrapper (:top insets))}
+     [quo/page-nav
+      {:key        :header
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   #(rf/dispatch [:navigate-back])
+       :right-side [{:icon-name :i/reveal :on-press not-implemented/alert}]}]
      [rn/flat-list
       {:key                             :list
        :header                          [header/view]

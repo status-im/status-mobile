@@ -21,48 +21,49 @@
         display-name        (profile.utils/displayed-name profile)
         full-name           (reagent/atom display-name)
         error-msg           (reagent/atom nil)
-        validate-name       (debounce/debounce #(reset! error-msg (utils/validation-name
-                                                                   %))
-                                               1000)
+        validate-name       (debounce/debounce #(reset! error-msg
+                                                  (utils/validation-name %))
+                                               500)
         on-change-text      (fn [s]
                               (reset! full-name (string/trim s))
                               (validate-name s))]
     (fn []
-      [quo/overlay {:type :shell}
-       [rn/view
-        {:key   :header
-         :style (style/page-wrapper insets)}
-        [quo/page-nav
-         {:background :blur
-          :icon-name  :i/arrow-left
-          :on-press   #(rf/dispatch [:navigate-back])}]
-        [rn/keyboard-avoiding-view
-         {:behaviour                (if platform/ios? :padding :height)
-          :keyboard-vertical-offset 12
-          :style                    style/screen-container}
-         [rn/view {:style {:gap 20}}
-          [quo/text-combinations {:title (i18n/label :t/name)}]
-          [quo/input
-           {:theme           :dark
-            :blur?           true
-            :error?          @error-msg
-            :container-style {:margin-bottom -8}
-            :default-value   @full-name
-            :auto-focus      true
-            :char-limit      constants/profile-name-max-length
-            :label           (i18n/label :t/profile-name)
-            :on-change-text  on-change-text}]
-          (when @error-msg
-            [quo/info-message
-             {:type :error
-              :size :default
-              :icon :i/info}
-             @error-msg])]
-         [quo/button
-          {:accessibility-label :submit-create-profile-button
-           :type                :primary
-           :customization-color customization-color
-           :on-press            (fn []
-                                  (rf/dispatch [:profile/edit-name @full-name]))
-           :disabled?           (or (not (seq @full-name)) @error-msg)}
-          (i18n/label :t/save-name)]]]])))
+      [quo/overlay
+       {:type            :shell
+        :container-style (style/page-wrapper insets)}
+       [quo/page-nav
+        {:key        :header
+         :background :blur
+         :icon-name  :i/arrow-left
+         :on-press   #(rf/dispatch [:navigate-back])}]
+       [rn/keyboard-avoiding-view
+        {:key                      :content
+         :behaviour                (if platform/ios? :padding :height)
+         :keyboard-vertical-offset 12
+         :style                    style/screen-container}
+        [rn/view {:style {:gap 22}}
+         [quo/text-combinations {:title (i18n/label :t/name)}]
+         [quo/input
+          {:theme           :dark
+           :blur?           true
+           :error?          @error-msg
+           :container-style {:margin-bottom -11}
+           :default-value   @full-name
+           :auto-focus      true
+           :char-limit      constants/profile-name-max-length
+           :label           (i18n/label :t/profile-name)
+           :on-change-text  on-change-text}]
+         (when (seq @error-msg)
+           [quo/info-message
+            {:type :error
+             :size :default
+             :icon :i/info}
+            @error-msg])]
+        [quo/button
+         {:accessibility-label :submit-create-profile-button
+          :type                :primary
+          :customization-color customization-color
+          :on-press            (fn []
+                                 (rf/dispatch [:profile/edit-name @full-name]))
+          :disabled?           (or (not (seq @full-name)) (seq @error-msg))}
+         (i18n/label :t/save-name)]]])))
