@@ -12,3 +12,6 @@
    :padding-top        14
    :padding-horizontal 20
    :justify-content    :space-between})
+
+(def button-wrapper
+  {:margin-vertical 12})
