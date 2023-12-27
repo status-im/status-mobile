@@ -171,7 +171,11 @@
                                          currency
                                          (get market-values-per-currency
                                               constants/profile-default-currency))
-        {:keys [change-pct-24hour]} market-values]
+        {:keys [change-pct-24hour]} market-values
+        crypto-value (utils/get-standard-crypto-format token token-units)
+        fiat-value   (if (string/includes? crypto-value "<")
+                       "<$0.01"
+                       (utils/prettify-balance currency-symbol fiat-value))]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
@@ -180,8 +184,8 @@
                             (neg? change-pct-24hour) :negative
                             :else                    :empty)
      :customization-color color
-     :values              {:crypto-value (utils/get-standard-crypto-format token token-units)
-                           :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
+     :values              {:crypto-value crypto-value
+                           :fiat-value   fiat-value}}))
 
 (rf/reg-sub
  :wallet/account-token-values
