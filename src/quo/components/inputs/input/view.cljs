@@ -61,7 +61,7 @@
    :container-style])
 
 (defn- base-input
-  [{:keys [on-change-text on-char-limit-reach weight]}]
+  [{:keys [on-change-text on-char-limit-reach weight default-value]}]
   (let [status              (reagent/atom :default)
         internal-on-focus   #(reset! status :focus)
         internal-on-blur    #(reset! status :default)
@@ -72,7 +72,7 @@
                                (if (> height min-height)
                                  (reset! multiple-lines? true)
                                  (reset! multiple-lines? false)))
-        char-count          (reagent/atom 0)
+        char-count          (reagent/atom (count default-value))
         update-char-limit!  (fn [new-text char-limit]
                               (when on-change-text (on-change-text new-text))
                               (let [amount-chars (count new-text)]
