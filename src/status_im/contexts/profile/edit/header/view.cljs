@@ -1,4 +1,4 @@
-(ns status-im.contexts.profile.edit.header
+(ns status-im.contexts.profile.edit.header.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.not-implemented :as not-implemented]

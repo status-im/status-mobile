@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.not-implemented :as not-implemented]
-            [status-im.contexts.profile.edit.header :as header]
+            [status-im.contexts.profile.edit.header.view :as header]
             [status-im.contexts.profile.edit.list-items :as edit.items]
             [status-im.contexts.profile.edit.style :as style]
             [utils.re-frame :as rf]))

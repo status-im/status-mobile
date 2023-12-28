@@ -11,5 +11,4 @@
                                    (re-frame/dispatch [:navigate-back])
                                    (re-frame/dispatch [:toasts/upsert
                                                        {:type :positive
-                                                        :text (i18n/label :t/name-updated)}]))
-                    }]}))
+                                                        :text (i18n/label :t/name-updated)}]))}]}))
