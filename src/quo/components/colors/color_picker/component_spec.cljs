@@ -17,5 +17,3 @@
       (h/fire-event :press (get (h/get-all-by-label-text :color-picker-item) 0))
       (-> (h/expect @selected)
           (.toStrictEqual :blue)))))
-
-

@@ -16,13 +16,12 @@
   (when-not (string/blank? entered-nickname)
     (rf/dispatch [:hide-bottom-sheet])
     (rf/dispatch [:toasts/upsert
-                  {:id         :add-nickname
-                   :icon       :i/correct
-                   :icon-color (colors/theme-colors colors/success-60 colors/success-50)
-                   :text       (i18n/label
-                                :t/set-nickname-toast
-                                {:primary-name primary-name
-                                 :nickname     (string/trim entered-nickname)})}])
+                  {:id   :add-nickname
+                   :type :positive
+                   :text (i18n/label
+                          :t/set-nickname-toast
+                          {:primary-name primary-name
+                           :nickname     (string/trim entered-nickname)})}])
     (rf/dispatch [:contacts/update-nickname public-key (string/trim entered-nickname)])))
 
 (defn nickname-drawer

@@ -48,7 +48,6 @@
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount]}]]
-   (js/alert "Not implemented yet")
    {:db (assoc-in db [:wallet :ui :send :amount] amount)}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes

@@ -5,7 +5,7 @@
 */
 ext {
     // kotlin_version is needed for react-native-camera-kit library
-    kotlin_version      = project.kotlinVersion
+    kotlin_version      = project.kotlinPluginVersion
     RNNKotlinVersion    = project.kotlinPluginVersion
     RNGH_kotlinVersion  = project.kotlinPluginVersion
     buildToolsVersion   = project.buildToolsVersion
@@ -14,8 +14,7 @@ ext {
     targetSdkVersion    = Integer.valueOf(project.targetSdkVersion)
     supportLibVersion   = project.supportLibVersion
     gradlePluginVersion = project.gradlePluginVersion
-    kotlinPluginVersion = project.kotlinPluginVersion
-
+    kotlinVersion       = project.kotlinPluginVersion
     ndkVersion = "25.2.9519653"
 }
 

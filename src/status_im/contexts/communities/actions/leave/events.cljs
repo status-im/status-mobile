@@ -1,6 +1,5 @@
 (ns status-im.contexts.communities.actions.leave.events
-  (:require [legacy.status-im.ui.components.colors :as colors]
-            [taoensso.timbre :as log]
+  (:require [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -9,9 +8,8 @@
    {:fx [[:dispatch [:sanitize-messages-and-process-response response-js]]
          [:dispatch
           [:toasts/upsert
-           {:icon       :correct
-            :icon-color (:positive-01 @colors/theme)
-            :text       (i18n/label :t/you-canceled-the-request)}]]]}))
+           {:type :positive
+            :text (i18n/label :t/you-canceled-the-request)}]]]}))
 
 (rf/reg-event-fx :communities/cancel-request-to-join
  (fn [_ [request-to-join-id]]
@@ -28,9 +26,8 @@
      {:fx [[:dispatch [:sanitize-messages-and-process-response response-js]]
            [:dispatch
             [:toasts/upsert
-             {:icon       :correct
-              :icon-color (:positive-01 @colors/theme)
-              :text       (i18n/label :t/left-community {:community community-name})}]]
+             {:type :positive
+              :text (i18n/label :t/left-community {:community community-name})}]]
            [:dispatch [:activity-center.notifications/fetch-unread-count]]
            [:dispatch [:navigate-back]]]})))
 

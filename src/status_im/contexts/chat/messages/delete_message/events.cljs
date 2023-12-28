@@ -1,6 +1,5 @@
 (ns status-im.contexts.chat.messages.delete-message.events
   (:require
-    [quo.foundations.colors :as colors]
     [status-im.contexts.chat.messages.list.events :as message-list]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -73,9 +72,8 @@
   {:events [:chat.ui/delete-message]}
   [{:keys [db]} {:keys [chat-id message-id]} undo-time-limit-ms]
   (when-let [message (get-in db [:messages chat-id message-id])]
-    ;; all delete message toast are the same toast with id :delete-message-for-everyone
-    ;; new delete operation will reset prev pending deletes' undo timelimit
-    ;; undo will undo all pending deletes
+    ;; all delete message toast are the same toast with id :delete-message-for-everyone new delete
+    ;; operation will reset prev pending deletes' undo timelimit undo will undo all pending deletes
     ;; all pending deletes are stored in toast
     (let [unpin? (should-and-able-to-unpin-to-be-deleted-message
                   db
@@ -107,8 +105,7 @@
        [[:toasts/close :delete-message-for-everyone]
         [:toasts/upsert
          {:id                                 :delete-message-for-everyone
-          :icon                               :i/info
-          :icon-color                         colors/danger-50-opa-40
+          :type                               :negative
           :message-deleted-for-everyone-count toast-count
           :message-deleted-for-everyone-undos existing-undos
           :text                               (i18n/label-pluralize
@@ -164,9 +161,8 @@
   (when-let [message (get-in db [:messages chat-id message-id])]
     (when (or force? (check-before-delete-and-send db chat-id message-id))
       (let [unpin-locally?
-            ;; this only check against local client data
-            ;; generally msg is already unpinned at delete locally phase when user
-            ;; has unpin permission
+            ;; this only check against local client data generally msg is already unpinned at delete
+            ;; locally phase when user has unpin permission
             ;;
             ;; will be true only if
             ;; 1. admin delete an unpinned msg

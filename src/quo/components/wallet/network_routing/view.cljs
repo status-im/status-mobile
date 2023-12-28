@@ -86,10 +86,10 @@
 
 (defn- dashed-line
   [network-name]
-  [rn/view {:style style/dashed-line}
-   (take 19
-         (interleave (repeat [rn/view {:style (style/dashed-line-line network-name)}])
-                     (repeat [rn/view {:style style/dashed-line-space}])))])
+  (into [rn/view {:style style/dashed-line}]
+        (take 19
+              (interleave (repeat [rn/view {:style (style/dashed-line-line network-name)}])
+                          (repeat [rn/view {:style style/dashed-line-space}])))))
 
 (defn f-network-routing-bars
   [_]

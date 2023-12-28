@@ -4,7 +4,6 @@
     [legacy.status-im.data-store.settings :as data-store.settings]
     [legacy.status-im.node.core :as node]
     [native-module.core :as native-module]
-    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.config :as config]
@@ -52,9 +51,8 @@
                 (str "generic-error: " res))]
     (when (some? error)
       (rf/dispatch [:toasts/upsert
-                    {:icon       :i/alert
-                     :icon-color colors/danger-50
-                     :text       error}]))))
+                    {:type :negative
+                     :text error}]))))
 
 (rf/defn preflight-outbound-check-for-local-pairing
   {:events [:syncing/preflight-outbound-check]}

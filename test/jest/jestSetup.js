@@ -7,6 +7,10 @@ require('react-native-reanimated/src/reanimated2/jestUtils').setUpTests();
 
 jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
+jest.mock('react-native-fs', () => ({
+  default: {},
+}));
+
 jest.mock('react-native-navigation', () => ({
   getNavigationConstants: () => ({ constants: [] }),
   Navigation: {

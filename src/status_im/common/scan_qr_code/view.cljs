@@ -141,10 +141,9 @@
         (on-failed-scan)
         (debounce/debounce-and-dispatch
          [:toasts/upsert
-          {:icon       :i/info
-           :icon-color colors/danger-50
-           :theme      :dark
-           :text       error-message}]
+          {:type  :negative
+           :theme :dark
+           :text  error-message}]
          300)))))
 
 (defn- render-camera

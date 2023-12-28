@@ -47,11 +47,11 @@
     (h/render [account/view {:type :tag}])
     (h/is-truthy (h/query-by-label-text :tag-container)))
 
-  (h/test "renders keycard icon if title-icon? is true"
-    (h/render [account/view {:title-icon? true}])
+  (h/test "renders keycard icon if title-icon is present"
+    (h/render [account/view {:title-icon :i/placeholder}])
     (h/is-truthy (h/query-by-label-text :title-icon)))
 
-  (h/test "doesn't render keycard icon if title-icon? is false"
+  (h/test "doesn't render keycard icon if title-icon is missing"
     (h/render [account/view])
     (h/is-falsy (h/query-by-label-text :title-icon)))
 

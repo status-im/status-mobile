@@ -6,14 +6,7 @@
     [test-helpers.component :as h]))
 
 (h/describe "soundtrack component"
-  (h/before-each
-   (fn []
-     (h/use-fake-timers)))
-
-  (h/after-each
-   (fn []
-     (h/clear-all-timers)
-     (h/use-real-timers)))
+  (h/setup-fake-timers)
 
   (h/test "renders soundtrack"
     (with-redefs [audio/get-player-duration (fn [] 2000)]

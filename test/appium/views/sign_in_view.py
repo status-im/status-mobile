@@ -285,20 +285,11 @@ class SignInView(BaseView):
         self.driver.info("## Multiaccount is recovered successfully!", device=False)
         return self.get_home_view()
 
-    def sign_in(self, password=common_password, keycard=False, position=1):
-        self.driver.info("## Sign in (password:%s, keycard:%s)" % (password, str(keycard)), device=False)
-
-        if keycard:
-            from views.keycard_view import KeycardView
-            keycard_view = KeycardView(self.driver)
-            keycard_view.one_button.wait_for_visibility_of_element(10)
-            keycard_view.enter_default_pin()
-            if keycard_view.connect_selected_card_button.is_element_displayed():
-                keycard_view.connect_selected_card_button.click()
-        else:
-            self.password_input.wait_for_visibility_of_element(10)
-            self.password_input.send_keys(password)
-            self.login_button.click()
+    def sign_in(self, password=common_password):
+        self.driver.info("## Sign in (password: %s)" % password, device=False)
+        self.password_input.wait_for_visibility_of_element(10)
+        self.password_input.send_keys(password)
+        self.login_button.click()
         self.driver.info("## Signed in successfully!", device=False)
         return self.get_home_view()
 

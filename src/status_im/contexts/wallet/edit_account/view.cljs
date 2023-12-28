@@ -1,7 +1,5 @@
 (ns status-im.contexts.wallet.edit-account.view
   (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
@@ -13,7 +11,7 @@
             [utils.re-frame :as rf]))
 
 (defn- show-save-account-toast
-  [updated-key theme]
+  [updated-key]
   (let [message (case updated-key
                   :name                     :t/edit-wallet-account-name-updated-message
                   :color                    :t/edit-wallet-account-colour-updated-message
@@ -21,40 +19,35 @@
                   :prod-preferred-chain-ids :t/edit-wallet-network-preferences-updated-message
                   nil)]
     (rf/dispatch [:toasts/upsert
-                  {:id         :edit-account
-                   :icon       :i/correct
-                   :icon-color (colors/resolve-color :success theme)
-                   :text       (i18n/label message)}])))
+                  {:id   :edit-account
+                   :type :positive
+                   :text (i18n/label message)}])))
 
 (defn- save-account
-  [{:keys [account updated-key new-value theme]}]
+  [{:keys [account updated-key new-value]}]
   (let [edited-account-data (assoc account updated-key new-value)]
     (rf/dispatch [:wallet/save-account
                   {:account    edited-account-data
-                   :on-success #(show-save-account-toast updated-key theme)}])))
+                   :on-success #(show-save-account-toast updated-key)}])))
 
-(defn- view-internal
-  [{:keys [theme]}]
+(def view
   (let [edited-account-name  (reagent/atom nil)
         show-confirm-button? (reagent/atom false)
         on-change-color      (fn [edited-color {:keys [color] :as account}]
                                (when (not= edited-color color)
                                  (save-account {:account     account
                                                 :updated-key :color
-                                                :new-value   edited-color
-                                                :theme       theme})))
+                                                :new-value   edited-color})))
         on-change-emoji      (fn [edited-emoji {:keys [emoji] :as account}]
                                (when (not= edited-emoji emoji)
                                  (save-account {:account     account
                                                 :updated-key :emoji
-                                                :new-value   edited-emoji
-                                                :theme       theme})))
+                                                :new-value   edited-emoji})))
         on-confirm-name      (fn [account]
                                (rn/dismiss-keyboard!)
                                (save-account {:account     account
                                               :updated-key :name
-                                              :new-value   @edited-account-name
-                                              :theme       theme}))]
+                                              :new-value   @edited-account-name}))]
     (fn []
       (let [{:keys [name emoji address color] :as account} (rf/sub [:wallet/current-viewing-account])
             network-details                                (rf/sub [:wallet/network-preference-details])
@@ -102,8 +95,5 @@
                                                             (save-account
                                                              {:account     account
                                                               :updated-key :prod-preferred-chain-ids
-                                                              :new-value   chain-ids
-                                                              :theme       theme}))}])}]))
+                                                              :new-value   chain-ids}))}])}]))
            :container-style style/data-item}]]))))
-
-(def view (quo.theme/with-theme view-internal))
