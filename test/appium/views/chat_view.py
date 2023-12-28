@@ -425,7 +425,7 @@ class CommunityView(HomeView):
     def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
         ChatView(self.driver).chat_element_by_text("https://status.app/c/").click_on_link_inside_message_body()
-        self.join_button.click()
+        self.join_button.wait_and_click(120)
         self.join_community_button.scroll_and_click()
         self.password_input.send_keys(password)
         Button(self.driver,
