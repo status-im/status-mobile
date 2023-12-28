@@ -101,11 +101,11 @@
    :label               (i18n/label :t/show-qr)})
 
 (defn- action-share
-  [chat-id] 
-      {:icon                :i/share
-       :accessibility-label :chat-share
-       :on-press  #(rf/dispatch [:communities/share-community-channel-url-with-data chat-id]) 
-       :label               (i18n/label :t/share-channel)})
+  [chat-id]
+  {:icon                :i/share
+   :accessibility-label :chat-share
+   :on-press            #(rf/dispatch [:communities/share-community-channel-url-with-data chat-id])
+   :label               (i18n/label :t/share-channel)})
 
 (defn actions
   [{:keys [locked? chat-id]} inside-chat?]

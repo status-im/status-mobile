@@ -1,8 +1,7 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
-            [legacy.status-im.ui.components.colors :as colors] 
-            [react-native.share :as share]
             [clojure.walk :as walk]
+            [react-native.share :as share]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
@@ -188,11 +187,12 @@
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
 
-(rf/reg-event-fx :communities/share-community-channel-url-with-data 
-    (fn [_ [chat-id]]
-      (let [community-id (subs chat-id 0 constants/community-id-length)
-            channel-id (subs chat-id constants/community-id-length)] 
-   {:json-rpc/call [{:method     "wakuext_shareCommunityChannelURLWithData"
-                     :params      [{:CommunityID community-id :ChannelID channel-id}] 
-                     :on-success  #(share/open {:url %}) 
-                     :on-error   #(log/error "failed to retrieve community channel url with data" %)}]})))
+(rf/reg-event-fx :communities/share-community-channel-url-with-data
+ (fn [_ [chat-id]]
+   (let [community-id (subs chat-id 0 constants/community-id-length)
+         channel-id   (subs chat-id constants/community-id-length)]
+     {:json-rpc/call [{:method     "wakuext_shareCommunityChannelURLWithData"
+                       :params     [{:CommunityID community-id :ChannelID channel-id}]
+                       :on-success #(share/open {:url %})
+                       :on-error   #(log/error "failed to retrieve community channel url with data"
+                                               %)}]})))
