@@ -8,8 +8,8 @@ let
 
   # We follow the master branch of official nixpkgs.
   nixpkgsSrc = builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/e7603eba51f2c7820c0a182c6bbb351181caa8e7.tar.gz";
-    sha256 = "sha256:0mwck8jyr74wh1b7g6nac1mxy6a0rkppz8n12andsffybsipz5jw";
+    url = "https://github.com/NixOS/nixpkgs/archive/428544ae95eec077c7f823b422afae5f174dee4b.tar.gz";
+    sha256 = "sha256:1k46cab8691ryd2yj5v007gf0c8wh8dhx4pq3nlbvizl874y8xxf";
   };
 
   # Status specific configuration defaults
