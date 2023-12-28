@@ -59,10 +59,10 @@
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
-        one-cent-value (/ 0.01 price)
+        one-cent-value (if (pos? price) (/ 0.01 price) 0)
         count          (calc-max-crypto-decimals one-cent-value)]
     (if (< token-units one-cent-value)
-      (str "<" one-cent-value)
+      (str "<" (.toFixed one-cent-value count))
       (.toFixed token-units count))))
 
 (defn total-token-units-in-all-chains
