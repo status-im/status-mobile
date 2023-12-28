@@ -17,94 +17,72 @@ class StatusOkHttpClientFactory : OkHttpClientFactory {
 
     companion object {
         private const val TAG = "StatusOkHttpClientFactory"
+        private const val SLEEP_DURATION = 500L // milliseconds
     }
 
     override fun createNewNetworkModuleClient(): OkHttpClient? {
-        var cert: X509Certificate? = null
-        lateinit var clientCertificates: HandshakeCertificates
-        var certPem = ""
-        // Get TLS PEM certificate from status-go
-        try {
-            // induce half second sleep because sometimes a cert is not immediately available
-            // TODO : remove sleep if App no longer crashes on Android 10 devices with
-            // java.lang.RuntimeException: Could not invoke WebSocketModule.connect
-            Thread.sleep(500)
-            certPem = getCertificatePem()
+        val certPem = getCertificatePem().takeIf { it.isNotEmpty() }
+            ?: return logAndReturnNull("Certificate is empty, cannot create OkHttpClient without a valid certificate")
+
+        val cert = try {
+            induceSleep()
+            // Convert PEM certificate string to X509Certificate object
+            CertificateFactory.getInstance("X.509")
+                .generateCertificate(ByteArrayInputStream(certPem.toByteArray())) as? X509Certificate
+                ?: return logAndReturnNull("Certificate could not be parsed as non-null")
         } catch (e: Exception) {
-            Log.e(TAG, "Could not getImageTLSCert", e)
+            return logAndReturnNull("Could not parse certificate", e)
         }
 
-        if (certPem.isEmpty()) {
-            Log.e(TAG, "Certificate is empty, cannot create OkHttpClient without a valid certificate")
-            return null
+        val clientCertificates = try {
+            induceSleep()
+            // Create HandshakeCertificates object with our certificate
+            HandshakeCertificates.Builder()
+                .addPlatformTrustedCertificates()
+                .addTrustedCertificate(cert)
+                .build()
+        } catch (e: Exception) {
+            return logAndReturnNull("Could not build HandshakeCertificates", e)
         }
 
-        // Convert PEM certificate string to X509Certificate object
-        try {
-            // induce half second sleep because sometimes a cert is not immediately available
-            // TODO : remove sleep if App no longer crashes on Android 10 devices
-            // java.lang.RuntimeException: Could not invoke WebSocketModule.connect
-            Thread.sleep(500)
-            val cf = CertificateFactory.getInstance("X.509")
-            val tempCert = cf.generateCertificate(ByteArrayInputStream(certPem.toByteArray())) as X509Certificate?
-            if (tempCert != null) {
-                cert = tempCert
-            } else {
-                Log.e(TAG, "Certificate could not be parsed as non-null")
-                return null
-            }
+        return try {
+            OkHttpClientProvider.createClientBuilder()
+                .sslSocketFactory(clientCertificates.sslSocketFactory(), clientCertificates.trustManager)
+                .build()
         } catch (e: Exception) {
-            Log.e(TAG, "Could not parse certificate", e)
-        }
-        // Create HandshakeCertificates object with our certificate
-        try {
-            // induce half second sleep because sometimes a cert is not immediately available
-            // TODO : remove sleep if App no longer crashes on Android 10 devices
-            // java.lang.RuntimeException: Could not invoke WebSocketModule.connect
-            Thread.sleep(500)
-            if (cert != null) {
-                clientCertificates = HandshakeCertificates.Builder()
-                    .addPlatformTrustedCertificates()
-                    .addTrustedCertificate(cert)
-                    .build()
-            } else {
-                Log.e(TAG, "Certificate is null, cannot build HandshakeCertificates")
-                return null
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Could not build HandshakeCertificates", e)
-            return null
-        }
-
-        // Create OkHttpClient with custom SSL socket factory and trust manager
-        try {
-            val clientCertificatesBuilder = OkHttpClientProvider.createClientBuilder()
-            if (clientCertificates.sslSocketFactory() != null && clientCertificates.trustManager != null) {
-                return clientCertificatesBuilder
-                       .sslSocketFactory(clientCertificates.sslSocketFactory(), clientCertificates.trustManager)
-                       .build()
-                } else {
-                    Log.e(TAG, "SSL Socket Factory or Trust Manager is null")
-                    return null
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Could not create OkHttpClient", e)
-            return null
+            logAndReturnNull("Could not create OkHttpClient", e)
         }
     }
 
     private fun getCertificatePem(): String {
         return try {
-            val certPem = StatusPackage.getImageTLSCert()
-            if (certPem == null || certPem.trim().isEmpty()) {
-                Log.e(TAG, "Certificate PEM string is null or empty")
-                ""
-            } else {
-                certPem
-            }
+            // Create OkHttpClient with custom SSL socket factory and trust manager
+            StatusPackage.getImageTLSCert().takeIf { !it.isNullOrBlank() }
+                ?: logAndReturnEmpty("Certificate PEM string is null or empty")
         } catch (e: Exception) {
-            Log.e(TAG, "Could not getImageTLSCert", e)
-            ""
+            logAndReturnEmpty("Could not getImageTLSCert", e)
         }
     }
+
+    private fun induceSleep() {
+        try {
+            // induce half second sleep because sometimes a cert is not immediately available
+            // TODO : remove sleep if App no longer crashes on Android 10 devices with
+            // java.lang.RuntimeException: Could not invoke WebSocketModule.connect
+            Thread.sleep(SLEEP_DURATION)
+        } catch (e: InterruptedException) {
+            Log.e(TAG, "Sleep interrupted", e)
+        }
+    }
+
+    private fun logAndReturnNull(message: String, e: Exception? = null): Nothing? {
+        Log.e(TAG, message, e)
+        return null
+    }
+
+    private fun logAndReturnEmpty(message: String, e: Exception? = null): String {
+        Log.e(TAG, message, e)
+        return ""
+    }
 }
+
