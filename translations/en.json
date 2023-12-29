@@ -2378,7 +2378,7 @@
     "account-info": "Account info",
     "account-name-input-placeholder": "Account name",
     "network-preferences": "Network preferences",
-    "network-preferences-desc": "Select which networks to receive funds on",
+    "network-preferences-desc": "Select which networks this address is happy to receive funds on",
     "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens",
     "edit-derivation-path": "Edit derivation path",
