@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "feature/peersyncing",
+    "commit-sha1": "d5d96916efbba9f681deb434114ab6883c643682",
+    "src-sha256": "1ii4l0fc0m6wyrxfkwh8ix7lr6508kjqf467n9d8pbmml0gjbvkj"
+}
