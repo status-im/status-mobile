@@ -4,7 +4,7 @@
 
 (re-frame/reg-event-fx :profile/edit-name
  (fn [{:keys [db]} [name]]
-   {:db            (update db :profile/profile merge {:display-name name})
+   {:db            (assoc-in db [:profile/profile :display-name] name)
     :json-rpc/call [{:method     "wakuext_setDisplayName"
                      :params     [name]
                      :on-success (fn []

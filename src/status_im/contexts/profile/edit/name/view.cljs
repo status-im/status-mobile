@@ -24,7 +24,7 @@
                                                   (utils/validation-name %))
                                                500)
         on-change-text      (fn [s]
-                              (reset! full-name (string/trim s))
+                              (reset! full-name s)
                               (validate-name s))]
     (fn []
       [quo/overlay
@@ -43,14 +43,14 @@
          [quo/input
           {:theme           :dark
            :blur?           true
-           :error?          (seq @error-msg)
+           :error?          (not (string/blank? @error-msg))
            :container-style {:margin-bottom -11}
            :default-value   @full-name
            :auto-focus      true
            :char-limit      constants/profile-name-max-length
            :label           (i18n/label :t/profile-name)
            :on-change-text  on-change-text}]
-         (when (seq @error-msg)
+         (when-not (string/blank? @error-msg)
            [quo/info-message
             {:type :error
              :size :default
@@ -62,5 +62,6 @@
            :customization-color customization-color
            :on-press            (fn []
                                   (rf/dispatch [:profile/edit-name @full-name]))
-           :disabled?           (boolean (or (not (seq @full-name)) (seq @error-msg)))}
+           :disabled?           (boolean (or (string/blank? @full-name)
+                                             (not (string/blank? @error-msg))))}
           (i18n/label :t/save-name)]]]])))

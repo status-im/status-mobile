@@ -19,7 +19,6 @@
     status-im.contexts.communities.overview.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
-    status-im.contexts.profile.edit.name.events
     status-im.contexts.profile.events
     status-im.contexts.profile.settings.events
     status-im.contexts.shell.share.events

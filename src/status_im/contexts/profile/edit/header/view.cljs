@@ -29,4 +29,5 @@
         :icon-only?      true
         :type            :grey
         :background      :photo
-        :size            32} :i/camera]]]))
+        :size            32}
+       :i/camera]]]))

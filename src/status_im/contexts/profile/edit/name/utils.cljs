@@ -30,8 +30,6 @@
   [s]
   (cond
     (or (= s nil) (= s ""))      nil
-    (has-special-characters s)   (i18n/label :t/are-not-allowed
-                                             {:check (i18n/label :t/special-characters)})
     (string/ends-with? s "-eth") (i18n/label :t/ending-not-allowed {:ending "-eth"})
     (string/ends-with? s "_eth") (i18n/label :t/ending-not-allowed {:ending "_eth"})
     (string/ends-with? s ".eth") (i18n/label :t/ending-not-allowed {:ending ".eth"})
@@ -39,6 +37,7 @@
     (string/ends-with? s " ")    (i18n/label :t/ends-with-space)
     (has-common-names s)         (i18n/label :t/are-not-allowed {:check (i18n/label :t/common-names)})
     (has-emojis s)               (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
+    (has-special-characters s)   (i18n/label :t/are-not-allowed
+                                             {:check (i18n/label :t/special-characters)})
     (name-too-short s)           (i18n/label :t/minimum-characters {:min-chars min-length})
-    (name-too-long s)            (i18n/label :t/profile-name-is-too-long)
-    :else                        nil))
+    (name-too-long s)            (i18n/label :t/profile-name-is-too-long)))
