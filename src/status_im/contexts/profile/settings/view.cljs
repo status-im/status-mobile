@@ -3,6 +3,7 @@
             [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
+            [react-native.pure :as prn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [status-im.common.not-implemented :as not-implemented]
@@ -12,16 +13,17 @@
             [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [react-native.flat-list :as fl]))
 
 (defn- settings-item-view
   [data]
-  [rf/delay-render
-   [quo/category
-    {:list-type       :settings
-     :container-style {:padding-bottom 0}
-     :blur?           true
-     :data            data}]])
+  #_[rf/delay-render]
+  (quo/category
+   {:list-type       :settings
+    :container-style {:padding-bottom 0}
+    :blur?           true
+    :data            (.-item data)}))
 
 (defn scroll-handler
   [event scroll-y]
@@ -58,16 +60,16 @@
                      {:icon-name :i/qr-code
                       :on-press  #(debounce/dispatch-and-chill [:open-modal :share-shell] 1000)}
                      {:icon-name :i/share :on-press not-implemented/alert}]}]]
-     [rn/flat-list
+     [fl/react-native-flat-list
       {:key                             :list
-       :header                          [settings.header/view {:scroll-y scroll-y}]
-       :data                            settings.items/items
-       :shows-vertical-scroll-indicator false
-       :render-fn                       settings-item-view
-       :get-item-layout                 get-item-layout
-       :footer                          [footer logout-press]
-       :scroll-event-throttle           16
-       :on-scroll                       #(scroll-handler % scroll-y)
+       ;:header                          [settings.header/view {:scroll-y scroll-y}]
+       :data                             settings.items/items
+       :showsVerticalScrollIndicator     false
+       :renderItem                       settings-item-view
+       ;:get-item-layout                 get-item-layout
+       ;:footer                          [footer logout-press]
+       ;:scrollEventThrottle           16
+       ;:onScroll                       #(scroll-handler % scroll-y)
        :bounces                         false}]
      [quo/floating-shell-button
       {:key :shell

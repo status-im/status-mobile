@@ -4,23 +4,21 @@
     [quo.components.settings.category.style :as style]
     [quo.components.settings.settings-item.view :as settings-item]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.pure :as prn]))
 
 (defn- category-internal
   [{:keys [label data] :as props}]
-  [rn/view {:style (style/container label)}
+  (prn/view #js {:style (style/container label)}
    (when label
-     [text/text
-      {:weight :medium
-       :size   :paragraph-2
-       :style  (style/label props)}
-      label])
-   [rn/view {:style (style/settings-items props)}
+     (prn/text
+      #js {:style  (style/label props)}
+      label))
+   (prn/view #js {:style (style/settings-items props)}
     (for [item data]
-      ^{:key item}
-      [:<>
-       [settings-item/view item]
-       (when-not (= item (last data))
-         [rn/view {:style (style/settings-separator props)}])])]])
+      ;(prn/fragment #js {:key item})
+      (settings-item/view item)
+      #_(when-not (= item (last data))
+          (prn/view #js {:style (style/settings-separator props)}))))))
 
-(def settings-category (quo.theme/with-theme category-internal))
+(def settings-category category-internal);(quo.theme/with-theme category-internal))

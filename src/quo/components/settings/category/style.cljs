@@ -4,39 +4,39 @@
 
 (defn container
   [label]
-  {:left               0
-   :right              0
-   :padding-horizontal 20
-   :padding-top        (when label 12)
-   :padding-bottom     8})
+  #js {:left               0
+       :right              0
+       :paddingHorizontal 20
+       :paddingTop        (when label 12)
+       :paddingBottom     8})
 
 (defn settings-items
   [{:keys [blur? theme]}]
-  {:margin-top       12
-   :border-radius    16
-   :background-color (if blur?
-                       colors/white-opa-5
-                       (colors/theme-colors colors/white colors/neutral-95 theme))
-   :border-width     (if blur? 0 1)
-   :border-color     (if blur?
-                       colors/white-opa-5
-                       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
+  #js {:marginTop       12
+       :borderRadius    16
+       :backgroundColor (if blur?
+                          colors/white-opa-5
+                          (colors/theme-colors colors/white colors/neutral-95 theme))
+       :borderWidth     (if blur? 0 1)
+       :borderColor     (if blur?
+                          colors/white-opa-5
+                          (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn label
   [{:keys [blur? theme]}]
-  {:color (if blur?
-            colors/white-opa-40
-            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
+  #js {:color (if blur?
+                colors/white-opa-40
+                (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
 
 (def reorder-items
   {:margin-top 12})
 
 (defn settings-separator
   [{:keys [blur? theme]}]
-  {:height           1
-   :background-color (if blur?
-                       colors/white-opa-5
-                       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
+  #js {:height           1
+       :backgroundColor (if blur?
+                          colors/white-opa-5
+                          (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn reorder-separator
   [blur? theme]

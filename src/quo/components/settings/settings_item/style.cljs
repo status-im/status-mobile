@@ -3,11 +3,11 @@
     [quo.foundations.colors :as colors]))
 
 (def container
-  {:padding-horizontal 12
-   :padding-top        12
-   :padding-bottom     14
-   :flex-direction     :row
-   :justify-content    :space-between})
+  #js {:paddingHorizontal 12
+       :paddingTop        12
+       :paddingBottom     14
+       :flexDirection     :row
+       :justifyContent    :space-between})
 
 (defn left-sub-container
   [{:keys [tag description]}]

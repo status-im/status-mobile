@@ -4,7 +4,8 @@
             [utils.re-frame :as rf]))
 
 (def items
-  [[{:title       (i18n/label :t/edit-profile)
+  (array
+   [{:title       (i18n/label :t/edit-profile)
      :on-press    not-implemented/alert
      :image-props :i/edit
      :image       :icon
@@ -100,4 +101,4 @@
      :action   :arrow}
     {:title    (i18n/label :t/status-help)
      :on-press not-implemented/alert
-     :action   :arrow}]])
+     :action   :arrow}]))

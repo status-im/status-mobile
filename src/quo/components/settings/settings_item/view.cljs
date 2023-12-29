@@ -1,19 +1,20 @@
 (ns quo.components.settings.settings-item.view
   (:require
-    [quo.components.avatars.icon-avatar :as icon-avatar]
-    [quo.components.avatars.user-avatar.view :as user-avatar]
-    [quo.components.buttons.button.view :as button]
-    [quo.components.icon :as icon]
-    [quo.components.list-items.preview-list.view :as preview-list]
-    [quo.components.markdown.text :as text]
-    [quo.components.selectors.selectors.view :as selectors]
-    [quo.components.settings.settings-item.style :as style]
-    [quo.components.tags.context-tag.view :as context-tag]
-    [quo.components.tags.status-tags :as status-tags]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [utils.i18n :as i18n]))
+   [quo.components.avatars.icon-avatar :as icon-avatar]
+   [quo.components.avatars.user-avatar.view :as user-avatar]
+   [quo.components.buttons.button.view :as button]
+   [quo.components.icon :as icon]
+   [quo.components.list-items.preview-list.view :as preview-list]
+   [quo.components.markdown.text :as text]
+   [quo.components.selectors.selectors.view :as selectors]
+   [quo.components.settings.settings-item.style :as style]
+   [quo.components.tags.context-tag.view :as context-tag]
+   [quo.components.tags.status-tags :as status-tags]
+   [quo.foundations.colors :as colors]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [utils.i18n :as i18n]
+   [react-native.pure :as prn]))
 
 (defn status-description
   [{:keys [description-props blur? theme]}]
@@ -103,20 +104,20 @@
 
 (defn- internal-view
   [{:keys [title on-press action-props accessibility-label blur? container-style] :as props}]
-  [rn/pressable
-   {:style               (merge style/container container-style)
-    :on-press            on-press
-    :accessibility-label accessibility-label}
-   [rn/view {:style (style/left-sub-container props)}
-    [image-component props]
-    [rn/view {:style style/left-container}
-     [text/text
-      {:weight :medium
-       :style  {:color (when blur? colors/white)}} title]
-     [description-component props]
-     [tag-component props]]]
-   [rn/view {:style (style/sub-container (:alignment action-props))}
-    [label-component props]
-    [action-component props]]])
+  (prn/pressable
+   #js {:style              style/container
+        :onPress            on-press
+        :accessibilityLabel accessibility-label}
+   (prn/view #js {:style (style/left-sub-container props)}
+    ;[image-component props]
+    (prn/view #js {:style style/left-container}
+     (prn/text
+      #js {;:weight :medium
+           :style  {:color (when blur? colors/white)}} title)))
+     ;[description-component props]
+     ;[tag-component props]))
+   (prn/view #js {:style (style/sub-container (:alignment action-props))})))
+    ;[label-component props]
+    ;[action-component props])))
 
-(def view (quo.theme/with-theme internal-view))
+(def view internal-view);(quo.theme/with-theme internal-view))

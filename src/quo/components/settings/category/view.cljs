@@ -6,5 +6,5 @@
 (defn category
   [{:keys [list-type] :as props}]
   (if (= list-type :settings)
-    [settings/settings-category props]
+    (settings/settings-category props)
     [reorder/reorder-category props]))
