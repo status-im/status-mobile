@@ -188,7 +188,6 @@
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
-
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
    (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
