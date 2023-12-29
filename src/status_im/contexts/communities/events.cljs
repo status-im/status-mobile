@@ -210,9 +210,8 @@
                        :on-error   (fn [err]
                                      (log/error
                                       "failed to retrieve community channel url with data"
-                                      {:error err
+                                      {:error   err
                                        :chat-id chat-id
-                                       :event
-                                       :communities/share-community-channel-url-with-data}))}]})))
+                                       :event   "share-community-channel-url-with-data"}))}]})))
 
 
