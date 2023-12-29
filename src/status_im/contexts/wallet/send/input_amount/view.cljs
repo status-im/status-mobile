@@ -16,7 +16,11 @@
 
 (defn- make-limit-label
   [{:keys [amount currency]}]
-  (str amount " " (string/upper-case (name currency))))
+  (str amount
+       " "
+       (some-> currency
+               name
+               string/upper-case)))
 
 (def not-digits-or-dot-pattern
   #"[^0-9+\.]")
