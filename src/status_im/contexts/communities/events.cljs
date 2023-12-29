@@ -1,6 +1,8 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
             [clojure.walk :as walk]
+            [legacy.status-im.data-store.chats :as data-store.chats]
+            [react-native.platform :as platform]
             [react-native.share :as share]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
@@ -189,10 +191,28 @@
 
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
-   (let [community-id (subs chat-id 0 constants/community-id-length)
-         channel-id   (subs chat-id constants/community-id-length)]
+   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
      {:json-rpc/call [{:method     "wakuext_shareCommunityChannelURLWithData"
                        :params     [{:CommunityID community-id :ChannelID channel-id}]
-                       :on-success #(share/open {:url %})
-                       :on-error   #(log/error "failed to retrieve community channel url with data"
-                                               %)}]})))
+                       :on-success #(share/open
+                                     (if platform/ios?
+                                       {:activityItemSources [{:placeholderItem {:type "text"
+                                                                                 :content
+                                                                                 "Channel on Status"}
+                                                               :item            {:default {:type    "url"
+                                                                                           :content %}}
+                                                               :linkMetadata    {:title
+                                                                                 "Channel on Status"}}]}
+                                       {:title   "Channel on Status"
+                                        :subject "Channel on Status"
+                                        :message %
+                                        :url     %}))
+                       :on-error   (fn [err]
+                                     (log/error
+                                      "failed to retrieve community channel url with data"
+                                      {:error err
+                                       :chat-id channel-id
+                                       :event
+                                       :communities/share-community-channel-url-with-data}))}]})))
+
+
