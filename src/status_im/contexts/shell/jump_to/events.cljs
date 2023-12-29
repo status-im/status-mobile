@@ -201,9 +201,9 @@
 (rf/defn floating-screen-closed
   {:events [:shell/floating-screen-closed]}
   [{:keys [db]} screen-id]
-  (merge
-   {:db         (-> (update db :shell/floating-screens dissoc screen-id)
-                    (update :shell/loaded-screens dissoc screen-id))
-    :dispatch-n (cond-> [[:set-view-id :shell-stack]]
-                  (= screen-id shell.constants/chat-screen)
-                  (conj [:chat/close]))}))
+  {:db         (cond-> (update db :shell/loaded-screens dissoc screen-id)
+                 (= screen-id shell.constants/discover-communities-screen)
+                 (update :shell/floating-screen dissoc screen-id))
+   :dispatch-n (cond-> [[:set-view-id :shell-stack]]
+                 (= screen-id shell.constants/chat-screen)
+                 (conj [:chat/close]))})
