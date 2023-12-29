@@ -13,8 +13,7 @@
 
 ;; NOTE(parvesh) - I am working on refactoring/optimization of the chat screen for performance
 ;; improvement. Please avoid refactoring these files. Also if you are not already working on bug
-;; fixes related to the chat navigation bar, please skip them.
-;; And ping me, so I can address them while refactoring
+;; fixes related to the composer, please skip them. And ping me, so I can address them while refactoring
 (defn- f-chat-screen
   [calculations-complete?]
   (let [insets                            (safe-area/get-insets)
@@ -47,6 +46,8 @@
 (defn lazy-chat-screen
   [calculations-complete?]
   (let [screen-loaded? (rf/sub [:shell/chat-screen-loaded?])]
+    (when-not screen-loaded?
+      (reanimated/set-shared-value calculations-complete? false))
     (when screen-loaded?
       [:f> f-chat-screen calculations-complete?])))
 
