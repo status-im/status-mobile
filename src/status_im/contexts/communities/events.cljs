@@ -213,5 +213,3 @@
                                       {:error   err
                                        :chat-id chat-id
                                        :event   "share-community-channel-url-with-data"}))}]})))
-
-
