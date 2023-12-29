@@ -211,7 +211,7 @@
                                      (log/error
                                       "failed to retrieve community channel url with data"
                                       {:error err
-                                       :chat-id channel-id
+                                       :chat-id chat-id
                                        :event
                                        :communities/share-community-channel-url-with-data}))}]})))
 
