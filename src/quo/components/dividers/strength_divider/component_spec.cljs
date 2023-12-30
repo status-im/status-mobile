@@ -6,34 +6,25 @@
 (h/describe "select-profile component"
   (h/test "render component"
     (h/render [strength-divider/view {:type :okay}])
-    (-> (h/expect (h/get-by-label-text :strength-divider))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-label-text :strength-divider)))
   (h/test "render component with :type :very-weak"
     (h/render [strength-divider/view {:type :very-weak}])
-    (-> (h/expect (h/get-by-translation-text :strength-divider-very-weak-label))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-translation-text :t/strength-divider-very-weak-label)))
   (h/test "render component with :type :weak"
     (h/render [strength-divider/view {:type :weak}])
-    (-> (h/expect (h/get-by-translation-text :strength-divider-weak-label))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-translation-text :t/strength-divider-weak-label)))
   (h/test "render component with :type :okay"
     (h/render [strength-divider/view {:type :okay}])
-    (-> (h/expect (h/get-by-translation-text :strength-divider-okay-label))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-translation-text :t/strength-divider-okay-label)))
   (h/test "render component with :type :strong"
     (h/render [strength-divider/view {:type :strong}])
-    (-> (h/expect (h/get-by-translation-text :strength-divider-strong-label))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-translation-text :t/strength-divider-strong-label)))
   (h/test "render component with :type :very-strong"
     (h/render [strength-divider/view {:type :very-strong}])
-    (-> (h/expect (h/get-by-translation-text :strength-divider-very-strong-label))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-translation-text :t/strength-divider-very-strong-label)))
   (h/test "render component with :type :alert"
     (h/render [strength-divider/view {:type :alert} "Text message"])
-    (-> (h/expect (h/get-by-text "Text message"))
-        (.toBeTruthy)))
+    (h/is-truthy (h/get-by-text "Text message")))
   (h/test "render component with :type :info"
     (h/render [strength-divider/view {:type :info} "Text Info"])
-    (-> (h/expect (h/get-by-text "Text Info"))
-        (.toBeTruthy))))
-
+    (h/is-truthy (h/get-by-text "Text Info"))))

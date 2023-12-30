@@ -24,10 +24,7 @@
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name color images]} (rf/sub [:communities/community id])
-        accounts                    (->> (rf/sub [:wallet])
-                                         :accounts
-                                         vals
-                                         (map #(assoc % :customization-color (:color %))))]
+        accounts                    (rf/sub [:wallet/accounts-with-customization-color])]
     [rn/safe-area-view {:style style/container}
 
      [quo/drawer-top
@@ -42,7 +39,7 @@
      [rn/flat-list
       {:render-fn               account-item
        :content-container-style {:padding 20}
-       :key-fn                  :key-uid
+       :key-fn                  :address
        :data                    accounts}]
 
      [rn/view {:style style/buttons}

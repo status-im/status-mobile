@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.account.tabs.about.view
   (:require
     [quo.core :as quo]
+    [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.share :as share]
@@ -28,7 +29,12 @@
         :right-icon          :i/external}
        {:icon                :i/copy
         :accessibility-label :copy-address
-        :label               (i18n/label :t/copy-address)}
+        :label               (i18n/label :t/copy-address)
+        :on-press            (fn []
+                               (clipboard/set-string address)
+                               (rf/dispatch [:toasts/upsert
+                                             {:type :positive
+                                              :text (i18n/label :t/address-copied)}]))}
        {:icon                :i/qr-code
         :accessibility-label :show-address-qr
         :label               (i18n/label :t/show-address-qr)}
@@ -56,7 +62,9 @@
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
         {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
         networks                                  (rf/sub [:wallet/network-details])]
-    [rn/view {:style style/about-tab}
+    [rn/scroll-view
+     {:style                   style/about-tab
+      :content-container-style {:padding-bottom 20}}
      [quo/data-item
       {:description     :default
        :icon-right?     true

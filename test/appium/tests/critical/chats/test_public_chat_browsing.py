@@ -285,7 +285,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                                                                    'username': self.username_1}),
                                                       (self.device_2.create_user, {'username': self.username_2}))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
+        self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
         [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
@@ -682,6 +682,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         profile_1 = self.home_1.get_profile_view()
         self.home_1.navigate_back_to_home_view()
         self.chat_1.profile_button.click()
+        profile_1.logout_button.scroll_to_element()
+        profile_1.profile_legacy_button.click()
         profile_1.contacts_button.wait_and_click()
         profile_1.blocked_users_button.wait_and_click()
         profile_1.element_by_text(self.username_2).click()
@@ -773,8 +775,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_1.get_channel(self.channel_name).click()
         self.channel_1.just_fyi("Receiver is checking if initial messages were delivered")
         for message in message_to_edit, message_to_delete:
-            if not self.channel_2.chat_element_by_text(message).is_element_displayed(30):
-                self.channel_2.driver.fail("Message '%s' was not received")
+            if not self.channel_1.chat_element_by_text(message).is_element_displayed(30):
+                self.channel_1.driver.fail("Message '%s' was not received")
 
         self.channel_2.just_fyi("Turning on airplane mode and editing/deleting messages")
         self.channel_2.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)

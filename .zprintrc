@@ -18,13 +18,17 @@
              ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-bl
              :respect-bl
 
-             ;; hang multiline left-hand-thing 
+             ;; hang multiline left-hand-thing
              ;; https://github.com/kkinnear/zprint/issues/273
              :multi-lhs-hang]
  :fn-map
  {"reg-sub"         :arg1-pair
   "h/describe"      :arg1-body
+  "h/describe-skip" :arg1-body
+  "h/describe-only" :arg1-body
   "h/test"          :arg1-body
+  "h/test-skip"     :arg1-body
+  "h/test-only"     :arg1-body
   "global.describe" :arg1-body
   "global.test"     :arg1-body
   "list-comp"       :binding
