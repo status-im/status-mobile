@@ -64,9 +64,10 @@
          :use-case        (when pinned-by :pinned)
          :on-press        #(on-press (assoc % :message-id message-id))
          :on-long-press   #(on-long-press (assoc %
-                                                 :message-id      message-id
-                                                 :theme           theme
-                                                 :reactions-order (map :emoji-id reactions)))
+                                                 :message-id           message-id
+                                                 :theme                theme
+                                                 :reactions-order      (map :emoji-id reactions)
+                                                 :user-message-content user-message-content))
          :on-press-add    #(on-press-add {:chat-id              chat-id
                                           :message-id           message-id
                                           :user-message-content user-message-content})}])]))
