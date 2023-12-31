@@ -374,10 +374,11 @@
       (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
     [community-scroll-page community pending?]))
 
-(defn overview
+(defn internal-overview
   [id]
   (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])]
+    (rn/use-effect #(rf/dispatch [:communities/update-last-opened-at id]) [id])
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [quo/floating-shell-button
@@ -385,3 +386,5 @@
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
       style/floating-shell-button]]))
+
+(defn overview [id] [:f> internal-overview id])

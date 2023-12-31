@@ -48,7 +48,8 @@
                         :tokenPermissions            :token-permissions
                         :communityTokensMetadata     :tokens-metadata
                         :introMessage                :intro-message
-                        :muteTill                    :muted-till})
+                        :muteTill                    :muted-till
+                        :lastOpenedAt                :last-opened-at})
       (update :admin-settings
               set/rename-keys
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
@@ -168,6 +169,13 @@
                   (assoc-in acc [communityId categoryId] true))
                 {}
                 categories))}))
+
+(rf/reg-event-fx :communities/update-last-opened-at
+ (fn [_ [community-id]]
+   {:json-rpc/call [{:method     "wakuext_updateLastOpenedAt"
+                     :params     [community-id]
+                     :on-success #(rf/dispatch [:communities/handle-community (first (:communities %))])
+                     :on-error   #(log/error (str "failed to update last opened at for community " %))}]}))
 
 (rf/reg-event-fx :community/fetch
  (fn [_]
