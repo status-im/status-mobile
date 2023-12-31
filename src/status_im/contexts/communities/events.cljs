@@ -48,7 +48,8 @@
                         :tokenPermissions            :token-permissions
                         :communityTokensMetadata     :tokens-metadata
                         :introMessage                :intro-message
-                        :muteTill                    :muted-till})
+                        :muteTill                    :muted-till
+                        :joinedAt                    :joined-at})
       (update :admin-settings
               set/rename-keys
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
