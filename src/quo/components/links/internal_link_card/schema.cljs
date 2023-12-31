@@ -7,6 +7,7 @@
      [:map {:closed true}
       [:title {:optional true} [:maybe :string]]
       [:description {:optional true} [:maybe :string]]
+      [:channel-name {:optional true} [:maybe :string]]
       [:loading? {:optional true} [:maybe :boolean]]
       [:subtitle {:optional true} [:maybe :string]]
       [:icon {:optional true} [:maybe [:or :string :int]]]
