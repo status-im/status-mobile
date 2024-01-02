@@ -75,13 +75,13 @@
                               data-type
                               fetch-criteria]]
      {:fx [[:json-rpc/call
-            [{:method     "wallet_getOwnedCollectiblesAsync"
-              :params     request-params
-              :on-error   (fn [error]
-                            (log/error "failed to request collectibles"
-                                       {:event  :wallet/request-collectibles
-                                        :error  error
-                                        :params request-params}))}]]
+            [{:method   "wallet_getOwnedCollectiblesAsync"
+              :params   request-params
+              :on-error (fn [error]
+                          (log/error "failed to request collectibles"
+                                     {:event  :wallet/request-collectibles
+                                      :error  error
+                                      :params request-params}))}]]
            (when new-request?
              [:dispatch [:wallet/clear-stored-collectibles]])]})))
 
