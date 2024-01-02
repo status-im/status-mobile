@@ -196,14 +196,12 @@
                        :on-success #(share/open
                                      (if platform/ios?
                                        {:activityItemSources [{:placeholderItem {:type "text"
-                                                                                 :content
-                                                                                 "Channel on Status"}
+                                                                                 :content (i18n/label :t/channel-on-status)}
                                                                :item            {:default {:type    "url"
                                                                                            :content %}}
-                                                               :linkMetadata    {:title
-                                                                                 "Channel on Status"}}]}
-                                       {:title   "Channel on Status"
-                                        :subject "Channel on Status"
+                                                               :linkMetadata    {:title (i18n/label :t/channel-on-status)}}]}
+                                       {:title (i18n/label :t/channel-on-status)
+                                        :subject (i18n/label :t/channel-on-status)
                                         :message %
                                         :url     %}))
                        :on-error   (fn [err]
