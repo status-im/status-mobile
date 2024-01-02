@@ -31,7 +31,7 @@ For example: https://github.com/status-im/status-react/pull/9147#issuecomment-54
 The test_send_stt_from_wallet opens link in TestRail https://ethstatus.testrail.net/index.php?/tests/view/890885 where performed steps could be found
 List of all runs performed by test jobs could be found here https://ethstatus.testrail.net/index.php?/runs/overview/14 
 
-**For credentials for TestRail to see results ping Chu in DM**:
+**For TestRail credentials to view results, contact Chu in DM**:
 
 Opening any test run navigates you to list of test cases with results:
 ![](images/how-to-launch-e2e/how-to-launch-e2e-2.png)
@@ -58,7 +58,7 @@ For easier access you can hit `Rerun tests` in GH comment and testrail_case_id/ 
 And then hit ‘Build’.
 Once the job starts it picks up specified tests, runs them against provided apk and sends results to pull request.
 
-Even we have 16 parallel sessions for testing it’s a time consuming operation (whole test suite we have automated at the moment takes ~140 minutes to finish). 
+Even we have 16 parallel sessions for testing it’s a time consuming operation (whole test suite we have automated currently takes ~140 minutes to finish). 
 So for PRs we pick only set of `critical or high` (you can also use this in TEST_MARKS param for job)
 tests (otherwise some PRs could wait their turn of the scheduled Jenkins job till the next day).
 
