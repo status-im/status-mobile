@@ -9,9 +9,10 @@
     [utils.re-frame :as rf]))
 
 (defn- view-internal
-  [{:keys [theme address]}]
-  (let [collectible-list (if address
-                           (rf/sub [:wallet/collectibles-per-account address])
+  [{:keys [theme]}]
+  (let [specific-address (rf/sub [:wallet/current-viewing-account-address])
+        collectible-list (if specific-address
+                           (rf/sub [:wallet/collectibles-per-account specific-address])
                            (rf/sub [:wallet/all-collectibles]))]
     (if (empty? collectible-list)
       [empty-tab/view
