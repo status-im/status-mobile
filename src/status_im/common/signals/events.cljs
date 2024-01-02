@@ -69,10 +69,7 @@
       "messages.new"               (messages.transport/sanitize-messages-and-process-response cofx
                                                                                               event-js
                                                                                               true)
-      "wallet"                     (rf/dispatch [:wallet/signal-fired
-                                                 (js->clj event-js
-                                                          :keywordize-keys
-                                                          true)])
+      "wallet"                     (rf/dispatch [:wallet/signal-received event-js])
       "local-notifications"        (local-notifications/process cofx
                                                                 (js->clj event-js :keywordize-keys true))
       "community.found"            (link-preview/cache-community-preview-data (js->clj event-js
