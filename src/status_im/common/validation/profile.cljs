@@ -2,6 +2,8 @@
   (:require [clojure.string :as string]
             [utils.i18n :as i18n]))
 
+;; NOTE - validation should match with Desktop
+;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
 (def min-length 5)
 
 (def max-length 24)

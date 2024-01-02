@@ -10,6 +10,7 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.common.validation.profile :as profile-validator]
     [status-im.constants :as c]
     [status-im.contexts.onboarding.create-profile.style :as style]
     [status-im.contexts.onboarding.select-photo.method-menu.view :as method-menu]
@@ -17,39 +18,8 @@
     [utils.re-frame :as rf]
     [utils.responsiveness :as responsiveness]))
 
-;; NOTE - validation should match with Desktop
-;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
-;;
-(def emoji-regex
-  (new
-   js/RegExp
-   #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])"
-   "i"))
-(defn has-emojis [s] (re-find emoji-regex s))
-(def common-names ["Ethereum" "Bitcoin"])
-(defn has-common-names [s] (pos? (count (filter #(string/includes? s %) common-names))))
-(def status-regex (new js/RegExp #"^[a-zA-Z0-9\-_ ]+$"))
-(defn has-special-characters [s] (not (re-find status-regex s)))
-(def min-length 5)
-(defn length-not-valid [s] (< (count (string/trim (str s))) min-length))
 (def scroll-view-height (reagent/atom 0))
 (def content-container-height (reagent/atom 0))
-
-(defn validation-message
-  [s]
-  (cond
-    (or (= s nil) (= s ""))      nil
-    (has-special-characters s)   (i18n/label :t/are-not-allowed
-                                             {:check (i18n/label :t/special-characters)})
-    (string/ends-with? s "-eth") (i18n/label :t/ending-not-allowed {:ending "-eth"})
-    (string/ends-with? s "_eth") (i18n/label :t/ending-not-allowed {:ending "_eth"})
-    (string/ends-with? s ".eth") (i18n/label :t/ending-not-allowed {:ending ".eth"})
-    (string/starts-with? s " ")  (i18n/label :t/start-with-space)
-    (string/ends-with? s " ")    (i18n/label :t/ends-with-space)
-    (has-common-names s)         (i18n/label :t/are-not-allowed {:check (i18n/label :t/common-names)})
-    (has-emojis s)               (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
-    :else                        nil))
-
 
 (defn show-button-background
   [keyboard-height keyboard-shown content-scroll-y]
@@ -65,7 +35,6 @@
 
         :else
         false))))
-
 
 (defn button-container
   [show-keyboard? keyboard-shown show-background? keyboard-height children]
@@ -109,23 +78,26 @@
                                                                          #(reset! show-keyboard? false))
                      {:keys [image-path display-name color]} onboarding-profile-data
                      full-name                               (reagent/atom display-name)
-                     validation-msg                          (reagent/atom (validation-message
-                                                                            @full-name))
+                     validation-msg                          (reagent/atom
+                                                              (profile-validator/validation-name
+                                                               @full-name))
                      on-change-text                          (fn [s]
-                                                               (reset! validation-msg (validation-message
-                                                                                       s))
+                                                               (reset! validation-msg
+                                                                 (profile-validator/validation-name
+                                                                  s))
                                                                (reset! full-name (string/trim s)))
                      custom-color                            (reagent/atom (or color
                                                                                c/profile-default-color))
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
                      on-change                               #(reset! custom-color %)]
-    (let [name-too-short?                          (length-not-valid @full-name)
+    (let [name-too-short?                          (profile-validator/name-too-short @full-name)
           valid-name?                              (and (not @validation-msg) (not name-too-short?))
           info-message                             (if @validation-msg
                                                      @validation-msg
                                                      (i18n/label :t/minimum-characters
-                                                                 {:min-chars min-length}))
+                                                                 {:min-chars
+                                                                  profile-validator/min-length}))
           info-type                                (cond @validation-msg :error
                                                          name-too-short? :default
                                                          :else           :success)
