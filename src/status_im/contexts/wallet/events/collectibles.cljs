@@ -7,6 +7,19 @@
             [utils.ethereum.chain :as chain]
             [utils.transforms :as types]))
 
+(def collectible-data-types
+  {:unique-id        0
+   :header           1
+   :details          2
+   :community-header 3})
+
+(def fetch-type
+  {:never-fetch         0
+   :always-fetch        1
+   :fetch-if-not-cached 2
+   :fetch-if-cache-old  3})
+
+(def max-cache-age-seconds 3600)
 (def collectibles-request-batch-size 1000)
 
 (defn displayable-collectible?
@@ -44,20 +57,6 @@
   {:db (assoc-in db [:wallet :last-collectible-details] collectible)})
 
 (rf/reg-event-fx :wallet/store-last-collectible-details store-last-collectible-details)
-
-(def collectible-data-types
-  {:unique-id        0
-   :header           1
-   :details          2
-   :community-header 3})
-
-(def fetch-type
-  {:never-fetch         0
-   :always-fetch        1
-   :fetch-if-not-cached 2
-   :fetch-if-cache-old  3})
-
-(def max-cache-age-seconds 3600)
 
 (rf/reg-event-fx
  :wallet/request-collectibles
