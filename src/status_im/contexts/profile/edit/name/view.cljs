@@ -4,9 +4,9 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im.common.validation.profile :as profile-validator]
             [status-im.constants :as constants]
             [status-im.contexts.profile.edit.name.style :as style]
-            [status-im.contexts.profile.edit.name.utils :as utils]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
@@ -21,7 +21,7 @@
         full-name           (reagent/atom display-name)
         error-msg           (reagent/atom nil)
         validate-name       (debounce/debounce #(reset! error-msg
-                                                  (utils/validation-name %))
+                                                  (profile-validator/validation-name %))
                                                500)
         on-change-text      (fn [s]
                               (reset! full-name s)

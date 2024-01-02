@@ -1,4 +1,4 @@
-(ns status-im.contexts.profile.edit.name.utils
+(ns status-im.common.validation.profile
   (:require [clojure.string :as string]
             [utils.i18n :as i18n]))
 
@@ -7,18 +7,15 @@
 (def max-length 24)
 
 (def emoji-regex
-  (new
-   js/RegExp
-   #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])"
-   "i"))
+  #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])")
 
-(defn has-emojis [s] (re-find emoji-regex s))
+(defn has-emojis [s] (boolean (re-find emoji-regex s)))
 
 (def common-names ["Ethereum" "Bitcoin"])
 
 (defn has-common-names [s] (pos? (count (filter #(string/includes? s %) common-names))))
 
-(def status-regex (new js/RegExp #"^[a-zA-Z0-9\-_ ]+$"))
+(def status-regex #"^[a-zA-Z0-9\-_ ]+$")
 
 (defn has-special-characters [s] (not (re-find status-regex s)))
 
