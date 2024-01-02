@@ -1,6 +1,5 @@
 (ns status-im.contexts.shell.jump-to.animation
   (:require
-    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.state :as state]
@@ -47,11 +46,6 @@
 
 ;;;; Floating Screen
 
-;; Dispatch Delay - Animation time for the opening of a screen is 200 ms,
-;; But starting and completion of animation sometimes takes a little extra time,
-;; according to the performance of the device. And if before the animation is
-;; complete we start other tasks like rendering messages or opening of the home screen
-;; in the background then the animation breaks. So we are adding a small delay for that dispatch.
 (defn animate-floating-screen
   [screen-id {:keys [id animation community-id hidden-screen?]}]
   (when (not= animation (get @state/floating-screens-state screen-id))
@@ -66,13 +60,7 @@
                                        shell.constants/close-screen-without-animation}
                                      animation)
                                   0
-                                  shell.constants/shell-animation-time)
-          dispatch-delay        (cond
-                                  (not floating-screen-open?) 0
-                                  js/goog.DEBUG               100
-                                  platform/android?           75
-                                  :else                       50)
-          dispatch-time         (+ animation-time dispatch-delay)]
+                                  shell.constants/shell-animation-time)]
       (js/setTimeout
        (fn [floating-screen-open?]
          (if floating-screen-open?
@@ -81,7 +69,7 @@
                          id community-id hidden-screen?])
            ;; Events realted to closing of a screen
            (rf/dispatch [:shell/floating-screen-closed screen-id])))
-       dispatch-time
+       animation-time
        floating-screen-open?))))
 
 (defn set-floating-screen-position
