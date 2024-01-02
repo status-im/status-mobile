@@ -77,7 +77,6 @@
      {:fx [[:json-rpc/call
             [{:method     "wallet_getOwnedCollectiblesAsync"
               :params     request-params
-              :on-success (fn [])
               :on-error   (fn [error]
                             (log/error "failed to request collectibles"
                                        {:event  :wallet/request-collectibles
