@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.send.transaction-confirmation.view
   (:require
+    [clojure.string :as string]
     [legacy.status-im.utils.utils :as utils]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
@@ -9,10 +10,11 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn- transaction-title
-  [{:keys [token-symbol amount account to-address]}]
+  [{:keys [token-symbol amount account to-address image-url collectible?]}]
   [rn/view {:style style/content-container}
    [rn/view {:style {:flex-direction :row}}
     [quo/text
@@ -22,10 +24,10 @@
       :accessibility-label :send-label}
      (i18n/label :t/send)]
     [quo/summary-tag
-     {:token        token-symbol
+     {:token        (if collectible? "" token-symbol)
       :label        (str amount " " token-symbol)
-      :type         :token
-      :image-source :eth}]]
+      :type         (if collectible? :collectible :token)
+      :image-source (if collectible? image-url :eth)}]]
    [rn/view
     {:style {:flex-direction :row
              :margin-top     4}}
@@ -54,7 +56,7 @@
       :label (utils/get-shortened-address to-address)}]]])
 
 (defn- user-summary
-  [{:keys [amount account-props theme label accessibility-label summary-type]}]
+  [{:keys [amount token-symbol account-props theme label accessibility-label summary-type]}]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
@@ -67,7 +69,8 @@
    [quo/summary-info
     {:type          summary-type
      :networks?     true
-     :values        {:ethereum amount}
+     :values        {:ethereum {:amount       amount
+                                :token-symbol token-symbol}}
      :account-props account-props}]])
 
 (defn- transaction-details
@@ -124,72 +127,85 @@
   (let [on-close              #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])
         send-transaction-data (rf/sub [:wallet/wallet-send])
         token                 (:token send-transaction-data)
-        token-symbol          (:symbol token)
-        amount                (:amount send-transaction-data)
-        route                 (:route send-transaction-data)
-        estimated-time-min    (:estimated-time route)
-        max-fees              "-"
-        to-address            (:to-address send-transaction-data)
-        account               (rf/sub [:wallet/current-viewing-account])
-        account-color         (:color account)
-        from-account-props    {:customization-color account-color
-                               :size                32
-                               :emoji               (:emoji account)
-                               :type                :default
-                               :name                (:name account)
-                               :address             (utils/get-shortened-address (:address account))}
-        user-props            {:full-name to-address
-                               :address   (utils/get-shortened-address to-address)}]
-    (prn route)
+        collectible           (:collectible send-transaction-data)
+        collection-data       (:collection-data collectible)
+        collectible-data      (:collectible-data collectible)
+        collectible-id        (get-in collectible [:id :token-id])
+        token-symbol          (if collectible
+                                (first (remove string/blank?
+                                               [(:name collectible-data)
+                                                (str (:name collection-data) " #" collectible-id)]))
+                                (:symbol token))
+        image-url             (when collectible (:image-url collectible-data))
+        amount                (:amount send-transaction-data)]
 
     (fn [{:keys [theme]}]
-      [rn/view {:style {:flex 1}}
-       [floating-button-page/view
-        {:header              [quo/page-nav
-                               {:icon-name           :i/arrow-left
-                                :on-press            on-close
-                                :margin-top          (safe-area/get-top)
-                                :background          :blur
-                                :accessibility-label :top-bar
-                                :right-side          [{:icon-name           :i/advanced
-                                                       :on-press            #(js/alert
-                                                                              "to be implemented")
-                                                       :accessibility-label :advanced-options}]}]
-         :footer              [standard-auth/slide-button
-                               {:size                :size-48
-                                :track-text          (i18n/label :t/slide-to-send)
-                                :container-style     {:z-index 2}
-                                :customization-color account-color
-                                :on-auth-success     #(rf/dispatch [:wallet/send-transaction %])
-                                :auth-button-label   (i18n/label :t/confirm)}]
-         :gradient-cover?     true
-         :customization-color (:color account)}
-        [rn/view
-         [transaction-title
-          {:token-symbol token-symbol
-           :amount       amount
-           :account      account
-           :to-address   to-address}]
-         [user-summary
-          {:amount              amount
-           :summary-type        :status-account
-           :accessibility-label :summary-from-label
-           :label               (i18n/label :t/from-capitalized)
-           :account-props       from-account-props
-           :theme               theme}]
-         [user-summary
-          {:amount              amount
-           :summary-type        :account
-           :accessibility-label :summary-to-label
-           :label               (i18n/label :t/to-capitalized)
-           :account-props       user-props
-           :theme               theme}]
-         [transaction-details
-          {:estimated-time-min estimated-time-min
-           :max-fees           max-fees
-           :token              token
-           :amount             amount
-           :to-address         to-address
-           :theme              theme}]]]])))
+      (let [route              (:route send-transaction-data)
+            estimated-time-min (:estimated-time route)
+            max-fees           "-"
+            to-address         (:to-address send-transaction-data)
+            account            (rf/sub [:wallet/current-viewing-account])
+            account-color      (:color account)
+            from-account-props {:customization-color account-color
+                                :size                32
+                                :emoji               (:emoji account)
+                                :type                :default
+                                :name                (:name account)
+                                :address             (utils/get-shortened-address (:address account))}
+            user-props         {:full-name to-address
+                                :address   (utils/get-shortened-address to-address)}]
+        [rn/view {:style {:flex 1}}
+         [floating-button-page/view
+          {:header              [quo/page-nav
+                                 {:icon-name           :i/arrow-left
+                                  :on-press            on-close
+                                  :margin-top          (safe-area/get-top)
+                                  :background          :blur
+                                  :accessibility-label :top-bar
+                                  :right-side          [{:icon-name           :i/advanced
+                                                         :on-press            #(js/alert
+                                                                                "to be implemented")
+                                                         :accessibility-label :advanced-options}]}]
+           :footer              [standard-auth/slide-button
+                                 {:size                :size-48
+                                  :track-text          (i18n/label :t/slide-to-send)
+                                  :container-style     {:z-index 2}
+                                  :customization-color account-color
+                                  :on-auth-success     #(rf/dispatch [:wallet/send-transaction
+                                                                      (security/safe-unmask-data %)])
+                                  :auth-button-label   (i18n/label :t/confirm)}]
+           :gradient-cover?     true
+           :customization-color (:color account)}
+          [rn/view
+           [transaction-title
+            {:token-symbol token-symbol
+             :amount       amount
+             :account      account
+             :to-address   to-address
+             :image-url    image-url
+             :collectible? (some? collectible)}]
+           [user-summary
+            {:amount              amount
+             :token-symbol        token-symbol
+             :summary-type        :status-account
+             :accessibility-label :summary-from-label
+             :label               (i18n/label :t/from-capitalized)
+             :account-props       from-account-props
+             :theme               theme}]
+           [user-summary
+            {:amount              amount
+             :token-symbol        token-symbol
+             :summary-type        :account
+             :accessibility-label :summary-to-label
+             :label               (i18n/label :t/to-capitalized)
+             :account-props       user-props
+             :theme               theme}]
+           [transaction-details
+            {:estimated-time-min estimated-time-min
+             :max-fees           max-fees
+             :token              token
+             :amount             amount
+             :to-address         to-address
+             :theme              theme}]]]]))))
 
 (def view (quo.theme/with-theme view-internal))

@@ -61,10 +61,9 @@
     [collectibles-tab/view
      {:collectibles         collectibles
       :filtered?            search-performed?
-      :on-collectible-press (fn [collectible-id]
-                              (js/alert (str "Collectible to send: \n"
-                                             collectible-id
-                                             "\nNavigation not implemented yet")))}]))
+      :on-collectible-press #(rf/dispatch [:wallet/send-select-collectible
+                                           {:collectible %
+                                            :stack-id    :wallet-select-asset}])}]))
 
 (defn- tab-view
   [search-text selected-tab on-change-text]
