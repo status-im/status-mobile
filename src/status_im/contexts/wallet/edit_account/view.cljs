@@ -49,11 +49,12 @@
                                               :updated-key :name
                                               :new-value   @edited-account-name}))]
     (fn []
-      (let [{:keys [name emoji address color] :as account} (rf/sub [:wallet/current-viewing-account])
-            network-details                                (rf/sub [:wallet/network-preference-details])
-            account-name                                   (or @edited-account-name name)
-            button-disabled?                               (or (nil? @edited-account-name)
-                                                               (= name @edited-account-name))]
+      (let [{:keys [name emoji address color watch-only?]
+             :as   account}  (rf/sub [:wallet/current-viewing-account])
+            network-details  (rf/sub [:wallet/network-preference-details])
+            account-name     (or @edited-account-name name)
+            button-disabled? (or (nil? @edited-account-name)
+                                 (= name @edited-account-name))]
         [create-or-edit-account/view
          {:page-nav-right-side [{:icon-name :i/delete
                                  :on-press  #(js/alert "Delete account: to be implemented")}]
@@ -90,10 +91,11 @@
                                             {:content
                                              (fn []
                                                [network-preferences/view
-                                                {:on-save (fn [chain-ids]
-                                                            (rf/dispatch [:hide-bottom-sheet])
-                                                            (save-account
-                                                             {:account     account
-                                                              :updated-key :prod-preferred-chain-ids
-                                                              :new-value   chain-ids}))}])}]))
+                                                {:on-save     (fn [chain-ids]
+                                                                (rf/dispatch [:hide-bottom-sheet])
+                                                                (save-account
+                                                                 {:account     account
+                                                                  :updated-key :prod-preferred-chain-ids
+                                                                  :new-value   chain-ids}))
+                                                 :watch-only? watch-only?}])}]))
            :container-style style/data-item}]]))))
