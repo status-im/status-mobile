@@ -40,23 +40,23 @@
             (update-in [:wallet :ui :send] dissoc :route)
             (update-in [:wallet :ui :send] dissoc :loading-suggested-routes?))}))
 
-
-(rf/reg-event-fx :wallet/select-send-account-address
- (fn [{:keys [db]} [{:keys [address stack-id]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :send-account-address] address)
-            (update-in [:wallet :ui :send] dissoc :to-address))
-    :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]}))
+(rf/reg-event-fx :wallet/clean-send-address
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
 
 (rf/reg-event-fx :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address token stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :to-address] address)
+ (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :recipient] (or recipient address))
+            (assoc-in [:wallet :ui :send :to-address] address))
     :fx [[:navigate-to-within-stack
           (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]}))
 
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :token] token)
+   {:db (-> db
+            (update-in [:wallet :ui :send] dissoc :collectible)
+            (assoc-in [:wallet :ui :send :token] token))
     :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-token-drawer
@@ -67,6 +67,15 @@
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :token] nil)}))
 
+(rf/reg-event-fx :wallet/send-select-collectible
+ (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
+   {:db (-> db
+            (update-in [:wallet :ui :send] dissoc :token)
+            (assoc-in [:wallet :ui :send :collectible] collectible)
+            (assoc-in [:wallet :ui :send :amount] 1))
+    :fx [[:dispatch [:wallet/get-suggested-routes 1]]
+         [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
@@ -76,18 +85,25 @@
  (fn [{:keys [db now]} [amount]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
-         account-address         (get-in db [:wallet :ui :send :send-account-address])
-         to-address              (or account-address (get-in db [:wallet :ui :send :to-address]))
-         token-decimal           (:decimals token)
-         token-id                (:symbol token)
-         network-preferences     []
+         collectible             (get-in db [:wallet :ui :send :collectible])
+         to-address              (get-in db [:wallet :ui :send :to-address])
+         token-decimal           (when token (:decimals token))
+         token-id                (if token
+                                   (:symbol token)
+                                   (str (get-in collectible [:id :contract-id :address])
+                                        ":"
+                                        (get-in collectible [:id :token-id])))
+         network-preferences     (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates               constants/gas-rate-medium
-         amount-in               (send-utils/amount-in-hex amount token-decimal)
+         amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address            wallet-address
          disabled-from-chain-ids []
          disabled-to-chain-ids   []
          from-locked-amount      {}
-         request-params          [constants/send-type-transfer
+         transaction-type        (if token
+                                   constants/send-type-transfer
+                                   constants/send-type-erc-721-transfer)
+         request-params          [transaction-type
                                   from-address
                                   to-address
                                   amount-in
@@ -124,21 +140,46 @@
       :fx [[:dispatch [:navigate-to :wallet-transaction-progress]]]})))
 
 (defn- transaction-bridge
-  [{:keys [from-address to-address route]}]
-  (let [{:keys [from bridge-name amount-out gas-amount gas-fees]}           route
-        {:keys [gas-price max-fee-per-gas-medium max-priority-fee-per-gas]} gas-fees]
-    [{:BridgeName bridge-name
-      :ChainID    (:chain-id from)
-      :TransferTx {:From                 from-address
-                   :To                   to-address
-                   :Gas                  (money/to-hex gas-amount)
-                   :GasPrice             (money/to-hex (money/->wei :gwei gas-price))
-                   :Value                amount-out
-                   :Nonce                nil
-                   :MaxFeePerGas         (money/to-hex (money/->wei :gwei max-fee-per-gas-medium))
-                   :MaxPriorityFeePerGas (money/to-hex (money/->wei :gwei max-priority-fee-per-gas))
-                   :Input                ""
-                   :Data                 "0x"}}]))
+  [{:keys [from-address to-address token-id token-address route]}]
+  (let [{:keys [from bridge-name amount-out gas-amount
+                gas-fees]}                 route
+        eip-1559-enabled?                  (:eip-1559-enabled gas-fees)
+        {:keys [gas-price max-fee-per-gas-medium
+                max-priority-fee-per-gas]} gas-fees
+        transfer-tx                        (cond-> {:From  from-address
+                                                    :To    (or token-address to-address)
+                                                    :Gas   (money/to-hex gas-amount)
+                                                    :Value amount-out
+                                                    :Nonce nil
+                                                    :Input ""
+                                                    :Data  "0x"}
+                                             eip-1559-enabled?       (assoc :TxType "0x02"
+                                                                            :MaxFeePerGas
+                                                                            (money/to-hex
+                                                                             (money/->wei
+                                                                              :gwei
+                                                                              max-fee-per-gas-medium))
+                                                                            :MaxPriorityFeePerGas
+                                                                            (money/to-hex
+                                                                             (money/->wei
+                                                                              :gwei
+                                                                              max-priority-fee-per-gas)))
+                                             (not eip-1559-enabled?) (assoc :TxType   "0x00"
+                                                                            :GasPrice (money/to-hex
+                                                                                       (money/->wei
+                                                                                        :gwei
+                                                                                        gas-price))))]
+    [(cond-> {:BridgeName bridge-name
+              :ChainID    (:chain-id from)}
+
+       (= bridge-name constants/bridge-name-erc-721-transfer)
+       (assoc :ERC721TransferTx
+              (assoc transfer-tx
+                     :Recipient to-address
+                     :TokenID   token-id))
+
+       (= bridge-name constants/bridge-name-transfer)
+       (assoc :TransferTx transfer-tx))]))
 
 (defn- multi-transaction-command
   [{:keys [from-address to-address from-asset to-asset amount-out transfer-type]
@@ -154,17 +195,27 @@
  (fn [{:keys [db]} [sha3-pwd]]
    (let [route          (get-in db [:wallet :ui :send :route])
          from-address   (get-in db [:wallet :current-viewing-account-address])
-         to-address     (get-in db [:wallet :ui :send :to-address])
          token          (get-in db [:wallet :ui :send :token])
-         token-id       (:symbol token)
-         request-params [(multi-transaction-command {:from-address from-address
-                                                     :to-address   to-address
-                                                     :from-asset   token-id
-                                                     :to-asset     token-id
-                                                     :amount-out   (:amount-out route)})
-                         (transaction-bridge {:to-address   to-address
-                                              :from-address from-address
-                                              :route        route})
+         collectible    (get-in db [:wallet :ui :send :collectible])
+         token-address  (when collectible
+                          (get-in collectible
+                                  [:id :contract-id :address]))
+         to-address     (get-in db [:wallet :ui :send :to-address])
+         token-id       (if token
+                          (:symbol token)
+                          (get-in collectible [:id :token-id]))
+         request-params [(multi-transaction-command
+                          {:from-address from-address
+                           :to-address   to-address
+                           :from-asset   token-id
+                           :to-asset     token-id
+                           :amount-out   (:amount-out route)})
+                         (transaction-bridge {:to-address    to-address
+                                              :from-address  from-address
+                                              :route         route
+                                              :token-address token-address
+                                              :token-id      (when collectible
+                                                               (money/to-hex (js/parseInt token-id)))})
                          sha3-pwd]]
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params

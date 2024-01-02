@@ -14,9 +14,9 @@
   {:margin-right 4})
 
 (defn details-container
-  [theme]
+  [route? theme]
   {:flex-direction     :row
-   :justify-content    :space-between
+   :justify-content    (if route? :space-between :center)
    :height             52
    :padding-horizontal 12
    :padding-top        7

@@ -432,3 +432,6 @@
 (def ^:const send-type-stickers-buy 4)
 (def ^:const send-type-bridge 5)
 (def ^:const send-type-erc-721-transfer 6)
+
+(def ^:const bridge-name-transfer "Transfer")
+(def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
