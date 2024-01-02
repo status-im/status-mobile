@@ -91,7 +91,7 @@
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
                      on-change                               #(reset! custom-color %)]
-    (let [name-too-short?                          (profile-validator/name-too-short @full-name)
+    (let [name-too-short?                          (profile-validator/name-too-short? @full-name)
           valid-name?                              (and (not @validation-msg) (not name-too-short?))
           info-message                             (if @validation-msg
                                                      @validation-msg

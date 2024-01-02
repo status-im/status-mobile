@@ -6,31 +6,31 @@
 
 (deftest has-emojis-test
   (are [arg expected]
-   (expected (profile-validator/has-emojis arg))
+   (expected (profile-validator/has-emojis? arg))
    "Hello 😊" true?
    "Hello"    false?))
 
 (deftest has-common-names-test
   (are [arg expected]
-   (expected (profile-validator/has-common-names arg))
+   (expected (profile-validator/has-common-names? arg))
    "Ethereum" true?
    "Hello"    false?))
 
 (deftest has-special-characters-test
   (are [arg expected]
-   (expected (profile-validator/has-special-characters arg))
+   (expected (profile-validator/has-special-characters? arg))
    "@name" true?
    "name"  false?))
 
 (deftest name-too-short-test
   (are [arg expected]
-   (expected (profile-validator/name-too-short arg))
+   (expected (profile-validator/name-too-short? arg))
    "abc"    true?
    "abcdef" false?))
 
 (deftest name-too-long-test
   (are [arg expected]
-   (expected (profile-validator/name-too-long arg))
+   (expected (profile-validator/name-too-long? arg))
    (apply str (repeat 25 "a")) true?
    "abcdef"                    false?))
 
