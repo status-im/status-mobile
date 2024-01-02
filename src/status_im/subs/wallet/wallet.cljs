@@ -192,7 +192,7 @@
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[{:keys [tokens color]} currency currency-symbol]]
-   (keep #(calc-token-value % color currency currency-symbol) tokens)))
+   (mapv #(calc-token-value % color currency currency-symbol) tokens)))
 
 (rf/reg-sub
  :wallet/network-preference-details
