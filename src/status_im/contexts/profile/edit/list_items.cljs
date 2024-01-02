@@ -7,7 +7,7 @@
             [utils.re-frame :as rf]))
 
 (defn items
-  []
+  [theme]
   (let [profile             (rf/sub [:profile/profile-with-image])
         customization-color (rf/sub [:profile/customization-color])
         full-name           (profile.utils/displayed-name profile)]
@@ -27,7 +27,7 @@
               {:title           (i18n/label :t/accent-colour)
                :on-press        not-implemented/alert
                :label           :color
-               :label-props     (colors/resolve-color customization-color :dark)
+               :label-props     (colors/resolve-color customization-color theme)
                :blur?           true
                :action          :arrow
                :container-style style/item-container}]}

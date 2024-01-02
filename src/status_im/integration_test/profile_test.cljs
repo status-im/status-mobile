@@ -8,7 +8,7 @@
 
 (deftest edit-profile-name-test
   (h/log-headline :edit-profile-name-test)
-  (let [new-name "New Name"]
+  (let [new-name "John Doe"]
     (rf-test/run-test-async
      (h/with-app-initialized
       (h/with-account

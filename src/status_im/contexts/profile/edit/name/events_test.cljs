@@ -3,13 +3,13 @@
             matcher-combinators.test
             [status-im.contexts.profile.edit.name.events :as sut]))
 
-(def profile-name "John Doe")
-
 (deftest edit-name-test
-  (let [cofx     {:db {:profile/profile {:display-name "test"}}}
-        expected {:db            {:profile/profile {:display-name profile-name}}
-                  :json-rpc/call [{:method     "wakuext_setDisplayName"
-                                   :params     [profile-name]
-                                   :on-success fn?}]}]
+  (let [new-name "John Doe"
+        cofx     {:db {:profile/profile {:display-name "Old name"}}}
+        expected {:db {:profile/profile {:display-name new-name}}
+                  :fx [[:json-rpc/call
+                        [{:method     "wakuext_setDisplayName"
+                          :params     [name]
+                          :on-success fn?}]]]}]
     (is (match? expected
-                (sut/edit-profile-name cofx [profile-name])))))
+                (sut/edit-profile-name cofx [new-name])))))
