@@ -23,12 +23,8 @@
                        :disabled (if blur?
                                    colors/white-opa-5
                                    (colors/theme-colors colors/neutral-5 colors/neutral-80-opa-40 theme))
-                       :success  (colors/theme-colors colors/success-50-opa-10
-                                                      colors/success-60-opa-10
-                                                      theme)
-                       :error    (colors/theme-colors colors/danger-50-opa-10
-                                                      colors/danger-60-opa-10
-                                                      theme))})
+                       :success  (colors/resolve-color :success theme 10)
+                       :error    (colors/resolve-color :danger theme 10))})
 
 (defn num-container
   [{:keys [blur? theme]}]
@@ -43,7 +39,7 @@
                       (colors/theme-colors colors/neutral-20 colors/neutral-70 theme))})
 
 (defn text
-  [{:keys [blur? theme state]}]
+  [{:keys [theme state]}]
   {:color (case state
             :success (colors/theme-colors colors/success-50 colors/success-60 theme)
             :error   (colors/theme-colors colors/danger-50 colors/danger-60 theme))})

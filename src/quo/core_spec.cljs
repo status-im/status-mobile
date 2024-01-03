@@ -47,6 +47,7 @@
     quo.components.list-items.channel.component-spec
     quo.components.list-items.community.component-spec
     quo.components.list-items.dapp.component-spec
+    quo.components.list-items.quiz-item.component-spec
     quo.components.list-items.saved-address.component-spec
     quo.components.list-items.saved-contact-address.component-spec
     quo.components.list-items.token-network.component-spec
