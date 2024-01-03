@@ -1,7 +1,6 @@
 (ns status-im.contexts.preview.quo.main
   (:refer-clojure :exclude [filter])
   (:require
-    [quo.components.list-items.quiz-item.view :as quiz-item]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -95,7 +94,8 @@
     [status-im.contexts.preview.quo.list-items.community-list :as
      community-list]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
-    [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists] ;[status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
+    [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
+    [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
     [status-im.contexts.preview.quo.list-items.saved-address :as saved-address]
     [status-im.contexts.preview.quo.list-items.saved-contact-address :as
      saved-contact-address]
