@@ -195,13 +195,13 @@
    (let [network-data
          {:test (map #(->> %
                            :Test
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)
           :prod (map #(->> %
                            :Prod
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)}]
-     {:db (assoc db :wallet/networks network-data)})))
+     {:db (assoc-in db [:wallet :networks] network-data)})))
 
 (rf/reg-event-fx :wallet/find-ens
  (fn [{:keys [db]} [input contacts chain-id cb]]

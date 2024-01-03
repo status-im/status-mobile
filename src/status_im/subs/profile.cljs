@@ -106,7 +106,6 @@
  (fn [profile]
    (:test-networks-enabled? profile)))
 
-
 (re-frame/reg-sub
  :multiaccount/contact
  :<- [:profile/profile]
