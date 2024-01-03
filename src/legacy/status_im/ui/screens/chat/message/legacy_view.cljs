@@ -9,8 +9,8 @@
     [quo.foundations.typography :as typography]
     [react-native.core :as rn]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messages.delete-message-for-me.events]
-    [status-im.contexts.chat.messages.delete-message.events]
+    [status-im.contexts.chat.messenger.messages.delete-message-for-me.events]
+    [status-im.contexts.chat.messenger.messages.delete-message.events]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))
