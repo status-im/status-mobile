@@ -26,6 +26,11 @@
   (when (exists? (.-NativeModules react-native))
         (.-DatabaseManager ^js (.-NativeModules react-native))))
 
+(defn ui-helper
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-UIHelper ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -34,8 +39,8 @@
   []
   (log/debug "[native-module] clear-web-data")
   (when (status)
-    (.clearCookies ^js (status))
-    (.clearStorageAPIs ^js (status))))
+    (.clearCookies ^js (ui-helper))
+    (.clearStorageAPIs ^js (ui-helper))))
 
 (defn init-keystore
   [key-uid callback]
@@ -232,7 +237,7 @@
 (defn set-soft-input-mode
   [mode]
   (log/debug "[native-module]  set-soft-input-mode")
-  (.setSoftInputMode ^js (status) mode))
+  (.setSoftInputMode ^js (ui-helper) mode))
 
 (defn call-rpc
   [payload callback]
@@ -408,7 +413,7 @@
 (defn toggle-webview-debug
   [on]
   (log/debug "[native-module] toggle-webview-debug" on)
-  (.toggleWebviewDebug ^js (status) on))
+  (.toggleWebviewDebug ^js (ui-helper) on))
 
 (defn rooted-device?
   [callback]
