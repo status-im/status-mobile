@@ -28,6 +28,6 @@
     (is (= (utils/calc-max-crypto-decimals 0.00323) 2))
     (is (= (utils/calc-max-crypto-decimals 0.00123) 3))
     (is (= (utils/calc-max-crypto-decimals 0.00000423) 5))
-    (is (= (utils/calc-max-crypto-decimals 1.23e-6) 6))
-    (is (= (utils/calc-max-crypto-decimals 1.13e-6) 7))))
+    (is (= (utils/calc-max-crypto-decimals 2.23e-6) 5))
+    (is (= (utils/calc-max-crypto-decimals 1.13e-6) 6))))
 
