@@ -37,6 +37,34 @@
        (map (comp :raw-balance val))
        (reduce money/add)))
 
+(defn extract-exponent
+  [s]
+  (if-let [index (string/index-of s "e")]
+    (subs s (+ index 2))
+    nil))
+
+(defn calc-max-crypto-decimals
+  [value]
+  (let [str-representation   (str value)
+        decimal-part         (second (clojure.string/split str-representation #"\."))
+        exponent             (extract-exponent str-representation)
+        zeroes-count         (count (take-while #(= \0 %) decimal-part))
+        max-decimals         (or exponent zeroes-count)
+        first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+    (if (= \1 first-non-zero-digit)
+      (inc max-decimals)
+      max-decimals)))
+
+(defn get-standard-crypto-format
+  "For full details: https://github.com/status-im/status-mobile/issues/18225"
+  [{:keys [market-values-per-currency]} token-units]
+  (let [price          (get-in market-values-per-currency [:usd :price])
+        one-cent-value (if (pos? price) (/ 0.01 price) 0)
+        decimals-count (calc-max-crypto-decimals one-cent-value)]
+    (if (< token-units one-cent-value)
+      (str "<" (.toFixed one-cent-value decimals-count))
+      (.toFixed token-units decimals-count))))
+
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
   (-> balances-per-chain

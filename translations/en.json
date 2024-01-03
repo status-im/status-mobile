@@ -2378,7 +2378,8 @@
     "account-info": "Account info",
     "account-name-input-placeholder": "Account name",
     "network-preferences": "Network preferences",
-    "network-preferences-desc": "Select which networks to receive funds on",
+    "network-preferences-desc-1": "Select which networks this address is happy to receive funds on",
+    "network-preferences-desc-2": "Select which networks to receive funds on",
     "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens",
     "edit-derivation-path": "Edit derivation path",
@@ -2444,5 +2445,6 @@
     "transacation-finalised": "Transaction finalised!",
     "no-relevant-tokens": "No relevant tokens",
     "from-label": "From",
-    "to-label": "To"
+    "to-label": "To",
+    "oops-wrong-word": "Oops! Wrong word"
 }
