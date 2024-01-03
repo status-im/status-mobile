@@ -335,28 +335,24 @@ shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
 
-_clojure-test: export TARGET := clojure
-_clojure-test:
+_test-clojure: export TARGET := clojure
+_test-clojure: export WATCH ?= false
+_test-clojure:
+ifeq ($(WATCH), true)
+	yarn install && \
+	yarn shadow-cljs compile mocks && \
+	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
+else
 	yarn install && \
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
-
-_clojure-test-watch: export TARGET := clojure
-_clojure-test-watch:
-	yarn install && \
-	yarn shadow-cljs compile mocks && \
-	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
+endif
 
 test: export SHADOW_OUTPUT_TO := target/test/test.js
 test: export SHADOW_NS_REGEXP := .*-test$$
 test: ##@test Run all Clojure tests
-test: _clojure-test
-
-test-watch: export SHADOW_OUTPUT_TO := target/test/test.js
-test-watch: export SHADOW_NS_REGEXP := .*-test$$
-test-watch: ##@test Watch all Clojure tests and re-run when files change
-test-watch: _clojure-test-watch
+test: _test-clojure
 
 test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
@@ -368,25 +364,15 @@ test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connection
 		'yarn shadow-cljs watch test --verbose' \
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
-unit-test: export SHADOW_OUTPUT_TO := target/unit_test/test.js
-unit-test: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
-unit-test: ##@test Run unit tests
-unit-test: _clojure-test
+test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
+test-unit: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
+test-unit: ##@test Run unit tests
+test-unit: _test-clojure
 
-unit-test-watch: export SHADOW_OUTPUT_TO := target/unit_test/test.js
-unit-test-watch: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
-unit-test-watch: ##@test Watch unit tests and re-run when files change
-unit-test-watch: _clojure-test-watch
-
-integration-test: export SHADOW_OUTPUT_TO := target/integration_test/test.js
-integration-test: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
-integration-test: ##@test Run integration tests
-integration-test: _clojure-test
-
-integration-test-watch: export SHADOW_OUTPUT_TO := target/integration_test/test.js
-integration-test-watch: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
-integration-test-watch: ##@test Watch integration tests and re-run when files change
-integration-test-watch: _clojure-test-watch
+test-integration: export SHADOW_OUTPUT_TO := target/integration_test/test.js
+test-integration: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
+test-integration: ##@test Run integration tests
+test-integration: _test-clojure
 
 android-test: jsbundle
 android-test: export TARGET := android
