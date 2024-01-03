@@ -17,6 +17,7 @@ public class Utils extends ReactContextBaseJavaModule  {
     private ReactApplicationContext reactContext;
 
     public Utils(ReactApplicationContext reactContext) {
+        super(reactContext);
         this.reactContext = reactContext;
     }
 

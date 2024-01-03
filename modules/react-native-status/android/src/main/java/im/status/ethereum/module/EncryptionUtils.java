@@ -18,9 +18,9 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
     private Utils utils;
 
     public EncryptionUtils(ReactApplicationContext reactContext) {
+        super(reactContext);
         this.reactContext = reactContext;
         this.utils = new Utils(reactContext);
-
     }
 
     @Override
@@ -49,10 +49,8 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
 
         Log.d(TAG, "Activity doesn't exist");
         return false;
-
     }
 
-    //TODO: remove duplicate executeRunnableStatusGoMethod
     private void executeRunnableStatusGoMethod(Supplier<String> method, Callback callback) throws JSONException {
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -68,29 +66,13 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    private void initKeystore(final String keyUID, final Callback callback) {
+    private void initKeystore(final String keyUID, final Callback callback) throws JSONException {
         Log.d(TAG, "initKeystore");
-
-        Activity currentActivity = getCurrentActivity();
-
-        if (!checkAvailability()) {
-            Log.e(TAG, "[initKeystore] Activity doesn't exist, cannot init keystore");
-            System.exit(0);
-            return;
-        }
 
         final String commonKeydir = this.utils.pathCombine(this.utils.getNoBackupDirectory(), "/keystore");
         final String keydir = this.utils.pathCombine(commonKeydir, keyUID);
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Statusgo.initKeystore(keydir);
-                callback.invoke(true);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        executeRunnableStatusGoMethod(() -> Statusgo.initKeystore(keydir), callback);
     }
 
     @ReactMethod
