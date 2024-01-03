@@ -16,6 +16,11 @@
   (when (exists? (.-NativeModules react-native))
         (.-AccountManager ^js (.-NativeModules react-native))))
 
+(defn encryption
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-EncryptionUtils ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -30,7 +35,7 @@
 (defn init-keystore
   [key-uid callback]
   (log/debug "[native-module] init-keystore" key-uid)
-  (.initKeystore ^js (status) key-uid callback))
+  (.initKeystore ^js (encryption) key-uid callback))
 
 (defn open-accounts
   [callback]
@@ -506,12 +511,12 @@
   (log/debug "[native-module] change-database-password")
   (init-keystore
    key-uid
-   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# callback)))
+   #(.reEncryptDbAndKeystore ^js (encryption) key-uid current-password# new-password# callback)))
 
 (defn convert-to-keycard-account
   [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]
   (log/debug "[native-module] convert-to-keycard-account")
-  (.convertToKeycardAccount ^js (status)
+  (.convertToKeycardAccount ^js (encryption)
                             key-uid
                             (types/clj->json multiaccount-data)
                             (types/clj->json settings)

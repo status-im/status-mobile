@@ -253,31 +253,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         folder.delete();
     }
 
-    @ReactMethod
-    private void initKeystore(final String keyUID, final Callback callback) {
-        Log.d(TAG, "initKeystore");
 
-        Activity currentActivity = getCurrentActivity();
-
-        if (!checkAvailability()) {
-            Log.e(TAG, "[initKeystore] Activity doesn't exist, cannot init keystore");
-            System.exit(0);
-            return;
-        }
-
-        final String commonKeydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
-        final String keydir = pathCombine(commonKeydir, keyUID);
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Statusgo.initKeystore(keydir);
-                callback.invoke(true);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
 
     @ReactMethod
     private void openAccounts(final Callback callback) {
@@ -700,6 +676,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     }
 
+    //TODO : maybe nuke since it is not called anywhere in status-mobile code
     @ReactMethod
     public void setAdjustResize() {
         Log.d(TAG, "setAdjustResize");
@@ -716,6 +693,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         });
     }
 
+    //TODO : maybe nuke since it is not called anywhere in status-mobile code
     @ReactMethod
     public void setAdjustPan() {
         Log.d(TAG, "setAdjustPan");
@@ -1047,21 +1025,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 }
             }
         });
-    }
-
-    @ReactMethod
-    public void reEncryptDbAndKeystore(final String keyUID, final String password, final String newPassword, final Callback callback) throws JSONException {
-        executeRunnableStatusGoMethod(() -> Statusgo.changeDatabasePassword(keyUID, password, newPassword), callback);
-    }
-
-    @ReactMethod
-    public void convertToKeycardAccount(final String keyUID, final String accountData, final String options, final String keycardUID, final String password,
-                                        final String newPassword, final Callback callback) throws JSONException {
-        final String keyStoreDir = this.getKeyStorePath(keyUID);
-        executeRunnableStatusGoMethod(() -> {
-                Statusgo.initKeystore(keyStoreDir);
-                return Statusgo.convertToKeycardAccount(accountData, options, keycardUID, password, newPassword);
-            }, callback);
     }
 
     @ReactMethod

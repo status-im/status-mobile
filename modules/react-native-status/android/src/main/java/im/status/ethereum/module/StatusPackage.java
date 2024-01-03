@@ -31,6 +31,7 @@ public class StatusPackage implements ReactPackage {
 
         modules.add(new StatusModule(reactContext, this.rootedDevice));
         modules.add(new AccountManager(reactContext));
+        modules.add(new EncryptionUtils(reactContext));
         modules.add(new RNSelectableTextInputModule(reactContext));
 
         return modules;
