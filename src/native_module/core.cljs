@@ -11,6 +11,11 @@
   (when (exists? (.-NativeModules react-native))
     (.-Status ^js (.-NativeModules react-native))))
 
+(defn account
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-AccountManager ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -35,7 +40,7 @@
 (defn prepare-dir-and-update-config
   [key-uid config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")
-  (.prepareDirAndUpdateConfig ^js (status)
+  (.prepareDirAndUpdateConfig ^js (account)
                               key-uid
                               config
                               #(callback (types/json->clj %))))
@@ -47,7 +52,7 @@
   (init-keystore
    key-uid
    #(.saveAccountAndLoginWithKeycard
-     ^js (status)
+     ^js (account)
      multiaccount-data
      password
      settings
@@ -76,11 +81,11 @@
 
 (defn create-account-and-login
   [request]
-  (.createAccountAndLogin ^js (status) (types/clj->json request)))
+  (.createAccountAndLogin ^js (account) (types/clj->json request)))
 
 (defn restore-account-and-login
   [request]
-  (.restoreAccountAndLogin ^js (status) (types/clj->json request)))
+  (.restoreAccountAndLogin ^js (account) (types/clj->json request)))
 
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
@@ -104,7 +109,7 @@
   []
   (log/debug "[native-module] logout")
   (clear-web-data)
-  (.logout ^js (status)))
+  (.logout ^js (account)))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -212,7 +217,7 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key (types/clj->json node-config))))
+   #(.loginWithKeycard ^js (account) multiaccount-data password chat-key (types/clj->json node-config))))
 
 (defn set-soft-input-mode
   [mode]
