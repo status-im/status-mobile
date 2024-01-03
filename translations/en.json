@@ -2445,5 +2445,6 @@
     "transacation-finalised": "Transaction finalised!",
     "no-relevant-tokens": "No relevant tokens",
     "from-label": "From",
-    "to-label": "To"
+    "to-label": "To",
+    "oops-wrong-word": "Oops! Wrong word"
 }
