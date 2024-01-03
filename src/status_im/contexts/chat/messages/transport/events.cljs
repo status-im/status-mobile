@@ -14,11 +14,11 @@
     [legacy.status-im.visibility-status-updates.core :as models.visibility-status-updates]
     [legacy.status-im.wallet.core :as wallet]
     [status-im.constants :as constants]
+    [status-im.contexts.chat.contacts.events :as models.contact]
     [status-im.contexts.chat.events :as chat.events]
     [status-im.contexts.chat.messages.content.reactions.events :as reactions]
     [status-im.contexts.chat.messages.pin.events :as messages.pin]
     [status-im.contexts.communities.events :as communities]
-    [status-im.contexts.contacts.events :as models.contact]
     [status-im.contexts.shell.activity-center.events :as activity-center]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))

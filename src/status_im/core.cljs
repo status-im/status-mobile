@@ -16,7 +16,7 @@
     [status-im.common.log :as log]
     [status-im.common.universal-links :as universal-links]
     [status-im.config :as config]
-    [status-im.contexts.push-notifications.events :as notifications]
+    [status-im.contexts.profile.push-notifications.events :as notifications]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
     status-im.events

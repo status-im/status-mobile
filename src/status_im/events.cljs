@@ -4,19 +4,19 @@
     [legacy.status-im.keycard.core :as keycard]
     status-im.common.alert.effects
     status-im.common.async-storage.effects
+    status-im.common.emoji-picker.events
     status-im.common.font.events
     [status-im.common.json-rpc.events]
     status-im.common.password-authentication.events
     status-im.common.signals.events
     status-im.common.theme.events
     [status-im.common.toasts.events]
-    [status-im.contexts.add-new-contact.events]
     status-im.contexts.chat.composer.events
     status-im.contexts.chat.events
+    [status-im.contexts.chat.home.add-new-contact.events]
     status-im.contexts.chat.photo-selector.events
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events
-    status-im.contexts.emoji-picker.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
     status-im.contexts.profile.events
