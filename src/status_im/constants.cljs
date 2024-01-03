@@ -335,13 +335,6 @@
 (def ^:const local-pairing-action-sync-device 3)
 (def ^:const local-pairing-action-pairing-installation 4)
 
-(def ^:const serialization-key
-  "We pass this serialization key as a parameter to MultiformatSerializePublicKey
-  function at status-go, This key determines the output base of the serialization.
-  according to https://specs.status.im/spec/2#public-key-serialization we serialize
-  keys with base58btc encoding"
-  "z")
-
 (def ^:const deserialization-key
   "We pass this deserialization key as a parameter to MultiformatDeserializePublicKey
   function at status-go, This key determines the output base of the deserialization.
