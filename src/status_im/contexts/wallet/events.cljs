@@ -327,3 +327,7 @@
  (fn [_ [explorer-link address]]
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
+
+(rf/reg-event-fx :wallet/initialize
+ (fn []
+   {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
