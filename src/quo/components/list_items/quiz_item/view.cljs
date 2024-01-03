@@ -4,6 +4,7 @@
     [quo.components.list-items.quiz-item.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
