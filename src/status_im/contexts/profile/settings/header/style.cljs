@@ -1,6 +1,5 @@
 (ns status-im.contexts.profile.settings.header.style
-  (:require [quo.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require [quo.foundations.colors :as colors]))
 
 (defn header-view
   [customization-color theme]
@@ -30,19 +29,17 @@
 
 (defn radius-container
   [opacity-animation]
-  (reanimated/apply-animations-to-style
-   {:opacity opacity-animation}
-   {:flex-direction  :row
-    :justify-content :space-between}))
+  {:opacity         opacity-animation
+   :flex-direction  :row
+   :justify-content :space-between})
 
 (defn avatar-container
   [theme scale-animation top-margin-animation side-margin-animation]
-  (reanimated/apply-animations-to-style
-   {:transform     [{:scale scale-animation}]
+  [{:transform     [{:scale scale-animation}]
     :margin-top    top-margin-animation
     :margin-left   side-margin-animation
     :margin-bottom side-margin-animation}
    {:align-items   :flex-start
     :border-width  4
     :border-color  (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)
-    :border-radius 100}))
+    :border-radius 100}])
