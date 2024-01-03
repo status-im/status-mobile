@@ -95,6 +95,7 @@
      community-list]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
+    [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
     [status-im.contexts.preview.quo.list-items.saved-address :as saved-address]
     [status-im.contexts.preview.quo.list-items.saved-contact-address :as
      saved-contact-address]
@@ -349,6 +350,8 @@
                         :component dapp/preview}
                        {:name      :preview-lists
                         :component preview-lists/view}
+                       {:name      :quiz-item
+                        :component quiz-item/view}
                        {:name      :saved-address
                         :component saved-address/view}
                        {:name      :saved-contact-address
