@@ -66,18 +66,11 @@
       (str "<" (.toFixed one-cent-value decimals-count))
       (.toFixed token-units decimals-count))))
 
-;(defn total-token-units-in-all-chains
-;  [{:keys [balances-per-chain decimals] :as _token}]
-;  (-> balances-per-chain
-;      (total-raw-balance-in-all-chains)
-;      (money/token->unit decimals)))
-
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
-  (let [raw-balances (total-raw-balance-in-all-chains balances-per-chain)]
-    (println "Intermediate result - Raw Balances:" raw-balances)
-    (-> raw-balances
-        (money/token->unit decimals))))
+  (-> balances-per-chain
+      (total-raw-balance-in-all-chains)
+      (money/token->unit decimals)))
 
 (defn get-account-by-address
   [accounts address]

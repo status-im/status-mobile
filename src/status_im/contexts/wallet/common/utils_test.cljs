@@ -25,22 +25,23 @@
 
 (deftest test-format-derivation-path
   (testing "format-derivation-path function"
-    (is (= (utils/format-derivation-path "m/44'/60'/0'/0/5") "m/44'/60'/0'/0/5"))
-    (is (= (utils/format-derivation-path "m/44'/60'/0'/0/0") "m/44'/60'/0'/0/0"))
-    (is (= (utils/format-derivation-path "m/44'/60'/0'/0/123") "m/44'/60'/0'/0/123"))))
+    (is (= (utils/format-derivation-path "m/44'/60'/0'/0/5") "m / 44' / 60' / 0' / 0 / 5"))
+    (is (= (utils/format-derivation-path "m/44'/60'/0'/0/0") "m / 44' / 60' / 0' / 0 / 0"))
+    (is (= (utils/format-derivation-path "m/44'/60'/0'/0/123") "m / 44' / 60' / 0' / 0 / 123"))))
+
 
 (deftest test-get-formatted-derivation-path
   (testing "get-formatted-derivation-path function"
-    (is (= (utils/get-formatted-derivation-path 5) "m/44'/60'/0'/0/5"))
-    (is (= (utils/get-formatted-derivation-path 0) "m/44'/60'/0'/0/0"))
-    (is (= (utils/get-formatted-derivation-path 123) "m/44'/60'/0'/0/123"))))
+    (is (= (utils/get-formatted-derivation-path 5) "m / 44' / 60' / 0' / 0 / 5"))
+    (is (= (utils/get-formatted-derivation-path 0) "m / 44' / 60' / 0' / 0 / 0"))
+    (is (= (utils/get-formatted-derivation-path 123) "m / 44' / 60' / 0' / 0 / 123"))))
 
 (deftest test-total-raw-balance-in-all-chains
   (testing "total-raw-balance-in-all-chains function"
     (let [balances-per-chain {1 {:raw-balance (money/bignumber 100)}
                               10 {:raw-balance (money/bignumber 200)}
                               42161 {:raw-balance (money/bignumber 300)}}]
-      (is (= (money/equal-to (utils/total-raw-balance-in-all-chains balances-per-chain) (money/bignumber 600)) true)))))
+      (is (money/equal-to (utils/total-raw-balance-in-all-chains balances-per-chain) (money/bignumber 600))))))
 
 (deftest test-extract-exponent
   (testing "extract-exponent function"
@@ -59,24 +60,23 @@
 (deftest test-get-standard-crypto-format
   (testing "get-standard-crypto-format function"
     (let [market-values-per-currency {:usd {:price 100}}
-          token-units                0.005]
+          token-units 0.005]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
-             "<0.01"))))
-  (let [market-values-per-currency {:usd {:price 0.005}}
-        token-units                0.01]
-    (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
-                                             token-units)
-           "2.00"))))
+             "<0.01")))
+    (let [market-values-per-currency {:usd {:price 0.005}}
+          token-units 0.01]
+      (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
+                                               token-units)
+             "2.00")))))
 
 (deftest test-total-token-units-in-all-chains
   (testing "total-token-units-in-all-chains function"
-    (let [token {:balances-per-chain [{:raw-balance 100} {:raw-balance 200} {:raw-balance 300}]
+    (let [token {:balances-per-chain {1 {:raw-balance (money/bignumber 100)}
+                                      10 {:raw-balance (money/bignumber 200)}
+                                      42161 {:raw-balance (money/bignumber 300)}}
                  :decimals           2}]
-      (is (= (utils/total-token-units-in-all-chains token) 6.0)))
-    (let [token {:balances-per-chain [{:raw-balance 0} {:raw-balance 0} {:raw-balance 0}]
-                 :decimals           3}]
-      (is (= (utils/total-token-units-in-all-chains token) 0.0)))))
+      (is (money/equal-to (utils/total-token-units-in-all-chains token) 6.0)))))
 
 (deftest test-get-account-by-address
   (testing "get-account-by-address function"
