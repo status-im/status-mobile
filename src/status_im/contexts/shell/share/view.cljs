@@ -157,7 +157,7 @@
                                   :qr-size     qr-size
                                   :error-level :highest})]
         [rn/view {:style {:width width}}
-         [rn/view {:key (:name account) :style style/qr-code-container}
+         [rn/view { :style style/qr-code-container}
           [quo/share-qr-code
            {:type                @wallet-type
             :qr-image-uri        qr-media-server-uri
@@ -179,7 +179,7 @@
   (let [accounts (rf/sub [:wallet/accounts])]
     [react/scroll-view {:horizontal true :style {:flex 1}} 
      (for [account accounts]
-       [wallet-qr-code-item account])]))
+       [wallet-qr-code-item account {:key (:key-uid account)}])]))
 
 (defn tab-content
   []
