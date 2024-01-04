@@ -135,7 +135,8 @@
                      (:balances-per-chain token))))
 
 (defn aggregate-tokens-for-all-accounts
-  "Receives accounts (seq) and returns aggregated tokens in all accounts"
+  "Receives accounts (seq) and returns aggregated tokens in all accounts
+   NOTE: We use double reduce for faster performance (faster than mapcat and flatten)"
   [accounts]
   (->> accounts
        (map :tokens)

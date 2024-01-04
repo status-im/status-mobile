@@ -1,7 +1,5 @@
 (ns status-im.contexts.wallet.events
   (:require
-    [camel-snake-kebab.core :as csk]
-    [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [status-im.contexts.wallet.data-store :as data-store]
