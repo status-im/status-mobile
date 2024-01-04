@@ -57,11 +57,18 @@
       (update :balances-per-chain update-vals #(update % :raw-balance money/bignumber))
       (update :balances-per-chain update-keys (comp utils.number/parse-int name))))
 
+(defn- remove-tokens-with-empty-values
+  [tokens]
+  (remove
+   #(or (string/blank? (:symbol %)) (string/blank? (:name %)))
+   tokens))
+
 (defn rpc->tokens
   [tokens]
   (-> tokens
       (update-keys name)
       (update-vals #(cske/transform-keys csk/->kebab-case %))
+      (update-vals remove-tokens-with-empty-values)
       (update-vals #(mapv rpc->balances-per-chain %))))
 
 (defn rpc->network
