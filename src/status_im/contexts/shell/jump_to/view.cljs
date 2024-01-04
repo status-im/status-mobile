@@ -2,11 +2,13 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.config :as config]
     [status-im.contexts.shell.jump-to.animation :as animation]
     [status-im.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
     [status-im.contexts.shell.jump-to.components.floating-screens.view :as floating-screens]
     [status-im.contexts.shell.jump-to.components.home-stack.view :as home-stack]
     [status-im.contexts.shell.jump-to.components.jump-to-screen.view :as jump-to-screen]
+    [status-im.contexts.shell.jump-to.pr-error-indicator :as pr-error-indicator]
     [status-im.contexts.shell.jump-to.shared-values :as shared-values]
     [status-im.contexts.shell.jump-to.utils :as utils]
     [status-im.navigation.state :as navigation.state]
@@ -45,7 +47,9 @@
      [:f> bottom-tabs/f-bottom-tabs]
      [:f> home-stack/f-home-stack]
      [floating-button shared-values]
-     [floating-screens/view]]))
+     [floating-screens/view]
+     (when config/pr-error-indicator?
+       [:f> pr-error-indicator/f-view])]))
 
 (defn shell-stack
   []

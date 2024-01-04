@@ -159,3 +159,5 @@
 
 (def community-accounts-selection-enabled? false)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
+
+(def pr-error-indicator? (enabled? (get-config :PR_ERROR_INDICATOR "0")))
