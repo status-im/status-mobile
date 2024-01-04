@@ -54,6 +54,11 @@
  :-> :token)
 
 (rf/reg-sub
+ :wallet/wallet-send-amount
+ :<- [:wallet/wallet-send]
+ :-> :amount)
+
+(rf/reg-sub
  :wallet/wallet-send-loading-suggested-routes?
  :<- [:wallet/wallet-send]
  :-> :loading-suggested-routes?)
