@@ -10,5 +10,4 @@
   {:margin-left 4})
 
 (def community-rule-text
-  {:margin-left 0
-   :flex        1})
+  {:flex 1})

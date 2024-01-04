@@ -11,7 +11,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- join-community-and-navigate-back
+(defn join-community-and-navigate-back
   [id]
   (rf/dispatch [:password-authentication/show
                 {:content (fn [] [password-authentication/view])}
@@ -28,7 +28,7 @@
                   images]} (rf/sub [:get-screen-params])
           {:keys [color]}  (rf/sub [:communities/community id])]
       [rn/safe-area-view {:flex 1}
-       [gesture/scroll-view {:style {:flex 1}}
+       [gesture/scroll-view {:style style/container}
         [rn/view style/page-container
          [rn/view {:style style/title-container}
           [quo/text
@@ -36,20 +36,20 @@
             :weight              :semi-bold
             :size                :heading-2}
            (i18n/label :t/request-to-join)]]
-         [rn/view {:style {:margin-right :auto :margin-top 4}}
+         [rn/view {:style style/community-icon}
           [quo/context-tag
            {:type           :community
             :size           24
             :community-logo (:thumbnail images)
             :community-name name}]]
          [quo/text
-          {:style               {:margin-top 24}
+          {:style               style/rules-text
            :accessibility-label :communities-rules-title
            :weight              :semi-bold
            :size                :paragraph-1}
           (i18n/label :t/community-rules)]
          [community-rules/view community-rules/standard-rules false]]]
-       [rn/view {:style (style/bottom-container)}
+       [rn/view {:style style/bottom-container}
         [quo/button
          {:accessibility-label :cancel
           :on-press            #(rf/dispatch [:navigate-back])
@@ -67,6 +67,5 @@
          {:size  :paragraph-2
           :style style/final-disclaimer-text}
          (i18n/label :t/request-to-join-disclaimer)]]])))
-
 
 (def view (quo.theme/with-theme view-internal))
