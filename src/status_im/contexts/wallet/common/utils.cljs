@@ -34,7 +34,7 @@
 (defn total-raw-balance-in-all-chains
   [balances-per-chain]
   (->> balances-per-chain
-       (map (comp :raw-balance val))
+       (map :raw-balance)
        (reduce money/add)))
 
 (defn extract-exponent
