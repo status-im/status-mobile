@@ -38,7 +38,7 @@
 (defn icon-container
   [is-first?]
   {:margin-left   (if is-first? 4 2)
-   :margin-bottom 2})
+   :margin-bottom 4})
 
 (defn time-text
   [theme]
