@@ -24,10 +24,13 @@ public class AccountManager extends ReactContextBaseJavaModule {
     private ReactApplicationContext reactContext;
 
     private Utils utils;
+    private LogManager logManager;
 
     public AccountManager(ReactApplicationContext reactContext) {
+        super(reactContext);
         this.reactContext = reactContext;
         this.utils = new Utils(reactContext);
+        this.logManager = new LogManager(reactContext);
     }
 
     @Override
@@ -63,33 +66,7 @@ public class AccountManager extends ReactContextBaseJavaModule {
         }
     }
 
-    private File prepareLogsFile(final Context context) {
-        final File logFile = this.utils.getLogsFile();
 
-        try {
-            logFile.setReadable(true);
-            File parent = logFile.getParentFile();
-            if (!parent.canWrite()) {
-                return null;
-            }
-            if (!parent.exists()) {
-                parent.mkdirs();
-            }
-            logFile.createNewFile();
-            logFile.setWritable(true);
-            Log.d(TAG, "Can write " + logFile.canWrite());
-            Uri gethLogUri = Uri.fromFile(logFile);
-
-            String gethLogFilePath = logFile.getAbsolutePath();
-            Log.d(TAG, gethLogFilePath);
-
-            return logFile;
-        } catch (Exception e) {
-            Log.d(TAG, "Can't create geth.log file! " + e.getMessage());
-        }
-
-        return null;
-    }
 
     private String updateConfig(final String jsonConfigString, final String absRootDirPath, final String keystoreDirPath) throws JSONException {
         final JSONObject jsonConfig = new JSONObject(jsonConfigString);
@@ -97,7 +74,7 @@ public class AccountManager extends ReactContextBaseJavaModule {
         final String dataDirPath = jsonConfig.getString("DataDir");
         final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
         final Context context = this.getReactApplicationContext();
-        final File gethLogFile = logEnabled ? prepareLogsFile(context) : null;
+        final File gethLogFile = logEnabled ? this.logManager.prepareLogsFile(context) : null;
         String gethLogDirPath = null;
         if (gethLogFile != null) {
             gethLogDirPath = gethLogFile.getParent();

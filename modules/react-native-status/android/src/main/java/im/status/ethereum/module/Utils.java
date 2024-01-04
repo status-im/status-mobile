@@ -29,7 +29,7 @@ public class Utils extends ReactContextBaseJavaModule  {
         return this.getReactApplicationContext().getNoBackupFilesDir().getAbsolutePath();
     }
 
-    private File getPublicStorageDirectory() {
+    public File getPublicStorageDirectory() {
         final Context context = this.getReactApplicationContext();
         // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
         // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)

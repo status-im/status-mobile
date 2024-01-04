@@ -77,9 +77,7 @@ import android.app.Service;
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, SignalHandler {
 
     private static final String TAG = "StatusModule";
-    private static final String logsZipFileName = "Status-debug-logs.zip";
     private static final String gethLogFileName = "geth.log";
-    private static final String statusLogFileName = "Status.log";
     private static StatusModule module;
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
@@ -155,13 +153,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
         // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
         return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-    }
-
-    private File getLogsFile() {
-        final File pubDirectory = this.getPublicStorageDirectory();
-        final File logFile = new File(pubDirectory, gethLogFileName);
-
-        return logFile;
     }
 
     private String pathCombine(final String path1, final String path2) {
@@ -287,136 +278,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         } catch (JSONException e) {
             Log.e(TAG, "JSON conversion failed: " + e.getMessage());
-        }
-    }
-
-    private Boolean zip(File[] _files, File zipFile, Stack<String> errorList) {
-        final int BUFFER = 0x8000;
-
-        try {
-            BufferedInputStream origin = null;
-            FileOutputStream dest = new FileOutputStream(zipFile);
-            ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
-            byte data[] = new byte[BUFFER];
-
-            for (int i = 0; i < _files.length; i++) {
-                final File file = _files[i];
-                if (file == null || !file.exists()) {
-                    continue;
-                }
-
-                Log.v("Compress", "Adding: " + file.getAbsolutePath());
-                try {
-                    FileInputStream fi = new FileInputStream(file);
-                    origin = new BufferedInputStream(fi, BUFFER);
-
-                    ZipEntry entry = new ZipEntry(file.getName());
-                    out.putNextEntry(entry);
-                    int count;
-
-                    while ((count = origin.read(data, 0, BUFFER)) != -1) {
-                        out.write(data, 0, count);
-                    }
-                    origin.close();
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
-                    errorList.push(e.getMessage());
-                }
-            }
-
-            out.close();
-
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private void dumpAdbLogsTo(final FileOutputStream statusLogStream) throws IOException {
-        final String filter = "logcat -d -b main ReactNativeJS:D StatusModule:D StatusService:D StatusNativeLogs:D *:S";
-        final java.lang.Process p = Runtime.getRuntime().exec(filter);
-        final java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()));
-        final java.io.BufferedWriter out = new java.io.BufferedWriter(new java.io.OutputStreamWriter(statusLogStream));
-        String line;
-        while ((line = in.readLine()) != null) {
-            out.write(line);
-            out.newLine();
-        }
-        out.close();
-        in.close();
-    }
-
-    private void showErrorMessage(final String message) {
-        final Activity activity = getCurrentActivity();
-
-        new AlertDialog.Builder(activity)
-                .setTitle("Error")
-                .setMessage(message)
-                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.dismiss();
-                    }
-                }).show();
-    }
-
-    @ReactMethod
-    public void sendLogs(final String dbJson, final String jsLogs, final Callback callback) {
-        Log.d(TAG, "sendLogs");
-        if (!checkAvailability()) {
-            return;
-        }
-
-        final Context context = this.getReactApplicationContext();
-        final File logsTempDir = new File(context.getCacheDir(), "logs"); // This path needs to be in sync with android/app/src/main/res/xml/file_provider_paths.xml
-        logsTempDir.mkdir();
-
-        final File dbFile = new File(logsTempDir, "db.json");
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(dbFile));
-            outputStreamWriter.write(dbJson);
-            outputStreamWriter.close();
-        } catch (IOException e) {
-            Log.e(TAG, "File write failed: " + e.toString());
-            showErrorMessage(e.getLocalizedMessage());
-        }
-
-        final File zipFile = new File(logsTempDir, logsZipFileName);
-        final File statusLogFile = new File(logsTempDir, statusLogFileName);
-        final File gethLogFile = getLogsFile();
-
-        try {
-            if (zipFile.exists() || zipFile.createNewFile()) {
-                final long usableSpace = zipFile.getUsableSpace();
-                if (usableSpace < 20 * 1024 * 1024) {
-                    final String message = String.format("Insufficient space available on device (%s) to write logs.\nPlease free up some space.", android.text.format.Formatter.formatShortFileSize(context, usableSpace));
-                    Log.e(TAG, message);
-                    showErrorMessage(message);
-                    return;
-                }
-            }
-
-            dumpAdbLogsTo(new FileOutputStream(statusLogFile));
-
-            final Stack<String> errorList = new Stack<String>();
-            final Boolean zipped = zip(new File[]{dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
-            if (zipped && zipFile.exists()) {
-                zipFile.setReadable(true, false);
-                Uri extUri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", zipFile);
-                callback.invoke(extUri.toString());
-            } else {
-                Log.d(TAG, "File " + zipFile.getAbsolutePath() + " does not exist");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            showErrorMessage(e.getLocalizedMessage());
-            e.printStackTrace();
-            return;
-        } finally {
-            dbFile.delete();
-            statusLogFile.delete();
-            zipFile.deleteOnExit();
         }
     }
 
@@ -633,8 +494,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     }
 
-
-
     @ReactMethod
     public void callRPC(final String payload, final Callback callback) throws JSONException {
         executeRunnableStatusGoMethod(() -> Statusgo.callRPC(payload), callback);
@@ -745,12 +604,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String backupDisabledDataDir() {
         return this.getNoBackupDirectory();
-    }
-
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String logFileDirectory() {
-        return getPublicStorageDirectory().getAbsolutePath();
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -883,16 +736,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         });
     }
 
-    @ReactMethod
-    public void initLogging(final boolean enabled, final boolean mobileSystem, final String logLevel, final Callback callback) throws JSONException {
-        final JSONObject jsonConfig = new JSONObject();
-        jsonConfig.put("Enabled", enabled);
-        jsonConfig.put("MobileSystem", mobileSystem);
-        jsonConfig.put("Level", logLevel);
-        jsonConfig.put("File", getLogsFile().getAbsolutePath());
-        final String config = jsonConfig.toString();
-        executeRunnableStatusGoMethod(() -> Statusgo.initLogging(config), callback);
-    }
+
 
 }
 

@@ -29,7 +29,7 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
     }
 
     //TODO: remove duplicate checkAvailability
-    private boolean checkAvailability() {
+    public boolean checkAvailability() {
         // We wait at least 10s for getCurrentActivity to return a value,
         // otherwise we give up
         for (int attempts = 0; attempts < 100; attempts++) {
@@ -51,7 +51,7 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         return false;
     }
 
-    private void executeRunnableStatusGoMethod(Supplier<String> method, Callback callback) throws JSONException {
+    public void executeRunnableStatusGoMethod(Supplier<String> method, Callback callback) throws JSONException {
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
