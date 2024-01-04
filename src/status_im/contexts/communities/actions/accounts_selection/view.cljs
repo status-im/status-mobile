@@ -18,20 +18,6 @@
                                           {:community-id id :password %}])}])
   (rf/dispatch [:navigate-back]))
 
-(defn- page-top
-  [{:keys [community-name logo-uri]}]
-  [rn/view {:style style/page-top}
-   [quo/text
-    {:size   :heading-1
-     :weight :semi-bold}
-    (i18n/label :t/request-to-join)]
-   [quo/context-tag
-    {:type            :community
-     :size            24
-     :community-logo  logo-uri
-     :community-name  community-name
-     :container-style {:margin-top 8}}]])
-
 (defn view
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
@@ -43,9 +29,13 @@
        :icon-name           :i/close
        :on-press            #(rf/dispatch [:navigate-back])
        :accessibility-label :back-button}]
-     [page-top
-      {:community-name name
-       :logo-uri       (get-in images [:thumbnail :uri])}]
+     [quo/page-top
+      {:title       (i18n/label :t/request-to-join)
+       :description :context-tag
+       :context-tag {:type           :community
+                     :size           24
+                     :community-logo (get-in images [:thumbnail :uri])
+                     :community-name name}}]
      [gesture/scroll-view
       [:<>
        [quo/text
