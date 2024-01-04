@@ -31,7 +31,7 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-(defn- total-raw-balance-in-all-chains
+(defn total-raw-balance-in-all-chains
   [balances-per-chain]
   (->> balances-per-chain
        (map (comp :raw-balance val))

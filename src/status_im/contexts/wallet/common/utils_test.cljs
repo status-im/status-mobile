@@ -204,10 +204,10 @@
     (let [balances-per-chain {:chain-1 {:balance 100}
                               :chain-2 {:balance 200}
                               :chain-3 {:balance 300}}
-          networks           [{:chain-id :chain-1 :name "Network A"}
-                              {:chain-id :chain-3 :name "Network C"}]]
+          networks           [{:chain-id 1 :name "Network A"}
+                              {:chain-id 3 :name "Network C"}]]
       (is (= (utils/network-list {:balances-per-chain balances-per-chain} networks)
-             #{:chain-1 :chain-3})))))
+             #{1 3})))))
 
 (deftest test-calculate-fiat-change
   (testing "calculate-fiat-change function"
