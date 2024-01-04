@@ -41,6 +41,11 @@
   (when (exists? (.-NativeModules react-native))
         (.-Utils ^js (.-NativeModules react-native))))
 
+(defn network
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-NetworkManager ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -252,30 +257,30 @@
 (defn call-rpc
   [payload callback]
   (log/debug "[native-module] call-rpc")
-  (.callRPC ^js (status) payload callback))
+  (.callRPC ^js (network) payload callback))
 
 (defn call-private-rpc
   [payload callback]
-  (.callPrivateRPC ^js (status) payload callback))
+  (.callPrivateRPC ^js (network) payload callback))
 
 (defn hash-transaction
   "used for keycard"
   [rpcParams callback]
   (log/debug "[native-module] hash-transaction")
-  (.hashTransaction ^js (status) rpcParams callback))
+  (.hashTransaction ^js (encryption) rpcParams callback))
 
 (defn hash-message
   "used for keycard"
   [message callback]
   (log/debug "[native-module] hash-message")
-  (.hashMessage ^js (status) message callback))
+  (.hashMessage ^js (encryption) message callback))
 
 (defn start-searching-for-local-pairing-peers
   "starts a UDP multicast beacon that both listens for and broadcasts to LAN peers"
   [callback]
   (log/info "[native-module] Start Searching for Local Pairing Peers"
             {:fn :start-searching-for-local-pairing-peers})
-  (.startSearchForLocalPairingPeers ^js (status) callback))
+  (.startSearchForLocalPairingPeers ^js (network) callback))
 
 (defn local-pairing-preflight-outbound-check
   "Checks whether the device has allows connecting to the local server"
@@ -290,7 +295,7 @@
   (log/info "[native-module] Fetching Connection String"
             {:fn          :get-connection-string-for-bootstrapping-another-device
              :config-json config-json})
-  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json callback))
+  (.getConnectionStringForBootstrappingAnotherDevice ^js (network) config-json callback))
 
 (defn input-connection-string-for-bootstrapping
   "Provides connection string to status-go for the purpose of local pairing on the receiver end"
@@ -299,7 +304,7 @@
             {:fn                :input-connection-string-for-bootstrapping
              :config-json       config-json
              :connection-string connection-string})
-  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json callback))
+  (.inputConnectionStringForBootstrapping ^js (network) connection-string config-json callback))
 
 (defn deserialize-and-compress-key
   "Provides a community id (public key) to status-go which is first deserialized
@@ -310,7 +315,7 @@
   (log/info "[native-module] Deserializing and then compressing public key"
             {:fn  :deserialize-and-compress-key
              :key input-key})
-  (.deserializeAndCompressKey ^js (status) input-key callback))
+  (.deserializeAndCompressKey ^js (encryption) input-key callback))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
@@ -318,54 +323,54 @@
   (log/info "[native-module] Deserializing compressed key"
             {:fn         :compressed-key->public-key
              :public-key public-key})
-  (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key callback))
+  (.multiformatDeserializePublicKey ^js (encryption) public-key deserialization-key callback))
 
 (defn hash-typed-data
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data")
-  (.hashTypedData ^js (status) data callback))
+  (.hashTypedData ^js (encryption) data callback))
 
 (defn hash-typed-data-v4
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data-v4")
-  (.hashTypedDataV4 ^js (status) data callback))
+  (.hashTypedDataV4 ^js (encryption) data callback))
 
 (defn send-transaction-with-signature
   "used for keycard"
   [rpcParams sig callback]
   (log/debug "[native-module] send-transaction-with-signature")
-  (.sendTransactionWithSignature ^js (status) rpcParams sig callback))
+  (.sendTransactionWithSignature ^js (network) rpcParams sig callback))
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
   [rpcParams callback]
   (log/debug "[native-module] sign-message")
-  (.signMessage ^js (status) rpcParams callback))
+  (.signMessage ^js (encryption) rpcParams callback))
 
 (defn recover-message
   [rpcParams callback]
   (log/debug "[native-module] recover")
-  (.recover ^js (status) rpcParams callback))
+  (.recover ^js (network) rpcParams callback))
 
 (defn send-transaction
   "NOTE: beware, the password has to be sha3 hashed"
   [rpcParams hashed-password callback]
   (log/debug "[native-module] send-transaction")
-  (.sendTransaction ^js (status) rpcParams hashed-password callback))
+  (.sendTransaction ^js (network) rpcParams hashed-password callback))
 
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] sign-typed-data")
-  (.signTypedData ^js (status) data account hashed-password callback))
+  (.signTypedData ^js (encryption) data account hashed-password callback))
 
 (defn sign-typed-data-v4
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] sign-typed-data-v4")
-  (.signTypedDataV4 ^js (status) data account hashed-password callback))
+  (.signTypedDataV4 ^js (encryption) data account hashed-password callback))
 
 (defn send-logs
   [dbJson js-logs callback]

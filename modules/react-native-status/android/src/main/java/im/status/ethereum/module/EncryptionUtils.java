@@ -124,4 +124,76 @@ public class EncryptionUtils extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void hashTransaction(final String txArgsJSON, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTransaction(txArgsJSON), callback);
+    }
+
+    @ReactMethod
+    public void hashMessage(final String message, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashMessage(message), callback);
+    }
+
+    @ReactMethod
+    public void multiformatSerializePublicKey(final String multiCodecKey, final String base58btc, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatSerializePublicKey(multiCodecKey,base58btc), callback);
+    }
+
+    @ReactMethod
+    public void multiformatDeserializePublicKey(final String multiCodecKey, final String base58btc, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatDeserializePublicKey(multiCodecKey,base58btc), callback);
+    }
+
+    @ReactMethod
+    public void compressPublicKey(final String multiCodecKey, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.compressPublicKey(multiCodecKey), callback);
+    }
+
+    @ReactMethod
+    public void decompressPublicKey(final String multiCodecKey, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.decompressPublicKey(multiCodecKey), callback);
+    }
+
+    @ReactMethod
+    public void deserializeAndCompressKey(final String desktopKey, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.deserializeAndCompressKey(desktopKey), callback);
+    }
+
+    @ReactMethod
+    public void hashTypedData(final String data, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTypedData(data), callback);
+    }
+
+    @ReactMethod
+    public void hashTypedDataV4(final String data, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTypedDataV4(data), callback);
+    }
+
+    @ReactMethod
+    public void signMessage(final String rpcParams, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signMessage(rpcParams), callback);
+    }
+
+    @ReactMethod
+    public void signTypedData(final String data, final String account, final String password, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signTypedData(data, account, password), callback);
+    }
+
+    @ReactMethod
+    public void signTypedDataV4(final String data, final String account, final String password, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signTypedDataV4(data, account, password), callback);
+
+    }
+
+    @ReactMethod
+    public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.extractGroupMembershipSignatures(signaturePairs), callback);
+    }
+
+    @ReactMethod
+    public void signGroupMembership(final String content, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signGroupMembership(content), callback);
+    }
+
+
 }

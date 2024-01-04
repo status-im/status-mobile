@@ -38,7 +38,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
     private boolean background;
-    private EncryptionUtils encryptionUtils;
     private Utils utils;
 
 
@@ -46,7 +45,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         super(reactContext);
         this.reactContext = reactContext;
         this.rootedDevice = rootedDevice;
-        this.encryptionUtils = new EncryptionUtils(reactContext);
         this.utils = new Utils(reactContext);
 
         reactContext.addLifecycleEventListener(this);
@@ -82,124 +80,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void addPeer(final String enode, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.addPeer(enode), callback);
-    }
-
-    @ReactMethod
-    public void hashTransaction(final String txArgsJSON, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTransaction(txArgsJSON), callback);
-    }
-
-    @ReactMethod
-    public void hashMessage(final String message, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashMessage(message), callback);
-    }
-
-    @ReactMethod
-    public void startSearchForLocalPairingPeers(final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.startSearchForLocalPairingPeers(), callback);
-    }
-
-    @ReactMethod
-    public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) throws JSONException {
-         final JSONObject jsonConfig = new JSONObject(configJSON);
-         final JSONObject senderConfig = jsonConfig.getJSONObject("senderConfig");
-         final String keyUID = senderConfig.getString("keyUID");
-         final String keyStorePath = this.utils.getKeyStorePath(keyUID);
-        senderConfig.put("keystorePath", keyStorePath);
-
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.getConnectionStringForBootstrappingAnotherDevice(jsonConfig.toString()), callback);
-    }
-
-    @ReactMethod
-    public void inputConnectionStringForBootstrapping(final String connectionString, final String configJSON, final Callback callback) throws JSONException {
-         final JSONObject jsonConfig = new JSONObject(configJSON);
-         final JSONObject receiverConfig = jsonConfig.getJSONObject("receiverConfig");
-         final String keyStorePath = this.utils.pathCombine(this.utils.getNoBackupDirectory(), "/keystore");
-         receiverConfig.put("keystorePath", keyStorePath);
-         receiverConfig.getJSONObject("nodeConfig").put("rootDataDir", this.utils.getNoBackupDirectory());
-
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.inputConnectionStringForBootstrapping(connectionString, jsonConfig.toString()), callback);
-    }
-
-    @ReactMethod
-    public void multiformatSerializePublicKey(final String multiCodecKey, final String base58btc, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatSerializePublicKey(multiCodecKey,base58btc), callback);
-    }
-
-    @ReactMethod
-    public void multiformatDeserializePublicKey(final String multiCodecKey, final String base58btc, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiformatDeserializePublicKey(multiCodecKey,base58btc), callback);
-    }
-
-    @ReactMethod
-    public void compressPublicKey(final String multiCodecKey, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.compressPublicKey(multiCodecKey), callback);
-    }
-
-    @ReactMethod
-    public void decompressPublicKey(final String multiCodecKey, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.decompressPublicKey(multiCodecKey), callback);
-    }
-
-    @ReactMethod
-    public void deserializeAndCompressKey(final String desktopKey, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.deserializeAndCompressKey(desktopKey), callback);
-    }
-
-    @ReactMethod
-    public void hashTypedData(final String data, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTypedData(data), callback);
-    }
-
-    @ReactMethod
-    public void hashTypedDataV4(final String data, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.hashTypedDataV4(data), callback);
-    }
-
-    @ReactMethod
-    public void sendTransactionWithSignature(final String txArgsJSON, final String signature, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.sendTransactionWithSignature(txArgsJSON, signature), callback);
-    }
-
-    @ReactMethod
-    public void sendTransaction(final String txArgsJSON, final String password, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.sendTransaction(txArgsJSON, password), callback);
-    }
-
-    @ReactMethod
-    public void signMessage(final String rpcParams, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signMessage(rpcParams), callback);
-    }
-
-    @ReactMethod
-    public void recover(final String rpcParams, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.recover(rpcParams), callback);
-    }
-
-    @ReactMethod
-    public void signTypedData(final String data, final String account, final String password, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signTypedData(data, account, password), callback);
-    }
-
-    @ReactMethod
-    public void signTypedDataV4(final String data, final String account, final String password, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signTypedDataV4(data, account, password), callback);
-
-    }
-
-    @ReactMethod
-    public void callRPC(final String payload, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.callRPC(payload), callback);
-    }
-
-    @ReactMethod
-    public void callPrivateRPC(final String payload, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.callPrivateRPC(payload), callback);
-    }
-
-    @ReactMethod
     public void closeApplication() {
         System.exit(0);
     }
@@ -229,16 +109,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.extractGroupMembershipSignatures(signaturePairs), callback);
-    }
-
-    @ReactMethod
-    public void signGroupMembership(final String content, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.signGroupMembership(content), callback);
-    }
-
-    @ReactMethod
     public void getNodeConfig(final Callback callback) throws JSONException {
         this.utils.executeRunnableStatusGoMethod(() -> Statusgo.getNodeConfig(), callback);
     }
@@ -253,7 +123,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public String fleets() {
         return Statusgo.fleets();
     }
-
 
     @ReactMethod
     public void identiconAsync(final String seed, final Callback callback) throws JSONException {
