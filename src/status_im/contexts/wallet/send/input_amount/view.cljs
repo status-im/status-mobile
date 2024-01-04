@@ -103,6 +103,7 @@
             input-num-value   (parse-double @input-value)
             token             (rf/sub [:wallet/wallet-send-token])
             route             (rf/sub [:wallet/wallet-send-route])
+            wallet-send       (rf/sub [:wallet/wallet-send])
             confirm-disabled? (or
                                (nil? route)
                                (empty? @input-value)
@@ -142,10 +143,9 @@
            :on-change-text  (fn [text]
                               (handle-on-change text))}]
          [routes/view
-          {:amount      amount
-           :route       route
-           :input-value @input-value
-           :networks    (:networks token)}]
+          {:amount   amount
+           :routes   (:suggested-routes wallet-send)
+           :networks (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)

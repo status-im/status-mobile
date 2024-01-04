@@ -7,49 +7,47 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn routes
+(defn route-item
   [{:keys [amount from-network to-network status]}]
-  [rn/view {:style style/routes-container}
-   [rn/view {:style style/routes-header-container}
-    [quo/section-label
-     {:section         (i18n/label :t/from-label)
-      :container-style (style/section-label 0)}]
-    [quo/section-label
-     {:section         (i18n/label :t/to-label)
-      :container-style (style/section-label 64)}]]
-   [rn/view {:style style/routes-inner-container}
-    [quo/network-bridge
-     {:amount  amount
-      :network from-network
-      :status  status}]
-    [quo/network-link
-     {:shape           :linear
-      :source          from-network
-      :destination     to-network
-      :container-style style/network-link}]
-    [quo/network-bridge
-     {:amount          amount
-      :network         to-network
-      :status          status
-      :container-style {:right 12}}]]])
+  [rn/view {:style style/routes-inner-container}
+   [quo/network-bridge
+    {:amount  amount
+     :network from-network
+     :status  status}]
+   [quo/network-link
+    {:shape           :linear
+     :source          from-network
+     :destination     to-network
+     :container-style style/network-link}]
+   [quo/network-bridge
+    {:amount          amount
+     :network         to-network
+     :status          status
+     :container-style {:right 12}}]])
 
 (defn view
-  [{:keys [amount route networks input-value]}]
+  [{:keys [amount routes]}]
   (let [loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-        from-network              (utils/id->network (get-in route [:From :chainId]))
-        to-network                (utils/id->network (get-in route [:To :chainId]))]
-    [rn/scroll-view
-     {:content-container-style {:flex-grow       1
-                                :align-items     :center
-                                :justify-content :center}}
-     (when (not (empty? input-value))
-       (if (and (not loading-suggested-routes?) route)
-         [routes
-          {:amount       amount
-           :status       :default
-           :from-network from-network
-           :to-network   to-network}]
-         [routes
-          {:status       :loading
-           :from-network (:network-name (nth (seq networks) 1))
-           :to-network   (:network-name (nth (seq networks) 1))}]))]))
+        candidates                (:Candidates routes)]
+    (if (and (not loading-suggested-routes?) (not-empty candidates))
+      [rn/flat-list
+       {:data                    candidates
+        :content-container-style style/routes-container
+        :header                  [rn/view {:style style/routes-header-container}
+                                  [quo/section-label
+                                   {:section         (i18n/label :t/from-label)
+                                    :container-style (style/section-label 0)}]
+                                  [quo/section-label
+                                   {:section         (i18n/label :t/to-label)
+                                    :container-style (style/section-label 64)}]]
+        :render-fn               (fn [route]
+                                   [route-item
+                                    {:amount       amount
+                                     :status       :default
+                                     :from-network (utils/id->network (get-in route [:From :chainId]))
+                                     :to-network   (utils/id->network (get-in route [:To :chainId]))}])}]
+      [rn/view {:style style/empty-container}
+       (if loading-suggested-routes?
+         [rn/activity-indicator]
+         (when (not (nil? candidates))
+           [quo/text (i18n/label :t/no-routes-found)]))])))
