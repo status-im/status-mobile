@@ -10,7 +10,10 @@
 
 (defn- view-internal
   [{:keys [theme]}]
-  (let [collectible-list (rf/sub [:wallet/collectibles])]
+  (let [specific-address (rf/sub [:wallet/current-viewing-account-address])
+        collectible-list (if specific-address
+                           (rf/sub [:wallet/collectibles-per-account specific-address])
+                           (rf/sub [:wallet/all-collectibles]))]
     (if (empty? collectible-list)
       [empty-tab/view
        {:title       (i18n/label :t/no-collectibles)

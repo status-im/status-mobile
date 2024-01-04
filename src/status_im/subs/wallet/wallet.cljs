@@ -39,7 +39,6 @@
  :<- [:wallet/ui]
  :-> :tokens-loading?)
 
-
 (rf/reg-sub
  :wallet/current-viewing-account-address
  :<- [:wallet]
