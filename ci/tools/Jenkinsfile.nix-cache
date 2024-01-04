@@ -21,8 +21,10 @@ pipeline {
     /* See nix/README.md */
     NIX_IGNORE_SYMLINK_STORE = 1
     /* we source .bash_profile to be able to use nix-store */
-    NIX_SSHOPTS = "-o StrictHostKeyChecking=no source .profile;"
+    NIX_SSHOPTS = "-oStrictHostKeyChecking=no"
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    NIX_STORE_CMD = '/nix/var/nix/profiles/default/bin/nix-store'
+    NIX_SSH_REMOTE = "ssh://${params.NIX_CACHE_USER}@${params.NIX_CACHE_HOST}?remote-program=${env.NIX_STORE_CMD}"
   }
 
   options {
@@ -42,19 +44,21 @@ pipeline {
       steps { script {
         nix.shell('nix-env -i openssh', sandbox: false, pure: false)
         /* some build targets don't build on MacOS */
-        os = sh(script: 'uname', returnStdout: true)
-        arch = sh(script: 'arch', returnStdout: true)
+        os = sh(script: 'uname', returnStdout: true).trim()
+        arch = sh(script: 'arch', returnStdout: true).trim()
       } }
     }
     stage('Build status-go') {
       steps { script {
         def platforms = ['mobile.android', 'mobile.ios', 'library']
         if (os != 'Darwin')  { platforms.removeAll { it == 'mobile.ios' } }
-        /* FIXME: Remove this when #16237 is merged. */
+        /* FIXME: "'x86_64-darwin' with features {} is required to build" */
         if (arch == 'arm64') { platforms.removeAll { it == 'mobile.android' } }
-        platforms.each { os ->
+        platforms.each { platform ->
+          /* Allow for Android builds on Apple ARM. */
+          env.NIXPKGS_SYSTEM_OVERRIDE = nixSysOverride(os, arch, platform)
           nix.build(
-            attr: "targets.status-go.${os}",
+            attr: "targets.status-go.${platform}",
             sandbox: false,
             link: false
           )
@@ -74,6 +78,8 @@ pipeline {
     }
     stage('Build android deps') {
       steps { script {
+        /* Allow for Android builds on Apple ARM. */
+        env.NIXPKGS_SYSTEM_OVERRIDE = nixSysOverride(os, arch, 'android')
         /* Build/fetch deps required to build android release. */
         nix.build(
           attr: 'targets.mobile.android.release.buildInputs',
@@ -86,9 +92,13 @@ pipeline {
     stage('Build nix shell deps') {
       steps { script {
         def shells = ['android', 'ios', 'fastlane', 'keytool', 'clojure', 'gradle']
-        if (os != "Darwin") { shells.removeAll { it == 'ios' } }
+        if (os != 'Darwin') { shells.removeAll { it == 'ios' } }
+        /* FIXME: "'x86_64-darwin' with features {} is required to build" */
+        if (arch == 'arm64') { shells.removeAll { it == 'android' } }
         /* Build/fetch deps required to start default Nix shell. */
         shells.each { shell ->
+          /* Allow for Android builds on Apple ARM. */
+          env.NIXPKGS_SYSTEM_OVERRIDE = nixSysOverride(os, arch, shell)
           nix.build(
             attr: "shells.${shell}.buildInputs",
             sandbox: false,
@@ -103,8 +113,7 @@ pipeline {
           nix.shell("""
               find /nix/store/ -mindepth 1 -maxdepth 1 -type d \
                 -not -name '*.links' -and -not -name '*-status-mobile-*' \
-                | xargs nix copy \
-                  --to ssh-ng://${params.NIX_CACHE_USER}@${params.NIX_CACHE_HOST}
+                | xargs nix copy --to ${NIX_SSH_REMOTE}
             """,
             pure: false
           )
@@ -118,4 +127,12 @@ pipeline {
       nix.shell('nix/scripts/clean.sh', pure: false)
     } }
   }
+}
+
+def nixSysOverride(os, arch, target='android') {
+    return (
+        os == 'Darwin' &&
+        arch == 'arm64' &&
+        target =~ /.*android$/
+    ) ? 'x86_64-darwin' : ''
 }
