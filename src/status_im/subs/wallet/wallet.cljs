@@ -49,11 +49,6 @@
  :-> :route)
 
 (rf/reg-sub
- :wallet/wallet-suggested-routes
- :<- [:wallet/wallet-send]
- :-> :suggested-routes)
-
-(rf/reg-sub
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
  :-> :token)
