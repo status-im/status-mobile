@@ -46,9 +46,11 @@
   []
   (let [current-component (reagent/current-component)
         reagent-props     (reagent/props current-component)
-        external-props    (oops/gobj-get current-component "props")
         children          (reagent/children current-component)
         updated-props     (update reagent-props :style transforms/styles-with-vectors)
+        ;; Some components add JS props to their children (such as TouchableWithoutFeedback), to make
+        ;; this component fully compatible we are passing those props to the inner component (`view*`).
+        external-props    (oops/gobj-get current-component "props")
         all-props         (transforms/copy-js-obj-to-map external-props updated-props #(not= % "argv"))]
     (into [view* all-props] children)))
 
