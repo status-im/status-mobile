@@ -30,14 +30,12 @@ public class LogManager extends ReactContextBaseJavaModule {
     private static final String statusLogFileName = "Status.log";
     private static final String logsZipFileName = "Status-debug-logs.zip";
     private ReactApplicationContext reactContext;
-    private EncryptionUtils encryptionUtils;
     private Utils utils;
 
     public LogManager(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
         this.utils = new Utils(reactContext);
-        this.encryptionUtils = new EncryptionUtils(reactContext);
     }
 
     @Override
@@ -154,7 +152,7 @@ public class LogManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void sendLogs(final String dbJson, final String jsLogs, final Callback callback) {
         Log.d(TAG, "sendLogs");
-        if (!this.encryptionUtils.checkAvailability()) {
+        if (!this.utils.checkAvailability()) {
             return;
         }
 
@@ -218,11 +216,13 @@ public class LogManager extends ReactContextBaseJavaModule {
         jsonConfig.put("Level", logLevel);
         jsonConfig.put("File", getLogsFile().getAbsolutePath());
         final String config = jsonConfig.toString();
-        this.encryptionUtils.executeRunnableStatusGoMethod(() -> Statusgo.initLogging(config), callback);
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.initLogging(config), callback);
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String logFileDirectory() {
         return this.utils.getPublicStorageDirectory().getAbsolutePath();
     }
+
+
 }

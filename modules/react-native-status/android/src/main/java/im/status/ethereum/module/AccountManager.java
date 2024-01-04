@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import android.util.Log;
 import android.content.Context;
+import android.app.Activity;
 
 public class AccountManager extends ReactContextBaseJavaModule {
     private static final String TAG = "AccountManager";
@@ -65,8 +66,6 @@ public class AccountManager extends ReactContextBaseJavaModule {
             Log.e(TAG, "restoreAccountAndLogin failed: " + result);
         }
     }
-
-
 
     private String updateConfig(final String jsonConfigString, final String absRootDirPath, final String keystoreDirPath) throws JSONException {
         final JSONObject jsonConfig = new JSONObject(jsonConfigString);
@@ -272,6 +271,71 @@ public class AccountManager extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void loginWithConfig(final String accountData, final String password, final String configJSON) {
+        Log.d(TAG, "loginWithConfig");
+        this.utils.migrateKeyStoreDir(accountData, password);
+        String result = Statusgo.loginWithConfig(accountData, password, configJSON);
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "LoginWithConfig result: " + result);
+        } else {
+            Log.e(TAG, "LoginWithConfig failed: " + result);
+        }
+    }
+
+    @ReactMethod
+    public void loginAccount(final String request) {
+        Log.d(TAG, "loginAccount");
+        String result = Statusgo.loginAccount(request);
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "loginAccount result: " + result);
+        } else {
+            Log.e(TAG, "loginAccount failed: " + result);
+        }
+    }
+
+    @ReactMethod
+    public void verify(final String address, final String password, final Callback callback) throws JSONException {
+        Activity currentActivity = getCurrentActivity();
+
+        final String absRootDirPath = this.utils.getNoBackupDirectory();
+        final String newKeystoreDir = this.utils.pathCombine(absRootDirPath, "keystore");
+
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.verifyAccountPassword(newKeystoreDir, address, password), callback);
+    }
+
+    @ReactMethod
+    public void verifyDatabasePassword(final String keyUID, final String password, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.verifyDatabasePassword(keyUID, password), callback);
+    }
+
+    //TODO : use this.utils.executeRunnableStatusGoMethod
+    @ReactMethod
+    private void openAccounts(final Callback callback) {
+        Activity currentActivity = getCurrentActivity();
+
+        final String rootDir = this.utils.getNoBackupDirectory();
+        Log.d(TAG, "openAccounts");
+        if (!this.utils.checkAvailability()) {
+            Log.e(TAG, "[openAccounts] Activity doesn't exist, cannot call openAccounts");
+            System.exit(0);
+            return;
+        }
+
+        Log.d(TAG, "[Opening accounts" + rootDir);
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.openAccounts(rootDir);
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    //TODO : use this.utils.executeRunnableStatusGoMethod
+    @ReactMethod
     public void logout() {
         Log.d(TAG, "logout");
         Runnable r = new Runnable() {
@@ -287,5 +351,52 @@ public class AccountManager extends ReactContextBaseJavaModule {
         };
 
         StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void multiAccountStoreAccount(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountStoreAccount(json), callback);
+    }
+
+    @ReactMethod
+    public void multiAccountLoadAccount(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountLoadAccount(json), callback);
+    }
+    //TODO: maybe nuke this method since this is not called anywhere in status-mobile
+    @ReactMethod
+    public void multiAccountReset(final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountReset(), callback);
+
+    }
+
+    @ReactMethod
+    public void multiAccountDeriveAddresses(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountDeriveAddresses(json), callback);
+    }
+
+    @ReactMethod
+    public void multiAccountGenerateAndDeriveAddresses(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountGenerateAndDeriveAddresses(json), callback);
+    }
+
+    @ReactMethod
+    public void multiAccountStoreDerived(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountStoreDerivedAccounts(json), callback);
+    }
+
+    @ReactMethod
+    public void multiAccountImportMnemonic(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountImportMnemonic(json), callback);
+    }
+
+    @ReactMethod
+    public void multiAccountImportPrivateKey(final String json, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.multiAccountImportPrivateKey(json), callback);
+    }
+
+    @ReactMethod
+    public void deleteMultiaccount(final String keyUID, final Callback callback) throws JSONException {
+        final String keyStoreDir = this.utils.getKeyStorePath(keyUID);
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.deleteMultiaccount(keyUID, keyStoreDir), callback);
     }
 }

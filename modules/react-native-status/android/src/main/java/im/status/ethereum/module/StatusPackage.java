@@ -35,6 +35,7 @@ public class StatusPackage implements ReactPackage {
         modules.add(new DatabaseManager(reactContext));
         modules.add(new UIHelper(reactContext));
         modules.add(new LogManager(reactContext));
+        modules.add(new Utils(reactContext));
         modules.add(new RNSelectableTextInputModule(reactContext));
 
         return modules;

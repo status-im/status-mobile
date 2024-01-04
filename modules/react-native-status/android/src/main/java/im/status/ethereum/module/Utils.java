@@ -1,8 +1,11 @@
 package im.status.ethereum.module;
 
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import android.util.Log;
+import java.util.function.Supplier;
 import java.io.File;
 import android.content.Context;
 import android.os.Environment;
@@ -27,6 +30,11 @@ public class Utils extends ReactContextBaseJavaModule  {
     }
     public String getNoBackupDirectory() {
         return this.getReactApplicationContext().getNoBackupFilesDir().getAbsolutePath();
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String backupDisabledDataDir() {
+        return getNoBackupDirectory();
     }
 
     public File getPublicStorageDirectory() {
@@ -61,6 +69,12 @@ public class Utils extends ReactContextBaseJavaModule  {
         return keydir;
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String keystoreDir() {
+        final String absRootDirPath = getNoBackupDirectory();
+        return pathCombine(absRootDirPath, "keystore");
+    }
+
     public void migrateKeyStoreDir(final String accountData, final String password) {
         try {
             final String commonKeydir = pathCombine(getNoBackupDirectory(), "/keystore");
@@ -77,4 +91,65 @@ public class Utils extends ReactContextBaseJavaModule  {
             Log.e(TAG, "JSON conversion failed: " + e.getMessage());
         }
     }
+
+    public boolean checkAvailability() {
+        // We wait at least 10s for getCurrentActivity to return a value,
+        // otherwise we give up
+        for (int attempts = 0; attempts < 100; attempts++) {
+            if (getCurrentActivity() != null) {
+                return true;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                if (getCurrentActivity() != null) {
+                    return true;
+                }
+                Log.d(TAG, "Activity doesn't exist");
+                return false;
+            }
+        }
+
+        Log.d(TAG, "Activity doesn't exist");
+        return false;
+    }
+
+    public void executeRunnableStatusGoMethod(Supplier<String> method, Callback callback) throws JSONException {
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable runnableTask = () -> {
+            String res = method.get();
+            callback.invoke(res);
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(runnableTask);
+    }
+
+    @ReactMethod
+    public void validateMnemonic(final String seed, final Callback callback) throws JSONException {
+        executeRunnableStatusGoMethod(() -> Statusgo.validateMnemonic(seed), callback);
+    }
+
+    public Boolean is24Hour() {
+        return android.text.format.DateFormat.is24HourFormat(this.reactContext.getApplicationContext());
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String checkAddressChecksum(final String address) {
+        return Statusgo.checkAddressChecksum(address);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String isAddress(final String address) {
+        return Statusgo.isAddress(address);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String toChecksumAddress(final String address) {
+        return Statusgo.toChecksumAddress(address);
+    }
+
 }

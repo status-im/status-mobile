@@ -36,6 +36,11 @@
   (when (exists? (.-NativeModules react-native))
         (.-LogManager ^js (.-NativeModules react-native))))
 
+(defn utils
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-Utils ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -55,7 +60,7 @@
 (defn open-accounts
   [callback]
   (log/debug "[native-module] open-accounts")
-  (.openAccounts ^js (status) #(callback (types/json->clj %))))
+  (.openAccounts ^js (account) #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
   [key-uid config callback]
@@ -88,16 +93,16 @@
   (let [config (if config (types/clj->json config) "")]
     (init-keystore
      key-uid
-     #(.loginWithConfig ^js (status) account-data hashed-password config))))
+     #(.loginWithConfig ^js (account) account-data hashed-password config))))
 
 (defn login-account
   "NOTE: beware, the password has to be sha3 hashed"
   [{:keys [keyUid] :as request}]
-  (log/debug "[native-module] loginWithConfig")
+  (log/debug "[native-module] loginAccount")
   (clear-web-data)
   (init-keystore
    keyUid
-   #(.loginAccount ^js (status) (types/clj->json request))))
+   #(.loginAccount ^js (account) (types/clj->json request))))
 
 (defn create-account-and-login
   [request]
@@ -139,7 +144,7 @@
    from memory"
   [address hashed-password callback]
   (log/debug "[native-module] multiaccount-load-account")
-  (.multiAccountLoadAccount ^js (status)
+  (.multiAccountLoadAccount ^js (account)
                             (types/clj->json {:address  address
                                               :password hashed-password})
                             callback))
@@ -152,7 +157,7 @@
   [account-id paths callback]
   (log/debug "[native-module]  multiaccount-derive-addresses")
   (when (status)
-    (.multiAccountDeriveAddresses ^js (status)
+    (.multiAccountDeriveAddresses ^js (account)
                                   (types/clj->json {:accountID account-id
                                                     :paths     paths})
                                   callback)))
@@ -170,7 +175,7 @@
   (when (status)
     (init-keystore
      key-uid
-     #(.multiAccountStoreAccount ^js (status)
+     #(.multiAccountStoreAccount ^js (account)
                                  (types/clj->json {:accountID account-id
                                                    :password  hashed-password})
                                  callback))))
@@ -183,7 +188,7 @@
              account-id)
   (init-keystore
    key-uid
-   #(.multiAccountStoreDerived ^js (status)
+   #(.multiAccountStoreDerived ^js (account)
                                (types/clj->json {:accountID account-id
                                                  :paths     paths
                                                  :password  hashed-password})
@@ -196,7 +201,7 @@
    to store the key"
   [n mnemonic-length paths callback]
   (log/debug "[native-module]  multiaccount-generate-and-derive-addresses")
-  (.multiAccountGenerateAndDeriveAddresses ^js (status)
+  (.multiAccountGenerateAndDeriveAddresses ^js (account)
                                            (types/clj->json {:n                    n
                                                              :mnemonicPhraseLength mnemonic-length
                                                              :bip39Passphrase      ""
@@ -206,7 +211,7 @@
 (defn multiaccount-import-mnemonic
   [mnemonic password callback]
   (log/debug "[native-module] multiaccount-import-mnemonic")
-  (.multiAccountImportMnemonic ^js (status)
+  (.multiAccountImportMnemonic ^js (account)
                                (types/clj->json {:mnemonicPhrase  mnemonic
                                                  ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
@@ -215,7 +220,7 @@
 (defn multiaccount-import-private-key
   [private-key callback]
   (log/debug "[native-module] multiaccount-import-private-key")
-  (.multiAccountImportPrivateKey ^js (status)
+  (.multiAccountImportPrivateKey ^js (account)
                                  (types/clj->json {:privateKey private-key})
                                  callback))
 
@@ -223,13 +228,13 @@
   "NOTE: beware, the password has to be sha3 hashed"
   [address hashed-password callback]
   (log/debug "[native-module] verify")
-  (.verify ^js (status) address hashed-password callback))
+  (.verify ^js (account) address hashed-password callback))
 
 (defn verify-database-password
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid hashed-password callback]
   (log/debug "[native-module] verify-database-password")
-  (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
+  (.verifyDatabasePassword ^js (account) key-uid hashed-password callback))
 
 (defn login-with-keycard
   [{:keys [key-uid multiaccount-data password chat-key node-config]}]
@@ -390,7 +395,7 @@
 (defn set-blank-preview-flag
   [flag]
   (log/debug "[native-module] set-blank-preview-flag")
-  (.setBlankPreviewFlag ^js (status) flag))
+  (.setBlankPreviewFlag ^js (encryption) flag))
 
 (defn get-device-model-info
   []
@@ -441,72 +446,72 @@
 (defn encode-transfer
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
-  (.encodeTransfer ^js (status) to-norm amount-hex))
+  (.encodeTransfer ^js (encryption) to-norm amount-hex))
 
 (defn decode-parameters
   [bytes-string types]
   (log/debug "[native-module] decode-parameters")
-  (let [json-str (.decodeParameters ^js (status)
+  (let [json-str (.decodeParameters ^js (encryption)
                                     (types/clj->json {:bytesString bytes-string :types types}))]
     (types/json->clj json-str)))
 
 (defn hex-to-number
   [hex]
   (log/debug "[native-module] hex-to-number")
-  (let [json-str (.hexToNumber ^js (status) hex)]
+  (let [json-str (.hexToNumber ^js (encryption) hex)]
     (types/json->clj json-str)))
 
 (defn number-to-hex
   [num]
   (log/debug "[native-module] number-to-hex")
-  (.numberToHex ^js (status) (str num)))
+  (.numberToHex ^js (encryption) (str num)))
 
 (defn sha3
   [s]
   (log/debug "[native-module] sha3")
   (when s
-    (.sha3 ^js (status) (str s))))
+    (.sha3 ^js (encryption) (str s))))
 
 (defn utf8-to-hex
   [s]
   (log/debug "[native-module] utf8-to-hex")
-  (.utf8ToHex ^js (status) s))
+  (.utf8ToHex ^js (encryption) s))
 
 (defn hex-to-utf8
   [s]
   (log/debug "[native-module] hex-to-utf8")
-  (.hexToUtf8 ^js (status) s))
+  (.hexToUtf8 ^js (encryption) s))
 
 (defn check-address-checksum
   [address]
   (log/debug "[native-module] check-address-checksum")
-  (let [result (.checkAddressChecksum ^js (status) address)]
+  (let [result (.checkAddressChecksum ^js (utils) address)]
     (types/json->clj result)))
 
 (defn address?
   [address]
   (log/debug "[native-module] address?")
   (when address
-    (let [result (.isAddress ^js (status) address)]
+    (let [result (.isAddress ^js (utils) address)]
       (types/json->clj result))))
 
 (defn to-checksum-address
   [address]
   (log/debug "[native-module] to-checksum-address")
-  (.toChecksumAddress ^js (status) address))
+  (.toChecksumAddress ^js (utils) address))
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
   [mnemonic callback]
   (log/debug "[native-module] validate-mnemonic")
-  (.validateMnemonic ^js (status) mnemonic callback))
+  (.validateMnemonic ^js (utils) mnemonic callback))
 
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and
   key files."
   [key-uid callback]
   (log/debug "[native-module] delete-multiaccount")
-  (.deleteMultiaccount ^js (status) key-uid callback))
+  (.deleteMultiaccount ^js (account) key-uid callback))
 
 (defn delete-imported-key
   "Delete imported key file."
@@ -518,7 +523,7 @@
   [input selection]
   (log/debug "[native-module] resetKeyboardInput")
   (when platform/android?
-    (.resetKeyboardInputCursor ^js (status) input selection)))
+    (.resetKeyboardInputCursor ^js (ui-helper) input selection)))
 
 ;; passwords are hashed
 (defn reset-password
@@ -542,7 +547,7 @@
 
 (defn backup-disabled-data-dir
   []
-  (.backupDisabledDataDir ^js (status)))
+  (.backupDisabledDataDir ^js (utils)))
 
 (defn fleets
   []
@@ -550,7 +555,7 @@
 
 (defn keystore-dir
   []
-  (.keystoreDir ^js (status)))
+  (.keystoreDir ^js (utils)))
 
 (defn log-file-directory
   []
