@@ -37,10 +37,10 @@
 
 (deftest test-total-raw-balance-in-all-chains
   (testing "total-raw-balance-in-all-chains function"
-    (let [balances-per-chain {1 {:raw-balance (money/bignumber 1000000000000)}
-                              10 {:raw-balance (money/bignumber 2645130235566666)}
-                              42161 {:raw-balance (money/bignumber 900000000000000)}}]
-      (is (= (utils/total-raw-balance-in-all-chains balances-per-chain) (money/bignumber 3546130235566666))))))
+    (let [balances-per-chain {1 {:raw-balance 100}
+                              10 {:raw-balance 200}
+                              42161 {:raw-balance 300}}]
+      (is (= (utils/total-raw-balance-in-all-chains balances-per-chain) 600)))))
 
 (deftest test-extract-exponent
   (testing "extract-exponent function"
