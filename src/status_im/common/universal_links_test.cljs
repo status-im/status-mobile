@@ -12,7 +12,7 @@
   (testing "the user is not logged in"
     (testing "it stores the url for later processing"
       (is (match? {:db {:universal-links/url "some-url"}}
-             (links/handle-url {:db {}} "some-url")))))
+                  (links/handle-url {:db {}} "some-url")))))
   (testing "the user is logged in"
     (let [db {:profile/profile     {:public-key "pk"}
               :app-state           "active"
@@ -22,8 +22,8 @@
                           [:db :universal-links/url]))))
       (testing "Handle a custom string"
         (is (match? (get-in (links/handle-url {:db db} "https://status.app/u#statuse2e")
-                       [:router/handle-uri :uri])
-               "https://status.app/u#statuse2e"))))))
+                            [:router/handle-uri :uri])
+                    "https://status.app/u#statuse2e"))))))
 
 (deftest url-event-listener
   (testing "the url is not nil"

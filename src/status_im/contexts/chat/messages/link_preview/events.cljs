@@ -80,9 +80,10 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:schema [:catn [:community-id [:? :string]]]]]]
-   [:map
-    [:db map?]
-    [:json-rpc/call :schema.common/rpc-call]]])
+   [:maybe
+    [:map
+     [:db map?]
+     [:json-rpc/call :schema.common/rpc-call]]]])
 
 (rf/reg-event-fx :chat.ui/fetch-community fetch-community)
 
@@ -124,9 +125,10 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:schema [:catn [:community-id [:? :string]]]]]]
-   [:map
-    [:db map?]
-    [:json-rpc/call :schema.common/rpc-call]]])
+   [:maybe
+    [:map
+     [:db map?]
+     [:json-rpc/call :schema.common/rpc-call]]]])
 
 (rf/reg-event-fx :chat.ui/spectate-community spectate-community)
 
