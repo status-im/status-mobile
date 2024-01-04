@@ -141,92 +141,42 @@
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (reset! selected-networks (map #(get utils/id->network %)
                                                                          chain-ids)))}])}]))
+(defn wallet-qr-code-item
+  [account]
+  (let [selected-networks (reagent/atom [:ethereum :optimism :arbitrum])
+        wallet-type       (reagent/atom :wallet-legacy)]
+    (fn []
+      (let [share-title         (str (:name account) " " (i18n/label :t/address))
+            qr-url              (utils/get-wallet-qr {:wallet-type       @wallet-type
+                                                      :selected-networks @selected-networks
+                                                      :address           (:address account)})
+            qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+                                 {:url         qr-url
+                                  :port        (rf/sub [:mediaserver/port])
+                                  :qr-size     qr-size
+                                  :error-level :highest})]
+        [rn/view {:key (:name account) :style style/qr-code-container}
+         [quo/share-qr-code
+          {:type                @wallet-type
+           :qr-image-uri        qr-media-server-uri
+           :qr-data             qr-url
+           :networks            @selected-networks
+           :on-share-press      #(share-action qr-url share-title)
+           :profile-picture     nil
+           :unblur-on-android?  true
+           :full-name           (:name account)
+           :customization-color (:color account)
+           :emoji               (:emoji account)
+           :on-multichain-press #(reset! wallet-type :wallet-multichain)
+           :on-legacy-press     #(reset! wallet-type :wallet-legacy)
+           :on-settings-press   #(open-preferences selected-networks)}]]))))
 
 (defn wallet-tab
   []
-  (let [accounts          (rf/sub [:wallet/accounts])
-        selected-networks (reagent/atom [:ethereum :optimism :arbitrum]) 
-        wallet-type       (reagent/atom :wallet-legacy)]
-    
-    (when (seq accounts) 
-        (fn []
-           (let [share-title         (str (:name (first accounts)) " " (i18n/label :t/address)) 
-            qr-url              (utils/get-wallet-qr {:wallet-type @wallet-type
-                                                       :selected-networks @selected-networks
-                                                       :address (:address (first accounts))}) 
-            qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
-                                   {:url         qr-url
-                                    :port        (rf/sub [:mediaserver/port])
-                                    :qr-size     qr-size
-                                    :error-level :highest})]
-          [rn/view {:key (:name (first accounts)) :style style/qr-code-container}
-           [quo/share-qr-code
-            {:type                @wallet-type
-             :qr-image-uri        qr-media-server-uri
-             :qr-data             qr-url
-             :networks            @selected-networks
-             :on-share-press      #(share-action qr-url share-title)
-             :profile-picture     nil
-             :unblur-on-android?  true
-             :full-name           (:name (first accounts))
-             :customization-color (:color (first accounts))
-             :emoji               (:emoji (first accounts))
-             :on-multichain-press #(reset! wallet-type :wallet-multichain)
-             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-             :on-settings-press   #(open-preferences selected-networks)}]] 
-      )))))
-
-
-          ;; (doall
-          ;;  (for [account accounts]
-          ;;    (let [share-title         (str (:name account) " " (i18n/label :t/address))
-          ;;          qr-url                                    (utils/get-wallet-qr {:wallet-type @wallet-type
-          ;;                                                                          :selected-networks
-          ;;                                                                          @selected-networks
-          ;;                                                                          :address (:address account)})
-          ;;          qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
-          ;;                               {:url         qr-url
-          ;;                                :port        (rf/sub
-          ;;                                              [:mediaserver/port])
-          ;;                                :qr-size     qr-size
-          ;;                                :error-level :highest})]
-
-
-              ;;  [rn/view {:key (:name account) :style style/qr-code-container}
-          ;; [rn/pressable
-          ;;  {:on-press #(js/alert {:number-of-accounts account})]
-          ;;   :style
-          ;;   {:flex               1
-          ;;    :padding-vertical   10
-          ;;    :padding-horizontal 20}
-          ;;   :title (:name account)}
-          ;;  [rn/text (:name account)]
-          ;;  [rn/text (:address account)]
-          ;;  [rn/text (:emoji account)]
-          ;;  [rn/text (:color account)]
-
-          ;; ;;  wallet address below
-          ;;  [rn/text (:address account)]
-          ;; ;;  wallet type below
-          ;;  [rn/text (:type account)]
-          ;;  [rn/text share-title]
-          ;;  [rn/text qr-url]
-          ;;  [rn/text qr-media-server-uri]] 
-                ;; [quo/share-qr-code
-                ;;  {:type                @wallet-type
-                ;;   :qr-image-uri        qr-media-server-uri
-                ;;   :qr-data             qr-url
-                ;;   :networks            @selected-networks
-                ;;   :on-share-press      #(share-action qr-url share-title)
-                ;;   :profile-picture     nil
-                ;;   :unblur-on-android?  true
-                ;;   :full-name           (:name account)
-                ;;   :customization-color (:color account)
-                ;;   :emoji               (:emoji account)
-                ;;   :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-                ;;   :on-multichain-press #(reset! wallet-type :wallet-multichain)
-                ;;   :on-settings-press   #(open-preferences selected-networks)}]])))]]
-
+  (let [accounts (rf/sub [:wallet/accounts])]
+    [react/scroll-view {:horizontal true :content-container-style {:flex 1}} 
+     (for [account accounts]
+       [wallet-qr-code-item account])]))
 
 (defn tab-content
   []
