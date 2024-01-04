@@ -1,16 +1,16 @@
 (ns status-im.contexts.shell.share.profile.view
   (:require
-   [clojure.string :as string]
-   [legacy.status-im.ui.components.list-selection :as list-selection] 
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors] 
-   [react-native.core :as rn] 
-   [status-im.common.qr-codes.view :as qr-codes] 
-   [status-im.contexts.profile.utils :as profile.utils]
-   [status-im.contexts.shell.share.style :as style] 
-   [utils.address :as address]
-   [utils.i18n :as i18n] 
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [legacy.status-im.ui.components.list-selection :as list-selection]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im.common.qr-codes.view :as qr-codes]
+    [status-im.contexts.profile.utils :as profile.utils]
+    [status-im.contexts.shell.share.style :as style]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn profile-tab
   []
