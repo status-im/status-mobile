@@ -11,7 +11,8 @@
            :on-success (fn []
                          (rf/dispatch [:navigate-back])
                          (rf/dispatch [:toasts/upsert
-                                       {:type :positive
-                                        :text (i18n/label :t/name-updated)}]))}]]]})
+                                       {:type  :positive
+                                        :theme :dark
+                                        :text  (i18n/label :t/name-updated)}]))}]]]})
 
 (rf/reg-event-fx :profile/edit-name edit-profile-name)
