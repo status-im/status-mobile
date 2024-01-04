@@ -21,240 +21,6 @@
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
-;; (defn header
-;;   []
-;;   [:<>
-;;    [rn/view {:style style/header-row}
-;;     [quo/button
-;;      {:icon-only?          true
-;;       :type                :grey
-;;       :background          :blur
-;;       :size                32
-;;       :accessibility-label :close-shell-share-tab
-;;       :container-style     style/header-button
-;;       :on-press            #(rf/dispatch [:navigate-back])}
-;;      :i/close]
-;;     [quo/button
-;;      {:icon-only?          true
-;;       :type                :grey
-;;       :background          :blur
-;;       :size                32
-;;       :accessibility-label :shell-scan-button
-;;       :on-press            #(rf/dispatch [:navigate-back])}
-;;      :i/scan]]
-;;    [quo/text
-;;     {:size   :heading-1
-;;      :weight :semi-bold
-;;      :style  style/header-heading}
-;;     (i18n/label :t/share)]])
-
-;; (defn profile-tab
-;;   []
-;;   (let [{:keys [emoji-hash
-;;                 customization-color
-;;                 universal-profile-url]
-;;          :as   profile}   (rf/sub [:profile/profile])
-;;         abbreviated-url   (address/get-abbreviated-profile-url
-;;                            universal-profile-url)
-;;         emoji-hash-string (string/join emoji-hash)]
-;;     [:<>
-;;      [rn/view {:style style/qr-code-container}
-;;       [qr-codes/share-qr-code
-;;        {:type                :profile
-;;         :unblur-on-android?  true
-;;         :qr-data             universal-profile-url
-;;         :qr-data-label-shown abbreviated-url
-;;         :on-share-press      #(list-selection/open-share {:message universal-profile-url})
-;;         :on-text-press       #(rf/dispatch [:share/copy-text-and-show-toast
-;;                                             {:text-to-copy      universal-profile-url
-;;                                              :post-copy-message (i18n/label
-;;                                              :t/link-to-profile-copied)}])
-;;         :on-text-long-press  #(rf/dispatch [:share/copy-text-and-show-toast
-;;                                             {:text-to-copy      universal-profile-url
-;;                                              :post-copy-message (i18n/label
-;;                                              :t/link-to-profile-copied)}])
-;;         :profile-picture     (:uri (profile.utils/photo profile))
-;;         :full-name           (profile.utils/displayed-name profile)
-;;         :customization-color customization-color}]]
-
-;;      [rn/view {:style style/emoji-hash-container}
-;;       [rn/view {:style style/emoji-address-container}
-;;        [rn/view {:style style/emoji-address-column}
-;;         [quo/text
-;;          {:size   :paragraph-2
-;;           :weight :medium
-;;           :style  style/emoji-hash-label}
-;;          (i18n/label :t/emoji-hash)]
-;;         [rn/touchable-highlight
-;;          {:active-opacity   1
-;;           :underlay-color   colors/neutral-80-opa-1-blur
-;;           :background-color :transparent
-;;           :on-press         #(rf/dispatch [:share/copy-text-and-show-toast
-;;                                            {:text-to-copy      emoji-hash-string
-;;                                             :post-copy-message (i18n/label :t/emoji-hash-copied)}])
-;;           :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast
-;;                                            {:text-to-copy      emoji-hash-string
-;;                                             :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
-;;          [rn/text {:style style/emoji-hash-content} emoji-hash-string]]]]
-;;       [rn/view {:style style/emoji-share-button-container}
-;;        [quo/button
-;;         {:icon-only?          true
-;;          :type                :grey
-;;          :background          :blur
-;;          :size                32
-;;          :accessibility-label :link-to-profile
-;;          :container-style     {:margin-right 12}
-;;          :on-press            #(rf/dispatch [:share/copy-text-and-show-toast
-;;                                              {:text-to-copy      emoji-hash-string
-;;                                               :post-copy-message (i18n/label :t/emoji-hash-copied)}])
-;;          :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast
-;;                                              {:text-to-copy      emoji-hash-string
-;;                                               :post-copy-message (i18n/label
-;;                                               :t/emoji-hash-copied)}])}
-;;         :i/copy]]]]))
-
-;; (defn wallet-tab
-;;   []
-;;   (let [{:keys [width]} (rf/sub [:dimensions/window])
-;;         wallet-type       (reagent/atom :wallet-legacy)
-;;         ;; Design team is yet to confirm the default selected networks here.
-;;         ;; Should be the current selected for the account or all the networks always
-;;         selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
-
-;;     [react/scroll-view {:horizontal true :keyboard-should-persist-taps true}
-;;      (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])
-;;            share-title                               (str (:name account) " " (i18n/label
- ;;            :t/address))
-;;            qr-url                                    (utils/get-wallet-qr {:wallet-type @wallet-type
-;;                                                                            :selected-networks
-;;                                                                            @selected-networks
-;;                                                                            :address address})
-;;            qr-media-server-uri                       (image-server/get-qr-image-uri-for-any-url
-;;                                                       {:url         qr-url
-;;                                                        :port        (rf/sub [:mediaserver/port])
-;;                                                        :qr-size     qr-size
-;;                                                        :error-level :highest})]
-;;         [rn/view {:style {:width width}}
-;;          [quo/share-qr-code
-;;           {:type                @wallet-type
-;;            :qr-image-uri        qr-media-server-uri
-;;            :qr-data             qr-url
-;;            :networks            @selected-networks
-;;            :on-share-press      #(share-action qr-url share-title)
-;;            :profile-picture     nil
-;;            :unblur-on-android?  true
-;;            :full-name           (:name account)
-;;            :customization-color color
-;;            :emoji               emoji
-;;            :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-;;            :on-multichain-press #(reset! wallet-type :wallet-multichain)
-;;            :on-settings-press   #(open-preferences selected-networks)}]])
-;;      (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])
-;;            share-title                               (str (:name account) " " (i18n/label
- ;;            :t/address))
-;;            qr-url                                    (utils/get-wallet-qr {:wallet-type @wallet-type
-;;                                                                            :selected-networks
-;;                                                                            @selected-networks
-;;                                                                            :address address})
-;;            qr-media-server-uri                       (image-server/get-qr-image-uri-for-any-url
-;;                                                       {:url         qr-url
-;;                                                        :port        (rf/sub [:mediaserver/port])
-;;                                                        :qr-size     qr-size
-;;                                                        :error-level :highest})]
-;;         [rn/view {:style {:width width}}
-;;          [quo/share-qr-code
-;;           {:type                @wallet-type
-;;            :qr-image-uri        qr-media-server-uri
-;;            :qr-data             qr-url
-;;            :networks            @selected-networks
-;;            :on-share-press      #(share-action qr-url share-title)
-;;            :profile-picture     nil
-;;            :unblur-on-android?  true
-;;            :full-name           (:name account)
-;;            :customization-color color
-;;            :emoji               emoji
-;;            :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-;;            :on-multichain-press #(reset! wallet-type :wallet-multichain)
-;;            :on-settings-press   #(open-preferences selected-networks)}]])
-;;    ]))
-
-;; ;; (defn wallet-tab
-;; ;;   []
-;; ;;   (let [wallet-type       (reagent/atom :wallet-legacy)
-;; ;;         ;; Design team is yet to confirm the default selected networks here.
-;; ;;         ;; Should be the current selected for the account or all the networks always
-;; ;;         selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
-
-
-;; ;;      (fn []
-;; ;;        (let [{:keys [address color emoji] :as account} (rf/sub
-     ;; [:wallet/current-viewing-account])
-;; ;;              share-title                               (str (:name account) " " (i18n/label
-     ;; :t/address))
-;; ;;              qr-url                                    (utils/get-wallet-qr {:wallet-type
-     ;; @wallet-type
-;; ;;
-     ;; :selected-networks
-;; ;;
-     ;; @selected-networks
-;; ;;                                                                              :address
-     ;; address})
-;; ;;              qr-media-server-uri
-     ;; (image-server/get-qr-image-uri-for-any-url
-;; ;;                                                         {:url         qr-url
-;; ;;                                                          :port        (rf/sub
-     ;; [:mediaserver/port])
-;; ;;                                                          :qr-size     qr-size
-;; ;;                                                          :error-level :highest})]
-
-
-
-;; ;;          [rn/view {:style style/qr-code-container}
-;; ;;           [quo/share-qr-code
-;; ;;            {:type                @wallet-type
-;; ;;             :qr-image-uri        qr-media-server-uri
-;; ;;             :qr-data             qr-url
-;; ;;             :networks            @selected-networks
-;; ;;             :on-share-press      #(share-action qr-url share-title)
-;; ;;             :profile-picture     nil
-;; ;;             :unblur-on-android?  true
-;; ;;             :full-name           (:name account)
-;; ;;             :customization-color color
-;; ;;             :emoji               emoji
-;; ;;             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-;; ;;             :on-multichain-press #(reset! wallet-type :wallet-multichain)
-;; ;;             :on-settings-press   #(open-preferences selected-networks)}]
-;; ;;           ]))))
-
-;; (defn tab-content
-;;   []
-;;   (let [selected-tab (reagent/atom :profile)]
-;;     (fn []
-;;       [:<>
-;;        [header]
-;;        [rn/view {:style style/tabs-container}
-;;         [quo/segmented-control
-;;          {:size           28
-;;           :blur?          true
-;;           :on-change      #(reset! selected-tab %)
-;;           :default-active :profile
-;;           :data           [{:id    :profile
-;;                             :label (i18n/label :t/profile)}
-;;                            {:id    :wallet
-;;                             :label (i18n/label :t/wallet)}]}]]
-;;        (if (= @selected-tab :profile)
-;;          [profile-tab]
-;;          [wallet-tab])])))
-
-;; (defn view
-;;   []
-;;   [rn/view {:flex 1 :padding-top (safe-area/get-top)}
-;;    [blur/view
-;;     {:style       style/blur
-;;      :blur-amount 20
-;;      :blur-radius (if platform/android? 25 10)}]
-;;    [tab-content]])
-
 (defn header
   []
   [:<>
@@ -375,49 +141,92 @@
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (reset! selected-networks (map #(get utils/id->network %)
                                                                          chain-ids)))}])}]))
+
 (defn wallet-tab
   []
   (let [accounts          (rf/sub [:wallet/accounts])
-        selected-networks (reagent/atom [:ethereum :optimism :arbitrum])
-        ]
-    [react/scroll-view {:horizontal false}
-
-     (for [account accounts]
-       (let [share-title         (str (:name account) " " (i18n/label :t/address))
-             qr-url              (utils/get-wallet-qr {:wallet-type (:type account)
-                                                       :selected-networks
-                                                       @selected-networks
-                                                       :address (:address account)})
-             qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
-                                  {:url         qr-url
-                                   :port        (rf/sub
-                                                 [:mediaserver/port])
-                                   :qr-size     qr-size
-                                   :error-level :highest})
-            ]
-
-         [rn/view {:style style/qr-code-container} 
-          [quo/share-qr-code
-            {:type                (:type account) 
-             :qr-image-uri        qr-media-server-uri 
-             :qr-data             qr-url 
+        selected-networks (reagent/atom [:ethereum :optimism :arbitrum]) 
+        wallet-type       (reagent/atom :wallet-legacy)]
+    
+    (when (seq accounts) 
+        (fn []
+           (let [share-title         (str (:name (first accounts)) " " (i18n/label :t/address)) 
+            qr-url              (utils/get-wallet-qr {:wallet-type @wallet-type
+                                                       :selected-networks @selected-networks
+                                                       :address (:address (first accounts))}) 
+            qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+                                   {:url         qr-url
+                                    :port        (rf/sub [:mediaserver/port])
+                                    :qr-size     qr-size
+                                    :error-level :highest})]
+          [rn/view {:key (:name (first accounts)) :style style/qr-code-container}
+           [quo/share-qr-code
+            {:type                @wallet-type
+             :qr-image-uri        qr-media-server-uri
+             :qr-data             qr-url
              :networks            @selected-networks
-             :on-share-press      #(share-action qr-url share-title) 
-             :profile-picture     nil 
-             :unblur-on-android?  true 
-             :full-name           (:name account) 
-             :emoji               (:emoji account) 
-             :on-legacy-press     #(reset! (:type account) :wallet-legacy) 
-             :on-multichain-press #(reset! ((:type account)) :wallet-multichain) 
-             :on-settings-press   #(open-preferences selected-networks)
-             }
-           ]
-         ]
-       )
-     )
-    ]
-  )
-)
+             :on-share-press      #(share-action qr-url share-title)
+             :profile-picture     nil
+             :unblur-on-android?  true
+             :full-name           (:name (first accounts))
+             :customization-color (:color (first accounts))
+             :emoji               (:emoji (first accounts))
+             :on-multichain-press #(reset! wallet-type :wallet-multichain)
+             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
+             :on-settings-press   #(open-preferences selected-networks)}]] 
+      )))))
+
+
+          ;; (doall
+          ;;  (for [account accounts]
+          ;;    (let [share-title         (str (:name account) " " (i18n/label :t/address))
+          ;;          qr-url                                    (utils/get-wallet-qr {:wallet-type @wallet-type
+          ;;                                                                          :selected-networks
+          ;;                                                                          @selected-networks
+          ;;                                                                          :address (:address account)})
+          ;;          qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+          ;;                               {:url         qr-url
+          ;;                                :port        (rf/sub
+          ;;                                              [:mediaserver/port])
+          ;;                                :qr-size     qr-size
+          ;;                                :error-level :highest})]
+
+
+              ;;  [rn/view {:key (:name account) :style style/qr-code-container}
+          ;; [rn/pressable
+          ;;  {:on-press #(js/alert {:number-of-accounts account})]
+          ;;   :style
+          ;;   {:flex               1
+          ;;    :padding-vertical   10
+          ;;    :padding-horizontal 20}
+          ;;   :title (:name account)}
+          ;;  [rn/text (:name account)]
+          ;;  [rn/text (:address account)]
+          ;;  [rn/text (:emoji account)]
+          ;;  [rn/text (:color account)]
+
+          ;; ;;  wallet address below
+          ;;  [rn/text (:address account)]
+          ;; ;;  wallet type below
+          ;;  [rn/text (:type account)]
+          ;;  [rn/text share-title]
+          ;;  [rn/text qr-url]
+          ;;  [rn/text qr-media-server-uri]] 
+                ;; [quo/share-qr-code
+                ;;  {:type                @wallet-type
+                ;;   :qr-image-uri        qr-media-server-uri
+                ;;   :qr-data             qr-url
+                ;;   :networks            @selected-networks
+                ;;   :on-share-press      #(share-action qr-url share-title)
+                ;;   :profile-picture     nil
+                ;;   :unblur-on-android?  true
+                ;;   :full-name           (:name account)
+                ;;   :customization-color (:color account)
+                ;;   :emoji               (:emoji account)
+                ;;   :on-legacy-press     #(reset! wallet-type :wallet-legacy)
+                ;;   :on-multichain-press #(reset! wallet-type :wallet-multichain)
+                ;;   :on-settings-press   #(open-preferences selected-networks)}]])))]]
+
 
 (defn tab-content
   []
