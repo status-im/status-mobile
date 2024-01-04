@@ -20,4 +20,9 @@
                                       :text       (i18n/label :t/notifications-marked-as-read
                                                               {:count unread-count})
                                       :theme      :dark})])
-                     (rf/dispatch [:hide-bottom-sheet]))}]]]))
+                     (rf/dispatch [:hide-bottom-sheet]))}
+       {:icon     :i/settings
+        :label    (i18n/label :t/chat-notification-preferences)
+        :on-press (fn []
+                    (rf/dispatch [:navigate-to :notifications-settings])
+                    (rf/dispatch [:hide-bottom-sheet]))}]]]))
