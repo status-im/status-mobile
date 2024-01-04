@@ -44,10 +44,10 @@
     (str title ": " content)]])
 
 (defn view
-  [rules scroll-enabled]
+  [rules scroll-enabled?]
   [rn/flat-list
    {:shows-horizontal-scroll-indicator false
-    :scroll-enabled                    scroll-enabled
+    :scroll-enabled                    scroll-enabled?
     :data                              rules
     :separator                         [rn/view {:margin-top 1}]
     :render-fn                         community-rule-item}])
