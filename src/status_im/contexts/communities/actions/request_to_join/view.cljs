@@ -1,6 +1,8 @@
 (ns status-im.contexts.communities.actions.request-to-join.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.password-authentication.view :as password-authentication]
@@ -9,7 +11,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn join-community-and-navigate-back
+(defn- join-community-and-navigate-back
   [id]
   (rf/dispatch [:password-authentication/show
                 {:content (fn [] [password-authentication/view])}
@@ -18,12 +20,13 @@
                                           {:community-id id :password %}])}])
   (rf/dispatch [:navigate-back]))
 
-(defn request-to-join
-  []
+(defn- view-internal
+  [{:keys [theme]}]
   (fn []
     (let [{:keys [name
                   id
-                  images]} (rf/sub [:get-screen-params])]
+                  images]} (rf/sub [:get-screen-params])
+          {:keys [color]}  (rf/sub [:communities/community id])]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style {:flex 1}}
         [rn/view style/page-container
@@ -45,7 +48,7 @@
            :weight              :semi-bold
            :size                :paragraph-1}
           (i18n/label :t/community-rules)]
-         [community-rules/view community-rules/standard-rules]]]
+         [community-rules/view community-rules/standard-rules false]]]
        [rn/view {:style (style/bottom-container)}
         [quo/button
          {:accessibility-label :cancel
@@ -56,10 +59,14 @@
         [quo/button
          {:accessibility-label :join-community-button
           :on-press            #(join-community-and-navigate-back id)
-          :container-style     {:flex 1}}
+          :container-style     {:flex 1}
+          :inner-style         {:background-color (colors/resolve-color color theme)}}
          (i18n/label :t/request-to-join)]]
        [rn/view {:style style/final-disclaimer-container}
         [quo/text
          {:size  :paragraph-2
           :style style/final-disclaimer-text}
          (i18n/label :t/request-to-join-disclaimer)]]])))
+
+
+(def view (quo.theme/with-theme view-internal))
