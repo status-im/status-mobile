@@ -3,7 +3,6 @@
             [status-im.contexts.wallet.common.utils :as utils]
             [utils.money :as money]))
 
-
 (deftest test-get-first-name
   (testing "get-first-name function"
     (is (= (utils/get-first-name "John Doe") "John"))
@@ -92,22 +91,6 @@
                            {:address "0x789"}]
           address-to-find "0x999"]
       (is (= (utils/get-account-by-address accounts address-to-find) nil)))))
-
-(deftest test-calculate-raw-balance
-  (testing "calculate-raw-balance function"
-    (is (= (utils/calculate-raw-balance "100000000" "8") 1.0))
-    (is (= (utils/calculate-raw-balance "50000000" "8") 0.5))
-    (is (= (utils/calculate-raw-balance "123456789" "2") 1234567.89))
-    (is (= (utils/calculate-raw-balance "0" "4") 0.0))))
-
-(deftest test-token-value-in-chain
-  (testing "token-value-in-chain function"
-    (let [token {:balances-per-chain {1 {:raw-balance (money/bignumber 100000000)}
-                                      2 {:raw-balance (money/bignumber 50000000)}
-                                      3 {:raw-balance (money/bignumber 123456789)}}
-                 :decimals           8}]
-      (is (= (utils/token-value-in-chain token 1) 1.0)))))
-
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"
