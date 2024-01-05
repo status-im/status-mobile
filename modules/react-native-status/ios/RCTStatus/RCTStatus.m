@@ -314,7 +314,6 @@ RCT_EXPORT_METHOD(hashTypedDataV4:(NSString *)data
 }
 
 
-
 RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -333,257 +332,7 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     callback(@[result]);
 }
 
--(NSString *) getKeyUID:(NSString *)jsonString {
-    NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *json = [NSJSONSerialization
-                          JSONObjectWithData:data
-                          options:NSJSONReadingMutableContainers
-                          error:nil];
 
-    return [json valueForKey:@"key-uid"];
-}
-
--(NSString *) prepareDirAndUpdateConfig:(NSString *)config
-                             withKeyUID:(NSString *)keyUID {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = nil;
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
-    NSURL *absTestnetFolderName = [rootUrl URLByAppendingPathComponent:@"ethereum/testnet"];
-
-    if (![fileManager fileExistsAtPath:absTestnetFolderName.path])
-        [fileManager createDirectoryAtPath:absTestnetFolderName.path withIntermediateDirectories:YES attributes:nil error:&error];
-
-    NSURL *flagFolderUrl = [rootUrl URLByAppendingPathComponent:@"ropsten_flag"];
-
-    if(![fileManager fileExistsAtPath:flagFolderUrl.path]){
-        NSLog(@"remove lightchaindata");
-        NSURL *absLightChainDataUrl = [absTestnetFolderName URLByAppendingPathComponent:@"StatusIM/lightchaindata"];
-        if([fileManager fileExistsAtPath:absLightChainDataUrl.path]) {
-            [fileManager removeItemAtPath:absLightChainDataUrl.path
-                                    error:nil];
-        }
-        [fileManager createDirectoryAtPath:flagFolderUrl.path
-               withIntermediateDirectories:NO
-                                attributes:nil
-                                     error:&error];
-    }
-
-    NSLog(@"after remove lightchaindata");
-
-    NSString *keystore = @"keystore";
-    NSURL *absTestnetKeystoreUrl = [absTestnetFolderName URLByAppendingPathComponent:keystore];
-    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:keystore];
-    if([fileManager fileExistsAtPath:absTestnetKeystoreUrl.path]){
-        NSLog(@"copy keystore");
-        [fileManager copyItemAtPath:absTestnetKeystoreUrl.path toPath:absKeystoreUrl.path error:nil];
-        [fileManager removeItemAtPath:absTestnetKeystoreUrl.path error:nil];
-    }
-
-    NSLog(@"after lightChainData");
-
-    NSLog(@"preconfig: %@", config);
-    NSData *configData = [config dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *configJSON = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
-    NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
-    NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
-    NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
-    NSString *keystoreDir = [@"/keystore/" stringByAppendingString:keyUID];
-    [configJSON setValue:keystoreDir forKey:@"KeyStoreDir"];
-    [configJSON setValue:@"" forKey:@"LogDir"];
-    [configJSON setValue:@"geth.log" forKey:@"LogFile"];
-    NSString *resultingConfig = [Utils jsonStringWithPrettyPrint:NO fromDictionary:configJSON];
-
-    NSLog(@"node config %@", resultingConfig);
-
-    if(![fileManager fileExistsAtPath:absDataDir]) {
-        [fileManager createDirectoryAtPath:absDataDir
-               withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-
-    NSLog(@"logUrlPath %@ rootDir %@", @"geth.log", rootUrl.path);
-    NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
-    if(![fileManager fileExistsAtPath:absLogUrl.path]) {
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
-        [fileManager createFileAtPath:absLogUrl.path contents:nil attributes:dict];
-    }
-
-    return resultingConfig;
-
-}
-
-
-RCT_EXPORT_METHOD(prepareDirAndUpdateConfig:(NSString *)keyUID
-                                     config:(NSString *)config
-                                   callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"PrepareDirAndUpdateConfig() method called");
-#endif
-    NSString *updatedConfig = [self prepareDirAndUpdateConfig:config
-                                                   withKeyUID:keyUID];
-    callback(@[updatedConfig]);
-}
-
-RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)multiaccountData
-                  password:(NSString *)password
-                  settings:(NSString *)settings
-                  config:(NSString *)config
-                  accountsData:(NSString *)accountsData) {
-#if DEBUG
-    NSLog(@"SaveAccountAndLogin() method called");
-#endif
-    [self getExportDbFilePath];
-    NSString *keyUID = [self getKeyUID:multiaccountData];
-    NSString *finalConfig = [self prepareDirAndUpdateConfig:config
-                                                 withKeyUID:keyUID];
-    NSString *result = StatusgoSaveAccountAndLogin(multiaccountData, password, settings, finalConfig, accountsData);
-    NSLog(@"%@", result);
-}
-
-RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
-                  password:(NSString *)password
-                  settings:(NSString *)settings
-                  config:(NSString *)config
-                  accountsData:(NSString *)accountsData
-                  chatKey:(NSString *)chatKey) {
-#if DEBUG
-    NSLog(@"SaveAccountAndLoginWithKeycard() method called");
-#endif
-    [self getExportDbFilePath];
-    NSString *keyUID = [self getKeyUID:multiaccountData];
-    NSString *finalConfig = [self prepareDirAndUpdateConfig:config
-                                                 withKeyUID:keyUID];
-    NSString *result = StatusgoSaveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
-    NSLog(@"%@", result);
-}
-
-- (NSString *) getExportDbFilePath {
-    NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"export.db"];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-
-    if ([fileManager fileExistsAtPath:filePath]) {
-        [fileManager removeItemAtPath:filePath error:nil];
-    }
-
-    return filePath;
-}
-
-- (void) migrateKeystore:(NSString *)accountData
-                password:(NSString *)password {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
-
-    NSString *keyUID = [self getKeyUID:accountData];
-    NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    NSURL *multiaccountKeystoreDir = [Utils getKeyStoreDirForKeyUID:keyUID];
-
-    NSArray *keys = [fileManager contentsOfDirectoryAtPath:multiaccountKeystoreDir.path error:nil];
-    if (keys.count == 0) {
-        NSString *migrationResult = StatusgoMigrateKeyStoreDir(accountData, password, oldKeystoreDir.path, multiaccountKeystoreDir.path);
-        NSLog(@"keystore migration result %@", migrationResult);
-
-        NSString *initKeystoreResult = StatusgoInitKeystore(multiaccountKeystoreDir.path);
-        NSLog(@"InitKeyStore result %@", initKeystoreResult);
-    }
-}
-
-RCT_EXPORT_METHOD(login:(NSString *)accountData
-                  password:(NSString *)password) {
-#if DEBUG
-    NSLog(@"Login() method called");
-#endif
-    [self getExportDbFilePath];
-    [self migrateKeystore:accountData password:password];
-    NSString *result = StatusgoLogin(accountData, password);
-    NSLog(@"%@", result);
-}
-
-RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
-                  password:(NSString *)password
-                  configJSON:(NSString *)configJSON) {
-#if DEBUG
-    NSLog(@"LoginWithConfig() method called");
-#endif
-    [self getExportDbFilePath];
-    [self migrateKeystore:accountData password:password];
-    NSString *result = StatusgoLoginWithConfig(accountData, password, configJSON);
-    NSLog(@"%@", result);
-}
-
-RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
-#if DEBUG
-    NSLog(@"LoginAccount() method called");
-#endif
-    NSString *result = StatusgoLoginAccount(request);
-    NSLog(@"%@", result);
-}
-
-RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
-                  password:(NSString *)password
-                  chatKey:(NSString *)chatKey
-                  nodeConfigJSON:(NSString *)nodeConfigJSON) {
-#if DEBUG
-    NSLog(@"LoginWithKeycard() method called");
-#endif
-    [self getExportDbFilePath];
-    [self migrateKeystore:accountData password:password];
-
-    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey, nodeConfigJSON);
-
-    NSLog(@"%@", result);
-}
-
-RCT_EXPORT_METHOD(logout) {
-#if DEBUG
-    NSLog(@"Logout() method called");
-#endif
-    NSString *result = StatusgoLogout();
-
-    NSLog(@"%@", result);
-}
-
-RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"OpenAccounts() method called");
-#endif
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
-
-    NSString *result = StatusgoOpenAccounts(rootUrl.path);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(verify:(NSString *)address
-                  password:(NSString *)password
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"VerifyAccountPassword() method called");
-#endif
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-		      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-		      lastObject];
-    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
-
-    NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
-    callback(@[result]);
-}
-
-RCT_EXPORT_METHOD(verifyDatabasePassword:(NSString *)keyUID
-                  password:(NSString *)password
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"VerifyDatabasePassword() method called");
-#endif
-    NSString *result = StatusgoVerifyDatabasePassword(keyUID, password);
-    callback(@[result]);
-}
 
 RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
                   currentPassword:(NSString *)currentPassword
@@ -612,7 +361,6 @@ RCT_EXPORT_METHOD(convertToKeycardAccount:(NSString *)keyUID
     NSString *result = StatusgoConvertToKeycardAccount(accountData, settings, keycardUID, currentPassword, newPassword);
     callback(@[result]);
 }
-
 
 #pragma mark - SignMessage
 
@@ -848,24 +596,9 @@ RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
     callback(@[result]);
 }
 
-RCT_EXPORT_METHOD(createAccountAndLogin:(NSString *)request) {
-#if DEBUG
-    NSLog(@"createAccountAndLogin() method called");
-#endif
-    StatusgoCreateAccountAndLogin(request);
-}
-
-RCT_EXPORT_METHOD(restoreAccountAndLogin:(NSString *)request) {
-#if DEBUG
-    NSLog(@"restoreAccountAndLogin() method called");
-#endif
-    StatusgoRestoreAccountAndLogin(request);
-}
-
 RCT_EXPORT_METHOD(closeApplication) {
     exit(0);
 }
-
 
 RCT_EXPORT_METHOD(connectionChange:(NSString *)type
                        isExpensive:(BOOL)isExpensive) {
@@ -903,7 +636,7 @@ RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
     NSLog(@"exportUnencryptedDatabase() method called");
 #endif
 
-    NSString *filePath = [self getExportDbFilePath];
+    NSString *filePath = [Utils getExportDbFilePath];
     StatusgoExportUnencryptedDatabase(accountData, password, filePath);
 
     callback(@[filePath]);

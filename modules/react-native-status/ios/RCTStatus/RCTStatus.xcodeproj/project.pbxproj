@@ -12,6 +12,7 @@
 		CE4E31B11D86951A0033ED64 /* Statusgo.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B01D86951A0033ED64 /* Statusgo.xcframework */; };
 		E967A3AC2B47BD5A00FB19B2 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = E967A3AB2B47BD5A00FB19B2 /* Utils.m */; };
 		E9BEF3602B470BF1001F6755 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BEF35E2B470BF1001F6755 /* NetworkManager.m */; };
+		E9FC4ED12B47EEFF00E834DB /* AccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9FC4ECF2B47EEFF00E834DB /* AccountManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,8 @@
 		E967A3AB2B47BD5A00FB19B2 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		E9BEF35E2B470BF1001F6755 /* NetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
 		E9BEF35F2B470BF1001F6755 /* NetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
+		E9FC4ECF2B47EEFF00E834DB /* AccountManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountManager.m; sourceTree = "<group>"; };
+		E9FC4ED02B47EEFF00E834DB /* AccountManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +74,8 @@
 		206C9F3C1D474E910063E3E6 /* Status */ = {
 			isa = PBXGroup;
 			children = (
+				E9FC4ED02B47EEFF00E834DB /* AccountManager.h */,
+				E9FC4ECF2B47EEFF00E834DB /* AccountManager.m */,
 				E967A3AA2B47BD5A00FB19B2 /* Utils.h */,
 				E967A3AB2B47BD5A00FB19B2 /* Utils.m */,
 				E9BEF35F2B470BF1001F6755 /* NetworkManager.h */,
@@ -140,6 +145,7 @@
 				E967A3AC2B47BD5A00FB19B2 /* Utils.m in Sources */,
 				E9BEF3602B470BF1001F6755 /* NetworkManager.m in Sources */,
 				206C9F401D474E910063E3E6 /* RCTStatus.m in Sources */,
+				E9FC4ED12B47EEFF00E834DB /* AccountManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

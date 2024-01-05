@@ -11,6 +11,11 @@
   (when (exists? (.-NativeModules react-native))
     (.-Status ^js (.-NativeModules react-native))))
 
+(defn account-manager
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-AccountManager ^js (.-NativeModules react-native))))
+
 (defn network
   []
   (when (exists? (.-NativeModules react-native))
@@ -35,12 +40,12 @@
 (defn open-accounts
   [callback]
   (log/debug "[native-module] open-accounts")
-  (.openAccounts ^js (status) #(callback (types/json->clj %))))
+  (.openAccounts ^js (account-manager) #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
   [key-uid config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")
-  (.prepareDirAndUpdateConfig ^js (status)
+  (.prepareDirAndUpdateConfig ^js (account-manager)
                               key-uid
                               config
                               #(callback (types/json->clj %))))
@@ -52,7 +57,7 @@
   (init-keystore
    key-uid
    #(.saveAccountAndLoginWithKeycard
-     ^js (status)
+     ^js (account-manager)
      multiaccount-data
      password
      settings
@@ -68,7 +73,7 @@
   (let [config (if config (types/clj->json config) "")]
     (init-keystore
      key-uid
-     #(.loginWithConfig ^js (status) account-data hashed-password config))))
+     #(.loginWithConfig ^js (account-manager) account-data hashed-password config))))
 
 (defn login-account
   "NOTE: beware, the password has to be sha3 hashed"
@@ -77,15 +82,15 @@
   (clear-web-data)
   (init-keystore
    keyUid
-   #(.loginAccount ^js (status) (types/clj->json request))))
+   #(.loginAccount ^js (account-manager) (types/clj->json request))))
 
 (defn create-account-and-login
   [request]
-  (.createAccountAndLogin ^js (status) (types/clj->json request)))
+  (.createAccountAndLogin ^js (account-manager) (types/clj->json request)))
 
 (defn restore-account-and-login
   [request]
-  (.restoreAccountAndLogin ^js (status) (types/clj->json request)))
+  (.restoreAccountAndLogin ^js (account-manager) (types/clj->json request)))
 
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
@@ -109,7 +114,7 @@
   []
   (log/debug "[native-module] logout")
   (clear-web-data)
-  (.logout ^js (status)))
+  (.logout ^js (account-manager)))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -119,7 +124,7 @@
    from memory"
   [address hashed-password callback]
   (log/debug "[native-module] multiaccount-load-account")
-  (.multiAccountLoadAccount ^js (status)
+  (.multiAccountLoadAccount ^js (account-manager)
                             (types/clj->json {:address  address
                                               :password hashed-password})
                             callback))
@@ -132,7 +137,7 @@
   [account-id paths callback]
   (log/debug "[native-module]  multiaccount-derive-addresses")
   (when (status)
-    (.multiAccountDeriveAddresses ^js (status)
+    (.multiAccountDeriveAddresses ^js (account-manager)
                                   (types/clj->json {:accountID account-id
                                                     :paths     paths})
                                   callback)))
@@ -150,7 +155,7 @@
   (when (status)
     (init-keystore
      key-uid
-     #(.multiAccountStoreAccount ^js (status)
+     #(.multiAccountStoreAccount ^js (account-manager)
                                  (types/clj->json {:accountID account-id
                                                    :password  hashed-password})
                                  callback))))
@@ -163,7 +168,7 @@
              account-id)
   (init-keystore
    key-uid
-   #(.multiAccountStoreDerived ^js (status)
+   #(.multiAccountStoreDerived ^js (account-manager)
                                (types/clj->json {:accountID account-id
                                                  :paths     paths
                                                  :password  hashed-password})
@@ -176,7 +181,7 @@
    to store the key"
   [n mnemonic-length paths callback]
   (log/debug "[native-module]  multiaccount-generate-and-derive-addresses")
-  (.multiAccountGenerateAndDeriveAddresses ^js (status)
+  (.multiAccountGenerateAndDeriveAddresses ^js (account-manager)
                                            (types/clj->json {:n                    n
                                                              :mnemonicPhraseLength mnemonic-length
                                                              :bip39Passphrase      ""
@@ -186,7 +191,7 @@
 (defn multiaccount-import-mnemonic
   [mnemonic password callback]
   (log/debug "[native-module] multiaccount-import-mnemonic")
-  (.multiAccountImportMnemonic ^js (status)
+  (.multiAccountImportMnemonic ^js (account-manager)
                                (types/clj->json {:mnemonicPhrase  mnemonic
                                                  ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
@@ -195,7 +200,7 @@
 (defn multiaccount-import-private-key
   [private-key callback]
   (log/debug "[native-module] multiaccount-import-private-key")
-  (.multiAccountImportPrivateKey ^js (status)
+  (.multiAccountImportPrivateKey ^js (account-manager)
                                  (types/clj->json {:privateKey private-key})
                                  callback))
 
@@ -203,13 +208,13 @@
   "NOTE: beware, the password has to be sha3 hashed"
   [address hashed-password callback]
   (log/debug "[native-module] verify")
-  (.verify ^js (status) address hashed-password callback))
+  (.verify ^js (account-manager) address hashed-password callback))
 
 (defn verify-database-password
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid hashed-password callback]
   (log/debug "[native-module] verify-database-password")
-  (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
+  (.verifyDatabasePassword ^js (account-manager) key-uid hashed-password callback))
 
 (defn login-with-keycard
   [{:keys [key-uid multiaccount-data password chat-key node-config]}]
@@ -217,7 +222,7 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key (types/clj->json node-config))))
+   #(.loginWithKeycard ^js (account-manager) multiaccount-data password chat-key (types/clj->json node-config))))
 
 (defn set-soft-input-mode
   [mode]
@@ -486,7 +491,7 @@
   key files."
   [key-uid callback]
   (log/debug "[native-module] delete-multiaccount")
-  (.deleteMultiaccount ^js (status) key-uid callback))
+  (.deleteMultiaccount ^js (account-manager) key-uid callback))
 
 (defn delete-imported-key
   "Delete imported key file."
