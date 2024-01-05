@@ -17,11 +17,11 @@
                                          :TryDatabase     true
                                          :WaitForResponse true}]}]}
              (sut/fetch-community {} ["community-id"])))))
-  (t/testing "with nil community id"
+  (t/testing "with no community id"
     (t/testing "do nothing"
       (t/is (match?
              nil
-             (sut/fetch-community {} nil))))))
+             (sut/fetch-community {} []))))))
 
 (t/deftest community-failed-to-resolve
   (t/testing "given a community id"
