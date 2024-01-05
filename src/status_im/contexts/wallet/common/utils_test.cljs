@@ -214,7 +214,7 @@
   (testing "calculate-fiat-change function"
     (is (money/equal-to (utils/calculate-fiat-change 100 10) 10))
     (is (money/equal-to (utils/calculate-fiat-change 50 10) 5))
-    (is (money/equal-to (utils/calculate-fiat-change 85 -15) -15)))
+    (is (money/equal-to (utils/calculate-fiat-change 85 -15) -15))))
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"
