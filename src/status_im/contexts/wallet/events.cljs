@@ -35,13 +35,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch-later
-          [{:dispatch [:navigate-back]
-            :ms       100}
-           {:dispatch [:navigate-back]
-            :ms       100}
-           {:dispatch [:navigate-to :wallet-accounts address]
-            :ms       300}]]
+         [:dispatch [:navigate-to :wallet-accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
@@ -51,7 +45,7 @@
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
    {:db (update db :wallet dissoc :current-viewing-account-address)
-    :fx [[:dispatch [:navigate-back]]]}))
+    :fx [[:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx
  :wallet/get-accounts-success
