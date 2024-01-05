@@ -16,6 +16,11 @@
   (when (exists? (.-NativeModules react-native))
     (.-AccountManager ^js (.-NativeModules react-native))))
 
+(defn encryption
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-EncryptionUtils ^js (.-NativeModules react-native))))
+
 (defn database
   []
   (when (exists? (.-NativeModules react-native))
@@ -40,7 +45,7 @@
 (defn init-keystore
   [key-uid callback]
   (log/debug "[native-module] init-keystore" key-uid)
-  (.initKeystore ^js (status) key-uid callback))
+  (.initKeystore ^js (encryption) key-uid callback))
 
 (defn open-accounts
   [callback]
@@ -247,13 +252,13 @@
   "used for keycard"
   [rpcParams callback]
   (log/debug "[native-module] hash-transaction")
-  (.hashTransaction ^js (status) rpcParams callback))
+  (.hashTransaction ^js (encryption) rpcParams callback))
 
 (defn hash-message
   "used for keycard"
   [message callback]
   (log/debug "[native-module] hash-message")
-  (.hashMessage ^js (status) message callback))
+  (.hashMessage ^js (encryption) message callback))
 
 (defn start-searching-for-local-pairing-peers
   "starts a UDP multicast beacon that both listens for and broadcasts to LAN peers"
@@ -295,7 +300,7 @@
   (log/info "[native-module] Deserializing and then compressing public key"
             {:fn  :deserialize-and-compress-key
              :key input-key})
-  (.deserializeAndCompressKey ^js (status) input-key callback))
+  (.deserializeAndCompressKey ^js (encryption) input-key callback))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
@@ -303,19 +308,19 @@
   (log/info "[native-module] Deserializing compressed key"
             {:fn         :compressed-key->public-key
              :public-key public-key})
-  (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key callback))
+  (.multiformatDeserializePublicKey ^js (encryption) public-key deserialization-key callback))
 
 (defn hash-typed-data
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data")
-  (.hashTypedData ^js (status) data callback))
+  (.hashTypedData ^js (encryption) data callback))
 
 (defn hash-typed-data-v4
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data-v4")
-  (.hashTypedDataV4 ^js (status) data callback))
+  (.hashTypedDataV4 ^js (encryption) data callback))
 
 (defn send-transaction-with-signature
   "used for keycard"
@@ -327,7 +332,7 @@
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
   [rpcParams callback]
   (log/debug "[native-module] sign-message")
-  (.signMessage ^js (status) rpcParams callback))
+  (.signMessage ^js (encryption) rpcParams callback))
 
 (defn recover-message
   [rpcParams callback]
@@ -344,13 +349,13 @@
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] sign-typed-data")
-  (.signTypedData ^js (status) data account hashed-password callback))
+  (.signTypedData ^js (encryption) data account hashed-password callback))
 
 (defn sign-typed-data-v4
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] sign-typed-data-v4")
-  (.signTypedDataV4 ^js (status) data account hashed-password callback))
+  (.signTypedDataV4 ^js (encryption) data account hashed-password callback))
 
 (defn send-logs
   [dbJson js-logs callback]
@@ -380,7 +385,7 @@
 (defn set-blank-preview-flag
   [flag]
   (log/debug "[native-module] set-blank-preview-flag")
-  (.setBlankPreviewFlag ^js (status) flag))
+  (.setBlankPreviewFlag ^js (encryption) flag))
 
 (defn get-device-model-info
   []
@@ -431,41 +436,41 @@
 (defn encode-transfer
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
-  (.encodeTransfer ^js (status) to-norm amount-hex))
+  (.encodeTransfer ^js (encryption) to-norm amount-hex))
 
 (defn decode-parameters
   [bytes-string types]
   (log/debug "[native-module] decode-parameters")
-  (let [json-str (.decodeParameters ^js (status)
+  (let [json-str (.decodeParameters ^js (encryption)
                                     (types/clj->json {:bytesString bytes-string :types types}))]
     (types/json->clj json-str)))
 
 (defn hex-to-number
   [hex]
   (log/debug "[native-module] hex-to-number")
-  (let [json-str (.hexToNumber ^js (status) hex)]
+  (let [json-str (.hexToNumber ^js (encryption) hex)]
     (types/json->clj json-str)))
 
 (defn number-to-hex
   [num]
   (log/debug "[native-module] number-to-hex")
-  (.numberToHex ^js (status) (str num)))
+  (.numberToHex ^js (encryption) (str num)))
 
 (defn sha3
   [s]
   (log/debug "[native-module] sha3")
   (when s
-    (.sha3 ^js (status) (str s))))
+    (.sha3 ^js (encryption) (str s))))
 
 (defn utf8-to-hex
   [s]
   (log/debug "[native-module] utf8-to-hex")
-  (.utf8ToHex ^js (status) s))
+  (.utf8ToHex ^js (encryption) s))
 
 (defn hex-to-utf8
   [s]
   (log/debug "[native-module] hex-to-utf8")
-  (.hexToUtf8 ^js (status) s))
+  (.hexToUtf8 ^js (encryption) s))
 
 (defn check-address-checksum
   [address]
@@ -516,12 +521,12 @@
   (log/debug "[native-module] change-database-password")
   (init-keystore
    key-uid
-   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# callback)))
+   #(.reEncryptDbAndKeystore ^js (encryption) key-uid current-password# new-password# callback)))
 
 (defn convert-to-keycard-account
   [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]
   (log/debug "[native-module] convert-to-keycard-account")
-  (.convertToKeycardAccount ^js (status)
+  (.convertToKeycardAccount ^js (encryption)
                             key-uid
                             (types/clj->json multiaccount-data)
                             (types/clj->json settings)
