@@ -68,9 +68,9 @@
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
-  (let [price           (get-in market-values-per-currency [:usd :price])
-        one-cent-value  (if (pos? price) (/ 0.01 price) 0)
-        decimals-count  (calc-max-crypto-decimals one-cent-value)]
+  (let [price          (get-in market-values-per-currency [:usd :price])
+        one-cent-value (if (pos? price) (/ 0.01 price) 0)
+        decimals-count (calc-max-crypto-decimals one-cent-value)]
     (if (money/equal-to token-units 0)
       "0"
       (if (< token-units one-cent-value)
