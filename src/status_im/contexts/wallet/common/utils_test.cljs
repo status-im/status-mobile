@@ -212,9 +212,9 @@
 
 (deftest test-calculate-fiat-change
   (testing "calculate-fiat-change function"
-    (is (= (utils/calculate-fiat-change 100 10) 10))
-    (is (= (utils/calculate-fiat-change 50 10) 5))
-    (is (= (utils/calculate-fiat-change 85 -15) -15))))
+    (is (money/equal-to (utils/calculate-fiat-change 100 10) (money/bignumber 9.090909090909092)))
+    (is (money/equal-to (utils/calculate-fiat-change 50 10) (money/bignumber 4.545454545454546)))
+    (is (money/equal-to (utils/calculate-fiat-change 85 -15) (money/bignumber -15.000000000000002)))))
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"
