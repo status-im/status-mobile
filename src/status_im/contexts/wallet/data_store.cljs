@@ -1,8 +1,11 @@
 (ns status-im.contexts.wallet.data-store
   (:require
+    [camel-snake-kebab.core :as csk]
+    [camel-snake-kebab.extras :as cske]
     [clojure.set :as set]
     [clojure.string :as string]
     [status-im.constants :as constants]
+    [utils.money :as money]
     [utils.number :as utils.number]))
 
 (defn chain-ids-string->set
@@ -47,6 +50,19 @@
       (update :prodPreferredChainIds chain-ids-set->string)
       (update :testPreferredChainIds chain-ids-set->string)
       (dissoc :watch-only?)))
+
+(defn- rpc->balances-per-chain
+  [token]
+  (-> token
+      (update :balances-per-chain update-vals #(update % :raw-balance money/bignumber))
+      (update :balances-per-chain update-keys (comp utils.number/parse-int name))))
+
+(defn rpc->tokens
+  [tokens]
+  (-> tokens
+      (update-keys name)
+      (update-vals #(cske/transform-keys csk/->kebab-case %))
+      (update-vals #(mapv rpc->balances-per-chain %))))
 
 (defn <-rpc
   [network]

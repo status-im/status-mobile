@@ -39,10 +39,11 @@
   []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [tokens-loading?    (rf/sub [:wallet/tokens-loading?])
-            networks           (rf/sub [:wallet/network-details])
-            account-cards-data (rf/sub [:wallet/account-cards-data])
-            cards              (conj account-cards-data (new-account-card-data))]
+      (let [tokens-loading?             (rf/sub [:wallet/tokens-loading?])
+            networks                    (rf/sub [:wallet/network-details])
+            account-cards-data          (rf/sub [:wallet/account-cards-data])
+            cards                       (conj account-cards-data (new-account-card-data))
+            {:keys [formatted-balance]} (rf/sub [:wallet/aggregated-tokens-and-balance])]
         [rn/view {:style (style/home-container)}
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
@@ -50,7 +51,7 @@
            {:state      (if tokens-loading? :loading :default)
             :time-frame :none
             :metrics    :none
-            :balance    "€0.00"
+            :balance    formatted-balance
             :networks   networks}]]
          [quo/wallet-graph {:time-frame :empty}]
          [rn/flat-list
