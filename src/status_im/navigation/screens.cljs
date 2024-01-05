@@ -97,7 +97,7 @@
 
     {:name      :community-requests-to-join
      :options   {:sheet? true}
-     :component join-menu/request-to-join}
+     :component join-menu/view}
 
     {:name      :community-account-selection
      :options   {:sheet? true}
