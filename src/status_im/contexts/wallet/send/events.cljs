@@ -64,6 +64,12 @@
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
     :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
 
+(rf/reg-event-fx
+ :wallet/send-select-collectible
+ (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
+   {:db (assoc-in db [:wallet :ui :send :collectible] collectible)
+    :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [amount]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])

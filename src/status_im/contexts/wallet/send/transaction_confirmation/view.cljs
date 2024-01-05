@@ -22,10 +22,11 @@
       :accessibility-label :send-label}
      (i18n/label :t/send)]
     [quo/summary-tag
-     {:token        token-symbol
-      :label        (str amount " " token-symbol)
-      :type         :token
-      :image-source :eth}]]
+     {:label        (str amount " " token-symbol)
+      :type         :collectible
+      :image-source nil
+      ;:image-source :eth
+      }]]
    [rn/view
     {:style {:flex-direction :row
              :margin-top     4}}
@@ -140,8 +141,6 @@
                                :address             (utils/get-shortened-address (:address account))}
         user-props            {:full-name to-address
                                :address   (utils/get-shortened-address to-address)}]
-    (prn route)
-
     (fn [{:keys [theme]}]
       [rn/view {:style {:flex 1}}
        [floating-button-page/view
