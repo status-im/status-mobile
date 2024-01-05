@@ -5,11 +5,10 @@
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn- view-internal
-  [{:keys [theme collectibles filtered?]}]
+  [{:keys [theme collectibles filtered? on-collectible-press]}]
   (cond
     (and filtered? (empty? collectibles))
     [rn/view]
@@ -29,10 +28,6 @@
       :render-fn               (fn [{:keys [preview-url id]}]
                                  [quo/collectible
                                   {:images   [preview-url]
-                                   :on-press (fn []
-                                               (rf/dispatch [:wallet/get-collectible-details id])
-                                               (rf/dispatch
-                                                [:navigate-to
-                                                 :wallet-collectible]))}])}]))
+                                   :on-press #(on-collectible-press id)}])}]))
 
 (def view (quo.theme/with-theme view-internal))

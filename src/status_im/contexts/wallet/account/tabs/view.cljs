@@ -16,7 +16,11 @@
     [rn/view {:style {:flex 1}}
      (case selected-tab
        :assets       [assets/view]
-       :collectibles [collectibles/view {:collectibles collectible-list}]
+       :collectibles [collectibles/view
+                      {:collectibles         collectible-list
+                       :on-collectible-press (fn [id]
+                                               (rf/dispatch [:wallet/get-collectible-details id])
+                                               (rf/dispatch [:navigate-to :wallet-collectible]))}]
        :activity     [activity/view]
        :permissions  [empty-tab/view
                       {:title        (i18n/label :t/no-permissions)
