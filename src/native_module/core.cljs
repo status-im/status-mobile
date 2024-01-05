@@ -26,6 +26,11 @@
   (when (exists? (.-NativeModules react-native))
     (.-DatabaseManager ^js (.-NativeModules react-native))))
 
+(defn log-manager
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-LogManager ^js (.-NativeModules react-native))))
+
 (defn network
   []
   (when (exists? (.-NativeModules react-native))
@@ -360,7 +365,7 @@
 (defn send-logs
   [dbJson js-logs callback]
   (log/debug "[native-module] send-logs")
-  (.sendLogs ^js (status) dbJson js-logs callback))
+  (.sendLogs ^js (log-manager) dbJson js-logs callback))
 
 (defn close-application
   []
@@ -549,8 +554,8 @@
 
 (defn log-file-directory
   []
-  (.logFileDirectory ^js (status)))
+  (.logFileDirectory ^js (log-manager)))
 
 (defn init-status-go-logging
   [{:keys [enable? mobile-system? log-level callback]}]
-  (.initLogging ^js (status) enable? mobile-system? log-level callback))
+  (.initLogging ^js (log-manager) enable? mobile-system? log-level callback))

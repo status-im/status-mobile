@@ -13,6 +13,7 @@
 		E967A3AC2B47BD5A00FB19B2 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = E967A3AB2B47BD5A00FB19B2 /* Utils.m */; };
 		E9BEF3602B470BF1001F6755 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BEF35E2B470BF1001F6755 /* NetworkManager.m */; };
 		E9C33AA62B4828A60074B1C5 /* DatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C33AA52B4828A60074B1C5 /* DatabaseManager.m */; };
+		E9DB08932B4858B400F51053 /* LogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9DB08912B4858B400F51053 /* LogManager.m */; };
 		E9F5C3322B483B6C001A7F40 /* EncryptionUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = E9F5C3312B483B6C001A7F40 /* EncryptionUtils.m */; };
 		E9FC4ED12B47EEFF00E834DB /* AccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9FC4ECF2B47EEFF00E834DB /* AccountManager.m */; };
 /* End PBXBuildFile section */
@@ -42,6 +43,8 @@
 		E9BEF35F2B470BF1001F6755 /* NetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
 		E9C33AA42B4828A60074B1C5 /* DatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseManager.h; sourceTree = "<group>"; };
 		E9C33AA52B4828A60074B1C5 /* DatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatabaseManager.m; sourceTree = "<group>"; };
+		E9DB08912B4858B400F51053 /* LogManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogManager.m; sourceTree = "<group>"; };
+		E9DB08922B4858B400F51053 /* LogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogManager.h; sourceTree = "<group>"; };
 		E9F5C3302B483B6C001A7F40 /* EncryptionUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EncryptionUtils.h; sourceTree = "<group>"; };
 		E9F5C3312B483B6C001A7F40 /* EncryptionUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptionUtils.m; sourceTree = "<group>"; };
 		E9FC4ECF2B47EEFF00E834DB /* AccountManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountManager.m; sourceTree = "<group>"; };
@@ -80,6 +83,8 @@
 		206C9F3C1D474E910063E3E6 /* Status */ = {
 			isa = PBXGroup;
 			children = (
+				E9DB08922B4858B400F51053 /* LogManager.h */,
+				E9DB08912B4858B400F51053 /* LogManager.m */,
 				E9F5C3302B483B6C001A7F40 /* EncryptionUtils.h */,
 				E9F5C3312B483B6C001A7F40 /* EncryptionUtils.m */,
 				E9C33AA42B4828A60074B1C5 /* DatabaseManager.h */,
@@ -152,6 +157,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9DB08932B4858B400F51053 /* LogManager.m in Sources */,
 				E9F5C3322B483B6C001A7F40 /* EncryptionUtils.m in Sources */,
 				E967A3AC2B47BD5A00FB19B2 /* Utils.m in Sources */,
 				E9BEF3602B470BF1001F6755 /* NetworkManager.m in Sources */,
