@@ -16,6 +16,11 @@
   (when (exists? (.-NativeModules react-native))
     (.-AccountManager ^js (.-NativeModules react-native))))
 
+(defn database
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-DatabaseManager ^js (.-NativeModules react-native))))
+
 (defn network
   []
   (when (exists? (.-NativeModules react-native))
@@ -99,7 +104,7 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.exportUnencryptedDatabase ^js (status) account-data hashed-password callback)))
+   #(.exportUnencryptedDatabase ^js (database) account-data hashed-password callback)))
 
 (defn import-db
   "NOTE: beware, the password has to be sha3 hashed"
@@ -108,7 +113,7 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.importUnencryptedDatabase ^js (status) account-data hashed-password)))
+   #(.importUnencryptedDatabase ^js (database) account-data hashed-password)))
 
 (defn logout
   []

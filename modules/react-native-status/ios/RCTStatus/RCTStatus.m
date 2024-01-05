@@ -56,15 +56,12 @@ RCT_EXPORT_METHOD(shouldMoveToInternalStorage:(RCTResponseSenderBlock)onResultCa
     onResultCallback(@[[NSNull null]]);
 }
 
-
 #pragma mark - moveToInternalStorage
 
 RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback) {
     // Android only
     onResultCallback(@[[NSNull null]]);
 }
-
-
 
 #pragma mark - InitKeystore method
 
@@ -89,7 +86,6 @@ RCT_EXPORT_METHOD(initKeystore:(NSString *)keyUID
                         callback(@[]);
                    });
 }
-
 
 #pragma mark - SendLogs method
 
@@ -313,7 +309,6 @@ RCT_EXPORT_METHOD(hashTypedDataV4:(NSString *)data
     callback(@[result]);
 }
 
-
 RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -331,8 +326,6 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     NSString *result = StatusgoMultiAccountDeriveAddresses(json);
     callback(@[result]);
 }
-
-
 
 RCT_EXPORT_METHOD(reEncryptDbAndKeystore:(NSString *)keyUID
                   currentPassword:(NSString *)currentPassword
@@ -386,7 +379,6 @@ RCT_EXPORT_METHOD(signTypedData:(NSString *)data
     callback(@[result]);
 }
 
-
 #pragma mark - SignTypedDataV4
 
 RCT_EXPORT_METHOD(signTypedDataV4:(NSString *)data
@@ -400,7 +392,6 @@ RCT_EXPORT_METHOD(signTypedDataV4:(NSString *)data
     callback(@[result]);
 }
 
-
 #pragma mark - SignGroupMembership
 
 RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
@@ -411,7 +402,6 @@ RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
     NSString *result = StatusgoSignGroupMembership(content);
     callback(@[result]);
 }
-
 
 #pragma mark - ExtractGroupMembershipSignatures
 
@@ -424,7 +414,6 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
     callback(@[result]);
 }
 
-
 #pragma mark - GetNodeConfig
 
 RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
@@ -434,8 +423,6 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
     NSString *result = StatusgoGetNodeConfig();
     callback(@[result]);
 }
-
-
 
 #pragma mark - only android methods
 
@@ -488,7 +475,6 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
 
     return commonKeystoreDir.path;
 }
-
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -629,27 +615,6 @@ RCT_EXPORT_METHOD(startLocalNotifications) {
 StatusgoStartLocalNotifications();
 }
 
-RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
-                  password:(NSString *)password
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"exportUnencryptedDatabase() method called");
-#endif
-
-    NSString *filePath = [Utils getExportDbFilePath];
-    StatusgoExportUnencryptedDatabase(accountData, password, filePath);
-
-    callback(@[filePath]);
-}
-
-RCT_EXPORT_METHOD(importUnencryptedDatabase:(NSString *)accountData
-                  password:(NSString *)password) {
-#if DEBUG
-    NSLog(@"importUnencryptedDatabase() method called");
-#endif
-    "";
-}
-
 RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
 {
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -703,7 +668,7 @@ RCT_EXPORT_METHOD(deactivateKeepAwake)
 
 - (NSString*) deviceName
 {
-    return [[UIDevice currentDevice] name];;
+    return [[UIDevice currentDevice] name];
 }
 
 - (NSDictionary *)constantsToExport
