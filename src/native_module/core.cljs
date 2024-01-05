@@ -11,6 +11,11 @@
   (when (exists? (.-NativeModules react-native))
     (.-Status ^js (.-NativeModules react-native))))
 
+(defn network
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-NetworkManager ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -222,11 +227,11 @@
 (defn call-rpc
   [payload callback]
   (log/debug "[native-module] call-rpc")
-  (.callRPC ^js (status) payload callback))
+  (.callRPC ^js (network) payload callback))
 
 (defn call-private-rpc
   [payload callback]
-  (.callPrivateRPC ^js (status) payload callback))
+  (.callPrivateRPC ^js (network) payload callback))
 
 (defn hash-transaction
   "used for keycard"
@@ -245,7 +250,7 @@
   [callback]
   (log/info "[native-module] Start Searching for Local Pairing Peers"
             {:fn :start-searching-for-local-pairing-peers})
-  (.startSearchForLocalPairingPeers ^js (status) callback))
+  (.startSearchForLocalPairingPeers ^js (network) callback))
 
 (defn local-pairing-preflight-outbound-check
   "Checks whether the device has allows connecting to the local server"
@@ -260,7 +265,7 @@
   (log/info "[native-module] Fetching Connection String"
             {:fn          :get-connection-string-for-bootstrapping-another-device
              :config-json config-json})
-  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json callback))
+  (.getConnectionStringForBootstrappingAnotherDevice ^js (network) config-json callback))
 
 (defn input-connection-string-for-bootstrapping
   "Provides connection string to status-go for the purpose of local pairing on the receiver end"
@@ -269,7 +274,7 @@
             {:fn                :input-connection-string-for-bootstrapping
              :config-json       config-json
              :connection-string connection-string})
-  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json callback))
+  (.inputConnectionStringForBootstrapping ^js (network) connection-string config-json callback))
 
 (defn deserialize-and-compress-key
   "Provides a community id (public key) to status-go which is first deserialized
@@ -306,7 +311,7 @@
   "used for keycard"
   [rpcParams sig callback]
   (log/debug "[native-module] send-transaction-with-signature")
-  (.sendTransactionWithSignature ^js (status) rpcParams sig callback))
+  (.sendTransactionWithSignature ^js (network) rpcParams sig callback))
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
@@ -317,13 +322,13 @@
 (defn recover-message
   [rpcParams callback]
   (log/debug "[native-module] recover")
-  (.recover ^js (status) rpcParams callback))
+  (.recover ^js (network) rpcParams callback))
 
 (defn send-transaction
   "NOTE: beware, the password has to be sha3 hashed"
   [rpcParams hashed-password callback]
   (log/debug "[native-module] send-transaction")
-  (.sendTransaction ^js (status) rpcParams hashed-password callback))
+  (.sendTransaction ^js (network) rpcParams hashed-password callback))
 
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
