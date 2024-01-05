@@ -1,14 +1,15 @@
 (ns status-im.contexts.wallet.send.select-asset.view
   (:require
-    [quo.core :as quo]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
-    [status-im.contexts.wallet.send.select-asset.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
+   [status-im.contexts.wallet.send.select-asset.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (def tabs-data
   [{:id :tab/assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
@@ -55,10 +56,11 @@
 
 (defn collectibles-grid
   [search-text]
-  (let [collectibles (rf/sub [:wallet/current-viewing-account-collectibles-filtered search-text])]
+  (let [collectibles      (rf/sub [:wallet/current-viewing-account-collectibles-filtered search-text])
+        search-performed? (not (string/blank? search-text))]
     [collectibles-tab/view
      {:collectibles         collectibles
-      :filtered?            true
+      :filtered?            search-performed?
       :on-collectible-press (fn [collectible-id]
                               (js/alert (str "Collectible to send: \n"
                                              collectible-id
