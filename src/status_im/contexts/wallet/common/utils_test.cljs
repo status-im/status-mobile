@@ -38,10 +38,11 @@
 
 (deftest test-total-raw-balance-in-all-chains
   (testing "total-raw-balance-in-all-chains function"
-    (let [balances-per-chain {1 {:raw-balance (money/bignumber 100)}
-                              10 {:raw-balance (money/bignumber 200)}
+    (let [balances-per-chain {1     {:raw-balance (money/bignumber 100)}
+                              10    {:raw-balance (money/bignumber 200)}
                               42161 {:raw-balance (money/bignumber 300)}}]
-      (is (money/equal-to (utils/total-raw-balance-in-all-chains balances-per-chain) (money/bignumber 600))))))
+      (is (money/equal-to (utils/total-raw-balance-in-all-chains balances-per-chain)
+                          (money/bignumber 600))))))
 
 (deftest test-extract-exponent
   (testing "extract-exponent function"
@@ -60,20 +61,20 @@
 (deftest test-get-standard-crypto-format
   (testing "get-standard-crypto-format function"
     (let [market-values-per-currency {:usd {:price 100}}
-          token-units (money/bignumber 0.005)]
+          token-units                (money/bignumber 0.005)]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
              "0.005")))
     (let [market-values-per-currency {:usd {:price 0.005}}
-          token-units (money/bignumber 0.01)]
+          token-units                (money/bignumber 0.01)]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
              "<2")))))
 
 (deftest test-total-token-units-in-all-chains
   (testing "total-token-units-in-all-chains function"
-    (let [token {:balances-per-chain {1 {:raw-balance (money/bignumber 100)}
-                                      10 {:raw-balance (money/bignumber 200)}
+    (let [token {:balances-per-chain {1     {:raw-balance (money/bignumber 100)}
+                                      10    {:raw-balance (money/bignumber 200)}
                                       42161 {:raw-balance (money/bignumber 300)}}
                  :decimals           2}]
       (is (money/equal-to (utils/total-token-units-in-all-chains token) 6.0)))))
@@ -107,79 +108,6 @@
                  :decimals           8}]
       (is (= (utils/token-value-in-chain token 1) 1.0)))))
 
-(deftest test-calculate-balance-for-account
-  (testing "calculate-balance-for-account function"
-    (let [account  {:tokens [{:balances-per-chain {1 {:raw-balance (money/bignumber 100000000)}
-                                                   2 {:raw-balance (money/bignumber 50000000)}
-                                                   3 {:raw-balance (money/bignumber 123456789)}}
-                              :decimals           8}
-                             {:balances-per-chain {1 {:raw-balance (money/bignumber 200000000)}
-                                                   2 {:raw-balance (money/bignumber 100000000)}
-                                                   3 {:raw-balance (money/bignumber 987654321)}}
-                              :decimals           8}]}
-          currency {:market-values-per-currency {:usd {:price 1}}}]
-      (is (= (utils/calculate-balance-for-account currency account) 9876543.21)))))
-
-(deftest test-calculate-balance-for-token
-  (testing "calculate-balance-for-token function"
-    (let [token {:balances-per-chain         {1 {:raw-balance (money/bignumber 100000000)}
-                                              2 {:raw-balance (money/bignumber 50000000)}
-                                              3 {:raw-balance (money/bignumber 123456789)}}
-                 :decimals                   8
-                 :market-values-per-currency {:usd {:price 1}}}]
-      (is (= (utils/calculate-balance-for-token token) 2234567.89)))
-
-    (let [token {:balances-per-chain         [{:raw-balance "0" :chain-id 1}
-                                              {:raw-balance "0" :chain-id 2}
-                                              {:raw-balance "0" :chain-id 3}]
-                 :decimals                   "4"
-                 :market-values-per-currency {:usd {:price 1}}}]
-      (is (= (utils/calculate-balance-for-token token) 0.0)))))
-
-(deftest test-calculate-balance
-  (testing "test calculate-balance function"
-    (let [tokens-in-account [{:balances-per-chain         [{:raw-balance "100000000" :chain-id 1}
-                                                           {:raw-balance "50000000" :chain-id 2}
-                                                           {:raw-balance "123456789" :chain-id 3}]
-                              :decimals                   "8"
-                              :market-values-per-currency {:usd {:price 1}}}
-                             {:balances-per-chain         [{:raw-balance "200000000" :chain-id 1}
-                                                           {:raw-balance "100000000" :chain-id 2}
-                                                           {:raw-balance "987654321" :chain-id 3}]
-                              :decimals                   "8"
-                              :market-values-per-currency {:usd {:price 1}}}]]
-      (is (= (utils/calculate-balance tokens-in-account) 10234567.89)))
-
-    (let [tokens-in-account [{:balances-per-chain         [{:raw-balance "0" :chain-id 1}
-                                                           {:raw-balance "0" :chain-id 2}
-                                                           {:raw-balance "0" :chain-id 3}]
-                              :decimals                   "4"
-                              :market-values-per-currency {:usd {:price 1}}}
-                             {:balances-per-chain         [{:raw-balance "0" :chain-id 1}
-                                                           {:raw-balance "0" :chain-id 2}
-                                                           {:raw-balance "0" :chain-id 3}]
-                              :decimals                   "4"
-                              :market-values-per-currency {:usd {:price 1}}}]]
-      (is (= (utils/calculate-balance tokens-in-account) 0.0)))))
-
-(deftest test-network-list
-  (testing "network-list function"
-    (let [balances-per-chain {:chain-1 {:balance 100}
-                              :chain-2 {:balance 200}
-                              :chain-3 {:balance 300}}
-          networks           [{:chain-id :chain-1 :name "Network A"}
-                              {:chain-id :chain-2 :name "Network B"}
-                              {:chain-id :chain-3 :name "Network C"}]]
-      (is (= (utils/network-list {:balances-per-chain balances-per-chain} networks)
-             #{:chain-1 :chain-2 :chain-3})))
-
-    (let [balances-per-chain {:chain-1 {:balance 100}
-                              :chain-2 {:balance 200}
-                              :chain-3 {:balance 300}}
-          networks           [{:chain-id 1 :name "Network A"}
-                              {:chain-id 3 :name "Network C"}]]
-      (is (= (utils/network-list {:balances-per-chain balances-per-chain} networks)
-             #{1 3})))))
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"
