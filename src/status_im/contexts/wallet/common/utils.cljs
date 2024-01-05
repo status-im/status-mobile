@@ -31,7 +31,7 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-(defn- total-raw-balance-in-all-chains
+(defn total-raw-balance-in-all-chains
   [balances-per-chain]
   (->> balances-per-chain
        (map (comp :raw-balance val))
@@ -55,15 +55,27 @@
       (inc max-decimals)
       max-decimals)))
 
+(defn remove-trailing-zeroes
+  [num]
+  (let [parts (clojure.string/split (str num) #"\.")]
+    (str (first parts)
+         (if-let [decimals (second parts)]
+           (if (seq (clojure.string/replace decimals #"0+$" ""))
+             (str "." (clojure.string/replace decimals #"0+$" ""))
+             "")
+           ""))))
+
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (if (pos? price) (/ 0.01 price) 0)
         decimals-count (calc-max-crypto-decimals one-cent-value)]
-    (if (< token-units one-cent-value)
-      (str "<" (.toFixed one-cent-value decimals-count))
-      (.toFixed token-units decimals-count))))
+    (if (money/equal-to token-units 0)
+      "0"
+      (if (< token-units one-cent-value)
+        (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
+        (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
 
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
