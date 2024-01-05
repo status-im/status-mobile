@@ -4,7 +4,7 @@
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
-    [status-im.common.data-store.wallet :as data-store]
+    [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.temp :as temp]
