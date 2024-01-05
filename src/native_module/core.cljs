@@ -36,6 +36,11 @@
   (when (exists? (.-NativeModules react-native))
         (.-LogManager ^js (.-NativeModules react-native))))
 
+(defn utils
+  []
+  (when (exists? (.-NativeModules react-native))
+        (.-Utils ^js (.-NativeModules react-native))))
+
 (defn network
   []
   (when (exists? (.-NativeModules react-native))
@@ -485,26 +490,26 @@
 (defn check-address-checksum
   [address]
   (log/debug "[native-module] check-address-checksum")
-  (let [result (.checkAddressChecksum ^js (status) address)]
+  (let [result (.checkAddressChecksum ^js (utils) address)]
     (types/json->clj result)))
 
 (defn address?
   [address]
   (log/debug "[native-module] address?")
   (when address
-    (let [result (.isAddress ^js (status) address)]
+    (let [result (.isAddress ^js (utils) address)]
       (types/json->clj result))))
 
 (defn to-checksum-address
   [address]
   (log/debug "[native-module] to-checksum-address")
-  (.toChecksumAddress ^js (status) address))
+  (.toChecksumAddress ^js (utils) address))
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
   [mnemonic callback]
   (log/debug "[native-module] validate-mnemonic")
-  (.validateMnemonic ^js (status) mnemonic callback))
+  (.validateMnemonic ^js (utils) mnemonic callback))
 
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and
@@ -547,7 +552,7 @@
 
 (defn backup-disabled-data-dir
   []
-  (.backupDisabledDataDir ^js (status)))
+  (.backupDisabledDataDir ^js (utils)))
 
 (defn fleets
   []
@@ -555,7 +560,7 @@
 
 (defn keystore-dir
   []
-  (.keystoreDir ^js (status)))
+  (.keystoreDir ^js (utils)))
 
 (defn log-file-directory
   []

@@ -1,7 +1,12 @@
 #import "Utils.h"
+#import "React/RCTBridge.h"
+#import "React/RCTEventDispatcher.h"
 #import "Statusgo.h"
+#import "Utils.h"
 
 @implementation Utils
+
+RCT_EXPORT_MODULE();
 
 + (NSString *)jsonStringWithPrettyPrint:(BOOL)prettyPrint fromDictionary:(NSDictionary *)dictionary {
     NSError *error;
@@ -82,5 +87,42 @@
         NSLog(@"InitKeyStore result %@", initKeystoreResult);
     }
 }
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+            lastObject];
+    return rootUrl.path;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+            URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+            lastObject];
+
+    NSURL *commonKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
+
+    return commonKeystoreDir.path;
+}
+
+RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
+    callback:(RCTResponseSenderBlock)callback) {
+    #if DEBUG
+        NSLog(@"validateMnemonic() method called");
+    #endif
+    NSString *result = StatusgoValidateMnemonic(seed);
+    callback(@[result]);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(checkAddressChecksum:(NSString *)address) {
+    return StatusgoCheckAddressChecksum(address);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
+    return StatusgoToChecksumAddress(address);
+}
+
 
 @end

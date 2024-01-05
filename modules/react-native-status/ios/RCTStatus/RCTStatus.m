@@ -63,8 +63,6 @@ RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback
     onResultCallback(@[[NSNull null]]);
 }
 
-
-
 RCT_EXPORT_METHOD(exportLogs:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"exportLogs() method called");
@@ -176,48 +174,8 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
     callback(@[result]);
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
-
-    NSURL *commonKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
-
-    return commonKeystoreDir.path;
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *rootUrl =[[fileManager
-                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
-                     lastObject];
-    return rootUrl.path;
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(checkAddressChecksum:(NSString *)address) {
-  return StatusgoCheckAddressChecksum(address);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAddress:(NSString *)address) {
-  return StatusgoIsAddress(address);
-}
-
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fleets) {
   return StatusgoFleets();
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
-  return StatusgoToChecksumAddress(address);
-}
-
-RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"validateMnemonic() method called");
-#endif
-    NSString *result = StatusgoValidateMnemonic(seed);
-    callback(@[result]);
 }
 
 RCT_EXPORT_METHOD(closeApplication) {
