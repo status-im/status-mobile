@@ -61,9 +61,11 @@
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (if (pos? price) (/ 0.01 price) 0)
         decimals-count (calc-max-crypto-decimals one-cent-value)]
-    (if (< token-units one-cent-value)
-      (str "<" (.toFixed one-cent-value decimals-count))
-      (.toFixed token-units decimals-count))))
+    (if (money/equal-to token-units 0)
+      "0"
+      (if (< token-units one-cent-value)
+        (str "<" (.toFixed one-cent-value decimals-count))
+        (.toFixed token-units decimals-count)))))
 
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
