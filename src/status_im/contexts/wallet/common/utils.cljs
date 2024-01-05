@@ -70,13 +70,12 @@
   [{:keys [market-values-per-currency]} token-units]
   (let [price           (get-in market-values-per-currency [:usd :price])
         one-cent-value  (if (pos? price) (/ 0.01 price) 0)
-        decimals-count  (calc-max-crypto-decimals one-cent-value)
-        formatted-value (remove-trailing-zeroes (.toFixed one-cent-value decimals-count))]
+        decimals-count  (calc-max-crypto-decimals one-cent-value)]
     (if (money/equal-to token-units 0)
       "0"
       (if (< token-units one-cent-value)
-        (str "<" formatted-value)
-        formatted-value))))
+        (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
+        (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
 
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
