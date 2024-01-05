@@ -3,7 +3,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messages.view :as chat]
+    [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.shell.jump-to.animation :as animation]

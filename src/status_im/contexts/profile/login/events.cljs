@@ -18,7 +18,7 @@
     [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as contacts]
-    [status-im.contexts.chat.messages.link-preview.events :as link-preview]
+    [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview]
     [status-im.contexts.profile.config :as profile.config]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.push-notifications.events :as notifications]
