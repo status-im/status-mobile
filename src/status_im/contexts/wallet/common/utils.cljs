@@ -33,7 +33,6 @@
 
 (defn total-raw-balance-in-all-chains
   [balances-per-chain]
-  (println "calling totalxxx", balances-per-chain)
   (->> balances-per-chain
        (map (comp :raw-balance val))
        (reduce money/add)))
