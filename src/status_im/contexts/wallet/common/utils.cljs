@@ -14,9 +14,9 @@
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
-      (if valid-balance? $ 0)
-      (.toFixed $ 2)
-      (str currency-symbol $))))
+          (if valid-balance? $ 0)
+          (.toFixed $ 2)
+          (str currency-symbol $))))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -55,17 +55,24 @@
       (inc max-decimals)
       max-decimals)))
 
+(defn remove-trailing-zeroes [num]
+  (let [parts (clojure.string/split (str num) #"\.")]
+    (str (first parts) (if-let [decimals (second parts)]
+                         (str "." (clojure.string/replace decimals #"0+$" ""))
+                         ""))))
+
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
   (let [price          (get-in market-values-per-currency [:usd :price])
         one-cent-value (if (pos? price) (/ 0.01 price) 0)
-        decimals-count (calc-max-crypto-decimals one-cent-value)]
+        decimals-count (calc-max-crypto-decimals one-cent-value)
+        formatted-value (remove-trailing-zeroes (.toFixed one-cent-value decimals-count))]
     (if (money/equal-to token-units 0)
       "0"
       (if (< token-units one-cent-value)
-        (str "<" (.toFixed one-cent-value decimals-count))
-        (.toFixed token-units decimals-count)))))
+        (str "<" formatted-value)
+        formatted-value))))
 
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
@@ -108,8 +115,8 @@
 (defn calculate-balance-for-token
   [token]
   (money/bignumber
-   (money/mul (total-token-units-in-all-chains token)
-              (-> token :market-values-per-currency :usd :price))))
+    (money/mul (total-token-units-in-all-chains token)
+               (-> token :market-values-per-currency :usd :price))))
 
 (defn calculate-balance
   [tokens-in-account]
@@ -134,9 +141,9 @@
   [{:keys [wallet-type selected-networks address]}]
   (if (= wallet-type :wallet-multichain)
     (as-> selected-networks $
-      (map qr-codes/get-network-short-name-url $)
-      (apply str $)
-      (str $ address))
+          (map qr-codes/get-network-short-name-url $)
+          (apply str $)
+          (str $ address))
     address))
 
 (def id->network

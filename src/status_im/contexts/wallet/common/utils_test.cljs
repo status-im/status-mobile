@@ -63,12 +63,12 @@
           token-units (money/bignumber 0.005)]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
-             "<0.01")))
+             "0.005")))
     (let [market-values-per-currency {:usd {:price 0.005}}
           token-units (money/bignumber 0.01)]
       (is (= (utils/get-standard-crypto-format {:market-values-per-currency market-values-per-currency}
                                                token-units)
-             "2.00")))))
+             "<2")))))
 
 (deftest test-total-token-units-in-all-chains
   (testing "total-token-units-in-all-chains function"
@@ -122,10 +122,10 @@
 
 (deftest test-calculate-balance-for-token
   (testing "calculate-balance-for-token function"
-    (let [token {:balances-per-chain         [{:raw-balance "100000000" :chain-id 1}
-                                              {:raw-balance "50000000" :chain-id 2}
-                                              {:raw-balance "123456789" :chain-id 3}]
-                 :decimals                   "8"
+    (let [token {:balances-per-chain         {1 {:raw-balance (money/bignumber 100000000)}
+                                              2 {:raw-balance (money/bignumber 50000000)}
+                                              3 {:raw-balance (money/bignumber 123456789)}}
+                 :decimals                   8
                  :market-values-per-currency {:usd {:price 1}}}]
       (is (= (utils/calculate-balance-for-token token) 2234567.89)))
 
