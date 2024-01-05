@@ -60,7 +60,9 @@
   (let [parts (clojure.string/split (str num) #"\.")]
     (str (first parts)
          (if-let [decimals (second parts)]
-           (str "." (clojure.string/replace decimals #"0+$" ""))
+           (if (not (empty? (clojure.string/replace decimals #"0+$" "")))
+             (str "." (clojure.string/replace decimals #"0+$" ""))
+             "")
            ""))))
 
 (defn get-standard-crypto-format
