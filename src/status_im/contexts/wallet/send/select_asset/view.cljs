@@ -55,11 +55,14 @@
 
 (defn collectibles-grid
   [search-text]
-  (let [collectibles-filtered (rf/sub [:wallet/current-viewing-account-collectibles-filtered
-                                       search-text])]
+  (let [collectibles (rf/sub [:wallet/current-viewing-account-collectibles-filtered search-text])]
     [collectibles-tab/view
-     {:collectibles collectibles-filtered
-      :filtered?    true}]))
+     {:collectibles         collectibles
+      :filtered?            true
+      :on-collectible-press (fn [collectible-id]
+                              (js/alert (str "Collectible to send: \n"
+                                             collectible-id
+                                             "\nNavigation not implemented yet")))}]))
 
 (defn- tab-view
   [search-text selected-tab on-change-text]
