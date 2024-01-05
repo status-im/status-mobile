@@ -7,18 +7,20 @@
     [status-im.contexts.wallet.common.activity-tab.view :as activity]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [selected-tab]}]
-  [rn/view {:style {:flex 1}}
-   (case selected-tab
-     :assets       [assets/view]
-     :collectibles [collectibles/view]
-     :activity     [activity/view]
-     :permissions  [empty-tab/view
-                    {:title        (i18n/label :t/no-permissions)
-                     :description  (i18n/label :t/no-collectibles-description)
-                     :placeholder? true}]
-     :dapps        [dapps/view]
-     [about/view])])
+  (let [collectible-list (rf/sub [:wallet/current-viewing-account-collectibles])]
+    [rn/view {:style {:flex 1}}
+     (case selected-tab
+       :assets       [assets/view]
+       :collectibles [collectibles/view {:collectibles collectible-list}]
+       :activity     [activity/view]
+       :permissions  [empty-tab/view
+                      {:title        (i18n/label :t/no-permissions)
+                       :description  (i18n/label :t/no-collectibles-description)
+                       :placeholder? true}]
+       :dapps        [dapps/view]
+       [about/view])]))
