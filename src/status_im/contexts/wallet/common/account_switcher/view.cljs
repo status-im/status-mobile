@@ -13,7 +13,7 @@
     nil))
 
 (defn view
-  [{:keys [on-press accessibility-label icon-name switcher-type]
+  [{:keys [on-press accessibility-label icon-name switcher-type margin-top]
     :or   {icon-name           :i/close
            accessibility-label :top-bar
            switcher-type       :account-options}}]
@@ -21,6 +21,7 @@
         networks                          (rf/sub [:wallet/network-details])]
     [quo/page-nav
      {:icon-name           icon-name
+      :margin-top          margin-top
       :background          :blur
       :on-press            on-press
       :accessibility-label accessibility-label

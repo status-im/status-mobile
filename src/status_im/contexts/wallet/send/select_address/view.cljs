@@ -3,7 +3,9 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.item-types :as types]
@@ -127,13 +129,20 @@
                          (fn []
                            (rf/dispatch [:wallet/clean-scanned-address])
                            (rf/dispatch [:wallet/clean-local-suggestions]))))
-        [rn/scroll-view
-         {:content-container-style      style/container
-          :keyboard-should-persist-taps :handled
-          :scroll-enabled               false}
-         [account-switcher/view
-          {:on-press      on-close
-           :switcher-type :select-account}]
+        [floating-button-page/view
+         {:header [account-switcher/view
+                   {:on-press      on-close
+                    :margin-top    (safe-area/get-top)
+                    :switcher-type :select-account}]
+          :footer (when (> (count @input-value) 0)
+                    [quo/button
+                     {:accessibility-label :continue-button
+                      :type                :primary
+                      :disabled?           (not valid-ens-or-address?)
+                      :on-press            #(rf/dispatch [:wallet/select-send-address
+                                                          {:address  @input-value
+                                                           :stack-id :wallet-select-address}])}
+                     (i18n/label :t/continue)])}
          [quo/text-combinations
           {:title                     (i18n/label :t/send-to)
            :container-style           style/title-container
@@ -147,17 +156,7 @@
             [rn/view
              {:style {:flex    1
                       :padding 8}}
-             [local-suggestions-list]]
-            (when (> (count @input-value) 0)
-              [quo/button
-               {:accessibility-label :continue-button
-                :type                :primary
-                :disabled?           (not valid-ens-or-address?)
-                :container-style     style/button
-                :on-press            #(rf/dispatch [:wallet/select-send-address
-                                                    {:address  @input-value
-                                                     :stack-id :wallet-select-address}])}
-               (i18n/label :t/continue)])]
+             [local-suggestions-list]]]
            [:<>
             [quo/tabs
              {:style            style/tabs
@@ -173,4 +172,3 @@
 (defn view
   []
   [:f> f-view])
-
