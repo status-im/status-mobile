@@ -10,19 +10,29 @@
     [utils.re-frame :as rf]))
 
 (defn- join-community-and-navigate-back
-  [id]
+  [id addresses-for-permissions]
   (rf/dispatch [:password-authentication/show
                 {:content (fn [] [password-authentication/view])}
                 {:label    (i18n/label :t/join-open-community)
                  :on-press #(rf/dispatch [:communities/request-to-join
-                                          {:community-id id :password %}])}])
+                                          {:community-id        id
+                                           :password            %
+                                           :addresses-to-reveal addresses-for-permissions}])}])
   (rf/dispatch [:navigate-back]))
 
-(defn view
+(defn f-view-internal
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name color images]} (rf/sub [:communities/community id])
-        accounts                    (rf/sub [:wallet/accounts-with-customization-color])]
+        accounts                    (rf/sub [:wallet/accounts-with-customization-color])
+        addresses-for-permissions   (rf/sub [:communities/addresses-for-permissions])
+        selected-accounts           (filter #(contains? addresses-for-permissions
+                                                        (:address %))
+                                            accounts)]
+    (rn/use-effect (fn []
+                     (rf/dispatch [:communities/set-addresses-for-permissions
+                                   (set (map :address accounts))]))
+                   [])
     [rn/view {:style style/container}
      [quo/page-nav
       {:text-align          :left
@@ -53,7 +63,7 @@
                       :action            :arrow
                       :label             :preview
                       :label-props       {:type :accounts
-                                          :data accounts}
+                                          :data selected-accounts}
                       :description-props {:text (i18n/label :t/all-addresses)}}
                      {:title             (i18n/label :t/for-airdrops)
                       :on-press          #(rf/dispatch [:open-modal :airdrop-addresses
@@ -77,4 +87,8 @@
         :track-text          (i18n/label :t/slide-to-request-to-join)
         :track-icon          :i/face-id
         :customization-color color
-        :on-complete         #(join-community-and-navigate-back id)}]]]))
+        :on-complete         #(join-community-and-navigate-back id addresses-for-permissions)}]]]))
+
+(defn view
+  []
+  [:f> f-view-internal])
