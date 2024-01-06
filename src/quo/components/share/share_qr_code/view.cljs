@@ -127,6 +127,8 @@
            profile-picture emoji on-share-press]
     :as   props}]
   [rn/view {:style style/content-container}
+   (prn "hello")
+   (prn component-width)
    [rn/view
     {:style style/share-qr-container}
     [rn/view
@@ -191,7 +193,7 @@
      bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
      "
   [{:keys [unblur-on-android?] :as props}]
-  (reagent/with-let [component-width     (reagent/atom 0)
+  (reagent/with-let [component-width     (reagent/atom nil)
                      container-component (if (and platform/android? unblur-on-android?)
                                            [rn/view {:background-color style/overlay-color}]
                                            [blur/view
