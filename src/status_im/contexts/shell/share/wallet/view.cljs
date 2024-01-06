@@ -58,7 +58,7 @@
                                   :qr-size     qr-size
                                   :error-level :highest})]
         [rn/view {:style {:width width :margin-left (if (zero? index) 0 -30)}}
-         [rn/view {:style style/qr-code-container}
+         [rn/view {:style style/qr-code-container} 
           [quo/share-qr-code
            {:type                @wallet-type
             :qr-image-uri        qr-media-server-uri
