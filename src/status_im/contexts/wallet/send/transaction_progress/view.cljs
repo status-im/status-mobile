@@ -20,7 +20,10 @@
 
 (defn view
   []
-  (let [status          (reagent/atom :sending)
+  (let [current-address (rf/sub [:wallet/current-viewing-account-address])
+        leave-page      (fn []
+                          (rf/dispatch [:navigate-to :wallet-accounts current-address]))
+        status          (reagent/atom :sending)
         {:keys [color]} (rf/sub [:wallet/current-viewing-account])]
     [floating-button-page/view
      {:header              [quo/page-nav
@@ -28,11 +31,11 @@
                              :background          :blur
                              :icon-name           :i/close
                              :margin-top          (safe-area/get-top)
-                             :on-press            #(rf/dispatch [:navigate-back])
+                             :on-press            leave-page
                              :accessibility-label :top-bar}]
       :footer              [quo/button
                             {:customization-color color
-                             :on-press            #(rf/dispatch [:navigate-back])}
+                             :on-press            leave-page}
                             (i18n/label :t/done)]
       :customization-color color
       :gradient-cover?     true}

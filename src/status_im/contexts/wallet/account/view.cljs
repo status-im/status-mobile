@@ -7,7 +7,6 @@
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.temp :as temp]
-    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -35,12 +34,12 @@
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
-      (let [{:keys [name color balance watch-only?]} (rf/sub [:wallet/current-viewing-account])
-            currency-symbol                          (rf/sub [:profile/currency-symbol])]
+      (let [{:keys [name color formatted-balance
+                    watch-only?]} (rf/sub [:wallet/current-viewing-account])]
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
-          {:current-value       (utils/prettify-balance currency-symbol balance)
+          {:current-value       formatted-balance
            :account-name        name
            :account             (if watch-only? :watched-address :default)
            :customization-color color}]

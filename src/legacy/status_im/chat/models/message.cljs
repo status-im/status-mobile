@@ -6,9 +6,9 @@
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [status-im.contexts.chat.messages.delete-message.events :as delete-message]
-    [status-im.contexts.chat.messages.list.events :as message-list]
-    [status-im.contexts.chat.messages.list.state :as view.state]
+    [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
+    [status-im.contexts.chat.messenger.messages.list.events :as message-list]
+    [status-im.contexts.chat.messenger.messages.list.state :as view.state]
     [utils.re-frame :as rf]))
 
 (defn- message-loaded?

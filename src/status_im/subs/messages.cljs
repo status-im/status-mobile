@@ -2,8 +2,8 @@
   (:require
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messages.list.events :as models.message-list]
-    [status-im.contexts.chat.messages.resolver.message-resolver :as resolver]
+    [status-im.contexts.chat.messenger.messages.list.events :as models.message-list]
+    [status-im.contexts.chat.messenger.messages.resolver.message-resolver :as resolver]
     [utils.i18n :as i18n]))
 
 (defn intersperse-datemark

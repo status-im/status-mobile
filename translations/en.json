@@ -180,6 +180,7 @@
     "community-rules": "Community rules",
     "address-to-share": "Addresses to share",
     "addresses-for-permissions": "Addresses for permissions",
+    "no-addresses-selected": "At least 1 address must be shared with community",
     "confirm-changes": "Confirm changes",
     "airdrop-addresses": "Address for airdrops",
     "join-as-a-member": "Join as a Member",
@@ -2447,5 +2448,7 @@
     "no-relevant-tokens": "No relevant tokens",
     "from-label": "From",
     "to-label": "To",
-    "oops-wrong-word": "Oops! Wrong word"
+    "oops-wrong-word": "Oops! Wrong word",
+    "time-in-mins": "{{minutes}} min",
+    "amount-with-currency-symbol": "{{symbol}} {{amount}}"
 }

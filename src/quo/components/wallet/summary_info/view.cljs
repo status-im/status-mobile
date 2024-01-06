@@ -2,6 +2,7 @@
   (:require
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.summary-info.style :as style]
     [quo.foundations.colors :as colors]
@@ -26,24 +27,29 @@
 
 (defn networks
   [values theme]
-  (let [{:keys [ethereum optimism arbitrum]} values]
+  (let [{:keys [ethereum optimism arbitrum]} values
+        show-optimism?                       (pos? optimism)
+        show-arbitrum?                       (pos? arbitrum)]
     [rn/view
      {:style               style/networks-container
       :accessibility-label :networks}
-     [network-amount
-      {:network  :ethereum
-       :amount   (str ethereum " ETH")
-       :divider? true
-       :theme    theme}]
-     [network-amount
-      {:network  :optimism
-       :amount   (str optimism " ETH")
-       :divider? true
-       :theme    theme}]
-     [network-amount
-      {:network :arbitrum
-       :amount  (str arbitrum " ETH")
-       :theme   theme}]]))
+     (when (pos? ethereum)
+       [network-amount
+        {:network  :ethereum
+         :amount   (str ethereum " ETH")
+         :divider? (or show-arbitrum? show-optimism?)
+         :theme    theme}])
+     (when show-optimism?
+       [network-amount
+        {:network  :optimism
+         :amount   (str optimism " OPT")
+         :divider? show-arbitrum?
+         :theme    theme}])
+     (when show-arbitrum?
+       [network-amount
+        {:network :arbitrum
+         :amount  (str arbitrum " ARB")
+         :theme   theme}])]))
 
 (defn- view-internal
   [{:keys [theme type account-props networks? values]}]
@@ -51,8 +57,13 @@
    {:style (style/container networks? theme)}
    [rn/view
     {:style style/info-container}
-    (if (= type :status-account)
-      [account-avatar/view account-props]
+    (case type
+      :status-account [account-avatar/view account-props]
+      :saved-account  [wallet-user-avatar/wallet-user-avatar (assoc account-props :size :size-32)]
+      :account        [wallet-user-avatar/wallet-user-avatar
+                       (assoc account-props
+                              :size     :size-32
+                              :neutral? true)]
       [user-avatar/user-avatar account-props])
     [rn/view {:style {:margin-left 8}}
      (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])

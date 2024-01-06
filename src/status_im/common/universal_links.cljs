@@ -200,24 +200,23 @@
               (handle-url url))))
 
 (defn generate-profile-url
-  ([cofx] (generate-profile-url cofx nil))
-  ([{:keys [db]} [{:keys [public-key cb]}]]
-   (let [profile-public-key (get-in db [:profile/profile :public-key])
-         profile?           (or (not public-key) (= public-key profile-public-key))
-         ens-name?          (if profile?
-                              (get-in db [:profile/profile :ens-name?])
-                              (get-in db [:contacts/contacts public-key :ens-name]))
-         public-key         (if profile? profile-public-key public-key)]
-     (when public-key
-       {:json-rpc/call
-        [{:method     (if ens-name? "wakuext_shareUserURLWithENS" "wakuext_shareUserURLWithData")
-          :params     [public-key]
-          :on-success (fn [url]
-                        (rf/dispatch [:universal-links/save-profile-url public-key url])
-                        (when (fn? cb) (cb)))
-          :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
-                                  {:error      %
-                                   :public-key public-key})}]}))))
+  [{:keys [db]} [{:keys [public-key cb]}]]
+  (let [profile-public-key (get-in db [:profile/profile :public-key])
+        profile?           (or (not public-key) (= public-key profile-public-key))
+        ens-name?          (if profile?
+                             (get-in db [:profile/profile :ens-name?])
+                             (get-in db [:contacts/contacts public-key :ens-name]))
+        public-key         (if profile? profile-public-key public-key)]
+    (when public-key
+      {:json-rpc/call
+       [{:method     (if ens-name? "wakuext_shareUserURLWithENS" "wakuext_shareUserURLWithData")
+         :params     [public-key]
+         :on-success (fn [url]
+                       (rf/dispatch [:universal-links/save-profile-url public-key url])
+                       (when (fn? cb) (cb)))
+         :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
+                                 {:error      %
+                                  :public-key public-key})}]})))
 
 (schema/=> generate-profile-url
   [:=>
