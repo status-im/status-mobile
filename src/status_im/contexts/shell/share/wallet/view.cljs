@@ -28,7 +28,6 @@
       :subject share-title
       :message address})))
 
-
 (defn- open-preferences
   [selected-networks]
   (rf/dispatch [:show-bottom-sheet
