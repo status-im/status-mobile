@@ -368,7 +368,7 @@ component-test-watch: export JEST_USE_SILENT_REPORTER := false
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	@@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
-	yarn install
+	# yarn install
 	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
 
 component-test: export TARGET := clojure
