@@ -23,6 +23,7 @@
                                                :name    "Wallet One"
                                                :emoji   "😆"
                                                :color   :blue}]})))
+            
   (h/test "should display the the wallet tab"
     (render-wallet-view)
     (h/wait-for #(h/is-truthy (h/get-by-text "Wallet One"))))
