@@ -156,10 +156,8 @@
                                       test-helpers.component-tests-preload
                                       status-im.setup.schema-preload
 
-                                      ;;    quo.core-spec
-                                      ;;    status-im.core-spec
-                                      status-im.contexts.shell.share.wallet.component-spec
-                                     ]
+                                      quo.core-spec
+                                      status-im.core-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"
                    :closure-defines  {schema.core/throw-on-error? true}
