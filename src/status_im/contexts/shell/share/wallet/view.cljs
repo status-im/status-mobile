@@ -79,7 +79,7 @@
   []
   (let [accounts (rf/sub [:wallet/accounts])
         width    (rf/sub [:dimensions/window-width])]
-    [rn/view {:style {:flex 1}}
+    [rn/view
      [rn/scroll-view
       {:horizontal                true
        :deceleration-rate         0.9
@@ -87,7 +87,7 @@
        :snap-to-interval          (- width 30)
        :disable-interval-momentum true
        :scroll-event-throttle     64
-      }
+       }
       (map-indexed
        (fn [index account]
          ^{:key (:address account)}
