@@ -1,13 +1,9 @@
 (ns status-im.contexts.wallet.send.transaction-confirmation.style
   (:require [quo.foundations.colors :as colors]))
 
-(defn container
-  [margin-top]
-  {:position :absolute
-   :top      margin-top
-   :right    0
-   :left     0
-   :bottom   0})
+(def detail-item
+  {:flex   1
+   :height 36})
 
 (def content-container
   {:padding-top        12
@@ -29,11 +25,9 @@
    :border-width       1
    :border-color       (colors/theme-colors colors/neutral-10 colors/neutral-90 theme)})
 
-(def slide-button-container
-  {:position :absolute
-   :right    20
-   :left     20
-   :bottom   20})
+(def details-title-container
+  {:padding-horizontal 20
+   :padding-bottom     16})
 
 (defn section-label
   [theme]

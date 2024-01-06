@@ -1,10 +1,8 @@
 (ns status-im.contexts.wallet.events
   (:require
-    [camel-snake-kebab.core :as csk]
-    [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
-    [status-im.common.data-store.wallet :as data-store]
+    [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.temp :as temp]
@@ -12,7 +10,6 @@
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
-    [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]))
 
@@ -35,13 +32,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch-later
-          [{:dispatch [:navigate-back]
-            :ms       100}
-           {:dispatch [:navigate-back]
-            :ms       100}
-           {:dispatch [:navigate-to :wallet-accounts address]
-            :ms       300}]]
+         [:dispatch [:navigate-to :wallet-accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
@@ -51,7 +42,7 @@
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
    {:db (update db :wallet dissoc :current-viewing-account-address)
-    :fx [[:dispatch [:navigate-back]]]}))
+    :fx [[:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx
  :wallet/get-accounts-success
@@ -115,19 +106,10 @@
               :params params})
    {:db (assoc-in db [:wallet :ui :tokens-loading?] false)}))
 
-(defn- fix-balances-per-chain
-  [token]
-  (-> token
-      (update :balances-per-chain update-vals #(update % :raw-balance money/bignumber))
-      (update :balances-per-chain update-keys (comp utils.number/parse-int name))))
-
 (rf/reg-event-fx
  :wallet/store-wallet-token
  (fn [{:keys [db]} [raw-tokens-data]]
-   (let [tokens     (-> raw-tokens-data
-                        (update-keys name)
-                        (update-vals #(cske/transform-keys csk/->kebab-case %))
-                        (update-vals #(mapv fix-balances-per-chain %)))
+   (let [tokens     (data-store/rpc->tokens raw-tokens-data)
          add-tokens (fn [stored-accounts tokens-per-account]
                       (reduce-kv (fn [accounts address tokens-data]
                                    (if (accounts address)

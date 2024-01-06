@@ -5,8 +5,8 @@
     [legacy.status-im.group-chats.db :as group-chats.db]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.composer.constants :as composer.constants]
     [status-im.contexts.chat.events :as chat.events]
+    [status-im.contexts.chat.messenger.composer.constants :as composer.constants]
     [status-im.contexts.profile.utils :as profile.utils]))
 
 (def memo-chats-stack-items (atom nil))

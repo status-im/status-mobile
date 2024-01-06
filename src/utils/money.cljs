@@ -247,6 +247,3 @@
   [:=> [:cat [:maybe :int]]
    [:maybe :string]])
 
-(defn amount-in-hex
-  [amount token-decimal]
-  (to-hex (mul (bignumber amount) (from-decimal token-decimal))))

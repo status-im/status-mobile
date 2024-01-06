@@ -3,14 +3,14 @@
     [legacy.status-im.ui.screens.screens :as old-screens]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.config :as config]
-    [status-im.contexts.chat.camera.view :as camera-screen]
     [status-im.contexts.chat.group-details.view :as group-details]
     [status-im.contexts.chat.home.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
     [status-im.contexts.chat.home.add-new-contact.views :as add-new-contact]
-    [status-im.contexts.chat.lightbox.view :as lightbox]
-    [status-im.contexts.chat.messages.view :as chat]
-    [status-im.contexts.chat.new-chat.view :as new-chat]
-    [status-im.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im.contexts.chat.home.new-chat.view :as new-chat]
+    [status-im.contexts.chat.messenger.camera.view :as camera-screen]
+    [status-im.contexts.chat.messenger.lightbox.view :as lightbox]
+    [status-im.contexts.chat.messenger.messages.view :as chat]
+    [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as
      addresses-for-permissions]
@@ -97,7 +97,7 @@
 
     {:name      :community-requests-to-join
      :options   {:sheet? true}
-     :component join-menu/request-to-join}
+     :component join-menu/view}
 
     {:name      :community-account-selection
      :options   {:sheet? true}
@@ -280,7 +280,10 @@
      :component emoji-picker/view}
 
     {:name      :wallet-accounts
-     :options   {:insets {:top? true}}
+     :options   {:insets             {:top? true}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
      :component wallet-accounts/view}
 
     {:name      :wallet-edit-account
@@ -338,7 +341,6 @@
      :component wallet-select-asset/view}
 
     {:name      :wallet-transaction-confirmation
-     :options   {:insets {:bottom? true}}
      :component wallet-transaction-confirmation/view}
 
     {:name      :wallet-transaction-progress

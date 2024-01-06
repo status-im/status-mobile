@@ -5,7 +5,7 @@
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]
     [status-im.contexts.chat.contacts.events :as contacts-store]
-    [status-im.contexts.chat.messages.list.events :as message-list]
+    [status-im.contexts.chat.messenger.messages.list.events :as message-list]
     [status-im.contexts.shell.activity-center.events :as activity-center]
     [status-im.navigation.events :as navigation]
     [utils.re-frame :as rf]))

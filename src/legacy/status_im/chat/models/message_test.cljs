@@ -3,7 +3,7 @@
     [cljs.test :refer-macros [deftest is testing]]
     [legacy.status-im.chat.models.loading :as loading]
     [legacy.status-im.chat.models.message :as message]
-    [status-im.contexts.chat.messages.list.state :as list.state]))
+    [status-im.contexts.chat.messenger.messages.list.state :as list.state]))
 
 (deftest add-received-message-test
   (with-redefs [message/add-message #(identity %1)]

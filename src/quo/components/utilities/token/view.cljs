@@ -37,13 +37,14 @@
 (def ^:private b64-png-image-prefix "data:image/png;base64,")
 
 (defn temp-empty-symbol
-  [token size]
+  [token size style]
   [rn/view
-   {:style (token-style {:justify-content :center
-                         :align-items     :center
-                         :border-radius   20
-                         :border-width    1
-                         :border-color    :grey}
+   {:style (token-style (merge {:justify-content :center
+                                :align-items     :center
+                                :border-radius   20
+                                :border-width    1
+                                :border-color    :grey}
+                               style)
                         size)}
    [quo/text {:style {:color :grey}}
     (some-> token
@@ -73,6 +74,6 @@
       [rn/image
        {:style  (token-style style size)
         :source source}]
-      [temp-empty-symbol token size])))
+      [temp-empty-symbol token size style])))
 
 (def view (schema/instrument #'view-internal ?schema))

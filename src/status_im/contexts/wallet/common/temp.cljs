@@ -4,35 +4,6 @@
     [status-im.common.resources :as status.resources]
     [utils.i18n :as i18n]))
 
-(def tokens
-  [{:token               :snt
-    :token-name          "Status"
-    :state               :default
-    :status              :empty
-    :customization-color :blue
-    :values              {:crypto-value      "0.00"
-                          :fiat-value        "€0.00"
-                          :percentage-change "0.00"
-                          :fiat-change       "€0.00"}}
-   {:token               :eth
-    :token-name          "Ether"
-    :state               :default
-    :status              :empty
-    :customization-color :blue
-    :values              {:crypto-value      "0.00"
-                          :fiat-value        "€0.00"
-                          :percentage-change "0.00"
-                          :fiat-change       "€0.00"}}
-   {:token               :dai
-    :token-name          "Dai Stablecoin"
-    :state               :default
-    :status              :empty
-    :customization-color :blue
-    :values              {:crypto-value      "0.00"
-                          :fiat-value        "€0.00"
-                          :percentage-change "0.00"
-                          :fiat-change       "€0.00"}}])
-
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
 (def buy-tokens-list
