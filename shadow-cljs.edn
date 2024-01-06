@@ -108,13 +108,13 @@
   ;; produced by the target :mocks below and redefines node require
   ;; function to use the mocks instead of the rn libraries
   :test
-  {:output-to "target/test/test.js"
+  {:output-to #shadow/env "SHADOW_OUTPUT_TO"
    :output-dir "target/test"
    :optimizations :simple
    :target :node-test
    :dev {:devtools {:preloads [status-im.setup.schema-preload]}}
    ;; Uncomment line below to `make test-watch` a specific file
-   ;; :ns-regexp "status-im.subs.messages-test$"
+   :ns-regexp #shadow/env "SHADOW_NS_REGEXP"
    :main legacy.status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl
    :ui-driven true

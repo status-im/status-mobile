@@ -5,7 +5,7 @@
 To run tests:
 
 ```
-   make test
+make test
 ```
 
 
@@ -13,10 +13,10 @@ To run tests:
 Also test watcher can be launched. It will re-run the entire test suite when any file is modified
 
 ```
-   make test-watch
+make test WATCH=true
 ```
 
-Developers can also manually change the shadow-cljs option `:ns-regex` to control which namespaces the test runner should pick. 
+Developers can also manually change the shadow-cljs option `:ns-regex` to control which namespaces the test runner should pick.
 
 ## Testing with REPL
 

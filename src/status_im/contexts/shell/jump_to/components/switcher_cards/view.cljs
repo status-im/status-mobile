@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messages.resolver.message-resolver :as resolver]
+    [status-im.contexts.chat.messenger.messages.resolver.message-resolver :as resolver]
     [status-im.contexts.shell.jump-to.animation :as animation]
     [status-im.contexts.shell.jump-to.components.switcher-cards.style :as style]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]

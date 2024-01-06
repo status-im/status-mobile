@@ -11,10 +11,10 @@
     status-im.common.signals.events
     status-im.common.theme.events
     [status-im.common.toasts.events]
-    status-im.contexts.chat.composer.events
     status-im.contexts.chat.events
     [status-im.contexts.chat.home.add-new-contact.events]
-    status-im.contexts.chat.photo-selector.events
+    status-im.contexts.chat.messenger.composer.events
+    status-im.contexts.chat.messenger.photo-selector.events
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events
     status-im.contexts.onboarding.common.overlay.events
