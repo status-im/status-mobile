@@ -84,7 +84,7 @@
       {:horizontal                true
        :deceleration-rate         0.9
        :snap-to-alignment         "start"
-       :snap-to-interval          (- 500 30)
+       :snap-to-interval          (- width 30)
        :disable-interval-momentum true
        :scroll-event-throttle     64
       }
