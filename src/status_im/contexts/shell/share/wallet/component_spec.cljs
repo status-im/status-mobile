@@ -19,8 +19,7 @@
    (fn []
      (h/setup-subs {:dimensions/window-width 500
                     :mediaserver/port        200
-                    :wallet/accounts         [{:type    :wallet-multichain
-                                               :address "0x707f635951193ddafbb40971a0fcaab8a6415160"
+                    :wallet/accounts         [{:address "0x707f635951193ddafbb40971a0fcaab8a6415160"
                                                :name    "Wallet One"
                                                :emoji   "😆"
                                                :color   :blue}]})))

@@ -127,8 +127,6 @@
            profile-picture emoji on-share-press]
     :as   props}]
   [rn/view {:style style/content-container}
-   (prn "hello")
-   (prn component-width)
    [rn/view
     {:style style/share-qr-container}
     [rn/view
