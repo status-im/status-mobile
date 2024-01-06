@@ -191,7 +191,7 @@
      bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
      "
   [{:keys [unblur-on-android?] :as props}]
-  (reagent/with-let [component-width     (reagent/atom nil)
+  (reagent/with-let [component-width     (reagent/atom 0)
                      container-component (if (and platform/android? unblur-on-android?)
                                            [rn/view {:background-color style/overlay-color}]
                                            [blur/view
