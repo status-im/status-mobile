@@ -192,7 +192,6 @@
  (fn [{:keys [db]} [addresses]]
    {:db (assoc-in db [:communities/addresses-for-permissions] addresses)}))
 
-
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
    (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
@@ -201,11 +200,15 @@
                        :on-success #(share/open
                                      (if platform/ios?
                                        {:activityItemSources [{:placeholderItem {:type "text"
-                                                                                 :content (i18n/label :t/channel-on-status)}
-                                                               :item            {:default {:type    "url"
-                                                                                           :content %}}
-                                                               :linkMetadata    {:title (i18n/label :t/channel-on-status)}}]}
-                                       {:title (i18n/label :t/channel-on-status)
+                                                                                 :content
+                                                                                 (i18n/label
+                                                                                  :t/channel-on-status)}
+                                                               :item {:default {:type    "url"
+                                                                                :content %}}
+                                                               :linkMetadata {:title
+                                                                              (i18n/label
+                                                                               :t/channel-on-status)}}]}
+                                       {:title   (i18n/label :t/channel-on-status)
                                         :subject (i18n/label :t/channel-on-status)
                                         :message %
                                         :url     %}))
