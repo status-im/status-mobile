@@ -13,7 +13,7 @@
     (h/fire-event :layout share-qr-code #js {:nativeEvent #js {:layout #js {:width 500}}})
     (rerender-fn [wallet-view/wallet-tab])))
 
-(h/describe "share wallet accounts"
+(h/describe "share wallet addresses"
   (h/setup-restorable-re-frame)
   (h/before-each
    (fn []
