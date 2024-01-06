@@ -39,7 +39,5 @@
     (-> (h/wait-for #(h/get-by-label-text :share-qr-code-multichain-tab))
         (.then (fn []
                  (h/fire-event :press (h/get-by-label-text :share-qr-code-multichain-tab))
-                 (-> (h/wait-for #(h/is-truthy (h/query-by-text "eth:"))))))))
-
-)
+                 (-> (h/wait-for #(h/is-truthy (h/query-by-text "eth:")))))))))
 
