@@ -63,9 +63,10 @@
                                                   err))}]}))))
 
 (defn request-to-join
-  [{:keys [db]} [{:keys [community-id password]}]]
-  (let [pub-key             (get-in db [:profile/profile :public-key])
-        addresses-to-reveal []]
+  [{:keys [db]}
+   [{:keys [community-id password addresses-to-reveal]
+     :or   {addresses-to-reveal []}}]]
+  (let [pub-key (get-in db [:profile/profile :public-key])]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
              :params     [pub-key community-id addresses-to-reveal]

@@ -11,8 +11,9 @@
     colors/white))
 
 (defn card
-  [{:keys [customization-color type theme pressed?]}]
-  {:width              162
+  [{:keys [customization-color type theme pressed? metrics?]}]
+  {:width              161
+   :height             (if metrics? 88 68)
    :background-color   (when (not= :watch-only type)
                          (colors/theme-colors
                           (colors/resolve-color customization-color

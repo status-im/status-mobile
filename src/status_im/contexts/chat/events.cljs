@@ -7,14 +7,14 @@
     [reagent.core :as reagent]
     [status-im.common.muting.helpers :refer [format-mute-till]]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.composer.link-preview.events :as link-preview]
     [status-im.contexts.chat.contacts.events :as contacts-store]
     status-im.contexts.chat.effects
-    status-im.contexts.chat.lightbox.events
-    status-im.contexts.chat.messages.content.reactions.events
-    [status-im.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
-    [status-im.contexts.chat.messages.delete-message.events :as delete-message]
-    [status-im.contexts.chat.messages.list.state :as chat.state]
+    [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
+    status-im.contexts.chat.messenger.lightbox.events
+    status-im.contexts.chat.messenger.messages.content.reactions.events
+    [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
+    [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
+    [status-im.contexts.chat.messenger.messages.list.state :as chat.state]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]

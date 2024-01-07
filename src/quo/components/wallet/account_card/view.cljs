@@ -21,7 +21,8 @@
       :style               (style/card {:customization-color customization-color
                                         :type                type
                                         :theme               theme
-                                        :pressed?            false})}
+                                        :pressed?            false
+                                        :metrics?            metrics?})}
      [rn/view {:style style/loader-container}
       [rn/view
        {:style (assoc (style/loader-view {:width       16
@@ -113,7 +114,8 @@
             :style        (style/card {:customization-color customization-color
                                        :type                type
                                        :theme               theme
-                                       :pressed?            @pressed?})
+                                       :pressed?            @pressed?
+                                       :metrics?            metrics?})
             :on-press     on-press}
            (when (and customization-color (and (not watch-only?) (not missing-keypair?)))
              [customization-colors/overlay
