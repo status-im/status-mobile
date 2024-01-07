@@ -39,9 +39,7 @@
                {:title                "Doodles"
                 :description          "Coloring the world with joy • ᴗ •"
                 :members-count        24
-                :emojis               [:i/group :i/verified :i/placeholder :i/add :i/send
-                                       :i/muted :i/mention :i/mobile :i/close-circle :i/unlocked
-                                       :i/locked :i/pin :i/clear :i/check]
+                :emoji-hash           "🌟🚀🐠🌈🏰🔮🦉🐼🍉🎨🚲🌙🍔🌵"
                 :active-members-count 12
                 :loading?             false
                 :customization-color  :purple

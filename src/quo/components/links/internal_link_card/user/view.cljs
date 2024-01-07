@@ -9,7 +9,7 @@
     [schema.core :as schema]))
 
 (defn- subtitle-comp
-  [subtitle emojis]
+  [subtitle emoji-hash]
   [rn/view
    [text/text
     {:size                :paragraph-2
@@ -23,7 +23,7 @@
       :number-of-lines     1
       :weight              :regular
       :accessibility-label :emoji-hash}
-     "🌟🚀🐠🌈🏰🔮🦉🐼🍉🎨🚲🌙🍔🌵"]]])
+     emoji-hash]]])
 
 (defn- title-comp
   [title]
@@ -43,7 +43,7 @@
     :style               style/logo}])
 
 (defn- loading-view
-  [theme size]
+  [theme]
   [rn/view {:accessibility-label :loading-user-link-view}
    [rn/view {:style style/row-spacing}
     [rn/view {:style (style/loading-circle theme)}]
@@ -57,7 +57,7 @@
 
 (defn view-internal
   [{:keys [title loading? icon
-           theme on-press subtitle emojis customization-color size]}]
+           theme on-press subtitle emoji-hash customization-color size]}]
   (if loading?
     [rn/pressable
      {:accessibility-label :internal-link-card
@@ -76,7 +76,7 @@
          [logo-comp icon])
        [title-comp title]]
       (when subtitle
-        [subtitle-comp subtitle emojis])]]))
+        [subtitle-comp subtitle emoji-hash])]]))
 
 (def view
   (quo.theme/with-theme
