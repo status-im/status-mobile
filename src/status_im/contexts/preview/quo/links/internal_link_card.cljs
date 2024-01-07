@@ -6,7 +6,11 @@
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor
-  [{:type :text
+  [{:key     :size
+    :type    :select
+    :options [{:key :message}
+              {:key :full-page}]}
+   {:type :text
     :key  :title}
    {:type :text
     :key  :subtitle}
@@ -42,7 +46,7 @@
                 :loading?             false
                 :customization-color  :purple
                 :banner               :light-blur-background
-                :type                 :community
+                :type                 :user
                 :subtitle             "Web 3.0 Designer @ethstatus - DJ, Producer - Dad - YouTuber"})]
     (fn []
       (let [banner (get resources/mock-images (:banner @state) :bored-ape)]

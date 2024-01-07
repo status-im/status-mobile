@@ -1,6 +1,5 @@
 (ns quo.components.links.internal-link-card.user.view
   (:require
-    [quo.components.icon :as icon]
     [quo.components.links.internal-link-card.schema :as component-schema]
     [quo.components.links.internal-link-card.user.style :as style]
     [quo.components.markdown.text :as text]
@@ -19,10 +18,12 @@
      :style               {:margin-bottom 12}}
     subtitle]
    [rn/view {:style {:flex-direction :row}}
-    (map-indexed (fn [index emoji]
-                   ^{:key index}
-                   [icon/icon emoji {:container-style {:margin-right 1}}])
-                 emojis)]])
+    [text/text
+     {:size                :paragraph-2
+      :number-of-lines     1
+      :weight              :regular
+      :accessibility-label :emoji-hash}
+     "🌟🚀🐠🌈🏰🔮🦉🐼🍉🎨🚲🌙🍔🌵"]]])
 
 (defn- title-comp
   [title]
@@ -42,7 +43,7 @@
     :style               style/logo}])
 
 (defn- loading-view
-  [theme]
+  [theme size]
   [rn/view {:accessibility-label :loading-user-link-view}
    [rn/view {:style style/row-spacing}
     [rn/view {:style (style/loading-circle theme)}]
@@ -56,15 +57,15 @@
 
 (defn view-internal
   [{:keys [title loading? icon
-           theme on-press subtitle emojis customization-color]}]
+           theme on-press subtitle emojis customization-color size]}]
   (if loading?
     [rn/pressable
      {:accessibility-label :internal-link-card
       :on-press            on-press
-      :style               (style/container loading? theme)}
+      :style               (style/container loading? theme size)}
      [loading-view theme]]
     [linear-gradient/linear-gradient
-     (assoc {:style (style/container loading? theme)}
+     (assoc {:style (style/container loading? theme size)}
             :colors
             (linear-gradient-props theme customization-color))
      [rn/pressable

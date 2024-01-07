@@ -39,9 +39,9 @@
     channel-name]])
 
 (defn- banner-comp
-  [thumbnail]
+  [thumbnail size]
   [rn/image
-   {:style               style/thumbnail
+   {:style               (style/thumbnail size)
     :source              thumbnail
     :accessibility-label :banner}])
 
@@ -53,7 +53,7 @@
     :style               (assoc style/logo :margin-bottom 2)}])
 
 (defn- loading-view
-  [theme]
+  [theme size]
   [rn/view
    {:accessibility-label :loading-channel-link-view
     :style               {:height 215}}
@@ -65,18 +65,18 @@
      [rn/view {:style (style/loading-circle theme)}]
      [rn/view {:style (style/loading-first-line-bar theme false)}]]]
    [rn/view {:style (style/loading-second-line-bar theme)}]
-   [rn/view {:style (style/loading-thumbnail-box theme)}]])
+   [rn/view {:style (style/loading-thumbnail-box theme size)}]])
 
 (defn view-internal
   [{:keys [title description loading? icon banner
-           theme on-press channel-name]
+           theme on-press channel-name size]
     :or   {channel-name "empty name"}}]
   [rn/pressable
-   {:style               (style/container theme)
+   {:style               (style/container size theme)
     :accessibility-label :internal-link-card
     :on-press            on-press}
    (if loading?
-     [loading-view theme]
+     [loading-view theme size]
      [:<>
       [rn/view {:style style/header-container}
        (when icon
@@ -85,7 +85,7 @@
       (when description
         [description-comp description])
       (when banner
-        [banner-comp banner])])])
+        [banner-comp banner size])])])
 
 (def view
   (quo.theme/with-theme

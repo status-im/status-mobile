@@ -26,19 +26,20 @@
    :margin-bottom    17})
 
 (defn loading-thumbnail-box
-  [theme]
+  [theme size]
   {:background-color (colors/theme-colors colors/neutral-5 colors/neutral-80 theme)
-   :height           139
+   :height           (if (= :message size) 139 160)
    :border-radius    12})
 
-(def thumbnail
+(defn thumbnail
+  [size]
   {:width         "100%"
-   :height        139
+   :height        (if (= :message size) 139 160)
    :margin-top    8
    :border-radius 12})
 
 (defn container
-  [theme]
+  [size theme]
   {:border-width       1
    :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :background-color   (colors/theme-colors colors/white colors/neutral-80-opa-40 theme)
@@ -46,7 +47,8 @@
    :padding-horizontal 12
    :padding-top        10
    :padding-bottom     12
-   :height             215})
+   :height             (if (= :message size) 215 236)
+   :width              (if (= :message size) 295 335)})
 
 (def header-container
   {:flex-direction :row

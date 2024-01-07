@@ -38,7 +38,7 @@
                        theme))
 
 (defn container
-  [loading? theme]
+  [loading? theme size]
   {:border-width       1
    :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :background-color   (colors/theme-colors colors/white colors/neutral-80-opa-40 theme)
@@ -46,7 +46,8 @@
    :padding-horizontal 12
    :padding-top        10
    :padding-bottom     12
-   :height             (if loading? 92 110)})
+   :height             (if loading? 92 110)
+   :width              (if (= :message size) 295 335)})
 
 (def header-container
   {:flex-direction :row

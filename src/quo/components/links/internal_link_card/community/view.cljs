@@ -21,12 +21,14 @@
      {:value               members-count
       :icon                :i/members
       :accessibility-label :members-count
-      :style               {:margin-right 12}}]
+      :style               {:margin-right 12}
+      :text-size           :paragraph-2}]
     (when active-members-count
       [community-stat/view
        {:value               active-members-count
         :icon                :i/active-members
-        :accessibility-label :active-members-count}])]])
+        :accessibility-label :active-members-count
+        :text-size           :paragraph-2}])]])
 
 (defn- title-comp
   [title]
@@ -39,9 +41,9 @@
    title])
 
 (defn- thumbnail-comp
-  [thumbnail]
+  [thumbnail size]
   [rn/image
-   {:style               style/thumbnail
+   {:style               (style/thumbnail size)
     :source              thumbnail
     :accessibility-label :thumbnail}])
 
@@ -59,7 +61,7 @@
    [rn/view {:style (style/loading-stat theme)}]])
 
 (defn- loading-view
-  [theme]
+  [theme size]
   [rn/view {:accessibility-label :loading-community-link-view}
    [rn/view {:style style/row-spacing}
     [rn/view {:style (style/loading-circle theme)}]
@@ -68,17 +70,17 @@
    [rn/view {:style style/row-spacing}
     [stat-loading theme]
     [stat-loading theme]]
-   [rn/view {:style (style/loading-thumbnail-box theme)}]])
+   [rn/view {:style (style/loading-thumbnail-box theme size)}]])
 
 (defn- view-internal
   [{:keys [title description loading? icon banner members-count active-members-count
-           theme on-press]}]
+           theme on-press size]}]
   [rn/pressable
-   {:style               (style/container theme)
+   {:style               (style/container size theme)
     :accessibility-label :internal-link-card
     :on-press            on-press}
    (if loading?
-     [loading-view theme]
+     [loading-view theme size]
      [:<>
       [rn/view {:style style/header-container}
        (when icon
@@ -87,7 +89,7 @@
       (when description
         [description-comp description members-count active-members-count])
       (when banner
-        [thumbnail-comp banner])])])
+        [thumbnail-comp banner size])])])
 
 (def view
   (quo.theme/with-theme
