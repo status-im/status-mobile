@@ -16,6 +16,8 @@
     :key  :subtitle}
    {:type :text
     :key  :description}
+   {:type :text
+    :key  :emoji-hash}
    {:type :boolean
     :key  :loading?}
    {:type :number
