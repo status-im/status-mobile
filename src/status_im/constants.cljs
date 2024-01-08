@@ -117,7 +117,7 @@
 (def ^:const profile-pictures-visibility-everyone 2)
 (def ^:const profile-pictures-visibility-none 3)
 
-(def ^:const min-password-length 6)
+(def ^:const min-password-length 10)
 (def ^:const max-group-chat-participants 20)
 (def ^:const default-number-of-messages 20)
 (def ^:const default-number-of-pin-messages 3)
