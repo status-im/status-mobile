@@ -1,16 +1,16 @@
 (ns status-im.contexts.shell.share.wallet.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.platform :as platform]
-   [react-native.share :as share]
-   [reagent.core :as reagent]
-   [status-im.contexts.shell.share.style :as style]
-   [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [utils.i18n :as i18n]
-   [utils.image-server :as image-server]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
+    [reagent.core :as reagent]
+    [status-im.contexts.shell.share.style :as style]
+    [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def qr-size 500)
 
@@ -76,7 +76,7 @@
 (defn wallet-tab
   []
   (let [accounts (rf/sub [:wallet/accounts])
-        width    (rf/sub [:dimensions/window-width])] 
+        width    (rf/sub [:dimensions/window-width])]
     [rn/flat-list
      {:horizontal                true
       :deceleration-rate         0.9
