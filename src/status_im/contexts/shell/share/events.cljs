@@ -1,6 +1,5 @@
 (ns status-im.contexts.shell.share.events
   (:require
-    [quo.foundations.colors :as colors]
     [status-im.common.toasts.events :as toasts]
     [utils.re-frame :as rf]))
 
@@ -10,8 +9,8 @@
   (rf/merge cofx
             {:copy-to-clipboard text-to-copy}
             (toasts/upsert
-             {:icon           :correct
-              :id             :successful-copy-toast-message
-              :icon-color     colors/success-50
-              :override-theme :dark
-              :text           post-copy-message})))
+             {:icon  :i/correct
+              :id    :successful-copy-toast-message
+              :type  :positive
+              :theme :dark
+              :text  post-copy-message})))

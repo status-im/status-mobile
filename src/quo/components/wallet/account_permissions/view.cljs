@@ -29,6 +29,7 @@
       [:checked? {:optional true} [:maybe :boolean]]
       [:disabled? {:optional true} [:maybe :boolean]]
       [:on-change {:optional true} [:maybe fn?]]
+      [:container-style {:optional true} [:maybe :map]]
       [:theme :schema.common/theme]]]]
    :any])
 
@@ -58,11 +59,11 @@
 
 (defn- view-internal
   [{:keys
-    [checked? disabled? on-change token-details keycard? theme]
+    [checked? disabled? on-change token-details keycard? theme container-style]
     {:keys
      [name address emoji customization-color]} :account}]
   [rn/view
-   {:style               (style/container theme)
+   {:style               (merge (style/container theme) container-style)
     :accessibility-label :wallet-account-permissions}
    [rn/view {:style style/row1}
     [account-avatar/view

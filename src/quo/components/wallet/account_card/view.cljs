@@ -21,7 +21,8 @@
       :style               (style/card {:customization-color customization-color
                                         :type                type
                                         :theme               theme
-                                        :pressed?            false})}
+                                        :pressed?            false
+                                        :metrics?            metrics?})}
      [rn/view {:style style/loader-container}
       [rn/view
        {:style (assoc (style/loader-view {:width       16
@@ -113,7 +114,8 @@
             :style        (style/card {:customization-color customization-color
                                        :type                type
                                        :theme               theme
-                                       :pressed?            @pressed?})
+                                       :pressed?            @pressed?
+                                       :metrics?            metrics?})
             :on-press     on-press}
            (when (and customization-color (and (not watch-only?) (not missing-keypair?)))
              [customization-colors/overlay
@@ -126,9 +128,13 @@
              [text/text {:style style/emoji} emoji]]
             [rn/view {:style style/watch-only-container}
              [text/text
-              {:size   :paragraph-2
-               :weight :medium
-               :style  (style/account-name type theme)}
+              {:size            :paragraph-2
+               :weight          :medium
+               :number-of-lines 1
+               :max-width       110
+               :margin-right    4
+               :ellipis-mode    :tail
+               :style           (style/account-name type theme)}
               name]
              (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])
              (when missing-keypair?

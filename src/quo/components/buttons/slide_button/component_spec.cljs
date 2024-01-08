@@ -63,14 +63,7 @@
    :track-icon  :face-id})
 
 (h/describe "slide-button"
-  (h/before-each
-   (fn []
-     (h/use-fake-timers)))
-
-  (h/after-each
-   (fn []
-     (h/clear-all-timers)
-     (h/use-real-timers)))
+  (h/setup-fake-timers)
 
   (h/test "render the correct text"
     (h/render [slide-button/view default-props])

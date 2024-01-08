@@ -8,3 +8,8 @@
  :<- [:wallet/ui]
  (fn [ui]
    (get-in ui [:send :select-address-tab])))
+
+(rf/reg-sub
+ :wallet/wallet-send
+ :<- [:wallet/ui]
+ :-> :send)

@@ -1,7 +1,6 @@
 (ns status-im.contexts.communities.overview.events
   (:require
     [legacy.status-im.data-store.communities :as data-store]
-    [legacy.status-im.ui.components.colors :as colors]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -64,9 +63,10 @@
                                                   err))}]}))))
 
 (defn request-to-join
-  [{:keys [db]} [{:keys [community-id password]}]]
-  (let [pub-key             (get-in db [:profile/profile :public-key])
-        addresses-to-reveal []]
+  [{:keys [db]}
+   [{:keys [community-id password addresses-to-reveal]
+     :or   {addresses-to-reveal []}}]]
+  (let [pub-key (get-in db [:profile/profile :public-key])]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
              :params     [pub-key community-id addresses-to-reveal]
@@ -104,11 +104,10 @@
            [:dispatch [:hide-bottom-sheet]]
            [:dispatch
             [:toasts/upsert
-             {:icon       :correct
-              :icon-color (:positive-01 @colors/theme)
-              :text       (i18n/label
-                           :t/requested-to-join-community
-                           {:community community-name})}]]]})))
+             {:type :positive
+              :text (i18n/label
+                     :t/requested-to-join-community
+                     {:community community-name})}]]]})))
 
 (defn request-to-join-with-signatures
   [_ [community-id addresses-to-reveal signatures]]

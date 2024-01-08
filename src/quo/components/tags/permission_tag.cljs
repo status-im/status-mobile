@@ -74,8 +74,8 @@
       [rn/view
        {:flex-direction :row
         :align-items    :center}
-       (for [{:keys [token-icon]} selected-tokens]
-         ^{:key token-icon}
+       (for [{:keys [token-icon id]} selected-tokens]
+         ^{:key id}
          [rn/view {:flex-direction :row}
           [rn/view (outer-resource-container size background-color)
            [rn/image

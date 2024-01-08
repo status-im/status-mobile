@@ -283,9 +283,9 @@ run-ios: export TARGET := ios
 run-ios: export IOS_STATUS_GO_TARGETS := iossimulator/amd64
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
-	npx react-native run-ios --simulator="$(SIMULATOR)"
+	npx react-native run-ios --simulator="$(SIMULATOR)" | xcbeautify
 else
-	npx react-native run-ios
+	npx react-native run-ios | xcbeautify
 endif
 
 show-ios-devices: ##@other shows connected ios device and its name
@@ -327,7 +327,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs$$" clean-ns && \
+	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs|.*/src/test_helpers/component_tests_preload\.cljs$$" clean-ns && \
 	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
@@ -335,26 +335,44 @@ shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
 
-test-watch: export TARGET := clojure
-test-watch: ##@ Watch tests and re-run no changes to cljs files
-	yarn install
-	nodemon --exec 'yarn shadow-cljs compile mocks && yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
-
-test-watch-for-repl: export TARGET := clojure
-test-watch-for-repl: ##@ Watch tests and support REPL connections
-	yarn install
-	rm -f target/test/test.js
-	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
-		'yarn shadow-cljs compile mocks && yarn shadow-cljs watch test --verbose' \
-		'until [ -f ./target/test/test.js ] ; do sleep 1 ; done ; node --require ./test-resources/override.js ./target/test/test.js --repl'
-
-test: export TARGET := clojure
-test: ##@test Run tests once in NodeJS
-	# Here we create the gyp bindings for nodejs
-	yarn install
+_test-clojure: export TARGET := clojure
+_test-clojure: export WATCH ?= false
+_test-clojure:
+ifeq ($(WATCH), true)
+	yarn install && \
+	yarn shadow-cljs compile mocks && \
+	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
+else
+	yarn install && \
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
-	node --require ./test-resources/override.js target/test/test.js
+	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
+endif
+
+test: export SHADOW_OUTPUT_TO := target/test/test.js
+test: export SHADOW_NS_REGEXP := .*-test$$
+test: ##@test Run all Clojure tests
+test: _test-clojure
+
+test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
+test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
+test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
+	yarn install
+	rm -f target/test/test.js
+	yarn shadow-cljs compile mocks && \
+	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
+		'yarn shadow-cljs watch test --verbose' \
+		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
+
+test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
+test-unit: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
+test-unit: ##@test Run unit tests
+test-unit: _test-clojure
+
+test-integration: export SHADOW_OUTPUT_TO := target/integration_test/test.js
+test-integration: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
+test-integration: ##@test Run integration tests
+test-integration: _test-clojure
 
 android-test: jsbundle
 android-test: export TARGET := android
@@ -364,6 +382,7 @@ android-test:
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test
+component-test-watch: export JEST_USE_SILENT_REPORTER := false
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	@@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
@@ -373,6 +392,7 @@ component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
 component-test: export BABEL_ENV := test
+component-test: export JEST_USE_SILENT_REPORTER := false
 component-test: ##@test Run component tests once in NodeJS
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec

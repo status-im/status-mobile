@@ -10,7 +10,7 @@
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Test Name"}])
-    (-> (h/expect (h/get-by-translation-text :origin))
+    (-> (h/expect (h/get-by-translation-text :t/origin))
         (.toBeTruthy)))
 
   (h/test "recovery phrase icon is visible when :type is :recovery-phrase"
@@ -59,7 +59,7 @@
                 :stored          :on-device
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Test Name"}])
-    (-> (h/expect (h/get-by-translation-text :on-device))
+    (-> (h/expect (h/get-by-translation-text :t/on-device))
         (.toBeTruthy)))
 
   (h/test "on-keycard text is visible when :stored is :on-keycard"
@@ -68,7 +68,7 @@
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Test Name"}])
-    (-> (h/expect (h/get-by-translation-text :on-keycard))
+    (-> (h/expect (h/get-by-translation-text :t/on-keycard))
         (.toBeTruthy)))
 
   (h/test "on-press is called when :type is :recovery-phrase"

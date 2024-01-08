@@ -69,7 +69,7 @@ in {
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
   openjdk = super.openjdk11_headless;
   xcodeWrapper = super.xcodeenv.composeXcodeWrapper {
-    version = "14.0";
+    version = "15.0";
     allowHigher = true;
   };
   go = super.go_1_19;
@@ -96,4 +96,5 @@ in {
   aapt2 = callPackage ./pkgs/aapt2 { };
   patchMavenSources = callPackage ./pkgs/patch-maven-srcs { };
   goMavenResolver = callPackage ./pkgs/go-maven-resolver { };
+  xcbeautify = callPackage ./pkgs/xcbeautify { };
 }

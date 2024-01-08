@@ -11,12 +11,24 @@
     image-url))
 
 (re-frame/reg-sub
- :wallet/collectibles
+ :wallet/collectibles-per-account
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (as-> wallet $
+     (get-in $ [:accounts address :collectibles])
+     (map (fn [{:keys [collectible-data] :as collectible}]
+            (assoc collectible :preview-url (preview-url collectible-data)))
+          $))))
+
+(re-frame/reg-sub
+ :wallet/all-collectibles
  :<- [:wallet]
  (fn [wallet]
-   (map (fn [collectible]
-          (assoc collectible :preview-url (preview-url (:collectible-data collectible))))
-        (:collectibles wallet))))
+   (->> wallet
+        :accounts
+        (mapcat (comp :collectibles val))
+        (map (fn [{:keys [collectible-data] :as collectible}]
+               (assoc collectible :preview-url (preview-url collectible-data)))))))
 
 (re-frame/reg-sub
  :wallet/last-collectible-details

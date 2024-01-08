@@ -36,10 +36,10 @@ pipeline {
       steps { script {
         copyArtifacts(
           projectName: "status-mobile/platforms/android-e2e",
-          filter: 'result/*-x86.apk',
+          filter: 'result/*-x86_64.apk',
           selector: specific(env.APK_BUILD_NUMBER),
         )
-        apk_path = "${env.WORKSPACE}/${utils.findFile('result/*-x86.apk')}"
+        apk_path = "${env.WORKSPACE}/${utils.findFile('result/*-x86_64.apk')}"
 
       } }
     }

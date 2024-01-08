@@ -3,7 +3,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messages.view :as chat]
+    [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.shell.jump-to.animation :as animation]
@@ -33,12 +33,9 @@
      [rn/view
       {:style               (style/screen-container (utils/dimensions))
        :accessibility-label (str screen-id "-floating-screen")
-       :accessible          true
-       :key                 id}
+       :accessible          true}
       [(get screens-map screen-id) id]]]))
 
-;; Currently chat screen and events both depends on current-chat-id, once we remove
-;; use of current-chat-id from view then we can keep last chat loaded, for fast navigation
 (defn lazy-screen
   [screen-id]
   (let [screen-param (rf/sub [:shell/floating-screen screen-id])]
