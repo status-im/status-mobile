@@ -84,8 +84,7 @@
        :snap-to-alignment         "start"
        :snap-to-interval          (- width 30)
        :disable-interval-momentum true
-       :scroll-event-throttle     64
-       }
+       :scroll-event-throttle     64}
       (map-indexed
        (fn [index account]
          ^{:key (:address account)}
