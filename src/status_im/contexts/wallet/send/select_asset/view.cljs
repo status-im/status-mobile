@@ -7,10 +7,13 @@
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
 <<<<<<< HEAD
+<<<<<<< HEAD
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
 =======
 >>>>>>> 3d647c8c3 (fix: asset decimals)
     [status-im.contexts.wallet.common.utils :as utils]
+=======
+>>>>>>> a8e8b0133 (lint)
     [status-im.contexts.wallet.send.select-asset.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -21,6 +24,7 @@
 
 (defn- asset-component
   []
+<<<<<<< HEAD
   (fn [token _ _ {:keys [currency currency-symbol]}]
 <<<<<<< HEAD
     (let [on-press         #(rf/dispatch [:wallet/send-select-token
@@ -36,17 +40,20 @@
         :token-value (str crypto-formatted " " (:symbol token))
         :fiat-value  fiat-formatted
 =======
+=======
+  (fn [token _ _ _]
+>>>>>>> a8e8b0133 (lint)
     (let [on-press
           #(rf/dispatch [:wallet/send-select-token
                          {:token    token
                           :stack-id :wallet-select-asset}])
-          token-units (utils/total-token-units-in-all-chains token)
-          crypto-formatted (utils/get-standard-crypto-format token token-units)
-          fiat-value (utils/total-token-fiat-value currency token)
-          fiat-formatted (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
+          total-balance-formatted (.toFixed (:total-balance token) 2)
+          balance-fiat-formatted (.toFixed (:total-balance-fiat token) 2)
+          currency-symbol (rf/sub [:profile/currency-symbol])]
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)
+<<<<<<< HEAD
 <<<<<<< HEAD
         :token-value (str balance-crypto-formatted " " (:symbol token))
         :fiat-value  balance-fiat-formatted
@@ -55,18 +62,18 @@
         :token-value (str crypto-formatted " " (:symbol token))
         :fiat-value  fiat-formatted
 >>>>>>> 71ce9a70d (lint)
+=======
+        :token-value (str total-balance-formatted " " (:symbol token))
+        :fiat-value  (str currency-symbol balance-fiat-formatted)
+>>>>>>> a8e8b0133 (lint)
         :networks    (:networks token)
         :on-press    on-press}])))
 
 (defn- asset-list
   [search-text]
-  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered search-text])
-        currency        (rf/sub [:profile/currency])
-        currency-symbol (rf/sub [:profile/currency-symbol])]
+  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered search-text])]
     [rn/flat-list
      {:data                         filtered-tokens
-      :render-data                  {:currency        currency
-                                     :currency-symbol currency-symbol}
       :style                        {:flex 1}
       :content-container-style      {:padding-horizontal 8}
       :keyboard-should-persist-taps :handled
