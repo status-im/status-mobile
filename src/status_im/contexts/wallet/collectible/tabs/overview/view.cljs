@@ -38,24 +38,24 @@
 
 (defn- info
   []
-  (let [chain-id               (rf/sub [:wallet/last-collectible-details-chain-id])
-        {:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
-        subtitle               (string/capitalize (name (or network-name "")))]
-    [rn/view
-     {:style style/info-container}
+  (let [chain-id                   (rf/sub [:wallet/last-collectible-details-chain-id])
+        {:keys [network-name]}     (rf/sub [:wallet/network-details-by-chain-id chain-id])
+        subtitle                   (string/capitalize (name (or network-name "")))
+        {:keys [name emoji color]} (rf/sub [:wallet/last-collectible-details-owner])]
+    [rn/view {:style style/info-container}
      [rn/view {:style style/account}
       [quo/data-item
-       {:description         :account
-        :card?               true
+       {:card?               true
         :status              :default
         :size                :default
         :title               (i18n/label :t/account-title)
-        :subtitle            "Collectibles vault"
-        :emoji               "🎮"
-        :customization-color :yellow}]]
+        :subtitle            name
+        :emoji               emoji
+        :subtitle-type       :account
+        :customization-color color}]]
      [rn/view {:style style/network}
       [quo/data-item
-       {:description   :network
+       {:subtitle-type :network
         :card?         true
         :status        :default
         :size          :default
