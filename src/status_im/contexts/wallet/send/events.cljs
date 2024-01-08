@@ -67,10 +67,13 @@
     :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 >>>>>>> 8e4dc8a63 (feat: send token drawer)
+=======
+>>>>>>> e93a55f38 (lint)
 (rf/reg-event-fx :wallet/send-select-token-drawer
  (fn [{:keys [db]} [{:keys [token]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)}))
