@@ -39,11 +39,14 @@
                             {:animated true})))
 
 (defn on-scroll-fn
-  [show-floating-scroll-down-button?]
-  (fn [y layout-height]
+  [show-floating-scroll-down-button? distance-atom layout-height-atom]
+  (fn [y layout-height new-distance]
     (let [threshold-height   (* (/ layout-height 100)
                                 threshold-percentage-to-show-floating-scroll-down-button)
           reached-threshold? (> y threshold-height)]
+      (when (not= layout-height @layout-height-atom)
+        (reset! layout-height-atom layout-height))
+      (reset! distance-atom new-distance)
       (when (not= reached-threshold? @show-floating-scroll-down-button?)
         (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
         (reset! show-floating-scroll-down-button? reached-threshold?)))))
@@ -272,44 +275,42 @@
       [message/message message-data context keyboard-shown?])))
 
 (defn on-content-size-change
-  [{:keys [distance-from-list-top window-height content-height calculations-complete?]}]
+  [{:keys [content-height distance-atom distance-from-list-top]}]
   (fn [_ content-height-new]
-    (let [change   (- content-height-new @content-height)
-          distance (if (reanimated/get-shared-value calculations-complete?)
-                     (+ (reanimated/get-shared-value distance-from-list-top) change)
-                     (- content-height-new window-height))]
-      (reanimated/set-shared-value distance-from-list-top distance)
-      (reset! content-height content-height-new))
-    (when-not (reanimated/get-shared-value calculations-complete?)
-      (js/setTimeout #(reanimated/set-shared-value calculations-complete? true) 10))))
+    ;; Updates to shared values are asynchronous and give the wrong value when accessed
+    ;; simultaneously(in on-layout event), that's why we are using distance atom here
+    (let [change       (- content-height-new @content-height)
+          new-distance (+ @distance-atom change)]
+      (when-not (= change 0)
+        (reanimated/set-shared-value distance-from-list-top new-distance)
+        (reset! distance-atom new-distance)
+        (reset! content-height content-height-new)))))
 
-(defn keyboard-offset
-  [distance-from-list-top keyboard-shown keyboard-height keyboard-offset?]
-  ;; Note - keyboard fires multiple events, we are making sure we only offset once
-  (when (> keyboard-height 0)
-    (let [current-distance-from-top (reanimated/get-shared-value distance-from-list-top)]
-      (when (and keyboard-shown (not @keyboard-offset?))
-        (reanimated/set-shared-value distance-from-list-top
-                                     (+ current-distance-from-top keyboard-height))
-        (reset! keyboard-offset? true))
-      (when (and (not keyboard-shown) @keyboard-offset?)
-        (reanimated/set-shared-value distance-from-list-top
-                                     (- current-distance-from-top keyboard-height))
-        (reset! keyboard-offset? false)))))
+(defn on-layout
+  [{:keys [event layout-height distance-atom distance-from-list-top
+           calculations-complete? messages-list-on-layout-finished?]}]
+  (let [layout-height-new (oops/oget event "nativeEvent.layout.height")
+        change            (- layout-height-new @layout-height)
+        new-distance      (- @distance-atom change)]
+    (when (and (not= change 0) (not= @layout-height layout-height-new))
+      (reanimated/set-shared-value distance-from-list-top new-distance)
+      (reset! distance-atom new-distance)
+      (reset! layout-height layout-height-new))
+    (when-not (reanimated/get-shared-value calculations-complete?)
+      (reanimated/set-shared-value calculations-complete? true))
+    (js/setTimeout #(reset! messages-list-on-layout-finished? true) 1000)))
 
 (defn f-messages-list-content
-  [{:keys [insets distance-from-list-top keyboard-offset? content-height cover-bg-color
-           show-floating-scroll-down-button? calculations-complete?
-           messages-list-on-layout-finished?]}]
-  (let [theme                                    (quo.theme/use-theme-value)
-        chat                                     (rf/sub [:chats/current-chat-chat-view])
-        {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
-        {window-height :height}                  (rn/get-window)
-        context                                  (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                                 (rf/sub [:chats/raw-chat-messages-stream
-                                                          (:chat-id chat)])
-        recording?                               (rf/sub [:chats/recording?])]
-    (keyboard-offset distance-from-list-top keyboard-shown keyboard-height keyboard-offset?)
+  [{:keys [insets distance-from-list-top content-height layout-height cover-bg-color distance-atom
+           show-floating-scroll-down-button? calculations-complete? messages-list-on-layout-finished?]}]
+  (let [theme                    (quo.theme/use-theme-value)
+        chat                     (rf/sub [:chats/current-chat-chat-view])
+        {:keys [keyboard-shown]} (hooks/use-keyboard)
+        {window-height :height}  (rn/get-window)
+        context                  (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                 (rf/sub [:chats/raw-chat-messages-stream
+                                          (:chat-id chat)])
+        recording?               (rf/sub [:chats/recording?])]
     [rn/view {:style {:flex 3}} ;; Pushes composer to bottom
      [rn/view {:style {:flex-shrink 1}} ;; Keeps flat list on top
       [reanimated/flat-list
@@ -334,10 +335,9 @@
         :render-fn                         render-fn
         :on-viewable-items-changed         on-viewable-items-changed
         :on-content-size-change            (on-content-size-change
-                                            {:distance-from-list-top distance-from-list-top
-                                             :window-height          window-height
-                                             :content-height         content-height
-                                             :calculations-complete? calculations-complete?})
+                                            {:content-height         content-height
+                                             :distance-atom          distance-atom
+                                             :distance-from-list-top distance-from-list-top})
         :on-end-reached                    #(list-on-end-reached distance-from-list-top)
         :on-scroll-to-index-failed         identity
         :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
@@ -354,14 +354,20 @@
         :on-scroll                         (reanimated/use-animated-scroll-handler
                                             (worklets/messages-list-on-scroll
                                              distance-from-list-top
-                                             (on-scroll-fn show-floating-scroll-down-button?)))
+                                             (on-scroll-fn show-floating-scroll-down-button?
+                                                           distance-atom
+                                                           layout-height)))
         :style                             {:background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
         :inverted                          true
-        :on-layout                         (fn [_]
-                                             (js/setTimeout #(reset! messages-list-on-layout-finished?
-                                                               true)
-                                                            1000))
+        :on-layout                         #(on-layout
+                                             {:event %
+                                              :layout-height layout-height
+                                              :distance-atom distance-atom
+                                              :distance-from-list-top distance-from-list-top
+                                              :calculations-complete? calculations-complete?
+                                              :messages-list-on-layout-finished?
+                                              messages-list-on-layout-finished?})
         :scroll-enabled                    (not recording?)
         :content-inset-adjustment-behavior :never}]]]))

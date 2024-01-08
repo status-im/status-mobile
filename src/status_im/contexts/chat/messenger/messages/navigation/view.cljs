@@ -35,12 +35,16 @@
                          distance-from-list-top
                          all-loaded?
                          calculations-complete?
-                         messages.constants/content-animation-start-position)
+                         (if platform/ios?
+                           messages.constants/content-animation-start-position-ios
+                           messages.constants/content-animation-start-position-android))
         header-position (worklets/navigation-header-position
                          distance-from-list-top
                          all-loaded?
                          messages.constants/top-bar-height
-                         messages.constants/content-animation-start-position)]
+                         (if platform/ios?
+                           messages.constants/content-animation-start-position-ios
+                           messages.constants/content-animation-start-position-android))]
     [reanimated/view
      {:style (style/header-content-container header-opacity header-position)}
      (when-not group-chat

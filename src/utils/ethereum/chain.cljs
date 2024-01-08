@@ -11,7 +11,9 @@
    :bsc         {:id   BSC-mainnet-chain-id
                  :name "BSC"}
    :bsc-testnet {:id   BSC-testnet-chain-id
-                 :name "BSC tetnet"}})
+                 :name "BSC testnet"}
+   :arbitrum    {:id 42161 :name "Arbitrum"}
+   :optimism    {:id 10 :name "Optimism"}})
 
 (defn chain-id->chain-keyword
   [i]
