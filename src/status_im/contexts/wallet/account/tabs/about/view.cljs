@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.share :as share]
+    [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
     [utils.i18n :as i18n]
@@ -18,15 +19,27 @@
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
         :label               (i18n/label :t/view-on-eth)
-        :right-icon          :i/external}
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/link
         :accessibility-label :view-on-opt
         :label               (i18n/label :t/view-on-opt)
-        :right-icon          :i/external}
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/optimism-mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/link
         :accessibility-label :view-on-arb
         :label               (i18n/label :t/view-on-arb)
-        :right-icon          :i/external}
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/arbitrum-mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/copy
         :accessibility-label :copy-address
         :label               (i18n/label :t/copy-address)
