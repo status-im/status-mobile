@@ -7,8 +7,8 @@
     [react-native.core :as rn]))
 
 (defn- category-internal
-  [{:keys [label data] :as props}]
-  [rn/view {:style (style/container label)}
+  [{:keys [label data container-style] :as props}]
+  [rn/view {:style (merge (style/container label) container-style)}
    (when label
      [text/text
       {:weight :medium

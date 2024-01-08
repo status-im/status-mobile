@@ -25,11 +25,11 @@
                  size
                  theme
                  blur?
-                 container-style]}]
-      [rn/view {:style {:flex 1}}
+                 container-style]
+          :or   {container-style {:flex 1}}}]
+      [rn/view {:style container-style}
        [quo/slide-button
         {:size                size
-         :container-style     container-style
          :customization-color customization-color
          :on-reset            (when @reset-slider? #(reset! reset-slider? false))
          :on-complete         #(authorize/authorize {:on-close              on-close

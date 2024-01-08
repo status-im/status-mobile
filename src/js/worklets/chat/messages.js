@@ -45,8 +45,9 @@ export function messagesListOnScroll(distanceFromListTop, callback) {
     const currentY = event.contentOffset.y;
     const layoutHeight = event.layoutMeasurement.height;
     const contentSizeY = event.contentSize.height - layoutHeight;
-    distanceFromListTop.value = contentSizeY - currentY;
-    runOnJS(callback)(currentY, layoutHeight);
+    const newDistance = contentSizeY - currentY;
+    distanceFromListTop.value = newDistance;
+    runOnJS(callback)(currentY, layoutHeight, newDistance);
   };
 }
 

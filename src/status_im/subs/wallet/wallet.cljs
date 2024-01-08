@@ -1,7 +1,6 @@
 (ns status-im.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
-            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [utils.number]))
 
@@ -30,15 +29,9 @@
  :-> :ui)
 
 (rf/reg-sub
- :wallet/wallet-send
- :<- [:wallet/ui]
- :-> :send)
-
-(rf/reg-sub
  :wallet/tokens-loading?
  :<- [:wallet/ui]
  :-> :tokens-loading?)
-
 
 (rf/reg-sub
  :wallet/current-viewing-account-address
@@ -126,10 +119,14 @@
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
  :<- [:wallet/balances]
- (fn [[accounts current-viewing-account-address balances]]
-   (let [current-viewing-account (utils/get-account-by-address accounts current-viewing-account-address)]
+ :<- [:profile/currency-symbol]
+ (fn [[accounts current-viewing-account-address balances currency-symbol]]
+   (let [current-viewing-account (utils/get-account-by-address accounts current-viewing-account-address)
+         balance                 (get balances current-viewing-account-address)
+         formatted-balance       (utils/prettify-balance currency-symbol balance)]
      (-> current-viewing-account
-         (assoc :balance (get balances current-viewing-account-address))))))
+         (assoc :balance           balance
+                :formatted-balance formatted-balance)))))
 
 (rf/reg-sub
  :wallet/tokens-filtered
@@ -163,33 +160,41 @@
  (fn [accounts]
    (remove #(:watch-only? %) accounts)))
 
-(defn- calc-token-value
-  [{:keys [market-values-per-currency] :as token} color currency currency-symbol]
-  (let [token-units                 (utils/total-token-units-in-all-chains token)
-        fiat-value                  (utils/total-token-fiat-value currency token)
-        market-values               (get market-values-per-currency
-                                         currency
-                                         (get market-values-per-currency
-                                              constants/profile-default-currency))
-        {:keys [change-pct-24hour]} market-values]
-    {:token               (:symbol token)
-     :token-name          (:name token)
-     :state               :default
-     :status              (cond
-                            (pos? change-pct-24hour) :positive
-                            (neg? change-pct-24hour) :negative
-                            :else                    :empty)
-     :customization-color color
-     :values              {:crypto-value token-units
-                           :fiat-value   (utils/prettify-balance currency-symbol fiat-value)}}))
-
 (rf/reg-sub
  :wallet/account-token-values
  :<- [:wallet/current-viewing-account]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  (fn [[{:keys [tokens color]} currency currency-symbol]]
-   (mapv #(calc-token-value % color currency currency-symbol) tokens)))
+   (mapv #(utils/calculate-token-value {:token           %
+                                        :color           color
+                                        :currency        currency
+                                        :currency-symbol currency-symbol})
+         tokens)))
+
+(rf/reg-sub
+ :wallet/aggregated-tokens
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (utils/aggregate-tokens-for-all-accounts accounts)))
+
+(rf/reg-sub
+ :wallet/aggregated-tokens-and-balance
+ :<- [:wallet/aggregated-tokens]
+ :<- [:profile/customization-color]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[aggregated-tokens color currency currency-symbol]]
+   (let [balance           (utils/calculate-balance-from-tokens {:currency currency
+                                                                 :tokens   aggregated-tokens})
+         formatted-balance (utils/prettify-balance currency-symbol balance)]
+     {:balance           balance
+      :formatted-balance formatted-balance
+      :tokens            (mapv #(utils/calculate-token-value {:token           %
+                                                              :color           color
+                                                              :currency        currency
+                                                              :currency-symbol currency-symbol})
+                               aggregated-tokens)})))
 
 (rf/reg-sub
  :wallet/network-preference-details

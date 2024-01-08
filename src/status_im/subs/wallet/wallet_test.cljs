@@ -278,9 +278,10 @@
            :public-key                "0x04371e2d9d66b82f056bc128064"
            :removed                   false
            :tokens                    tokens-0x1}
-          (dissoc result :balance)))
+          (dissoc result :balance :formatted-balance)))
 
-      (is (money/equal-to (:balance result) (money/bignumber 3250))))))
+      (is (money/equal-to (:balance result) (money/bignumber 3250)))
+      (is (match? (:formatted-balance result) "$3250.00")))))
 
 (h/deftest-sub :wallet/addresses
   [sub-name]
@@ -440,3 +441,21 @@
              (->> (rf/sub [sub-name])
                   ;; Removed `#js source` property for correct compare
                   (map #(dissoc % :source)))))))
+
+(h/deftest-sub :wallet/aggregated-tokens
+  [sub-name]
+  (testing "returns aggregated tokens from all accounts"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+    (let [result                  (rf/sub [sub-name])
+          eth-token               (some #(when (= (:symbol %) "ETH") %) result)
+          eth-mainnet-raw-balance (get-in eth-token [:balances-per-chain 1 :raw-balance])]
+      (is (match? 2 (count result)))
+      (is (money/equal-to (money/bignumber 7520) eth-mainnet-raw-balance)))))
+
+(h/deftest-sub :wallet/aggregated-tokens-and-balance
+  [sub-name]
+  (testing "returns aggregated tokens (in quo/token-value props) and balances from all accounts"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+    (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
+      (is (match? 2 (count tokens)))
+      (is (match? "$4506.00" formatted-balance)))))

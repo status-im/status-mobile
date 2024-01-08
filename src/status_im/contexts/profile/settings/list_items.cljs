@@ -5,7 +5,7 @@
 
 (def items
   [[{:title       (i18n/label :t/edit-profile)
-     :on-press    not-implemented/alert
+     :on-press    #(rf/dispatch [:open-modal :edit-profile])
      :image-props :i/edit
      :image       :icon
      :blur?       true

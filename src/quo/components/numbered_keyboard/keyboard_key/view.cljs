@@ -26,6 +26,7 @@
                                    (on-press label)))
           :on-press-in         #(reset! pressed? true)
           :on-press-out        #(reset! pressed? false)
+          :hit-slop            {:top 8 :bottom 8 :left 25 :right 25}
           :style               (style/container background-color)}
          (case type
            :key             [icons/icon

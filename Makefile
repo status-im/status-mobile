@@ -335,26 +335,44 @@ shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
 
-test-watch: export TARGET := clojure
-test-watch: ##@ Watch tests and re-run no changes to cljs files
-	yarn install
-	nodemon --exec 'yarn shadow-cljs compile mocks && yarn shadow-cljs compile test && node --require ./test-resources/override.js target/test/test.js' -e cljs
-
-test-watch-for-repl: export TARGET := clojure
-test-watch-for-repl: ##@ Watch tests and support REPL connections
-	yarn install
-	rm -f target/test/test.js
-	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
-		'yarn shadow-cljs compile mocks && yarn shadow-cljs watch test --verbose' \
-		'until [ -f ./target/test/test.js ] ; do sleep 1 ; done ; node --require ./test-resources/override.js ./target/test/test.js --repl'
-
-test: export TARGET := clojure
-test: ##@test Run tests once in NodeJS
-	# Here we create the gyp bindings for nodejs
-	yarn install
+_test-clojure: export TARGET := clojure
+_test-clojure: export WATCH ?= false
+_test-clojure:
+ifeq ($(WATCH), true)
+	yarn install && \
+	yarn shadow-cljs compile mocks && \
+	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
+else
+	yarn install && \
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
-	node --require ./test-resources/override.js target/test/test.js
+	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
+endif
+
+test: export SHADOW_OUTPUT_TO := target/test/test.js
+test: export SHADOW_NS_REGEXP := .*-test$$
+test: ##@test Run all Clojure tests
+test: _test-clojure
+
+test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
+test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
+test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
+	yarn install
+	rm -f target/test/test.js
+	yarn shadow-cljs compile mocks && \
+	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
+		'yarn shadow-cljs watch test --verbose' \
+		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
+
+test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
+test-unit: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
+test-unit: ##@test Run unit tests
+test-unit: _test-clojure
+
+test-integration: export SHADOW_OUTPUT_TO := target/integration_test/test.js
+test-integration: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
+test-integration: ##@test Run integration tests
+test-integration: _test-clojure
 
 android-test: jsbundle
 android-test: export TARGET := android

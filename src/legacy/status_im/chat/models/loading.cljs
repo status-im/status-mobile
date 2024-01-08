@@ -4,7 +4,7 @@
     [legacy.status-im.data-store.messages :as data-store.messages]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messages.list.events :as message-list]
+    [status-im.contexts.chat.messenger.messages.list.events :as message-list]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 

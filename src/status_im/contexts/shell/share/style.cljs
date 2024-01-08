@@ -85,10 +85,10 @@
 (def emoji-hash-content
   {:color          colors/white
    :align-self     :flex-start
-   :padding-top    4
+   :padding-top    2
    :padding-bottom 12
    :padding-left   12
-   :font-size      13})
+   :font-size      12})
 
 (def tabs-container
   {:padding-horizontal screen-padding

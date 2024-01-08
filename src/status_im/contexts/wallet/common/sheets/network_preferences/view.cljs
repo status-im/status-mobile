@@ -28,7 +28,7 @@
                   :on-change           on-change}})
 
 (defn- view-internal
-  [{:keys [selected-networks]}]
+  [{:keys [selected-networks watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
                 network-preferences-names]} (rf/sub [:wallet/current-viewing-account])
@@ -63,7 +63,9 @@
              :blur-radius 25}])
          [quo/drawer-top
           {:title       (i18n/label :t/network-preferences)
-           :description (i18n/label :t/network-preferences-desc)
+           :description (if watch-only?
+                          (i18n/label :t/network-preferences-desc-1)
+                          (i18n/label :t/network-preferences-desc-2))
            :blur?       blur?}]
          [quo/data-item
           {:status          :default

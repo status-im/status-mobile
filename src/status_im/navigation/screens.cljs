@@ -1,15 +1,16 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
+    [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.config :as config]
-    [status-im.contexts.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
-    [status-im.contexts.add-new-contact.views :as add-new-contact]
-    [status-im.contexts.chat.camera.view :as camera-screen]
     [status-im.contexts.chat.group-details.view :as group-details]
-    [status-im.contexts.chat.lightbox.view :as lightbox]
-    [status-im.contexts.chat.messages.view :as chat]
-    [status-im.contexts.chat.new-chat.view :as new-chat]
-    [status-im.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im.contexts.chat.home.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
+    [status-im.contexts.chat.home.add-new-contact.views :as add-new-contact]
+    [status-im.contexts.chat.home.new-chat.view :as new-chat]
+    [status-im.contexts.chat.messenger.camera.view :as camera-screen]
+    [status-im.contexts.chat.messenger.lightbox.view :as lightbox]
+    [status-im.contexts.chat.messenger.messages.view :as chat]
+    [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as
      addresses-for-permissions]
@@ -17,7 +18,6 @@
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
-    [status-im.contexts.emoji-picker.view :as emoji-picker]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
@@ -31,14 +31,16 @@
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im.contexts.onboarding.welcome.view :as welcome]
+    [status-im.contexts.preview.quo.component-preview.view :as component-preview]
+    [status-im.contexts.preview.quo.main :as quo.preview]
+    [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.edit.name.view :as edit-name]
+    [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
     [status-im.contexts.profile.settings.view :as settings]
-    [status-im.contexts.quo-preview.component-preview.view :as component-preview]
-    [status-im.contexts.quo-preview.main :as quo.preview]
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
     [status-im.contexts.shell.share.view :as share]
-    [status-im.contexts.status-im-preview.main :as status-im-preview]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
@@ -97,7 +99,7 @@
 
     {:name      :community-requests-to-join
      :options   {:sheet? true}
-     :component join-menu/request-to-join}
+     :component join-menu/view}
 
     {:name      :community-account-selection
      :options   {:sheet? true}
@@ -164,6 +166,14 @@
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}
+
+    {:name      :edit-profile
+     :options   options/transparent-screen-options
+     :component edit-profile/view}
+
+    {:name      :edit-name
+     :options   options/transparent-screen-options
+     :component edit-name/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
@@ -280,7 +290,10 @@
      :component emoji-picker/view}
 
     {:name      :wallet-accounts
-     :options   {:insets {:top? true}}
+     :options   {:insets             {:top? true}
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
      :component wallet-accounts/view}
 
     {:name      :wallet-edit-account
@@ -338,7 +351,6 @@
      :component wallet-select-asset/view}
 
     {:name      :wallet-transaction-confirmation
-     :options   {:insets {:bottom? true}}
      :component wallet-transaction-confirmation/view}
 
     {:name      :wallet-transaction-progress
