@@ -6,7 +6,10 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+<<<<<<< HEAD
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
+=======
+>>>>>>> 3d647c8c3 (fix: asset decimals)
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.select-asset.style :as style]
     [utils.i18n :as i18n]
@@ -19,6 +22,7 @@
 (defn- asset-component
   []
   (fn [token _ _ {:keys [currency currency-symbol]}]
+<<<<<<< HEAD
     (let [on-press         #(rf/dispatch [:wallet/send-select-token
                                           {:token    token
                                            :stack-id :wallet-select-asset}])
@@ -31,6 +35,22 @@
         :label       (:name token)
         :token-value (str crypto-formatted " " (:symbol token))
         :fiat-value  fiat-formatted
+=======
+    (let [on-press
+          #(rf/dispatch [:wallet/send-select-token
+                         {:token    token
+                          :stack-id :wallet-select-asset}])
+          token-units (utils/total-token-units-in-all-chains token)
+          balance-crypto-formatted (utils/get-standard-crypto-format token token-units)
+          fiat-value (utils/total-token-fiat-value currency token)
+          balance-fiat-formatted
+          (utils/get-standard-fiat-format balance-crypto-formatted currency-symbol fiat-value)]
+      [quo/token-network
+       {:token       (:symbol token)
+        :label       (:name token)
+        :token-value (str balance-crypto-formatted " " (:symbol token))
+        :fiat-value  balance-fiat-formatted
+>>>>>>> 3d647c8c3 (fix: asset decimals)
         :networks    (:networks token)
         :on-press    on-press}])))
 
