@@ -9,7 +9,8 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.string :as utils.string]))
+    [utils.string :as utils.string]
+    [taoensso.timbre :as log]))
 
 (defn header
   []
@@ -46,15 +47,18 @@
         text]])]])
 
 (defn password-inputs
-  [{:keys [passwords-match? on-change-password on-change-repeat-password on-input-focus
+  [{:keys [passwords-match? on-change-password on-change-repeat-password on-password-input-focus on-repeat-password-input-focus
            password-long-enough? empty-password? show-password-validation?
-           on-blur-repeat-password]}]
-  (let [hint-1-status (if password-long-enough? :success :neutral)
+           on-blur-repeat-password focused-input]}]
+  (log/info "focused-input is " focused-input " and (not password-long-enough?) is " (not password-long-enough?))
+  (let [hint-1-status (if (and (= focused-input :repeat-password) (not password-long-enough?)) :danger
+                        (if password-long-enough? :success :neutral))
         hint-2-status (if passwords-match? :success :danger)
         hint-2-text   (if passwords-match?
                         (i18n/label :t/password-creation-match)
                         (i18n/label :t/password-creation-dont-match))
         error?        (and show-password-validation?
+                           (not password-long-enough?)
                            (not passwords-match?)
                            (not empty-password?))]
     [:<>
@@ -64,7 +68,8 @@
                         :shown  true}
        :placeholder    (i18n/label :t/password-creation-placeholder-1)
        :on-change-text on-change-password
-       :on-focus       on-input-focus
+       :on-focus       on-password-input-focus
+       :error?         error?
        :auto-focus     true}]
      [rn/view {:style style/space-between-inputs}]
      [password-with-hint
@@ -75,7 +80,7 @@
        :error?         error?
        :placeholder    (i18n/label :t/password-creation-placeholder-2)
        :on-change-text on-change-repeat-password
-       :on-focus       on-input-focus
+       :on-focus       on-repeat-password-input-focus
        :on-blur        on-blur-repeat-password}]]))
 
 (def strength-status
@@ -144,9 +149,11 @@
           [password-inputs
            {:password-long-enough?     long-enough?
             :passwords-match?          same-passwords?
+            :focused-input             @focused-input
             :empty-password?           empty-password?
             :show-password-validation? @show-password-validation?
-            :on-input-focus            #(reset! focused-input :password)
+            :on-password-input-focus   #(reset! focused-input :password)
+            :on-repeat-password-input-focus #(reset! focused-input :repeat-password)
             :on-change-password        (fn [new-value]
                                          (reset! password new-value)
                                          (when (same-password-length?)
@@ -167,7 +174,7 @@
                :on-change #(swap! accepts-disclaimer? not)
                :checked?  @accepts-disclaimer?}
               (i18n/label :t/password-creation-disclaimer)]])
-          (when (and (= @focused-input :password) (not same-passwords?))
+          (when (and (or (= @focused-input :password) (= @focused-input :repeat-password)) (not same-passwords?))
             [help
              {:validations       validations
               :password-strength password-strength}])
