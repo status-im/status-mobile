@@ -57,7 +57,7 @@
                                   :qr-size     qr-size
                                   :error-level :highest})]
         [rn/view {:style {:width width :margin-left (if (zero? index) 0 -30)}}
-         [rn/view {:style style/qr-code-container} 
+         [rn/view {:style style/qr-code-container}
           [quo/share-qr-code
            {:type                @wallet-type
             :qr-image-uri        qr-media-server-uri
@@ -71,8 +71,7 @@
             :emoji               (:emoji account)
             :on-multichain-press #(reset! wallet-type :wallet-multichain)
             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-            :on-settings-press   #(open-preferences selected-networks)}]]]
-      ))))
+            :on-settings-press   #(open-preferences selected-networks)}]]]))))
 
 (defn wallet-tab
   []
