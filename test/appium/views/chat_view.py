@@ -325,6 +325,13 @@ class ChatElementByText(Text):
 
         return PinnedByLabelText(self.driver, self.locator)
 
+    @property
+    def message_text_content(self):
+        return Text(
+            self.driver,
+            xpath="//%s//*[@content-desc='message-text-content']/android.widget.TextView" % self.chat_item_locator
+        )
+
 
 class UsernameOptions(Button):
     def __init__(self, driver, username):

@@ -654,13 +654,35 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
     def test_1_1_chat_delete_via_long_press_relogin(self):
         self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
+        self.home_2.just_fyi("Getting chat history")
+        chat_history = list()
+        for element in self.chat_2.chat_element_by_text(text='').message_text_content.find_elements():
+            chat_history.append(element.text)
+        if not chat_history:
+            self.errors.append("No chat history was loaded")
 
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.chats_tab.click()
         self.home_2.delete_chat_long_press(username=self.username_1)
-        if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed():
+        chat = self.home_2.get_chat_from_home_view(self.username_1)
+        if chat.is_element_displayed():
             self.errors.append("Deleted '%s' chat is shown, but the chat has been deleted" % self.username_1)
         self.home_2.reopen_app()
-        if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed(15):
+        if chat.is_element_displayed(15):
             self.errors.append(
                 "Deleted chat '%s' is shown after re-login, but the chat has been deleted" % self.username_1)
+            chat.click()
+        else:
+            self.home_2.contacts_tab.click()
+            chat.click()
+            self.chat_2.profile_send_message_button.click()
+
+        lost_messages = list()
+        for message_text in chat_history:
+            if not self.chat_2.chat_element_by_text(message_text).is_element_displayed():
+                lost_messages.append(message_text)
+        if lost_messages:
+            self.errors.append("Message(s) missed in 1-1 chat after deleting the chat and relogin: %s" % lost_messages)
         self.errors.verify_no_errors()
