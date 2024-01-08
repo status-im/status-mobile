@@ -19,6 +19,9 @@
 
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
+(def mainnet-chain-explorer-link "https://etherscan.io/address/")
+(def optimism-mainnet-chain-explorer-link "https://optimistic.etherscan.io/address/")
+(def arbitrum-mainnet-chain-explorer-link "https://arbiscan.io/address/")
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -91,7 +94,7 @@
 
 (def mainnet-networks
   [{:id                  "mainnet_rpc"
-    :chain-explorer-link "https://etherscan.io/address/"
+    :chain-explorer-link mainnet-chain-explorer-link
     :name                "Mainnet with upstream RPC"
     :config              {:NetworkId      (chain/chain-keyword->chain-id :mainnet)
                           :DataDir        "/ethereum/mainnet_rpc"
