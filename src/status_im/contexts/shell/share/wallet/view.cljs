@@ -77,16 +77,13 @@
   []
   (let [accounts (rf/sub [:wallet/accounts])
         width    (rf/sub [:dimensions/window-width])]
-    [rn/view
-     [rn/scroll-view
-      {:horizontal                true
-       :deceleration-rate         0.9
-       :snap-to-alignment         "start"
-       :snap-to-interval          (- width 30)
-       :disable-interval-momentum true
-       :scroll-event-throttle     64}
-      (map-indexed
-       (fn [index account]
-         ^{:key (:address account)}
-         [wallet-qr-code-item account width index])
-       accounts)]]))
+    [rn/flat-list
+     {:horizontal                true
+      :deceleration-rate         0.9
+      :snap-to-alignment         "start"
+      :snap-to-interval          (- width 30)
+      :disable-interval-momentum true
+      :scroll-event-throttle     64
+      :data                      accounts
+      :render-fn                 (fn [account index]
+                                   (wallet-qr-code-item account width index))}]))
