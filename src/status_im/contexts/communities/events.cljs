@@ -194,27 +194,25 @@
 
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
-   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
-     {:json-rpc/call [{:method     "wakuext_shareCommunityChannelURLWithData"
-                       :params     [{:CommunityID community-id :ChannelID channel-id}]
-                       :on-success #(share/open
-                                     (if platform/ios?
-                                       {:activityItemSources [{:placeholderItem {:type "text"
-                                                                                 :content
-                                                                                 (i18n/label
-                                                                                  :t/channel-on-status)}
-                                                               :item {:default {:type    "url"
-                                                                                :content %}}
-                                                               :linkMetadata {:title
-                                                                              (i18n/label
-                                                                               :t/channel-on-status)}}]}
-                                       {:title   (i18n/label :t/channel-on-status)
-                                        :subject (i18n/label :t/channel-on-status)
-                                        :message %
-                                        :url     %}))
-                       :on-error   (fn [err]
-                                     (log/error
-                                      "failed to retrieve community channel url with data"
-                                      {:error   err
-                                       :chat-id chat-id
-                                       :event   "share-community-channel-url-with-data"}))}]})))
+   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)
+         title                             (i18n/label :t/channel-on-status)]
+     {:json-rpc/call
+      [{:method     "wakuext_shareCommunityChannelURLWithData"
+        :params     [{:CommunityID community-id :ChannelID channel-id}]
+        :on-success (fn [url]
+                      (share/open
+                       (if platform/ios?
+                         {:activityItemSources [{:placeholderItem {:type    "text"
+                                                                   :content title}
+                                                 :item            {:default {:type    "url"
+                                                                             :content url}}
+                                                 :linkMetadata    {:title title}}]}
+                         {:title   title
+                          :subject title
+                          :message url
+                          :url     url})))
+        :on-error   (fn [err]
+                      (log/error "failed to retrieve community channel url with data"
+                                 {:error   err
+                                  :chat-id chat-id
+                                  :event   "share-community-channel-url-with-data"}))}]})))
