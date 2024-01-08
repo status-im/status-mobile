@@ -13,6 +13,7 @@
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.profile.profiles.style :as style]
     [taoensso.timbre :as log]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
@@ -49,11 +50,15 @@
       :on-press            (fn []
                              (when @push-animation-fn-atom
                                (@push-animation-fn-atom))
-                             (rf/dispatch [:open-modal :new-to-status]))
+                             (debounce/dispatch-and-chill
+                              [:open-modal :new-to-status]
+                              1000))
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
-      :on-press            #(rf/dispatch [:open-modal :sign-in])
+      :on-press            #(debounce/dispatch-and-chill
+                             [:open-modal :sign-in]
+                             1000)
       :accessibility-label :multi-profile}]]])
 
 (defn show-new-account-options

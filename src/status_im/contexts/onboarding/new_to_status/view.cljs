@@ -8,6 +8,7 @@
     [status-im.common.resources :as resources]
     [status-im.config :as config]
     [status-im.contexts.onboarding.new-to-status.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -30,7 +31,9 @@
                         (* 2 56) ;; two other list items
                         (* 2 16) ;; spacing between items
                         220)     ;; extra spacing (top bar)
-       :on-press     #(rf/dispatch [:onboarding/navigate-to-create-profile])}]
+       :on-press     #(debounce/dispatch-and-chill
+                       [:onboarding/navigate-to-create-profile]
+                       1000)}]
      [rn/view {:style style/subtitle-container}
       [quo/text
        {:style  style/subtitle
