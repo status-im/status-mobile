@@ -109,7 +109,7 @@
     :accessibility-label accessibility-label}
    [rn/view {:style (style/left-sub-container props)}
     [image-component props]
-    [rn/view {:style style/left-container}
+    [rn/view {:style (style/left-container (:image props))}
      [text/text
       {:weight :medium
        :style  {:color (when blur? colors/white)}} title]
