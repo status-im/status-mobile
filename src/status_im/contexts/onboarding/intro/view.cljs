@@ -8,8 +8,7 @@
     [status-im.contexts.onboarding.intro.style :as style]
     [status-im.contexts.syncing.scan-sync-code.view :as scan-sync-code]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn view
   []
@@ -29,7 +28,9 @@
      :bottom-card         {:on-press            (fn []
                                                   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
                                                     (blur-show-fn))
-                                                  (rf/dispatch [:open-modal :new-to-status]))
+                                                  (debounce/dispatch-and-chill
+                                                   [:open-modal :new-to-status]
+                                                   1000))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}
     [quo/text
@@ -41,7 +42,9 @@
       {:style style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
-      {:on-press #(rf/dispatch [:open-modal :privacy-policy])
+      {:on-press #(debounce/dispatch-and-chill
+                   [:open-modal :privacy-policy]
+                   1000)
        :style    style/highlighted-text}
       (i18n/label :t/terms-of-service)]]]
    [overlay/view]])
