@@ -19,10 +19,12 @@
 (defn sub-container
   [align-action]
   {:flex-direction :row
+   :padding-right  0.5
    :align-items    (or align-action :center)})
 
-(def left-container
-  {:margin-horizontal 12
+(defn left-container
+  [image?]
+  {:margin-horizontal (if image? 12 0)
    :flex              1
    :height            "100%"
    :justify-content   :flex-start})
@@ -57,6 +59,7 @@
   {:width            15
    :height           15
    :border-radius    12
+   :margin-right     4
    :background-color background-color})
 
 (def status-tag-container
