@@ -20,10 +20,14 @@
         display-name        (profile.utils/displayed-name profile)
         full-name           (reagent/atom display-name)
         error-msg           (reagent/atom nil)
-        validate-name       (debounce/debounce #(reset! error-msg
-                                                  (profile-validator/validation-name %))
-                                               500)
+        typing?             (reagent/atom false)
+        validate-name       (debounce/debounce (fn [name]
+                                                 (reset! error-msg
+                                                   (profile-validator/validation-name name))
+                                                 (reset! typing? false))
+                                               300)
         on-change-text      (fn [s]
+                              (reset! typing? true)
                               (reset! full-name s)
                               (validate-name s))]
     (fn []
@@ -62,6 +66,7 @@
            :customization-color customization-color
            :on-press            (fn []
                                   (rf/dispatch [:profile/edit-name @full-name]))
-           :disabled?           (boolean (or (string/blank? @full-name)
+           :disabled?           (boolean (or @typing?
+                                             (string/blank? @full-name)
                                              (not (string/blank? @error-msg))))}
           (i18n/label :t/save-name)]]]])))
