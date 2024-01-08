@@ -9,6 +9,17 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn- trait-item
+  [{:keys [trait-type value]}]
+  [quo/data-item
+   {:description     :default
+    :card?           true
+    :status          :default
+    :size            :default
+    :title           trait-type
+    :subtitle        value
+    :container-style style/traits-item}])
+
 (defn- traits-section
   []
   (let [traits (rf/sub [:wallet/last-collectible-details-traits])]
@@ -18,15 +29,7 @@
         {:section         (i18n/label :t/traits)
          :container-style style/traits-title-container}]
        [rn/flat-list
-        {:render-fn               (fn [{:keys [trait-type value]}]
-                                    [quo/data-item
-                                     {:description     :default
-                                      :card?           true
-                                      :status          :default
-                                      :size            :default
-                                      :title           trait-type
-                                      :subtitle        value
-                                      :container-style style/traits-item}])
+        {:render-fn               trait-item
          :data                    traits
          :key                     :collectibles-list
          :key-fn                  :id
@@ -35,11 +38,9 @@
 
 (defn- info
   []
-  (let [chain-id        (rf/sub [:wallet/last-collectible-details-chain-id])
-        network         (rf/sub [:wallet/network-details-by-chain-id
-                                 chain-id])
-        network-keyword (get network :network-name)
-        network-name    (string/capitalize (name network-keyword))]
+  (let [chain-id               (rf/sub [:wallet/last-collectible-details-chain-id])
+        {:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+        subtitle               (string/capitalize (name (or network-name "")))]
     [rn/view
      {:style style/info-container}
      [rn/view {:style style/account}
@@ -52,7 +53,6 @@
         :subtitle            "Collectibles vault"
         :emoji               "🎮"
         :customization-color :yellow}]]
-
      [rn/view {:style style/network}
       [quo/data-item
        {:description   :network
@@ -60,8 +60,8 @@
         :status        :default
         :size          :default
         :title         (i18n/label :t/network)
-        :network-image (quo.resources/get-network network-keyword)
-        :subtitle      network-name}]]]))
+        :network-image (quo.resources/get-network network-name)
+        :subtitle      subtitle}]]]))
 
 (defn- view-internal
   []

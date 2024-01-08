@@ -72,7 +72,8 @@
 
 (defn view-internal
   [{:keys [theme] :as _props}]
-  (let [selected-tab (reagent/atom :overview)]
+  (let [selected-tab  (reagent/atom :overview)
+        on-tab-change #(reset! selected-tab %)]
     (fn []
       (let [collectible               (rf/sub [:wallet/last-collectible-details])
             {:keys [collectible-data preview-url
@@ -104,7 +105,7 @@
             :style          style/tabs
             :scrollable?    true
             :default-active @selected-tab
-            :on-change      #(reset! selected-tab %)
+            :on-change      on-tab-change
             :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
 

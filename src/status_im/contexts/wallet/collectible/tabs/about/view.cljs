@@ -13,7 +13,8 @@
   []
   (let [window-width               (rf/sub [:dimensions/window-width])
         item-width                 (- (/ window-width 2) link-card-space)
-        {:keys [collectible-data]} (rf/sub [:wallet/last-collectible-details]) ]
+        {:keys [collectible-data]} (rf/sub [:wallet/last-collectible-details])
+        link-card-container-style  (style/link-card item-width)]
     [:<>
      [rn/view {:style style/title}
       [quo/text
@@ -30,6 +31,6 @@
      [rn/view {:style style/link-cards-container}
       (for [item (:cards temp/collectible-about)]
         ^{:key (:title item)}
-        [quo/link-card (assoc item :container-style (style/link-card item-width))])]]))
+        [quo/link-card (assoc item :container-style link-card-container-style)])]]))
 
 (def view (quo.theme/with-theme view-internal))
