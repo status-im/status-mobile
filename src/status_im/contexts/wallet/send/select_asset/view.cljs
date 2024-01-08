@@ -41,16 +41,20 @@
                          {:token    token
                           :stack-id :wallet-select-asset}])
           token-units (utils/total-token-units-in-all-chains token)
-          balance-crypto-formatted (utils/get-standard-crypto-format token token-units)
+          crypto-formatted (utils/get-standard-crypto-format token token-units)
           fiat-value (utils/total-token-fiat-value currency token)
-          balance-fiat-formatted
-          (utils/get-standard-fiat-format balance-crypto-formatted currency-symbol fiat-value)]
+          fiat-formatted (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)
+<<<<<<< HEAD
         :token-value (str balance-crypto-formatted " " (:symbol token))
         :fiat-value  balance-fiat-formatted
 >>>>>>> 3d647c8c3 (fix: asset decimals)
+=======
+        :token-value (str crypto-formatted " " (:symbol token))
+        :fiat-value  fiat-formatted
+>>>>>>> 71ce9a70d (lint)
         :networks    (:networks token)
         :on-press    on-press}])))
 
