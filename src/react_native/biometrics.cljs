@@ -1,7 +1,8 @@
 (ns react-native.biometrics
   (:require
     ["react-native-biometrics" :default rn-biometrics]
-    [oops.core :as oops]))
+    [oops.core :as oops]
+    [schema.core :as schema]))
 
 (defonce biometrics (rn-biometrics.))
 
@@ -39,4 +40,14 @@
                (let [result  (js->clj result)
                      success (get result "success")
                      error   (get result "error")]
-                 (if error error success))))))
+                 (when error (throw error))
+                 success)))))
+
+(schema/=> authenticate
+  [:=>
+   [:cat
+    [:map {:closed true}
+     [:prompt-message {:optional true} string?]
+     [:fallback-prompt-message {:optional true} string?]
+     [:cancel-button-text {:optional true} string?]]]
+   :any])
