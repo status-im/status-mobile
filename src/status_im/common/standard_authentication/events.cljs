@@ -6,3 +6,8 @@
  (fn [{:keys [db]} [callback]]
    (let [key-uid (get-in db [:profile/profile :key-uid])]
      {:fx [[:keychain/get-user-password [key-uid callback]]]})))
+
+(rf/reg-event-fx
+ :standard-auth/reset-login-password
+ (fn [{:keys [db]}]
+   {:db (update db :profile/login dissoc :password :error)}))

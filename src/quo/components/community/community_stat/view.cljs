@@ -8,7 +8,7 @@
             utils.money))
 
 (defn view-internal
-  [{:keys [value icon theme style accessibility-label]}]
+  [{:keys [value icon theme style accessibility-label text-size]}]
   [rn/view
    {:style               (merge style/container style)
     :accessibility-label accessibility-label}
@@ -19,7 +19,7 @@
      :resize-mode     :center
      :color           (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
    [quo.text/text
-    {:size   :paragraph-1
+    {:size   (or text-size :paragraph-1)
      :weight :regular
      :style  (style/text theme)} (utils.money/format-amount value)]])
 
