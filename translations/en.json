@@ -139,7 +139,7 @@
     "change-log-level": "Confirm and restart the app to change log level to {{log-level}}",
     "change-logging-enabled": "Are you sure you want to {{enable}} logging?",
     "change-passcode": "Change Passcode",
-    "change-password": "Change Password",
+    "change-password": "Change password",
     "change-pin": "Change 6-digit passcode",
     "change-puk": "Change 12-digit PUK",
     "change-pairing": "Change pairing code",
@@ -2457,5 +2457,6 @@
     "to-label": "To",
     "oops-wrong-word": "Oops! Wrong word",
     "time-in-mins": "{{minutes}} min",
-    "amount-with-currency-symbol": "{{symbol}} {{amount}}"
+    "amount-with-currency-symbol": "{{symbol}} {{amount}}",
+    "no-routes-found": "No routes found"
 }
