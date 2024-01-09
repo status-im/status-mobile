@@ -1,6 +1,5 @@
 (ns status-im.common.standard-authentication.standard-auth.authorize
   (:require
-    [native-module.core :as native-module]
     [react-native.touch-id :as biometric]
     [status-im.common.standard-authentication.enter-password.view :as enter-password]
     [taoensso.timbre :as log]
@@ -18,11 +17,11 @@
            auth-button-label theme blur? auth-button-icon-left]}]
   (let [handle-auth-success (fn [biometric?]
                               (fn [entered-password]
-                                (let [sha3-pwd (if biometric?
-                                                 (str (security/safe-unmask-data entered-password))
-                                                 (native-module/sha3 (str (security/safe-unmask-data
-                                                                           entered-password))))]
-                                  (on-auth-success sha3-pwd))))
+                                (let [sha3-masked-password (if biometric?
+                                                             entered-password
+                                                             (security/hash-masked-password
+                                                              entered-password))]
+                                  (on-auth-success sha3-masked-password))))
         password-login      (fn [{:keys [on-press-biometrics]}]
                               (rf/dispatch [:show-bottom-sheet
                                             {:on-close on-close
@@ -53,10 +52,12 @@
                                               (password-login {:on-press-biometrics
                                                                #(on-press-biometrics
                                                                  on-press-biometrics)}))}))]
-    (biometric/get-supported-type
-     (fn [biometric-type]
-       (if (and biometric-auth? biometric-type)
-         (biometrics-login biometrics-login)
-         (do
-           (reset-password)
-           (password-login {})))))))
+    (if biometric-auth?
+      (biometric/get-supported-type
+       (fn [biometric-type]
+         (if biometric-type
+           (biometrics-login biometrics-login)
+           (do
+             (reset-password)
+             (password-login {})))))
+      (password-login {}))))
