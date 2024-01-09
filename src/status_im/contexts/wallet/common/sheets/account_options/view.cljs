@@ -81,7 +81,8 @@
                                 (clipboard/set-string multichain-address))}
         {:icon                :i/qr-code
          :accessibility-label :show-address-qr
-         :label               (i18n/label :t/show-address-qr)}
+         :label               (i18n/label :t/show-address-qr)
+         :on-press            #(rf/dispatch [:open-modal :wallet-receive {:status :share}])}
         {:icon                :i/share
          :accessibility-label :share-account
          :label               (i18n/label :t/share-account)

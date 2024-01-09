@@ -52,7 +52,11 @@
         wallet-type       (reagent/atom :wallet-legacy)
         ;; Design team is yet to confirm the default selected networks here.
         ;; Should be the current selected for the account or all the networks always
-        selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
+        selected-networks (reagent/atom [:ethereum :optimism :arbitrum])
+        {:keys [status]}  (rf/sub [:get-screen-params])
+        title             (case status
+                            :share (i18n/label :t/share-address)
+                            (i18n/label :t/receive))]
     (fn []
       (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])
             share-title                               (str (:name account) " " (i18n/label :t/address))
@@ -78,7 +82,7 @@
             :accessibility-label :top-bar}]
           [quo/text-combinations
            {:container-style style/header-container
-            :title           (i18n/label :t/receive)}]
+            :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
             {:type                @wallet-type
