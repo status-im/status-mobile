@@ -28,7 +28,7 @@
 (defn view
   [{:keys [amount routes]}]
   (let [loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-        candidates                (:Candidates routes)]
+        candidates                (:candidates routes)]
     (if (and (not loading-suggested-routes?) (not-empty candidates))
       [rn/flat-list
        {:data                    candidates
@@ -44,8 +44,8 @@
                                    [route-item
                                     {:amount       amount
                                      :status       :default
-                                     :from-network (utils/id->network (get-in route [:From :chainId]))
-                                     :to-network   (utils/id->network (get-in route [:To :chainId]))}])}]
+                                     :from-network (utils/id->network (get-in route [:from :chain-id]))
+                                     :to-network   (utils/id->network (get-in route [:to :chain-id]))}])}]
       [rn/view {:style style/empty-container}
        (if loading-suggested-routes?
          [rn/activity-indicator]
