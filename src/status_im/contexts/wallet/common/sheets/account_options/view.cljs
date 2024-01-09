@@ -8,6 +8,7 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
+            [react-native.share :as share]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im.contexts.wallet.common.utils :as utils]
@@ -35,7 +36,8 @@
         network-preference-details                     (rf/sub [:wallet/network-preference-details])
         multichain-address                             (utils/get-multichain-address
                                                         network-preference-details
-                                                        address)]
+                                                        address)
+        share-title                                    (str name " " (i18n/label :t/address))]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -77,9 +79,27 @@
                                               {:type :positive
                                                :text (i18n/label :t/address-copied)}])
                                 (clipboard/set-string multichain-address))}
+        {:icon                :i/qr-code
+         :accessibility-label :show-address-qr
+         :label               (i18n/label :t/show-address-qr)}
         {:icon                :i/share
          :accessibility-label :share-account
-         :label               (i18n/label :t/share-account)}
+         :label               (i18n/label :t/share-account)
+         :on-press            (fn []
+                                (rf/dispatch [:hide-bottom-sheet])
+                                (js/setTimeout
+                                 #(share/open
+                                   (if platform/ios?
+                                     {:activityItemSources
+                                      [{:placeholderItem {:type    "text"
+                                                          :content address}
+                                        :item            {:default {:type "text"
+                                                                    :content address}}
+                                        :linkMetadata    {:title share-title}}]}
+                                     {:title   share-title
+                                      :subject share-title
+                                      :message address}))
+                                 600))}
         {:add-divider?        (not show-account-selector?)
          :icon                :i/delete
          :accessibility-label :remove-account
