@@ -57,6 +57,7 @@
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
         {:keys [currency]}        (rf/sub [:profile/profile])
+        networks                  (rf/sub [:wallet/network-details])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         token-symbol              (:symbol token)
@@ -134,7 +135,7 @@
           {:container-style style/input-container
            :token           token-symbol
            :currency        currency
-           :networks        (:networks token)
+           :networks        networks
            :title           (i18n/label :t/send-limit {:limit limit-label})
            :conversion      conversion-rate
            :show-keyboard?  false
@@ -145,7 +146,7 @@
          [routes/view
           {:amount   amount
            :routes   suggested-routes
-           :networks (:networks token)}]
+           :networks networks}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)
