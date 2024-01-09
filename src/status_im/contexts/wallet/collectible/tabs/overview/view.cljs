@@ -12,7 +12,7 @@
 (defn- trait-item
   [{:keys [trait-type value]}]
   [quo/data-item
-   {:description     :default
+   {:subtitle-type   :default
     :card?           true
     :status          :default
     :size            :default
