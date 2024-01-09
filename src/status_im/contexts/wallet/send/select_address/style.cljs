@@ -17,5 +17,5 @@
 
 (def button
   {:justify-self      :flex-end
-   :margin-bottom     46
+   :margin-bottom     20
    :margin-horizontal 20})
