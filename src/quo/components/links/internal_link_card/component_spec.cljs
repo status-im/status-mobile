@@ -14,7 +14,7 @@
    :icon                "data:image/png,logo-x"
    :type                :user
    :customization-color "#ff0000"
-   :emojis              [:i/active-members :i/arrow-left]})
+   :emoji-hash          "🌟🚀🐠🌈🏰🔮🦉🐼🍉🎨🚲🌙🍔🌵"})
 
 (h/describe "Internal link card - User"
   (h/test "renders with most common props"
