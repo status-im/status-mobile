@@ -2457,5 +2457,6 @@
     "to-label": "To",
     "oops-wrong-word": "Oops! Wrong word",
     "time-in-mins": "{{minutes}} min",
-    "amount-with-currency-symbol": "{{symbol}} {{amount}}"
+    "amount-with-currency-symbol": "{{symbol}} {{amount}}",
+    "no-routes-found": "No routes found"
 }
