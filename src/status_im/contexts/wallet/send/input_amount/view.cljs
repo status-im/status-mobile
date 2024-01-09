@@ -101,7 +101,6 @@
                                             :stack-id :wallet-send-input-amount}])}}]
       (let [limit-label       (make-limit-label @current-limit)
             input-num-value   (parse-double @input-value)
-            token             (rf/sub [:wallet/wallet-send-token])
             suggested-routes  (rf/sub [:wallet/wallet-send-suggested-routes])
             route             (rf/sub [:wallet/wallet-send-route])
             confirm-disabled? (or
@@ -110,7 +109,6 @@
                                (<= input-num-value 0)
                                (> input-num-value (:amount @current-limit)))
             amount            (str @input-value " " token-symbol)]
-        (println "sus" suggested-routes)
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
