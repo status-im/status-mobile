@@ -2,6 +2,7 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im.contexts.profile.edit.name.events]
     [status-im.contexts.profile.login.events :as profile.login]
     [status-im.contexts.profile.rpc :as profile.rpc]
     [status-im.navigation.events :as navigation]
