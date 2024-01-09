@@ -20,8 +20,7 @@
    {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
    window-height
-   edit
-   scroll-to-bottom-fn]
+   edit]
   (reanimated/animate height comp-constants/input-height)
   (reanimated/set-shared-value saved-height comp-constants/input-height)
   (reanimated/set-shared-value last-height comp-constants/input-height)
@@ -39,11 +38,11 @@
   (reset! text-value "")
   (reset! sending-links? false)
   (reset! sending-images? false)
-  (when (and (not (some? edit)) scroll-to-bottom-fn)
-    (scroll-to-bottom-fn)))
+  (when-not (some? edit)
+    (rf/dispatch [:chat.ui/scroll-to-bottom])))
 
 (defn f-send-button
-  [props state animations window-height images? btn-opacity scroll-to-bottom-fn z-index edit]
+  [props state animations window-height images? btn-opacity z-index edit]
   (let [{:keys [text-value]} state
         customization-color  (rf/sub [:profile/customization-color])]
     (rn/use-effect (fn []
@@ -61,19 +60,17 @@
     [reanimated/view
      {:style (style/send-button btn-opacity @z-index)}
      [quo/button
-      {:icon-only? true
-       :size 32
+      {:icon-only?          true
+       :size                32
        :customization-color customization-color
        :accessibility-label :send-message-button
-       :on-press #(send-message props state animations window-height edit scroll-to-bottom-fn)}
+       :on-press            #(send-message props state animations window-height edit)}
       :i/arrow-up]]))
 
 (defn send-button
-  [props {:keys [text-value] :as state} animations window-height images? edit btn-opacity
-   scroll-to-bottom-fn]
+  [props {:keys [text-value] :as state} animations window-height images? edit btn-opacity]
   (let [z-index (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
-    [:f> f-send-button props state animations window-height images? btn-opacity scroll-to-bottom-fn
-     z-index edit]))
+    [:f> f-send-button props state animations window-height images? btn-opacity z-index edit]))
 
 (defn disabled-audio-button
   [opacity]
@@ -231,7 +228,7 @@
     :icon     :i/format}])
 
 (defn view
-  [props state animations window-height insets scroll-to-bottom-fn {:keys [edit images]}]
+  [props state animations window-height insets {:keys [edit images]}]
   (let [send-btn-opacity  (reanimated/use-shared-value 0)
         audio-btn-opacity (reanimated/interpolate send-btn-opacity [0 1] [1 0])]
     [rn/view {:style style/actions-container}
@@ -242,8 +239,7 @@
       [image-button props animations insets edit]
       [reaction-button]
       [format-button]]
-     [:f> send-button props state animations window-height images edit send-btn-opacity
-      scroll-to-bottom-fn]
+     [:f> send-button props state animations window-height images edit send-btn-opacity]
      (when (and (not edit) (not images))
        ;; TODO(alwx): needs to be replaced with an `audio-button` later. See
        ;; https://github.com/status-im/status-mobile/issues/16084 for more details.

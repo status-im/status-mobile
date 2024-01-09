@@ -23,37 +23,16 @@
     [utils.re-frame :as rf]
     [utils.worklets.chat.messages :as worklets]))
 
-(defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const min-message-height 32)
-(defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
-(defn list-ref [ref] (reset! messages-list-ref ref))
-
-(defn scroll-to-bottom
-  []
-  (some-> ^js @messages-list-ref
-          (.scrollToOffset #js
-                            {:animated true})))
-
-(defn on-scroll-fn
-  [show-floating-scroll-down-button? distance-atom layout-height-atom]
-  (fn [y layout-height new-distance]
-    (let [threshold-height   (* (/ layout-height 100)
-                                threshold-percentage-to-show-floating-scroll-down-button)
-          reached-threshold? (> y threshold-height)]
-      (when (not= layout-height @layout-height-atom)
-        (reset! layout-height-atom layout-height))
-      (reset! distance-atom new-distance)
-      (when (not= reached-threshold? @show-floating-scroll-down-button?)
-        (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
-        (reset! show-floating-scroll-down-button? reached-threshold?)))))
+(defn list-ref [ref] (reset! state/messages-list-ref ref))
 
 (defn on-viewable-items-changed
   [e]
-  (when @messages-list-ref
+  (when @state/messages-list-ref
     (reset! state/first-not-visible-item
       (when-let [last-visible-element (aget (oops/oget e "viewableItems")
                                             (dec (oops/oget e "viewableItems.length")))]
@@ -61,7 +40,7 @@
               ;; Get first not visible element, if it's a datemark/gap
               ;; we might add messages on receiving as they do not have
               ;; a clock value, but usually it will be a message
-              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+              first-not-visible (aget (oops/oget @state/messages-list-ref "props.data") (inc index))]
           (when (and first-not-visible
                      (= :message (:type first-not-visible)))
             first-not-visible))))))
@@ -300,9 +279,16 @@
       (reanimated/set-shared-value calculations-complete? true))
     (js/setTimeout #(reset! messages-list-on-layout-finished? true) 1000)))
 
+(defn on-scroll-fn
+  [distance-atom layout-height-atom]
+  (fn [layout-height new-distance]
+    (when (not= layout-height @layout-height-atom)
+      (reset! layout-height-atom layout-height))
+    (reset! distance-atom new-distance)))
+
 (defn f-messages-list-content
   [{:keys [insets distance-from-list-top content-height layout-height cover-bg-color distance-atom
-           show-floating-scroll-down-button? calculations-complete? messages-list-on-layout-finished?]}]
+           calculations-complete? messages-list-on-layout-finished? chat-list-scroll-y]}]
   (let [theme                    (quo.theme/use-theme-value)
         chat                     (rf/sub [:chats/current-chat-chat-view])
         {:keys [keyboard-shown]} (hooks/use-keyboard)
@@ -354,9 +340,8 @@
         :on-scroll                         (reanimated/use-animated-scroll-handler
                                             (worklets/messages-list-on-scroll
                                              distance-from-list-top
-                                             (on-scroll-fn show-floating-scroll-down-button?
-                                                           distance-atom
-                                                           layout-height)))
+                                             chat-list-scroll-y
+                                             (on-scroll-fn distance-atom layout-height)))
         :style                             {:background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
