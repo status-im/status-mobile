@@ -45,7 +45,8 @@
                                     {:amount       amount
                                      :status       :default
                                      :from-network (utils/id->network (get-in route [:from :chain-id]))
-                                     :to-network   (utils/id->network (get-in route [:to :chain-id]))}])}]
+                                     :to-network   (utils/id->network (get-in route
+                                                                              [:to :chain-id]))}])}]
       [rn/view {:style style/empty-container}
        (if loading-suggested-routes?
          [rn/activity-indicator]
