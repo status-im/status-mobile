@@ -37,6 +37,7 @@
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
+    [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
@@ -367,7 +368,13 @@
      :options   (merge
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
-     :component scan-profile-qr-page/view}]
+     :component scan-profile-qr-page/view}
+
+    ;; Settings
+
+    {:name      :settings-password
+     :options   options/transparent-screen-options
+     :component settings-password/view}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview

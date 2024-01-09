@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.standard-authentication.standard-auth.authorize :as authorize]
+    [status-im.constants :as constants]
     [utils.re-frame :as rf]))
 
 (defn- view-internal
@@ -15,7 +16,7 @@
                            #(reset! reset-slider? true)
                            200))
         auth-method     (rf/sub [:auth-method])
-        biometric-auth? (= auth-method "biometric")]
+        biometric-auth? (= auth-method constants/auth-method-biometric)]
     (fn [{:keys [track-text
                  customization-color
                  auth-button-label

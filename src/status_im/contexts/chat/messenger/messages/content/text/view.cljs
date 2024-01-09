@@ -149,8 +149,9 @@
   [{:keys [content chat-id edited-at style-override on-layout]}]
   ^{:key (:parsed-text content)}
   [rn/view
-   {:style     style-override
-    :on-layout on-layout}
+   {:style               style-override
+    :on-layout           on-layout
+    :accessibility-label :message-text-content}
    (reduce (fn [acc e]
              (render-block acc e chat-id style-override))
            [:<>]
