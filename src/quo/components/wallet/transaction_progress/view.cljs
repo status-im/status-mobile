@@ -180,8 +180,8 @@
       :networks networks}]
     [tag-internal tag-photo tag-name tag-number theme]
     (for [network networks]
-      ^{:key (:network network)}
       (let [assoc-props #(get-network networks %)]
+        ^{:key (:network network)}
         [view-network (assoc-props (:network network))]))]])
 
 (def view (quo.theme/with-theme view-internal))

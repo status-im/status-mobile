@@ -1,7 +1,7 @@
 (ns status-im.contexts.profile.recover.events
   (:require
     [native-module.core :as native-module]
-    [status-im.contexts.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.contexts.profile.config :as profile.config]
     status-im.contexts.profile.recover.effects
     [utils.re-frame :as rf]

@@ -675,21 +675,6 @@ class BaseView(object):
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
         time.sleep(3)
 
-    def get_public_key(self):
-        self.driver.info("Get public key via Share QR button")
-
-        self.show_qr_button.click_until_presence_of_element(self.link_to_profile_button)
-        self.link_to_profile_button.click()
-        public_key = self.driver.get_clipboard_text()
-        # Legacy profile view
-        # profile_view = self.get_profile_view()
-        # self.profile_button.click_until_presence_of_element(profile_view.default_username_text)
-        # profile_view.share_my_profile_button.click()
-        # profile_view.public_key_text.wait_for_visibility_of_element(20)
-        # public_key = profile_view.public_key_text.text
-        self.click_system_back_button()
-        return public_key
-
     def tap_mutual_cr_switcher(self):
         profile_view = self.profile_button.click()
         profile_view.advanced_button.scroll_and_click()

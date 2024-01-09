@@ -5,7 +5,7 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.contexts.wallet.add-address-to-watch.confirm-address.style :as style]
     [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view :as
      create-or-edit-account]

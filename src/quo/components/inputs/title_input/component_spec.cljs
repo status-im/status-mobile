@@ -13,16 +13,17 @@
                {:value      ""
                 :max-length 24}])
     (h/fire-event :on-focus (h/query-by-label-text :profile-title-input))
-    (h/wait-for #(h/is-truthy (h/query-by-text "00")))
-    (h/is-truthy (h/query-by-text "/24")))
+    (-> (h/wait-for #(h/get-by-text "00"))
+        (.then #(h/is-truthy (h/query-by-text "/24")))))
 
   (h/test "renders with max length digits and character count"
     (h/render [title-input/view
                {:default-value "abc"
-                :max-length    24} "abc"])
+                :max-length    24}
+               "abc"])
     (h/fire-event :on-focus (h/query-by-label-text :profile-title-input))
-    (h/wait-for #(h/is-truthy (h/query-by-text "03")))
-    (h/is-truthy (h/query-by-text "/24")))
+    (-> (h/wait-for #(h/get-by-text "03"))
+        (.then #(h/is-truthy (h/query-by-text "/24")))))
 
   (h/test "text updates on change"
     (let [on-change-text (h/mock-fn)]

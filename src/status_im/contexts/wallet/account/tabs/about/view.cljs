@@ -1,9 +1,11 @@
 (ns status-im.contexts.wallet.account.tabs.about.view
   (:require
     [quo.core :as quo]
+    [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.share :as share]
+    [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
     [utils.i18n :as i18n]
@@ -17,18 +19,35 @@
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
         :label               (i18n/label :t/view-on-eth)
-        :right-icon          :i/external}
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/link
         :accessibility-label :view-on-opt
         :label               (i18n/label :t/view-on-opt)
-        :right-icon          :i/external}
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/optimism-mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/link
         :accessibility-label :view-on-arb
         :label               (i18n/label :t/view-on-arb)
-        :right-icon          :i/external}
+        :right-icon          :i/external
+        :on-press            #(rf/dispatch
+                               [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                config/arbitrum-mainnet-chain-explorer-link
+                                address])}
        {:icon                :i/copy
         :accessibility-label :copy-address
-        :label               (i18n/label :t/copy-address)}
+        :label               (i18n/label :t/copy-address)
+        :on-press            (fn []
+                               (clipboard/set-string address)
+                               (rf/dispatch [:toasts/upsert
+                                             {:type :positive
+                                              :text (i18n/label :t/address-copied)}]))}
        {:icon                :i/qr-code
         :accessibility-label :show-address-qr
         :label               (i18n/label :t/show-address-qr)}
@@ -56,7 +75,9 @@
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
         {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
         networks                                  (rf/sub [:wallet/network-details])]
-    [rn/view {:style style/about-tab}
+    [rn/scroll-view
+     {:style                   style/about-tab
+      :content-container-style {:padding-bottom 20}}
      [quo/data-item
       {:description     :default
        :icon-right?     true

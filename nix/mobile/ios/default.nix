@@ -21,6 +21,7 @@ in {
       xcodeWrapper watchman procps
       flock # used in nix/scripts/node_modules.sh
       ios-deploy # used in 'make run-ios-device'
+      xcbeautify # used in 'make run-ios'
     ];
 
     # WARNING: Executes shellHook in reverse order.

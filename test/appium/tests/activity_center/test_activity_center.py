@@ -92,8 +92,6 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
     @marks.testrail_id(702851)
     def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
         self.device_2.just_fyi('Creating a new user on Device2')
-        # self.home_2.navigate_back_to_home_view()
-        # self.home_2.profile_button.click()
         self.home_2.reopen_app(sign_in=False)
         new_username = "new user"
         self.device_2.create_user(username=new_username, first_user=False)
@@ -153,10 +151,22 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
                     self.username_2, self.profile_link_2, decoded_username))
         public_key_2 = self.profile_link_2.split("#")[-1]
 
-        self.home_1.just_fyi("Device 1 creates a new user")
-        self.profile_1.driver.reset()
         new_username_1 = "test user 123"
-        self.device_1.create_user(username=new_username_1)
+
+        def _device_1_creates_user():
+            self.home_1.just_fyi("Device 1 creates a new user")
+            self.profile_1.driver.reset()
+            self.device_1.create_user(username=new_username_1)
+
+        def _device_2_sign_in():
+            self.home_2.just_fyi("Device 2 sign in, user name is " + self.username_2)
+            self.home_2.reopen_app(sign_in=False)
+            self.device_2.show_profiles_button.wait_and_click()
+            self.device_2.get_user(username=self.username_2).click()
+            self.device_2.sign_in()
+
+        self.loop.run_until_complete(run_in_parallel(((_device_1_creates_user, {}),
+                                                      (_device_2_sign_in, {}))))
 
         self.device_1.just_fyi('Device1 sends a contact request to Device2 using his profile link')
         self.home_1.chats_tab.click()

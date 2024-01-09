@@ -5,7 +5,7 @@
     [react-native.core :as rn]))
 
 (defn view
-  [{:keys [type]} & children]
+  [{:keys [type container-style]} & children]
   [rn/view {:style (style/overlay-background type)}
    (if (= type :shell)
      [blur/view
@@ -14,7 +14,7 @@
        :blur-type     :transparent
        :overlay-color :transparent
        :style         style/container}
-      [rn/view {:style style/blur-container}
+      [rn/view {:style (merge style/blur-container container-style)}
        children]]
-     [rn/view {:style style/container}
+     [rn/view {:style (merge style/container container-style)}
       children])])

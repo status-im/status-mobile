@@ -8,7 +8,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.link-previews-settings.styles :as styles]
     [re-frame.core :as re-frame]
-    [status-im.contexts.chat.messages.link-preview.events]
+    [status-im.contexts.chat.messenger.messages.link-preview.events]
     [utils.i18n :as i18n]))
 
 (defn prepare-urls-items-data

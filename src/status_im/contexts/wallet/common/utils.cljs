@@ -31,11 +31,51 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-(defn- total-raw-balance-in-all-chains
+(defn total-raw-balance-in-all-chains
   [balances-per-chain]
   (->> balances-per-chain
        (map (comp :raw-balance val))
        (reduce money/add)))
+
+(defn extract-exponent
+  [s]
+  (if-let [index (string/index-of s "e")]
+    (subs s (+ index 2))
+    nil))
+
+(defn calc-max-crypto-decimals
+  [value]
+  (let [str-representation   (str value)
+        decimal-part         (second (clojure.string/split str-representation #"\."))
+        exponent             (extract-exponent str-representation)
+        zeroes-count         (count (take-while #(= \0 %) decimal-part))
+        max-decimals         (or exponent zeroes-count)
+        first-non-zero-digit (first (filter #(not (= \0 %)) decimal-part))]
+    (if (= \1 first-non-zero-digit)
+      (inc max-decimals)
+      max-decimals)))
+
+(defn remove-trailing-zeroes
+  [num]
+  (let [parts (clojure.string/split (str num) #"\.")]
+    (str (first parts)
+         (if-let [decimals (second parts)]
+           (if (seq (clojure.string/replace decimals #"0+$" ""))
+             (str "." (clojure.string/replace decimals #"0+$" ""))
+             "")
+           ""))))
+
+(defn get-standard-crypto-format
+  "For full details: https://github.com/status-im/status-mobile/issues/18225"
+  [{:keys [market-values-per-currency]} token-units]
+  (let [price          (get-in market-values-per-currency [:usd :price])
+        one-cent-value (if (pos? price) (/ 0.01 price) 0)
+        decimals-count (calc-max-crypto-decimals one-cent-value)]
+    (if (money/equal-to token-units 0)
+      "0"
+      (if (< token-units one-cent-value)
+        (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
+        (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
 
 (defn total-token-units-in-all-chains
   [{:keys [balances-per-chain decimals] :as _token}]
@@ -46,18 +86,6 @@
 (defn get-account-by-address
   [accounts address]
   (some #(when (= (:address %) address) %) accounts))
-
-(defn calculate-raw-balance
-  [raw-balance decimals]
-  (if-let [n (utils.number/parse-int raw-balance nil)]
-    (/ n (Math/pow 10 (utils.number/parse-int decimals)))
-    0))
-
-(defn token-value-in-chain
-  [{:keys [balances-per-chain decimals]} chain-id]
-  (let [balance-in-chain (get balances-per-chain chain-id)]
-    (when balance-in-chain
-      (calculate-raw-balance (:raw-balance balance-in-chain) decimals))))
 
 (defn total-token-fiat-value
   "Returns the total token fiat value taking into account all token's chains."
@@ -87,6 +115,41 @@
        (map #(calculate-balance-for-token %))
        (reduce +)))
 
+(defn calculate-balance-from-tokens
+  [{:keys [currency tokens]}]
+  (->> tokens
+       (map #(total-token-fiat-value currency %))
+       (reduce money/add)))
+
+(defn- add-balances-per-chain
+  [b1 b2]
+  {:raw-balance (money/add (:raw-balance b1) (:raw-balance b2))
+   :chain-id    (:chain-id b2)})
+
+(defn- merge-token
+  [existing-token token]
+  (assoc token
+         :balances-per-chain
+         (merge-with add-balances-per-chain
+                     (:balances-per-chain existing-token)
+                     (:balances-per-chain token))))
+
+(defn aggregate-tokens-for-all-accounts
+  "Receives accounts (seq) and returns aggregated tokens in all accounts
+   NOTE: We use double reduce for faster performance (faster than mapcat and flatten)"
+  [accounts]
+  (->> accounts
+       (map :tokens)
+       (reduce
+        (fn [result-map tokens-per-account]
+          (reduce
+           (fn [acc token]
+             (update acc (:symbol token) merge-token token))
+           result-map
+           tokens-per-account))
+        {})
+       vals))
+
 (defn network-list
   [{:keys [balances-per-chain]} networks]
   (into #{}
@@ -95,10 +158,6 @@
                                     (= (:related-chain-id %) chain-id))
                                networks)))
               (keys balances-per-chain))))
-
-(defn calculate-fiat-change
-  [fiat-value change-pct-24hour]
-  (money/bignumber (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour)))))
 
 (defn get-wallet-qr
   [{:keys [wallet-type selected-networks address]}]
@@ -113,3 +172,28 @@
   {constants/mainnet-chain-id  :ethereum
    constants/optimism-chain-id :optimism
    constants/arbitrum-chain-id :arbitrum})
+
+(defn calculate-token-value
+  "This function returns token values in the props of token-value (quo) component"
+  [{:keys [token color currency currency-symbol]}]
+  (let [token-units                 (total-token-units-in-all-chains token)
+        fiat-value                  (total-token-fiat-value currency token)
+        market-values               (or (get-in token [:market-values-per-currency currency])
+                                        (get-in token
+                                                [:market-values-per-currency
+                                                 constants/profile-default-currency]))
+        {:keys [change-pct-24hour]} market-values
+        crypto-value                (get-standard-crypto-format token token-units)
+        fiat-value                  (if (string/includes? crypto-value "<")
+                                      "<$0.01"
+                                      (prettify-balance currency-symbol fiat-value))]
+    {:token               (:symbol token)
+     :token-name          (:name token)
+     :state               :default
+     :status              (cond
+                            (pos? change-pct-24hour) :positive
+                            (neg? change-pct-24hour) :negative
+                            :else                    :empty)
+     :customization-color color
+     :values              {:crypto-value crypto-value
+                           :fiat-value   fiat-value}}))

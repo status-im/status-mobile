@@ -325,6 +325,13 @@ class ChatElementByText(Text):
 
         return PinnedByLabelText(self.driver, self.locator)
 
+    @property
+    def message_text_content(self):
+        return Text(
+            self.driver,
+            xpath="//%s//*[@content-desc='message-text-content']/android.widget.TextView" % self.chat_item_locator
+        )
+
 
 class UsernameOptions(Button):
     def __init__(self, driver, username):
@@ -425,7 +432,7 @@ class CommunityView(HomeView):
     def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
         ChatView(self.driver).chat_element_by_text("https://status.app/c/").click_on_link_inside_message_body()
-        self.join_button.click()
+        self.join_button.wait_and_click(120)
         self.join_community_button.scroll_and_click()
         self.password_input.send_keys(password)
         Button(self.driver,
@@ -1083,7 +1090,7 @@ class ChatView(BaseView):
         self.driver.info("Adding one more '%s' reaction or removing an added one" % emoji)
         key = emojis[emoji]
         element = Button(self.driver, accessibility_id='emoji-reaction-%s' % key)
-        element.click()
+        element.wait_and_click()
 
     def view_profile_long_press(self, message=str):
         self.chat_element_by_text(message).long_press_element()

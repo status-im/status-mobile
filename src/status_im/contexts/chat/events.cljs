@@ -3,19 +3,18 @@
     [clojure.set :as set]
     [legacy.status-im.chat.models.loading :as loading]
     [legacy.status-im.data-store.chats :as chats-store]
-    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.common.muting.helpers :refer [format-mute-till]]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.composer.link-preview.events :as link-preview]
+    [status-im.contexts.chat.contacts.events :as contacts-store]
     status-im.contexts.chat.effects
-    status-im.contexts.chat.lightbox.events
-    status-im.contexts.chat.messages.content.reactions.events
-    [status-im.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
-    [status-im.contexts.chat.messages.delete-message.events :as delete-message]
-    [status-im.contexts.chat.messages.list.state :as chat.state]
-    [status-im.contexts.contacts.events :as contacts-store]
+    [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
+    status-im.contexts.chat.messenger.lightbox.events
+    status-im.contexts.chat.messenger.messages.content.reactions.events
+    [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
+    [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
+    [status-im.contexts.chat.messenger.messages.list.state :as chat.state]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -350,11 +349,9 @@
                           :t/channel-unmuted-successfully))))]
     {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
-                {:icon       :i/correct
-                 :icon-color (colors/theme-colors colors/success-60
-                                                  colors/success-50)
-                 :text       (mute-duration-text (when (some? muted-till)
-                                                   (str (format-mute-till muted-till))))}]}))
+                {:type :positive
+                 :text (mute-duration-text (when (some? muted-till)
+                                             (str (format-mute-till muted-till))))}]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}

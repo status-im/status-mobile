@@ -12,8 +12,8 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchGlogPhase"
-    "patchJestPhase"
-    "installPhase"    
+    "patchBoostPodSpec"
+    "installPhase"
   ];
 
   # First symlink all modules as is
@@ -56,13 +56,6 @@ stdenv.mkDerivation {
       '-Wl,--build-id=none'
   '';
 
-  # Remove when we upgrade jest to 29
-  patchJestPhase = ''
-    substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
-      'jest.now()' \
-      'Date.now'
-  '';
-
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/
@@ -83,6 +76,14 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh \
     --replace 'export CC="' '#export CC="' \
     --replace 'export CXX="' '#export CXX="'
+  '';
+
+  # to fix pod checksum issue : https://github.com/facebook/react-native/issues/42180
+  # TODO remove this patch after upgrading to react-native 0.73.2
+  patchBoostPodSpec = ''
+   substituteInPlace ./node_modules/react-native/third-party-podspecs/boost.podspec \
+      --replace 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2' \
+      'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' \
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

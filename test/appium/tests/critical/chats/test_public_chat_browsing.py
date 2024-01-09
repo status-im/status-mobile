@@ -285,7 +285,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                                                                    'username': self.username_1}),
                                                       (self.device_2.create_user, {'username': self.username_2}))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
+        self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
         [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
@@ -682,6 +682,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         profile_1 = self.home_1.get_profile_view()
         self.home_1.navigate_back_to_home_view()
         self.chat_1.profile_button.click()
+        profile_1.logout_button.scroll_to_element()
+        profile_1.profile_legacy_button.click()
         profile_1.contacts_button.wait_and_click()
         profile_1.blocked_users_button.wait_and_click()
         profile_1.element_by_text(self.username_2).click()
@@ -773,8 +775,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_1.get_channel(self.channel_name).click()
         self.channel_1.just_fyi("Receiver is checking if initial messages were delivered")
         for message in message_to_edit, message_to_delete:
-            if not self.channel_2.chat_element_by_text(message).is_element_displayed(30):
-                self.channel_2.driver.fail("Message '%s' was not received")
+            if not self.channel_1.chat_element_by_text(message).is_element_displayed(30):
+                self.channel_1.driver.fail("Message '%s' was not received")
 
         self.channel_2.just_fyi("Turning on airplane mode and editing/deleting messages")
         self.channel_2.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
@@ -988,8 +990,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702948)
-    @marks.xfail(
-        reason="Can't navigate to a channel by hashtag link, https://github.com/status-im/status-mobile/issues/18095")
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1000,11 +1000,32 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.create_community(community_type="closed")
         community_name = "closed community"
         self.community_1.share_community(community_name, self.username_2)
+        self.community_1.get_to_community_channel_from_home(community_name, "general")
+        control_message_general_chat = "this message should be visible to the user before joining"
+        self.channel_1.send_message(control_message_general_chat)
 
-        self.home_2.just_fyi("Device 2 joins the community")
+        self.home_2.just_fyi("Device 2 checks the community channels and message inside")
         self.home_2.get_chat(self.username_1).click()
         control_message_1_1_chat = "it is just a message text"
         self.chat_2.send_message(control_message_1_1_chat)
+        self.chat_2.chat_element_by_text("https://status.app/c/").click_on_link_inside_message_body()
+        closed_com_channels = dogs_channel, cats_channel = "dogs", "cats"  # not checking the last channel '# rules' to avoid scrolling
+        not_shown = list()
+        for chan_name in closed_com_channels:
+            if not self.community_2.get_channel(chan_name).is_element_displayed():
+                not_shown.append(chan_name)
+        if not_shown:
+            self.errors.append("Not all channels are shown in community before joining: %s" % not_shown)
+        chan = self.community_2.get_channel("general")
+        if chan.is_element_displayed():
+            chan.click()
+            if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(20):
+                self.errors.append("Message in community channel is not visible for user before join")
+        else:
+            not_shown.append("general")
+
+        self.home_2.just_fyi("Device 2 joins the community")
+        self.home_2.jump_to_card_by_text(self.username_1)
         self.community_2.join_community(open_community=False)
 
         self.home_1.just_fyi("Device 1 accepts the community request")
@@ -1019,7 +1040,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
 
-        dogs_channel, cats_channel = "dogs", "cats"
         cats_message = "Where is a cat?"
 
         self.home_1.just_fyi("Device 1 sends a message in the cats channel")
@@ -1068,6 +1088,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703629)
+    @marks.xfail(
+        reason="Can't join a community if admin goes offline, https://github.com/status-im/status-mobile/issues/17678")
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1080,6 +1102,16 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.create_community(community_type="open")
         community_name = "open community"
         self.community_1.share_community(community_name, self.username_2)
+        self.community_1.get_to_community_channel_from_home(community_name, "general")
+        control_message_general_chat = "this message should be visible to the user before joining"
+        self.channel_1.send_message(control_message_general_chat)
+        try:
+            self.channel_1.chat_element_by_text(control_message_general_chat).wait_for_status_to_be(
+                expected_status='Delivered',
+                timeout=60)
+            message_sent = True
+        except TimeoutException:
+            message_sent = False
 
         self.home_1.just_fyi("Device 1 goes offline")
         app_package = self.device_1.driver.current_package
@@ -1099,6 +1131,15 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
         if not self.community_2.community_status_pending.is_element_displayed():
             self.errors.append("Pending status is not displayed")
+        general_channel = self.community_2.get_channel("general")
+        if general_channel.is_element_displayed():
+            general_channel.click()
+            if not self.channel_2.chat_element_by_text(control_message_general_chat).is_element_displayed(30):
+                self.errors.append(
+                    "Message in community channel is not visible for user before join, it was indicated as" \
+                    "%s sent for the sender before he went offline" % "" if message_sent else "not")
+        else:
+            self.errors.append("Community channel is not displayed for user before join")
         self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
         self.community_2.close_community_view_button.click()
         self.home_2.pending_communities_tab.click()

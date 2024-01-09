@@ -1,15 +1,14 @@
 (ns status-im.contexts.wallet.send.input-amount.component-spec
   (:require
-    [re-frame.core :as re-frame]
+    status-im.contexts.wallet.events
+    status-im.contexts.wallet.send.events
     [status-im.contexts.wallet.send.input-amount.view :as input-amount]
-    [test-helpers.component :as h]))
+    [test-helpers.component :as h]
+    [utils.debounce :as debounce]
+    [utils.re-frame :as rf]))
 
-(defn setup-subs
-  [subscriptions]
-  (doseq [keyval subscriptions]
-    (re-frame/reg-sub
-     (key keyval)
-     (fn [_] (val keyval)))))
+(set! rf/dispatch #())
+(set! debounce/debounce-and-dispatch #())
 
 (def sub-mocks
   {:profile/profile                              {:currency :usd}
@@ -45,74 +44,111 @@
    :wallet/wallet-send-route                     {:route []}})
 
 (h/describe "Send > input amount screen"
+  (h/setup-restorable-re-frame)
+
   (h/test "Default render"
-    (with-redefs [re-frame/dispatch #()]
-      (setup-subs sub-mocks)
-      (h/render [input-amount/view {}])
-      (h/is-truthy (h/get-by-text "0"))
-      (h/is-truthy (h/get-by-text "ETH"))
-      (h/is-truthy (h/get-by-text "$0.00"))
-      (h/is-disabled (h/get-by-label-text :button-one))))
+    (h/setup-subs sub-mocks)
+    (h/render [input-amount/view {}])
+    (h/is-truthy (h/get-by-text "0"))
+    (h/is-truthy (h/get-by-text "ETH"))
+    (h/is-truthy (h/get-by-text "$0.00"))
+    (h/is-disabled (h/get-by-label-text :button-one)))
 
   (h/test "Fill token input and confirm"
-    (with-redefs [re-frame/dispatch #()]
-      (setup-subs sub-mocks)
-      (let [on-confirm (h/mock-fn)]
-        (h/render [input-amount/view
-                   {:on-confirm on-confirm
-                    :rate       10
-                    :limit      1000}])
+    (h/setup-subs sub-mocks)
+    (let [on-confirm (h/mock-fn)]
+      (h/render [input-amount/view
+                 {:on-confirm on-confirm
+                  :rate       10
+                  :limit      1000}])
 
-        (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
-        (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-        (h/fire-event :press (h/query-by-label-text :keyboard-key-3))
-        (h/fire-event :press (h/query-by-label-text :keyboard-key-.))
-        (h/fire-event :press (h/query-by-label-text :keyboard-key-4))
-        (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-3))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-.))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-4))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
 
-        (h/wait-for #(h/is-truthy (h/get-by-text "$1234.50")))
+      (-> (h/wait-for #(h/get-by-text "$1234.50"))
+          (.then (fn []
+                   (h/is-truthy (h/get-by-label-text :button-one))
+                   (h/fire-event :press (h/get-by-label-text :button-one))
+                   (h/was-called on-confirm))))))
 
-        (h/is-truthy (h/get-by-label-text :button-one))
+  (h/test "Fill token input and confirm"
+    (h/setup-subs sub-mocks)
 
-        (h/fire-event :press (h/get-by-label-text :button-one))
-        (h/was-called on-confirm))))
+    (let [on-confirm (h/mock-fn)]
+      (h/render [input-amount/view
+                 {:rate       10
+                  :limit      1000
+                  :on-confirm on-confirm}])
+
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-3))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-.))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-4))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+
+      (-> (h/wait-for #(h/get-by-text "$1234.50"))
+          (.then (fn []
+                   (h/is-truthy (h/get-by-label-text :button-one))
+                   (h/fire-event :press (h/get-by-label-text :button-one))
+                   (h/was-called on-confirm))))))
 
   (h/test "Try to fill more than limit"
-    (with-redefs [re-frame/dispatch #()]
-      (setup-subs sub-mocks)
-      (h/render [input-amount/view
-                 {:rate  10
-                  :limit 286}])
+    (h/setup-subs sub-mocks)
+    (h/render [input-amount/view
+               {:rate  10
+                :limit 286}])
 
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
 
-      (h/wait-for #(h/is-truthy (h/get-by-text "$290.00")))
+    (-> (h/wait-for #(h/is-truthy (h/get-by-text "$290.00")))
+        (.then (fn []
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-backspace))
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-8))
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+                 (h/wait-for #(h/get-by-text "$2850.00"))))))
 
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-backspace))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-8))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-      (h/wait-for #(h/is-truthy (h/get-by-text "$2850.00")))))
+  (h/test "Try to fill more than limit"
+    (h/setup-subs sub-mocks)
+    (h/render [input-amount/view
+               {:rate       10
+                :limit      286
+                :on-confirm #()}])
+
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+
+    (-> (h/wait-for #(h/get-by-text "$290.00"))
+        (.then (fn []
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-backspace))
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-8))
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+                 (h/wait-for #(h/get-by-text "$2850.00"))))))
 
   (h/test "Switch from crypto to fiat and check limit"
-    (with-redefs [re-frame/dispatch #()]
-      (setup-subs sub-mocks)
-      (h/render [input-amount/view
-                 {:rate  10
-                  :limit 250}])
+    (h/setup-subs sub-mocks)
+    (h/render [input-amount/view
+               {:rate       10
+                :limit      250
+                :on-confirm #()}])
 
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-0))
-      (h/wait-for #(h/is-truthy (h/get-by-text "$200.00")))
-
-      (h/fire-event :press (h/query-by-label-text :reorder))
-
-      (h/wait-for #(h/is-truthy (h/get-by-text "2.00 ETH")))
-
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-
-      (h/wait-for #(h/is-truthy (h/get-by-text "205.50 ETH")))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-      (h/wait-for #(h/is-truthy (h/get-by-text "205.50 ETH"))))))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-0))
+    (-> (h/wait-for #(h/get-by-text "$200.00"))
+        (.then (fn []
+                 (h/fire-event :press (h/query-by-label-text :reorder))
+                 (h/wait-for #(h/get-by-text "2.00 ETH"))))
+        (.then (fn []
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+                 (h/wait-for #(h/get-by-text "205.50 ETH"))))
+        (.then (fn []
+                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
+                 (h/wait-for #(h/get-by-text "205.50 ETH")))))))

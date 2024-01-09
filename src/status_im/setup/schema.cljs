@@ -97,7 +97,7 @@
     (malli.instrument/unstrument!)
 
     (malli.dev/start! {:report (schema/reporter)})
-    (println "Schemas initialized.")
+    (log/debug "Schemas initialized.")
 
     ;; It is relatively easy to write invalid schemas, but we don't want to
     ;; block the app from initializing if such errors happen, at least not until

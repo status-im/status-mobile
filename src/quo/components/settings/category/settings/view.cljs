@@ -7,18 +7,20 @@
     [react-native.core :as rn]))
 
 (defn- category-internal
-  [{:keys [label data] :as props}]
-  [rn/view {:style (style/container label)}
+  [{:keys [label data container-style] :as props}]
+  [rn/view {:style (merge (style/container label) container-style)}
    (when label
      [text/text
       {:weight :medium
        :size   :paragraph-2
        :style  (style/label props)}
       label])
-   [rn/flat-list
-    {:data      data
-     :style     (style/settings-items props)
-     :render-fn settings-item/view
-     :separator [rn/view {:style (style/settings-separator props)}]}]])
+   [rn/view {:style (style/settings-items props)}
+    (for [item data]
+      ^{:key item}
+      [:<>
+       [settings-item/view item]
+       (when-not (= item (last data))
+         [rn/view {:style (style/settings-separator props)}])])]])
 
 (def settings-category (quo.theme/with-theme category-internal))

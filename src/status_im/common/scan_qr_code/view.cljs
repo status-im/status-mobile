@@ -141,10 +141,9 @@
         (on-failed-scan)
         (debounce/debounce-and-dispatch
          [:toasts/upsert
-          {:icon       :i/info
-           :icon-color colors/danger-50
-           :theme      :dark
-           :text       error-message}]
+          {:type  :negative
+           :theme :dark
+           :text  error-message}]
          300)))))
 
 (defn- render-camera
@@ -181,6 +180,11 @@
         app-state-listener (.addEventListener rn/app-state "change" set-torch-off-fn)]
     #(.remove app-state-listener)))
 
+(defn- navigate-back-handler
+  []
+  (rf/dispatch [:navigate-back])
+  true)
+
 (defn f-view-internal
   [{:keys [title subtitle validate-fn on-success-scan error-message]}]
   (let [insets             (safe-area/get-insets)
@@ -199,14 +203,15 @@
             camera-ready-to-scan? (and show-camera?
                                        (not @qr-code-succeed?))]
         (rn/use-effect
-         #(set-listener-torch-off-on-app-inactive torch?))
-
-        (rn/use-effect
          (fn []
+           (rn/hw-back-add-listener navigate-back-handler)
+           (set-listener-torch-off-on-app-inactive torch?)
            (when-not @camera-permission-granted?
-             (permissions/permission-granted? :camera
-                                              #(reset! camera-permission-granted? %)
-                                              #(reset! camera-permission-granted? false)))))
+             (permissions/permission-granted?
+              :camera
+              #(reset! camera-permission-granted? %)
+              #(reset! camera-permission-granted? false)))
+           #(rn/hw-back-remove-listener navigate-back-handler)))
         [:<>
          [rn/view {:style style/background}]
          (when camera-ready-to-scan?
