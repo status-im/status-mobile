@@ -64,9 +64,9 @@
  :-> :loading-suggested-routes?)
 
 (rf/reg-sub
-  :wallet/wallet-send-suggested-routes
-  :<- [:wallet/wallet-send]
-  :-> :suggested-routes)
+ :wallet/wallet-send-suggested-routes
+ :<- [:wallet/wallet-send]
+ :-> :suggested-routes)
 
 (rf/reg-sub
  :wallet/watch-address-activity-state
