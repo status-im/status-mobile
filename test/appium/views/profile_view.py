@@ -348,7 +348,6 @@ class ProfileView(BaseView):
         self.node_version_text = Text(self.driver,
                                       xpath="//*[@content-desc='node-version']//android.widget.TextView[2]")
 
-
         # Logout
         self.logout_button = LogoutButton(self.driver)
         self.logout_dialog = LogoutDialog(self.driver)
@@ -356,7 +355,8 @@ class ProfileView(BaseView):
 
         # New profile
         self.profile_password_button = Button(self.driver, accessibility_id="icon, Password, label-component, icon")
-        self.profile_legacy_button = Button(self.driver, accessibility_id="icon, Legacy settings, label-component, icon")
+        self.profile_legacy_button = Button(self.driver,
+                                            accessibility_id="icon, Legacy settings, label-component, icon")
 
     def switch_network(self, network='Mainnet with upstream RPC'):
         self.driver.info("## Switch network to '%s'" % network, device=False)
@@ -439,7 +439,8 @@ class ProfileView(BaseView):
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         ## pointing to legacy profile until new feature is implemented
-        self.profile_legacy_button.scroll_and_click()
+        self.logout_button.scroll_to_element()
+        self.profile_legacy_button.click()
         self.profile_picture.click()
         if update_by == "Gallery":
             self.select_from_gallery_button.click()
