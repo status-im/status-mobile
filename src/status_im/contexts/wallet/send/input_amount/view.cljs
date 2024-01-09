@@ -57,7 +57,6 @@
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
         {:keys [currency]}        (rf/sub [:profile/profile])
-        networks                  (rf/sub [:wallet/network-details])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         token-symbol              (:symbol token)
@@ -102,6 +101,7 @@
                                             :stack-id :wallet-send-input-amount}])}}]
       (let [limit-label       (make-limit-label @current-limit)
             input-num-value   (parse-double @input-value)
+            token             (rf/sub [:wallet/wallet-send-token])
             suggested-routes  (rf/sub [:wallet/wallet-send-suggested-routes])
             route             (rf/sub [:wallet/wallet-send-route])
             confirm-disabled? (or
@@ -110,6 +110,7 @@
                                (<= input-num-value 0)
                                (> input-num-value (:amount @current-limit)))
             amount            (str @input-value " " token-symbol)]
+        (println "sus" suggested-routes)
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -134,7 +135,7 @@
           {:container-style style/input-container
            :token           token-symbol
            :currency        currency
-           :networks        networks
+           :networks        (:networks token)
            :title           (i18n/label :t/send-limit {:limit limit-label})
            :conversion      conversion-rate
            :show-keyboard?  false
@@ -145,7 +146,7 @@
          [routes/view
           {:amount   amount
            :routes   suggested-routes
-           :networks networks}]
+           :networks (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)

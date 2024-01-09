@@ -41,7 +41,8 @@
                                                   :removed false}
    :wallet/wallet-send-token                     {:symbol :eth}
    :wallet/wallet-send-loading-suggested-routes? false
-   :wallet/wallet-send-route                     {:route []}})
+   :wallet/wallet-send-route                     {:route []}
+   :wallet/wallet-send-suggested-routes          {:candidates []}})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)
