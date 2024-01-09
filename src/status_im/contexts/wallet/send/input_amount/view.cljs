@@ -102,8 +102,8 @@
       (let [limit-label       (make-limit-label @current-limit)
             input-num-value   (parse-double @input-value)
             token             (rf/sub [:wallet/wallet-send-token])
+            suggested-routes  (rf/sub [:wallet/wallet-send-suggested-routes])
             route             (rf/sub [:wallet/wallet-send-route])
-            wallet-send       (rf/sub [:wallet/wallet-send])
             confirm-disabled? (or
                                (nil? route)
                                (empty? @input-value)
@@ -144,7 +144,7 @@
                               (handle-on-change text))}]
          [routes/view
           {:amount   amount
-           :routes   (:suggested-routes wallet-send)
+           :routes   suggested-routes
            :networks (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
