@@ -1183,6 +1183,8 @@
     "profile-details": "Profile details",
     "profile-name": "Profile name",
     "profile-name-is-too-long": "Profile name is too long",
+    "profile-picture-added": "Profile picture added",
+    "profile-picture-removed": "Profile picture removed",
     "public-chat": "Public chat",
     "public-chats": "Public chats",
     "public-group-status": "Public",

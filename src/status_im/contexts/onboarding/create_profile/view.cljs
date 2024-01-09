@@ -10,10 +10,10 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.common.profile-picture-picker.view :as picture-picker]
     [status-im.common.validation.profile :as profile-validator]
     [status-im.constants :as c]
     [status-im.contexts.onboarding.create-profile.style :as style]
-    [status-im.contexts.onboarding.select-photo.method-menu.view :as method-menu]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :as responsiveness]))
@@ -144,7 +144,7 @@
                                      (rf/dispatch
                                       [:show-bottom-sheet
                                        {:content (fn []
-                                                   [method-menu/view on-change-profile-pic])
+                                                   [picture-picker/view on-change-profile-pic false])
                                         :shell?  true}]))
               :image-picker-props  {:profile-picture     @profile-pic
                                     :full-name           (if (seq @full-name)

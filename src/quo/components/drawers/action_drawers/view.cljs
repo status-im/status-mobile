@@ -14,9 +14,9 @@
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
 (defn- divider
-  [theme]
+  [theme blur?]
   [rn/view
-   {:style               (style/divider theme)
+   {:style               (style/divider theme blur?)
     :accessible          true
     :accessibility-label :divider}])
 
@@ -45,7 +45,7 @@
            blur?]}]
   [:<>
    (when add-divider?
-     [divider theme])
+     [divider theme blur?])
    [maybe-pressable disabled?
     {:accessibility-label accessibility-label
      :style               (style/container {:sub-label           sub-label

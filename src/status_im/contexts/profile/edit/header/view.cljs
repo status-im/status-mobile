@@ -1,7 +1,7 @@
 (ns status-im.contexts.profile.edit.header.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [status-im.common.not-implemented :as not-implemented]
+            [status-im.common.profile-picture-picker.view :as picture-picker]
             [status-im.contexts.profile.edit.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -9,9 +9,14 @@
 
 (defn view
   []
-  (let [profile         (rf/sub [:profile/profile-with-image])
-        full-name       (profile.utils/displayed-name profile)
-        profile-picture (profile.utils/photo profile)]
+  (let [profile               (rf/sub [:profile/profile-with-image])
+        full-name             (profile.utils/displayed-name profile)
+        profile-picture       (profile.utils/photo profile)
+        has-picture           (rf/sub [:profile/has-picture])
+        on-change-profile-pic (fn [picture]
+                                (if picture
+                                  (rf/dispatch [:profile/edit-picture picture])
+                                  (rf/dispatch [:profile/delete-picture])))]
     [rn/view
      {:key   :edit-profile
       :style style/screen-container}
@@ -24,7 +29,13 @@
         :ring?             true
         :size              :big}]
       [quo/button
-       {:on-press        not-implemented/alert
+       {:on-press        (fn []
+                           (rf/dispatch
+                            [:show-bottom-sheet
+                             {:content (fn []
+                                         [picture-picker/view on-change-profile-pic has-picture])
+                              :theme   :dark
+                              :shell?  true}]))
         :container-style style/camera-button
         :icon-only?      true
         :type            :grey
