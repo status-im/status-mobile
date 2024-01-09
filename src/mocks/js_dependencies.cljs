@@ -165,6 +165,7 @@
     :PlaybackCategories {}})
 (def net-info #js {})
 (def touchid #js {})
+(def react-native-biometrics #js {:default {}})
 (def react-native-image-viewing #js {:default {}})
 (def react-native-static-safe-area-insets #js {:default {}})
 

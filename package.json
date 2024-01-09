@@ -35,6 +35,7 @@
     "react-dom": "18.0.0",
     "react-native": "0.72.5",
     "react-native-background-timer": "^2.1.1",
+    "react-native-biometrics": "^3.0.1",
     "react-native-blob-util": "^0.13.18",
     "react-native-camera-kit": "14.0.0-beta13",
     "react-native-config": "^1.5.0",
