@@ -2463,5 +2463,11 @@
     "oops-wrong-word": "Oops! Wrong word",
     "time-in-mins": "{{minutes}} min",
     "amount-with-currency-symbol": "{{symbol}} {{amount}}",
-    "no-routes-found": "No routes found"
+    "no-routes-found": "No routes found",
+    "remove-watched-address-title": "Remove watched address",
+    "remove-watched-address-desc": "The watched address will be removed from all of your synced devices.",
+    "remove-account-title": "Remove account",
+    "remove-account-desc": "The account will be removed from all of your synced devices. Make sure you have a backup of your keypair or recovery phrase and derivation path (if it’s not default).",
+    "derivation-path-copied": "Derivation path copied",
+    "remove-account-confirmation": "I have taken note of the derivation path"
 }
