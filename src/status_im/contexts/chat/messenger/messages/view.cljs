@@ -17,8 +17,9 @@
 (defn- f-chat-screen
   [calculations-complete?]
   (let [insets                            (safe-area/get-insets)
-        keyboard-offset?                  (atom false)
         content-height                    (atom 0)
+        layout-height                     (atom 0)
+        distance-atom                     (atom 0)
         show-floating-scroll-down-button? (reagent/atom false)
         messages-list-on-layout-finished? (reagent/atom false)
         distance-from-list-top            (reanimated/use-shared-value 0)]
@@ -30,8 +31,9 @@
        :calculations-complete? calculations-complete?}]
      [:f> list.view/f-messages-list-content
       {:insets                            insets
+       :layout-height                     layout-height
        :content-height                    content-height
-       :keyboard-offset?                  keyboard-offset?
+       :distance-atom                     distance-atom
        :calculations-complete?            calculations-complete?
        :distance-from-list-top            distance-from-list-top
        :messages-list-on-layout-finished? messages-list-on-layout-finished?

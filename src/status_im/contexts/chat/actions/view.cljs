@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.actions.view
   (:require
     [quo.core :as quo]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -22,10 +23,14 @@
       :label               (i18n/label :t/new-chat)
       :on-press            (fn []
                              (rf/dispatch [:group-chat/clear-contacts])
-                             (rf/dispatch [:open-modal :start-a-new-chat]))}
+                             (debounce/dispatch-and-chill
+                              [:open-modal :start-a-new-chat]
+                              1000))}
      {:icon                :i/add-user
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-a-contact)
       :sub-label           (i18n/label :t/enter-a-chat-key)
       :add-divider?        true
-      :on-press            #(rf/dispatch [:open-modal :new-contact])}]]])
+      :on-press            #(debounce/dispatch-and-chill
+                             [:open-modal :new-contact]
+                             1000)}]]])

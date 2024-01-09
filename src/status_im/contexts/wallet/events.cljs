@@ -321,3 +321,9 @@
             :on-error   #(log/info "failed to get address details"
                                    {:error %
                                     :event :wallet/get-address-details})}]]]}))
+
+(rf/reg-event-fx
+ :wallet/navigate-to-chain-explorer-from-bottom-sheet
+ (fn [_ [explorer-link address]]
+   {:fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
