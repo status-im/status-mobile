@@ -102,7 +102,6 @@
                                             :stack-id :wallet-send-input-amount}])}}]
       (let [limit-label       (make-limit-label @current-limit)
             input-num-value   (parse-double @input-value)
-            token             (rf/sub [:wallet/wallet-send-token])
             suggested-routes  (rf/sub [:wallet/wallet-send-suggested-routes])
             route             (rf/sub [:wallet/wallet-send-route])
             confirm-disabled? (or
