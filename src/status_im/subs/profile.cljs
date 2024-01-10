@@ -73,12 +73,14 @@
                                                   :key-uid        target-key-uid
                                                   :theme          (theme/get-theme)
                                                   :override-ring? override-ring?})
-          (image-server/get-initials-avatar-uri-fn {:port           port
-                                                    :ratio          pixel-ratio/ratio
-                                                    :key-uid        target-key-uid
-                                                    :theme          (theme/get-theme)
-                                                    :override-ring? override-ring?
-                                                    :font-file      font-file}))}))))
+          (image-server/get-initials-avatar-uri-fn
+           {:port            port
+            :ratio           pixel-ratio/ratio
+            :key-uid         target-key-uid
+            :theme           (theme/get-theme)
+            :uppercase-ratio (:uppercase-ratio constants/initials-avatar-font-conf)
+            :override-ring?  override-ring?
+            :font-file       font-file}))}))))
 
 (re-frame/reg-sub
  :multiaccount/public-key

@@ -6,7 +6,8 @@
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.worklets.chat.messages :as worklets]))
 
 (defn bar
   [theme]
@@ -23,33 +24,33 @@
   [:f> f-blur-view props])
 
 (defn- f-shell-button
-  [{:keys [focused?]} scroll-to-bottom-fn show-floating-scroll-down-button?]
-  (let [customization-color (rf/sub [:profile/customization-color])
-        hide-shell?         (or @focused? @show-floating-scroll-down-button?)
-        y-shell             (reanimated/use-shared-value (if hide-shell? 35 0))
-        opacity             (reanimated/use-shared-value (if hide-shell? 0 1))]
-    (rn/use-effect
-     (fn []
-       (reanimated/animate opacity (if hide-shell? 0 1))
-       (reanimated/animate y-shell (if hide-shell? 35 0)))
-     [@focused? @show-floating-scroll-down-button?])
+  [{:keys [composer-focused?]} chat-list-scroll-y window-height]
+  (let [customization-color        (rf/sub [:profile/customization-color])
+        scroll-down-button-opacity (worklets/scroll-down-button-opacity
+                                    chat-list-scroll-y
+                                    composer-focused?
+                                    window-height)
+        jump-to-button-opacity     (worklets/jump-to-button-opacity
+                                    scroll-down-button-opacity
+                                    composer-focused?)
+        jump-to-button-position    (worklets/jump-to-button-position
+                                    scroll-down-button-opacity
+                                    composer-focused?)]
     [:<>
      [reanimated/view
-      {:style (style/shell-button y-shell opacity)}
+      {:style (style/shell-button jump-to-button-position jump-to-button-opacity)}
       [quo/floating-shell-button
        {:jump-to
-        {:on-press            (fn []
-                                (rf/dispatch [:shell/navigate-to-jump-to]))
+        {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
          :customization-color customization-color
          :label               (i18n/label :t/jump-to)
          :style               {:align-self :center}}}
        {}]]
-     (when (and (not @focused?)
-                @show-floating-scroll-down-button?)
-       [quo/floating-shell-button
-        {:scroll-to-bottom {:on-press scroll-to-bottom-fn}}
-        style/scroll-to-bottom-button])]))
+     [quo/floating-shell-button
+      {:scroll-to-bottom {:on-press #(rf/dispatch [:chat.ui/scroll-to-bottom])}}
+      style/scroll-to-bottom-button
+      scroll-down-button-opacity]]))
 
 (defn shell-button
-  [state scroll-to-bottom-fn show-floating-scroll-down-button?]
-  [:f> f-shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?])
+  [state chat-list-scroll-y window-height]
+  [:f> f-shell-button state chat-list-scroll-y window-height])

@@ -2,6 +2,7 @@
 
 (def routes-container
   {:padding-horizontal 20
+   :flex               1
    :padding-vertical   16
    :width              "100%"
    :height             "100%"})
@@ -24,3 +25,8 @@
 (def network-link
   {:right   6
    :z-index 1})
+
+(def empty-container
+  {:flex-grow       1
+   :align-items     :center
+   :justify-content :center})

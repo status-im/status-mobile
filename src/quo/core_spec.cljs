@@ -39,6 +39,7 @@
     quo.components.inputs.recovery-phrase.component-spec
     quo.components.inputs.title-input.component-spec
     quo.components.keycard.component-spec
+    quo.components.links.internal-link-card.component-spec
     quo.components.links.link-preview.component-spec
     quo.components.links.url-preview-list.component-spec
     quo.components.links.url-preview.component-spec

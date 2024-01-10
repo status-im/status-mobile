@@ -305,7 +305,7 @@ endif
 
 # Get all clojure files, including untracked, excluding removed
 define find_all_clojure_files
-$$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
+$$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -E '((\.clj-kondo\/status-im)|(src).*\.clj[sc]?$$)|((\.clj-kondo\/(status-im|config))|(src).*\.edn$$)|shadow-cljs\.edn')
 endef
 
 lint: export TARGET := clojure

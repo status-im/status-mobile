@@ -42,9 +42,9 @@
         :color                    "#0E162000"
         :font-size                12
         :font-file                "/font/Inter Medium.otf"
-        :uppercase-ratio          "uppercase-ratio"
+        :uppercase-ratio          0.6
         :indicator-size           2
         :indicator-center-to-edge 6
         :indicator-color          "#0E1620"
         :ring-width               4})
-      "https://localhost:port/accountInitials?publicKey=public-key&keyUid=key-uid&length=length&size=96&bgColor=background-color&color=%230E162000&fontSize=24&fontFile=%2Ffont%2FInter%20Medium.otf&uppercaseRatio=uppercase-ratio&theme=:light&clock=&name=full-nametimestamp&indicatorColor=%230E1620&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=8"))))
+      "https://localhost:port/accountInitials?publicKey=public-key&keyUid=key-uid&length=length&size=96&bgColor=background-color&color=%230E162000&fontSize=24&fontFile=%2Ffont%2FInter%20Medium.otf&uppercaseRatio=0.6&theme=:light&clock=&name=full-nametimestamp&indicatorColor=%230E1620&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=8"))))

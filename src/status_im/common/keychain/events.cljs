@@ -131,6 +131,7 @@
  :keychain/clear-user-password
  (fn [key-uid]
    (keychain/reset-credentials (password-migration-key-name key-uid))
+   (keychain/reset-credentials (str key-uid "-auth"))
    (keychain/reset-credentials key-uid)))
 
 (re-frame/reg-fx
@@ -141,6 +142,11 @@
        (.then #(save-password-migration! key-uid))
        (.then #(when on-success (on-success)))
        (.catch #(when on-error (on-error %))))))
+
+(re-frame/reg-event-fx
+ :keychain/save-password-and-auth-method
+ (fn [_ [opts]]
+   {:keychain/save-password-and-auth-method opts}))
 
 ;; NOTE: migrating the plaintext password in the keychain
 ;; with the hashed one. Added due to the sync onboarding
