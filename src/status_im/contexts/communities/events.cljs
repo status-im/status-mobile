@@ -424,3 +424,14 @@
  (fn [{:keys [db]} [community-id]]
    (when (get-in db [:communities community-id])
      {:db (update-in db [:communities community-id] dissoc :fetching-revealed-accounts)})))
+(rf/reg-event-fx :communities/set-addresses-for-permissions
+ (fn [{:keys [db]} [addresses]]
+   {:db (assoc-in db [:communities/addresses-for-permissions] addresses)}))
+
+(rf/reg-event-fx :communities/update-last-opened-at
+ (fn [_ [community-id]]
+   {:json-rpc/call [{:method     "wakuext_communityUpdateLastOpenedAt"
+                     :params     [community-id]
+                     :on-success #(rf/dispatch [:communities/handle-community (first (:communities %))])
+                     :on-error   #(log/error (str "failed to update last opened at for community "
+                                                  %))}]}))
