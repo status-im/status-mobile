@@ -193,7 +193,8 @@
    :record-permission?    (reagent/atom true)
    :recording?            (reagent/atom false)
    :first-level?          (reagent/atom true)
-   :menu-items            (reagent/atom selection/first-level-menu-items)})
+   :menu-items            (reagent/atom selection/first-level-menu-items)
+   :composer-focused?     (reanimated/use-shared-value false)})
 
 (defn init-subs
   []

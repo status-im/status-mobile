@@ -2,6 +2,7 @@
   (:require
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
+    [schema.core :as schema]
     [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
@@ -181,6 +182,19 @@
    (if ring? 1 0)
    "&ringWidth="
    (* ring-width ratio)))
+
+(schema/=> get-initials-avatar-uri
+  [:=>
+   [:cat
+    [:map
+     [:color string?]
+     [:background-color string?]
+     [:size number?]
+     [:ratio float?]
+     [:uppercase-ratio number?]
+     [:font-size number?]
+     [:font-file string?]]]
+   [:string]])
 
 (defn get-initials-avatar-uri-fn
   "return a fn that calls `get-account-initials-uri`
