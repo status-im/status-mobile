@@ -209,21 +209,14 @@
  :profile.login/biometric-success
  (fn [{:keys [db]}]
    (let [key-uid (get-in db [:profile/login :key-uid])]
-     {:db db
-      :fx [[:biometric/reset-not-enrolled-error key-uid]
-           [:keychain/get-user-password
-            [key-uid #(rf/dispatch [:profile.login/get-user-password-success %])]]]})))
+     {:db       db
+      :dispatch [:keychain/get-user-password
+                 [key-uid #(rf/dispatch [:profile.login/get-user-password-success %])]]})))
 
 (rf/reg-event-fx
  :profile.login/biometric-auth-fail
- (fn [{:keys [db]} [code]]
-   (let [key-uid (get-in db [:profile/login :key-uid])]
-     {:db db
-      :fx [(if (= code constants/biometric-error-not-enrolled)
-             [:biometric/supress-not-enrolled-error
-              [key-uid
-               [:biometric/show-message code]]]
-             [:dispatch [:biometric/show-message code]])]})))
+ (fn [_ [code]]
+   {:dispatch [:biometric/show-message code]}))
 
 
 (rf/defn verify-database-password

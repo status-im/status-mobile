@@ -55,47 +55,6 @@
      {:title   (i18n/label :t/biometric-auth-login-error-title)
       :content content}}))
 
-(defn- supress-biometry-error-key
-  [key-uid]
-  (keyword (str "biometric/supress-not-enrolled-error-" key-uid)))
-
-;; NOTE: if the account had biometrics registered, but it's not enrolled at the moment,
-;; we should show the error message only once and supress further "NOT_ENROLLED" errors
-;; until biometry is enrolled again. Note that we can only know that when :biometric/authenticate
-;; is dispatched and fails with "NOT_ENROLLED", since :biometric/get-supported-biometric-type
-;; only tells us what kind of biometric is available on the device, but it doesn't know of its
-;; enrollment status.
-(re-frame/reg-fx
- :biometric/supress-not-enrolled-error
- (fn [[key-uid dispatch-event]]
-   (let [storage-key (supress-biometry-error-key key-uid)]
-     (-> (async-storage/get-item storage-key identity)
-         (.then (fn [item]
-                  (when (not item)
-                    (rf/dispatch dispatch-event)
-                    (async-storage/set-item! storage-key true))))
-         (.catch (fn [err]
-                   (log/error "Couldn't supress biometry NOT_ENROLLED error"
-                              {:key-uid key-uid
-                               :event   :biometric/supress-not-enrolled-error
-                               :error   err})))))))
-
-;; NOTE: when biometrics is re-enrolled, we erase the flag in async-storage to assure
-;; the "NOT_ENROLLED" error message will be shown again if biometrics is un-enrolled
-;; in the future.
-(re-frame/reg-fx
- :biometric/reset-not-enrolled-error
- (fn [key-uid]
-   (let [storage-key (supress-biometry-error-key key-uid)]
-     (-> (async-storage/get-item storage-key identity)
-         (.then (fn [supress?]
-                  (when supress?
-                    (async-storage/set-item! storage-key nil))))
-         (.catch (fn [err]
-                   (log/error "Couldn't reset supressing biometry NOT_ENROLLED error"
-                              {:key-uid key-uid
-                               :event   :biometric/reset-not-enrolled-error
-                               :error   err})))))))
 
 (re-frame/reg-fx
  :biometric/authenticate
