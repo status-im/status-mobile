@@ -81,6 +81,7 @@
 
 (def transparent-screen-options
   (merge
+   (statusbar-and-navbar-root)
    {:modalPresentationStyle :overCurrentContext
     :theme                  :dark
     :layout                 {:componentBackgroundColor :transparent
