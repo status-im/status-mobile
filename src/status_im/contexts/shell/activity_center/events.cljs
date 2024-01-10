@@ -156,14 +156,20 @@
                         :on-error   [:activity-center/process-notification-failure nil
                                      :notification/mark-all-as-read]}]})))
 
-(rf/defn mark-all-as-read-success
-  {:events [:activity-center.notifications/mark-all-as-read-success]}
-  [{:keys [db]}]
+(defn merge-chats
+  [db chats]
+  (update db :chats merge (collection/index-by :chat-id chats)))
+
+(defn mark-all-as-read-success
+  [{:keys [db]} [{:keys [chats] :as _messenger-response}]]
   {:db (-> (reduce (fn [acc notification-type]
                      (assoc-in acc [:activity-center :unread-counts-by-type notification-type] 0))
                    db
                    types/all-supported)
-           (update :activity-center dissoc :mark-all-as-read-undoable-till))})
+           (update :activity-center dissoc :mark-all-as-read-undoable-till)
+           (merge-chats (map data-store.chats/<-rpc chats)))})
+
+(rf/reg-event-fx :activity-center.notifications/mark-all-as-read-success mark-all-as-read-success)
 
 (rf/defn undo-mark-all-as-read
   {:events [:activity-center.notifications/undo-mark-all-as-read-locally]}
