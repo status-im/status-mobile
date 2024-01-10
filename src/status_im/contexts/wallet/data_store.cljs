@@ -64,7 +64,7 @@
       (update-vals #(cske/transform-keys csk/->kebab-case %))
       (update-vals #(mapv rpc->balances-per-chain %))))
 
-(defn <-rpc
+(defn rpc->network
   [network]
   (-> network
       (set/rename-keys

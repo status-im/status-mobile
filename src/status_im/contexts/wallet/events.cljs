@@ -195,13 +195,13 @@
    (let [network-data
          {:test (map #(->> %
                            :Test
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)
           :prod (map #(->> %
                            :Prod
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)}]
-     {:db (assoc db :wallet/networks network-data)})))
+     {:db (assoc-in db [:wallet :networks] network-data)})))
 
 (rf/reg-event-fx :wallet/find-ens
  (fn [{:keys [db]} [input contacts chain-id cb]]
@@ -301,6 +301,10 @@
      (background-timer/clear-timeout current-timeout)
      {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
 
+(rf/reg-event-fx :wallet/clean-account-selection
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :send-account-address)}))
+
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
    {:db (assoc-in db
@@ -327,3 +331,7 @@
  (fn [_ [explorer-link address]]
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
+
+(rf/reg-event-fx :wallet/initialize
+ (fn []
+   {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))

@@ -37,7 +37,7 @@
 (h/deftest-sub :wallet/network-details
   [sub-name]
   (testing "returns data with prod"
-    (swap! rf-db/app-db assoc :wallet/networks network-data)
+    (swap! rf-db/app-db assoc-in [:wallet :networks] network-data)
     (is (= [{:network-name :ethereum
              :short-name   "eth"
              :chain-id     1
