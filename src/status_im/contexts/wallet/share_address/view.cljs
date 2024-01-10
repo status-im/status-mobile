@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.receive.view
+(ns status-im.contexts.wallet.share-address.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
@@ -8,7 +8,7 @@
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.receive.style :as style]
+    [status-im.contexts.wallet.share-address.style :as style]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
