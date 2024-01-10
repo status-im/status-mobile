@@ -22,16 +22,15 @@
 
 (defn f-view-internal
   []
-  (let [{id :community-id}          (rf/sub [:get-screen-params])
-        {:keys [name color images]} (rf/sub [:communities/community id])
-        accounts                    (rf/sub [:wallet/accounts-with-customization-color])
-        addresses-for-permissions   (rf/sub [:communities/addresses-for-permissions])
-        selected-accounts           (filter #(contains? addresses-for-permissions
-                                                        (:address %))
-                                            accounts)]
+  (let [{id :community-id}            (rf/sub [:get-screen-params])
+        {:keys [name color images]}   (rf/sub [:communities/community id])
+        accounts                      (rf/sub [:wallet/accounts-with-customization-color])
+        selected-permission-addresses (rf/sub [:communities/selected-permission-addresses])
+        selected-accounts             (filter #(contains? selected-permission-addresses
+                                                          (:address %))
+                                              accounts)]
     (rn/use-effect (fn []
-                     (rf/dispatch [:communities/set-addresses-for-permissions
-                                   (set (map :address accounts))]))
+                     (rf/dispatch [:communities/initialize-permission-addresses]))
                    [])
     [rn/view {:style style/container}
      [quo/page-nav
@@ -87,7 +86,7 @@
         :track-text          (i18n/label :t/slide-to-request-to-join)
         :track-icon          :i/face-id
         :customization-color color
-        :on-complete         #(join-community-and-navigate-back id addresses-for-permissions)}]]]))
+        :on-complete         #(join-community-and-navigate-back id selected-permission-addresses)}]]]))
 
 (defn view
   []
