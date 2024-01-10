@@ -77,15 +77,13 @@
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]
- (fn [[wallet network-details]]
-   ;; TODO(@rende11): `testnet?` value would be relevant after this implementation,
-   ;; https://github.com/status-im/status-mobile/issues/17826
-   (let [testnet? false]
-     (->> wallet
-          :accounts
-          vals
-          (map #(assoc-network-preferences-names network-details % testnet?))
-          (sort-by :position)))))
+ :<- [:profile/test-networks-enabled?]
+ (fn [[wallet network-details test-networks-enabled?]]
+   (->> wallet
+        :accounts
+        vals
+        (map #(assoc-network-preferences-names network-details % test-networks-enabled?))
+        (sort-by :position))))
 
 (rf/reg-sub
  :wallet/addresses

@@ -195,13 +195,13 @@
    (let [network-data
          {:test (map #(->> %
                            :Test
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)
           :prod (map #(->> %
                            :Prod
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)}]
-     {:db (assoc db :wallet/networks network-data)})))
+     {:db (assoc-in db [:wallet :networks] network-data)})))
 
 (rf/reg-event-fx :wallet/find-ens
  (fn [{:keys [db]} [input contacts chain-id cb]]
@@ -327,3 +327,7 @@
  (fn [_ [explorer-link address]]
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
+
+(rf/reg-event-fx :wallet/initialize
+ (fn []
+   {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
