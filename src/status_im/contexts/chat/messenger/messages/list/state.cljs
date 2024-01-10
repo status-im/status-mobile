@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.list.state)
 
+(defonce messages-list-ref (atom nil))
 (defonce first-not-visible-item (atom nil))
 
 (defonce scrolling (atom nil))

@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.effects
   (:require
     [react-native.async-storage :as async-storage]
+    [status-im.contexts.chat.messenger.messages.list.state :as chat.state]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [utils.re-frame :as rf]))
 
@@ -16,3 +17,9 @@
            (when (= stored-key-uid key-uid)
              (rf/dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id
                            shell.constants/open-screen-without-animation])))))))))
+
+(rf/reg-fx :effects.chat/scroll-to-bottom
+ (fn []
+   (some-> ^js @chat.state/messages-list-ref
+           (.scrollToOffset #js
+                             {:animated true}))))
