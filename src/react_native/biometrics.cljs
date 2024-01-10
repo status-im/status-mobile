@@ -1,10 +1,9 @@
 (ns react-native.biometrics
   (:require
-    ["react-native-biometrics" :default rn-biometrics]
+    ["react-native-biometrics" :default biometrics]
     [oops.core :as oops]
-    [schema.core :as schema]))
-
-(defonce biometrics (rn-biometrics.))
+    [schema.core :as schema]
+    [status-im.constants :as constants]))
 
 (defn get-supported-type
   "Returns a JS promise that resolves with the biometrics types supported by the
@@ -12,7 +11,8 @@
 
   Resolved values: `:Biometrics` `:FaceID` `:TouchID`"
   []
-  (-> (.isSensorAvailable biometrics)
+  (-> (biometrics.)
+      (.isSensorAvailable)
       (.then (fn [result]
                (let [type (-> result
                               (oops/oget "biometryType")
@@ -23,24 +23,28 @@
   "Returns a JS promise that resolves to a boolean, which signifies whether
   biometrics is enabled/disabled on the device."
   []
-  (-> (.isSensorAvailable biometrics)
+  (-> (biometrics.)
+      (.isSensorAvailable)
       (.then (fn [result]
-               (-> result
-                   (oops/oget "available"))))))
+               (oops/oget result "available")))))
 
 (defn authenticate
   "Returns a JS promise that resolves with a boolean auth success state: `true` for
   success and `false` when canceled by user."
   [{:keys [prompt-message fallback-prompt-message cancel-button-text]}]
-  (-> (.simplePrompt biometrics
-                     (clj->js {"promptMessage"         prompt-message
-                               "fallbackPromptMessage" fallback-prompt-message
-                               "cancelButtonText"      cancel-button-text}))
+  (-> (biometrics.)
+      (.simplePrompt #js {"promptMessage"         prompt-message
+                          "fallbackPromptMessage" fallback-prompt-message
+                          "cancelButtonText"      cancel-button-text})
       (.then (fn [result]
                (let [result  (js->clj result)
                      success (get result "success")
                      error   (get result "error")]
-                 (when error (throw error))
+                 ;; NOTE: currently `error` is only present for the user cancellation case,
+                 ;; so putting this here for the future in case they add other errors
+                 ;; instead of rejecting.
+                 (when (and error (not= error constants/biometric-error-user-canceled))
+                   (throw error))
                  success)))))
 
 (schema/=> authenticate

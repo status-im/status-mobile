@@ -5,7 +5,6 @@
     [react-native.async-storage :as async-storage]
     [react-native.biometrics :as biometrics]
     [react-native.platform :as platform]
-    [react-native.touch-id :as touch-id]
     [status-im.common.keychain.events :as keychain]
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
@@ -13,27 +12,19 @@
     [utils.re-frame :as rf]))
 
 (def android-device-blacklisted?
-  (= (:brand (native-module/get-device-model-info)) "bannedbrand"))
-
-(defn get-supported-type
-  [callback]
-  (cond platform/ios?     (touch-id/get-supported-type callback)
-        platform/android? (if android-device-blacklisted?
-                            (callback nil)
-                            (touch-id/get-supported-type callback))
-        :else             (callback nil)))
+  (and platform/android? (= (:brand (native-module/get-device-model-info)) "bannedbrand")))
 
 (defn get-label-by-type
   [biometric-type]
   (condp = biometric-type
-    :fingerprint (i18n/label :t/biometric-fingerprint)
-    :FaceID      (i18n/label :t/biometric-faceid)
+    constants/biometrics-type-android (i18n/label :t/biometric-fingerprint)
+    constants/biometrics-type-face-id (i18n/label :t/biometric-faceid)
     (i18n/label :t/biometric-touchid)))
 
 (defn get-icon-by-type
   [biometric-type]
   (condp = biometric-type
-    :FaceID :i/face-id
+    constants/biometrics-type-face-id :i/face-id
     :i/touch-id))
 
 (re-frame/reg-fx
@@ -42,8 +33,10 @@
    ;;NOTE: if we can't save user password, we can't use biometric
    (keychain/can-save-user-password?
     (fn [can-save?]
-      (when can-save?
-        (get-supported-type #(rf/dispatch [:biometric/get-supported-biometric-type-success %])))))))
+      (when (and can-save? (not android-device-blacklisted?))
+        (-> (biometrics/get-supported-type)
+            (.then (fn [type]
+                     (rf/dispatch [:biometric/get-supported-biometric-type-success type])))))))))
 
 (rf/defn get-supported-biometric-auth-success
   {:events [:biometric/get-supported-biometric-type-success]}
@@ -53,19 +46,14 @@
 (rf/defn show-message
   {:events [:biometric/show-message]}
   [_ code]
-  (let [handle-error? (and code
-                           (not (contains? #{constants/biometric-error-user-canceled
-                                             constants/biometric-error-user-fallback}
-                                           code)))
-        content       (if (#{constants/biometric-error-not-available
-                             constants/biometric-error-not-enrolled}
-                           code)
-                        (i18n/label :t/grant-face-id-permissions)
-                        (i18n/label :t/biometric-auth-error {:code code}))]
-    (when handle-error?
-      {:effects.utils/show-popup
-       {:title   (i18n/label :t/biometric-auth-login-error-title)
-        :content content}})))
+  (let [content (if (#{constants/biometric-error-not-available
+                       constants/biometric-error-not-enrolled}
+                     code)
+                  (i18n/label :t/grant-face-id-permissions)
+                  (i18n/label :t/biometric-auth-error {:code code}))]
+    {:effects.utils/show-popup
+     {:title   (i18n/label :t/biometric-auth-login-error-title)
+      :content content}}))
 
 (defn- supress-biometry-error-key
   [key-uid]
@@ -111,23 +99,18 @@
 
 (re-frame/reg-fx
  :biometric/authenticate
- (fn [options]
-   (touch-id/authenticate
-    (merge
-     {:reason  (i18n/label :t/biometric-auth-reason-login)
-      :options (merge
-                {:unifiedErrors true}
-                (when platform/ios?
-                  {:passcodeFallback false
-                   :fallbackLabel    (i18n/label :t/biometric-auth-login-ios-fallback-label)})
-                (when platform/android?
-                  {:title                  (i18n/label :t/biometric-auth-android-title)
-                   :imageColor             :blue
-                   :imageErrorColor        :red
-                   :sensorDescription      (i18n/label :t/biometric-auth-android-sensor-desc)
-                   :sensorErrorDescription (i18n/label :t/biometric-auth-android-sensor-error-desc)
-                   :cancelText             (i18n/label :t/cancel)}))}
-     options))))
+ (fn [{:keys [on-success on-fail prompt-message]}]
+   (-> (biometrics/authenticate
+        {:prompt-message          (or prompt-message (i18n/label :t/biometric-auth-reason-login))
+         :fallback-prompt-message (i18n/label
+                                   :t/biometric-auth-login-ios-fallback-label)
+         :cancel-button-text      (i18n/label :t/cancel)})
+       ;; NOTE: resolves to `false` when cancelled by user
+       (.then #(when % on-success))
+       (.catch (fn [err]
+                 (-> err
+                     (.-message)
+                     (on-fail)))))))
 
 (rf/defn authenticate
   {:events [:biometric/authenticate]}
