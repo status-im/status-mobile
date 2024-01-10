@@ -1,6 +1,9 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
             [clojure.walk :as walk]
+            [legacy.status-im.data-store.chats :as data-store.chats] 
+            [react-native.platform :as platform]
+            [react-native.share :as share]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
