@@ -39,7 +39,7 @@
      (assoc last-collectible :preview-url (preview-url (:collectible-data last-collectible))))))
 
 (re-frame/reg-sub
- :wallet/last-collectible-chain-id
+ :wallet/last-collectible-details-chain-id
  :<- [:wallet/last-collectible-details]
  (fn [collectible]
    (get-in collectible [:id :contract-id :chain-id])))
@@ -54,3 +54,18 @@
                (or (string/includes? (string/lower-case collection-name) search-text-lower-case)
                    (string/includes? (string/lower-case collectible-name) search-text-lower-case)))
              current-account-collectibles))))
+
+(re-frame/reg-sub
+ :wallet/last-collectible-details-traits
+ :<- [:wallet/last-collectible-details]
+ (fn [collectible]
+   (get-in collectible [:collectible-data :traits])))
+
+(re-frame/reg-sub
+ :wallet/last-collectible-details-owner
+ :<- [:wallet/last-collectible-details]
+ :<- [:wallet]
+ (fn [[collectible wallet]]
+   (let [address (:address (first (:ownership collectible)))
+         account (get-in wallet [:accounts address])]
+     account)))
