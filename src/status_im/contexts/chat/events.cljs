@@ -281,7 +281,7 @@
 
 (rf/defn close-and-remove-chat
   "Closes the chat and removes it from chat list while retaining history, producing all necessary effects for that"
-  {:events [:chat.ui/close-chat]}
+  {:events [:chat.ui/close-and-remove-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
             {:effects/push-notifications-clear-message-notifications [chat-id]
@@ -386,7 +386,7 @@
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
                             (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:chat.ui/close-chat chat-id]))}})
+                            (rf/dispatch [:chat.ui/close-and-remove-chat chat-id]))}})
 
 (rf/defn navigate-to-user-pinned-messages
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
@@ -447,3 +447,8 @@
                     :params     [{:id chat-id}]
                     :on-success #()
                     :on-error   #(log/error "failed to fetch messages for chat" chat-id %)}]})
+
+(rf/defn scroll-to-bottom
+  {:events [:chat.ui/scroll-to-bottom]}
+  [_]
+  {:effects.chat/scroll-to-bottom nil})

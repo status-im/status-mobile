@@ -1,9 +1,6 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
             [clojure.walk :as walk]
-            [legacy.status-im.data-store.chats :as data-store.chats]
-            [react-native.platform :as platform]
-            [react-native.share :as share]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
@@ -188,9 +185,40 @@
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
-(rf/reg-event-fx :communities/set-addresses-for-permissions
- (fn [{:keys [db]} [addresses]]
-   {:db (assoc-in db [:communities/addresses-for-permissions] addresses)}))
+(defn initialize-permission-addresses
+  [{:keys [db]}]
+  (let [accounts  (get-in db [:wallet :accounts])
+        addresses (set (map :address (vals accounts)))]
+    {:db (assoc db
+                :communities/previous-permission-addresses addresses
+                :communities/selected-permission-addresses addresses)}))
+
+(rf/reg-event-fx :communities/initialize-permission-addresses
+ initialize-permission-addresses)
+
+(rf/reg-event-fx :communities/update-previous-permission-addresses
+ (fn [{:keys [db]}]
+   {:db (assoc db
+               :communities/previous-permission-addresses
+               (get-in db [:communities/selected-permission-addresses]))}))
+
+(defn toggle-selected-permission-address
+  [{:keys [db]} [address]]
+  {:db (update db
+               :communities/selected-permission-addresses
+               (fn [selected-addresses]
+                 (if (contains? selected-addresses address)
+                   (disj selected-addresses address)
+                   (conj selected-addresses address))))})
+
+(rf/reg-event-fx :communities/toggle-selected-permission-address
+ toggle-selected-permission-address)
+
+(rf/reg-event-fx :communities/reset-selected-permission-addresses
+ (fn [{:keys [db]}]
+   {:db (assoc db
+               :communities/selected-permission-addresses
+               (get-in db [:communities/previous-permission-addresses]))}))
 
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]

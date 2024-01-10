@@ -16,11 +16,11 @@
 (defn focus
   "Animate to the `saved-height`, display background-overlay if needed, and set cursor position"
   [{:keys [input-ref] :as props}
-   {:keys [text-value focused? lock-selection? saved-cursor-position]}
+   {:keys [text-value focused? lock-selection? saved-cursor-position composer-focused?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]
     :as   animations}
-   {:keys [max-height] :as dimensions}
-   show-floating-scroll-down-button?]
+   {:keys [max-height] :as dimensions}]
+  (reanimated/set-shared-value composer-focused? true)
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
   (let [last-height-value (reanimated/get-shared-value last-height)]
@@ -35,13 +35,12 @@
   (when (and (not-empty @text-value) @input-ref)
     (.setNativeProps ^js @input-ref
                      (clj->js {:selection {:start @saved-cursor-position :end @saved-cursor-position}})))
-  (kb/handle-refocus-emoji-kb-ios props animations dimensions)
-  (reset! show-floating-scroll-down-button? false))
+  (kb/handle-refocus-emoji-kb-ios props animations dimensions))
 
 (defn blur
   "Save the current height, minimize the composer, animate-out the background, and save cursor position"
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index
-           maximized? recording?]}
+           maximized? recording? composer-focused?]}
    {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
    {:keys [content-height max-height window-height]}
    {:keys [images link-previews? reply]}]
@@ -53,6 +52,7 @@
                                                   max-height
                                                   content-height
                                                   saved-height)]
+      (reanimated/set-shared-value composer-focused? false)
       (reset! focused? false)
       (rf/dispatch [:chat.ui/set-input-focused false])
       (reanimated/set-shared-value last-height reopen-height)

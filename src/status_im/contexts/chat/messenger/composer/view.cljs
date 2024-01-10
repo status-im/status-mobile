@@ -30,8 +30,7 @@
 
 (defn sheet-component
   [{:keys [insets
-           scroll-to-bottom-fn
-           show-floating-scroll-down-button?
+           chat-list-scroll-y
            window-height
            blur-height
            opacity
@@ -89,7 +88,7 @@
       (:edit subscriptions)]
      [rn/view
       {:style style/composer-sheet-and-jump-to-container}
-      [sub-view/shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?]
+      [sub-view/shell-button state chat-list-scroll-y window-height]
       [gesture/gesture-detector
        {:gesture
         (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
@@ -114,42 +113,39 @@
            :menu-items @(:menu-items state)
            :style      (style/input-view state)}
           [rn/text-input
-           {:ref #(reset! (:input-ref props) %)
-            :default-value @(:text-value state)
-            :on-focus
-            #(handler/focus props state animations dimensions show-floating-scroll-down-button?)
-            :on-blur #(handler/blur state animations dimensions subscriptions)
-            :on-content-size-change #(handler/content-size-change %
-                                                                  state
-                                                                  animations
-                                                                  dimensions
-                                                                  (or keyboard-shown
-                                                                      (:edit subscriptions)))
-            :on-scroll #(handler/scroll % props state animations dimensions)
-            :on-change-text #(handler/change-text % props state)
-            :on-selection-change #(handler/selection-change % props state)
-            :on-selection #(selection/on-selection % props state)
-            :keyboard-appearance (quo.theme/theme-value :light :dark)
+           {:ref                      #(reset! (:input-ref props) %)
+            :default-value            @(:text-value state)
+            :on-focus                 #(handler/focus props state animations dimensions)
+            :on-blur                  #(handler/blur state animations dimensions subscriptions)
+            :on-content-size-change   #(handler/content-size-change %
+                                                                    state
+                                                                    animations
+                                                                    dimensions
+                                                                    (or keyboard-shown
+                                                                        (:edit subscriptions)))
+            :on-scroll                #(handler/scroll % props state animations dimensions)
+            :on-change-text           #(handler/change-text % props state)
+            :on-selection-change      #(handler/selection-change % props state)
+            :on-selection             #(selection/on-selection % props state)
+            :keyboard-appearance      (quo.theme/theme-value :light :dark)
             :max-font-size-multiplier 1
-            :multiline true
-            :placeholder (i18n/label :t/type-something)
-            :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50)
-            :style (style/input-text props
-                                     state
-                                     {:max-height max-height
-                                      :theme      theme})
-            :max-length constants/max-text-size
-            :accessibility-label :chat-message-input}]]]
+            :multiline                true
+            :placeholder              (i18n/label :t/type-something)
+            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
+            :style                    (style/input-text props
+                                                        state
+                                                        {:max-height max-height
+                                                         :theme      theme})
+            :max-length               constants/max-text-size
+            :accessibility-label      :chat-message-input}]]]
         [:<>
          [gradients/view props state animations show-bottom-gradient?]
          [link-preview/view]
          [images/images-list]]
-        [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
-         subscriptions]]]]]))
+        [:f> actions/view props state animations window-height insets subscriptions]]]]]))
 
 (defn f-composer
-  [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?
-           messages-list-on-layout-finished?]}]
+  [{:keys [insets chat-list-scroll-y messages-list-on-layout-finished?]}]
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
         opacity       (reanimated/use-shared-value 0)
@@ -159,8 +155,7 @@
                                                       (:bottom insets)))
         extra-params  {:insets                            insets
                        :window-height                     window-height
-                       :scroll-to-bottom-fn               scroll-to-bottom-fn
-                       :show-floating-scroll-down-button? show-floating-scroll-down-button?
+                       :chat-list-scroll-y                chat-list-scroll-y
                        :blur-height                       blur-height
                        :opacity                           opacity
                        :background-y                      background-y
