@@ -47,7 +47,7 @@
   [:=>
    [:cat
     [:map {:closed true}
-     [:prompt-message {:optional true} string?]
+     [:prompt-message string?]
      [:fallback-prompt-message {:optional true} string?]
      [:cancel-button-text {:optional true} string?]]]
    :any])

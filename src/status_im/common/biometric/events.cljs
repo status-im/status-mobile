@@ -3,6 +3,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.async-storage :as async-storage]
+    [react-native.biometrics :as biometrics]
     [react-native.platform :as platform]
     [react-native.touch-id :as touch-id]
     [status-im.common.keychain.events :as keychain]
