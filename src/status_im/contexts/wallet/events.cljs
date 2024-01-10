@@ -301,6 +301,10 @@
      (background-timer/clear-timeout current-timeout)
      {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
 
+(rf/reg-event-fx :wallet/clean-account-selection
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :send-account-address)}))
+
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
    {:db (assoc-in db
