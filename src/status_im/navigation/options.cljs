@@ -86,12 +86,7 @@
     :theme                  :dark
     :layout                 {:componentBackgroundColor :transparent
                              :orientation              ["portrait"]
-                             :backgroundColor          :transparent}}
-   (if platform/android?
-     {:statusBar {:backgroundColor :transparent
-                  :style           :light
-                  :drawBehind      true}}
-     {:statusBar {:style :light}})))
+                             :backgroundColor          :transparent}}))
 
 (def sheet-options
   {:layout                 {:componentBackgroundColor :transparent
