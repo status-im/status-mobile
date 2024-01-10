@@ -57,9 +57,9 @@
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
-    [status-im.contexts.wallet.edit-account.view :as wallet-edit-account] 
+    [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
-    [status-im.contexts.wallet.scan-account.view :as scan-address] 
+    [status-im.contexts.wallet.scan-account.view :as scan-address]
     [status-im.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
@@ -330,7 +330,7 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
 
-    {:name      :wallet-receive
+    {:name      :wallet-share-address
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
 
