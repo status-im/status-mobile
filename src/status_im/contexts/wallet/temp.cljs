@@ -105,3 +105,20 @@
                 :type         :network
                 :network-logo (quo.resources/get-network :ethereum)
                 :network-name "Mainnet"}}])
+
+(def collectible-about
+  {:cards [{:title               "BAYC"
+            :icon                :social/link
+            :address             "boredapeyachtclub"
+            :customization-color :social/link
+            :on-press            #(js/alert "pressed")}
+           {:title               "Twitter"
+            :icon                :social/twitter
+            :address             "@BoredApeYC"
+            :customization-color :social/twitter
+            :on-press            #(js/alert "pressed")}
+           {:title               "Opensea"
+            :icon                :social/opensea
+            :address             "Bored Ape Yacht Club"
+            :customization-color :social/opensea
+            :on-press            #(js/alert "pressed")}]})
