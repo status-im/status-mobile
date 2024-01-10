@@ -95,7 +95,8 @@
                   :button-text         (i18n/label :t/confirm)
                   :close-button-text   (i18n/label :t/cancel)
                   :on-press            (fn []
-                                         (hide-sheet-and-dispatch [:chat.ui/close-chat chat-id])
+                                         (hide-sheet-and-dispatch [:chat.ui/close-and-remove-chat
+                                                                   chat-id])
                                          (when inside-chat?
                                            (rf/dispatch [:navigate-back])))}])}]))
 

@@ -20,9 +20,9 @@
         content-height                    (atom 0)
         layout-height                     (atom 0)
         distance-atom                     (atom 0)
-        show-floating-scroll-down-button? (reagent/atom false)
         messages-list-on-layout-finished? (reagent/atom false)
-        distance-from-list-top            (reanimated/use-shared-value 0)]
+        distance-from-list-top            (reanimated/use-shared-value 0)
+        chat-list-scroll-y                (reanimated/use-shared-value 0)]
     [rn/keyboard-avoiding-view
      {:style                    style/keyboard-avoiding-container
       :keyboard-vertical-offset (- (:bottom insets))}
@@ -36,14 +36,13 @@
        :distance-atom                     distance-atom
        :calculations-complete?            calculations-complete?
        :distance-from-list-top            distance-from-list-top
+       :chat-list-scroll-y                chat-list-scroll-y
        :messages-list-on-layout-finished? messages-list-on-layout-finished?
-       :cover-bg-color                    :turquoise
-       :show-floating-scroll-down-button? show-floating-scroll-down-button?}]
+       :cover-bg-color                    :turquoise}]
      [composer.view/composer
       {:insets                            insets
-       :scroll-to-bottom-fn               list.view/scroll-to-bottom
-       :messages-list-on-layout-finished? messages-list-on-layout-finished?
-       :show-floating-scroll-down-button? show-floating-scroll-down-button?}]]))
+       :chat-list-scroll-y                chat-list-scroll-y
+       :messages-list-on-layout-finished? messages-list-on-layout-finished?}]]))
 
 (defn lazy-chat-screen
   [calculations-complete?]
