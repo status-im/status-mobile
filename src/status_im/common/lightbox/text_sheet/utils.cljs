@@ -1,10 +1,10 @@
-(ns status-im.contexts.chat.messenger.lightbox.text-sheet.utils
+(ns status-im.common.lightbox.text-sheet.utils
   (:require
     [oops.core :as oops]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
     [reagent.core :as r]
-    [status-im.contexts.chat.messenger.lightbox.constants :as constants]))
+    [status-im.common.lightbox.constants :as constants]))
 
 (defn- collapse-sheet
   [{:keys [derived-value overlay-opacity saved-top expanded? overlay-z-index]}]
@@ -16,10 +16,10 @@
 
 (defn sheet-gesture
   [{:keys [derived-value saved-top overlay-opacity gradient-opacity]}
-   expanded-height max-height full-height overlay-z-index expanded? dragging? expanding-message?]
+   expanded-height max-height full-height overlay-z-index expanded? dragging? expandable-text?]
   (let [disable-gesture-update (r/atom false)]
     (-> (gesture/gesture-pan)
-        (gesture/enabled expanding-message?)
+        (gesture/enabled expandable-text?)
         (gesture/on-start (fn []
                             (reset! overlay-z-index 1)
                             (reset! dragging? true)

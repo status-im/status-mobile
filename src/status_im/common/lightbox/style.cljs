@@ -1,9 +1,9 @@
-(ns status-im.contexts.chat.messenger.lightbox.style
+(ns status-im.common.lightbox.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.lightbox.constants :as c]))
+    [status-im.common.lightbox.constants :as c]))
 
 ;;;; VIEW
 (defn image

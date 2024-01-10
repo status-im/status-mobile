@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.zoomable-image.utils
+(ns status-im.common.lightbox.zoomable-image.utils
   (:require
     [clojure.string :as string]
     [react-native.core :as rn]
@@ -6,8 +6,8 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
-    [status-im.contexts.chat.messenger.lightbox.animations :as anim]
-    [status-im.contexts.chat.messenger.lightbox.zoomable-image.constants :as constants]
+    [status-im.common.lightbox.animations :as anim]
+    [status-im.common.lightbox.zoomable-image.constants :as constants]
     [utils.re-frame :as rf]))
 
 ;;; Helpers
@@ -97,7 +97,7 @@
         (rescale constants/min-scale true)
         (js/setTimeout #(rf/dispatch [:navigate-back]) 70))
       (rf/dispatch [:navigate-back]))
-    (js/setTimeout #(rf/dispatch [:chat.ui/exit-lightbox-signal nil]) 500)))
+    (js/setTimeout #(rf/dispatch [:lightbox/exit-lightbox-signal nil]) 500)))
 
 (defn handle-zoom-out-signal
   "Zooms out when pressing on another photo from the small bottom list"

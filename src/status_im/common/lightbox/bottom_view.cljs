@@ -1,13 +1,13 @@
-(ns status-im.contexts.chat.messenger.lightbox.bottom-view
+(ns status-im.common.lightbox.bottom-view
   (:require
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.lightbox.animations :as anim]
-    [status-im.contexts.chat.messenger.lightbox.constants :as c]
-    [status-im.contexts.chat.messenger.lightbox.style :as style]
-    [status-im.contexts.chat.messenger.lightbox.text-sheet.view :as text-sheet]
+    [status-im.common.lightbox.animations :as anim]
+    [status-im.common.lightbox.constants :as c]
+    [status-im.common.lightbox.style :as style]
+    [status-im.common.lightbox.text-sheet.view :as text-sheet]
     [utils.re-frame :as rf]))
 
 (defn get-small-item-layout
@@ -27,7 +27,7 @@
     [rn/touchable-opacity
      {:active-opacity 1
       :on-press       (fn []
-                        (rf/dispatch [:chat.ui/zoom-out-signal @scroll-index])
+                        (rf/dispatch [:lightbox/zoom-out-signal @scroll-index])
                         (reset! scroll-index-lock? true)
                         (js/setTimeout #(reset! scroll-index-lock? false) 500)
                         (js/setTimeout
@@ -38,9 +38,9 @@
                            (.scrollToIndex ^js @flat-list-ref
                                            #js {:animated true :index index}))
                          (if platform/ios? 50 150))
-                        (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)]))}
+                        (rf/dispatch [:lightbox/update-animation-shared-element-id (:id item)]))}
      [reanimated/fast-image
-      {:source {:uri (:image (:content item))}
+      {:source {:uri (:image item)}
        :style  (reanimated/apply-animations-to-style {:width  size-value
                                                       :height size-value}
                                                      {:border-radius 10})}]]))
@@ -50,7 +50,8 @@
   [:f> f-small-image item index _ render-data])
 
 (defn bottom-view
-  [messages index scroll-index insets animations derived item-width props state transparent?]
+  [{:keys [images index scroll-index insets animations derived item-width props state transparent?
+           bottom-text-component]}]
   (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
      {:colors   [colors/neutral-100-opa-100 colors/neutral-100-opa-80 colors/neutral-100-opa-0]
@@ -58,12 +59,17 @@
       :start    {:x 0 :y 1}
       :end      {:x 0 :y 0}
       :style    (style/gradient-container insets animations derived transparent?)}
-     [text-sheet/view messages animations state props]
+     (when bottom-text-component
+       [text-sheet/view
+        {:overlay-opacity  (:overlay-opacity animations)
+         :overlay-z-index  (:overlay-z-index state)
+         :text-sheet-lock? (:text-sheet-lock? props)
+         :text-component   bottom-text-component}])
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
-       :key-fn                            :message-id
+       :key-fn                            :id
        :style                             {:height c/small-list-height}
-       :data                              messages
+       :data                              images
        :render-fn                         small-image
        :render-data                       {:scroll-index scroll-index
                                            :props        props}

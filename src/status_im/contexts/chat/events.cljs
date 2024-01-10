@@ -4,13 +4,12 @@
     [legacy.status-im.chat.models.loading :as loading]
     [legacy.status-im.data-store.chats :as chats-store]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    status-im.common.lightbox.events
     [status-im.common.muting.helpers :refer [format-mute-till]]
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as contacts-store]
     status-im.contexts.chat.effects
     [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
-    status-im.contexts.chat.messenger.lightbox.events
     status-im.contexts.chat.messenger.messages.content.reactions.events
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
     [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
@@ -394,38 +393,6 @@
   [cofx chat-id]
   (navigation/navigate-to cofx :chat-pinned-messages {:chat-id chat-id}))
 
-
-(rf/defn update-shared-element-id
-  {:events [:chat.ui/update-shared-element-id]}
-  [{:keys [db]} shared-element-id]
-  {:db (assoc db :shared-element-id shared-element-id)})
-
-(rf/defn navigate-to-lightbox
-  {:events [:chat.ui/navigate-to-lightbox]}
-  [{:keys [db]} shared-element-id screen-params]
-  (reagent/next-tick #(rf/dispatch [:navigate-to :lightbox screen-params]))
-  {:db (assoc db :shared-element-id shared-element-id)})
-
-(rf/defn exit-lightbox-signal
-  {:events [:chat.ui/exit-lightbox-signal]}
-  [{:keys [db]} value]
-  {:db (assoc db :lightbox/exit-signal value)})
-
-(rf/defn zoom-out-signal
-  {:events [:chat.ui/zoom-out-signal]}
-  [{:keys [db]} value]
-  {:db (assoc db :lightbox/zoom-out-signal value)})
-
-(rf/defn orientation-change
-  {:events [:chat.ui/orientation-change]}
-  [{:keys [db]} value]
-  {:db (assoc db :lightbox/orientation value)})
-
-(rf/defn lightbox-scale
-  {:events [:chat.ui/lightbox-scale]}
-  [{:keys [db]} value]
-  {:db (assoc db :lightbox/scale value)})
-
 (rf/defn check-last-chat
   {:events [:chat/check-last-chat]}
   [{:keys [db]}]
@@ -452,3 +419,15 @@
   {:events [:chat.ui/scroll-to-bottom]}
   [_]
   {:effects.chat/scroll-to-bottom nil})
+
+(rf/reg-event-fx :chat.ui/clear-sending-images
+ (fn [{:keys [db]}]
+   {:db (update-in db [:chat/inputs (:current-chat-id db) :metadata] assoc :sending-image {})}))
+
+(rf/reg-event-fx :chat.ui/image-unselected
+ (fn [{:keys [db]} [original]]
+   (let [current-chat-id (:current-chat-id db)]
+     {:db (update-in db
+                     [:chat/inputs current-chat-id :metadata :sending-image]
+                     dissoc
+                     (:uri original))})))
