@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]
+    [legacy.status-im.multiaccounts.logout.core :as logout]
     [legacy.status-im.utils.test :as utils.test]
     [status-im.contexts.profile.utils :as profile.utils]
     [test-helpers.integration :as h]
@@ -20,7 +21,9 @@
            [:toasts/upsert]
            (let [profile      (rf/sub [:profile/profile])
                  display-name (profile.utils/displayed-name profile)]
-             (is (= new-name display-name))))))))))
+             (is (= new-name display-name)))
+           (h/logout)
+           (rf-test/wait-for [::logout/logout-method]))))))))
 
 (deftest edit-profile-picture-test
   (h/log-headline :edit-profile-picture-test)
@@ -35,7 +38,9 @@
          (rf-test/wait-for
            [:toasts/upsert]
            (let [profile (rf/sub [:profile/profile])]
-             (is (not (nil? (:images profile))))))))))))
+             (is (not (nil? (:images profile)))))
+           (h/logout)
+           (rf-test/wait-for [::logout/logout-method]))))))))
 
 (deftest delete-profile-picture-test
   (h/log-headline :delete-profile-picture-test)
@@ -48,4 +53,6 @@
        (rf-test/wait-for
          [:toasts/upsert]
          (let [profile (rf/sub [:profile/profile])]
-           (is (nil? (:image profile))))))))))
+           (is (nil? (:image profile))))
+         (h/logout)
+         (rf-test/wait-for [::logout/logout-method])))))))

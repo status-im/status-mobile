@@ -27,15 +27,15 @@
 (defn delete-profile-picture
   [{:keys [db]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
-                      :params     [key-uid]
-                      :on-success (fn []
-                                    (rf/dispatch [:profile/update-local-picture nil])
-                                    (rf/dispatch [:toasts/upsert
-                                                  {:type  :positive
-                                                   :theme :dark
-                                                   :text  (i18n/label
-                                                           :t/profile-picture-removed)}]))}]}))
+    {:json-rpc/call
+     [{:method     "multiaccounts_deleteIdentityImage"
+       :params     [key-uid]
+       :on-success (fn []
+                     (rf/dispatch [:profile/update-local-picture nil])
+                     (rf/dispatch [:toasts/upsert
+                                   {:type  :positive
+                                    :theme :dark
+                                    :text  (i18n/label :t/profile-picture-removed)}]))}]}))
 
 (rf/reg-event-fx :profile/edit-picture edit-profile-picture)
 
