@@ -3,8 +3,6 @@
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.share :as share]
     [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
@@ -61,19 +59,8 @@
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
                                (js/setTimeout
-                                #(share/open
-                                  (if platform/ios?
-                                    {:activityItemSources [{:placeholderItem {:type "text"
-                                                                              :content
-                                                                              multichain-address}
-                                                            :item            {:default
-                                                                              {:type "text"
-                                                                               :content
-                                                                               multichain-address}}
-                                                            :linkMetadata    {:title share-title}}]}
-                                    {:title   share-title
-                                     :subject share-title
-                                     :message multichain-address}))
+                                #(rf/dispatch [:wallet/share-account
+                                               {:title share-title :content multichain-address}])
                                 600))}]]]))
 
 (defn view

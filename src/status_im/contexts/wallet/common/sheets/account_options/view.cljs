@@ -8,7 +8,6 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
-            [react-native.share :as share]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im.contexts.wallet.common.utils :as utils]
@@ -89,17 +88,8 @@
          :on-press            (fn []
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (js/setTimeout
-                                 #(share/open
-                                   (if platform/ios?
-                                     {:activityItemSources
-                                      [{:placeholderItem {:type    "text"
-                                                          :content address}
-                                        :item            {:default {:type    "text"
-                                                                    :content address}}
-                                        :linkMetadata    {:title share-title}}]}
-                                     {:title   share-title
-                                      :subject share-title
-                                      :message address}))
+                                 #(rf/dispatch [:wallet/share-account
+                                                {:title share-title :content address}])
                                  600))}
         {:add-divider?        (not show-account-selector?)
          :icon                :i/delete

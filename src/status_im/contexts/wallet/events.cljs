@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
+    [react-native.platform :as platform]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -329,3 +330,18 @@
 (rf/reg-event-fx :wallet/initialize
  (fn []
    {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
+
+(rf/reg-event-fx :wallet/share-account
+ (fn [_ [{:keys [content title]}]]
+   {:fx [[:dispatch [:hide-bottom-sheet]]
+         [:effects.share/open
+          (if platform/ios?
+            {:activityItemSources
+             [{:placeholderItem {:type    "text"
+                                 :content content}
+               :item            {:default {:type    "text"
+                                           :content content}}
+               :linkMetadata    {:title title}}]}
+            {:title   title
+             :subject title
+             :message content})]]}))
