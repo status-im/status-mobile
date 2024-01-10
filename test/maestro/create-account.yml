@@ -1,0 +1,27 @@
+# create-account.yaml
+
+appId: im.status.ethereum.pr
+---
+- launchApp
+- tapOn: "I’m new to Status"
+- tapOn: "Let's go!"
+- tapOn: "Your name"
+- inputText: "DeviceA"
+- tapOn: "Continue"
+- inputText: "password123"
+- tapOn: "Repeat password"
+- inputText: "password123"
+- tapOn: "I understand my password can't be recovered"
+- tapOn:
+      text: "Confirm password"
+      index: 1
+- tapOn: "Continue"
+- tapOn: "Maybe later"
+- tapOn: "Start using Status"
+- tapOn: "profile-picture"
+- swipe:
+      direction: "UP"
+- tapOn: "Legacy settings"
+- tapOn: "default-username"
+- tapOn: "chat-key"
+
