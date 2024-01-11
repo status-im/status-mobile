@@ -52,7 +52,7 @@
 
 (def right-side-container
   {:padding 4
-   :flex 1})
+   :flex    1})
 
 (defn action-container
   [theme]

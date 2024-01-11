@@ -77,9 +77,11 @@
   (let [context-theme (or theme (quo.theme/get-theme))
         icon-name     (case type
                         :positive (if (= theme :light)
-                                    :i/correct :i/correct-dark)
+                                    :i/correct
+                                    :i/correct-dark)
                         :negative (if (= theme :light)
-                                    :i/incorrect :i/incorrect-dark)
+                                    :i/incorrect
+                                    :i/incorrect-dark)
                         :neutral  icon)]
     [quo.theme/provider {:theme context-theme}
      [toast-container
