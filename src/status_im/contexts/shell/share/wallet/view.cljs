@@ -1,16 +1,16 @@
 (ns status-im.contexts.shell.share.wallet.view
   (:require
-   [quo.core :as quo] 
-   [react-native.core :as rn]
-   [react-native.platform :as platform]
-   [react-native.share :as share]
-   [reagent.core :as reagent]
-   [status-im.contexts.shell.share.style :as style]
-   [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [utils.i18n :as i18n]
-   [utils.image-server :as image-server]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
+    [reagent.core :as reagent]
+    [status-im.contexts.shell.share.style :as style]
+    [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def qr-size 500)
 
@@ -24,9 +24,9 @@
                                                          :content
                                                          address}}
                              :linkMetadata    {:title share-title}}]}
-     {:title   share-title
-      :subject share-title
-      :message address
+     {:title     share-title
+      :subject   share-title
+      :message   address
       :isNewTask true})))
 
 
@@ -36,7 +36,7 @@
                 {:theme :dark
                  :shell? true
                  :content
-                 (fn [] 
+                 (fn []
                    [network-preferences/view
                     {:blur?             true
                      :selected-networks (set selected-networks)
@@ -65,7 +65,7 @@
             :qr-image-uri        qr-media-server-uri
             :qr-data             qr-url
             :networks            @selected-networks
-            :on-share-press      #(share-action qr-url share-title) 
+            :on-share-press      #(share-action qr-url share-title)
             :profile-picture     nil
             :unblur-on-android?  true
             :full-name           (:name account)
