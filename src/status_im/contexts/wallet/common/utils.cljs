@@ -173,6 +173,12 @@
    constants/optimism-chain-id :optimism
    constants/arbitrum-chain-id :arbitrum})
 
+(defn get-standard-fiat-format
+  [crypto-value currency-symbol fiat-value]
+  (if (string/includes? crypto-value "<")
+    "<$0.01"
+    (prettify-balance currency-symbol fiat-value)))
+
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
@@ -184,9 +190,7 @@
                                                  constants/profile-default-currency]))
         {:keys [change-pct-24hour]} market-values
         crypto-value                (get-standard-crypto-format token token-units)
-        fiat-value                  (if (string/includes? crypto-value "<")
-                                      "<$0.01"
-                                      (prettify-balance currency-symbol fiat-value))]
+        fiat-value                  (get-standard-fiat-format crypto-value currency-symbol fiat-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default

@@ -47,17 +47,23 @@
             (update-in [:wallet :ui :send] dissoc :to-address))
     :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]}))
 
-(rf/reg-event-fx :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address stack-id]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :to-address] address)
-            (update-in [:wallet :ui :send] dissoc :send-account-address))
-    :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]}))
+(fn [{:keys [db]} [{:keys [address token stack-id]}]]
+  {:db (assoc-in db [:wallet :ui :send :to-address] address)
+   :fx [[:navigate-to-within-stack
+         (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]})
 
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
     :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
+
+(rf/reg-event-fx :wallet/send-select-token-drawer
+ (fn [{:keys [db]} [{:keys [token]}]]
+   {:db (assoc-in db [:wallet :ui :send :token] token)}))
+
+(rf/reg-event-fx :wallet/clean-selected-token
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :send :token] nil)}))
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id]}]]

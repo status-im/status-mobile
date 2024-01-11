@@ -27,7 +27,7 @@
 (def info
   {:flex-direction :row
    :align-items    :center
-   :width          "70%"})
+   :width          "60%"})
 
 (def token-info
   {:height 40
@@ -42,7 +42,7 @@
 
 (def values-container
   {:align-items :flex-end
-   :max-width   "30%"})
+   :max-width   "40%"})
 
 (defn fiat-value
   [theme]
