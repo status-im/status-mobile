@@ -22,6 +22,7 @@
 (defn album-message
   [{:keys [albumize?] :as message} context on-long-press message-container-data]
   (let [shared-element-id (rf/sub [:shared-element-id])
+        media-server-port (rf/sub [:mediaserver/port])
         first-image       (first (:album message))
         album-style       (if (> (:image-width first-image) (:image-height first-image))
                             :landscape
@@ -57,8 +58,7 @@
                                                :index    index}])}
               [fast-image/fast-image
                {:style     (style/image dimensions index portrait? images-count)
-                :source    {:uri (url/replace-port (:image (:content item))
-                                                   (rf/sub [:mediaserver/port]))}
+                :source    {:uri (url/replace-port (:image (:content item)) media-server-port)}
                 :native-ID (when (and (= shared-element-id (:message-id item))
                                       (< index constants/max-album-photos))
                              :shared-element)}]

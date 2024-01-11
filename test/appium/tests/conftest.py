@@ -196,7 +196,7 @@ def _upload_and_check_response_with_retries(apk_file_path, retries=3):
         try:
             _upload_and_check_response(apk_file_path)
             break
-        except (ConnectionError, RemoteDisconnected):
+        except (ConnectionError, RemoteDisconnected, c_er):
             time.sleep(10)
 
 

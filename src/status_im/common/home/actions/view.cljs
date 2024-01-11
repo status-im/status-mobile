@@ -349,7 +349,7 @@
   [chat-id]
   (entry {:icon                :i/members
           :label               (i18n/label :t/group-details)
-          :on-press            #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])
+          :on-press            #(hide-sheet-and-dispatch [:navigate-to :group-chat-profile chat-id])
           :danger?             false
           :accessibility-label :group-details
           :sub-label           nil

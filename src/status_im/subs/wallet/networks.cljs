@@ -4,10 +4,16 @@
             [status-im.constants :as constants]))
 
 (re-frame/reg-sub
- :wallet/filtered-networks-by-mode
+ :wallet/networks
+ :<- [:wallet]
+ :-> :networks)
+
+(re-frame/reg-sub
+ :wallet/networks-by-mode
  :<- [:wallet/networks]
- (fn [networks [_ test?]]
-   (get networks (if test? :test :prod))))
+ :<- [:profile/test-networks-enabled?]
+ (fn [[networks test-networks-enabled?]]
+   (get networks (if test-networks-enabled? :test :prod))))
 
 (def mainnet-network-details
   {:source       (resources/get-network constants/mainnet-network-name)
@@ -32,7 +38,7 @@
 
 (re-frame/reg-sub
  :wallet/network-details
- :<- [:wallet/filtered-networks-by-mode false]
+ :<- [:wallet/networks-by-mode]
  (fn [networks]
    (->> networks
         (keep

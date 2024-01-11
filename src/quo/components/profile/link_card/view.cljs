@@ -8,7 +8,7 @@
             [react-native.linear-gradient :as linear-gradient]))
 
 (defn- view-internal
-  [{:keys [address theme on-press icon title customization-color]}]
+  [{:keys [address theme on-press icon title customization-color container-style]}]
   [rn/pressable
    {:accessibility-label :link-card
     :on-press            on-press}
@@ -17,7 +17,7 @@
               (properties/gradient-end-color theme customization-color)]
      :start  {:x 0 :y 1}
      :end    {:x 1 :y 1}
-     :style  (style/container theme)}
+     :style  (merge (style/container theme) container-style)}
     [rn/view {:style style/icon-container}
      [social/view
       {:accessibility-label :social-icon
