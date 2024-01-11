@@ -32,6 +32,17 @@
         (add-collectibles-preview-url))))
 
 (re-frame/reg-sub
+ :wallet/current-viewing-account-collectibles-filtered
+ :<- [:wallet/current-viewing-account-collectibles]
+ (fn [current-account-collectibles [_ search-text]]
+   (let [search-text-lower-case (string/lower-case search-text)]
+     (filter (fn [{{collection-name :name}  :collection-data
+                   {collectible-name :name} :collectible-data}]
+               (or (string/includes? (string/lower-case collection-name) search-text-lower-case)
+                   (string/includes? (string/lower-case collectible-name) search-text-lower-case)))
+             current-account-collectibles))))
+
+(re-frame/reg-sub
  :wallet/last-collectible-details
  :<- [:wallet]
  (fn [wallet]
