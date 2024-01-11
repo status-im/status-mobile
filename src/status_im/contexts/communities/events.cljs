@@ -238,10 +238,11 @@
                                                  :item            {:default {:type    "url"
                                                                              :content url}}
                                                  :linkMetadata    {:title title}}]}
-                         {:title   title
-                          :subject title
-                          :message url
-                          :url     url})))
+                         {:title     title
+                          :subject   title
+                          :message   url
+                          :url       url
+                          :isNewTask true})))
         :on-error   (fn [err]
                       (log/error "failed to retrieve community channel url with data"
                                  {:error   err
