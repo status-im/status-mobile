@@ -212,22 +212,64 @@ Properties must be set on view level
  :bottom           0}
 ```
 
-### Apply animated styles in the style file
+### Animated styles in the style file
 
 ```clojure
 ;; bad
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
-    [reanimated/view {:style (reanimated/apply-animations-to-style
-                              {:opacity opacity}
-                              style/circle-container)}]))
+    [reanimated/view {:style [{:opacity opacity}
+                              style/circle-container]}]))
 
 ;; good
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
     [reanimated/view {:style (style/circle-container opacity)}]))
+```
+
+### `apply-animations-to-style` vs `[]`
+
+`apply-animations-to-style` is a function wrapping `reanimated/use-animated-style` to make it work in 
+ClojureScript, since Reanimated  3.x, we are able to just pass inline styles for some use cases, please 
+check Reanimated docs about [inline styles](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation/#defining-a-shared-value)
+and [useAnimatedStyle](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/animating-styles-and-props/#animating-styles)
+for more information. Most of the time we can simply use a vector:
+
+```clojure
+(defn f-view []
+  (let [scroll-x (reanimated/use-shared-value 0)
+        scroll-y (reanimated/use-shared-value 0)
+        opacity  (reanimated/interpolate scroll-y [0 45 50] [1 1 0])]
+    ...
+    [reanimated/view
+
+     ;; bad
+     {:style (reanimated/apply-animations-to-style
+              {:opacity   opacity
+               :transform [{:translate-x scroll-x} {:translate-y scroll-y}]}
+              {:flex-direction  :row
+               :justify-content :space-between})}
+
+     ;; good
+     {:style [{:opacity   opacity
+               :transform [{:translate-x scroll-x} {:translate-y scroll-y}]}
+              {:flex-direction  :row
+               :justify-content :space-between}]}
+
+     ;; other valid and good variants
+     {:style [{:opacity opacity}
+              {:transform [{:translate-x scroll-x} {:translate-y scroll-y}]}
+              {:flex-direction  :row
+               :justify-content :space-between}]}
+
+     {:style {:opacity         opacity
+              :transform       [{:translate-x scroll-x} {:translate-y scroll-y}]
+              :flex-direction  :row
+              :justify-content :space-between}}
+     
+     ...]))
 ```
 
 ### Don't use percents to define width/height
