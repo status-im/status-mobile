@@ -2108,7 +2108,7 @@
     "my-albums": "My albums",
     "images": "images",
     "album-images-count": "{{album-images-count}} photos",
-    "only-6-images": "You can only add 6 images to your message",
+    "only-6-photos": "You can only add 6 photos to your message",
     "delivered": "Delivered",
     "mark-all-notifications-as-read": "Mark all notifications as read",
     "notifications-marked-as-read": "{{count}} notifications marked as read",

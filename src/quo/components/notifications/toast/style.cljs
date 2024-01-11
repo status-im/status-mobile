@@ -21,13 +21,13 @@
 
 (defn content-container
   [theme]
-  {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
-   :flex-direction   :row
-   :justify-content  :space-between
-   :padding-vertical 8
-   :padding-left     10
-   :padding-right    8
-   :border-radius    12})
+  {:background-color   (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
+   :flex-direction     :row
+   :align-items        :center
+   :justify-content    :space-between
+   :padding-vertical   8
+   :padding-horizontal 8
+   :border-radius      12})
 
 (defn title
   [theme]
@@ -47,8 +47,12 @@
                                                      theme))
    :container-style {:width 20 :height 20}})
 
-(def left-side-container {:padding 2})
-(def right-side-container {:padding 4 :flex 1})
+(def left-side-container
+  {:padding 2})
+
+(def right-side-container
+  {:padding 4
+   :flex 1})
 
 (defn action-container
   [theme]
