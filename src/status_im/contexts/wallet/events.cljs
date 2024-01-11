@@ -129,7 +129,14 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
+<<<<<<< HEAD
   {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
+=======
+         (println "cleaniingggg")
+  {:db (-> db
+           (dissoc :wallet/scanned-address :wallet/send-address)
+           (update-in [:wallet :ui :send] dissoc :to-address))})
+>>>>>>> 443f27004 (updates)
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
@@ -206,6 +213,7 @@
    (let [result (if (empty? input)
                   []
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
+     (println "find ens")
      (if (and input (empty? result))
        (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
        {:db (assoc db
@@ -229,6 +237,7 @@
 
 (rf/reg-event-fx :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
+   (println "resultxx" result)
    {:db (assoc db
                :wallet/local-suggestions     (if result
                                                [{:type     item-types/address

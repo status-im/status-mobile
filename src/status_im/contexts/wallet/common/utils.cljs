@@ -14,9 +14,9 @@
   (let [valid-balance? (and balance
                             (or (number? balance) (.-toFixed balance)))]
     (as-> balance $
-      (if valid-balance? $ 0)
-      (.toFixed $ 2)
-      (str currency-symbol $))))
+          (if valid-balance? $ 0)
+          (.toFixed $ 2)
+          (str currency-symbol $))))
 
 (defn get-derivation-path
   [number-of-accounts]
@@ -106,8 +106,8 @@
 (defn calculate-balance-for-token
   [token]
   (money/bignumber
-   (money/mul (total-token-units-in-all-chains token)
-              (-> token :market-values-per-currency :usd :price))))
+    (money/mul (total-token-units-in-all-chains token)
+               (-> token :market-values-per-currency :usd :price))))
 
 (defn calculate-balance
   [tokens-in-account]
@@ -129,10 +129,10 @@
 (defn- merge-token
   [existing-token token]
   (assoc token
-         :balances-per-chain
-         (merge-with add-balances-per-chain
-                     (:balances-per-chain existing-token)
-                     (:balances-per-chain token))))
+    :balances-per-chain
+    (merge-with add-balances-per-chain
+                (:balances-per-chain existing-token)
+                (:balances-per-chain token))))
 
 (defn aggregate-tokens-for-all-accounts
   "Receives accounts (seq) and returns aggregated tokens in all accounts
@@ -141,13 +141,13 @@
   (->> accounts
        (map :tokens)
        (reduce
-        (fn [result-map tokens-per-account]
-          (reduce
-           (fn [acc token]
-             (update acc (:symbol token) merge-token token))
-           result-map
-           tokens-per-account))
-        {})
+         (fn [result-map tokens-per-account]
+           (reduce
+             (fn [acc token]
+               (update acc (:symbol token) merge-token token))
+             result-map
+             tokens-per-account))
+         {})
        vals))
 
 (defn network-list
@@ -163,9 +163,9 @@
   [{:keys [wallet-type selected-networks address]}]
   (if (= wallet-type :wallet-multichain)
     (as-> selected-networks $
-      (map qr-codes/get-network-short-name-url $)
-      (apply str $)
-      (str $ address))
+          (map qr-codes/get-network-short-name-url $)
+          (apply str $)
+          (str $ address))
     address))
 
 (def id->network
@@ -183,22 +183,40 @@
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
-  (let [token-units                 (total-token-units-in-all-chains token)
-        fiat-value                  (total-token-fiat-value currency token)
-        market-values               (or (get-in token [:market-values-per-currency currency])
-                                        (get-in token
-                                                [:market-values-per-currency
-                                                 constants/profile-default-currency]))
+  (let [token-units   (total-token-units-in-all-chains token)
+        fiat-value    (total-token-fiat-value currency token)
+        market-values (or (get-in token [:market-values-per-currency currency])
+                          (get-in token
+                                  [:market-values-per-currency
+                                   constants/profile-default-currency]))
         {:keys [change-pct-24hour]} market-values
+<<<<<<< HEAD
         crypto-value                (get-standard-crypto-format token token-units)
         fiat-value                  (get-standard-fiat-format crypto-value currency-symbol fiat-value)]
+=======
+        crypto-value  (get-standard-crypto-format token token-units)
+        fiat-value    (if (string/includes? crypto-value "<")
+                        "<$0.01"
+                        (prettify-balance currency-symbol fiat-value))]
+>>>>>>> 720df984c (updates)
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
      :status              (cond
                             (pos? change-pct-24hour) :positive
                             (neg? change-pct-24hour) :negative
-                            :else                    :empty)
+                            :else :empty)
      :customization-color color
      :values              {:crypto-value crypto-value
                            :fiat-value   fiat-value}}))
+
+(defn get-multichain-address
+  [networks address]
+  (str (->> networks
+            (map #(str (:short-name %) ":"))
+            (clojure.string/join ""))
+       address))
+
+(defn split-prefix-and-address [input-string]
+  (let [split-result (string/split input-string #"0x")]
+    [(first split-result) (str "0x" (second split-result))]))

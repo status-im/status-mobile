@@ -48,8 +48,6 @@
                                   [:wallet/find-ens text contacts chain-id cb]
                                   300))
         :on-change-text        (fn [text]
-                                 (when-not (= scanned-address text)
-                                   (rf/dispatch [:wallet/clean-scanned-address]))
                                  (when (empty? text)
                                    (rf/dispatch [:wallet/clean-local-suggestions]))
                                  (reset! input-value text))

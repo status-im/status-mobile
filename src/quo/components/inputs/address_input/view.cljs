@@ -67,6 +67,7 @@
                                      (when (not= @value text)
                                        (let [address? (when address-regex
                                                         (boolean (re-matches address-regex text)))]
+                                         (println "adddress???" address?)
                                          (if (> (count text) 0)
                                            (reset! status :typing)
                                            (reset! status :active))
