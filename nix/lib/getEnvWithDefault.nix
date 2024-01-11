@@ -3,6 +3,6 @@ name: default: let
   logEnvOverride = value:
     builtins.trace "getEnvWithDefault ${name} (default: ${toString default}): ${value}" value;
 in
-  if envOverride != ""
+  if envOverride != "" && envOverride != default
   then logEnvOverride envOverride
   else default

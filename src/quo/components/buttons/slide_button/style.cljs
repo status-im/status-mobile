@@ -1,8 +1,7 @@
 (ns quo.components.buttons.slide-button.style
   (:require
     [quo.components.buttons.slide-button.constants :as constants]
-    [quo.components.buttons.slide-button.utils :as utils]
-    [react-native.reanimated :as reanimated]))
+    [quo.components.buttons.slide-button.utils :as utils]))
 
 (def absolute-fill
   {:position :absolute
@@ -13,28 +12,25 @@
 
 (defn thumb-container
   [{:keys [interpolate-track thumb-size customization-color theme]}]
-  (reanimated/apply-animations-to-style
-   {:transform [{:translate-x (interpolate-track :track-clamp)}]}
+  [{:transform [{:translate-x (interpolate-track :track-clamp)}]}
    {:background-color (utils/main-color customization-color theme)
     :border-radius    12
     :height           thumb-size
     :width            thumb-size
     :align-items      :center
     :overflow         :hidden
-    :justify-content  :center}))
+    :justify-content  :center}])
 
 (defn arrow-icon-container
   [interpolate-track]
-  (reanimated/apply-animations-to-style
-   {:transform [{:translate-x (interpolate-track :arrow-icon-position)}]}
-   {:flex            1
-    :align-items     :center
-    :justify-content :center}))
+  {:transform       [{:translate-x (interpolate-track :arrow-icon-position)}]
+   :flex            1
+   :align-items     :center
+   :justify-content :center})
 
 (defn action-icon
   [interpolate-track size]
-  (reanimated/apply-animations-to-style
-   {:transform [{:translate-x (interpolate-track :action-icon-position)}]}
+  [{:transform [{:translate-x (interpolate-track :action-icon-position)}]}
    {:height          size
     :width           size
     :position        :absolute
@@ -42,7 +38,7 @@
     :left            0
     :top             0
     :flex-direction  :row
-    :justify-content :space-around}))
+    :justify-content :space-around}])
 
 (defn track
   [{:keys [disabled? customization-color height blur?]}]
@@ -57,9 +53,8 @@
 
 (defn track-cover
   [interpolate-track]
-  (reanimated/apply-animations-to-style
-   {:left (interpolate-track :track-cover)}
-   (assoc absolute-fill :overflow :hidden)))
+  [{:left (interpolate-track :track-cover)}
+   (assoc absolute-fill :overflow :hidden)])
 
 (defn track-cover-text-container
   [track-width]

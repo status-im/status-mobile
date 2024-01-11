@@ -270,11 +270,12 @@
 
 (re-frame/reg-sub
  :contacts/contacts-by-chat
- (fn [[_ _ chat-id] _]
+ (fn [[_ chat-id]]
    [(re-frame/subscribe [:chats/chat chat-id])
-    (re-frame/subscribe [:contacts/contacts])])
- (fn [[chat all-contacts] [_ query-fn]]
-   (contact.db/query-chat-contacts chat all-contacts query-fn)))
+    (re-frame/subscribe [:contacts/contacts])
+    (re-frame/subscribe [:profile/profile])])
+ (fn [[{:keys [contacts admins]} all-contacts current-multiaccount]]
+   (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-multiaccount)))
 
 (re-frame/reg-sub
  :contacts/contact-by-address
@@ -316,8 +317,9 @@
 
 (re-frame/reg-sub
  :contacts/group-members-sections
- :<- [:contacts/current-chat-contacts]
- (fn [members]
+ (fn [[_ chat-id]]
+   [(re-frame/subscribe [:contacts/contacts-by-chat chat-id])])
+ (fn [[members]]
    (let [admins  (filter :admin? members)
          online  (filter #(and (not (:admin? %)) (:online? %)) members)
          offline (filter #(and (not (:admin? %)) (not (:online? %))) members)]

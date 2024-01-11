@@ -109,7 +109,7 @@
 
 (defn actions
   [{:keys [locked? chat-id]} inside-chat?]
-  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])]
+  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])]
     (cond
       locked?
       [quo/action-drawer

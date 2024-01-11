@@ -12,7 +12,7 @@
 (def message-max-length 100)
 
 (defn request-membership
-  [{:keys [state introduction-message] :as invitation}]
+  [{:keys [state introduction-message] :as invitation} chat-id]
   (let [{:keys [message retry?]} @(re-frame/subscribe [:chats/current-chat-membership])
         message-length           (count message)]
     [react/view {:margin-horizontal 16 :margin-top 10}
@@ -47,7 +47,7 @@
         [react/text (i18n/label :t/introduce-yourself)]
         [quo/text-input
          {:placeholder         (i18n/label :t/message)
-          :on-change-text      #(re-frame/dispatch [:group-chats.ui/update-membership-message %])
+          :on-change-text      #(re-frame/dispatch [:group-chats.ui/update-membership-message % chat-id])
           :max-length          (if platform/android?
                                  message-max-length
                                  (when (>= message-length message-max-length)
@@ -63,4 +63,4 @@
   [chat-id invitation-admin]
   (letsubs [invitations [:group-chat/invitations-by-chat-id chat-id]]
     (when invitation-admin
-      [request-membership (first invitations)])))
+      [request-membership (first invitations) chat-id])))
