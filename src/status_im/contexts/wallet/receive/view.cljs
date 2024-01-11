@@ -19,15 +19,16 @@
   [address share-title]
   (share/open
    (if platform/ios?
-     {:activity-item-sources [{:placeholder-item {:type    "text"
-                                                  :content address}
-                               :item             {:default {:type "text"
-                                                            :content
-                                                            address}}
-                               :link-metadata    {:title share-title}}]}
+     {:activityItemSources [{:placeholderItem {:type    "text"
+                                               :content address}
+                             :item            {:default {:type "text"
+                                                         :content
+                                                         address}}
+                             :linkMetadata    {:title share-title}}]}
      {:title   share-title
       :subject share-title
-      :message address})))
+      :message address
+      :isNewTask true})))
 
 (defn- open-preferences
   [selected-networks]
