@@ -137,8 +137,7 @@
     [quo/icon :i/info {:no-color true}]]])
 
 (defn token-gates
-  [{:keys [id]}]
-  (rf/dispatch [:communities/check-permissions-to-join-community id])
+  []
   (fn [{:keys [id color]}]
     (let [{:keys [can-request-access?
                   number-of-hold-tokens tokens]} (rf/sub [:community/token-gated-overview id])]
@@ -222,8 +221,9 @@
      {:on-press      (when joined-or-spectated
                        (fn []
                          (rf/dispatch [:dismiss-keyboard])
-                         (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)]
-                                                      1000)))
+                         (debounce/dispatch-and-chill
+                          [:communities/navigate-to-community-chat (str community-id id)]
+                          1000)))
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content (fn []
