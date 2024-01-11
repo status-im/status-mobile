@@ -39,12 +39,12 @@
         :address-regex         constants/regx-address
         :scanned-value         (or send-address scanned-address)
         :on-detect-address     #(debounce/debounce-and-dispatch
-                                  [:wallet/validate-address %]
-                                  300)
+                                 [:wallet/validate-address %]
+                                 300)
         :on-detect-ens         (fn [text cb]
                                  (debounce/debounce-and-dispatch
-                                   [:wallet/find-ens text contacts chain-id cb]
-                                   300))
+                                  [:wallet/find-ens text contacts chain-id cb]
+                                  300))
         :on-change-text        (fn [text]
                                  (when-not (= scanned-address text)
                                    (rf/dispatch [:wallet/clean-scanned-address]))
