@@ -46,7 +46,7 @@
   [chat-id]
   (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
-        current-chat           (rf/sub [:chat-by-id chat-id])
+        current-chat           (rf/sub [:chats/chat-by-id chat-id])
         {:keys [community-id]} current-chat
         community              (rf/sub [:communities/community community-id])
         community-images       (rf/sub [:community/images community-id])]

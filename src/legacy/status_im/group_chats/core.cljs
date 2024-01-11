@@ -51,9 +51,9 @@
 
 (rf/defn remove-members
   {:events [:group-chats.ui/remove-members-pressed]}
-  [{{:keys [current-chat-id] :group-chat/keys [deselected-members]} :db :as cofx}]
+  [{{:group-chat/keys [deselected-members]} :db :as cofx} chat-id]
   {:json-rpc/call [{:method      "wakuext_removeMembersFromGroupChat"
-                    :params      [nil current-chat-id deselected-members]
+                    :params      [nil chat-id deselected-members]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated % true])
                     :on-error    #()}]})
@@ -97,19 +97,19 @@
 (rf/defn add-members
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-pressed]}
-  [{{:keys [current-chat-id] :group-chat/keys [selected-participants]} :db :as cofx}]
+  [{{:group-chat/keys [selected-participants]} :db :as cofx} chat-id]
   {:json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
-                    :params      [nil current-chat-id selected-participants]
+                    :params      [nil chat-id selected-participants]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated % true])}]})
 
 (rf/defn add-members-from-invitation
   "Add members to a group chat"
   {:events [:group-chats.ui/add-members-from-invitation]}
-  [{{:keys [current-chat-id] :as db} :db :as cofx} id participant]
+  [{:keys [db]} id participant chat-id]
   {:db            (assoc-in db [:group-chat/invitations id :state] constants/invitation-state-approved)
    :json-rpc/call [{:method      "wakuext_addMembersToGroupChat"
-                    :params      [nil current-chat-id [participant]]
+                    :params      [nil chat-id [participant]]
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 
@@ -150,23 +150,23 @@
 
 (rf/defn membership-retry
   {:events [:group-chats.ui/membership-retry]}
-  [{{:keys [current-chat-id] :as db} :db}]
-  {:db (assoc-in db [:chat/memberships current-chat-id :retry?] true)})
+  [{:keys [db]} chat-id]
+  {:db (assoc-in db [:chat/memberships chat-id :retry?] true)})
 
 (rf/defn membership-message
   {:events [:group-chats.ui/update-membership-message]}
-  [{{:keys [current-chat-id] :as db} :db} message]
-  {:db (assoc-in db [:chat/memberships current-chat-id :message] message)})
+  [{:keys [db]} message chat-id]
+  {:db (assoc-in db [:chat/memberships chat-id :message] message)})
 
 (rf/defn send-group-chat-membership-request
   "Send group chat membership request"
   {:events [:send-group-chat-membership-request]}
-  [{{:keys [current-chat-id chats] :as db} :db :as cofx}]
-  (let [{:keys [invitation-admin]} (get chats current-chat-id)
-        message                    (get-in db [:chat/memberships current-chat-id :message])]
-    {:db            (assoc-in db [:chat/memberships current-chat-id] nil)
+  [{{:keys [chats] :as db} :db :as cofx} chat-id]
+  (let [{:keys [invitation-admin]} (get chats chat-id)
+        message                    (get-in db [:chat/memberships chat-id :message])]
+    {:db            (assoc-in db [:chat/memberships chat-id] nil)
      :json-rpc/call [{:method      "wakuext_sendGroupChatInvitationRequest"
-                      :params      [nil current-chat-id invitation-admin message]
+                      :params      [nil chat-id invitation-admin message]
                       :js-response true
                       :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 
@@ -241,15 +241,6 @@
   {:events [:group/clear-removed-members]}
   [{db :db}]
   {:db (assoc db :group-chat/deselected-members #{})})
-
-(rf/defn show-group-chat-profile
-  {:events [:show-group-chat-profile]}
-  [{:keys [db] :as cofx} chat-id]
-  (rf/merge cofx
-            {:db (-> db
-                     (assoc :new-chat-name (get-in db [:chats chat-id :name]))
-                     (assoc :current-chat-id chat-id))}
-            (navigation/navigate-to :group-chat-profile nil)))
 
 (rf/defn ui-leave-chat-pressed
   {:events [:group-chats.ui/leave-chat-pressed]}
