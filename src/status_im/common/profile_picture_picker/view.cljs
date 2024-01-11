@@ -59,7 +59,7 @@
    crop-opts))
 
 (defn view
-  [update-profile-pic-callback has-picture]
+  [update-profile-pic-callback has-picture?]
   [quo/action-drawer
    [[{:icon                :i/camera
       :accessibility-label :take-photo-button
@@ -87,7 +87,7 @@
                                :on-denied   (fn []
                                               (log/info
                                                "user has denied permissions to select picture"))}))}
-     (when has-picture
+     (when has-picture?
        {:accessibility-label :remove-profile-picture
         :add-divider?        true
         :danger?             true

@@ -12,7 +12,7 @@
   (let [profile               (rf/sub [:profile/profile-with-image])
         full-name             (profile.utils/displayed-name profile)
         profile-picture       (profile.utils/photo profile)
-        has-picture           (rf/sub [:profile/has-picture])
+        has-picture?          (rf/sub [:profile/has-picture])
         on-change-profile-pic (fn [picture]
                                 (if picture
                                   (rf/dispatch [:profile/edit-picture picture])
@@ -33,7 +33,7 @@
                            (rf/dispatch
                             [:show-bottom-sheet
                              {:content (fn []
-                                         [picture-picker/view on-change-profile-pic has-picture])
+                                         [picture-picker/view on-change-profile-pic has-picture?])
                               :theme   :dark
                               :shell?  true}]))
         :container-style style/camera-button
