@@ -155,7 +155,9 @@
            :left-action     :dot
            :delete-key?     true
            :on-press        handle-keyboard-press
-           :on-delete       handle-delete}]]))))
+           :on-delete       handle-delete}]
+        ]
+      ))))
 
 (defn- view-internal
   [props]
