@@ -65,8 +65,6 @@
                                                         :port        (rf/sub [:mediaserver/port])
                                                         :qr-size     qr-size
                                                         :error-level :highest})
-            ;; status is either :share or :receive. when it's :share, the title will be :t/share-address
-            ;; and when it's :receive, the title will be :t/receive
             {:keys [status]}                          (rf/sub [:get-screen-params])
             title                                     (case status
                                                         :share   (i18n/label :t/share-address)

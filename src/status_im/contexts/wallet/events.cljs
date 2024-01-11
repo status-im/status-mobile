@@ -333,8 +333,7 @@
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
-   {:fx [[:dispatch [:hide-bottom-sheet]]
-         [:effects.share/open
+   {:fx [[:effects.share/open
           (if platform/ios?
             {:activityItemSources
              [{:placeholderItem {:type    "text"
