@@ -1,26 +1,26 @@
 ;; -*- mode: clojure -*-
 ;; vi: ft=clojure
-{:width     105
- :style     [;; community style
-             ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#community
-             :community
+{:width 105
+ :remove {:fn-force-nl #{:noarg1-body}}
 
-             ;; no comma in map
-             :no-comma
+ :style
+ [;; community style https://github.com/kkinnear/zprint/blob/main/doc/reference.md#community
+  :community
 
-             :custom-justify
+  ;; no comma in map
+  :no-comma
 
-             ;; respect all newlines
-             ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-nl
-             :respect-nl
+  :custom-justify
 
-             ;; respect blank line
-             ;; https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-bl
-             :respect-bl
+  ;; respect all newlines https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-nl
+  :respect-nl
 
-             ;; hang multiline left-hand-thing
-             ;; https://github.com/kkinnear/zprint/issues/273
-             :multi-lhs-hang]
+  ;; respect blank line https://github.com/kkinnear/zprint/blob/main/doc/reference.md#respect-bl
+  :respect-bl
+
+  ;; hang multiline left-hand-thing https://github.com/kkinnear/zprint/issues/273
+  :multi-lhs-hang]
+
  :fn-map
  {"reg-sub"         :arg1-pair
   "h/describe"      :arg1-body
@@ -50,9 +50,9 @@
   "assoc-some"      "assoc"
   "conj-when"       "conj"
   "conj-some"       "conj"}
- :remove    {:fn-force-nl #{:noarg1-body}}
+
  :style-map
- {:no-comma       {:map {:comma? false}}
+ {:no-comma {:map {:comma? false}}
   :custom-justify
   {:doc     "Justify everything using pre-1.1.2 approach"
    :binding {:justify? true :justify {:max-variance 1000}}
