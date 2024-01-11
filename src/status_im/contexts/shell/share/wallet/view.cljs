@@ -87,5 +87,6 @@
       :disable-interval-momentum true
       :scroll-event-throttle     64
       :data                      accounts
+      :directional-lock-enabled  true
       :render-fn                 (fn [account index]
                                    (wallet-qr-code-item account width index))}]))
