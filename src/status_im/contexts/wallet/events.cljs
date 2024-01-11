@@ -341,7 +341,9 @@
 
 (rf/reg-event-fx :wallet/initialize
  (fn []
-   {:fx [[:dispatch-n [[:wallet/start-wallet] [:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
+   {:fx [[:dispatch [:wallet/start-wallet]]
+         [:dispatch [:wallet/get-ethereum-chains]]
+         [:dispatch [:wallet/get-accounts]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
