@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.select-asset.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -16,27 +17,32 @@
 
 (defn- asset-component
   []
-  (fn [token _ _ _]
+  (fn [token _ _ {:keys [currency currency-symbol]}]
     (let [on-press
           #(rf/dispatch [:wallet/send-select-token
                          {:token    token
                           :stack-id :wallet-select-asset}])
-          total-balance-formatted (.toFixed (:total-balance token) 2)
-          balance-fiat-formatted (.toFixed (:total-balance-fiat token) 2)
-          currency-symbol (rf/sub [:profile/currency-symbol])]
+          token-units (utils/total-token-units-in-all-chains token)
+          crypto-formatted (utils/get-standard-crypto-format token token-units)
+          fiat-value (utils/total-token-fiat-value currency token)
+          fiat-formatted (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)
-        :token-value (str total-balance-formatted " " (:symbol token))
-        :fiat-value  (str currency-symbol balance-fiat-formatted)
+        :token-value (str crypto-formatted " " (:symbol token))
+        :fiat-value  fiat-formatted
         :networks    (:networks token)
         :on-press    on-press}])))
 
 (defn- asset-list
   [search-text]
-  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered search-text])]
+  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered search-text])
+        currency        (rf/sub [:profile/currency])
+        currency-symbol (rf/sub [:profile/currency-symbol])]
     [rn/flat-list
      {:data                         filtered-tokens
+      :render-data                  {:currency        currency
+                                     :currency-symbol currency-symbol}
       :style                        {:flex 1}
       :content-container-style      {:padding-horizontal 8}
       :keyboard-should-persist-taps :handled
