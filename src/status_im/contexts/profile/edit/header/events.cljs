@@ -23,10 +23,10 @@
   (let [key-uid     (get-in db [:profile/profile :key-uid])
         crop-width  (or crop-width profile-picture-picker/crop-size)
         crop-height (or crop-height profile-picture-picker/crop-size)]
-    {:json-rpc/call
-     [{:method     "multiaccounts_storeIdentityImage"
-       :params     [key-uid picture 0 0 crop-width crop-height]
-       :on-success [:profile/edit-profile-picture-success]}]}))
+    {:fx [[:json-rpc/call
+           [{:method     "multiaccounts_storeIdentityImage"
+             :params     [key-uid picture 0 0 crop-width crop-height]
+             :on-success [:profile/edit-profile-picture-success]}]]]}))
 
 (rf/reg-event-fx :profile/edit-picture edit-profile-picture)
 
@@ -42,9 +42,9 @@
 (defn delete-profile-picture
   [{:keys [db]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:json-rpc/call
-     [{:method     "multiaccounts_deleteIdentityImage"
-       :params     [key-uid]
-       :on-success [:profile/delete-profile-picture-success]}]}))
+    {:fx [[:json-rpc/call
+           [{:method     "multiaccounts_deleteIdentityImage"
+             :params     [key-uid]
+             :on-success [:profile/delete-profile-picture-success]}]]]}))
 
 (rf/reg-event-fx :profile/delete-picture delete-profile-picture)
