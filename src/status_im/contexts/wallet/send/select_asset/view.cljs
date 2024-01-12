@@ -1,16 +1,16 @@
 (ns status-im.contexts.wallet.send.select-asset.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
-   [status-im.contexts.wallet.send.select-asset.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.send.select-asset.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def tabs-data
   [{:id :tab/assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}

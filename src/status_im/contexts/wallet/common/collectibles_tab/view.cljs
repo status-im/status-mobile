@@ -1,11 +1,11 @@
 (ns status-im.contexts.wallet.common.collectibles-tab.view
   (:require
-   [quo.core :as quo]
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.common.resources :as resources]
-   [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-   [utils.i18n :as i18n]))
+    [quo.core :as quo]
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
+    [utils.i18n :as i18n]))
 
 (defn- view-internal
   [{:keys [theme collectibles filtered? on-collectible-press]}]
