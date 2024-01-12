@@ -5,10 +5,12 @@
             [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.buttons.button.view :as button]
             [quo.components.gradient.gradient-cover.view :as gradient-cover]
+            [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
+            [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -123,44 +125,47 @@
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
-           profile-picture emoji on-share-press]
+           profile-picture emoji on-share-press watched-account?]
     :as   props}]
   [:<>
    [rn/view {:style style/gradient-bg}
     [gradient-cover/view {:customization-color customization-color :height 463}]]
    [rn/view {:style style/content-container}
     [rn/view
-     {:style style/share-qr-container}
-     [rn/view
-      {:style style/share-qr-inner-container}
-      [account-avatar/view
-       {:customization-color customization-color
-        :emoji               emoji
-        :size                32}]
-      [text/text
-       {:size   :heading-2
-        :weight :semi-bold
-        :style  {:margin-left 8}} full-name]]
-     [share-button {:on-press on-share-press}]]
-    (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
-      [header props])
-    [quo.theme/provider {:theme :light}
-     [qr-code/view
-      {:qr-image-uri        qr-image-uri
-       :size                (style/qr-code-size component-width)
-       :avatar              (if (= share-qr-type :profile)
-                              :profile
-                              :wallet-account)
-       :customization-color customization-color
-       :full-name           full-name
-       :profile-picture     profile-picture
-       :emoji               emoji}]]
-    [rn/view {:style style/bottom-container}
-     (case share-qr-type
-       :profile           [profile-bottom props]
-       :wallet-legacy     [wallet-legacy-bottom props]
-       :wallet-multichain [wallet-multichain-bottom props]
-       nil)]]])
+     {:style style/share-qr-inner-container}
+     [account-avatar/view
+      {:customization-color customization-color
+       :emoji               emoji
+       :size                32}]
+     [text/text
+      {:size   :heading-2
+       :weight :semi-bold
+       :style  {:margin-left 8}} full-name]
+     (when (and watched-account? (not= share-qr-type :profile))
+       [icons/icon
+        :i/reveal
+        {:color colors/white-opa-40
+         :container-style style/watched-account-icon}])]
+    [share-button {:on-press on-share-press}]]
+   (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
+     [header props])
+   [quo.theme/provider {:theme :light}
+    [qr-code/view
+     {:qr-image-uri        qr-image-uri
+      :size                (style/qr-code-size component-width)
+      :avatar              (if (= share-qr-type :profile)
+                             :profile
+                             :wallet-account)
+      :customization-color customization-color
+      :full-name           full-name
+      :profile-picture     profile-picture
+      :emoji               emoji}]]
+   [rn/view {:style style/bottom-container}
+    (case share-qr-type
+      :profile           [profile-bottom props]
+      :wallet-legacy     [wallet-legacy-bottom props]
+      :wallet-multichain [wallet-multichain-bottom props]
+      nil)]])
 
 (defn- view-internal
   "Receives the following properties:
@@ -181,11 +186,13 @@
      - emoji:               Emoji in a string to show in the QR code.
      - on-legacy-press:     Callback for the legacy tab.
      - on-multichain-press: Callback for the multichain tab.
+     - watched-account?     Boolean
    `:wallet-multichain`
      - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
      - on-settings-press:   Callback for the settings button.
      - emoji:               Emoji in a string to show in the QR code.
      - on-legacy-press:     Callback for the legacy tab.
+     - watched-account?     Boolean
      - on-multichain-press: Callback for the multichain tab.
 
      WARNING on Android:

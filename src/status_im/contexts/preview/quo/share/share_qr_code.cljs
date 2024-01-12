@@ -37,6 +37,8 @@
     :options [{:key "🐈"}
               {:key "👻"}
               {:key "🐧"}]}
+    {:key    :watched-account?
+     :type   :boolean}
    (preview/customization-color-option)])
 
 (def possible-networks [:ethereum :optimism :arbitrum :myNet])
@@ -47,6 +49,8 @@
     :options [{:key "🐈"}
               {:key "👻"}
               {:key "🐧"}]}
+   {:key    :watched-account?
+    :type   :boolean}
    (preview/customization-color-option)
    {:key     :networks
     :type    :select
@@ -96,7 +100,8 @@
                              :on-legacy-press     #(js/alert (str "Tab " % " pressed"))
                              :on-multichain-press #(js/alert (str "Tab " % " pressed"))
                              :networks            (take 2 possible-networks)
-                             :on-settings-press   #(js/alert "Settings pressed")})
+                             :on-settings-press   #(js/alert "Settings pressed")
+                             :watched-account?    false})
         _ (add-watch state :change set-qr-data-based-on-type)]
     (fn []
       (let [qr-url              (if (= (:type @state) :wallet-multichain)
