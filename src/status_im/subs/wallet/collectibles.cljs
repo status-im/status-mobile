@@ -10,15 +10,17 @@
     animation-url
     image-url))
 
+(defn add-collectibles-preview-url
+  [collectibles]
+  (map (fn [{:keys [collectible-data] :as collectible}]
+         (assoc collectible :preview-url (preview-url collectible-data)))
+       collectibles))
+
 (re-frame/reg-sub
- :wallet/collectibles-per-account
- :<- [:wallet]
- (fn [wallet [_ address]]
-   (as-> wallet $
-     (get-in $ [:accounts address :collectibles])
-     (map (fn [{:keys [collectible-data] :as collectible}]
-            (assoc collectible :preview-url (preview-url collectible-data)))
-          $))))
+ :wallet/current-viewing-account-collectibles
+ :<- [:wallet/current-viewing-account]
+ (fn [current-account]
+   (-> current-account :collectibles add-collectibles-preview-url)))
 
 (re-frame/reg-sub
  :wallet/all-collectibles
@@ -27,8 +29,18 @@
    (->> wallet
         :accounts
         (mapcat (comp :collectibles val))
-        (map (fn [{:keys [collectible-data] :as collectible}]
-               (assoc collectible :preview-url (preview-url collectible-data)))))))
+        (add-collectibles-preview-url))))
+
+(re-frame/reg-sub
+ :wallet/current-viewing-account-collectibles-filtered
+ :<- [:wallet/current-viewing-account-collectibles]
+ (fn [current-account-collectibles [_ search-text]]
+   (let [search-text-lower-case (string/lower-case search-text)]
+     (filter (fn [{{collection-name :name}  :collection-data
+                   {collectible-name :name} :collectible-data}]
+               (or (string/includes? (string/lower-case collection-name) search-text-lower-case)
+                   (string/includes? (string/lower-case collectible-name) search-text-lower-case)))
+             current-account-collectibles))))
 
 (re-frame/reg-sub
  :wallet/last-collectible-details

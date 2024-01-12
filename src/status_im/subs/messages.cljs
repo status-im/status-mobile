@@ -216,10 +216,7 @@
    [(re-frame/subscribe [:chats/message-list chat-id])
     (re-frame/subscribe [:chats/chat-messages chat-id])
     (re-frame/subscribe [:chats/pinned chat-id])
-    (re-frame/subscribe [:chats/loading-messages? chat-id])
-    (re-frame/subscribe [:chats/synced-from chat-id])
-    (re-frame/subscribe [:chats/chat-type chat-id])
-    (re-frame/subscribe [:chats/joined chat-id])])
+    (re-frame/subscribe [:chats/loading-messages? chat-id])])
  (fn [[message-list messages pin-messages loading-messages?] _]
    ;;TODO (perf)
    (let [message-list-seq (models.message-list/->seq message-list)]

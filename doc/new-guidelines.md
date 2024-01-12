@@ -212,16 +212,15 @@ Properties must be set on view level
  :bottom           0}
 ```
 
-### Apply animated styles in the style file
+### Animated styles in the style file
 
 ```clojure
 ;; bad
 (defn circle
   []
   (let [opacity (reanimated/use-shared-value 1)]
-    [reanimated/view {:style (reanimated/apply-animations-to-style
-                              {:opacity opacity}
-                              style/circle-container)}]))
+    [reanimated/view {:style [{:opacity opacity}
+                              style/circle-container]}]))
 
 ;; good
 (defn circle
@@ -230,6 +229,38 @@ Properties must be set on view level
     [reanimated/view {:style (style/circle-container opacity)}]))
 ```
 
+### Pass a vector of styles to Reanimated view
+
+Prefer to pass a vector of styles to `react-native.reanimated/view` `:style`
+prop instead of using `apply-animations-to-style` directly. For more details, check out Reanimated docs about [inline
+styles](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation/#defining-a-shared-value)
+and [useAnimatedStyle](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/animating-styles-and-props/#animating-styles).
+
+```clojure
+(defn f-view []
+  (let [scroll-x (reanimated/use-shared-value 0)
+        opacity  (reanimated/interpolate scroll-x [0 45 50] [1 1 0])]
+    [reanimated/view
+     ;; bad
+     {:style (reanimated/apply-animations-to-style
+              {:opacity   opacity
+               :transform [{:translate-x scroll-x}]}
+              {:flex-direction :row})}
+
+     ;; good
+     {:style [{:opacity   opacity
+               :transform [{:translate-x scroll-x}]}
+              {:flex-direction :row}]}
+
+     ;; other valid and good variants
+     {:style [{:opacity opacity}
+              {:transform [{:translate-x scroll-x}]}
+              {:flex-direction :row}]}
+
+     {:style {:opacity        opacity
+              :transform      [{:translate-x scroll-x}]
+              :flex-direction :row}}]))
+```
 ### Don't use percents to define width/height
 
 In ReactNative, all layouts use the [flexbox
