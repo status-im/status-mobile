@@ -190,12 +190,15 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id       :ethereum
-   constants/goerli-chain-id        :ethereum
-   constants/optimism-chain-id      :optimism
-   constants/optimism-test-chain-id :optimism
-   constants/arbitrum-chain-id      :arbitrum
-   constants/arbitrum-test-chain-id :arbitrum})
+  {constants/ethereum-mainnet-chain-id :ethereum
+   constants/ethereum-goerli-chain-id  :ethereum
+   constants/ethereum-sepolia-chain-id :ethereum
+   constants/optimism-mainnet-chain-id :optimism
+   constants/optimism-goerli-chain-id  :optimism
+   constants/optimism-sepolia-chain-id :optimism
+   constants/arbitrum-mainnet-chain-id :arbitrum
+   constants/arbitrum-goerli-chain-id  :arbitrum
+   constants/arbitrum-sepolia-chain-id :arbitrum})
 
 (def short-name->id
   {:eth  constants/mainnet-chain-id

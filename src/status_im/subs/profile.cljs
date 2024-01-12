@@ -107,6 +107,12 @@
    (:test-networks-enabled? profile)))
 
 (re-frame/reg-sub
+ :profile/is-sepolia-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (:is-sepolia-enabled? profile)))
+
+(re-frame/reg-sub
  :multiaccount/contact
  :<- [:profile/profile]
  (fn [current-account]
