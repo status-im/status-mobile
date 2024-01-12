@@ -229,49 +229,38 @@ Properties must be set on view level
     [reanimated/view {:style (style/circle-container opacity)}]))
 ```
 
-### `apply-animations-to-style` vs `[]`
+### Pass a vector of styles to Reanimated view
 
-`apply-animations-to-style` is a function wrapping `reanimated/use-animated-style` to make it work in 
-ClojureScript, since Reanimated  3.x, we are able to just pass inline styles for some use cases, please 
-check Reanimated docs about [inline styles](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation/#defining-a-shared-value)
-and [useAnimatedStyle](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/animating-styles-and-props/#animating-styles)
-for more information. Most of the time we can simply use a vector:
+Prefer to pass a vector of styles to `react-native.reanimated/view` `:style`
+prop instead of using `apply-animations-to-style` directly. For more details, check out Reanimated docs about [inline
+styles](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation/#defining-a-shared-value)
+and [useAnimatedStyle](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/animating-styles-and-props/#animating-styles).
 
 ```clojure
 (defn f-view []
   (let [scroll-x (reanimated/use-shared-value 0)
-        scroll-y (reanimated/use-shared-value 0)
-        opacity  (reanimated/interpolate scroll-y [0 45 50] [1 1 0])]
-    ...
+        opacity  (reanimated/interpolate scroll-x [0 45 50] [1 1 0])]
     [reanimated/view
-
      ;; bad
      {:style (reanimated/apply-animations-to-style
               {:opacity   opacity
-               :transform [{:translate-x scroll-x} {:translate-y scroll-y}]}
-              {:flex-direction  :row
-               :justify-content :space-between})}
+               :transform [{:translate-x scroll-x}]}
+              {:flex-direction :row})}
 
      ;; good
      {:style [{:opacity   opacity
-               :transform [{:translate-x scroll-x} {:translate-y scroll-y}]}
-              {:flex-direction  :row
-               :justify-content :space-between}]}
+               :transform [{:translate-x scroll-x}]}
+              {:flex-direction :row}]}
 
      ;; other valid and good variants
      {:style [{:opacity opacity}
-              {:transform [{:translate-x scroll-x} {:translate-y scroll-y}]}
-              {:flex-direction  :row
-               :justify-content :space-between}]}
+              {:transform [{:translate-x scroll-x}]}
+              {:flex-direction :row}]}
 
-     {:style {:opacity         opacity
-              :transform       [{:translate-x scroll-x} {:translate-y scroll-y}]
-              :flex-direction  :row
-              :justify-content :space-between}}
-     
-     ...]))
+     {:style {:opacity        opacity
+              :transform      [{:translate-x scroll-x}]
+              :flex-direction :row}}]))
 ```
-
 ### Don't use percents to define width/height
 
 In ReactNative, all layouts use the [flexbox
