@@ -12,7 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchGlogPhase"
-    "patchBoostPodSpec"
+    "patchCodegen"
     "installPhase"
   ];
 
@@ -78,12 +78,12 @@ stdenv.mkDerivation {
     --replace 'export CXX="' '#export CXX="'
   '';
 
-  # to fix pod checksum issue : https://github.com/facebook/react-native/issues/42180
-  # TODO remove this patch after upgrading to react-native 0.73.2
-  patchBoostPodSpec = ''
-   substituteInPlace ./node_modules/react-native/third-party-podspecs/boost.podspec \
-      --replace 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2' \
-      'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' \
+  # to fix codegen issue for FBReactNativeSpec, otherwise iOS won't build on CI
+  # TODO remove this patch after RN team fixes promise failures in node_modules/react-native/scripts/codegen/generate-artifacts-executor.js
+  patchCodegen = ''
+   substituteInPlace ./node_modules/react-native/scripts/cocoapods/codegen.rb \
+      --replace 'if new_arch_enabled' 'if !new_arch_enabled' \
+      --replace 'return if !new_arch_enabled' 'return if new_arch_enabled'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
