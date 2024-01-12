@@ -124,10 +124,10 @@
  :<- [:wallet/balances]
  :<- [:profile/currency-symbol]
  (fn [[accounts current-viewing-account-address balances currency-symbol]]
-   (let [current-viewing-account (utils/get-account-by-address accounts current-viewing-account-address)
-         balance                 (get balances current-viewing-account-address)
-         formatted-balance       (utils/prettify-balance currency-symbol balance)]
-     (-> current-viewing-account
+   (let [balance           (get balances current-viewing-account-address)
+         formatted-balance (utils/prettify-balance currency-symbol balance)]
+     (-> accounts
+         (utils/get-account-by-address current-viewing-account-address)
          (assoc :balance           balance
                 :formatted-balance formatted-balance)))))
 
