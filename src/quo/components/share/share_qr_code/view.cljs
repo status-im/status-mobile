@@ -144,7 +144,7 @@
      (when (and watched-account? (not= share-qr-type :profile))
        [icons/icon
         :i/reveal
-        {:color colors/white-opa-40
+        {:color           colors/white-opa-40
          :container-style style/watched-account-icon}])]
     [share-button {:on-press on-share-press}]]
    (when (#{:wallet-legacy :wallet-multichain} share-qr-type)

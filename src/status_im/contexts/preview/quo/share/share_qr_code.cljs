@@ -37,8 +37,8 @@
     :options [{:key "🐈"}
               {:key "👻"}
               {:key "🐧"}]}
-    {:key    :watched-account?
-     :type   :boolean}
+   {:key  :watched-account?
+    :type :boolean}
    (preview/customization-color-option)])
 
 (def possible-networks [:ethereum :optimism :arbitrum :myNet])
@@ -49,8 +49,8 @@
     :options [{:key "🐈"}
               {:key "👻"}
               {:key "🐧"}]}
-   {:key    :watched-account?
-    :type   :boolean}
+   {:key  :watched-account?
+    :type :boolean}
    (preview/customization-color-option)
    {:key     :networks
     :type    :select
