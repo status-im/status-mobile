@@ -23,10 +23,8 @@
   [theme]
   {:background-color   (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
    :flex-direction     :row
-   :align-items        :center
    :justify-content    :space-between
-   :padding-vertical   8
-   :padding-horizontal 8
+   :padding            8
    :border-radius      12})
 
 (defn title
@@ -48,7 +46,8 @@
    :container-style {:width 20 :height 20}})
 
 (def left-side-container
-  {:padding 2})
+  {:padding     2
+   :padding-top 4})
 
 (def right-side-container
   {:padding 4
