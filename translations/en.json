@@ -1793,6 +1793,8 @@
     "community-info-not-found": "Community information not found",
     "community-info": "Community info",
     "not-found": "Not found",
+    "nothing-found": "Nothing found",
+    "try-to-search-something-else": "Try to search something else",
     "activity": "Activity",
     "reject-and-delete": "Reject and delete",
     "accept-and-add": "Accept and add",

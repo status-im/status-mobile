@@ -329,7 +329,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs|.*/src/test_helpers/component_tests_preload\.cljs$$" clean-ns && \
+	clojure-lsp --ns-exclude-regex ".*/\.clj-kondo/.*|.*/src/status_im/core\.cljs|.*/src/test_helpers/component_tests_preload\.cljs$$" clean-ns && \
 	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
