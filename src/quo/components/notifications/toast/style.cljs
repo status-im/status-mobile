@@ -21,11 +21,11 @@
 
 (defn content-container
   [theme]
-  {:background-color   (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
-   :flex-direction     :row
-   :justify-content    :space-between
-   :padding            8
-   :border-radius      12})
+  {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
+   :flex-direction   :row
+   :justify-content  :space-between
+   :padding          8
+   :border-radius    12})
 
 (defn title
   [theme]
