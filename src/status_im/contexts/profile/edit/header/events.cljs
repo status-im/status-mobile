@@ -1,5 +1,5 @@
 (ns status-im.contexts.profile.edit.header.events
-  (:require [status-im.common.profile-picture-picker.view :as photo-picker]
+  (:require [status-im.common.profile-picture-picker.view :as profile-picture-picker]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -9,20 +9,35 @@
           (assoc-in db [:profile/profile :images] images)
           (update db :profile/profile dissoc :images))}))
 
+(rf/reg-event-fx :profile/edit-profile-picture-success
+ (fn [_ [images]]
+   {:fx [[:dispatch [:profile/update-local-picture (reverse images)]]
+         [:dispatch
+          [:toasts/upsert
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/profile-picture-added)}]]]}))
+
 (defn edit-profile-picture
   [{:keys [db]} [picture crop-width crop-height]]
   (let [key-uid     (get-in db [:profile/profile :key-uid])
-        crop-width  (or crop-width photo-picker/crop-size)
-        crop-height (or crop-height photo-picker/crop-size)]
+        crop-width  (or crop-width profile-picture-picker/crop-size)
+        crop-height (or crop-height profile-picture-picker/crop-size)]
     {:json-rpc/call
      [{:method     "multiaccounts_storeIdentityImage"
        :params     [key-uid picture 0 0 crop-width crop-height]
-       :on-success (fn [images]
-                     (rf/dispatch [:profile/update-local-picture (reverse images)])
-                     (rf/dispatch [:toasts/upsert
-                                   {:type  :positive
-                                    :theme :dark
-                                    :text  (i18n/label :t/profile-picture-added)}]))}]}))
+       :on-success [:profile/edit-profile-picture-success]}]}))
+
+(rf/reg-event-fx :profile/edit-picture edit-profile-picture)
+
+(rf/reg-event-fx :profile/delete-profile-picture-success
+ (fn [_]
+   {:fx [[:dispatch [:profile/update-local-picture nil]]
+         [:dispatch
+          [:toasts/upsert
+           {:type  :positive
+            :theme :dark
+            :text  (i18n/label :t/profile-picture-removed)}]]]}))
 
 (defn delete-profile-picture
   [{:keys [db]}]
@@ -30,13 +45,6 @@
     {:json-rpc/call
      [{:method     "multiaccounts_deleteIdentityImage"
        :params     [key-uid]
-       :on-success (fn []
-                     (rf/dispatch [:profile/update-local-picture nil])
-                     (rf/dispatch [:toasts/upsert
-                                   {:type  :positive
-                                    :theme :dark
-                                    :text  (i18n/label :t/profile-picture-removed)}]))}]}))
-
-(rf/reg-event-fx :profile/edit-picture edit-profile-picture)
+       :on-success [:profile/delete-profile-picture-success]}]}))
 
 (rf/reg-event-fx :profile/delete-picture delete-profile-picture)

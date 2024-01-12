@@ -59,7 +59,7 @@
    crop-opts))
 
 (defn view
-  [update-profile-pic-callback has-picture?]
+  [{:keys [update-profile-pic-callback has-picture?]}]
   [quo/action-drawer
    [[{:icon                :i/camera
       :accessibility-label :take-photo-button
@@ -92,7 +92,7 @@
         :add-divider?        true
         :danger?             true
         :blur?               true
-        :icon                :main-icons/delete
+        :icon                :i/delete
         :label               (i18n/label :t/profile-pic-remove)
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])

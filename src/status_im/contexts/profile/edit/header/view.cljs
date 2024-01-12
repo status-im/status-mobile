@@ -1,7 +1,7 @@
 (ns status-im.contexts.profile.edit.header.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [status-im.common.profile-picture-picker.view :as picture-picker]
+            [status-im.common.profile-picture-picker.view :as profile-picture-picker]
             [status-im.contexts.profile.edit.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -33,7 +33,9 @@
                            (rf/dispatch
                             [:show-bottom-sheet
                              {:content (fn []
-                                         [picture-picker/view on-change-profile-pic has-picture?])
+                                         [profile-picture-picker/view
+                                          {:update-profile-pic-callback on-change-profile-pic
+                                           :has-picture?                has-picture?}])
                               :theme   :dark
                               :shell?  true}]))
         :container-style style/camera-button

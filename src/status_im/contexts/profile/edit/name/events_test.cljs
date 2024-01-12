@@ -10,6 +10,6 @@
                   :fx [[:json-rpc/call
                         [{:method     "wakuext_setDisplayName"
                           :params     [name]
-                          :on-success fn?}]]]}]
+                          :on-success [:profile/edit-profile-name-success]}]]]}]
     (is (match? expected
                 (sut/edit-profile-name cofx [new-name])))))
