@@ -119,7 +119,7 @@
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
-                 show-user-info? theme]}]
+                 show-user-info? preview? theme]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by]} message-data
             first-image                                  (first (:album message-data))
@@ -212,7 +212,7 @@
              (when @show-delivery-state?
                [status/status outgoing-status])])]
           (when show-reactions?
-            [reactions/message-reactions-row message-data
+            [reactions/message-reactions-row (assoc message-data :preview? preview?)
              [rn/view {:pointer-events :none}
               [user-message-content-internal
                {:theme           theme
@@ -239,7 +239,8 @@
                         :context         context
                         :keyboard-shown? keyboard-shown?
                         :show-reactions? true
-                        :show-user-info? true}]]))}]))
+                        :show-user-info? true
+                        :preview?        true}]]))}]))
 
 (defn system-message?
   [content-type]
