@@ -4,7 +4,8 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (re-frame/reg-sub
  :communities/fetching-community
@@ -319,7 +320,7 @@
                                             {:symbol      sym
                                              :sufficient? (when (seq check-criteria) sufficient?)
                                              :loading?    checking-permissions?
-                                             :amount      amount
+                                             :amount      (money/with-precision amount 2)
                                              :img-src     (get token-images sym)})
                                           token_criteria
                                           (or check-criteria token_criteria))))))}))
