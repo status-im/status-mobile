@@ -320,7 +320,7 @@
                                             {:symbol      sym
                                              :sufficient? (when (seq check-criteria) sufficient?)
                                              :loading?    checking-permissions?
-                                             :amount      (money/with-precision amount 2)
+                                             :amount      (money/with-precision amount 3)
                                              :img-src     (get token-images sym)})
                                           token_criteria
                                           (or check-criteria token_criteria))))))}))
