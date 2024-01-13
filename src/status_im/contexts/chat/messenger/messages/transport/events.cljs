@@ -356,32 +356,49 @@
            (conj set-hash-fxs
                  #(sanitize-messages-and-process-response % response-js false)))))
 
+(defn- image->rpc [image] (set/rename-keys image {:data-uri :dataUri}))
+
 (defn- link-preview->rpc
   [preview]
   (update preview
           :thumbnail
           (fn [thumbnail]
-            (set/rename-keys thumbnail {:data-uri :dataUri}))))
+            (image->rpc thumbnail))))
+
+(defn- status-link-preview->rpc
+  [preview]
+  (update preview
+          :community
+          (fn [community]
+            (-> community
+                (set/rename-keys {:community-id         :communityId
+                                  :display-name         :displayName
+                                  :members-count        :membersCount
+                                  :active-members-count :activeMembersCount})
+                (update :banner image->rpc)
+                (update :icon image->rpc)))))
 
 (defn build-message
   [msg]
   (-> msg
       (update :link-previews #(map link-preview->rpc %))
+      (update :status-link-previews #(set (map status-link-preview->rpc %)))
       (set/rename-keys
-       {:album-id          :albumId
-        :audio-duration-ms :audioDurationMs
-        :audio-path        :audioPath
-        :chat-id           :chatId
-        :community-id      :communityId
-        :content-type      :contentType
-        :ens-name          :ensName
-        :image-height      :imageHeight
-        :image-path        :imagePath
-        :image-width       :imageWidth
-        :link-previews     :linkPreviews
-        :response-to       :responseTo
-        :sticker           :sticker
-        :text              :text})))
+       {:album-id             :albumId
+        :audio-duration-ms    :audioDurationMs
+        :audio-path           :audioPath
+        :chat-id              :chatId
+        :community-id         :communityId
+        :content-type         :contentType
+        :ens-name             :ensName
+        :image-height         :imageHeight
+        :image-path           :imagePath
+        :image-width          :imageWidth
+        :link-previews        :linkPreviews
+        :status-link-previews :statusLinkPreviews
+        :response-to          :responseTo
+        :sticker              :sticker
+        :text                 :text})))
 
 (rf/defn send-chat-messages
   [_ messages]
