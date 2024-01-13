@@ -104,6 +104,7 @@
     (rf/merge cofx
               (clean-input current-chat-id)
               (link-preview/reset-unfurled)
+              (link-preview/clear-status-link-previews)
               (mentions/clear-mentions))))
 
 
@@ -140,15 +141,34 @@
           preferred-name (get-in db [:profile/profile :preferred-name])
           emoji? (emoji-only-content? {:text        input-text
                                        :response-to message-id})]
-      {:chat-id       current-chat-id
-       :content-type  (if emoji?
-                        constants/content-type-emoji
-                        constants/content-type-text)
-       :text          input-text
-       :response-to   message-id
-       :ens-name      preferred-name
-       :link-previews (map #(select-keys % [:url :title :description :thumbnail])
-                           (get-in db [:chat/link-previews :unfurled]))})))
+      {:chat-id              current-chat-id
+       :content-type         (if emoji?
+                               constants/content-type-emoji
+                               constants/content-type-text)
+       :text                 input-text
+       :response-to          message-id
+       :ens-name             preferred-name
+       :link-previews        (map #(select-keys % [:url :title :description :thumbnail])
+                                  (get-in db [:chat/link-previews :unfurled]))
+       :status-link-previews (map (fn [{{:keys [community-id color description display-name
+                                                members-count active-members-count icon banner]}
+                                        :community
+                                        url :url}]
+                                    {:url url
+                                     :community
+                                     {:community-id         community-id
+                                      :color                color
+                                      :description          description
+                                      :display-name         display-name
+                                      :members-count        members-count
+                                      :active-members-count active-members-count
+                                      :icon                 {:data-uri (:data-uri icon)
+                                                             :width    (:width icon)
+                                                             :height   (:height icon)}
+                                      :banner               {:data-uri (:data-uri banner)
+                                                             :width    (:width banner)
+                                                             :height   (:height banner)}}})
+                                  (get-in db [:chat/status-link-previews :unfurled]))})))
 
 (rf/defn send-messages
   [{:keys [db] :as cofx} input-text current-chat-id]
@@ -160,6 +180,7 @@
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
                 (link-preview/reset-unfurled)
+                (link-preview/clear-status-link-previews)
                 (messages.transport/send-chat-messages messages)))))
 
 (rf/defn send-audio-message
@@ -187,24 +208,30 @@
   (rf/merge
    cofx
    {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id           message-id
-                                    :text         text
-                                    :content-type (if (emoji-only-content?
-                                                       {:text        text
-                                                        :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)
-                                    :linkPreviews (map #(-> %
-                                                            (select-keys [:url :title :description
-                                                                          :thumbnail])
-                                                            data-store-messages/->link-preview-rpc)
-                                                       (get-in db [:chat/link-previews :unfurled]))}]
+                     :params      [{:id                 message-id
+                                    :text               text
+                                    :content-type       (if (emoji-only-content?
+                                                             {:text        text
+                                                              :response-to quoted-message})
+                                                          constants/content-type-emoji
+                                                          constants/content-type-text)
+                                    :linkPreviews       (map #(-> %
+                                                                  (select-keys [:url :title :description
+                                                                                :thumbnail])
+                                                                  data-store-messages/->link-preview-rpc)
+                                                             (get-in db [:chat/link-previews :unfurled]))
+                                    :statusLinkPreviews (map
+                                                         data-store-messages/<-status-link-previews-rpc
+                                                         (get-in db
+                                                                 [:chat/status-link-previews
+                                                                  :unfurled]))}]
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)
                      :on-success  (fn [result]
                                     (rf/dispatch [:sanitize-messages-and-process-response
                                                   result]))}]}
    (link-preview/reset-unfurled)
+   (link-preview/clear-status-link-previews)
    (cancel-message-edit)))
 
 (rf/defn send-current-message

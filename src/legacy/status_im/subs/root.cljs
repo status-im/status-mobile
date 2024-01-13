@@ -99,6 +99,7 @@
 ;;; Link previews
 (reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
 (reg-root-key-sub :chat/link-previews :chat/link-previews)
+(reg-root-key-sub :chat/status-link-previews :chat/status-link-previews)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)

@@ -35,25 +35,28 @@
   (let [cleared (set (get-in db [:chat/link-previews :cleared]))]
     (when (or (empty? urls)
               (not= (set urls) cleared))
-      (let [cache      (get-in db [:chat/link-previews :cache])
-            previews   (urls->previews cache urls)
-            new-urls   (->> previews
-                            (filter :loading?)
-                            (map :url))
+      (let [cache                (get-in db [:chat/link-previews :cache])
+            previews             (urls->previews cache urls)
+            new-urls             (->> previews
+                                      (filter :loading?)
+                                      (map :url))
+            status-link-preview? #(string/includes? % "status.app")
             ;; `request-id` is a must because we need to process only the last
             ;; unfurling event, as well as avoid needlessly updating the app db
             ;; if the user changes the URLs in the input text when there are
             ;; in-flight RPC requests.
-            request-id (new-request-id)]
+            request-id           (new-request-id)
+            status-link-urls     (->> urls
+                                      (filter status-link-preview?))]
         (merge {:db (-> db
                         (assoc-in [:chat/link-previews :unfurled] previews)
                         (assoc-in [:chat/link-previews :request-id] request-id)
                         (update :chat/link-previews dissoc :cleared))}
-               (when (seq new-urls)
+               (when (or (seq status-link-urls) (seq new-urls))
                  (log/debug "Unfurling URLs" {:urls new-urls :request-id request-id})
                  {:json-rpc/call
                   [{:method     "wakuext_unfurlURLs"
-                    :params     [new-urls]
+                    :params     [(concat new-urls status-link-urls)]
                     :on-success #(rf/dispatch [:link-preview/unfurl-parsed-urls-success request-id %])
                     :on-error   #(rf/dispatch [:link-preview/unfurl-parsed-urls-error request-id
                                                %])}]}))))))
@@ -82,17 +85,22 @@
 
 (rf/defn unfurl-parsed-urls-success
   {:events [:link-preview/unfurl-parsed-urls-success]}
-  [{:keys [db]} request-id {new-previews :linkPreviews}]
+  [{:keys [db]} request-id {new-previews :linkPreviews status-link-previews :statusLinkPreviews}]
   (when (= request-id (get-in db [:chat/link-previews :request-id]))
-    (let [new-previews         (map data-store.messages/<-link-preview-rpc new-previews)
-          curr-previews        (get-in db [:chat/link-previews :unfurled])
-          indexed-new-previews (utils.collection/index-by :url new-previews)]
+    (let [new-previews                 (map data-store.messages/<-link-preview-rpc new-previews)
+          curr-previews                (get-in db [:chat/link-previews :unfurled])
+          indexed-new-previews         (utils.collection/index-by :url new-previews)
+          status-link-previews         (map data-store.messages/<-status-link-previews-rpc
+                                            status-link-previews)
+          indexed-status-link-previews (utils.collection/index-by :url status-link-previews)]
       (log/debug "URLs unfurled"
                  {:event      :link-preview/unfurl-parsed-urls-success
                   :previews   (map #(update % :thumbnail dissoc :data-uri) new-previews)
                   :request-id request-id})
       {:db (-> db
                (update-in [:chat/link-previews :unfurled] reconcile-unfurled indexed-new-previews)
+               (assoc-in [:chat/status-link-previews :unfurled]
+                         status-link-previews)
                (update-in [:chat/link-previews :cache]
                           merge
                           indexed-new-previews
@@ -130,3 +138,11 @@
     {:db (-> db
              (update :chat/link-previews dissoc :unfurled :request-id)
              (assoc-in [:chat/link-previews :cleared] unfurled-urls))}))
+
+(rf/defn clear-status-link-previews
+  {:events [:status-link-preview/clear]}
+  [{:keys [db]}]
+  (let [unfurled-urls (set (map :url (get-in db [:chat/status-link-previews :unfurled])))]
+    {:db (-> db
+             (update :chat/status-link-previews dissoc :unfurled)
+             (assoc-in [:chat/status-link-previews :cleared] unfurled-urls))}))

@@ -424,10 +424,18 @@
    (get previews :unfurled)))
 
 (re-frame/reg-sub
+ :chats/status-link-previews-unfurled
+ :<- [:chat/status-link-previews]
+ (fn [previews]
+   (get previews :unfurled)))
+
+(re-frame/reg-sub
  :chats/link-previews?
  :<- [:chats/link-previews-unfurled]
- (fn [previews]
-   (boolean (seq previews))))
+ :<- [:chats/status-link-previews-unfurled]
+ (fn [previews status-link-previews]
+   (or (boolean (seq status-link-previews))
+       (boolean (seq previews)))))
 
 (re-frame/reg-sub
  :chat/check-channel-muted?

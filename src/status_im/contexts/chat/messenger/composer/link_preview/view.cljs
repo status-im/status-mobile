@@ -20,26 +20,36 @@
 
 (defn f-view
   []
-  (let [previews (rf/sub [:chats/link-previews-unfurled])
-        height   (use-animated-height (boolean (seq previews)))]
+  (let [previews             (rf/sub [:chats/link-previews-unfurled])
+        status-link-previews (rf/sub [:chats/status-link-previews-unfurled])
+        height               (use-animated-height (boolean (seq previews)))]
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
      [quo/url-preview-list
       {:key-fn               :url
        :preview-width        (- (:width (rn/get-window))
                                 (* 2 style/padding-horizontal))
-       :container-style      (when (seq previews) style/preview-list)
+       :container-style      (when (or (seq status-link-previews) (seq previews)) style/preview-list)
        :container-style-item {:height style/preview-height}
        :horizontal-spacing   style/padding-horizontal
        :loading-message      (i18n/label :t/link-preview-loading-message)
-       :on-clear             #(rf/dispatch [:link-preview/clear])
-       :data                 (map (fn [{:keys [title thumbnail hostname loading? url]}]
-                                    {:title     title
-                                     :body      hostname
-                                     :loading?  loading?
-                                     :thumbnail (:data-uri thumbnail)
-                                     :url       url})
-                                  previews)}]]))
+       :on-clear             #(do
+                                (rf/dispatch [:status-link-preview/clear])
+                                (rf/dispatch [:link-preview/clear]))
+       :data                 (map (fn [{:keys [title thumbnail hostname loading? url community]}]
+                                    (if (seq community)
+                                      (let [{:keys [display-name banner]} community]
+                                        {:title     display-name
+                                         :body      "status.app"
+                                         :loading?  loading?
+                                         :thumbnail (:data-uri banner)
+                                         :url       url})
+                                      {:title     title
+                                       :body      hostname
+                                       :loading?  loading?
+                                       :thumbnail (:data-uri thumbnail)
+                                       :url       url}))
+                                  (set (concat previews status-link-previews)))}]]))
 
 (defn view
   []
