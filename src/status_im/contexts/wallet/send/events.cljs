@@ -2,9 +2,11 @@
   (:require
     [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
+    [native-module.core :as native-module]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
+    [utils.address :as address]
     [utils.money :as money]
     [utils.number]
     [utils.re-frame :as rf]))
@@ -140,8 +142,8 @@
       :fx [[:dispatch [:navigate-to :wallet-transaction-progress]]]})))
 
 (defn- transaction-bridge
-  [{:keys [from-address to-address token-id token-address route]}]
-  (let [{:keys [from bridge-name amount-out gas-amount
+  [{:keys [from-address from-chain-id to-address token-id token-address route data eth-transfer?]}]
+  (let [{:keys [bridge-name amount-out gas-amount
                 gas-fees]}                 route
         eip-1559-enabled?                  (:eip-1559-enabled gas-fees)
         {:keys [gas-price max-fee-per-gas-medium
@@ -149,10 +151,10 @@
         transfer-tx                        (cond-> {:From  from-address
                                                     :To    (or token-address to-address)
                                                     :Gas   (money/to-hex gas-amount)
-                                                    :Value amount-out
+                                                    :Value (when eth-transfer? amount-out)
                                                     :Nonce nil
                                                     :Input ""
-                                                    :Data  "0x"}
+                                                    :Data  (or data "0x")}
                                              eip-1559-enabled?       (assoc :TxType "0x02"
                                                                             :MaxFeePerGas
                                                                             (money/to-hex
@@ -170,7 +172,7 @@
                                                                                         :gwei
                                                                                         gas-price))))]
     [(cond-> {:BridgeName bridge-name
-              :ChainID    (:chain-id from)}
+              :ChainID    from-chain-id}
 
        (= bridge-name constants/bridge-name-erc-721-transfer)
        (assoc :ERC721TransferTx
@@ -193,35 +195,50 @@
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
-   (let [route          (get-in db [:wallet :ui :send :route])
-         from-address   (get-in db [:wallet :current-viewing-account-address])
-         token          (get-in db [:wallet :ui :send :token])
-         collectible    (get-in db [:wallet :ui :send :collectible])
-         token-address  (when collectible
-                          (get-in collectible
-                                  [:id :contract-id :address]))
-         to-address     (get-in db [:wallet :ui :send :to-address])
-         token-id       (if token
-                          (:symbol token)
-                          (get-in collectible [:id :token-id]))
-         request-params [(multi-transaction-command
-                          {:from-address from-address
-                           :to-address   to-address
-                           :from-asset   token-id
-                           :to-asset     token-id
-                           :amount-out   (:amount-out route)})
-                         (transaction-bridge {:to-address    to-address
-                                              :from-address  from-address
-                                              :route         route
-                                              :token-address token-address
-                                              :token-id      (when collectible
-                                                               (money/to-hex (js/parseInt token-id)))})
-                         sha3-pwd]]
+   (let [route           (get-in db [:wallet :ui :send :route])
+         from-address    (get-in db [:wallet :current-viewing-account-address])
+         token           (get-in db [:wallet :ui :send :token])
+         collectible     (get-in db [:wallet :ui :send :collectible])
+         from-chain-id   (get-in route [:from :chain-id])
+         token-id        (if token
+                           (:symbol token)
+                           (get-in collectible [:id :token-id]))
+         erc20-transfer? (and token (not= token-id "ETH"))
+         eth-transfer?   (and token (not erc20-transfer?))
+         token-address   (cond collectible
+                               (get-in collectible
+                                       [:id :contract-id :address])
+                               erc20-transfer?
+                               (get-in token [:balances-per-chain from-chain-id :address]))
+         to-address      (get-in db [:wallet :ui :send :to-address])
+         data            (when erc20-transfer?
+                           (native-module/encode-transfer (address/normalized-hex to-address)
+                                                          (:amount-out route)))
+         request-params  [(multi-transaction-command
+                           {:from-address from-address
+                            :to-address   to-address
+                            :from-asset   token-id
+                            :to-asset     token-id
+                            :amount-out   (if eth-transfer? (:amount-out route) "0x0")})
+                          (transaction-bridge {:to-address    to-address
+                                               :from-address  from-address
+                                               :route         route
+                                               :from-chain-id from-chain-id
+                                               :token-address token-address
+                                               :token-id      (when collectible
+                                                                (money/to-hex (js/parseInt token-id)))
+                                               :data          data
+                                               :eth-transfer? eth-transfer?})
+                          sha3-pwd]]
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (rf/dispatch [:wallet/add-authorized-transaction result]))
+                                     (rf/dispatch [:wallet/add-authorized-transaction result])
+                                     (rf/dispatch [:wallet/clean-scanned-address])
+                                     (rf/dispatch [:wallet/clean-local-suggestions])
+                                     (rf/dispatch [:wallet/clean-send-address])
+                                     (rf/dispatch [:wallet/select-address-tab nil]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction
