@@ -160,6 +160,7 @@
                  :color               cover-bg-color
                  :icon                (if muted? :i/activity-center :i/muted)
                  :on-press            (fn []
+                                        (rf/dispatch [:dismiss-keyboard])
                                         (if muted?
                                           (home.actions/unmute-chat-action chat-id)
                                           (home.actions/mute-chat-action chat-id
