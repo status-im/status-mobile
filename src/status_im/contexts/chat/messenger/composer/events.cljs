@@ -104,7 +104,6 @@
     (rf/merge cofx
               (clean-input current-chat-id)
               (link-preview/reset-unfurled)
-              (link-preview/clear-status-link-previews)
               (mentions/clear-mentions))))
 
 
@@ -180,7 +179,6 @@
       (rf/merge cofx
                 (clean-input (:current-chat-id db))
                 (link-preview/reset-unfurled)
-                (link-preview/clear-status-link-previews)
                 (messages.transport/send-chat-messages messages)))))
 
 (rf/defn send-audio-message
@@ -231,7 +229,6 @@
                                     (rf/dispatch [:sanitize-messages-and-process-response
                                                   result]))}]}
    (link-preview/reset-unfurled)
-   (link-preview/clear-status-link-previews)
    (cancel-message-edit)))
 
 (rf/defn send-current-message
