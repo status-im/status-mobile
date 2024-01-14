@@ -16,6 +16,7 @@
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
+    [status-im.contexts.communities.actions.channel-view-details.view :as channel-view-channel-members-and-details]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -140,6 +141,10 @@
     {:name      :community-account-selection
      :options   {:insets {:top? true}}
      :component communities.accounts-selection/view}
+
+    {:name      :view-channel-members-and-details
+     :options   {:insets {:top? true}}
+     :component channel-view-channel-members-and-details/view}
 
     {:name      :addresses-for-permissions
      :options   {:insets {:top? true}}
