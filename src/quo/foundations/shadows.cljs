@@ -5,60 +5,59 @@
     [quo.theme :as quo.theme]
     [react-native.platform :as platform]))
 
+(defn clamp
+  [value min-val max-val]
+  (max min-val (min max-val value)))
+
+(defn get-shadow-color
+  ([color opacity]
+   (get-shadow-color color opacity 5))
+  ([color opacity coefficient]
+   {:shadow-color   (if platform/android?
+                      (colors/alpha color (clamp (* opacity coefficient) 0 1))
+                      color)
+    :shadow-opacity opacity}))
+
+(defn get-shadow-radius
+  ([radius]
+   (get-shadow-radius radius 0.8))
+  ([radius coefficient]
+   {:elevation     (* radius coefficient)
+    :shadow-radius radius}))
+
+
 (def ^:private shadows
-  (let [dark-normal           {1 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.5))
-                                  :shadow-offset  {:width 0 :height 4}
-                                  :elevation      3
-                                  :shadow-opacity 1
-                                  :shadow-radius  20}
-                               2 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.64))
-                                  :shadow-offset  {:width 0 :height 4}
-                                  :elevation      4
-                                  :shadow-opacity 1
-                                  :shadow-radius  20}
-                               3 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.64))
-                                  :shadow-offset  {:width 0 :height 12}
-                                  :elevation      8
-                                  :shadow-opacity 1
-                                  :shadow-radius  20}
-                               4 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.72))
-                                  :shadow-offset  {:width 0 :height 16}
-                                  :shadow-opacity 1
-                                  :shadow-radius  20
-                                  :elevation      15}}
+  (let [dark-normal           {1 (merge {:shadow-offset {:width 0 :height 4}}
+                                        (get-shadow-color colors/neutral-100 0.5)
+                                        (get-shadow-radius 20))
+                               2 (merge {:shadow-offset {:width 0 :height 4}}
+                                        (get-shadow-color colors/neutral-100 0.64)
+                                        (get-shadow-radius 20))
+                               3 (merge {:shadow-offset {:width 0 :height 12}}
+                                        (get-shadow-color colors/neutral-100 0.64)
+                                        (get-shadow-radius 20))
+                               4 (merge {:shadow-offset {:width 0 :height 16}}
+                                        (get-shadow-color colors/neutral-100 0.72)
+                                        (get-shadow-radius 20))}
         dark-normal-inverted  (-> dark-normal
                                   (update-in [:soft :shadow-offset :height] -)
                                   (update-in [:medium :shadow-offset :height] -)
                                   (update-in [:intense :shadow-offset :height] -)
                                   (update-in [:strong :shadow-offset :height] -))
-        light-normal          {1 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.04))
-                                  :shadow-offset  {:width 0 :height 4}
-                                  :elevation      1
-                                  :shadow-opacity 1
-                                  :shadow-radius  16}
-                               2 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.08))
-                                  :shadow-offset  {:width 0 :height 4}
-                                  :elevation      6
-                                  :shadow-opacity 1
-                                  :shadow-radius  16}
-                               3 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.12))
-                                  :shadow-offset  {:width 0 :height 12}
-                                  :elevation      8
-                                  :shadow-opacity 1
-                                  :shadow-radius  16}
-                               4 {:shadow-color   (when platform/ios?
-                                                    (colors/alpha colors/neutral-100 0.16))
-                                  :shadow-offset  {:width 0 :height 16}
-                                  :shadow-opacity 1
-                                  :shadow-radius  16
-                                  :elevation      13}}
+        light-normal          {1 (merge {:shadow-offset {:width 0 :height 4}}
+                                        (get-shadow-color colors/neutral-100 0.04)
+                                        (get-shadow-radius 16))
+
+                               2 (merge {:shadow-offset {:width 0 :height 4}}
+                                        (get-shadow-color colors/neutral-100 0.08)
+                                        (get-shadow-radius 16))
+                               3 (merge {:shadow-offset {:width 0 :height 12}}
+                                        (get-shadow-color colors/neutral-100 0.12)
+                                        (get-shadow-radius 16))
+                               4 (merge {:shadow-offset {:width 0 :height 16}}
+                                        (get-shadow-color colors/neutral-100 0.16)
+                                        (get-shadow-radius 16))
+                              }
         light-normal-inverted (-> light-normal
                                   (update-in [:soft :shadow-offset :height] -)
                                   (update-in [:medium :shadow-offset :height] -)
