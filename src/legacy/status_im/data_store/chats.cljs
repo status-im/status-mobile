@@ -36,6 +36,13 @@
     :always
     (update :contacts conj (:id member))))
 
+(defn decode-chat-id
+  [chat-id]
+  (let [community-id (subs chat-id 0 constants/community-id-length)
+        channel-id   (subs chat-id constants/community-id-length)]
+    {:community-id community-id
+     :channel-id   channel-id}))
+
 (defn- unmarshal-members
   [{:keys [members chat-type] :as chat}]
   (cond
