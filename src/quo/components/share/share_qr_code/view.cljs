@@ -142,7 +142,7 @@
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
-           profile-picture emoji on-share-press watched-account?]
+           profile-picture emoji on-share-press]
     :as   props}]
   [:<>
    [rn/view {:style style/gradient-bg}
@@ -155,7 +155,7 @@
       {:size   :heading-2
        :weight :semi-bold
        :style  {:margin-left 8}} full-name]
-     (when (and watched-account? (not= share-qr-type :profile))
+     (when (= share-qr-type :watched-address)
        [icons/icon
         :i/reveal
         {:color           colors/white-opa-40
