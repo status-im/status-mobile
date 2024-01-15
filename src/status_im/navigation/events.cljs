@@ -119,6 +119,7 @@
   {:events [:show-bottom-sheet]}
   [{:keys [db]} content]
   (let [{:keys [sheets hide?]} (:bottom-sheet db)]
+    (rf/dispatch [:dismiss-keyboard])
     (rf/merge {:db (update-in db [:bottom-sheet :sheets] #(conj % content))}
               #(when-not hide?
                  (if (seq sheets)
