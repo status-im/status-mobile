@@ -6,7 +6,6 @@
             [quo.components.avatars.user-avatar.view :as user-avatar]
             [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
             [quo.components.buttons.button.view :as button]
-            [quo.components.gradient.gradient-cover.view :as gradient-cover]
             [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
@@ -19,7 +18,7 @@
             [utils.i18n :as i18n]))
 
 (defn- header
-  [{:keys [share-qr-type on-legacy-press on-multichain-press]}]
+  [{:keys [on-legacy-press on-multichain-press address]}]
   [rn/view {:style style/header-container}
    [tab/view
     {:accessibility-label         :share-qr-code-legacy-tab
@@ -27,7 +26,7 @@
      :active-item-container-style style/header-tab-active
      :item-container-style        style/header-tab-inactive
      :size                        24
-     :active                      (= :wallet-legacy share-qr-type)
+     :active                      (= :legacy address)
      :on-press                    on-legacy-press}
     (i18n/label :t/legacy)]
    [rn/view {:style style/space-between-tabs}]
@@ -37,7 +36,7 @@
      :active-item-container-style style/header-tab-active
      :item-container-style        style/header-tab-inactive
      :size                        24
-     :active                      (= :wallet-multichain share-qr-type)
+     :active                      (= :multichain address)
      :on-press                    on-multichain-press}
     (i18n/label :t/multichain)]])
 
@@ -144,12 +143,9 @@
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
            profile-picture emoji on-share-press]
     :as   props}]
-  [:<>
-   [rn/view {:style style/gradient-bg}
-    [gradient-cover/view {:customization-color customization-color :height 463}]]
-   [rn/view {:style style/content-container}
-    [rn/view
-     {:style style/share-qr-inner-container}
+  [rn/view {:style style/content-container}
+   [rn/view {:style style/share-qr-container}
+    [rn/view {:style style/share-qr-inner-container}
      [header-icon props]
      [text/text
       {:size   :heading-2
@@ -161,7 +157,7 @@
         {:color           colors/white-opa-40
          :container-style style/watched-account-icon}])]
     [share-button {:on-press on-share-press}]]
-   (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
+   (when (not= share-qr-type :profile)
      [header props])
    [quo.theme/provider {:theme :light}
     [qr-code/view
