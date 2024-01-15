@@ -117,11 +117,8 @@
   (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
                          (rf/dispatch [:wallet/clean-local-suggestions])
-<<<<<<< HEAD
                          (rf/dispatch [:wallet/clean-account-selection])
-=======
                          (rf/dispatch [:wallet/clean-selected-token])
->>>>>>> 8e4dc8a63 (feat: send token drawer)
                          (rf/dispatch [:wallet/select-address-tab nil])
                          (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
@@ -163,22 +160,7 @@
             [rn/view
              {:style {:flex    1
                       :padding 8}}
-<<<<<<< HEAD
              [local-suggestions-list]]]
-=======
-             [local-suggestions-list]]
-            (when (> (count @input-value) 0)
-              [quo/button
-               {:accessibility-label :continue-button
-                :type                :primary
-                :disabled?           (not valid-ens-or-address?)
-                :container-style     style/button
-                :on-press            #(rf/dispatch [:wallet/select-send-address
-                                                    {:address  @input-value
-                                                     :token    token
-                                                     :stack-id :wallet-select-address}])}
-               (i18n/label :t/continue)])]
->>>>>>> 8e4dc8a63 (feat: send token drawer)
            [:<>
             [quo/tabs
              {:style            style/tabs
