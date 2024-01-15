@@ -3,6 +3,8 @@
             [clojure.string :as string]
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
+            [quo.components.avatars.user-avatar.view :as user-avatar]
+            [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
             [quo.components.buttons.button.view :as button]
             [quo.components.gradient.gradient-cover.view :as gradient-cover]
             [quo.components.icon :as icons]
@@ -123,6 +125,21 @@
      :on-press            on-settings-press}
     :i/advanced]])
 
+(defn- header-icon
+  [{:keys [share-qr-type customization-color emoji profile-picture wallet-user-avatar]}]
+  (case share-qr-type
+    :profile [user-avatar/user-avatar {:size              :small
+                                       :status-indicator? false
+                                       :profile-picture   profile-picture
+                                       :customization-color customization-color}]
+    (:wallet :watched-address)  [account-avatar/view {:customization-color customization-color
+                                                      :emoji               emoji
+                                                      :size                32}]
+    :saved-address [wallet-user-avatar/wallet-user-avatar {:size :size-32
+                                                           :customization-color customization-color
+                                                           :full-name wallet-user-avatar}]
+    nil))
+
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
            profile-picture emoji on-share-press watched-account?]
@@ -133,10 +150,7 @@
    [rn/view {:style style/content-container}
     [rn/view
      {:style style/share-qr-inner-container}
-     [account-avatar/view
-      {:customization-color customization-color
-       :emoji               emoji
-       :size                32}]
+     [header-icon props]
      [text/text
       {:size   :heading-2
        :weight :semi-bold

@@ -15,8 +15,23 @@
    {:key     :type
     :type    :select
     :options [{:key :profile}
-              {:key :wallet-legacy}
-              {:key :wallet-multichain}]}])
+              {:key :wallet}
+              {:key :saved-address}
+              {:key :watched-address}]}])
+
+(def possible-networks [:ethereum :optimism :arbitrum :myNet])
+
+(def networks-selector
+  {:key     :networks
+   :type    :select
+   :options [{:key   (take 1 possible-networks)
+              :value "Ethereum"}
+             {:key   (take 2 possible-networks)
+              :value "Ethereum and Optimism"}
+             {:key   (take 3 possible-networks)
+              :value "Ethereum, Optimism and Arbitrum"}
+             {:key   (take 4 possible-networks)
+              :value "Ethereum, Optimism, Arbitrum and unknown"}]})
 
 (def profile-descriptor
   [{:key     :profile-picture
@@ -24,44 +39,76 @@
     :options [{:key   (resources/get-mock-image :user-picture-female2)
                :value "User 1"}
               {:key   (resources/get-mock-image :user-picture-male4)
-               :value "User 2"}
-              {:key   nil
-               :value "No picture"}]}
+               :value "User 2"}]}
    {:key  :full-name
     :type :text}
    (preview/customization-color-option)])
 
-(def wallet-legacy-descriptor
-  [{:key     :emoji
+(def wallet-descriptor
+  [{:key :address
+    :type :select
+    :options [{:key :legacy}
+              {:key :multichain}]}
+   {:key     :emoji
     :type    :select
     :options [{:key "🐈"}
               {:key "👻"}
               {:key "🐧"}]}
-   {:key  :watched-account?
-    :type :boolean}
+   networks-selector
    (preview/customization-color-option)])
 
-(def possible-networks [:ethereum :optimism :arbitrum :myNet])
+(def saved-address-descriptor
+  [{:key :address
+    :type :select
+    :options [{:key :legacy}
+              {:key :multichain}]}
+   {:key     :wallet-user-avatar
+    :type    :text}
+   networks-selector
+   (preview/customization-color-option)])
 
-(def wallet-multichain-descriptor
-  [{:key     :emoji
+(def watched-address-descriptor
+  [{:key :address
+    :type :select
+    :options [{:key :legacy}
+              {:key :multichain}]}
+   {:key     :emoji
     :type    :select
     :options [{:key "🐈"}
               {:key "👻"}
               {:key "🐧"}]}
-   {:key  :watched-account?
-    :type :boolean}
-   (preview/customization-color-option)
-   {:key     :networks
-    :type    :select
-    :options [{:key   (take 1 possible-networks)
-               :value "Ethereum"}
-              {:key   (take 2 possible-networks)
-               :value "Ethereum and Optimism"}
-              {:key   (take 3 possible-networks)
-               :value "Ethereum, Optimism and Arbitrum"}
-              {:key   (take 4 possible-networks)
-               :value "Ethereum, Optimism, Arbitrum and unknown"}]}])
+   networks-selector
+   (preview/customization-color-option)])
+
+;; (def wallet-legacy-descriptor
+;;   [{:key     :emoji
+;;     :type    :select
+;;     :options [{:key "🐈"}
+;;               {:key "👻"}
+;;               {:key "🐧"}]}
+;;    {:key  :watched-account?
+;;     :type :boolean}
+;;    (preview/customization-color-option)])
+
+;; (def wallet-multichain-descriptor
+;;   [{:key     :emoji
+;;     :type    :select
+;;     :options [{:key "🐈"}
+;;               {:key "👻"}
+;;               {:key "🐧"}]}
+;;    {:key  :watched-account?
+;;     :type :boolean}
+;;    (preview/customization-color-option)
+;;    {:key     :networks
+;;     :type    :select
+;;     :options [{:key   (take 1 possible-networks)
+;;                :value "Ethereum"}
+;;               {:key   (take 2 possible-networks)
+;;                :value "Ethereum and Optimism"}
+;;               {:key   (take 3 possible-networks)
+;;                :value "Ethereum, Optimism and Arbitrum"}
+;;               {:key   (take 4 possible-networks)
+;;                :value "Ethereum, Optimism, Arbitrum and unknown"}]}])
 
 (defn- get-network-short-name-url
   [network]
@@ -88,20 +135,21 @@
 (defn view
   []
   (let [state (reagent/atom {:type                :profile
+                             :address             :legacy
                              :qr-data             profile-link
                              :on-share-press      #(js/alert "share pressed")
                              :on-text-press       #(js/alert "text pressed")
                              :on-text-long-press  #(js/alert "text long press")
-                             :profile-picture     nil
+                             :profile-picture     (resources/get-mock-image :user-picture-female2)
                              :full-name           "My User"
                              :customization-color :purple
+                             :wallet-user-avatar  "Alicia Keys"
                              :emoji               "🐈"
                              :on-info-press       #(js/alert "Info pressed")
                              :on-legacy-press     #(js/alert (str "Tab " % " pressed"))
                              :on-multichain-press #(js/alert (str "Tab " % " pressed"))
                              :networks            (take 2 possible-networks)
-                             :on-settings-press   #(js/alert "Settings pressed")
-                             :watched-account?    false})
+                             :on-settings-press   #(js/alert "Settings pressed")})
         _ (add-watch state :change set-qr-data-based-on-type)]
     (fn []
       (let [qr-url              (if (= (:type @state) :wallet-multichain)
@@ -118,8 +166,9 @@
             typed-descriptor    (concat descriptor
                                         (case (:type @state)
                                           :profile           profile-descriptor
-                                          :wallet-legacy     wallet-legacy-descriptor
-                                          :wallet-multichain wallet-multichain-descriptor
+                                          :wallet wallet-descriptor
+                                          :saved-address saved-address-descriptor
+                                          :watched-address watched-address-descriptor
                                           nil))]
         [preview/preview-container
          {:state                     state
