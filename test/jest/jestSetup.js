@@ -11,6 +11,10 @@ jest.mock('react-native-fs', () => ({
   default: {},
 }));
 
+jest.mock('react-native-share', () => ({
+  default: {},
+}));
+
 jest.mock('react-native-navigation', () => ({
   getNavigationConstants: () => ({ constants: [] }),
   Navigation: {
