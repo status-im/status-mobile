@@ -118,6 +118,7 @@
                          (rf/dispatch [:wallet/clean-scanned-address])
                          (rf/dispatch [:wallet/clean-local-suggestions])
                          (rf/dispatch [:wallet/clean-account-selection])
+                         (rf/dispatch [:wallet/clean-selected-token])
                          (rf/dispatch [:wallet/select-address-tab nil])
                          (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
@@ -125,6 +126,7 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
+            token                 (rf/sub [:wallet/wallet-send-token])
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
         (rn/use-effect (fn []
                          (fn []
@@ -143,6 +145,7 @@
                       :disabled?           (not valid-ens-or-address?)
                       :on-press            #(rf/dispatch [:wallet/select-send-address
                                                           {:address  @input-value
+                                                           :token    token
                                                            :stack-id :wallet-select-address}])}
                      (i18n/label :t/continue)])}
          [quo/text-combinations

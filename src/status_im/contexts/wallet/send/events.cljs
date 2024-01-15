@@ -40,6 +40,7 @@
             (update-in [:wallet :ui :send] dissoc :route)
             (update-in [:wallet :ui :send] dissoc :loading-suggested-routes?))}))
 
+
 (rf/reg-event-fx :wallet/select-send-account-address
  (fn [{:keys [db]} [{:keys [address stack-id]}]]
    {:db (-> db
