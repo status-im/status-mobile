@@ -42,7 +42,7 @@
        {:animate?     true
         :progress     progress
         :paused?      paused?
-        :gesture      :tappable
+        :gesture      :swipeable
         :is-dragging? is-dragging?
         :drag-amount  drag-amount
         :header-text  header-text}]
