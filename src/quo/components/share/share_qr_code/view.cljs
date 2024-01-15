@@ -125,7 +125,7 @@
     :i/advanced]])
 
 (defn- header-icon
-  [{:keys [share-qr-type customization-color emoji profile-picture wallet-user-avatar]}]
+  [{:keys [share-qr-type customization-color emoji profile-picture full-name]}]
   (case share-qr-type
     :profile [user-avatar/user-avatar {:size              :small
                                        :status-indicator? false
@@ -136,12 +136,12 @@
                                                       :size                32}]
     :saved-address [wallet-user-avatar/wallet-user-avatar {:size :size-32
                                                            :customization-color customization-color
-                                                           :full-name wallet-user-avatar}]
+                                                           :full-name full-name}]
     nil))
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
-           profile-picture emoji on-share-press]
+           profile-picture emoji on-share-press address]
     :as   props}]
   [rn/view {:style style/content-container}
    [rn/view {:style style/share-qr-container}
@@ -163,19 +163,22 @@
     [qr-code/view
      {:qr-image-uri        qr-image-uri
       :size                (style/qr-code-size component-width)
-      :avatar              (if (= share-qr-type :profile)
-                             :profile
-                             :wallet-account)
+      :avatar              (case share-qr-type
+                             :profile                   :profile
+                             (:watched-address :wallet) :wallet-account
+                             :saved-address             :saved-address
+                             nil)
       :customization-color customization-color
       :full-name           full-name
       :profile-picture     profile-picture
       :emoji               emoji}]]
    [rn/view {:style style/bottom-container}
-    (case share-qr-type
-      :profile           [profile-bottom props]
-      :wallet-legacy     [wallet-legacy-bottom props]
-      :wallet-multichain [wallet-multichain-bottom props]
-      nil)]])
+    (if (= share-qr-type :profile)
+      [profile-bottom props]
+      (case address
+        :legacy     [wallet-legacy-bottom props]
+        :multichain [wallet-multichain-bottom props]
+        nil))]])
 
 (defn- view-internal
   "Receives the following properties:

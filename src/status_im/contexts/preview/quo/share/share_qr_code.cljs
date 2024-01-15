@@ -62,8 +62,6 @@
     :type :select
     :options [{:key :legacy}
               {:key :multichain}]}
-   {:key     :wallet-user-avatar
-    :type    :text}
    networks-selector
    (preview/customization-color-option)])
 
@@ -135,7 +133,7 @@
 (defn view
   []
   (let [state (reagent/atom {:type                :profile
-                             :address             :legacy
+                             :address             :multichain
                              :qr-data             profile-link
                              :on-share-press      #(js/alert "share pressed")
                              :on-text-press       #(js/alert "text pressed")
@@ -143,7 +141,6 @@
                              :profile-picture     (resources/get-mock-image :user-picture-female2)
                              :full-name           "My User"
                              :customization-color :purple
-                             :wallet-user-avatar  "Alicia Keys"
                              :emoji               "🐈"
                              :on-info-press       #(js/alert "Info pressed")
                              :on-legacy-press     #(js/alert (str "Tab " % " pressed"))
