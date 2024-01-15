@@ -58,15 +58,16 @@
 (def picture-border-width 4)
 
 (defn display-picture-container
-  [animation]
+  [animation theme]
   (reanimated/apply-animations-to-style
    {:transform [{:scale animation}]}
-   {:border-radius picture-diameter
-    :border-width  picture-border-width
-    :border-color  (colors/theme-colors colors/white colors/neutral-95)
-    :position      :absolute
-    :top           (- (+ picture-radius picture-border-width))
-    :left          (+ (/ picture-radius 2) picture-border-width)}))
+   {:border-radius    picture-diameter
+    :border-width     picture-border-width
+    :border-color     (colors/theme-colors colors/white colors/neutral-95 theme)
+    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+    :position         :absolute
+    :top              (- (+ picture-radius picture-border-width))
+    :left             (+ (/ picture-radius 2) picture-border-width)}))
 
 (defn display-picture
   [theme]
