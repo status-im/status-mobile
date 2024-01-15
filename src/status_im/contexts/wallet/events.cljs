@@ -131,12 +131,15 @@
   [{:keys [db]}]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 =======
          (println "cleaniingggg")
 =======
   (println "cleaniingggg")
 >>>>>>> 503ffe845 (loading routes ui)
+=======
+>>>>>>> 2f11bf5f4 (loading routes ui)
   {:db (-> db
            (dissoc :wallet/scanned-address :wallet/send-address)
            (update-in [:wallet :ui :send] dissoc :to-address))})
@@ -217,7 +220,6 @@
    (let [result (if (empty? input)
                   []
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
-     (println "find ens")
      (if (and input (empty? result))
        (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
        {:db (assoc db
@@ -241,7 +243,6 @@
 
 (rf/reg-event-fx :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
-   (println "resultxx" result)
    {:db (assoc db
                :wallet/local-suggestions     (if result
                                                [{:type     item-types/address

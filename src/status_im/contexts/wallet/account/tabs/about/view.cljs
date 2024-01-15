@@ -15,7 +15,7 @@
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        networks                      (rf/sub [:wallet/network-details])
+        networks                      (rf/sub [:wallet/network-preference-details])
         share-title                   (str (:name account) " " (i18n/label :t/address))
         multichain-address            (utils/get-multichain-address networks address)]
     [quo/action-drawer
