@@ -29,7 +29,6 @@
       :message   address
       :isNewTask true})))
 
-
 (defn- open-preferences
   [selected-networks]
   (rf/dispatch [:show-bottom-sheet
