@@ -54,13 +54,6 @@
     :fx [[:navigate-to-within-stack
           (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]}))
 
-
-(rf/reg-event-fx :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address token stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :to-address] address)
-    :fx [[:navigate-to-within-stack
-          (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]}))
-
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
