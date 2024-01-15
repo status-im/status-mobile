@@ -55,6 +55,7 @@
         ^js identity-images            (.-identityImages response-js)
         ^js accounts                   (.-accounts response-js)
         ^js ens-username-details-js    (.-ensUsernameDetails response-js)
+        ^js customization-color-js     (.-customizationColor response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -204,7 +205,14 @@
         (js-delete response-js "ensUsernameDetails")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (rf/dispatch [:ens/update-usernames ens-username-details-clj]))))))
+                  (rf/dispatch [:ens/update-usernames ens-username-details-clj])))
+
+      (seq customization-color-js)
+      (let [customization-color (types/js->clj customization-color-js)]
+        (js-delete response-js "customizationColor")
+        (rf/merge cofx
+                  (process-next response-js sync-handler)
+                  (rf/dispatch [:profile/edit-accent-colour customization-color]))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"
