@@ -8,9 +8,11 @@
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
+            [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
@@ -124,43 +126,46 @@
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
-           profile-picture emoji on-share-press]
+           profile-picture emoji on-share-press theme]
     :as   props}]
-  [rn/view {:style style/content-container}
-   [rn/view
-    {:style style/share-qr-container}
+  [linear-gradient/linear-gradient
+   {:colors [(colors/resolve-color customization-color theme 15) :transparent]
+    :style  {:border-radius 16}}
+   [rn/view {:style style/content-container}
     [rn/view
-     {:style style/share-qr-inner-container}
-     [account-avatar/view
-      {:customization-color customization-color
-       :emoji               emoji
-       :size                32}]
-     [text/text
-      {:size   :heading-2
-       :weight :semi-bold
-       :style  {:margin-left 8}} full-name]]
-    [share-button {:on-press on-share-press}]]
-   (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
-     [header props])
-   [quo.theme/provider {:theme :light}
-    [qr-code/view
-     {:qr-image-uri        qr-image-uri
-      :size                (style/qr-code-size component-width)
-      :avatar              (if (= share-qr-type :profile)
-                             :profile
-                             :wallet-account)
-      :customization-color customization-color
-      :full-name           full-name
-      :profile-picture     profile-picture
-      :emoji               emoji}]]
-   [rn/view {:style style/bottom-container}
-    (case share-qr-type
-      :profile           [profile-bottom props]
-      :wallet-legacy     [wallet-legacy-bottom props]
-      :wallet-multichain [wallet-multichain-bottom props]
-      nil)]])
+     {:style style/share-qr-container}
+     [rn/view
+      {:style style/share-qr-inner-container}
+      [account-avatar/view
+       {:customization-color customization-color
+        :emoji               emoji
+        :size                32}]
+      [text/text
+       {:size   :heading-2
+        :weight :semi-bold
+        :style  {:margin-left 8}} full-name]]
+     [share-button {:on-press on-share-press}]]
+    (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
+      [header props])
+    [quo.theme/provider {:theme :light}
+     [qr-code/view
+      {:qr-image-uri        qr-image-uri
+       :size                (style/qr-code-size component-width)
+       :avatar              (if (= share-qr-type :profile)
+                              :profile
+                              :wallet-account)
+       :customization-color customization-color
+       :full-name           full-name
+       :profile-picture     profile-picture
+       :emoji               emoji}]]
+    [rn/view {:style style/bottom-container}
+     (case share-qr-type
+       :profile           [profile-bottom props]
+       :wallet-legacy     [wallet-legacy-bottom props]
+       :wallet-multichain [wallet-multichain-bottom props]
+       nil)]]])
 
-(defn view
+(defn- view-internal
   "Receives the following properties:
    - type:                :profile | :wallet-legacy | :wallet-multichain
    - qr-image-uri:        Image source value.
@@ -211,3 +216,6 @@
                (-> props
                    (assoc :component-width @component-width)
                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
+
+
+(def view (quo.theme/with-theme view-internal))
