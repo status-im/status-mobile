@@ -130,9 +130,13 @@
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
 <<<<<<< HEAD
+<<<<<<< HEAD
   {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 =======
          (println "cleaniingggg")
+=======
+  (println "cleaniingggg")
+>>>>>>> 503ffe845 (loading routes ui)
   {:db (-> db
            (dissoc :wallet/scanned-address :wallet/send-address)
            (update-in [:wallet :ui :send] dissoc :to-address))})

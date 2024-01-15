@@ -53,12 +53,20 @@
     (normalize-input current v)
     current))
 
+(defn find-possible-networks
+  [{:keys [balances-per-chain]} input-value]
+  (->> balances-per-chain
+       (filter (fn [[_ {:keys [balance]}]]
+                 (>= (js/parseFloat balance) input-value)))
+       (map first)))
+
 (defn- f-view-internal
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
         {:keys [currency]}        (rf/sub [:profile/profile])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        address-prefix            (rf/sub [:wallet/wallet-send-address-prefix])
         token-symbol              (:symbol token)
         limit-crypto              (or (:total-balance token) limit)
         conversion-rate           (or rate 10)
@@ -123,7 +131,6 @@
                            (debounce/debounce-and-dispatch [:wallet/get-suggested-routes @input-value]
                                                            100)))
                        [@input-value])
-        (println "ttt" token)
         [rn/view
          {:style style/screen}
          [account-switcher/view
@@ -143,9 +150,10 @@
            :on-change-text  (fn [text]
                               (handle-on-change text))}]
          [routes/view
-          {:amount   amount
-           :routes   suggested-routes
-           :networks (:networks token)}]
+          {:amount           amount
+           :routes           suggested-routes
+           :loading-networks (find-possible-networks token @input-value)
+           :networks         (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)
@@ -156,7 +164,12 @@
            :left-action     :dot
            :delete-key?     true
            :on-press        handle-keyboard-press
+<<<<<<< HEAD
            :on-delete       handle-delete}]]))))
+=======
+           :on-delete       handle-delete}]]
+      ))))
+>>>>>>> a8d136405 (loading routes ui)
 
 (defn- view-internal
   [props]
