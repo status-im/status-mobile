@@ -38,6 +38,12 @@
    {:NativeModules            {:RNGestureHandlerModule {:Direction (fn [])}
                                :PushNotifications      {}
                                :Status                 utils.test/status
+                               :EncryptionUtils        utils.test/encryption-utils
+                               :AccountManager         utils.test/account-manager
+                               :Utils                  utils.test/utils
+                               :LogManager             utils.test/log-manager
+                               :NetworkManager         utils.test/network
+                               :UIHelper               utils.test/ui-helper
                                :ReanimatedModule       {:configureProps (fn [])}}
 
     :View                     {}

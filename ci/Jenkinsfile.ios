@@ -78,7 +78,9 @@ pipeline {
         }
         stage('Upload') {
           steps { script {
-            env.DIAWI_URL = ios.uploadToDiawi()
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              env.DIAWI_URL = ios.uploadToDiawi()
+            }
             env.PKG_URL = env.DIAWI_URL
             jenkins.setBuildDesc(IPA: env.PKG_URL)
           } }
