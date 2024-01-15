@@ -140,7 +140,15 @@
   []
   (fn [{:keys [id color]}]
     (let [{:keys [can-request-access?
-                  number-of-hold-tokens tokens]} (rf/sub [:community/token-gated-overview id])]
+                  number-of-hold-tokens tokens
+                  highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+          highest-permission-role-text
+          (i18n/label
+           (condp = highest-permission-role
+             constants/community-token-permission-become-token-owner  :t/token-owner
+             constants/community-token-permission-become-token-master :t/token-master
+             constants/community-token-permission-become-admin        :t/admin
+             :t/member))]
       [rn/view {:style (style/token-gated-container)}
        [rn/view
         {:style {:padding-horizontal 12
@@ -150,7 +158,7 @@
                  :flex               1}}
         [quo/text {:weight :medium}
          (if can-request-access?
-           (i18n/label :t/you-eligible-to-join)
+           (i18n/label :t/you-eligible-to-join-as {:role highest-permission-role-text})
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button]]
        (when (pos? number-of-hold-tokens)
@@ -163,12 +171,15 @@
         {:tokens   tokens
          :padding? true}]
        [quo/button
-        {:on-press            #(join-gated-community id)
+        {:on-press
+         (if config/community-accounts-selection-enabled?
+           #(rf/dispatch [:open-modal :community-account-selection {:community-id id}])
+           #(join-gated-community id))
          :accessibility-label :join-community-button
          :customization-color color
-         :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
-         :disabled?           (not can-request-access?)
-         :icon-left           (if can-request-access? :i/unlocked :i/locked)}
+         :container-style {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+         :disabled? (not can-request-access?)
+         :icon-left (if can-request-access? :i/unlocked :i/locked)}
         (i18n/label :t/join-open-community)]])))
 
 (defn join-community

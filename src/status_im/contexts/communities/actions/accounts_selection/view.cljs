@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.password-authentication.view :as password-authentication]
+    [status-im.constants :as constants]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
     [utils.i18n :as i18n]
@@ -11,20 +12,26 @@
 
 (defn- join-community-and-navigate-back
   [id]
-  (rf/dispatch [:password-authentication/show
-                {:content (fn [] [password-authentication/view])}
+  (rf/dispatch [:password-authentication/show {:content (fn [] [password-authentication/view])}
                 {:label    (i18n/label :t/join-open-community)
                  :on-press #(rf/dispatch [:communities/request-to-join-with-addresses
-                                          {:community-id id
-                                           :password     %}])}])
+                                          {:community-id id :password %}])}])
   (rf/dispatch [:navigate-back]))
 
 (defn f-view-internal
   []
-  (let [{id :community-id}          (rf/sub [:get-screen-params])
+  (let [{id :community-id} (rf/sub [:get-screen-params])
         {:keys [name color images]} (rf/sub [:communities/community id])
-        airdrop-account             (rf/sub [:communities/airdrop-account id])
-        selected-accounts           (rf/sub [:communities/selected-permission-accounts id])]
+        airdrop-account (rf/sub [:communities/airdrop-account id])
+        selected-accounts (rf/sub [:communities/selected-permission-accounts id])
+        {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+        highest-permission-role-text
+        (i18n/label
+         (condp = highest-permission-role
+           constants/community-token-permission-become-token-owner  :t/token-owner
+           constants/community-token-permission-become-token-master :t/token-master
+           constants/community-token-permission-become-admin        :t/admin
+           :t/member))]
     [rn/view {:style style/container}
      [quo/page-nav
       {:text-align          :left
@@ -48,7 +55,7 @@
         (i18n/label :t/address-to-share)]
        [quo/category
         {:list-type :settings
-         :data      [{:title             (i18n/label :t/join-as-a-member)
+         :data      [{:title             (i18n/label :t/join-as-a {:role highest-permission-role-text})
                       :on-press          #(rf/dispatch [:open-modal :addresses-for-permissions
                                                         {:community-id id}])
                       :description       :text
