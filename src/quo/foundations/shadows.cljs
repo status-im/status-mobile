@@ -3,28 +3,28 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.platform :as platform]))
+    [react-native.platform :as platform]
+    [utils.number]))
 
-(defn clamp
-  [value min-val max-val]
-  (max min-val (min max-val value)))
 
-(defn get-shadow-color
+(def ^:private shadowOpacityCoefficient 5)
+(def ^:private shadowRadiusCoefficient 0.8)
+
+(defn- get-shadow-color
   ([color opacity]
-   (get-shadow-color color opacity 5))
+   (get-shadow-color color opacity shadowOpacityCoefficient))
   ([color opacity coefficient]
    {:shadow-color   (if platform/android?
-                      (colors/alpha color (clamp (* opacity coefficient) 0 1))
+                      (colors/alpha color (utils.number/value-in-range (* opacity coefficient) 0 1))
                       color)
     :shadow-opacity opacity}))
 
-(defn get-shadow-radius
+(defn- get-shadow-radius
   ([radius]
-   (get-shadow-radius radius 0.8))
+   (get-shadow-radius radius shadowRadiusCoefficient))
   ([radius coefficient]
    {:elevation     (* radius coefficient)
     :shadow-radius radius}))
-
 
 (def ^:private shadows
   (let [dark-normal           {1 (merge {:shadow-offset {:width 0 :height 4}}
@@ -56,8 +56,7 @@
                                         (get-shadow-radius 16))
                                4 (merge {:shadow-offset {:width 0 :height 16}}
                                         (get-shadow-color colors/neutral-100 0.16)
-                                        (get-shadow-radius 16))
-                              }
+                                        (get-shadow-radius 16))}
         light-normal-inverted (-> light-normal
                                   (update-in [:soft :shadow-offset :height] -)
                                   (update-in [:medium :shadow-offset :height] -)
