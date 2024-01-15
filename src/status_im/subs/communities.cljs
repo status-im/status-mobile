@@ -65,12 +65,6 @@
  (fn [[{:keys [members]}] _]
    members))
 
-(re-frame/reg-sub
- :communities/current-community-members
- :<- [:chats/current-chat]
- :<- [:communities]
- (fn [[{:keys [community-id]} communities]]
-   (get-in communities [community-id :members])))
 
 (re-frame/reg-sub
  :communities/sorted-community-members
@@ -90,6 +84,36 @@
      (->> members
           (sort-by #(get names (get % 0)))
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
+
+(re-frame/reg-sub
+ :communities/sorted-community-members-section-list
+ (fn [[_ community-id]]
+   (let [profile         (re-frame/subscribe [:profile/profile])
+         members         (re-frame/subscribe [:communities/community-members community-id])
+         active-contacts (re-frame/subscribe [:contacts/active])]
+     [profile members active-contacts]))
+ (fn [[profile members active-contacts] _]
+   (let [names (reduce (fn [acc contact-identity]
+                         (assoc acc
+                                contact-identity
+                                (when (= (:public-key profile) contact-identity)
+                                  (:primary-name profile)
+                                  contact-identity)))
+                       {}
+                       (keys members))]
+     (->> members
+          (sort-by #(get names (get % 0)))
+          (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))
+          reverse
+          (mapv (fn [item]
+                  (when-not (= (:public-key profile) (key item))
+                    {:title (if (some #(and (= (key item) (:public-key %))
+                                            (:active? %))
+                                      active-contacts)
+                              :Offline
+                              :Online)
+                     :data  {:public-key (key item)}})))
+          (remove #(nil? %))))))
 
 (re-frame/reg-sub
  :communities/featured-contract-communities
