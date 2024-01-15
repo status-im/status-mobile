@@ -7,7 +7,8 @@
   {:height            56
    :padding-vertical  12
    :justify-content   :center
-   :margin-horizontal 20})
+   :margin-horizontal 20
+   :margin-top        (when platform/ios? 44)})
 
 (def featured-communities-header
   {:flex-direction  :row
