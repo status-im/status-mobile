@@ -15,7 +15,7 @@
     [status-im.contexts.chat.messenger.messages.pin.banner.view :as pin.banner]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.worklets.chat.messages :as worklets]))
+    [utils.worklets.chat.messenger.navigation :as worklets]))
 
 (defn f-header-content-container
   [{:keys [chat distance-from-list-top all-loaded? calculations-complete?]}]
