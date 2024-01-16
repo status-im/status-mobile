@@ -2,7 +2,7 @@
 
 set -eof pipefail
 
-FILES=$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep --ignore-case -E '\.(java|cpp|nix|json|sh|md|js|clj|cljs|cljc|edn)$')
+FILES=$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep --ignore-case -E '\.(java|cpp|nix|json|sh|md|js|clj|cljs|cljc|edn|kt|m)$')
 N_FILES=$(echo "$FILES" | wc -l)
 LINT_SHOULD_FIX=0
 

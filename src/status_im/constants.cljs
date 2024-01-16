@@ -166,6 +166,8 @@
 (def ^:const community-request-to-join-state-accepted 3)
 (def ^:const community-request-to-join-state-cancelled 4)
 
+(def ^:const community-id-length 68)
+
   ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")
 ; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived
@@ -334,13 +336,6 @@
 (def ^:const local-pairing-action-pairing-account 2)
 (def ^:const local-pairing-action-sync-device 3)
 (def ^:const local-pairing-action-pairing-installation 4)
-
-(def ^:const serialization-key
-  "We pass this serialization key as a parameter to MultiformatSerializePublicKey
-  function at status-go, This key determines the output base of the serialization.
-  according to https://specs.status.im/spec/2#public-key-serialization we serialize
-  keys with base58btc encoding"
-  "z")
 
 (def ^:const deserialization-key
   "We pass this deserialization key as a parameter to MultiformatDeserializePublicKey

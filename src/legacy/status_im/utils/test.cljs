@@ -31,104 +31,81 @@
                       (.pollSignal native-status signal-received-callback)
                       100))))
 
-(def status
+(def ui-helper
   (clj->js
-   {:openAccounts
-    (fn [callback]
-      (callback (.openAccounts native-status test-dir)))
+   {:clearCookies     identity
+    :clearStorageAPIs identity}))
 
-    :multiAccountStoreDerived
-    (fn [json callback]
-      (callback (.multiAccountStoreDerivedAccounts native-status json)))
-
-    :getNodeConfig (fn [] (types/clj->json {:WakuV2Config ""}))
-
-    :backupDisabledDataDir (fn [] (str test-dir "/backup"))
-    :keystoreDir (fn [] "")
-    :logFileDirectory (fn [] (str test-dir "/log"))
-    :clearCookies identity
-    :clearStorageAPIs identity
-    :setBlankPreviewFlag identity
-
-    :callPrivateRPC
-    (fn [payload callback]
-      (callback (.callPrivateRPC native-status payload)))
-
-    :createAccountAndLogin (fn [request] (.createAccountAndLogin native-status request))
-
-    :saveAccountAndLogin
-    (fn [multiaccount-data password settings config accounts-data]
-      (.saveAccountAndLogin native-status multiaccount-data password settings config accounts-data))
-
-    :logout
-    (fn [] (.logout native-status))
-
-    :multiAccountGenerateAndDeriveAddresses
-    (fn [json callback]
-      (callback (.multiAccountGenerateAndDeriveAddresses native-status json)))
-
-    :multiAccountImportMnemonic
-    (fn [json callback]
-      (callback (.multiAccountImportMnemonic native-status json)))
-
-    :multiAccountLoadAccount
-    (fn [json callback]
-      (callback (.multiAccountLoadAccount native-status json)))
-
-    :multiAccountDeriveAddresses
-    (fn [json callback]
-      (callback (.multiAccountDeriveAddresses native-status json)))
-
+(def encryption-utils
+  (clj->js
+   {:sha3
+    (fn [s] (.sha3 native-status s))
+    :setBlankPreviewFlag
+    identity
+    :encodeTransfer
+    (fn [to-norm amount-hex]
+      (.encodeTransfer native-status to-norm amount-hex))
+    :hexToNumber
+    (fn [hex] (.hexToNumber native-status hex))
+    :decodeParameters
+    (fn [decode-param-json]
+      (.decodeParameters native-status decode-param-json))
+    :numberToHex
+    (fn [num-str] (.numberToHex native-status num-str))
+    :initKeystore
+    (fn [key-uid callback]
+      (callback (.initKeystore native-status
+                               (str test-dir "/keystore/" key-uid))))
     :multiformatDeserializePublicKey
     (fn [public-key deserialization-key callback]
       (callback (.multiformatDeserializePublicKey
                  native-status
                  public-key
-                 deserialization-key)))
+                 deserialization-key)))}))
 
-    :initKeystore
-    (fn [key-uid callback]
-      (callback (.initKeystore native-status
-                               (str test-dir "/keystore/" key-uid))))
+(def account-manager
+  (clj->js
+   {:openAccounts
+    (fn [callback]
+      (callback (.openAccounts native-status test-dir)))
+    :createAccountAndLogin
+    (fn [request] (.createAccountAndLogin native-status request))
+    :logout
+    (fn [] (.logout native-status))
+    :multiAccountImportMnemonic
+    (fn [json callback]
+      (callback (.multiAccountImportMnemonic native-status json)))
+    :multiAccountLoadAccount
+    (fn [json callback]
+      (callback (.multiAccountLoadAccount native-status json)))
+    :multiAccountDeriveAddresses
+    (fn [json callback]
+      (callback (.multiAccountDeriveAddresses native-status json)))
+    :multiAccountGenerateAndDeriveAddresses
+    (fn [json callback]
+      (callback (.multiAccountGenerateAndDeriveAddresses native-status json)))
+    :multiAccountStoreDerived
+    (fn [json callback]
+      (callback (.multiAccountStoreDerivedAccounts native-status json)))}))
 
-    :encodeTransfer
-    (fn [to-norm amount-hex]
-      (.encodeTransfer native-status to-norm amount-hex))
-
-    :encodeFunctionCall
-    (fn [method params-json]
-      (.encodeFunctionCall native-status method params-json))
-
-    :decodeParameters
-    (fn [decode-param-json]
-      (.decodeParameters native-status decode-param-json))
-
-    :hexToNumber
-    (fn [hex] (.hexToNumber native-status hex))
-
-    :numberToHex
-    (fn [num-str] (.numberToHex native-status num-str))
-
-    :checkAddressChecksum
-    (fn [address] (.checkAddressChecksum native-status address))
-
-    :sha3
-    (fn [s] (.sha3 native-status s))
-
+(def utils
+  (clj->js
+   {:backupDisabledDataDir
+    (fn [] (str test-dir "/backup"))
+    :keystoreDir (fn [] "")
     :toChecksumAddress
     (fn [address] (.toChecksumAddress native-status address))
-
-    :isAddress
-    (fn [address] (.isAddress native-status address))
-
-    :fleets
-    (fn [] (.fleets native-status))
-
+    :checkAddressChecksum
+    (fn [address] (.checkAddressChecksum native-status address))
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
+    :isAddress
+    (fn [address] (.isAddress native-status address))}))
 
-    :startLocalNotifications identity
-
+(def log-manager
+  (clj->js
+   {:logFileDirectory
+    (fn [] (str test-dir "/log"))
     :initLogging
     (fn [enabled mobile-system log-level callback]
       (callback (.initLogging native-status
@@ -136,3 +113,18 @@
                                                 :MobileSystem mobile-system
                                                 :Level        log-level
                                                 :File         (str test-dir "/geth.log")}))))}))
+
+(def network
+  (clj->js
+   {:callPrivateRPC
+    (fn [payload callback]
+      (callback (.callPrivateRPC native-status payload)))}))
+
+(def status
+  (clj->js
+   {:getNodeConfig
+    (fn [] (types/clj->json {:WakuV2Config ""}))
+    :fleets
+    (fn [] (.fleets native-status))
+    :startLocalNotifications
+    identity}))

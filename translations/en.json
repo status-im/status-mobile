@@ -147,6 +147,7 @@
     "change-pairing-description": "Changing the pairing code does not affect the current pairings. However, any new pairing will require the new code.",
     "changed-amount-warning": "Amount was changed from {{old}} to {{new}}",
     "changed-asset-warning": "Asset was changed from {{old}} to {{new}}",
+    "channel-on-status": "Channel on Status",
     "chaos-mode": "Chaos mode",
     "chaos-unicorn-day": "Chaos Unicorn Day",
     "chaos-unicorn-day-details": "🦄🦄🦄🦄🦄🦄🦄🚀!",

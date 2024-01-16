@@ -41,3 +41,11 @@
                        :timestamp                2}]
     (testing "from-rpc"
       (is (= expected-chat (chats/<-rpc chat))))))
+
+(deftest decode-chat-id-test
+  (let [community-id "0x0322b9b84acb1631d6a31d41d9cf8e1938d352a624bc130de92869e025c7ca79c4"
+        channel-id   "02081bc7-20e4-4362-99e2-37669c28cc08"
+        chat-id      (str community-id channel-id)]
+    (is (= {:community-id community-id
+            :channel-id   channel-id}
+           (chats/decode-chat-id chat-id)))))
