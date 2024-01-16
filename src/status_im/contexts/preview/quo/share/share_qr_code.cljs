@@ -78,36 +78,6 @@
    networks-selector
    (preview/customization-color-option)])
 
-;; (def wallet-legacy-descriptor
-;;   [{:key     :emoji
-;;     :type    :select
-;;     :options [{:key "🐈"}
-;;               {:key "👻"}
-;;               {:key "🐧"}]}
-;;    {:key  :watched-account?
-;;     :type :boolean}
-;;    (preview/customization-color-option)])
-
-;; (def wallet-multichain-descriptor
-;;   [{:key     :emoji
-;;     :type    :select
-;;     :options [{:key "🐈"}
-;;               {:key "👻"}
-;;               {:key "🐧"}]}
-;;    {:key  :watched-account?
-;;     :type :boolean}
-;;    (preview/customization-color-option)
-;;    {:key     :networks
-;;     :type    :select
-;;     :options [{:key   (take 1 possible-networks)
-;;                :value "Ethereum"}
-;;               {:key   (take 2 possible-networks)
-;;                :value "Ethereum and Optimism"}
-;;               {:key   (take 3 possible-networks)
-;;                :value "Ethereum, Optimism and Arbitrum"}
-;;               {:key   (take 4 possible-networks)
-;;                :value "Ethereum, Optimism, Arbitrum and unknown"}]}])
-
 (defn- get-network-short-name-url
   [network]
   (case network
@@ -133,7 +103,7 @@
 (defn view
   []
   (let [state (reagent/atom {:type                :profile
-                             :address             :multichain
+                             :address             :legacy
                              :qr-data             profile-link
                              :on-share-press      #(js/alert "share pressed")
                              :on-text-press       #(js/alert "text pressed")
@@ -149,7 +119,7 @@
                              :on-settings-press   #(js/alert "Settings pressed")})
         _ (add-watch state :change set-qr-data-based-on-type)]
     (fn []
-      (let [qr-url              (if (= (:type @state) :wallet-multichain)
+      (let [qr-url              (if (and (= (:address @state) :multichain) (not= (:type @state) :profile))
                                   (as-> (:networks @state) $
                                     (map get-network-short-name-url $)
                                     (apply str $)
