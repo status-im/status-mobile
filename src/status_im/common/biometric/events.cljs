@@ -2,7 +2,6 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [react-native.async-storage :as async-storage]
     [react-native.biometrics :as biometrics]
     [react-native.platform :as platform]
     [status-im.common.keychain.events :as keychain]
@@ -64,12 +63,14 @@
          :fallback-prompt-message (i18n/label
                                    :t/biometric-auth-login-ios-fallback-label)
          :cancel-button-text      (i18n/label :t/cancel)})
-       ;; NOTE: resolves to `false` when cancelled by user
-       (.then #(when % on-success))
+       (.then (fn [not-canceled?]
+                (when (and on-success not-canceled?)
+                  (on-success))))
        (.catch (fn [err]
-                 (-> err
-                     (.-message)
-                     (on-fail)))))))
+                 (when on-fail
+                   (-> err
+                       (.-message)
+                       (on-fail))))))))
 
 (rf/defn authenticate
   {:events [:biometric/authenticate]}
@@ -98,3 +99,23 @@
    (let [key-uid (get-in db [:profile/profile :key-uid])]
      {:db                           (assoc db :auth-method constants/auth-method-none)
       :keychain/clear-user-password key-uid})))
+
+(rf/reg-fx
+ :biometric/check-if-available
+ (fn [[key-uid callback]]
+   (keychain/can-save-user-password?
+    (fn [can-save?]
+      (when can-save?
+        (-> (biometrics/get-available)
+            (.then (fn [available?]
+                     (when-not available?
+                       (throw (js/Error. "biometric-not-available")))))
+            (.then #(keychain/get-auth-method! key-uid))
+            (.then (fn [auth-method]
+                     (when auth-method (callback auth-method))))
+            (.catch (fn [err]
+                      (when-not (= (.-message err) "biometric-not-available")
+                        (log/error "Failed to check if biometrics is available"
+                                   {:error   err
+                                    :key-uid key-uid
+                                    :event   :profile.login/check-biometric}))))))))))

@@ -384,7 +384,6 @@
 (def ^:const biometrics-type-face-id :FaceID)
 
 ;; NOTE react-native-biometrics error codes are bleh
-(def ^:const biometric-error-user-canceled "User cancellation")
 (def ^:const biometric-error-not-available "Biometric hardware unavailable")
 (def ^:const biometric-error-not-enrolled "No fingerprints enrolled.")
 

@@ -1,6 +1,6 @@
 (ns status-im.common.standard-authentication.standard-auth.authorize
   (:require
-    [react-native.touch-id :as biometric]
+    [react-native.biometrics :as biometrics]
     [status-im.common.standard-authentication.enter-password.view :as enter-password]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -39,25 +39,27 @@
         ; to retrigger biometric auth, so they can endlessly repeat this cycle.
         biometrics-login    (fn [on-press-biometrics]
                               (rf/dispatch [:dismiss-keyboard])
-                              (biometric/authenticate
-                               {:reason     (i18n/label :t/biometric-auth-confirm-message)
-                                :on-success (fn [_response]
-                                              (on-close)
-                                              (rf/dispatch [:standard-auth/on-biometric-success
-                                                            (handle-auth-success true)]))
-                                :on-fail    (fn [error]
-                                              (on-close)
-                                              (log/error "Authentication Failed. Error:" error)
-                                              (when on-auth-fail (on-auth-fail error))
-                                              (password-login {:on-press-biometrics
-                                                               #(on-press-biometrics
-                                                                 on-press-biometrics)}))}))]
+                              (biometrics/authenticate
+                               {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
+                                :on-success     (fn [not-canceled?]
+                                                  (on-close)
+                                                  (when not-canceled?
+                                                    (rf/dispatch [:standard-auth/on-biometric-success
+                                                                  (handle-auth-success true)])))
+                                :on-fail        (fn [error]
+                                                  (on-close)
+                                                  (log/error "Authentication Failed. Error:" error)
+                                                  (when on-auth-fail (on-auth-fail error))
+                                                  (password-login {:on-press-biometrics
+                                                                   #(on-press-biometrics
+                                                                     on-press-biometrics)}))}))]
     (if biometric-auth?
-      (biometric/get-supported-type
-       (fn [biometric-type]
-         (if biometric-type
-           (biometrics-login biometrics-login)
-           (do
-             (reset-password)
-             (password-login {})))))
+      (-> (biometrics/get-supported-type)
+          (.then (fn [biometric-type]
+                   (if biometric-type
+                     (biometrics-login biometrics-login)
+                     (do
+                       (reset-password)
+                       (password-login {})))))
+          (.catch #(password-login {})))
       (password-login {}))))

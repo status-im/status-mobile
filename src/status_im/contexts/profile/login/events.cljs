@@ -16,7 +16,6 @@
     [status-im.common.log :as logging]
     [status-im.common.universal-links :as universal-links]
     [status-im.config :as config]
-    [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as contacts]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview]
     [status-im.contexts.profile.config :as profile.config]
@@ -178,11 +177,11 @@
 (rf/defn login-with-biometric-if-available
   {:events [:profile.login/login-with-biometric-if-available]}
   [_ key-uid]
-  {:keychain/get-auth-method [key-uid
-                              #(rf/dispatch [:profile.login/get-auth-method-success % key-uid])]})
+  {:biometric/check-if-available [key-uid
+                                  #(rf/dispatch [:profile.login/check-biometric-success % key-uid])]})
 
-(rf/defn get-auth-method-success
-  {:events [:profile.login/get-auth-method-success]}
+(rf/defn check-biometric-success
+  {:events [:profile.login/check-biometric-success]}
   [{:keys [db]} auth-method key-uid]
   (merge {:db (assoc db :auth-method auth-method)}
          (when (= auth-method keychain/auth-method-biometric)
@@ -194,7 +193,6 @@
                                         :on-fail    #(rf/dispatch
                                                       [:profile.login/biometric-auth-fail %])}]))}})))
 
-;; result of :keychain/get-auth-method above
 (rf/defn get-user-password-success
   {:events [:profile.login/get-user-password-success]}
   [{:keys [db] :as cofx} password]
