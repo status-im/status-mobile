@@ -127,16 +127,19 @@
 (defn- header-icon
   [{:keys [share-qr-type customization-color emoji profile-picture full-name]}]
   (case share-qr-type
-    :profile [user-avatar/user-avatar {:size              :small
-                                       :status-indicator? false
-                                       :profile-picture   profile-picture
-                                       :customization-color customization-color}]
-    (:wallet :watched-address)  [account-avatar/view {:customization-color customization-color
-                                                      :emoji               emoji
-                                                      :size                32}]
-    :saved-address [wallet-user-avatar/wallet-user-avatar {:size :size-32
-                                                           :customization-color customization-color
-                                                           :full-name full-name}]
+    :profile                   [user-avatar/user-avatar
+                                {:size                :small
+                                 :status-indicator?   false
+                                 :profile-picture     profile-picture
+                                 :customization-color customization-color}]
+    (:wallet :watched-address) [account-avatar/view
+                                {:customization-color customization-color
+                                 :emoji               emoji
+                                 :size                32}]
+    :saved-address             [wallet-user-avatar/wallet-user-avatar
+                                {:size                :size-32
+                                 :customization-color customization-color
+                                 :full-name           full-name}]
     nil))
 
 (defn- share-qr-code

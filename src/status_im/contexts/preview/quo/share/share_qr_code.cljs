@@ -45,8 +45,8 @@
    (preview/customization-color-option)])
 
 (def wallet-descriptor
-  [{:key :address
-    :type :select
+  [{:key     :address
+    :type    :select
     :options [{:key :legacy}
               {:key :multichain}]}
    {:key     :emoji
@@ -58,16 +58,16 @@
    (preview/customization-color-option)])
 
 (def saved-address-descriptor
-  [{:key :address
-    :type :select
+  [{:key     :address
+    :type    :select
     :options [{:key :legacy}
               {:key :multichain}]}
    networks-selector
    (preview/customization-color-option)])
 
 (def watched-address-descriptor
-  [{:key :address
-    :type :select
+  [{:key     :address
+    :type    :select
     :options [{:key :legacy}
               {:key :multichain}]}
    {:key     :emoji
@@ -119,7 +119,8 @@
                              :on-settings-press   #(js/alert "Settings pressed")})
         _ (add-watch state :change set-qr-data-based-on-type)]
     (fn []
-      (let [qr-url              (if (and (= (:address @state) :multichain) (not= (:type @state) :profile))
+      (let [qr-url              (if (and (= (:address @state) :multichain)
+                                         (not= (:type @state) :profile))
                                   (as-> (:networks @state) $
                                     (map get-network-short-name-url $)
                                     (apply str $)
@@ -132,9 +133,9 @@
                                   :error-level :highest})
             typed-descriptor    (concat descriptor
                                         (case (:type @state)
-                                          :profile           profile-descriptor
-                                          :wallet wallet-descriptor
-                                          :saved-address saved-address-descriptor
+                                          :profile         profile-descriptor
+                                          :wallet          wallet-descriptor
+                                          :saved-address   saved-address-descriptor
                                           :watched-address watched-address-descriptor
                                           nil))]
         [preview/preview-container
