@@ -519,8 +519,6 @@ PODS:
   - SocketRocket (0.6.1)
   - SSZipArchive (2.4.3)
   - TOCropViewController (2.6.1)
-  - TouchID (4.4.1):
-    - React
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -606,7 +604,6 @@ DEPENDENCIES:
   - RNSVG (from `../node_modules/react-native-svg`)
   - secp256k1 (from `https://github.com/status-im/secp256k1.swift.git`)
   - SSZipArchive (= 2.4.3)
-  - TouchID (from `../node_modules/react-native-touch-id`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -783,8 +780,6 @@ EXTERNAL SOURCES:
   secp256k1:
     :git: https://github.com/status-im/secp256k1.swift.git
     :submodules: true
-  TouchID:
-    :path: "../node_modules/react-native-touch-id"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -887,7 +882,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
-  TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
 
 PODFILE CHECKSUM: 3f98ce893757dfa17e609ef7cd24fa41635b73a6
