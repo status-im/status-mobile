@@ -43,7 +43,7 @@
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (reset! selected-networks (map #(get utils/id->network %)
                                                                          chain-ids)))}])}]))
-(defn wallet-qr-code-item
+(defn- wallet-qr-code-item
   [account width index]
   (let [selected-networks (reagent/atom [:ethereum :optimism :arbitrum])
         wallet-type       (reagent/atom :wallet-legacy)]
@@ -73,18 +73,66 @@
             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
             :on-settings-press   #(open-preferences @selected-networks)}]]]))))
 
+(defn- indicator
+  [is-active]
+  [rn/view
+   {:style {:width           8
+            :height          8
+            :borderRadius    4
+            :backgroundColor :white
+            :opacity         (if is-active 1.0 0.5)}}])
+
+(defn- indicator-list
+  [n current-index]
+  [rn/view
+   {:style {:display         :flex
+            :flex-direction  :row
+            :align-items     :center
+            :justify-content :center
+            :gap             8}}
+   (for [i (range n)]
+     ^{:key i} [indicator (= current-index i)])])
+
+(defn- render-item
+  [_]
+  (let [width (rf/sub [:dimensions/window-width])]
+    (reagent/create-class
+     {:should-component-update
+      (fn [_ [_ old-item] [_ new-item]]
+        (not= old-item new-item))
+      :reagent-render
+      (fn [item index]
+        [wallet-qr-code-item item width index])})))
+
 (defn wallet-tab
   []
-  (let [accounts (rf/sub [:wallet/accounts])
-        width    (rf/sub [:dimensions/window-width])]
-    [rn/flat-list
-     {:horizontal                true
-      :deceleration-rate         0.9
-      :snap-to-alignment         "start"
-      :snap-to-interval          (- width 30)
-      :disable-interval-momentum true
-      :scroll-event-throttle     64
-      :data                      accounts
-      :directional-lock-enabled  true
-      :render-fn                 (fn [account index]
-                                   (wallet-qr-code-item account width index))}]))
+  (let [accounts      (rf/sub [:wallet/accounts])
+        width         (rf/sub [:dimensions/window-width])
+        current-index (reagent/atom 0)]
+    (fn []
+      [rn/view
+       [rn/flat-list
+        {:horizontal                        true
+         :deceleration-rate                 0.9
+         :snap-to-alignment                 "start"
+         :snap-to-interval                  (- width 30)
+         :disable-interval-momentum         true
+         :scroll-event-throttle             64
+         :data                              accounts
+         :directional-lock-enabled          true
+         :paging-enabled                    true
+         :shows-horizontal-scroll-indicator false
+         :key-extractor                     (fn [item]
+                                              (:emoji item))
+         :on-scroll                         (fn [e]
+                                              (reset! current-index (js/Math.ceil
+                                                                     (/ e.nativeEvent.contentOffset.x
+                                                                        width))))
+         :render-fn                         render-item}]
+       [rn/view
+        {:style {:margin-top 20}}
+        (indicator-list (count accounts) @current-index)]]
+    )))
+
+
+
