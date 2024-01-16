@@ -45,8 +45,8 @@
 (rf/defn show-message
   {:events [:biometric/show-message]}
   [_ code]
-  (let [content (if (#{constants/biometric-error-not-available
-                       constants/biometric-error-not-enrolled}
+  (let [content (if (#{biometrics/biometric-error-not-available
+                       biometrics/biometric-error-not-enrolled}
                      code)
                   (i18n/label :t/grant-face-id-permissions)
                   (i18n/label :t/biometric-auth-error {:code code}))]

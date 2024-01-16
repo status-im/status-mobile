@@ -383,10 +383,6 @@
 (def ^:const biometrics-type-touch-id :TouchID)
 (def ^:const biometrics-type-face-id :FaceID)
 
-;; NOTE react-native-biometrics error codes are bleh
-(def ^:const biometric-error-not-available "Biometric hardware unavailable")
-(def ^:const biometric-error-not-enrolled "No fingerprints enrolled.")
-
 (def ^:const onboarding-generating-keys-animation-duration-ms 7000)
 (def ^:const onboarding-generating-keys-navigation-retry-ms 3000)
 

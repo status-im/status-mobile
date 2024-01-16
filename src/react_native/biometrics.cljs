@@ -1,8 +1,13 @@
 (ns react-native.biometrics
   (:require
     ["react-native-biometrics" :default biometrics]
+    [clojure.string :as string]
     [oops.core :as oops]
+    [react-native.platform :as platform]
     [schema.core :as schema]))
+
+(def ^:const biometric-error-not-available "biometric-not-available")
+(def ^:const biometric-error-not-enrolled "biometric-not-enrolled")
 
 (defn get-supported-type
   "Returns a JS promise that resolves with the biometrics types supported by the
@@ -28,7 +33,21 @@
       (.then (fn [result]
                (oops/oget result "available")))))
 
-(def ^:private ^:const biometric-error-user-canceled "User cancellation")
+;; NOTE: the react-native-biometry package error codes/messages differ across platforms.
+;; On android we get error messages while on iOS it's a stringified Obj-C error object.
+(defn- convert-auth-error-message
+  [code]
+  (letfn [(includes? [substring string]
+            (string/includes? string substring))]
+    (if platform/android?
+      (condp = code
+        "No fingerprints enrolled."      biometric-error-not-enrolled
+        "Biometric hardware unavailable" biometric-error-not-available
+        code)
+
+      (condp includes? code
+        "No identities are enrolled" biometric-error-not-enrolled
+        code))))
 
 (defn authenticate
   "Returns a JS promise that resolves with a boolean auth success state: `true` for
@@ -40,15 +59,12 @@
                        "fallbackPromptMessage" fallback-prompt-message
                        "cancelButtonText"      cancel-button-text})
       (.then (fn [result]
-               (let [result  (js->clj result)
-                     success (get result "success")
-                     error   (get result "error")]
-                 ;; NOTE: currently `error` is only present for the user cancellation case,
-                 ;; so putting this here for the future in case they add other errors
-                 ;; instead of rejecting.
-                 (when (and error (not= error biometric-error-user-canceled))
-                   (throw error))
-                 success)))))
+               (-> result js->clj (get "success"))))
+      (.catch (fn [error]
+                (-> (.-message error)
+                    convert-auth-error-message
+                    js/Error
+                    throw)))))
 
 (schema/=> authenticate
   [:=>
