@@ -84,7 +84,7 @@
          :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
         {:icon                :i/share
          :accessibility-label :share-account
-         :label               (i18n/label :t/share-account)
+         :label               (i18n/label :t/share-address)
          :on-press            (fn []
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (js/setTimeout
