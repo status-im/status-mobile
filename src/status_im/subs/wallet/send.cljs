@@ -13,3 +13,8 @@
  :wallet/wallet-send
  :<- [:wallet/ui]
  :-> :send)
+
+(rf/reg-sub
+ :wallet/wallet-send-recipient
+ :<- [:wallet/wallet-send]
+ :-> :recipient)

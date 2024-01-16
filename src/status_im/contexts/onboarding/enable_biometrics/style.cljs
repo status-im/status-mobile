@@ -2,6 +2,10 @@
 
 (def default-margin 20)
 
+(def title-container
+  {:margin-horizontal 20
+   :padding-vertical  12})
+
 (defn page-container
   [insets]
   {:flex            1
@@ -10,8 +14,10 @@
 
 (defn page-illustration
   [width]
-  {:flex  1
-   :width width})
+  {:flex           1
+   :padding-top    12
+   :padding-bottom 10
+   :width          width})
 
 (defn buttons
   [insets]

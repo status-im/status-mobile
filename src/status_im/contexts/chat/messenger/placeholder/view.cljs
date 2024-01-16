@@ -5,7 +5,7 @@
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im.contexts.chat.messenger.placeholder.style :as style]
-    [utils.worklets.chat.messages :as worklets]))
+    [utils.worklets.chat.messenger.placeholder :as worklets]))
 
 (defn- loading-skeleton
   []

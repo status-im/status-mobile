@@ -24,11 +24,13 @@
 (defn- address-input
   [input-value input-focused?]
   (fn []
-    (let [scanned-address       (rf/sub [:wallet/scanned-address])
-          send-address          (rf/sub [:wallet/wallet-send-to-address])
-          valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])
-          chain-id              (rf/sub [:chain-id])
-          contacts              (rf/sub [:contacts/active])]
+    (let [scanned-address          (rf/sub [:wallet/scanned-address])
+          send-address             (rf/sub [:wallet/wallet-send-to-address])
+          recipient                (rf/sub [:wallet/wallet-send-recipient])
+          recipient-plain-address? (= send-address recipient)
+          valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
+          chain-id                 (rf/sub [:chain-id])
+          contacts                 (rf/sub [:contacts/active])]
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
@@ -37,7 +39,7 @@
                                  (rf/dispatch [:open-modal :scan-address]))
         :ens-regex             constants/regx-ens
         :address-regex         constants/regx-address
-        :scanned-value         (or send-address scanned-address)
+        :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :on-detect-address     #(debounce/debounce-and-dispatch
                                  [:wallet/validate-address %]
                                  300)
@@ -80,8 +82,9 @@
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
                                       (rf/dispatch [:wallet/select-send-address
-                                                    {:address  address
-                                                     :stack-id :wallet-select-address}]))))
+                                                    {:address   address
+                                                     :recipient local-suggestion
+                                                     :stack-id  :wallet-select-address}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -117,8 +120,8 @@
   (let [on-close       (fn []
                          (rf/dispatch [:wallet/clean-scanned-address])
                          (rf/dispatch [:wallet/clean-local-suggestions])
-                         (rf/dispatch [:wallet/clean-account-selection])
                          (rf/dispatch [:wallet/clean-selected-token])
+                         (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/select-address-tab nil])
                          (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
@@ -131,8 +134,7 @@
         (rn/use-effect (fn []
                          (fn []
                            (rf/dispatch [:wallet/clean-scanned-address])
-                           (rf/dispatch [:wallet/clean-local-suggestions])
-                           (rf/dispatch [:wallet/clean-account-selection]))))
+                           (rf/dispatch [:wallet/clean-local-suggestions]))))
         [floating-button-page/view
          {:header [account-switcher/view
                    {:on-press      on-close
