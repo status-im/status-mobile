@@ -97,7 +97,6 @@
    (get-user-password! key-uid callback)))
 
 (rf/defn get-user-password
-  {:events [:keychain/get-user-password]}
   [_ [key-uid callback]]
   {:keychain/get-user-password [key-uid callback]})
 

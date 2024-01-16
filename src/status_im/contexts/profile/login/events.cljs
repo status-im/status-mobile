@@ -207,9 +207,8 @@
  :profile.login/biometric-success
  (fn [{:keys [db]}]
    (let [key-uid (get-in db [:profile/login :key-uid])]
-     {:db       db
-      :dispatch [:keychain/get-user-password
-                 [key-uid #(rf/dispatch [:profile.login/get-user-password-success %])]]})))
+     {:keychain/get-user-password [key-uid
+                                   #(rf/dispatch [:profile.login/get-user-password-success %])]})))
 
 (rf/reg-event-fx
  :profile.login/biometric-auth-fail
