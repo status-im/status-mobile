@@ -12,9 +12,10 @@
   [{:keys [color address] :as account}]
   [quo/account-item
    {:account-props (assoc account :customization-color color)
-    :on-press      #(rf/dispatch [:wallet/select-send-account-address
-                                  {:address  address
-                                   :stack-id :wallet-select-address}])}])
+    :on-press      #(rf/dispatch [:wallet/select-send-address
+                                  {:address   address
+                                   :recipient account
+                                   :stack-id  :wallet-select-address}])}])
 
 (defn my-accounts
   [theme]

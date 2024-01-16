@@ -20,9 +20,9 @@
   []
   (let [state                (reagent/atom {:type      :status-account
                                             :networks? true
-                                            :values    {:ethereum 150
-                                                        :optimism 50
-                                                        :arbitrum 25}})
+                                            :values    {:ethereum {:amount 150}
+                                                        :optimism {:amount 50}
+                                                        :arbitrum {:amount 25}}})
         status-account-props {:customization-color :purple
                               :size                32
                               :emoji               "🍑"
