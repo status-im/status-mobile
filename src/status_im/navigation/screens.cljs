@@ -41,6 +41,7 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
+    [status-im.contexts.shell.scan.view :as shell-scan]
     [status-im.contexts.shell.share.view :as share]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
@@ -84,6 +85,12 @@
 
     {:name      :shell-stack
      :component shell/shell-stack}
+
+    {:name      :shell-scan-qr
+     :options   (merge
+                 options/dark-screen
+                 {:modalPresentationStyle :overCurrentContext})
+     :component shell-scan/view}
 
     {:name      :chat
      :options   {:insets     {:top? true}

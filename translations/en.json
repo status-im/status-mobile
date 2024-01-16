@@ -2432,6 +2432,7 @@
     "est-time": "Est. time",
     "user-gets": "{{name}} gets",
     "slide-to-send": "Slide to send",
+    "oops-qr-does-not-work": "Oops! This QR doesn’t work with Status",
     "this-address-has-activity": "This address has activity",
     "generate-new-keypair": "Generate new keypair",
     "import-using-phrase": "Import using recovery phrase",

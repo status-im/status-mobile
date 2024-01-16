@@ -247,10 +247,12 @@
       :zoom-mode    :off
       :torch-mode   torch-mode
       :scan-barcode true
-      :on-read-code #(when scan-code?
-                       (check-qr-code-and-navigate {:event           %
-                                                    :on-success-scan set-qr-code-succeeded
-                                                    :on-failed-scan  set-rescan-timeout}))}]]
+      :on-read-code (fn [a]
+                      (prn "=========")
+                      (when scan-code?
+                        (check-qr-code-and-navigate {:event           a
+                                                     :on-success-scan set-qr-code-succeeded
+                                                     :on-failed-scan  set-rescan-timeout})))}]]
    [hole-view/hole-view
     {:style style/hole
      :holes [(assoc qr-view-finder :borderRadius 16)]}

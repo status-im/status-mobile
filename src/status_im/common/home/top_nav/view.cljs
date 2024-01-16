@@ -34,7 +34,7 @@
                                            nil)]
     [quo/top-nav
      {:avatar-on-press          #(rf/dispatch [:open-modal :settings])
-      :scan-on-press            #(js/alert "to be implemented")
+      :scan-on-press            #(rf/dispatch [:open-modal :shell-scan-qr])
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
       :qr-code-on-press         #(dispatch-and-chill [:open-modal :share-shell] 1000)
       :container-style          (merge style/top-nav-container container-style)

@@ -58,6 +58,7 @@
                                                       set-code]))]
     (fn []
       [rn/view {:style style/container-main}
+       (prn @code)
        [:f> f-use-interval clock cleanup-clock @delay-ms]
        [rn/scroll-view {}
         [quo/page-nav
