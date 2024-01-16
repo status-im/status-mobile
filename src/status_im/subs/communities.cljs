@@ -87,12 +87,14 @@
 
 (re-frame/reg-sub
  :communities/sorted-community-members-section-list
- (fn [[_ community-id]]
+ (fn [[_ community-id chat-id]]
    (let [profile         (re-frame/subscribe [:profile/profile])
          members         (re-frame/subscribe [:communities/community-members community-id])
-         active-contacts (re-frame/subscribe [:contacts/active])]
-     [profile members active-contacts]))
- (fn [[profile members active-contacts] _]
+         active-contacts (re-frame/subscribe [:contacts/active])
+         chat-members    (re-frame/subscribe [:chats/chat-members-by-id chat-id])]
+     [profile members active-contacts chat-members]))
+ (fn [[profile members active-contacts chat-members] _]
+   (prn chat-members "mega")
    (let [names (reduce (fn [acc contact-identity]
                          (assoc acc
                                 contact-identity
@@ -101,19 +103,51 @@
                                   contact-identity)))
                        {}
                        (keys members))]
-     (->> members
-          (sort-by #(get names (get % 0)))
-          (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))
-          reverse
-          (mapv (fn [item]
-                  (when-not (= (:public-key profile) (key item))
-                    {:title (if (some #(and (= (key item) (:public-key %))
-                                            (:active? %))
-                                      active-contacts)
-                              :Offline
-                              :Online)
-                     :data  {:public-key (key item)}})))
-          (remove #(nil? %))))))
+     (prn (->> members
+               (sort-by #(get names (get % 0)))
+               keys
+               (group-by (fn [item]
+                           (some (fn [current-item]
+                                   (and
+                                    (:active? current-item)
+                                    (= item (:public-key current-item))))
+                                 active-contacts)))
+               reverse
+               (map (fn [[k v]]
+                      {:title (if-not k :Online :Offline)
+                       :data  (->> v
+                                   flatten)}))))
+     '({:title :Online
+        :data
+        ("0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22"
+         "0x044a9af39e538d20c0f550f34314f72676c25f090cf6cbd14d7bc38c6d18f0f118b7508005a1c9a509976f4478c5396555f13689b8ae7bb89bbb206ea24b603f22")}
+       {:title :Offline
+        :data
+        ("0x0404c24d7ced5138ea82c5d26bdcf7f8f225499648a106fbf5e60f4db2326378fdb0f8c8d70621c78b8d83170464d5eb4db6ee6fdbcd2a08d8a1125aef83e535ca"
+         "0x0404c24d7ced5138ea82c5d26bdcf7f8f225499648a106fbf5e60f4db2326378fdb0f8c8d70621c78b8d83170464d5eb4db6ee6fdbcd2a08d8a1125aef83e535ca"
+         "0x0404c24d7ced5138ea82c5d26bdcf7f8f225499648a106fbf5e60f4db2326378fdb0f8c8d70621c78b8d83170464d5eb4db6ee6fdbcd2a08d8a1125aef83e535ca"
+         "0x0404c24d7ced5138ea82c5d26bdcf7f8f225499648a106fbf5e60f4db2326378fdb0f8c8d70621c78b8d83170464d5eb4db6ee6fdbcd2a08d8a1125aef83e535ca"
+         "0x04673a37eee7ec6cb2e30747d06d91d5548824fe64bf996646e205371a8b1b8a70e36fbda25abad6fe9b1052a0cb984229f7036f38908107c3ab6d2e14b864a52d")})
+     #_(->> members
+            (sort-by #(get names (get % 0)))
+            keys
+            (group-by (fn [item]
+                        (some (fn [current-item]
+                                (and
+                                 (:active? current-item)
+                                 (= item (:public-key current-item))))
+                              active-contacts)))
+            reverse
+            (map (fn [[k v]]
+                   {:title (if-not k :Online :Offline)
+                    :data  (->> v
+                                flatten)}))))))
 
 (re-frame/reg-sub
  :communities/featured-contract-communities

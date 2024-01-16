@@ -1,18 +1,15 @@
 (ns status-im.contexts.communities.actions.channel-view-details.view
-  (:require [oops.core :as oops]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [status-im.common.contact-list-item.view :as contact-list-item]
             [status-im.common.contact-list.view :as contact-list]
             [status-im.common.home.actions.view :as home.actions]
-            [status-im.common.home.banner.view :as common.banner]
-            [status-im.contexts.chat.messenger.lightbox.view :refer [get-item-layout]]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn contact-item-render
-  [[_ public-key]]
+  [public-key]
   (let [show-profile-actions          #(rf/dispatch [:show-bottom-sheet
                                                      {:content (fn [] [home.actions/contact-actions
                                                                        {:public-key public-key}])}])
@@ -30,22 +27,29 @@
       :added?         added?}
      {:public-key public-key}]))
 
-(defn contacts
-  [{:keys [theme]}]
+(defn footer []
+  [rn/view {:style {:margin-top 8}}])
+
+(defn members
+  [{:keys [theme chat-id]}]
   (let [{:keys [community-id]} (rf/sub [:get-screen-params])
-        items                  (rf/sub [:communities/sorted-community-members-section-list community-id])]
+        items                  (rf/sub [:communities/sorted-community-members-section-list
+                                        community-id chat-id])]
     [rn/section-list
      {:key-fn                            :public-key
-      :get-item-layout                   get-item-layout
+      :content-container-style           {:padding-bottom 20}
+      :get-item-layout                   (fn [_ index]
+                                           #js
+                                            {:length 200
+                                             :offset (* 200 index)
+                                             :index  index})
       :content-inset-adjustment-behavior :never
       :sections                          items
       :sticky-section-headers-enabled    false
       :render-section-header-fn          contact-list/contacts-section-header
+      :render-section-footer-fn          footer
       :render-fn                         contact-item-render
-      :scroll-event-throttle             8
-      :on-scroll                         #(common.banner/set-scroll-shared-value
-                                           {:scroll-input (oops/oget %
-                                                                     "nativeEvent.contentOffset.y")})}]))
+      :scroll-event-throttle             8}]))
 
 (defn f-view
   [{:keys [theme chat-id]}]
@@ -53,7 +57,7 @@
                 chat-type]} (rf/sub [:chats/chat-by-id
                                      chat-id])
         pins-count          (rf/sub [:chats/pin-messages-count chat-id])]
-    [rn/view
+    [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:background :blur
        :icon-name  :i/arrow-left
@@ -90,7 +94,9 @@
                                 (if muted
                                   (home.actions/unmute-chat-action chat-id)
                                   (home.actions/mute-chat-action chat-id chat-type muted)))}]}]]]
-                                  [contacts {:theme theme}]]))
+     [members
+      {:theme      theme
+       :chat-id chat-id}]]))
 
 (defn internal-view
   [args]
