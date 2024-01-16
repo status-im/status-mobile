@@ -101,7 +101,7 @@
                              {})})
 
 (def dark-screen
-  (merge (statusbar true)
+  (merge (statusbar-and-navbar-root)
          {:theme  :dark
           :layout {:componentBackgroundColor colors/neutral-95
                    :orientation              ["portrait"]
