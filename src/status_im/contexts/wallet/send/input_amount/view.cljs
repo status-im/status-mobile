@@ -164,16 +164,7 @@
            :left-action     :dot
            :delete-key?     true
            :on-press        handle-keyboard-press
-<<<<<<< HEAD
-<<<<<<< HEAD
            :on-delete       handle-delete}]]))))
-=======
-           :on-delete       handle-delete}]]
-      ))))
->>>>>>> a8d136405 (loading routes ui)
-=======
-           :on-delete       handle-delete}]]))))
->>>>>>> 68beef68f (loading routes ui)
 
 (defn- view-internal
   [props]

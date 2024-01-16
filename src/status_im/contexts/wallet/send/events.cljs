@@ -45,6 +45,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
@@ -58,6 +59,8 @@
 >>>>>>> a910a8624 (updates)
 =======
 >>>>>>> a8d136405 (loading routes ui)
+=======
+>>>>>>> 56cce6c62 (review)
 (rf/reg-event-fx :wallet/select-send-account-address
  (fn [{:keys [db]} [{:keys [address stack-id]}]]
    {:db (-> db
