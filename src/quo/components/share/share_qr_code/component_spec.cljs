@@ -20,13 +20,43 @@
         (h/is-truthy (h/get-by-text qr-label)))
 
       (h/test "Wallet Legacy"
-        (render-share-qr-code {:type    :wallet-legacy
+        (render-share-qr-code {:type    :wallet
+                               :address :legacy
                                :qr-data qr-label
                                :emoji   "👻"})
         (h/is-truthy (h/get-by-text qr-label)))
 
-      (h/test "Wallet Multichain"
-        (render-share-qr-code {:type    :wallet-multichain
+      (h/test "Wallet multichain"
+        (render-share-qr-code {:type    :wallet
+                               :address :multichain
+                               :qr-data qr-label
+                               :emoji   "👻"})
+        (h/is-truthy (h/get-by-text qr-label)))
+
+      (h/test "Saved address legacy"
+        (render-share-qr-code {:type      :saved-address
+                               :address   :legacy
+                               :qr-data   qr-label
+                               :full-name "John Doe"})
+        (h/is-truthy (h/get-by-text qr-label)))
+
+      (h/test "Saved address multichain"
+        (render-share-qr-code {:type    :saved-address
+                               :address :multichain
+                               :qr-data qr-label
+                               :emoji   "👻"})
+        (h/is-truthy (h/get-by-text qr-label)))
+
+      (h/test "Watched address legacy"
+        (render-share-qr-code {:type    :watched-address
+                               :address :legacy
+                               :qr-data qr-label
+                               :emoji   "👻"})
+        (h/is-truthy (h/get-by-text qr-label)))
+
+      (h/test "Watched address multichain"
+        (render-share-qr-code {:type    :watched-address
+                               :address :multichain
                                :qr-data qr-label
                                :emoji   "👻"})
         (h/is-truthy (h/get-by-text qr-label)))))
@@ -60,7 +90,7 @@
 
       (h/describe "Wallet Legacy"
         (test-fire-events
-         {:type :wallet-legacy :emoji "👽"}
+         {:type :wallet :address :legacy :emoji "👽"}
          [{:test-name           "Text pressed"
            :accessibility-label :share-qr-code-info-text
            :event-name          :press
@@ -84,7 +114,111 @@
 
       (h/describe "Wallet Multichain"
         (test-fire-events
-         {:type :wallet-multichain :emoji "👽"}
+         {:type :wallet :address :multichain :emoji "👽"}
+         [{:test-name           "Text pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :press
+           :callback-prop-key   :on-text-press}
+          {:test-name           "Text long pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :long-press
+           :callback-prop-key   :on-text-long-press}
+          {:test-name           "Share button pressed"
+           :accessibility-label :link-to-profile
+           :event-name          :press
+           :callback-prop-key   :on-share-press}
+          {:test-name           "Legacy tab pressed"
+           :accessibility-label :share-qr-code-legacy-tab
+           :event-name          :press
+           :callback-prop-key   :on-legacy-press}
+          {:test-name           "Multichain tab pressed"
+           :accessibility-label :share-qr-code-multichain-tab
+           :event-name          :press
+           :callback-prop-key   :on-multichain-press}
+          {:test-name           "Settings pressed"
+           :accessibility-label :share-qr-code-settings
+           :event-name          :press
+           :callback-prop-key   :on-settings-press}]))
+
+      (h/describe "Saved Address Legacy"
+        (test-fire-events
+         {:type :saved-address :address :legacy :full-name "John Doe"}
+         [{:test-name           "Text pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :press
+           :callback-prop-key   :on-text-press}
+          {:test-name           "Text long pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :long-press
+           :callback-prop-key   :on-text-long-press}
+          {:test-name           "Share button pressed"
+           :accessibility-label :link-to-profile
+           :event-name          :press
+           :callback-prop-key   :on-share-press}
+          {:test-name           "Legacy tab pressed"
+           :accessibility-label :share-qr-code-legacy-tab
+           :event-name          :press
+           :callback-prop-key   :on-legacy-press}
+          {:test-name           "Multichain tab pressed"
+           :accessibility-label :share-qr-code-multichain-tab
+           :event-name          :press
+           :callback-prop-key   :on-multichain-press}]))
+
+      (h/describe "Saved Address Multichain"
+        (test-fire-events
+         {:type :saved-address :address :multichain :fullname "John Doe"}
+         [{:test-name           "Text pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :press
+           :callback-prop-key   :on-text-press}
+          {:test-name           "Text long pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :long-press
+           :callback-prop-key   :on-text-long-press}
+          {:test-name           "Share button pressed"
+           :accessibility-label :link-to-profile
+           :event-name          :press
+           :callback-prop-key   :on-share-press}
+          {:test-name           "Legacy tab pressed"
+           :accessibility-label :share-qr-code-legacy-tab
+           :event-name          :press
+           :callback-prop-key   :on-legacy-press}
+          {:test-name           "Multichain tab pressed"
+           :accessibility-label :share-qr-code-multichain-tab
+           :event-name          :press
+           :callback-prop-key   :on-multichain-press}
+          {:test-name           "Settings pressed"
+           :accessibility-label :share-qr-code-settings
+           :event-name          :press
+           :callback-prop-key   :on-settings-press}]))
+
+      (h/describe "Watched Address Legacy"
+        (test-fire-events
+         {:type :watched-address :address :legacy :emoji "👽"}
+         [{:test-name           "Text pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :press
+           :callback-prop-key   :on-text-press}
+          {:test-name           "Text long pressed"
+           :accessibility-label :share-qr-code-info-text
+           :event-name          :long-press
+           :callback-prop-key   :on-text-long-press}
+          {:test-name           "Share button pressed"
+           :accessibility-label :link-to-profile
+           :event-name          :press
+           :callback-prop-key   :on-share-press}
+          {:test-name           "Legacy tab pressed"
+           :accessibility-label :share-qr-code-legacy-tab
+           :event-name          :press
+           :callback-prop-key   :on-legacy-press}
+          {:test-name           "Multichain tab pressed"
+           :accessibility-label :share-qr-code-multichain-tab
+           :event-name          :press
+           :callback-prop-key   :on-multichain-press}]))
+
+      (h/describe "Watched Address Multichain"
+        (test-fire-events
+         {:type :watched-address :address :multichain :emoji "👽"}
          [{:test-name           "Text pressed"
            :accessibility-label :share-qr-code-info-text
            :event-name          :press
