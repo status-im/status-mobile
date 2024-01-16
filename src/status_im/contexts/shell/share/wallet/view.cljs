@@ -120,10 +120,7 @@
          :scroll-event-throttle             64
          :data                              accounts
          :directional-lock-enabled          true
-         :paging-enabled                    true
          :shows-horizontal-scroll-indicator false
-         :key-extractor                     (fn [item]
-                                              (:emoji item))
          :on-scroll                         (fn [e]
                                               (reset! current-index (js/Math.ceil
                                                                      (/ e.nativeEvent.contentOffset.x
@@ -131,8 +128,4 @@
          :render-fn                         render-item}]
        [rn/view
         {:style {:margin-top 20}}
-        (indicator-list (count accounts) @current-index)]]
-    )))
-
-
-
+        (indicator-list (count accounts) @current-index)]])))
