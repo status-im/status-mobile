@@ -179,6 +179,7 @@
     "<$0.01"
     (prettify-balance currency-symbol fiat-value)))
 
+
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]

@@ -21,7 +21,12 @@
 (def collectible-image
   {:width         24
    :height        24
-   :border-radius 10})
+   :border-radius 8})
+
+(def network
+  {:width         24
+   :height        24
+   :border-radius 12})
 
 (def token-image
   {:border-radius 12})
