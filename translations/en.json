@@ -2319,6 +2319,7 @@
     "empty-tab-description": "C'mon do something...",
     "buy": "Buy",
     "bridge": "Bridge",
+    "bridge-to": "Bridge {{name}} to",
     "on-device": "On device",
     "on-keycard": "On Keycard",
     "keypair-title": "{{name}}'s default keypair",

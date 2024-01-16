@@ -13,6 +13,20 @@
   [item]
   {:source (quo.resources/get-network (:network-name item))})
 
+(defn- bridge-token-component
+  []
+  (fn [token]
+    (let [on-press #(rf/dispatch [:wallet/select-bridge-to
+                                  {:token    token
+                                   :stack-id :wallet-bridge}])]
+      [quo/token-network
+       {:token       (:token token)
+        :label       (:label token)
+        :token-value (:token-value token)
+        :fiat-value  (:fiat-value token)
+        :networks    (:networks token)
+        :on-press    on-press}])))
+
 (defn view
   []
   (let [networks       (rf/sub [:wallet/network-details])
@@ -30,5 +44,5 @@
        :placeholder     (i18n/label :t/search-assets)}]
      [rn/flat-list
       {:data                    (temp/bridge-token-list networks-logos)
-       :render-fn               quo/token-network
+       :render-fn               bridge-token-component
        :content-container-style style/list-content-container}]]))
