@@ -108,6 +108,12 @@
    (get chats chat-id)))
 
 (re-frame/reg-sub
+ :chats/chat-members-by-id
+ :<- [:chats/chats]
+ (fn [chats [_ chat-id]]
+   (get-in chats [chat-id :members])))
+
+(re-frame/reg-sub
  :chats/muted
  (fn [[_ chat-id] _]
    (re-frame/subscribe [:chats/chat-by-id chat-id]))
