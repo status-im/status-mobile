@@ -70,6 +70,7 @@
 
 (rf/reg-event-fx :wallet/select-send-address
 <<<<<<< HEAD
+<<<<<<< HEAD
                  (fn [{:keys [db]} [{:keys [address stack-id]}]]
                    (let [[prefix to-address] (utils/split-prefix-and-address address)]
                      {:db (-> db
@@ -80,10 +81,14 @@
 >>>>>>> 443f27004 (updates)
 =======
  (fn [{:keys [db]} [{:keys [address stack-id]}]]
+=======
+ (fn [{:keys [db]} [{:keys [address token stack-id]}]]
+>>>>>>> d582beba0 (lint)
    (let [[prefix to-address] (utils/split-prefix-and-address address)]
      {:db (-> db
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix))
+<<<<<<< HEAD
       :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]})))
 >>>>>>> 503ffe845 (loading routes ui)
 
@@ -94,6 +99,9 @@
             (assoc-in [:wallet :ui :send :to-address] address))
     :fx [[:navigate-to-within-stack
           (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]}))
+=======
+      :fx [[:navigate-to-within-stack (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]})))
+>>>>>>> d582beba0 (lint)
 
 (rf/reg-event-fx :wallet/send-select-token
 <<<<<<< HEAD

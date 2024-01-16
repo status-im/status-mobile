@@ -14,11 +14,13 @@
     {:amount  amount
      :network from-network
      :status  status}]
-   [quo/network-link
-    {:shape           :linear
-     :source          from-network
-     :destination     to-network
-     :container-style style/network-link}]
+   (if (= status :default)
+     [quo/network-link
+      {:shape           :linear
+       :source          from-network
+       :destination     to-network
+       :container-style style/network-link}]
+     [rn/view {:style {:width 73}}])
    [quo/network-bridge
     {:amount          amount
      :network         to-network
