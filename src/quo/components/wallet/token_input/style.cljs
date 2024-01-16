@@ -24,7 +24,7 @@
           :margin-right (if platform/ios? 6 4)
           :color        (colors/theme-colors colors/neutral-100 colors/white theme)
           :padding      0
-          :text-align   :center
+          :flex         1
           :height       "100%"}))
 
 (defn divider
