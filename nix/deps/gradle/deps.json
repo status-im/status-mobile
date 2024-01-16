@@ -14121,16 +14121,16 @@
   },
 
   {
-    "path": "net/bytebuddy/byte-buddy-agent/1.14.10",
+    "path": "net/bytebuddy/byte-buddy-agent/1.14.11",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "byte-buddy-agent-1.14.10.pom": {
-        "sha1": "ab24aa41b81d9496ec9ccd188a0449327d93bfdf",
-        "sha256": "sha256-U7yX6ca/fC0OX5y6x9Xeaykk2RbPS4F+ajo1kpx5a0o="
+      "byte-buddy-agent-1.14.11.pom": {
+        "sha1": "00a2165ce3253489dd9fd0836a169dfce74e2042",
+        "sha256": "sha256-VBMQ/3WsTurkYFUJn8Ec3b5TqcBe6vry9wMgZQ2zzOk="
       },
-      "byte-buddy-agent-1.14.10.jar": {
-        "sha1": "90ed94ac044ea8953b224304c762316e91fd6b31",
-        "sha256": "sha256-Z5k6idR8pY/4aIAqREjd0VDl/k5aVkXe2ZDXtNVXprk="
+      "byte-buddy-agent-1.14.11.jar": {
+        "sha1": "f9cb566608fbac6bc7bf54901a7aa11543a989ee",
+        "sha256": "sha256-L1N6Yhpk+nAT1oxpWnajTujXna105jXKyhbdViV664A="
       }
     }
   },
@@ -14158,12 +14158,12 @@
   },
 
   {
-    "path": "net/bytebuddy/byte-buddy-parent/1.14.10",
+    "path": "net/bytebuddy/byte-buddy-parent/1.14.11",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "byte-buddy-parent-1.14.10.pom": {
-        "sha1": "4c560a925c30d5911dc875af5af4737e21b397be",
-        "sha256": "sha256-xpghkGD7DlZaDyyWCU6Ssg7+FG/WFjayyeTAO9m6Sns="
+      "byte-buddy-parent-1.14.11.pom": {
+        "sha1": "696bf3e007e88bd1c0c2d877d74e0f3c56f2b96f",
+        "sha256": "sha256-RsDxP8l3jcLrtpdIgjqixMvwfqt9GMaqGRxSnRZQiSs="
       }
     }
   },
@@ -14199,16 +14199,16 @@
   },
 
   {
-    "path": "net/bytebuddy/byte-buddy/1.14.10",
+    "path": "net/bytebuddy/byte-buddy/1.14.11",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "byte-buddy-1.14.10.pom": {
-        "sha1": "8806052a8770a6b3e14362ed0ce6ef263e6a20ab",
-        "sha256": "sha256-zVh4KEX/ju3y7YOgw+30Xu65nhTAWvii6QGGDqCAzq8="
+      "byte-buddy-1.14.11.pom": {
+        "sha1": "5ecfcd2f75aa8c7b6347d864a4d0a5212c360301",
+        "sha256": "sha256-NYRJ1sc1OFhFCN2K5s/eVrr0o0t2e3HZzEZE8PH0IRo="
       },
-      "byte-buddy-1.14.10.jar": {
-        "sha1": "8117daf4a612122eb4f517f66adff778cb8b4737",
-        "sha256": "sha256-MObgRGQ3pn2zfit/fTP1B4fd/ZcDWTGd/QVGnaoty84="
+      "byte-buddy-1.14.11.jar": {
+        "sha1": "725602eb7c8c56b51b9c21f273f9df5c909d9e7d",
+        "sha256": "sha256-Yq4oGH7SsGKBPaap1We/7nM8NBWCaZti3ZgCMHKaAxM="
       }
     }
   },
@@ -19666,16 +19666,16 @@
   },
 
   {
-    "path": "org/mockito/mockito-core/5.8.0",
+    "path": "org/mockito/mockito-core/5.9.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "mockito-core-5.8.0.pom": {
-        "sha1": "a2b7b33c5d649a2f48b1e7aab95d81671f66875f",
-        "sha256": "sha256-dJWKzd4UjzC/ox/8CFi2L3H2PMws602KjGfX9CjUOi0="
+      "mockito-core-5.9.0.pom": {
+        "sha1": "2054dcc15b9ede899cb9ec6e8e960e36c68b4574",
+        "sha256": "sha256-BJDEL+Yu7WRzQdpAojcHGW2BO0TbKj3KMB2IFz56yPc="
       },
-      "mockito-core-5.8.0.jar": {
-        "sha1": "df310627f77f859114ad31e1376fff0dce263cca",
-        "sha256": "sha256-wyD2YqA8KVHtzFGkS2TXmo6ZQ3P/VIRTtf2vad6+RoI="
+      "mockito-core-5.9.0.jar": {
+        "sha1": "faa88b96db3aeb96a93e83dec7491345bfbfc414",
+        "sha256": "sha256-u62Rhe1zSWX6x+Nn8OUVlvaVMeUdiyy87BBI3W+0Hyw="
       }
     }
   },
