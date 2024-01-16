@@ -53,7 +53,7 @@
     (normalize-input current v)
     current))
 
-(defn find-possible-networks
+(defn- find-affordable-networks
   [{:keys [balances-per-chain]} input-value]
   (->> balances-per-chain
        (filter (fn [[_ {:keys [balance]}]]
@@ -153,7 +153,7 @@
          [routes/view
           {:amount           amount
            :routes           suggested-routes
-           :loading-networks (find-possible-networks token @input-value)
+           :loading-networks (find-affordable-networks token @input-value)
            :networks         (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
