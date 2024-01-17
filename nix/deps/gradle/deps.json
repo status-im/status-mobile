@@ -12500,10 +12500,6 @@
       "guava-33.0.0-jre.jar": {
         "sha1": "161ba27964a62f241533807a46b8711b13c1d94b",
         "sha256": "sha256-9NhcPk1BFpQzfLhzq+oJskK2ZLsBMyC+YQUyfEWZFTc="
-      },
-      "guava-33.0.0-jre.module": {
-        "sha1": "3a3d152130aea267ef0140ec03aca206fa850875",
-        "sha256": "sha256-WaLb0FXRuqdi548aW6Orlz7dE/wn3MGHEQXi95f2gtM="
       }
     }
   },
@@ -20535,6 +20531,21 @@
   },
 
   {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk7-1.8.0.pom": {
+        "sha1": "b8a4b9c31ec89be4e5806db4aa92192a9d592bf0",
+        "sha256": "sha256-36lkSmrluJjuR1ux9X6DC6H3cK7mycFfgRKqOBGAGEo="
+      },
+      "kotlin-stdlib-jdk7-1.8.0.jar": {
+        "sha1": "3c91271347f678c239607abb676d4032a7898427",
+        "sha256": "sha256-TIidHZgD9fLrbBWSprfmI2msdmDJ7uFauhb+wFkWNmY="
+      }
+    }
+  },
+
+  {
     "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.20-RC2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -20725,6 +20736,21 @@
       "kotlin-stdlib-jdk8-1.6.0.jar": {
         "sha1": "baf82c475e9372c25407f3d132439e4aa803b8b8",
         "sha256": "sha256-qwVHxJWVMhSl8rKBUAFPTgITNnjVK3fXY3XqI15EPb0="
+      }
+    }
+  },
+
+  {
+    "path": "org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.0",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "kotlin-stdlib-jdk8-1.8.0.pom": {
+        "sha1": "fb9dbe3343144298825b8d9f23a51f4af4be6cb0",
+        "sha256": "sha256-K7bHVRuXx7oCn5hmWC56oZ1jq/1M1T2j/AxGLzq1/CY="
+      },
+      "kotlin-stdlib-jdk8-1.8.0.jar": {
+        "sha1": "ed04f49e186a116753ad70d34f0ac2925d1d8020",
+        "sha256": "sha256-BbYoBEQbDJoZILa31c9zKaTiS2JYR44ysfBGygGQCUY="
       }
     }
   },
