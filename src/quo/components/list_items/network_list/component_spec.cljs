@@ -12,7 +12,7 @@
    :token-value "100.00 ETH"
    :fiat-value  "€100.00"})
 
-(h/describe "List items: Network List Item"
+(h/describe "List items: Network List"
   (h/test "default state"
     (h/render [network-list/view (dissoc props :state)])
     (h/is-truthy (h/get-by-text "Mainnet")))
