@@ -391,7 +391,7 @@
     "react-native-fetch-polyfill"                      fetch
     "react-native-status-keycard"                      status-keycard
     "react-native-keychain"                            keychain
-    "react-native-touch-id"                            touchid
+    "react-native-biometrics"                          react-native-biometrics
     "@react-native-community/netinfo"                  net-info
     "react-native-dialogs"                             dialogs
     "react-native"                                     react-native
