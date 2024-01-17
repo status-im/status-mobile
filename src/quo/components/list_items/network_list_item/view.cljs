@@ -1,11 +1,11 @@
 (ns quo.components.list-items.network-list-item.view
   (:require
-    [quo.components.list-items.network-list-item.style :as style]
-    [quo.components.markdown.text :as text]
-    [quo.foundations.resources :as quo.resources]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+   [quo.components.list-items.network-list-item.style :as style]
+   [quo.components.markdown.text :as text]
+   [quo.foundations.resources :as quo.resources]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]))
 
 (defn- info
   [{:keys [network-name label]}]

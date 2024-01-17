@@ -6,7 +6,6 @@
   (cond
     (= state :pressed)  (colors/resolve-color customization-color theme 5)
     (= state :active)   (colors/resolve-color customization-color theme 10)
-    (= state :selected) (colors/resolve-color customization-color theme 5)
     :else               :transparent))
 
 (defn container
@@ -19,10 +18,6 @@
    :border-radius      12
    :height             56
    :background-color   (background-color state customization-color theme)})
-
-(defn check-color
-  [customization-color theme]
-  (colors/resolve-color customization-color theme))
 
 (def info
   {:flex-direction :row
