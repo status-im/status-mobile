@@ -33,7 +33,7 @@
       (.then (fn [result]
                (oops/oget result "available")))))
 
-;; NOTE: the react-native-biometry package error codes/messages differ across platforms.
+;; NOTE: the react-native-biometrics package error codes/messages differ across platforms.
 ;; On android we get error messages while on iOS it's a stringified Obj-C error object.
 (defn- convert-auth-error-message
   [code]
