@@ -22,8 +22,7 @@
 (def info
   {:flex-direction :row
    :align-items    :center
-   :gap            2
-   :width          "70%"})
+   :gap            2})
 
 (def network-image
   {:border-width     1
@@ -35,8 +34,7 @@
    :width            32})
 
 (def values-container
-  {:align-items :flex-end
-   :max-width   "30%"})
+  {:align-items :flex-end})
 
 (defn fiat-value
   [theme]
