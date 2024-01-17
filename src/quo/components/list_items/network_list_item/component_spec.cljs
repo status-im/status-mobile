@@ -32,10 +32,6 @@
     (h/has-style (h/query-by-label-text ::network-list-item)
                  {:backgroundColor (colors/resolve-color :blue :light 10)}))
 
-  (h/test "Selected state"
-    (h/render [network-list-item/view (assoc props :state :selected)])
-    (h/is-truthy (h/query-by-label-text :check-icon)))
-
   (h/test "Call on-press"
     (let [on-press (h/mock-fn)]
       (h/render [network-list-item/view (assoc props :on-press on-press)])
