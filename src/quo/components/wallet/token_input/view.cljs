@@ -14,11 +14,13 @@
     [reagent.core :as reagent]))
 
 (defn calc-value
-  [crypto? currency token value conversion]
+  [crypto? currency token value conversion crypto-decimals]
   (let [num-value (if (string? value) (parse-double (or value "0")) value)]
     (if crypto?
       (str (get common/currency-label currency) (.toFixed (* num-value conversion) 2))
-      (str (.toFixed (/ num-value conversion) 2) " " (string/upper-case (or (clj->js token) ""))))))
+      (str (.toFixed (/ num-value conversion) crypto-decimals)
+           " "
+           (string/upper-case (or (clj->js token) ""))))))
 
 (defn- view-internal
   [{external-value :value}]
@@ -27,7 +29,8 @@
         crypto?           (reagent/atom true)
         input-ref         (atom nil)
         controlled-input? (some? external-value)]
-    (fn [{:keys          [theme token currency conversion networks title customization-color
+    (fn [{:keys          [theme token currency crypto-decimals conversion networks title
+                          customization-color
                           on-change-text on-swap container-style show-keyboard?]
           :or            {show-keyboard? true}
           external-value :value}]
@@ -86,6 +89,6 @@
          {:size   :paragraph-2
           :weight :medium
           :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-         (calc-value @crypto? currency token (or external-value @value) conversion)]]])))
+         (calc-value @crypto? currency token (or external-value @value) conversion crypto-decimals)]]])))
 
 (def view (quo.theme/with-theme view-internal))

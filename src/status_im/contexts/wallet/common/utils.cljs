@@ -65,6 +65,12 @@
              "")
            ""))))
 
+(defn get-crypto-decimals-count
+  [{:keys [market-values-per-currency]}]
+  (let [price          (get-in market-values-per-currency [:usd :price])
+        one-cent-value (if (pos? price) (/ 0.01 price) 0)]
+    (calc-max-crypto-decimals one-cent-value)))
+
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]

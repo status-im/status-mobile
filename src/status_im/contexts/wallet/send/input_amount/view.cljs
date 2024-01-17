@@ -7,6 +7,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [utils.debounce :as debounce]
@@ -61,15 +62,16 @@
        (map first)))
 
 (defn- f-view-internal
-  [{:keys [rate limit]}]
+  []
   (let [bottom                    (safe-area/get-bottom)
         {:keys [currency]}        (rf/sub [:profile/profile])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         token-symbol              (:symbol token)
-        limit-crypto              (or (:total-balance token) limit)
-        conversion-rate           (or rate 10)
-        limit-fiat                (* limit-crypto conversion-rate)
+        limit-crypto              (utils/get-standard-crypto-format token (:total-balance token))
+        conversion-rate           (get-in token [:market-values-per-currency :usd :price])
+        limit-fiat                (.toFixed (* (:total-balance token) conversion-rate) 2)
+        crypto-decimals           (utils/get-crypto-decimals-count token)
         input-value               (reagent/atom "")
         current-limit             (reagent/atom {:amount   limit-crypto
                                                  :currency token-symbol})
@@ -102,6 +104,7 @@
                                           (reset! input-value (str current-limit-amount))
                                           (reset! input-value v))
                                         (reagent/flush))))]
+    (println "tokenx" (get-in token [:market-values-per-currency :usd :price]))
     (fn [{:keys [on-confirm]
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
                                            {:amount   @input-value
@@ -140,6 +143,7 @@
           {:container-style style/input-container
            :token           token-symbol
            :currency        currency
+           :crypto-decimals crypto-decimals
            :networks        (:networks token)
            :title           (i18n/label :t/send-limit {:limit limit-label})
            :conversion      conversion-rate
