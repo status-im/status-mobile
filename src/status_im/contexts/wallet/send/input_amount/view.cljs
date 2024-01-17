@@ -66,7 +66,6 @@
         {:keys [currency]}        (rf/sub [:profile/profile])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-        address-prefix            (rf/sub [:wallet/wallet-send-address-prefix])
         token-symbol              (:symbol token)
         limit-crypto              (or (:total-balance token) limit)
         conversion-rate           (or rate 10)
