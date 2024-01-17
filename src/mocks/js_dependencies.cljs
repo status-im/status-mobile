@@ -420,6 +420,7 @@
     "react-native-draggable-flatlist"                  react-native-draggable-flatlist
     "react-native-webview"                             react-native-webview
     "@react-native-community/audio-toolkit"            react-native-audio-toolkit
+    "@react-native-clipboard/clipboard"                react-native-clipboard
     "react-native-image-viewing"                       react-native-image-viewing
     "react-native-share"                               react-native-share
     "@react-native-async-storage/async-storage"        async-storage
