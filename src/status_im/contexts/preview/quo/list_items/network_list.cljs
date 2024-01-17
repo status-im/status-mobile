@@ -27,7 +27,6 @@
     :type :text}
    {:key  :fiat-value
     :type :text}
-   (preview/customization-color-option)
    {:key  :show-alert-on-press?
     :type :boolean}])
 
