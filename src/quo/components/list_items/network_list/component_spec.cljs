@@ -40,4 +40,4 @@
 
   (h/test "Empty props"
     (h/render [network-list/view {}])
-    (h/is-truthy (h/get-by-label-text ::network-list-item))))
+    (h/is-truthy (h/get-by-label-text ::network-list))))
