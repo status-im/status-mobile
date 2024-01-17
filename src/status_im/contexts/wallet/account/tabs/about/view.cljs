@@ -8,13 +8,16 @@
     [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
+    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        share-title                   (str (:name account) " " (i18n/label :t/address))]
+        networks                      (rf/sub [:wallet/network-preference-details])
+        share-title                   (str (:name account) " " (i18n/label :t/address))
+        multichain-address            (utils/get-multichain-address networks address)]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
@@ -44,7 +47,7 @@
         :accessibility-label :copy-address
         :label               (i18n/label :t/copy-address)
         :on-press            (fn []
-                               (clipboard/set-string address)
+                               (clipboard/set-string multichain-address)
                                (rf/dispatch [:toasts/upsert
                                              {:type :positive
                                               :text (i18n/label :t/address-copied)}]))}
@@ -59,15 +62,17 @@
                                (js/setTimeout
                                 #(share/open
                                   (if platform/ios?
-                                    {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                              :content address}
-                                                            :item            {:default {:type "text"
-                                                                                        :content
-                                                                                        address}}
+                                    {:activityItemSources [{:placeholderItem {:type "text"
+                                                                              :content
+                                                                              multichain-address}
+                                                            :item            {:default
+                                                                              {:type "text"
+                                                                               :content
+                                                                               multichain-address}}
                                                             :linkMetadata    {:title share-title}}]}
                                     {:title   share-title
                                      :subject share-title
-                                     :message address}))
+                                     :message multichain-address}))
                                 600))}]]]))
 
 (defn view
