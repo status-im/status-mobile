@@ -89,6 +89,7 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix))
 <<<<<<< HEAD
+<<<<<<< HEAD
       :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]})))
 >>>>>>> 503ffe845 (loading routes ui)
 
@@ -102,6 +103,11 @@
 =======
       :fx [[:navigate-to-within-stack (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]})))
 >>>>>>> d582beba0 (lint)
+=======
+      :fx [[:navigate-to-within-stack (if token
+                                        [:wallet-send-input-amount stack-id]
+                                        [:wallet-select-asset stack-id])]]})))
+>>>>>>> cb16e5c8c (review)
 
 (rf/reg-event-fx :wallet/send-select-token
 <<<<<<< HEAD

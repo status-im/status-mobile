@@ -131,7 +131,6 @@
                            (debounce/debounce-and-dispatch [:wallet/get-suggested-routes @input-value]
                                                            100)))
                        [@input-value])
-        (println "qqq")
         [rn/view
          {:style style/screen}
          [account-switcher/view
