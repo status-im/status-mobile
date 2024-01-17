@@ -279,8 +279,9 @@ run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
 SIMULATOR=iPhone 13
+# TODO: fix IOS_STATUS_GO_TARGETS to be either amd64 or arm64 when RN is upgraded
 run-ios: export TARGET := ios
-run-ios: export IOS_STATUS_GO_TARGETS := iossimulator/amd64
+run-ios: export IOS_STATUS_GO_TARGETS := ios/arm64;iossimulator/amd64
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
 	npx react-native run-ios --simulator="$(SIMULATOR)" | xcbeautify
@@ -291,8 +292,9 @@ endif
 show-ios-devices: ##@other shows connected ios device and its name
 	xcrun xctrace list devices
 
+# TODO: fix IOS_STATUS_GO_TARGETS to be either amd64 or arm64 when RN is upgraded
 run-ios-device: export TARGET := ios
-run-ios-device: export IOS_STATUS_GO_TARGETS := ios/arm64
+run-ios-device: export IOS_STATUS_GO_TARGETS := ios/arm64;iossimulator/amd64
 run-ios-device: ##@run iOS app and start it on a connected device by its name
 ifndef DEVICE_NAME
 	$(error Usage: make run-ios-device DEVICE_NAME=your-device-name)
@@ -327,7 +329,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	clojure-lsp --ns-exclude-regex ".*/src/status_im/core\.cljs|.*/src/test_helpers/component_tests_preload\.cljs$$" clean-ns && \
+	clojure-lsp --ns-exclude-regex ".*/\.clj-kondo/.*|.*/src/status_im/core\.cljs|.*/src/test_helpers/component_tests_preload\.cljs$$" clean-ns && \
 	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
@@ -384,9 +386,8 @@ component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test
 component-test-watch: export JEST_USE_SILENT_REPORTER := false
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
-	@@scripts/check-metro-shadow-process.sh
+	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
-	yarn install
 	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
 
 component-test: export TARGET := clojure
@@ -396,7 +397,6 @@ component-test: export JEST_USE_SILENT_REPORTER := false
 component-test: ##@test Run component tests once in NodeJS
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
-	yarn install
 	yarn shadow-cljs compile component-test && \
 	jest --clearCache && jest --config=test/jest/jest.config.js --testEnvironment node
 

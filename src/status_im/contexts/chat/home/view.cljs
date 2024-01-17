@@ -48,7 +48,7 @@
 
 (defn chats
   [{:keys [theme selected-tab set-scroll-ref scroll-shared-value]}]
-  (let [unfiltered-items (rf/sub [:chats-stack-items])
+  (let [unfiltered-items (rf/sub [:chats/chats-stack-items])
         items            (filter-and-sort-items-by-tab selected-tab unfiltered-items)]
     (if (empty? items)
       [common.empty-state/view

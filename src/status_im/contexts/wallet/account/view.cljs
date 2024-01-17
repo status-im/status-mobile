@@ -47,7 +47,7 @@
          (when (not watch-only?)
            [quo/wallet-ctas
             {:send-action    #(rf/dispatch [:open-modal :wallet-select-address])
-             :receive-action #(rf/dispatch [:open-modal :wallet-receive])
+             :receive-action #(rf/dispatch [:open-modal :wallet-share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
              :bridge-action  #(rf/dispatch [:open-modal :wallet-bridge])}])

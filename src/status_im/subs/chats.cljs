@@ -12,7 +12,7 @@
 (def memo-chats-stack-items (atom nil))
 
 (re-frame/reg-sub
- :chats-stack-items
+ :chats/chats-stack-items
  :<- [:chats/home-list-chats]
  :<- [:view-id]
  :<- [:home-items-show-number]
@@ -102,45 +102,17 @@
            active-chats)))
 
 (re-frame/reg-sub
- :chat-by-id
+ :chats/chat-by-id
  :<- [:chats/chats]
  (fn [chats [_ chat-id]]
    (get chats chat-id)))
 
 (re-frame/reg-sub
- :chats/synced-from
- (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chat-by-id chat-id]))
- (fn [{:keys [synced-from]}]
-   synced-from))
-
-(re-frame/reg-sub
  :chats/muted
  (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chat-by-id chat-id]))
+   (re-frame/subscribe [:chats/chat-by-id chat-id]))
  (fn [{:keys [muted]}]
    muted))
-
-(re-frame/reg-sub
- :chats/chat-type
- (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chat-by-id chat-id]))
- (fn [{:keys [chat-type]}]
-   chat-type))
-
-(re-frame/reg-sub
- :chats/joined
- (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chat-by-id chat-id]))
- (fn [{:keys [joined]}]
-   joined))
-
-(re-frame/reg-sub
- :chats/synced-to-and-from
- (fn [[_ chat-id] _]
-   (re-frame/subscribe [:chat-by-id chat-id]))
- (fn [chat]
-   (select-keys chat [:synced-to :synced-from])))
 
 (re-frame/reg-sub
  :chats/current-raw-chat
@@ -395,7 +367,7 @@
 (re-frame/reg-sub
  :group-chat/inviter-info
  (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:chat-by-id chat-id])
+   [(re-frame/subscribe [:chats/chat-by-id chat-id])
     (re-frame/subscribe [:multiaccount/public-key])])
  (fn [[chat my-public-key]]
    {:member?    (group-chats.db/member? my-public-key chat)

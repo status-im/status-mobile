@@ -101,22 +101,22 @@
    :label               (i18n/label :t/show-qr)})
 
 (defn- action-share
-  []
+  [chat-id]
   {:icon                :i/share
    :accessibility-label :chat-share
-   :on-press            not-implemented/alert
+   :on-press            #(rf/dispatch [:communities/share-community-channel-url-with-data chat-id])
    :label               (i18n/label :t/share-channel)})
 
 (defn actions
   [{:keys [locked? chat-id]} inside-chat?]
-  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])]
+  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])]
     (cond
       locked?
       [quo/action-drawer
        [[(action-invite-people)
          (action-token-requirements)
          (action-qr-code)
-         (action-share)]]]
+         (action-share chat-id)]]]
 
       (and (not inside-chat?) (not locked?))
       [quo/action-drawer
@@ -127,7 +127,7 @@
          (action-pinned-messages)
          (action-invite-people)
          (action-qr-code)
-         (action-share)]]]
+         (action-share chat-id)]]]
 
       (and inside-chat? (not locked?))
       [quo/action-drawer
@@ -140,6 +140,6 @@
            (chat-actions/fetch-messages chat-id))
          (action-invite-people)
          (action-qr-code)
-         (action-share)]]]
+         (action-share chat-id)]]]
 
       :else nil)))

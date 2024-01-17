@@ -16,13 +16,19 @@
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
    {:keys [content-height]}
-   {:keys [input-content-height input-text input-maximized?]}]
-  (when (and (empty? @text-value) (not= input-text nil))
-    (reset! text-value input-text)
-    (reset! content-height input-content-height)
-    (reset! saved-cursor-position (count input-text)))
-  (when input-maximized?
-    (reset! maximized? true)))
+   {:keys [input-content-height input-text input-maximized?]}
+   {:keys [height]}]
+  (let [lines            (utils/calc-lines input-content-height)
+        minimized-height (if (or (= lines 1) (empty? input-text))
+                           constants/input-height
+                           constants/multiline-minimized-height)]
+    (when (and (empty? @text-value) (not= input-text nil))
+      (reset! text-value input-text)
+      (reset! content-height input-content-height)
+      (reset! saved-cursor-position (count input-text))
+      (reanimated/set-shared-value height minimized-height))
+    (when input-maximized?
+      (reset! maximized? true))))
 
 (defn maximized-effect
   [{:keys [maximized?]}
@@ -101,7 +107,7 @@
    [max-height])
   (rn/use-effect
    (fn []
-     (reenter-screen-effect state dimensions subscriptions))
+     (reenter-screen-effect state dimensions subscriptions animations))
    [max-height subscriptions]))
 
 (defn use-edit

@@ -53,6 +53,13 @@
     (normalize-input current v)
     current))
 
+(defn- find-affordable-networks
+  [{:keys [balances-per-chain]} input-value]
+  (->> balances-per-chain
+       (filter (fn [[_ {:keys [balance]}]]
+                 (>= (js/parseFloat balance) input-value)))
+       (map first)))
+
 (defn- f-view-internal
   [{:keys [rate limit]}]
   (let [bottom                    (safe-area/get-bottom)
@@ -142,9 +149,10 @@
            :on-change-text  (fn [text]
                               (handle-on-change text))}]
          [routes/view
-          {:amount   amount
-           :routes   suggested-routes
-           :networks (:networks token)}]
+          {:amount           amount
+           :routes           suggested-routes
+           :loading-networks (find-affordable-networks token @input-value)
+           :networks         (:networks token)}]
          [quo/bottom-actions
           {:actions          :1-action
            :button-one-label (i18n/label :t/confirm)

@@ -167,7 +167,7 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
-           (assoc :wallet/networks network-data)))
+           (assoc-in [:wallet :networks] network-data)))
     (is
      (=
       (list {:path                      "m/44'/60'/0'/0/0"
@@ -252,7 +252,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
-           (assoc :wallet/networks network-data)))
+           (assoc-in [:wallet :networks] network-data)))
 
     (let [result (rf/sub [sub-name])]
       (is
@@ -310,7 +310,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
-           (assoc :wallet/networks network-data)))
+           (assoc-in [:wallet :networks] network-data)))
     (is
      (= (list
          {:path                      "m/44'/60'/0'/0/0"
@@ -365,7 +365,7 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
-           (assoc :wallet/networks network-data)))
+           (assoc-in [:wallet :networks] network-data)))
     (is
      (= (list
          {:path                      "m/44'/60'/0'/0/0"
@@ -421,7 +421,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
-           (assoc :wallet/networks network-data)))
+           (assoc-in [:wallet :networks] network-data)))
     (is
      (match? [{:short-name       "eth"
                :network-name     :ethereum

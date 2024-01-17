@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
+    [react-native.platform :as platform]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -129,9 +130,7 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (-> db
-           (dissoc :wallet/scanned-address :wallet/send-address)
-           (update-in [:wallet :ui :send] dissoc :to-address))})
+  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
@@ -195,13 +194,13 @@
    (let [network-data
          {:test (map #(->> %
                            :Test
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)
           :prod (map #(->> %
                            :Prod
-                           data-store/<-rpc)
+                           data-store/rpc->network)
                      data)}]
-     {:db (assoc db :wallet/networks network-data)})))
+     {:db (assoc-in db [:wallet :networks] network-data)})))
 
 (rf/reg-event-fx :wallet/find-ens
  (fn [{:keys [db]} [input contacts chain-id cb]]
@@ -327,3 +326,21 @@
  (fn [_ [explorer-link address]]
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
+
+(rf/reg-event-fx :wallet/initialize
+ (fn []
+   {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
+
+(rf/reg-event-fx :wallet/share-account
+ (fn [_ [{:keys [content title]}]]
+   {:fx [[:effects.share/open
+          (if platform/ios?
+            {:activityItemSources
+             [{:placeholderItem {:type    "text"
+                                 :content content}
+               :item            {:default {:type    "text"
+                                           :content content}}
+               :linkMetadata    {:title title}}]}
+            {:title   title
+             :subject title
+             :message content})]]}))

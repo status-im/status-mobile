@@ -90,11 +90,10 @@
                        (assoc :chats/loading?           true
                               :networks/current-network current-network
                               :networks/networks        (merge networks config/default-networks-by-id)
-                              :profile/profile          (merge profile-overview settings))
-                       (assoc-in [:wallet :ui :tokens-loading?] true))
-               :fx [[:dispatch [:wallet/get-ethereum-chains]]
-                    [:dispatch [:universal-links/generate-profile-url]]
-                    [:dispatch [:community/fetch]]]}
+                              :profile/profile          (merge profile-overview settings)))
+               :fx [[:dispatch [:universal-links/generate-profile-url]]
+                    [:dispatch [:community/fetch]]
+                    [:dispatch [:wallet/initialize]]]}
               (notifications/load-preferences)
               (data-store.chats/fetch-chats-preview
                {:on-success
@@ -125,8 +124,7 @@
                                                             :on-error   #(log/error
                                                                           "failed to start messenger")}]
               :check-eip1559-activation                   {:network-id network-id}
-              :effects.profile/enable-local-notifications nil
-              :dispatch-n                                 [[:wallet/get-accounts]]}
+              :effects.profile/enable-local-notifications nil}
        (not (:universal-links/handling db))
        (assoc :effects.chat/open-last-chat (get-in db [:profile/profile :key-uid]))
        notifications-enabled?
@@ -145,7 +143,7 @@
   {:events [:messenger-started]}
   [{:keys [db] :as cofx} {:keys [mailservers] :as response}]
   (log/info "Messenger started")
-  (let [new-account? (get db :onboarding-2/new-account?)]
+  (let [new-account? (get db :onboarding/new-account?)]
     (rf/merge cofx
               {:db            (-> db
                                   (assoc :messenger/started? true)

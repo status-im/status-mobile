@@ -44,6 +44,11 @@
  :-> :to-address)
 
 (rf/reg-sub
+ :wallet/wallet-send-address-prefix
+ :<- [:wallet/wallet-send]
+ :-> :address-prefix)
+
+(rf/reg-sub
  :wallet/wallet-send-route
  :<- [:wallet/wallet-send]
  :-> :route)
@@ -77,15 +82,13 @@
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]
- (fn [[wallet network-details]]
-   ;; TODO(@rende11): `testnet?` value would be relevant after this implementation,
-   ;; https://github.com/status-im/status-mobile/issues/17826
-   (let [testnet? false]
-     (->> wallet
-          :accounts
-          vals
-          (map #(assoc-network-preferences-names network-details % testnet?))
-          (sort-by :position)))))
+ :<- [:profile/test-networks-enabled?]
+ (fn [[wallet network-details test-networks-enabled?]]
+   (->> wallet
+        :accounts
+        vals
+        (map #(assoc-network-preferences-names network-details % test-networks-enabled?))
+        (sort-by :position))))
 
 (rf/reg-sub
  :wallet/addresses
@@ -126,10 +129,10 @@
  :<- [:wallet/balances]
  :<- [:profile/currency-symbol]
  (fn [[accounts current-viewing-account-address balances currency-symbol]]
-   (let [current-viewing-account (utils/get-account-by-address accounts current-viewing-account-address)
-         balance                 (get balances current-viewing-account-address)
-         formatted-balance       (utils/prettify-balance currency-symbol balance)]
-     (-> current-viewing-account
+   (let [balance           (get balances current-viewing-account-address)
+         formatted-balance (utils/prettify-balance currency-symbol balance)]
+     (-> accounts
+         (utils/get-account-by-address current-viewing-account-address)
          (assoc :balance           balance
                 :formatted-balance formatted-balance)))))
 

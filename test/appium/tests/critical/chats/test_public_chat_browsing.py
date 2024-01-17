@@ -5,7 +5,7 @@ import emoji
 import pytest
 from _pytest.outcomes import Failed
 from appium.webdriver.connectiontype import ConnectionType
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 
 from tests import marks, run_in_parallel, pytest_config_global, transl
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
@@ -108,7 +108,10 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         message_to_delete = "message to delete and undo"
         self.channel.send_message(message_to_delete)
         self.channel.delete_message_in_chat(message_to_delete)
-        self.channel.element_by_text("Undo").click()
+        try:
+            self.channel.element_by_text("Undo").click()
+        except StaleElementReferenceException:
+            pytest.fail("Can't press Undo button, not enough time")
         try:
             self.channel.chat_element_by_text(message_to_delete).wait_for_visibility_of_element()
         except TimeoutException:

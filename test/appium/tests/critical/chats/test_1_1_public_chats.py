@@ -655,6 +655,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
         self.home_2.get_chat(self.username_1).click()
+        self.chat_2.chat_message_input.wait_for_visibility_of_element()
         self.home_2.just_fyi("Getting chat history")
         chat_history = list()
         for element in self.chat_2.chat_element_by_text(text='').message_text_content.find_elements():

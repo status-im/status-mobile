@@ -27,11 +27,11 @@
 (defn background-image
   [content-width]
   [rn/image
-   {:style  {:resize-mode   :stretch
-             :resize-method :scale
-             :margin-top    32
-             :width         content-width}
-    :source (resources/get-image :onboarding-illustration)}])
+   {:resize-mode   :stretch
+    :resize-method :scale
+    :style         {:margin-top 32
+                    :width      content-width}
+    :source        (resources/get-image :onboarding-illustration)}])
 
 (defonce progress (atom nil))
 (defonce paused? (atom nil))

@@ -10,6 +10,7 @@
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
+            [status-im.contexts.wallet.common.utils :as utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -31,7 +32,11 @@
 (defn- options
   [{:keys [theme show-account-selector? options-height]}]
   (let [{:keys [name color emoji address watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        network-preference-details                     (rf/sub [:wallet/network-preference-details])]
+        network-preference-details                     (rf/sub [:wallet/network-preference-details])
+        multichain-address                             (utils/get-multichain-address
+                                                        network-preference-details
+                                                        address)
+        share-title                                    (str name " " (i18n/label :t/address))]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -72,10 +77,20 @@
                                 (rf/dispatch [:toasts/upsert
                                               {:type :positive
                                                :text (i18n/label :t/address-copied)}])
-                                (clipboard/set-string address))}
+                                (clipboard/set-string multichain-address))}
+        {:icon                :i/qr-code
+         :accessibility-label :show-address-qr
+         :label               (i18n/label :t/show-address-qr)
+         :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
         {:icon                :i/share
          :accessibility-label :share-account
-         :label               (i18n/label :t/share-account)}
+         :label               (i18n/label :t/share-address)
+         :on-press            (fn []
+                                (rf/dispatch [:hide-bottom-sheet])
+                                (js/setTimeout
+                                 #(rf/dispatch [:wallet/share-account
+                                                {:title share-title :content address}])
+                                 600))}
         {:add-divider?        (not show-account-selector?)
          :icon                :i/delete
          :accessibility-label :remove-account

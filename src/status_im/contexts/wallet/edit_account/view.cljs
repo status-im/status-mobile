@@ -13,10 +13,11 @@
 (defn- show-save-account-toast
   [updated-key]
   (let [message (case updated-key
-                  :name                     :t/edit-wallet-account-name-updated-message
-                  :color                    :t/edit-wallet-account-colour-updated-message
-                  :emoji                    :t/edit-wallet-account-emoji-updated-message
-                  :prod-preferred-chain-ids :t/edit-wallet-network-preferences-updated-message
+                  :name                       :t/edit-wallet-account-name-updated-message
+                  :color                      :t/edit-wallet-account-colour-updated-message
+                  :emoji                      :t/edit-wallet-account-emoji-updated-message
+                  (:prod-preferred-chain-ids
+                   :test-preferred-chain-ids) :t/edit-wallet-network-preferences-updated-message
                   nil)]
     (rf/dispatch [:toasts/upsert
                   {:id   :edit-account
@@ -50,11 +51,15 @@
                                               :new-value   @edited-account-name}))]
     (fn []
       (let [{:keys [name emoji address color watch-only?]
-             :as   account}  (rf/sub [:wallet/current-viewing-account])
-            network-details  (rf/sub [:wallet/network-preference-details])
-            account-name     (or @edited-account-name name)
-            button-disabled? (or (nil? @edited-account-name)
-                                 (= name @edited-account-name))]
+             :as   account}         (rf/sub [:wallet/current-viewing-account])
+            network-details         (rf/sub [:wallet/network-preference-details])
+            test-networks-enabled?  (rf/sub [:profile/test-networks-enabled?])
+            network-preferences-key (if test-networks-enabled?
+                                      :test-preferred-chain-ids
+                                      :prod-preferred-chain-ids)
+            account-name            (or @edited-account-name name)
+            button-disabled?        (or (nil? @edited-account-name)
+                                        (= name @edited-account-name))]
         [create-or-edit-account/view
          {:page-nav-right-side [{:icon-name :i/delete
                                  :on-press  #(js/alert "Delete account: to be implemented")}]
@@ -95,7 +100,7 @@
                                                                 (rf/dispatch [:hide-bottom-sheet])
                                                                 (save-account
                                                                  {:account     account
-                                                                  :updated-key :prod-preferred-chain-ids
+                                                                  :updated-key network-preferences-key
                                                                   :new-value   chain-ids}))
                                                  :watch-only? watch-only?}])}]))
            :container-style style/data-item}]]))))

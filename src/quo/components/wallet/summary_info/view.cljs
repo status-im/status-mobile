@@ -33,22 +33,22 @@
     [rn/view
      {:style               style/networks-container
       :accessibility-label :networks}
-     (when (pos? ethereum)
+     (when (and ethereum (pos? (:amount ethereum)))
        [network-amount
         {:network  :ethereum
-         :amount   (str ethereum " ETH")
+         :amount   (str (:amount ethereum) " " (or (:token-symbol ethereum) "ETH"))
          :divider? (or show-arbitrum? show-optimism?)
          :theme    theme}])
      (when show-optimism?
        [network-amount
         {:network  :optimism
-         :amount   (str optimism " OPT")
+         :amount   (str (:amount optimism) " " (or (:token-symbol optimism) "OPT"))
          :divider? show-arbitrum?
          :theme    theme}])
      (when show-arbitrum?
        [network-amount
         {:network :arbitrum
-         :amount  (str arbitrum " ARB")
+         :amount  (str (:amount arbitrum) " " (or (:token-symbol arbitrum) "ARB"))
          :theme   theme}])]))
 
 (defn- view-internal

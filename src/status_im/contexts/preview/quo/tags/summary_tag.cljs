@@ -55,9 +55,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom
-               (merge {:type :token}
-                      (data :token)))]
+  (let [state (reagent/atom (assoc (data :token) :type :token))]
     (fn []
       [preview/preview-container
        {:state      state

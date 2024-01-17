@@ -11,6 +11,41 @@
   (when (exists? (.-NativeModules react-native))
     (.-Status ^js (.-NativeModules react-native))))
 
+(defn account-manager
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-AccountManager ^js (.-NativeModules react-native))))
+
+(defn encryption
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-EncryptionUtils ^js (.-NativeModules react-native))))
+
+(defn database
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-DatabaseManager ^js (.-NativeModules react-native))))
+
+(defn ui-helper
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-UIHelper ^js (.-NativeModules react-native))))
+
+(defn log-manager
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-LogManager ^js (.-NativeModules react-native))))
+
+(defn utils
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-Utils ^js (.-NativeModules react-native))))
+
+(defn network
+  []
+  (when (exists? (.-NativeModules react-native))
+    (.-NetworkManager ^js (.-NativeModules react-native))))
+
 (defn init
   [handler]
   (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
@@ -18,24 +53,24 @@
 (defn clear-web-data
   []
   (log/debug "[native-module] clear-web-data")
-  (when (status)
-    (.clearCookies ^js (status))
-    (.clearStorageAPIs ^js (status))))
+  (when (ui-helper)
+    (.clearCookies ^js (ui-helper))
+    (.clearStorageAPIs ^js (ui-helper))))
 
 (defn init-keystore
   [key-uid callback]
   (log/debug "[native-module] init-keystore" key-uid)
-  (.initKeystore ^js (status) key-uid callback))
+  (.initKeystore ^js (encryption) key-uid callback))
 
 (defn open-accounts
   [callback]
   (log/debug "[native-module] open-accounts")
-  (.openAccounts ^js (status) #(callback (types/json->clj %))))
+  (.openAccounts ^js (account-manager) #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
   [key-uid config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")
-  (.prepareDirAndUpdateConfig ^js (status)
+  (.prepareDirAndUpdateConfig ^js (account-manager)
                               key-uid
                               config
                               #(callback (types/json->clj %))))
@@ -47,7 +82,7 @@
   (init-keystore
    key-uid
    #(.saveAccountAndLoginWithKeycard
-     ^js (status)
+     ^js (account-manager)
      multiaccount-data
      password
      settings
@@ -63,24 +98,24 @@
   (let [config (if config (types/clj->json config) "")]
     (init-keystore
      key-uid
-     #(.loginWithConfig ^js (status) account-data hashed-password config))))
+     #(.loginWithConfig ^js (account-manager) account-data hashed-password config))))
 
 (defn login-account
   "NOTE: beware, the password has to be sha3 hashed"
   [{:keys [keyUid] :as request}]
-  (log/debug "[native-module] loginWithConfig")
+  (log/debug "[native-module] loginAccount")
   (clear-web-data)
   (init-keystore
    keyUid
-   #(.loginAccount ^js (status) (types/clj->json request))))
+   #(.loginAccount ^js (account-manager) (types/clj->json request))))
 
 (defn create-account-and-login
   [request]
-  (.createAccountAndLogin ^js (status) (types/clj->json request)))
+  (.createAccountAndLogin ^js (account-manager) (types/clj->json request)))
 
 (defn restore-account-and-login
   [request]
-  (.restoreAccountAndLogin ^js (status) (types/clj->json request)))
+  (.restoreAccountAndLogin ^js (account-manager) (types/clj->json request)))
 
 (defn export-db
   "NOTE: beware, the password has to be sha3 hashed"
@@ -89,7 +124,7 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.exportUnencryptedDatabase ^js (status) account-data hashed-password callback)))
+   #(.exportUnencryptedDatabase ^js (database) account-data hashed-password callback)))
 
 (defn import-db
   "NOTE: beware, the password has to be sha3 hashed"
@@ -98,13 +133,13 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.importUnencryptedDatabase ^js (status) account-data hashed-password)))
+   #(.importUnencryptedDatabase ^js (database) account-data hashed-password)))
 
 (defn logout
   []
   (log/debug "[native-module] logout")
   (clear-web-data)
-  (.logout ^js (status)))
+  (.logout ^js (account-manager)))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -114,7 +149,7 @@
    from memory"
   [address hashed-password callback]
   (log/debug "[native-module] multiaccount-load-account")
-  (.multiAccountLoadAccount ^js (status)
+  (.multiAccountLoadAccount ^js (account-manager)
                             (types/clj->json {:address  address
                                               :password hashed-password})
                             callback))
@@ -127,7 +162,7 @@
   [account-id paths callback]
   (log/debug "[native-module]  multiaccount-derive-addresses")
   (when (status)
-    (.multiAccountDeriveAddresses ^js (status)
+    (.multiAccountDeriveAddresses ^js (account-manager)
                                   (types/clj->json {:accountID account-id
                                                     :paths     paths})
                                   callback)))
@@ -145,7 +180,7 @@
   (when (status)
     (init-keystore
      key-uid
-     #(.multiAccountStoreAccount ^js (status)
+     #(.multiAccountStoreAccount ^js (account-manager)
                                  (types/clj->json {:accountID account-id
                                                    :password  hashed-password})
                                  callback))))
@@ -158,7 +193,7 @@
              account-id)
   (init-keystore
    key-uid
-   #(.multiAccountStoreDerived ^js (status)
+   #(.multiAccountStoreDerived ^js (account-manager)
                                (types/clj->json {:accountID account-id
                                                  :paths     paths
                                                  :password  hashed-password})
@@ -171,7 +206,7 @@
    to store the key"
   [n mnemonic-length paths callback]
   (log/debug "[native-module]  multiaccount-generate-and-derive-addresses")
-  (.multiAccountGenerateAndDeriveAddresses ^js (status)
+  (.multiAccountGenerateAndDeriveAddresses ^js (account-manager)
                                            (types/clj->json {:n                    n
                                                              :mnemonicPhraseLength mnemonic-length
                                                              :bip39Passphrase      ""
@@ -181,7 +216,7 @@
 (defn multiaccount-import-mnemonic
   [mnemonic password callback]
   (log/debug "[native-module] multiaccount-import-mnemonic")
-  (.multiAccountImportMnemonic ^js (status)
+  (.multiAccountImportMnemonic ^js (account-manager)
                                (types/clj->json {:mnemonicPhrase  mnemonic
                                                  ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
@@ -190,7 +225,7 @@
 (defn multiaccount-import-private-key
   [private-key callback]
   (log/debug "[native-module] multiaccount-import-private-key")
-  (.multiAccountImportPrivateKey ^js (status)
+  (.multiAccountImportPrivateKey ^js (account-manager)
                                  (types/clj->json {:privateKey private-key})
                                  callback))
 
@@ -198,13 +233,13 @@
   "NOTE: beware, the password has to be sha3 hashed"
   [address hashed-password callback]
   (log/debug "[native-module] verify")
-  (.verify ^js (status) address hashed-password callback))
+  (.verify ^js (account-manager) address hashed-password callback))
 
 (defn verify-database-password
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid hashed-password callback]
   (log/debug "[native-module] verify-database-password")
-  (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
+  (.verifyDatabasePassword ^js (account-manager) key-uid hashed-password callback))
 
 (defn login-with-keycard
   [{:keys [key-uid multiaccount-data password chat-key node-config]}]
@@ -212,47 +247,51 @@
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key (types/clj->json node-config))))
+   #(.loginWithKeycard ^js (account-manager)
+                       multiaccount-data
+                       password
+                       chat-key
+                       (types/clj->json node-config))))
 
 (defn set-soft-input-mode
   [mode]
   (log/debug "[native-module]  set-soft-input-mode")
-  (.setSoftInputMode ^js (status) mode))
+  (.setSoftInputMode ^js (ui-helper) mode))
 
 (defn call-rpc
   [payload callback]
   (log/debug "[native-module] call-rpc")
-  (.callRPC ^js (status) payload callback))
+  (.callRPC ^js (network) payload callback))
 
 (defn call-private-rpc
   [payload callback]
-  (.callPrivateRPC ^js (status) payload callback))
+  (.callPrivateRPC ^js (network) payload callback))
 
 (defn hash-transaction
   "used for keycard"
   [rpcParams callback]
   (log/debug "[native-module] hash-transaction")
-  (.hashTransaction ^js (status) rpcParams callback))
+  (.hashTransaction ^js (encryption) rpcParams callback))
 
 (defn hash-message
   "used for keycard"
   [message callback]
   (log/debug "[native-module] hash-message")
-  (.hashMessage ^js (status) message callback))
+  (.hashMessage ^js (encryption) message callback))
 
 (defn start-searching-for-local-pairing-peers
   "starts a UDP multicast beacon that both listens for and broadcasts to LAN peers"
   [callback]
   (log/info "[native-module] Start Searching for Local Pairing Peers"
             {:fn :start-searching-for-local-pairing-peers})
-  (.startSearchForLocalPairingPeers ^js (status) callback))
+  (.startSearchForLocalPairingPeers ^js (network) callback))
 
 (defn local-pairing-preflight-outbound-check
   "Checks whether the device has allows connecting to the local server"
   [callback]
   (log/info "[native-module] Performing local pairing preflight check")
   (when platform/ios?
-    (.localPairingPreflightOutboundCheck ^js (status) callback)))
+    (.localPairingPreflightOutboundCheck ^js (encryption) callback)))
 
 (defn get-connection-string-for-bootstrapping-another-device
   "Generates connection string form status-go for the purpose of local pairing on the sender end"
@@ -260,7 +299,7 @@
   (log/info "[native-module] Fetching Connection String"
             {:fn          :get-connection-string-for-bootstrapping-another-device
              :config-json config-json})
-  (.getConnectionStringForBootstrappingAnotherDevice ^js (status) config-json callback))
+  (.getConnectionStringForBootstrappingAnotherDevice ^js (network) config-json callback))
 
 (defn input-connection-string-for-bootstrapping
   "Provides connection string to status-go for the purpose of local pairing on the receiver end"
@@ -269,7 +308,7 @@
             {:fn                :input-connection-string-for-bootstrapping
              :config-json       config-json
              :connection-string connection-string})
-  (.inputConnectionStringForBootstrapping ^js (status) connection-string config-json callback))
+  (.inputConnectionStringForBootstrapping ^js (network) connection-string config-json callback))
 
 (defn deserialize-and-compress-key
   "Provides a community id (public key) to status-go which is first deserialized
@@ -280,7 +319,7 @@
   (log/info "[native-module] Deserializing and then compressing public key"
             {:fn  :deserialize-and-compress-key
              :key input-key})
-  (.deserializeAndCompressKey ^js (status) input-key callback))
+  (.deserializeAndCompressKey ^js (encryption) input-key callback))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
@@ -288,59 +327,59 @@
   (log/info "[native-module] Deserializing compressed key"
             {:fn         :compressed-key->public-key
              :public-key public-key})
-  (.multiformatDeserializePublicKey ^js (status) public-key deserialization-key callback))
+  (.multiformatDeserializePublicKey ^js (encryption) public-key deserialization-key callback))
 
 (defn hash-typed-data
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data")
-  (.hashTypedData ^js (status) data callback))
+  (.hashTypedData ^js (encryption) data callback))
 
 (defn hash-typed-data-v4
   "used for keycard"
   [data callback]
   (log/debug "[native-module] hash-typed-data-v4")
-  (.hashTypedDataV4 ^js (status) data callback))
+  (.hashTypedDataV4 ^js (encryption) data callback))
 
 (defn send-transaction-with-signature
   "used for keycard"
   [rpcParams sig callback]
   (log/debug "[native-module] send-transaction-with-signature")
-  (.sendTransactionWithSignature ^js (status) rpcParams sig callback))
+  (.sendTransactionWithSignature ^js (network) rpcParams sig callback))
 
 (defn sign-message
   "NOTE: beware, the password in rpcParams has to be sha3 hashed"
   [rpcParams callback]
   (log/debug "[native-module] sign-message")
-  (.signMessage ^js (status) rpcParams callback))
+  (.signMessage ^js (encryption) rpcParams callback))
 
 (defn recover-message
   [rpcParams callback]
   (log/debug "[native-module] recover")
-  (.recover ^js (status) rpcParams callback))
+  (.recover ^js (network) rpcParams callback))
 
 (defn send-transaction
   "NOTE: beware, the password has to be sha3 hashed"
   [rpcParams hashed-password callback]
   (log/debug "[native-module] send-transaction")
-  (.sendTransaction ^js (status) rpcParams hashed-password callback))
+  (.sendTransaction ^js (network) rpcParams hashed-password callback))
 
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] sign-typed-data")
-  (.signTypedData ^js (status) data account hashed-password callback))
+  (.signTypedData ^js (encryption) data account hashed-password callback))
 
 (defn sign-typed-data-v4
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
   (log/debug "[native-module] sign-typed-data-v4")
-  (.signTypedDataV4 ^js (status) data account hashed-password callback))
+  (.signTypedDataV4 ^js (encryption) data account hashed-password callback))
 
 (defn send-logs
   [dbJson js-logs callback]
   (log/debug "[native-module] send-logs")
-  (.sendLogs ^js (status) dbJson js-logs callback))
+  (.sendLogs ^js (log-manager) dbJson js-logs callback))
 
 (defn close-application
   []
@@ -365,7 +404,7 @@
 (defn set-blank-preview-flag
   [flag]
   (log/debug "[native-module] set-blank-preview-flag")
-  (.setBlankPreviewFlag ^js (status) flag))
+  (.setBlankPreviewFlag ^js (encryption) flag))
 
 (defn get-device-model-info
   []
@@ -393,7 +432,7 @@
 (defn toggle-webview-debug
   [on]
   (log/debug "[native-module] toggle-webview-debug" on)
-  (.toggleWebviewDebug ^js (status) on))
+  (.toggleWebviewDebug ^js (ui-helper) on))
 
 (defn rooted-device?
   [callback]
@@ -416,72 +455,72 @@
 (defn encode-transfer
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
-  (.encodeTransfer ^js (status) to-norm amount-hex))
+  (.encodeTransfer ^js (encryption) to-norm amount-hex))
 
 (defn decode-parameters
   [bytes-string types]
   (log/debug "[native-module] decode-parameters")
-  (let [json-str (.decodeParameters ^js (status)
+  (let [json-str (.decodeParameters ^js (encryption)
                                     (types/clj->json {:bytesString bytes-string :types types}))]
     (types/json->clj json-str)))
 
 (defn hex-to-number
   [hex]
   (log/debug "[native-module] hex-to-number")
-  (let [json-str (.hexToNumber ^js (status) hex)]
+  (let [json-str (.hexToNumber ^js (encryption) hex)]
     (types/json->clj json-str)))
 
 (defn number-to-hex
   [num]
   (log/debug "[native-module] number-to-hex")
-  (.numberToHex ^js (status) (str num)))
+  (.numberToHex ^js (encryption) (str num)))
 
 (defn sha3
   [s]
   (log/debug "[native-module] sha3")
   (when s
-    (.sha3 ^js (status) (str s))))
+    (.sha3 ^js (encryption) (str s))))
 
 (defn utf8-to-hex
   [s]
   (log/debug "[native-module] utf8-to-hex")
-  (.utf8ToHex ^js (status) s))
+  (.utf8ToHex ^js (encryption) s))
 
 (defn hex-to-utf8
   [s]
   (log/debug "[native-module] hex-to-utf8")
-  (.hexToUtf8 ^js (status) s))
+  (.hexToUtf8 ^js (encryption) s))
 
 (defn check-address-checksum
   [address]
   (log/debug "[native-module] check-address-checksum")
-  (let [result (.checkAddressChecksum ^js (status) address)]
+  (let [result (.checkAddressChecksum ^js (utils) address)]
     (types/json->clj result)))
 
 (defn address?
   [address]
   (log/debug "[native-module] address?")
   (when address
-    (let [result (.isAddress ^js (status) address)]
+    (let [result (.isAddress ^js (utils) address)]
       (types/json->clj result))))
 
 (defn to-checksum-address
   [address]
   (log/debug "[native-module] to-checksum-address")
-  (.toChecksumAddress ^js (status) address))
+  (.toChecksumAddress ^js (utils) address))
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
   [mnemonic callback]
   (log/debug "[native-module] validate-mnemonic")
-  (.validateMnemonic ^js (status) mnemonic callback))
+  (.validateMnemonic ^js (utils) mnemonic callback))
 
 (defn delete-multiaccount
   "Delete multiaccount from database, deletes multiaccount's database and
   key files."
   [key-uid callback]
   (log/debug "[native-module] delete-multiaccount")
-  (.deleteMultiaccount ^js (status) key-uid callback))
+  (.deleteMultiaccount ^js (account-manager) key-uid callback))
 
 (defn delete-imported-key
   "Delete imported key file."
@@ -493,7 +532,7 @@
   [input selection]
   (log/debug "[native-module] resetKeyboardInput")
   (when platform/android?
-    (.resetKeyboardInputCursor ^js (status) input selection)))
+    (.resetKeyboardInputCursor ^js (ui-helper) input selection)))
 
 ;; passwords are hashed
 (defn reset-password
@@ -501,12 +540,12 @@
   (log/debug "[native-module] change-database-password")
   (init-keystore
    key-uid
-   #(.reEncryptDbAndKeystore ^js (status) key-uid current-password# new-password# callback)))
+   #(.reEncryptDbAndKeystore ^js (encryption) key-uid current-password# new-password# callback)))
 
 (defn convert-to-keycard-account
   [{:keys [key-uid] :as multiaccount-data} settings current-password# new-password callback]
   (log/debug "[native-module] convert-to-keycard-account")
-  (.convertToKeycardAccount ^js (status)
+  (.convertToKeycardAccount ^js (encryption)
                             key-uid
                             (types/clj->json multiaccount-data)
                             (types/clj->json settings)
@@ -517,7 +556,7 @@
 
 (defn backup-disabled-data-dir
   []
-  (.backupDisabledDataDir ^js (status)))
+  (.backupDisabledDataDir ^js (utils)))
 
 (defn fleets
   []
@@ -525,12 +564,12 @@
 
 (defn keystore-dir
   []
-  (.keystoreDir ^js (status)))
+  (.keystoreDir ^js (utils)))
 
 (defn log-file-directory
   []
-  (.logFileDirectory ^js (status)))
+  (.logFileDirectory ^js (log-manager)))
 
 (defn init-status-go-logging
   [{:keys [enable? mobile-system? log-level callback]}]
-  (.initLogging ^js (status) enable? mobile-system? log-level callback))
+  (.initLogging ^js (log-manager) enable? mobile-system? log-level callback))

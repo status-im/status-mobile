@@ -21,7 +21,7 @@
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.worklets.chat.messages :as worklets]))
+    [utils.worklets.chat.messenger.messages :as worklets]))
 
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
@@ -137,7 +137,7 @@
   [chat-id cover-bg-color]
   (let [latest-pin-text                      (rf/sub [:chats/last-pinned-message-text chat-id])
         pins-count                           (rf/sub [:chats/pin-messages-count chat-id])
-        {:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])
+        {:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])
         community-channel?                   (= constants/community-chat-type chat-type)
         muted?                               (and muted (some? muted-till))
         mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)

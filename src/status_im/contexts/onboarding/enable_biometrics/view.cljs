@@ -16,7 +16,7 @@
 (defn page-title
   []
   [quo/text-combinations
-   {:container-style                 {:margin-top 12 :margin-horizontal 20}
+   {:container-style                 style/title-container
     :title                           (i18n/label :t/enable-biometrics)
     :title-accessibility-label       :enable-biometrics-title
     :description                     (i18n/label :t/use-biometrics)
@@ -51,9 +51,12 @@
 (defn enable-biometrics-parallax
   []
   (let [stretch (if rn/small-screen? 25 40)]
-    [parallax/video
-     {:layers  (:biometrics resources/parallax-video)
-      :stretch stretch}]))
+    [rn/view
+     {:position :absolute
+      :top      12}
+     [parallax/video
+      {:layers  (:biometrics resources/parallax-video)
+       :stretch stretch}]]))
 
 (defn enable-biometrics-simple
   []
