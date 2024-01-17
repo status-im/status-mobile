@@ -152,7 +152,9 @@
           :style               (style/user-message-content
                                 {:first-in-group? (:first-in-group? message-data)
                                  :outgoing        outgoing
-                                 :outgoing-status outgoing-status})
+                                 :outgoing-status outgoing-status
+                                 :small-screen?   rn/small-screen?
+                                 :preview?        preview?})
           :on-press            (fn []
                                  (if (and platform/ios? keyboard-shown?)
                                    (do

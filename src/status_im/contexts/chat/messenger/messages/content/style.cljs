@@ -16,10 +16,14 @@
      (assoc :margin-top 4))))
 
 (defn user-message-content
-  [{:keys [outgoing outgoing-status]}]
+  [{:keys [outgoing outgoing-status small-screen? preview?]}]
   {:border-radius      16
    :padding-horizontal 8
-   :padding-vertical   4
+   :padding-top        4
+   :padding-bottom     (if (and (not preview?)
+                                small-screen?)
+                         8
+                         4)
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
                          1)})
