@@ -3,18 +3,19 @@
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.share :as share]
     [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
+    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        share-title                   (str (:name account) " " (i18n/label :t/address))]
+        networks                      (rf/sub [:wallet/network-preference-details])
+        share-title                   (str (:name account) " " (i18n/label :t/address))
+        multichain-address            (utils/get-multichain-address networks address)]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
@@ -44,30 +45,22 @@
         :accessibility-label :copy-address
         :label               (i18n/label :t/copy-address)
         :on-press            (fn []
-                               (clipboard/set-string address)
+                               (clipboard/set-string multichain-address)
                                (rf/dispatch [:toasts/upsert
                                              {:type :positive
                                               :text (i18n/label :t/address-copied)}]))}
        {:icon                :i/qr-code
         :accessibility-label :show-address-qr
-        :label               (i18n/label :t/show-address-qr)}
+        :label               (i18n/label :t/show-address-qr)
+        :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
        {:icon                :i/share
         :accessibility-label :share-address
         :label               (i18n/label :t/share-address)
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
                                (js/setTimeout
-                                #(share/open
-                                  (if platform/ios?
-                                    {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                              :content address}
-                                                            :item            {:default {:type "text"
-                                                                                        :content
-                                                                                        address}}
-                                                            :linkMetadata    {:title share-title}}]}
-                                    {:title   share-title
-                                     :subject share-title
-                                     :message address}))
+                                #(rf/dispatch [:wallet/share-account
+                                               {:title share-title :content multichain-address}])
                                 600))}]]]))
 
 (defn view

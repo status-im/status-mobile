@@ -38,8 +38,8 @@
                                  (rn/dismiss-keyboard!)
                                  (rf/dispatch [:open-modal :scan-address]))
         :ens-regex             constants/regx-ens
-        :address-regex         constants/regx-address
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
+        :address-regex         constants/regx-multichain-address
         :on-detect-address     #(debounce/debounce-and-dispatch
                                  [:wallet/validate-address %]
                                  300)
@@ -48,8 +48,6 @@
                                   [:wallet/find-ens text contacts chain-id cb]
                                   300))
         :on-change-text        (fn [text]
-                                 (when-not (= scanned-address text)
-                                   (rf/dispatch [:wallet/clean-scanned-address]))
                                  (when (empty? text)
                                    (rf/dispatch [:wallet/clean-local-suggestions]))
                                  (reset! input-value text))
