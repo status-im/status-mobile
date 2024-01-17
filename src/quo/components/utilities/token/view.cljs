@@ -12,7 +12,7 @@
    [:cat
     [:map {:closed true}
      [:size {:optional true :default 32} [:or keyword? pos-int?]]
-     [:token {:optional true} [:or keyword? string?]]
+     [:token {:optional true} [:maybe keyword? string?]]
      [:style {:optional true} map?]
      ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
      [:image-source {:optional true} [:maybe [:or :schema.common/image-source :string]]]]]
