@@ -119,7 +119,7 @@
      :component lightbox/lightbox}
 
     {:name      :photo-selector
-     :options   {:sheet? true}
+     :options   (merge {:sheet? true} (options/statusbar-and-navbar-root))
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
@@ -202,14 +202,17 @@
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:theme                  :dark
-                 :layout                 options/onboarding-transparent-layout
-                 :animations             (merge transitions/new-to-status-modal-animations
-                                                transitions/push-animations-for-transparent-background)
-                 :popGesture             false
-                 :modalPresentationStyle :overCurrentContext
-                 :hardwareBackButton     {:dismissModalOnPress false
-                                          :popStackOnPress     false}}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme                  :dark
+                  :layout                 options/onboarding-transparent-layout
+                  :animations             (merge
+                                           transitions/new-to-status-modal-animations
+                                           transitions/push-animations-for-transparent-background)
+                  :popGesture             false
+                  :modalPresentationStyle :overCurrentContext
+                  :hardwareBackButton     {:dismissModalOnPress false
+                                           :popStackOnPress     false}})
      :component enable-biometrics/view}
 
     {:name      :generating-keys
@@ -229,11 +232,14 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:theme                  :dark
-                 :layout                 options/onboarding-transparent-layout
-                 :animations             (merge transitions/new-to-status-modal-animations
-                                                transitions/push-animations-for-transparent-background)
-                 :modalPresentationStyle :overCurrentContext}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme                  :dark
+                  :layout                 options/onboarding-transparent-layout
+                  :animations             (merge
+                                           transitions/new-to-status-modal-animations
+                                           transitions/push-animations-for-transparent-background)
+                  :modalPresentationStyle :overCurrentContext})
      :component enable-notifications/view}
 
     {:name      :identifiers
@@ -281,9 +287,11 @@
      :component syncing-results/view}
 
     {:name      :welcome
-     :options   {:theme      :dark
-                 :layout     options/onboarding-transparent-layout
-                 :animations transitions/push-animations-for-transparent-background}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme      :dark
+                  :layout     options/onboarding-transparent-layout
+                  :animations transitions/push-animations-for-transparent-background})
      :component welcome/view}
 
     {:name      :emoji-picker
