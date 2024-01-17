@@ -35,7 +35,8 @@
         network-preference-details                     (rf/sub [:wallet/network-preference-details])
         multichain-address                             (utils/get-multichain-address
                                                         network-preference-details
-                                                        address)]
+                                                        address)
+        share-title                                    (str name " " (i18n/label :t/address))]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -77,9 +78,19 @@
                                               {:type :positive
                                                :text (i18n/label :t/address-copied)}])
                                 (clipboard/set-string multichain-address))}
+        {:icon                :i/qr-code
+         :accessibility-label :show-address-qr
+         :label               (i18n/label :t/show-address-qr)
+         :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
         {:icon                :i/share
          :accessibility-label :share-account
-         :label               (i18n/label :t/share-account)}
+         :label               (i18n/label :t/share-address)
+         :on-press            (fn []
+                                (rf/dispatch [:hide-bottom-sheet])
+                                (js/setTimeout
+                                 #(rf/dispatch [:wallet/share-account
+                                                {:title share-title :content address}])
+                                 600))}
         {:add-divider?        (not show-account-selector?)
          :icon                :i/delete
          :accessibility-label :remove-account

@@ -3,8 +3,6 @@
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.share :as share]
     [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
@@ -53,26 +51,16 @@
                                               :text (i18n/label :t/address-copied)}]))}
        {:icon                :i/qr-code
         :accessibility-label :show-address-qr
-        :label               (i18n/label :t/show-address-qr)}
+        :label               (i18n/label :t/show-address-qr)
+        :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
        {:icon                :i/share
         :accessibility-label :share-address
         :label               (i18n/label :t/share-address)
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
                                (js/setTimeout
-                                #(share/open
-                                  (if platform/ios?
-                                    {:activityItemSources [{:placeholderItem {:type "text"
-                                                                              :content
-                                                                              multichain-address}
-                                                            :item            {:default
-                                                                              {:type "text"
-                                                                               :content
-                                                                               multichain-address}}
-                                                            :linkMetadata    {:title share-title}}]}
-                                    {:title   share-title
-                                     :subject share-title
-                                     :message multichain-address}))
+                                #(rf/dispatch [:wallet/share-account
+                                               {:title share-title :content multichain-address}])
                                 600))}]]]))
 
 (defn view

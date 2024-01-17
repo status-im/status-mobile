@@ -23,6 +23,7 @@
     status-im.contexts.profile.settings.events
     status-im.contexts.shell.share.events
     status-im.contexts.syncing.events
+    status-im.contexts.wallet.effects
     status-im.contexts.wallet.events
     status-im.contexts.wallet.send.events
     [status-im.db :as db]
