@@ -3,6 +3,7 @@
     [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
     [utils.money :as money]
@@ -47,10 +48,21 @@
             (update-in [:wallet :ui :send] dissoc :to-address))
     :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]}))
 
-(fn [{:keys [db]} [{:keys [address token stack-id]}]]
-  {:db (assoc-in db [:wallet :ui :send :to-address] address)
-   :fx [[:navigate-to-within-stack
-         (if token [:wallet-send-input-amount stack-id] [:wallet-select-asset stack-id])]]})
+(rf/reg-event-fx :wallet/clean-send-address
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
+
+(rf/reg-event-fx :wallet/select-send-address
+ (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
+   (let [[prefix to-address] (utils/split-prefix-and-address address)]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :recipient] (or recipient address))
+              (assoc-in [:wallet :ui :send :to-address] to-address)
+              (assoc-in [:wallet :ui :send :address-prefix] prefix))
+      :fx [[:navigate-to-within-stack
+            (if token
+              [:wallet-send-input-amount stack-id]
+              [:wallet-select-asset stack-id])]]})))
 
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
@@ -174,4 +186,3 @@
                                                 {:event  :wallet/send-transaction
                                                  :error  error
                                                  :params request-params}))}]})))
-

@@ -1,6 +1,9 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
             [clojure.walk :as walk]
+            [legacy.status-im.data-store.chats :as data-store.chats]
+            [react-native.platform :as platform]
+            [react-native.share :as share]
             [status-im.constants :as constants]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
@@ -219,3 +222,29 @@
    {:db (assoc db
                :communities/selected-permission-addresses
                (get-in db [:communities/previous-permission-addresses]))}))
+
+(rf/reg-event-fx :communities/share-community-channel-url-with-data
+ (fn [_ [chat-id]]
+   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)
+         title                             (i18n/label :t/channel-on-status)]
+     {:json-rpc/call
+      [{:method     "wakuext_shareCommunityChannelURLWithData"
+        :params     [{:CommunityID community-id :ChannelID channel-id}]
+        :on-success (fn [url]
+                      (share/open
+                       (if platform/ios?
+                         {:activityItemSources [{:placeholderItem {:type    "text"
+                                                                   :content title}
+                                                 :item            {:default {:type    "url"
+                                                                             :content url}}
+                                                 :linkMetadata    {:title title}}]}
+                         {:title     title
+                          :subject   title
+                          :message   url
+                          :url       url
+                          :isNewTask true})))
+        :on-error   (fn [err]
+                      (log/error "failed to retrieve community channel url with data"
+                                 {:error   err
+                                  :chat-id chat-id
+                                  :event   "share-community-channel-url-with-data"}))}]})))

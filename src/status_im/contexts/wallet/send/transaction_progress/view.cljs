@@ -22,6 +22,10 @@
   []
   (let [current-address (rf/sub [:wallet/current-viewing-account-address])
         leave-page      (fn []
+                          (rf/dispatch [:wallet/clean-scanned-address])
+                          (rf/dispatch [:wallet/clean-local-suggestions])
+                          (rf/dispatch [:wallet/clean-send-address])
+                          (rf/dispatch [:wallet/select-address-tab nil])
                           (rf/dispatch [:navigate-to :wallet-accounts current-address]))
         status          (reagent/atom :sending)
         {:keys [color]} (rf/sub [:wallet/current-viewing-account])]

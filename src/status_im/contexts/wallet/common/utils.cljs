@@ -179,6 +179,7 @@
     "<$0.01"
     (prettify-balance currency-symbol fiat-value)))
 
+
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
@@ -201,3 +202,15 @@
      :customization-color color
      :values              {:crypto-value crypto-value
                            :fiat-value   fiat-value}}))
+
+(defn get-multichain-address
+  [networks address]
+  (str (->> networks
+            (map #(str (:short-name %) ":"))
+            (clojure.string/join ""))
+       address))
+
+(defn split-prefix-and-address
+  [input-string]
+  (let [split-result (string/split input-string #"0x")]
+    [(first split-result) (str "0x" (second split-result))]))
