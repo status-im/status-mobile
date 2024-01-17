@@ -202,3 +202,15 @@
      :customization-color color
      :values              {:crypto-value crypto-value
                            :fiat-value   fiat-value}}))
+
+(defn get-multichain-address
+  [networks address]
+  (str (->> networks
+            (map #(str (:short-name %) ":"))
+            (clojure.string/join ""))
+       address))
+
+(defn split-prefix-and-address
+  [input-string]
+  (let [split-result (string/split input-string #"0x")]
+    [(first split-result) (str "0x" (second split-result))]))

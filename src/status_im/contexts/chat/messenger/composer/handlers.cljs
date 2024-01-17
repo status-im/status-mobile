@@ -16,18 +16,20 @@
 (defn focus
   "Animate to the `saved-height`, display background-overlay if needed, and set cursor position"
   [{:keys [input-ref] :as props}
-   {:keys [text-value focused? lock-selection? saved-cursor-position composer-focused?]}
+   {:keys [text-value focused? lock-selection? saved-cursor-position composer-focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]
     :as   animations}
    {:keys [max-height] :as dimensions}]
   (reanimated/set-shared-value composer-focused? true)
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
-  (let [last-height-value (reanimated/get-shared-value last-height)]
-    (reanimated/animate height last-height-value)
-    (reanimated/set-shared-value saved-height last-height-value)
+  (let [last-height-value (reanimated/get-shared-value last-height)
+        new-height        (min max-height last-height-value)]
+    (reanimated/animate height new-height)
+    (reanimated/set-shared-value saved-height new-height)
     (reanimated/animate container-opacity 1)
     (when (> last-height-value (* constants/background-threshold max-height))
+      (reset! maximized? true)
       (reanimated/animate opacity 1)
       (reanimated/set-shared-value background-y 0)))
 

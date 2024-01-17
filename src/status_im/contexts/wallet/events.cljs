@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
+    [react-native.platform :as platform]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -129,9 +130,7 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (-> db
-           (dissoc :wallet/scanned-address :wallet/send-address)
-           (update-in [:wallet :ui :send] dissoc :to-address))})
+  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
@@ -301,10 +300,6 @@
      (background-timer/clear-timeout current-timeout)
      {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
 
-(rf/reg-event-fx :wallet/clean-account-selection
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :send-account-address)}))
-
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
    {:db (assoc-in db
@@ -335,3 +330,17 @@
 (rf/reg-event-fx :wallet/initialize
  (fn []
    {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
+
+(rf/reg-event-fx :wallet/share-account
+ (fn [_ [{:keys [content title]}]]
+   {:fx [[:effects.share/open
+          (if platform/ios?
+            {:activityItemSources
+             [{:placeholderItem {:type    "text"
+                                 :content content}
+               :item            {:default {:type    "text"
+                                           :content content}}
+               :linkMetadata    {:title title}}]}
+            {:title   title
+             :subject title
+             :message content})]]}))

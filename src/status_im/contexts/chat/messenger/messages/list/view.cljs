@@ -21,7 +21,7 @@
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.worklets.chat.messages :as worklets]))
+    [utils.worklets.chat.messenger.messages :as worklets]))
 
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
