@@ -38,13 +38,8 @@
                                  (rn/dismiss-keyboard!)
                                  (rf/dispatch [:open-modal :scan-address]))
         :ens-regex             constants/regx-ens
-<<<<<<< HEAD
-        :address-regex         constants/regx-address
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
-=======
         :address-regex         constants/regx-multichain-address
-        :scanned-value         (or send-address scanned-address)
->>>>>>> 56cce6c62 (review)
         :on-detect-address     #(debounce/debounce-and-dispatch
                                  [:wallet/validate-address %]
                                  300)

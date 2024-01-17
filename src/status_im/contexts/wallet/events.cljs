@@ -129,21 +129,7 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
-=======
-         (println "cleaniingggg")
-=======
-  (println "cleaniingggg")
->>>>>>> 503ffe845 (loading routes ui)
-=======
->>>>>>> 2f11bf5f4 (loading routes ui)
-  {:db (-> db
-           (dissoc :wallet/scanned-address :wallet/send-address)
-           (update-in [:wallet :ui :send] dissoc :to-address))})
->>>>>>> 443f27004 (updates)
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
