@@ -15,7 +15,7 @@
     :type    :select
     :options [{:key :default}
               {:key :active}
-              {:key :selected}]}
+              {:key :pressed}]}
    {:key     :network-name
     :type    :select
     :options [{:key :ethereum}
