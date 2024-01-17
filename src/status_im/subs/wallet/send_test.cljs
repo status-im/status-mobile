@@ -12,3 +12,44 @@
   (testing "returns active tab for selecting address"
     (swap! rf-db/app-db assoc-in [:wallet :ui :send :select-address-tab] :tabs/recent)
     (is (= :tabs/recent (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/send-transaction-ids
+  [sub-name]
+  (testing "returns the transaction ids attached the last send flow"
+    (swap! rf-db/app-db assoc-in [:wallet :ui :send :transaction-ids] ["0x123" "0x321"])
+    (is (= ["0x123" "0x321"] (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/send-transaction-progress
+  [sub-name]
+  (testing "returns transaction data for a transaction with multiple transactions"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :transactions]
+      {"0x123" {:status   :pending
+                :id       240
+                :chain-id 5}
+       "0x321" {:status   :pending
+                :id       240
+                :chain-id 1}})
+    (swap! rf-db/app-db assoc-in [:wallet :ui :send :transaction-ids] ["0x123" "0x321"])
+    (is (= {"0x123" {:status   :pending
+                     :id       240
+                     :chain-id 5}
+            "0x321" {:status   :pending
+                     :id       240
+                     :chain-id 1}}
+           (rf/sub [sub-name]))))
+
+  (testing "returns transaction data for a transaction with a single transaction"
+    (swap! rf-db/app-db assoc-in
+      [:wallet :transactions]
+      {"0x123" {:status   :pending
+                :id       100
+                :chain-id 5}
+       "0x321" {:status   :pending
+                :id       240
+                :chain-id 1}})
+    (swap! rf-db/app-db assoc-in [:wallet :ui :send :transaction-ids] ["0x123"])
+    (is (= {"0x123" {:status   :pending
+                     :id       100
+                     :chain-id 5}}
+           (rf/sub [sub-name])))))

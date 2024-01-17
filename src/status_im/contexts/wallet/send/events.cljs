@@ -10,9 +10,12 @@
     [utils.number]
     [utils.re-frame :as rf]))
 
+(rf/reg-event-fx :wallet/clean-send-data
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui] dissoc :send)}))
+
 (rf/reg-event-fx :wallet/select-address-tab
  (fn [{:keys [db]} [tab]]
-
    {:db (assoc-in db [:wallet :ui :send :select-address-tab] tab)}))
 
 (rf/reg-event-fx :wallet/suggested-routes-success
@@ -126,14 +129,21 @@
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
-   (let [transaction-hashes (:hashes transaction)
-         chain-id           (key (first transaction-hashes))
-         tx-id              (first (val (first transaction-hashes)))
-         transaction-detes  {:status   :pending
-                             :id       (:id transaction)
-                             :chain-id chain-id}]
-     {:db (assoc-in db [:wallet :transactions tx-id] transaction-detes)
-      :fx [[:dispatch [:navigate-to :wallet-transaction-progress]]]})))
+   (let [transaction-batch-id (:id transaction)
+         transaction-hashes   (:hashes transaction)
+         transaction-ids      (flatten (vals transaction-hashes))
+         transaction-details  (send-utils/map-multitransaction-by-ids transaction-batch-id
+                                                                      transaction-hashes)]
+     {:db (-> db
+              (assoc-in [:wallet :transactions] transaction-details)
+              (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
+      :fx [[:dispatch
+            [:navigate-to-within-stack
+             [:wallet-transaction-progress :wallet-transaction-confirmation]]]]})))
+
+(rf/reg-event-fx :wallet/close-transaction-progress-page
+ (fn [_]
+   {:fx [[:dispatch [:dismiss-modal :wallet-transaction-progress]]]}))
 
 (defn- transaction-bridge
   [{:keys [from-address to-address route]}]

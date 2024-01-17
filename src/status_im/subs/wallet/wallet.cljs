@@ -219,3 +219,8 @@
    (map (fn [{:keys [color] :as account}]
           (assoc account :customization-color color))
         accounts)))
+
+(rf/reg-sub
+ :wallet/transactions
+ :<- [:wallet]
+ :-> :transactions)
