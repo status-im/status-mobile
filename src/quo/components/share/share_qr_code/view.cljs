@@ -185,30 +185,37 @@
 
 (defn- view-internal
   "Receives the following properties:
-   - type:                :profile | :wallet-legacy | :wallet-multichain
-   - qr-image-uri:        Image source value.
-   - qr-data:             Text to show below the QR code.
-   - on-text-press:       Callback for the `qr-data` text.
-   - on-text-long-press:  Callback for the `qr-data` text.
-   - on-share-press:      Callback for the share button.
-   - customization-color: Custom color for the QR code component.
-   - unblur-on-android?:  [Android only] disables blur for this component.
+   - type:                  :profile | :wallet | :saved-address | :watched-address
+   - qr-image-uri:          Image source value.
+   - qr-data:               Text to show below the QR code.
+   - on-text-press:         Callback for the `qr-data` text.
+   - on-text-long-press:    Callback for the `qr-data` text.
+   - on-share-press:        Callback for the share button.
+   - customization-color:   Custom color for the QR code component.
+   - unblur-on-android?:    [Android only] disables blur for this component.
+   - full-name:             User full name.
 
    Depending on the `type`, different properties are accepted:
    `:profile`
-     - full-name:       User full name.
-     - profile-picture: map ({:source image-source}) or any image source.
-   `:wallet-legacy`
+     - profile-picture:     map ({:source image-source}) or any image source.
+   `:wallet`
+     - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
      - emoji:               Emoji in a string to show in the QR code.
      - on-legacy-press:     Callback for the legacy tab.
      - on-multichain-press: Callback for the multichain tab.
-     - watched-account?     Boolean
-   `:wallet-multichain`
+     - address:             :legacy | :multichain
+   `:saved-address`
+     - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
+     - on-settings-press:   Callback for the settings button.
+     - on-legacy-press:     Callback for the legacy tab.
+     - address:             :legacy | :multichain
+     - on-multichain-press: Callback for the multichain tab.
+   `:watched-address`
      - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
      - on-settings-press:   Callback for the settings button.
      - emoji:               Emoji in a string to show in the QR code.
      - on-legacy-press:     Callback for the legacy tab.
-     - watched-account?     Boolean
+     - address:             :legacy | :multichain
      - on-multichain-press: Callback for the multichain tab.
 
      WARNING on Android:
