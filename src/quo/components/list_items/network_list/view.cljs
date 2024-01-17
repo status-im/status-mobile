@@ -1,12 +1,12 @@
 (ns quo.components.list-items.network-list.view
   (:require
-    [clojure.string :as string]
-    [quo.components.list-items.network-list.style :as style]
-    [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [schema.core :as schema]))
+   [clojure.string :as string]
+   [quo.components.list-items.network-list.style :as style]
+   [quo.components.markdown.text :as text]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [schema.core :as schema]))
 
 (defn- info
   [{:keys [network-image label]}]
@@ -61,7 +61,6 @@
       (let [internal-state (if @pressed?
                              :pressed
                              state)]
-
         [rn/pressable
          {:style               (style/container internal-state customization-color theme)
           :on-press-in         on-press-in
@@ -73,4 +72,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+    (schema/instrument #'view-internal ?schema)))

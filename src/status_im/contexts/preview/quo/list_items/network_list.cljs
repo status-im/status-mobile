@@ -1,9 +1,9 @@
 (ns status-im.contexts.preview.quo.list-items.network-list
   (:require
-    [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
-    [reagent.core :as reagent]
-    [status-im.contexts.preview.quo.preview :as preview]))
+   [quo.core :as quo]
+   [quo.foundations.resources :as quo.resources]
+   [reagent.core :as reagent]
+   [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor
   [{:key     :state
