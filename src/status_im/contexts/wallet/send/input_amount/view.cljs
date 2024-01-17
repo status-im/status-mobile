@@ -104,7 +104,6 @@
                                           (reset! input-value (str current-limit-amount))
                                           (reset! input-value v))
                                         (reagent/flush))))]
-    (println "tokenx" (get-in token [:market-values-per-currency :usd :price]))
     (fn [{:keys [on-confirm]
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
                                            {:amount   @input-value
