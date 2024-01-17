@@ -459,3 +459,49 @@
                                       :loading?    checking-permissions?
                                       :img-src     token-image-eth}]]}
            (rf/sub [sub-name community-id])))))
+
+(h/deftest-sub :communities/airdrop-account
+  [sub-name]
+  (testing "returns airdrop account"
+    (swap! rf-db/app-db assoc
+      :communities/airdrop-address
+      "0x1"
+      :wallet {:accounts {"0x1" {:address "0x1"
+                                 :color   :blue
+                                 :name    "account1"}
+                          "0x2" {:address "0x2"
+                                 :color   :orange
+                                 :name    "account2"}}})
+    (is (match? {:address                   "0x1"
+                 :network-preferences-names #{}
+                 :name                      "account1"
+                 :color                     :blue
+                 :customization-color       :blue}
+                (rf/sub [sub-name])))))
+
+(h/deftest-sub :communities/selected-permission-accounts
+  [sub-name]
+  (testing "returns selected permission accounts"
+    (swap! rf-db/app-db assoc
+      :communities/selected-permission-addresses
+      #{"0x1" "0x3"}
+      :wallet {:accounts {"0x1" {:address "0x1"
+                                 :color   :blue
+                                 :name    "account1"}
+                          "0x2" {:address "0x2"
+                                 :color   :orange
+                                 :name    "account2"}
+                          "0x3" {:address "0x3"
+                                 :color   :purple
+                                 :name    "account3"}}})
+    (is (match? [{:address                   "0x1"
+                  :color                     :blue
+                  :customization-color       :blue
+                  :network-preferences-names #{}
+                  :name                      "account1"}
+                 {:address                   "0x3"
+                  :color                     :purple
+                  :customization-color       :purple
+                  :network-preferences-names #{}
+                  :name                      "account3"}]
+                (rf/sub [sub-name])))))

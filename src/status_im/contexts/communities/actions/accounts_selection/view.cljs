@@ -10,25 +10,21 @@
     [utils.re-frame :as rf]))
 
 (defn- join-community-and-navigate-back
-  [id addresses-for-permissions]
+  [id]
   (rf/dispatch [:password-authentication/show
                 {:content (fn [] [password-authentication/view])}
                 {:label    (i18n/label :t/join-open-community)
-                 :on-press #(rf/dispatch [:communities/request-to-join
-                                          {:community-id        id
-                                           :password            %
-                                           :addresses-to-reveal addresses-for-permissions}])}])
+                 :on-press #(rf/dispatch [:communities/request-to-join-with-addresses
+                                          {:community-id id
+                                           :password     %}])}])
   (rf/dispatch [:navigate-back]))
 
 (defn f-view-internal
   []
-  (let [{id :community-id}            (rf/sub [:get-screen-params])
-        {:keys [name color images]}   (rf/sub [:communities/community id])
-        accounts                      (rf/sub [:wallet/accounts-with-customization-color])
-        selected-permission-addresses (rf/sub [:communities/selected-permission-addresses])
-        selected-accounts             (filter #(contains? selected-permission-addresses
-                                                          (:address %))
-                                              accounts)]
+  (let [{id :community-id}          (rf/sub [:get-screen-params])
+        {:keys [name color images]} (rf/sub [:communities/community id])
+        airdrop-account             (rf/sub [:communities/airdrop-account])
+        selected-accounts           (rf/sub [:communities/selected-permission-accounts])]
     (rn/use-effect (fn []
                      (rf/dispatch [:communities/initialize-permission-addresses]))
                    [])
@@ -71,8 +67,8 @@
                       :action            :arrow
                       :label             :preview
                       :label-props       {:type :accounts
-                                          :data [(first accounts)]}
-                      :description-props {:text (-> accounts first :name)}}]}]
+                                          :data [airdrop-account]}
+                      :description-props {:text (:name airdrop-account)}}]}]
        [quo/text
         {:style               style/section-title
          :accessibility-label :community-rules-title
@@ -86,7 +82,7 @@
         :track-text          (i18n/label :t/slide-to-request-to-join)
         :track-icon          :i/face-id
         :customization-color color
-        :on-complete         #(join-community-and-navigate-back id selected-permission-addresses)}]]]))
+        :on-complete         #(join-community-and-navigate-back id)}]]]))
 
 (defn view
   []

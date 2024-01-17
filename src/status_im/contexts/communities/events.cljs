@@ -190,20 +190,35 @@
 
 (defn initialize-permission-addresses
   [{:keys [db]}]
-  (let [accounts  (get-in db [:wallet :accounts])
-        addresses (set (map :address (vals accounts)))]
+  (let [accounts        (get-in db [:wallet :accounts])
+        sorted-accounts (sort-by :position (vals accounts))
+        addresses       (set (map :address sorted-accounts))]
     {:db (assoc db
                 :communities/previous-permission-addresses addresses
-                :communities/selected-permission-addresses addresses)}))
+                :communities/selected-permission-addresses addresses
+                :communities/airdrop-address               (:address (first sorted-accounts)))}))
 
 (rf/reg-event-fx :communities/initialize-permission-addresses
  initialize-permission-addresses)
 
+(defn update-previous-permission-addresses
+  [{:keys [db]}]
+  (let [accounts                      (get-in db [:wallet :accounts])
+        sorted-accounts               (sort-by :position (vals accounts))
+        selected-permission-addresses (get-in db [:communities/selected-permission-addresses])
+        selected-accounts             (filter #(contains? selected-permission-addresses
+                                                          (:address %))
+                                              sorted-accounts)
+        current-airdrop-address       (get-in db [:communities/airdrop-address])]
+    {:db (assoc db
+                :communities/previous-permission-addresses selected-permission-addresses
+                :communities/airdrop-address               (if (contains? selected-permission-addresses
+                                                                          current-airdrop-address)
+                                                             current-airdrop-address
+                                                             (:address (first selected-accounts))))}))
+
 (rf/reg-event-fx :communities/update-previous-permission-addresses
- (fn [{:keys [db]}]
-   {:db (assoc db
-               :communities/previous-permission-addresses
-               (get-in db [:communities/selected-permission-addresses]))}))
+ update-previous-permission-addresses)
 
 (defn toggle-selected-permission-address
   [{:keys [db]} [address]]
@@ -248,3 +263,7 @@
                                  {:error   err
                                   :chat-id chat-id
                                   :event   "share-community-channel-url-with-data"}))}]})))
+
+(rf/reg-event-fx :communities/set-airdrop-address
+ (fn [{:keys [db]} [address]]
+   {:db (assoc db :communities/airdrop-address address)}))

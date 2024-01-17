@@ -459,3 +459,25 @@
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
       (is (match? 2 (count tokens)))
       (is (match? "$4506.00" formatted-balance)))))
+
+(h/deftest-sub :wallet/accounts-with-customization-color
+  [sub-name]
+  (testing "returns all accounts with customization color"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :networks] network-data)))
+    (is
+     (= [(-> accounts
+             (get "0x1")
+             (assoc :customization-color :blue)
+             (assoc :network-preferences-names #{:ethereum :arbitrum :optimism}))
+         (-> accounts
+             (get "0x2")
+             (assoc :customization-color :purple)
+             (assoc :network-preferences-names #{:ethereum :arbitrum :optimism}))
+         (-> accounts
+             (get "0x3")
+             (assoc :customization-color :magenta)
+             (assoc :network-preferences-names #{}))]
+        (rf/sub [sub-name])))))

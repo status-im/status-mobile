@@ -8,26 +8,21 @@
     [utils.re-frame :as rf]))
 
 (defn- render-item
-  [item]
+  [item _ _ airdrop-address]
   [quo/account-item
    {:account-props item
+    :state         (when (= airdrop-address (:address item)) :selected)
+    :on-press      (fn []
+                     (rf/dispatch [:communities/set-airdrop-address (:address item)])
+                     (rf/dispatch [:navigate-back]))
     :emoji         (:emoji item)}])
-
-(defn- accounts-list
-  [{:keys [accounts]}]
-  [rn/view {:style style/account-list-container}
-   (when (seq accounts)
-     [rn/flat-list
-      {:data      accounts
-       :render-fn render-item
-       :key-fn    :address}])])
 
 (defn view
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name images color]} (rf/sub [:communities/community id])
-        logo-uri                    (get-in images [:thumbnail :uri])
-        accounts                    (rf/sub [:wallet/accounts-with-customization-color])]
+        selected-accounts           (rf/sub [:communities/selected-permission-accounts])
+        airdrop-address             (rf/sub [:communities/airdrop-address])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag
@@ -37,7 +32,9 @@
        :on-button-press     not-implemented/alert
        :community-logo      (get-in images [:thumbnail :uri])
        :customization-color color}]
-     [accounts-list
-      {:accounts       accounts
-       :logo-uri       logo-uri
-       :community-name name}]]))
+     [rn/flat-list
+      {:data                    selected-accounts
+       :render-fn               render-item
+       :render-data             airdrop-address
+       :content-container-style style/account-list-container
+       :key-fn                  :address}]]))
