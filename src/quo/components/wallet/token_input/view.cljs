@@ -18,7 +18,7 @@
   (let [num-value (if (string? value) (parse-double (or value "0")) value)]
     (if crypto?
       (str (get common/currency-label currency) (.toFixed (* num-value conversion) 2))
-      (str (.toFixed (/ num-value conversion) crypto-decimals)
+      (str (.toFixed (/ num-value conversion) (or crypto-decimals 2))
            " "
            (string/upper-case (or (clj->js token) ""))))))
 
