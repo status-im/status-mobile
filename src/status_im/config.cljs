@@ -15,7 +15,7 @@
 (goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
 (goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
 (goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
-(goog-define OPENSEA_API_KEY "")
+(goog-define OPENSEA_API_KEY "f3a0ae6a19004122b28e0097fff6d7d9")
 
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
