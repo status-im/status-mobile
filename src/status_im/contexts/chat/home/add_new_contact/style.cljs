@@ -21,7 +21,7 @@
   []
   {:size   :heading-1
    :weight :semi-bold
-   :style  {:margin-top    32
+   :style  {:margin-top    28
             :margin-bottom 6
             :color         (colors/theme-colors colors/neutral-100 colors/white)}})
 
