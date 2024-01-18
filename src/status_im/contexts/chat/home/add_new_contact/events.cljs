@@ -104,7 +104,7 @@
       :empty            {:db (dissoc db :contacts/new-identity)}
       (:valid :invalid) {:db (assoc db :contacts/new-identity contact)}
       :decompress-key   {:db (assoc db :contacts/new-identity contact)
-                         :effects.contacts/decompress-public-key
+                         :serialization/decompress-public-key
                          {:compressed-key id
                           :on-success
                           (dispatcher :contacts/set-new-identity-success input)

@@ -259,12 +259,6 @@
   {:type    :wallet-account
    :account (when account (string/lower-case account))})
 
-(defn community-route-type
-  [route-params]
-  (if (string/starts-with? (:community-id route-params) "z")
-    :desktop-community
-    :community))
-
 (defn handle-uri
   [chain chats uri cb]
   (let [{:keys [handler route-params query-params]} (match-uri uri)]
@@ -297,14 +291,14 @@
       (cb {:type handler :community-id (:community-id route-params)})
 
       (and (= handler :community) (:community-id route-params))
-      (cb {:type         (community-route-type route-params)
+      (cb {:type         :community
            :community-id (:community-id route-params)})
 
       (and (= handler :community-chat) (:community-channel-id route-params) (:community-id route-params))
       (match-community-channel-async route-params cb)
 
       (and (= handler :community-chat) (:community-id route-params))
-      (cb {:type         (community-route-type route-params)
+      (cb {:type         :community
            :community-id (:community-id route-params)})
 
       ;; NOTE: removed in `match-uri`, might need this in the future

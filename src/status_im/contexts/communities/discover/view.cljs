@@ -20,11 +20,11 @@
       [quo/community-card-view-item
        {:community (assoc item :cover cover)
         :width     width
-        :on-press  #(rf/dispatch [:navigate-to :community-overview (:id item)])}]
+        :on-press  #(rf/dispatch [:communities/navigate-to-community-overview (:id item)])}]
       [quo/community-list-item
        {:on-press      (fn []
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:navigate-to :community-overview (:id item)]))
+                         (rf/dispatch [:communities/navigate-to-community-overview (:id item)]))
         :on-long-press #(rf/dispatch
                          [:show-bottom-sheet
                           {:content (fn []
@@ -142,12 +142,13 @@
            (if (= view-type :card-view)
              [quo/community-card-view-item
               {:community (assoc community :cover cover)
-               :on-press  #(rf/dispatch [:navigate-to :community-overview (:id community)])}]
+               :on-press  #(rf/dispatch [:communities/navigate-to-community-overview (:id community)])}]
 
              [quo/community-list-item
               {:on-press      (fn []
                                 (rf/dispatch [:dismiss-keyboard])
-                                (rf/dispatch [:navigate-to :community-overview (:id community)]))
+                                (rf/dispatch [:communities/navigate-to-community-overview
+                                              (:id community)]))
                :on-long-press #(js/alert "TODO: to be implemented")}
               community])]))
       (if communities communities communities-ids))

@@ -1,12 +1,17 @@
 (ns status-im.contexts.communities.events
   (:require [clojure.set :as set]
+            [clojure.string :as string]
             [clojure.walk :as walk]
             [legacy.status-im.data-store.chats :as data-store.chats]
+            [legacy.status-im.mailserver.core :as mailserver]
             [react-native.platform :as platform]
             [react-native.share :as share]
+            [schema.core :as schema]
             [status-im.constants :as constants]
+            [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
             status-im.contexts.communities.actions.community-options.events
             status-im.contexts.communities.actions.leave.events
+            [status-im.navigation.events :as navigation]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -71,14 +76,19 @@
    (when community-js
      (let [{:keys [token-permissions
                    token-permissions-check joined id]
-            :as   community}      (<-rpc community-js)
-           has-token-permissions? (not (seq token-permissions))]
+            :as   community} (<-rpc community-js)
+           has-channel-perm? (fn [id-perm-tuple]
+                               (let [{:keys [type]} (second id-perm-tuple)]
+                                 (or (= type constants/community-token-permission-can-view-channel)
+                                     (=
+                                      type
+                                      constants/community-token-permission-can-view-and-post-channel))))]
        {:db (assoc-in db [:communities id] community)
-        :fx [(when (and has-token-permissions? (not joined))
+        :fx [(when (not joined)
                [:dispatch [:chat.ui/spectate-community id]])
-             (when (and has-token-permissions? (nil? token-permissions-check))
+             (when (nil? token-permissions-check)
                [:dispatch [:communities/check-permissions-to-join-community id]])
-             (when (and has-token-permissions? (not (get-in db [:community-channels-permissions id])))
+             (when (some has-channel-perm? token-permissions)
                [:dispatch [:communities/check-all-community-channels-permissions id]])]}))))
 
 (rf/defn handle-removed-chats
@@ -190,20 +200,35 @@
 
 (defn initialize-permission-addresses
   [{:keys [db]}]
-  (let [accounts  (get-in db [:wallet :accounts])
-        addresses (set (map :address (vals accounts)))]
+  (let [accounts        (get-in db [:wallet :accounts])
+        sorted-accounts (sort-by :position (vals accounts))
+        addresses       (set (map :address sorted-accounts))]
     {:db (assoc db
                 :communities/previous-permission-addresses addresses
-                :communities/selected-permission-addresses addresses)}))
+                :communities/selected-permission-addresses addresses
+                :communities/airdrop-address               (:address (first sorted-accounts)))}))
 
 (rf/reg-event-fx :communities/initialize-permission-addresses
  initialize-permission-addresses)
 
+(defn update-previous-permission-addresses
+  [{:keys [db]}]
+  (let [accounts                      (get-in db [:wallet :accounts])
+        sorted-accounts               (sort-by :position (vals accounts))
+        selected-permission-addresses (get-in db [:communities/selected-permission-addresses])
+        selected-accounts             (filter #(contains? selected-permission-addresses
+                                                          (:address %))
+                                              sorted-accounts)
+        current-airdrop-address       (get-in db [:communities/airdrop-address])]
+    {:db (assoc db
+                :communities/previous-permission-addresses selected-permission-addresses
+                :communities/airdrop-address               (if (contains? selected-permission-addresses
+                                                                          current-airdrop-address)
+                                                             current-airdrop-address
+                                                             (:address (first selected-accounts))))}))
+
 (rf/reg-event-fx :communities/update-previous-permission-addresses
- (fn [{:keys [db]}]
-   {:db (assoc db
-               :communities/previous-permission-addresses
-               (get-in db [:communities/selected-permission-addresses]))}))
+ update-previous-permission-addresses)
 
 (defn toggle-selected-permission-address
   [{:keys [db]} [address]]
@@ -248,3 +273,126 @@
                                  {:error   err
                                   :chat-id chat-id
                                   :event   "share-community-channel-url-with-data"}))}]})))
+
+(rf/reg-event-fx :communities/set-airdrop-address
+ (fn [{:keys [db]} [address]]
+   {:db (assoc db :communities/airdrop-address address)}))
+
+(defn community-fetched
+  [{:keys [db]} [community-id community]]
+  (when community
+    {:db (update db :communities/fetching-community dissoc community-id)
+     :fx [[:dispatch [:communities/handle-community community]]
+          [:dispatch
+           [:chat.ui/cache-link-preview-data (link-preview.events/community-link community-id)
+            community]]]}))
+
+(rf/reg-event-fx :chat.ui/community-fetched community-fetched)
+
+(defn community-failed-to-fetch
+  [{:keys [db]} [community-id]]
+  {:db (update db :communities/fetching-community dissoc community-id)})
+
+(rf/reg-event-fx :chat.ui/community-failed-to-fetch community-failed-to-fetch)
+
+(defn fetch-community
+  [{:keys [db]} [community-id]]
+  (when (and community-id (not (get-in db [:communities/fetching-community community-id])))
+    {:db            (assoc-in db [:communities/fetching-community community-id] true)
+     :json-rpc/call [{:method     "wakuext_fetchCommunity"
+                      :params     [{:CommunityKey    community-id
+                                    :TryDatabase     true
+                                    :WaitForResponse true}]
+                      :on-success (fn [community]
+                                    (rf/dispatch [:chat.ui/community-fetched community-id community]))
+                      :on-error   (fn [err]
+                                    (rf/dispatch [:chat.ui/community-failed-to-fetch community-id])
+                                    (log/error {:message
+                                                "Failed to request community info from mailserver"
+                                                :error err}))}]}))
+
+(schema/=> fetch-community
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:catn [:community-id [:? :string]]]]]]
+   [:maybe
+    [:map
+     [:db map?]
+     [:json-rpc/call :schema.common/rpc-call]]]])
+
+(rf/reg-event-fx :communities/fetch-community fetch-community)
+
+(defn spectate-community-success
+  [{:keys [db]} [{:keys [communities]}]]
+  (when-let [community (first communities)]
+    {:db (-> db
+             (assoc-in [:communities (:id community) :spectated] true)
+             (assoc-in [:communities (:id community) :spectating] false))
+     :fx [[:dispatch [:communities/handle-community community]]
+          [:dispatch [::mailserver/request-messages]]]}))
+
+(rf/reg-event-fx :chat.ui/spectate-community-success spectate-community-success)
+
+(defn spectate-community-failed
+  [{:keys [db]} [community-id]]
+  {:db (assoc-in db [:communities community-id :spectating] false)})
+
+(rf/reg-event-fx :chat.ui/spectate-community-failed spectate-community-failed)
+
+(defn spectate-community
+  [{:keys [db]} [community-id]]
+  (let [{:keys [spectated spectating joined]} (get-in db [:communities community-id])]
+    (when (and (not joined) (not spectated) (not spectating))
+      {:db            (assoc-in db [:communities community-id :spectating] true)
+       :json-rpc/call [{:method     "wakuext_spectateCommunity"
+                        :params     [community-id]
+                        :on-success [:chat.ui/spectate-community-success]
+                        :on-error   (fn [err]
+                                      (log/error {:message
+                                                  "Failed to spectate community"
+                                                  :error err})
+                                      (rf/dispatch [:chat.ui/spectate-community-failed
+                                                    community-id]))}]})))
+
+(schema/=> spectate-community
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:catn [:community-id [:? :string]]]]]]
+   [:maybe
+    [:map
+     [:db map?]
+     [:json-rpc/call :schema.common/rpc-call]]]])
+
+(rf/reg-event-fx :chat.ui/spectate-community spectate-community)
+
+(rf/defn navigate-to-serialized-community
+  [_ {:keys [community-id]}]
+  {:serialization/deserialize-and-compress-key
+   {:serialized-key community-id
+    :on-success     #(rf/dispatch [:communities/navigate-to-community-overview %])
+    :on-error       #(log/error {:message      "Failed to decompress community-id"
+                                 :error        %
+                                 :community-id community-id})}})
+
+(rf/reg-event-fx :communities/navigate-to-community-overview
+ (fn [cofx [deserialized-key]]
+   (if (string/starts-with? deserialized-key constants/serialization-key)
+     (navigate-to-serialized-community cofx deserialized-key)
+     (rf/merge
+      cofx
+      {:fx [[:dispatch [:communities/fetch-community deserialized-key]]
+            [:dispatch [:navigate-to :community-overview deserialized-key]]]}
+      (navigation/pop-to-root :shell-stack)))))
+
+(rf/reg-event-fx :communities/navigate-to-community-chat
+ (fn [{:keys [db]} [chat-id pop-to-root?]]
+   (let [{:keys [community-id]} (get-in db [:chats chat-id])]
+     {:fx [(when community-id
+             [:dispatch [:communities/fetch-community community-id]])
+           (if pop-to-root?
+             [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
+             [:dispatch [:chat/navigate-to-chat chat-id]])]})))

@@ -50,7 +50,8 @@ org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.7.22
 com.android.tools.lint:lint-gradle:30.4.2
 com.android.tools.build:gradle:7.4.2
 com.android.tools.build:aapt2:7.4.2-8841542
-org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2' \
+org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
+org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.9.0' \
         >> "${DEPS_LIST}"
 }
 

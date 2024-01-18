@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.receive.view
+(ns status-im.contexts.wallet.share-address.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
@@ -8,7 +8,7 @@
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.receive.style :as style]
+    [status-im.contexts.wallet.share-address.style :as style]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
@@ -64,7 +64,12 @@
                                                        {:url         qr-url
                                                         :port        (rf/sub [:mediaserver/port])
                                                         :qr-size     qr-size
-                                                        :error-level :highest})]
+                                                        :error-level :highest})
+            {:keys [status]}                          (rf/sub [:get-screen-params])
+            title                                     (case status
+                                                        :share   (i18n/label :t/share-address)
+                                                        :receive (i18n/label :t/receive)
+                                                        nil)]
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
@@ -78,7 +83,7 @@
             :accessibility-label :top-bar}]
           [quo/text-combinations
            {:container-style style/header-container
-            :title           (i18n/label :t/receive)}]
+            :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
             {:type                @wallet-type
