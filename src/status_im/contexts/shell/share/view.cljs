@@ -1,14 +1,14 @@
 (ns status-im.contexts.shell.share.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.contexts.shell.share.profile.view :as profile-view]
-   [status-im.contexts.shell.share.style :as style]
-   [status-im.contexts.shell.share.wallet.view :as wallet-view]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.contexts.shell.share.profile.view :as profile-view]
+    [status-im.contexts.shell.share.style :as style]
+    [status-im.contexts.shell.share.wallet.view :as wallet-view]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn header
   []
@@ -59,8 +59,5 @@
 
 (defn view
   []
-  [rn/view
-   {:flex        1}
-   [quo/overlay {:type :shell}
-
-    [tab-content]]])
+  [quo/overlay {:type :shell}
+   [tab-content]])
