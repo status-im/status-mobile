@@ -193,3 +193,26 @@
       (is (match?
            nil
            (events/spectate-community-success {} []))))))
+
+(deftest get-revealed-accounts
+  (let [community {:id community-id}]
+    (testing "given a unjoined community"
+      (is (match?
+           nil
+           (events/get-revealed-accounts {:db {:communities {community-id community}}} [community-id]))))
+    (testing "given a already :fetching-revealed-accounts community"
+      (is (match?
+           nil
+           (events/get-revealed-accounts
+            {:db {:communities {community-id (assoc community :fetching-revealed-accounts true)}}}
+            [community-id]))))
+    (testing "given joined community"
+      (let [community (assoc community :joined true)
+            db        {:communities     {community-id community}
+                       :profile/profile {:public-key "profile-public-key"}}
+            effects   (events/get-revealed-accounts {:db db} [community-id])]
+        (is (match? (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
+                    (:db effects)))
+        (is (match? {:method "wakuext_getRevealedAccounts"
+                     :params [community-id "profile-public-key"]}
+                    (-> effects :json-rpc/call first (select-keys [:method :params]))))))))

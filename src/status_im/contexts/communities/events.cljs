@@ -70,6 +70,12 @@
                      {}
                      (:communityTokensMetadata c)))))
 
+(defn <-revealed-accounts-rpc
+  [accounts]
+  (mapv
+   #(set/rename-keys % {:isAirdropAddress :airdrop-address?})
+   (js->clj accounts :keywordize-keys true)))
+
 (rf/reg-event-fx :communities/handle-community
  (fn [{:keys [db]}
       [community-js]]
@@ -90,7 +96,9 @@
              (when (nil? token-permissions-check)
                [:dispatch [:communities/check-permissions-to-join-community id]])
              (when (some has-channel-perm? token-permissions)
-               [:dispatch [:communities/check-all-community-channels-permissions id]])]}))))
+               [:dispatch [:communities/check-all-community-channels-permissions id]])
+             (when joined
+               [:dispatch [:communities/get-revealed-accounts id]])]}))))
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
@@ -405,3 +413,54 @@
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
              [:dispatch [:chat/navigate-to-chat chat-id]])]})))
+
+(defn get-revealed-accounts
+  [{:keys [db]} [community-id]]
+  (let [{:keys [joined fetching-revealed-accounts]
+         :as   community} (get-in db [:communities community-id])]
+    (when (and community joined (not fetching-revealed-accounts))
+      {:db (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
+       :json-rpc/call
+       [{:method      "wakuext_getRevealedAccounts"
+         :params      [community-id (get-in db [:profile/profile :public-key])]
+         :js-response true
+         :on-success  [:communities/get-revealed-accounts-success community-id]
+         :on-error    (fn [err]
+                        (log/error {:message      "failed to fetch revealed accounts"
+                                    :community-id community-id
+                                    :err          err})
+                        (rf/dispatch [:communities/get-revealed-accounts-failed community-id]))}]})))
+
+(rf/reg-event-fx :communities/get-revealed-accounts get-revealed-accounts)
+
+(schema/=> get-revealed-accounts
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:catn [:community-id [:? :string]]]]]]
+   [:maybe
+    [:map
+     [:db map?]
+     [:json-rpc/call :schema.common/rpc-call]]]])
+
+(rf/reg-event-fx :communities/get-revealed-accounts-success
+ (fn [{:keys [db]} [community-id revealed-accounts-js]]
+   (when-let [community (get-in db [:communities community-id])]
+     (let [revealed-accounts
+           (reduce
+            (fn [acc {:keys [address] :as revealed-account}]
+              (assoc acc address (dissoc revealed-account :address)))
+            {}
+            (<-revealed-accounts-rpc revealed-accounts-js))
+
+           community-with-revealed-accounts
+           (-> community
+               (assoc :revealed-accounts revealed-accounts)
+               (dissoc :fetching-revealed-accounts))]
+       {:db (assoc-in db [:communities community-id] community-with-revealed-accounts)}))))
+
+(rf/reg-event-fx :communities/get-revealed-accounts-failed
+ (fn [{:keys [db]} [community-id]]
+   (when (get-in db [:communities community-id])
+     {:db (update-in db [:communities community-id] dissoc :fetching-revealed-accounts)})))
