@@ -13,6 +13,7 @@ stdenv.mkDerivation {
     "patchKeyChainPhase"
     "patchGlogPhase"
     "patchCodegen"
+    "patchRNScriptPhase"
     "installPhase"
   ];
 
@@ -84,6 +85,12 @@ stdenv.mkDerivation {
    substituteInPlace ./node_modules/react-native/scripts/cocoapods/codegen.rb \
       --replace 'if new_arch_enabled' 'if !new_arch_enabled' \
       --replace 'return if !new_arch_enabled' 'return if new_arch_enabled'
+  '';
+
+  # to fix https://github.com/status-im/status-mobile/issues/18548
+  patchRNScriptPhase = ''
+   substituteInPlace ./node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh \
+        --replace 'cp -R -X' 'cp -R'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
