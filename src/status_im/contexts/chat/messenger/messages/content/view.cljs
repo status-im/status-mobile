@@ -235,7 +235,9 @@
                  (if (or deleted? deleted-for-me?)
                    (fn [] [content.deleted/deleted-message message-data])
                    (fn []
-                     [rn/view {:pointer-events :none}
+                     [rn/view
+                      {:pointer-events :none
+                       :padding-top    4}
                       [user-message-content
                        {:message-data    message-data
                         :context         context

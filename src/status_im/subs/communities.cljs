@@ -335,3 +335,17 @@
  :<- [:communities]
  (fn [communities [_ community-id]]
    (get-in communities [community-id :intro-message])))
+
+(re-frame/reg-sub
+ :communities/airdrop-account
+ :<- [:communities/airdrop-address]
+ :<- [:wallet/accounts-with-customization-color]
+ (fn [[airdrop-address accounts]]
+   (first (filter #(= (:address %) airdrop-address) accounts))))
+
+(re-frame/reg-sub
+ :communities/selected-permission-accounts
+ :<- [:communities/selected-permission-addresses]
+ :<- [:wallet/accounts-with-customization-color]
+ (fn [[selected-permission-addresses accounts]]
+   (filter #(contains? selected-permission-addresses (:address %)) accounts)))
