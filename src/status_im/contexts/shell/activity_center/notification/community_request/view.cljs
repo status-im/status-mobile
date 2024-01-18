@@ -71,7 +71,7 @@
      [gesture/touchable-without-feedback
       {:on-press (fn []
                    (rf/dispatch [:navigate-back])
-                   (rf/dispatch [:navigate-to :community-overview community-id]))}
+                   (rf/dispatch [:communities/navigate-to-community-overview community-id]))}
       [quo/activity-log
        {:title               header-text
         :customization-color customization-color

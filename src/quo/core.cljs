@@ -86,7 +86,7 @@
     quo.components.list-items.saved-contact-address.view
     quo.components.list-items.token-network.view
     quo.components.list-items.token-value.view
-    quo.components.list-items.user-list
+    quo.components.list-items.user
     quo.components.loaders.skeleton-list.view
     quo.components.markdown.list.view
     quo.components.markdown.text
@@ -299,7 +299,7 @@
 (def account-list-card quo.components.list-items.account-list-card.view/view)
 (def address quo.components.list-items.address.view/view)
 (def channel quo.components.list-items.channel.view/view)
-(def community-list-item quo.components.list-items.community.view/view)
+(def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
 (def menu-item quo.components.list-items.menu-item/menu-item)
 (def preview-list quo.components.list-items.preview-list.view/view)
@@ -308,7 +308,7 @@
 (def saved-contact-address quo.components.list-items.saved-contact-address.view/view)
 (def token-network quo.components.list-items.token-network.view/view)
 (def token-value quo.components.list-items.token-value.view/view)
-(def user-list quo.components.list-items.user-list/user-list)
+(def user quo.components.list-items.user/user)
 
 ;;;; Loaders
 (def skeleton-list quo.components.loaders.skeleton-list.view/view)
