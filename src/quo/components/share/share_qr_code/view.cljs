@@ -129,8 +129,7 @@
            profile-picture emoji on-share-press theme]
     :as   props}]
   [linear-gradient/linear-gradient
-   {:colors [(colors/resolve-color customization-color theme 15) :transparent]
-    :style  {:border-radius 16}}
+   {:colors [(colors/resolve-color customization-color theme 15) (colors/resolve-color customization-color theme 10) :transparent]}
    [rn/view {:style style/content-container}
     [rn/view
      {:style style/share-qr-container}
