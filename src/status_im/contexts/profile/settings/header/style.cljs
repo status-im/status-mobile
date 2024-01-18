@@ -35,11 +35,10 @@
 
 (defn avatar-container
   [theme scale-animation top-margin-animation side-margin-animation]
-  [{:transform     [{:scale scale-animation}]
-    :margin-top    top-margin-animation
-    :margin-left   side-margin-animation
-    :margin-bottom side-margin-animation}
-   {:align-items   :flex-start
-    :border-width  4
-    :border-color  (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)
-    :border-radius 100}])
+  [{:transform [{:translate-x side-margin-animation}
+                {:translate-y top-margin-animation}
+                {:scale scale-animation}]}
+   {:align-items      :flex-start
+    :border-width     4
+    :border-color     (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)
+    :border-radius    100}])
