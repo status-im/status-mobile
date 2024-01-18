@@ -67,7 +67,7 @@
   []
   (let [{:keys [customization-color] :as profile} (rf/sub [:profile/profile-with-image])
         {:keys [address path watch-only?]}        (rf/sub [:wallet/current-viewing-account])
-        networks                                  (rf/sub [:wallet/network-details])]
+        networks                                  (rf/sub [:wallet/network-preference-details])]
     [rn/scroll-view
      {:style                   style/about-tab
       :content-container-style {:padding-bottom 20}}
