@@ -64,6 +64,9 @@
       (update :chats <-chats-rpc)
       (update :token-permissions seq)
       (update :categories <-categories-rpc)
+      (assoc :membership-permissions?
+             (some #(= (:type %) constants/community-token-permission-become-member)
+                   (vals (:tokenPermissions c))))
       (assoc :token-images
              (reduce (fn [acc {sym :symbol image :image}]
                        (assoc acc sym image))

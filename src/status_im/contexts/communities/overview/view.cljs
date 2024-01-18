@@ -172,14 +172,14 @@
         (i18n/label :t/join-open-community)]])))
 
 (defn join-community
-  [{:keys [joined color permissions token-permissions id] :as community}
+  [{:keys [joined color permissions token-permissions membership-permissions? id] :as community}
    pending?]
   (let [access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
         invite-only?    (= access-type :invite-only)]
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
-       (if (seq token-permissions)
+       (if membership-permissions?
          [token-gates community]
          [quo/button
           {:on-press
@@ -190,7 +190,7 @@
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
            :icon-left :i/communities}
-          (i18n/label :t/request-to-join-community)]))
+          (i18n/label :t/request-to-join)]))
 
      (when (not (or joined pending? token-permissions))
        [quo/text
