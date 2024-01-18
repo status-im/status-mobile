@@ -73,7 +73,8 @@
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
-           :padding-top padding-top}
+           :padding-top padding-top
+           :key         :share-adress}
           [quo/page-nav
            {:icon-name           :i/close
             :on-press            #(rf/dispatch [:navigate-back])

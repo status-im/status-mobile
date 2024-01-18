@@ -60,4 +60,6 @@
 (defn view
   []
   [quo/overlay {:type :shell}
-   [tab-content]])
+   [rn/view
+    {:key :share}
+    [tab-content]]])
