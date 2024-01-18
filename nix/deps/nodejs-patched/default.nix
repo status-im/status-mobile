@@ -12,7 +12,6 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchGlogPhase"
-    "patchCodegen"
     "patchRNScriptPhase"
     "installPhase"
   ];
@@ -77,14 +76,6 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh \
     --replace 'export CC="' '#export CC="' \
     --replace 'export CXX="' '#export CXX="'
-  '';
-
-  # to fix codegen issue for FBReactNativeSpec, otherwise iOS won't build on CI
-  # TODO remove this patch after RN team fixes promise failures in node_modules/react-native/scripts/codegen/generate-artifacts-executor.js
-  patchCodegen = ''
-   substituteInPlace ./node_modules/react-native/scripts/cocoapods/codegen.rb \
-      --replace 'if new_arch_enabled' 'if !new_arch_enabled' \
-      --replace 'return if !new_arch_enabled' 'return if new_arch_enabled'
   '';
 
   # to fix https://github.com/status-im/status-mobile/issues/18548
