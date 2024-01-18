@@ -59,14 +59,14 @@
   [sub-name]
   (testing "returns chain ids in the prod mode"
     (swap! rf-db/app-db
-           #(-> %
-                (assoc-in [:profile/profile :test-networks-enabled?] false)
-                (assoc-in [:wallet :networks] network-data)))
+      #(-> %
+           (assoc-in [:profile/profile :test-networks-enabled?] false)
+           (assoc-in [:wallet :networks] network-data)))
     (is (= [1 42161 10] (rf/sub [sub-name]))))
-  
+
   (testing "returns chain ids in the test mode"
     (swap! rf-db/app-db
-           #(-> %
-                (assoc-in [:profile/profile :test-networks-enabled?] true)
-                (assoc-in [:wallet :networks] network-data)))
+      #(-> %
+           (assoc-in [:profile/profile :test-networks-enabled?] true)
+           (assoc-in [:wallet :networks] network-data)))
     (is (= [3 4 5] (rf/sub [sub-name])))))

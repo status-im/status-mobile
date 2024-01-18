@@ -3,7 +3,7 @@
             [camel-snake-kebab.extras :as cske]
             [clojure.string :as string]
             [taoensso.timbre :as log]
-            [utils.re-frame :as rf] 
+            [utils.re-frame :as rf]
             [utils.transforms :as types]))
 
 (def collectible-data-types
