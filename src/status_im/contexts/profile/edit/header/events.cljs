@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.edit.header.events
-  (:require [status-im.common.profile-picture-picker.view :as profile-picture-picker]
+  (:require [clojure.string :as string]
+            [status-im.common.profile-picture-picker.view :as profile-picture-picker]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -22,10 +23,11 @@
   [{:keys [db]} [picture crop-width crop-height]]
   (let [key-uid     (get-in db [:profile/profile :key-uid])
         crop-width  (or crop-width profile-picture-picker/crop-size)
-        crop-height (or crop-height profile-picture-picker/crop-size)]
+        crop-height (or crop-height profile-picture-picker/crop-size)
+        path        (string/replace-first picture #"file://" "")]
     {:fx [[:json-rpc/call
            [{:method     "multiaccounts_storeIdentityImage"
-             :params     [key-uid picture 0 0 crop-width crop-height]
+             :params     [key-uid path 0 0 crop-width crop-height]
              :on-success [:profile/edit-profile-picture-success]}]]]}))
 
 (rf/reg-event-fx :profile/edit-picture edit-profile-picture)
