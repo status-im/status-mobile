@@ -10524,63 +10524,63 @@
   },
 
   {
-    "path": "com/facebook/react/hermes-android/0.73.1",
+    "path": "com/facebook/react/hermes-android/0.73.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "hermes-android-0.73.1.pom": {
-        "sha1": "82fb638f9a16219e40866c41c1098af9e8327fba",
-        "sha256": "sha256-Spq+5DI2vWOIXapJUkZjPDOIc++TrA92swG0pMko0aA="
+      "hermes-android-0.73.2.pom": {
+        "sha1": "f1386f4e608a7f10349def57413d650c6f0b75b8",
+        "sha256": "sha256-Dp1Uemm9P7Kr92f059qpRyUnyXgMlotCfmchvf6cxNY="
       },
-      "hermes-android-0.73.1-debug.aar": {
-        "sha1": "74312b5c550842bba900e67b8251adc7b72c5795",
-        "sha256": "sha256-55Bgyt9RXWvUs10ABa24SuGCdZdthDKdO+NGt5eb5Dk="
+      "hermes-android-0.73.2-debug.aar": {
+        "sha1": "8b6b1977468976a7ba38e98445f04f23c6937e59",
+        "sha256": "sha256-fwDe7eYQ9s2eAeBlHvUoftbEuOBTiasfX5R3Z/MKcDA="
       },
-      "hermes-android-0.73.1-debug.aar.asc": {
-        "sha1": "45c97195e88c6380f98bcb3a26049f4eb06a064e",
-        "sha256": "sha256-uiEHnThuh1BbU0ddsU0FWxcynZ/cTsMSBEHse9Zp6AQ="
+      "hermes-android-0.73.2-debug.aar.asc": {
+        "sha1": "5813c2d946247f000fa2d35db11bbca88201ccb3",
+        "sha256": "sha256-pxVKC2vq7RRieW7N84AR8RhcaHZHPEz5NIfa4iQcQ9w="
       },
-      "hermes-android-0.73.1-release.aar": {
-        "sha1": "27366e886b514d2900bc332808d0573203a8765e",
-        "sha256": "sha256-VXiOZabg1XM45lWJgilk13G4O9+5KuK9KkipGBK2/dQ="
+      "hermes-android-0.73.2-release.aar": {
+        "sha1": "8d92ba0f05878b200730fefb028c4457e3cd2b51",
+        "sha256": "sha256-IFGSCNrFlo1YPNiZ8aBf7dT4uqyT75wNND/V/hpBMpk="
       },
-      "hermes-android-0.73.1-release.aar.asc": {
-        "sha1": "59349cdf69a11ff8eb9cf429b04c4b6eea128b2a",
-        "sha256": "sha256-U2hHbSWpG0OLAR7C2O8sMcvZafle7hpkbb0L5l7XMtI="
+      "hermes-android-0.73.2-release.aar.asc": {
+        "sha1": "da72ac55769cdc49e27d12cbe895b8cb5e250a00",
+        "sha256": "sha256-BEJ6GR55u9Y30U4EN3o7DvkHzUG/q9T6G07aY4WDFyQ="
       },
-      "hermes-android-0.73.1.module": {
-        "sha1": "61feacbc1c1f1257ececaf31e2e3e2b9740e430d",
-        "sha256": "sha256-6ncnWSUpqHm/H2eZHfEBy4BsalRjiabs+v83TZPo2HE="
+      "hermes-android-0.73.2.module": {
+        "sha1": "b04579835ab72101cadfcd70c06d4d295669d2aa",
+        "sha256": "sha256-WgCx/nZxgSxkpknwNyhGPqsTYs7HWlEMaCwOLANS7DU="
       }
     }
   },
 
   {
-    "path": "com/facebook/react/react-android/0.73.1",
+    "path": "com/facebook/react/react-android/0.73.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "react-android-0.73.1.pom": {
-        "sha1": "7b9c4bae525ffc81223fa8c138e75d57b2352433",
-        "sha256": "sha256-KmYgzT8eUIP2q11PenCwCyz5Rg6EbjqpFUILjPujiD8="
+      "react-android-0.73.2.pom": {
+        "sha1": "31b4ed406731cb1d721a3b06598d186adfebe53d",
+        "sha256": "sha256-o6ZeHJRKOWBdDZAEqXhxNngku9P51j3H5y975uXY9Ao="
       },
-      "react-android-0.73.1-debug.aar": {
-        "sha1": "6741eb22e5c86a230344d5b30b2781e1b8c10782",
-        "sha256": "sha256-y+2I0CHDZ3bWgUSQ0D3fJbobjXSt5s0pkSjeFdAl1Vs="
+      "react-android-0.73.2-debug.aar": {
+        "sha1": "8b70bb0adb1e50f207a78fef6d04c0d7b5359502",
+        "sha256": "sha256-464w6oi+JiQ8WexQ8Ni//UnyjjwVjyAurWV6vuSlTlI="
       },
-      "react-android-0.73.1-debug.aar.asc": {
-        "sha1": "4a2fbdb7a1c98ed724f21d2091b47a1ae0c09602",
-        "sha256": "sha256-AM/AJDownJ9Zc4+W3IDeR3C+0CK0/jZ6wcnehs3l//M="
+      "react-android-0.73.2-debug.aar.asc": {
+        "sha1": "30c84db6aa8a619499cc5fbac3bd8716d7113261",
+        "sha256": "sha256-l7i0n2N45NNp9Dc220IhlnxEKLizl4Cie5ReiqNTHT0="
       },
-      "react-android-0.73.1-release.aar": {
-        "sha1": "7d2669747ac28d1aa65d25f9957df22fb5c4507b",
-        "sha256": "sha256-D2kCAWkW2U+H1jaL9+lKssoEeIe+r4gaEaSYY2JOrJ4="
+      "react-android-0.73.2-release.aar": {
+        "sha1": "3eadbd1a5a14bcee1550079614abab72ae1ac078",
+        "sha256": "sha256-mLTVgz4gYFnSFyP72FjRLd/bPJvm4AWJvbmS3c+gQk0="
       },
-      "react-android-0.73.1-release.aar.asc": {
-        "sha1": "32675f04b11eafe4fff25e36c37b2ef871fab8b8",
-        "sha256": "sha256-wwwKYcoia4V3kBW2gVmEmeRWvHP0XMbWkZSmZh8JI7Y="
+      "react-android-0.73.2-release.aar.asc": {
+        "sha1": "8d7d1446af72e3436f839b145d9161d59920f0ea",
+        "sha256": "sha256-hGyycEwoLGRL6t1kAWecKwfPtF3ByiVQotlJilNhBFc="
       },
-      "react-android-0.73.1.module": {
-        "sha1": "6bcc48fb544087523d2fe1a8ee06f6a5d7adf753",
-        "sha256": "sha256-NLc8edZKhXMkm2EeQ/S3JiBFrBUjDywQZAZtMmFr+qU="
+      "react-android-0.73.2.module": {
+        "sha1": "c926a4b8783f98cb789646f362dc40d7d8b63f3b",
+        "sha256": "sha256-HNGXdNw5vWVTXsn8/lNqhiDD1aA+BMrmliWxWxQh4vs="
       }
     }
   },
@@ -12500,6 +12500,10 @@
       "guava-33.0.0-jre.jar": {
         "sha1": "161ba27964a62f241533807a46b8711b13c1d94b",
         "sha256": "sha256-9NhcPk1BFpQzfLhzq+oJskK2ZLsBMyC+YQUyfEWZFTc="
+      },
+      "guava-33.0.0-jre.module": {
+        "sha1": "3a3d152130aea267ef0140ec03aca206fa850875",
+        "sha256": "sha256-WaLb0FXRuqdi548aW6Orlz7dE/wn3MGHEQXi95f2gtM="
       }
     }
   },
@@ -19661,16 +19665,16 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-reflect/2.0.0-Beta2",
+    "path": "org/jetbrains/kotlin/kotlin-reflect/2.0.0-Beta3",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "kotlin-reflect-2.0.0-Beta2.pom": {
-        "sha1": "71908b10dd3fefa0509880918948931ad0b8d7c8",
-        "sha256": "sha256-TmkaczZz+Eqbux6yz2SyE9WhflLrknrULgk8j/2sfUs="
+      "kotlin-reflect-2.0.0-Beta3.pom": {
+        "sha1": "dc97aad46542eaa0cb64120911ac1013483969ac",
+        "sha256": "sha256-NnPskjZQvqH3zdWL94mDT/EMvy51senYGEbKjz+ya64="
       },
-      "kotlin-reflect-2.0.0-Beta2.jar": {
-        "sha1": "0cf9ed5d13e31c4e4ab74be627b7cedc0ecc7715",
-        "sha256": "sha256-PAz62O51jigTUVGhAJHGrWdbLoVdCFwwhhI883u50bw="
+      "kotlin-reflect-2.0.0-Beta3.jar": {
+        "sha1": "6915153788502bdccc98753f41dcbd5bf7c7e128",
+        "sha256": "sha256-k4zOXYaKP8MBwjWAOLuEt0ahsLlSHtdnldJma/o0e2Y="
       }
     }
   },
@@ -21263,28 +21267,28 @@
   },
 
   {
-    "path": "org/jetbrains/kotlin/kotlin-stdlib/2.0.0-Beta2",
+    "path": "org/jetbrains/kotlin/kotlin-stdlib/2.0.0-Beta3",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "kotlin-stdlib-2.0.0-Beta2.pom": {
-        "sha1": "a1310fbc42c0cbc786766d2e35dcbfdaf3f8a8b1",
-        "sha256": "sha256-8upeJFveFokz2f2rBOXj2KZ9+OzyWxWtqZ9/2qcJGnI="
+      "kotlin-stdlib-2.0.0-Beta3.pom": {
+        "sha1": "1005b3f259dffb93f972e5227eb18fc579b71811",
+        "sha256": "sha256-2qxjaqrwUBME9CbB4lpEKGV4qi2VGn8USteyCSZ8lq4="
       },
-      "kotlin-stdlib-2.0.0-Beta2-all.jar": {
-        "sha1": "c844df2813fa56f8baa346530a5172ccf03277d0",
-        "sha256": "sha256-o8TV9hZ9IGumB5g+8nq6R6YU+VxlRV0PJ3IsSsMRsSM="
+      "kotlin-stdlib-2.0.0-Beta3-all.jar": {
+        "sha1": "845c7a75152307a41522e800bb9706a58e02b228",
+        "sha256": "sha256-YwNHMM8zT64dAULHPNt+zLXQ5xTeAvtP/HKybthMDWI="
       },
-      "kotlin-stdlib-2.0.0-Beta2-common.jar": {
+      "kotlin-stdlib-2.0.0-Beta3-common.jar": {
         "sha1": "e0224f6b9468655e1feffe789ab7ebd4965a9431",
         "sha256": "sha256-ikItp8AZFxM/bokvCF68e2Q+oNGbbJxTILtPDnj7uMI="
       },
-      "kotlin-stdlib-2.0.0-Beta2.jar": {
-        "sha1": "61be8a13ad24f43c915ba6962440cd30af4700ec",
-        "sha256": "sha256-yDOkRXCSzieZ5nejro0ku4suO6qDwWlDBdnb5ZHgquA="
+      "kotlin-stdlib-2.0.0-Beta3.jar": {
+        "sha1": "9982637ebb69602015ed823cceca7054d2ab8bbe",
+        "sha256": "sha256-1+6KuGuMgmiuPLpxx+cJSZ3/pnVOMmLdtzmk3mwB0ro="
       },
-      "kotlin-stdlib-2.0.0-Beta2.module": {
-        "sha1": "22702775430e8d3a9f8d824167e00484e07d5932",
-        "sha256": "sha256-J6vVZxhfZbGpw8tTtV4RQTPJrkFqMwetPevDDG/iO/U="
+      "kotlin-stdlib-2.0.0-Beta3.module": {
+        "sha1": "5026675037ebf81e108eb3cc581a24570ec7ceb2",
+        "sha256": "sha256-rlVFQM89Ga0h57LsViIgT8iSdE18G0rd/TN7/u9UKrU="
       }
     }
   },

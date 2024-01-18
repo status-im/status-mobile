@@ -25,14 +25,13 @@ class MainApplication : NavigationApplication() {
             return BuildConfig.DEBUG
         }
 
-        override fun getPackages(): List<ReactPackage> {
-            val statusPackage = StatusPackage(RootUtil.isDeviceRooted())
-            val packages = PackageList(this).getPackages()
-            packages.add(statusPackage)
-            packages.add(RNStatusKeycardPackage())
-            packages.add(PushNotificationPackage())
-            packages.add(BlurViewPackage())
-            return packages
+        override fun getPackages(): List<ReactPackage> =
+            PackageList(this).packages.apply {
+          // Packages that cannot be autolinked yet can be added manually here
+          add(StatusPackage(RootUtil.isDeviceRooted()))
+          add(RNStatusKeycardPackage())
+          add(PushNotificationPackage())
+          add(BlurViewPackage())
         }
 
         override fun getJSMainModuleName(): String = "index"
