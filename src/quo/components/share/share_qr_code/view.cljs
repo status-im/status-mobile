@@ -4,16 +4,13 @@
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.buttons.button.view :as button]
+            [quo.components.gradient.gradient-cover.view :as gradient-cover]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
-            [quo.foundations.colors :as colors]
             [quo.theme]
-            [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
@@ -126,11 +123,11 @@
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
-           profile-picture emoji on-share-press theme]
+           profile-picture emoji on-share-press]
     :as   props}]
-  [linear-gradient/linear-gradient
-   {:colors [(colors/resolve-color customization-color theme 15)
-             (colors/resolve-color customization-color theme 10) :transparent]}
+  [:<>
+   [rn/view {:style style/gradient-bg}
+    [gradient-cover/view {:customization-color customization-color}]]
    [rn/view {:style style/content-container}
     [rn/view
      {:style style/share-qr-container}
@@ -195,16 +192,9 @@
      Sometimes while using a blur layer on top of another on Android, this component looks
      bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
      "
-  [{:keys [unblur-on-android?] :as props}]
+  [props]
   (reagent/with-let [component-width     (reagent/atom nil)
-                     container-component (if (and platform/android? unblur-on-android?)
-                                           [rn/view {:background-color style/overlay-color}]
-                                           [blur/view
-                                            {:blur-radius      20
-                                             :blur-amount      20
-                                             :blur-type        :transparent
-                                             :overlay-color    style/overlay-color
-                                             :background-color style/overlay-color}])]
+                     container-component [rn/view {:background-color style/overlay-color}]]
     [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code

@@ -1,16 +1,14 @@
 (ns status-im.contexts.shell.share.view
   (:require
-    [quo.core :as quo]
-    [react-native.blur :as blur]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [status-im.contexts.shell.share.profile.view :as profile-view]
-    [status-im.contexts.shell.share.style :as style]
-    [status-im.contexts.shell.share.wallet.view :as wallet-view]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [status-im.contexts.shell.share.profile.view :as profile-view]
+   [status-im.contexts.shell.share.style :as style]
+   [status-im.contexts.shell.share.wallet.view :as wallet-view]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn header
   []
@@ -43,7 +41,7 @@
   []
   (let [selected-tab (reagent/atom :profile)]
     (fn []
-      [:<>
+      [rn/view {:style {:padding-top (safe-area/get-top)}}
        [header]
        [rn/view {:style style/tabs-container}
         [quo/segmented-control
@@ -61,9 +59,8 @@
 
 (defn view
   []
-  [rn/view {:flex 1 :padding-top (safe-area/get-top)}
-   [blur/view
-    {:style       style/blur
-     :blur-amount 20
-     :blur-radius (if platform/android? 25 10)}]
-   [tab-content]])
+  [rn/view
+   {:flex        1}
+   [quo/overlay {:type :shell}
+
+    [tab-content]]])

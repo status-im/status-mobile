@@ -25,7 +25,6 @@
      [rn/view {:style style/qr-code-container}
       [qr-codes/share-qr-code
        {:type                :profile
-        :unblur-on-android?  true
         :qr-data             universal-profile-url
         :qr-data-label-shown abbreviated-url
         :on-share-press      #(list-selection/open-share {:message universal-profile-url})
