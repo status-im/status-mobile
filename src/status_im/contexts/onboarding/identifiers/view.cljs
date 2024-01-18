@@ -53,7 +53,7 @@
                                                           (* (count header-text) window-width))}]}]
       [rn/view
        {:style          style/content-container
-        :pointer-events :none}
+        :pointer-events :box-none}
        [profile-card/profile-card
         {:profile-picture     photo-path
          :name                display-name
