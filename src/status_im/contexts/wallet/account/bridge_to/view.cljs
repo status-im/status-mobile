@@ -1,15 +1,16 @@
 (ns status-im.contexts.wallet.account.bridge-to.view
   (:require
-    [clojure.string :as string]
-    [quo.components.markdown.text :as text]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.foundations.resources :as quo.resources]
-    [react-native.core :as rn]
-    [status-im.contexts.wallet.account.bridge-to.style :as style]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.components.markdown.text :as text]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.foundations.resources :as quo.resources]
+   [react-native.core :as rn]
+   [status-im.contexts.wallet.account.bridge-to.style :as style]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
+
 
 (defn get-balance-for-chain
   [data chain-id]
@@ -19,12 +20,12 @@
 
 (defn- bridge-token-component
   []
-  (fn [network]
+  (fn [network token]
     (let [network          (rf/sub [:wallet/network-details-by-chain-id (:chain-id network)])
-          {:keys [tokens]} (rf/sub [:wallet/current-viewing-account])
-          all-balances     (:balances-per-chain (first tokens))
+          all-balances     (:balances-per-chain token)
           balance          (get-balance-for-chain all-balances (:chain-id network))
           currency-symbol  (rf/sub [:profile/currency-symbol])]
+      (print token)
       [rn/pressable
        {:style {:flex-direction     :row
                 :align-items        :center
@@ -54,21 +55,31 @@
 (defn view
   []
   (let [send-bridge-data (rf/sub [:wallet/wallet-send])
+
         token            (:token send-bridge-data)
+        token-symbol            (:symbol token)
         network-details  (rf/sub [:wallet/network-details])
         mainnet          (first network-details)
-        layer-2-networks (rest network-details)]
+        layer-2-networks (rest network-details)
+        account  (rf/sub [:wallet/current-viewing-account])
+        tokens (:tokens account)
+        account-token  (first (filter #(= token-symbol (% :symbol)) tokens))]
     [rn/view
      [account-switcher/view
       {:on-press            #(rf/dispatch [:navigate-back-within-stack :wallet-bridge-to])
        :icon-name           :i/arrow-left
        :accessibility-label :top-bar}]
+
+     (print account-token)
+     (print "------")
+    ;;  (print (:tokens foo))
+
      [quo/text-combinations
       {:container-style style/header-container
-       :title           (i18n/label :t/bridge-to {:name (string/upper-case (:label token))})}]
+       :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:label token)))})}]
 
      [rn/view style/mainnet-container
-      [bridge-token-component mainnet]]
+      [bridge-token-component mainnet account-token]]
 
      [rn/view
       {:style {:border-bottom-width 1
@@ -76,7 +87,8 @@
      [quo/text-combinations
       {:container-style style/description-container
        :description     (i18n/label :t/layer-2)}]
-     [rn/flat-list
-      {:data                    layer-2-networks
-       :render-fn               bridge-token-component
-       :content-container-style style/list-content-container}]]))
+    ;;  [rn/flat-list
+    ;;   {:data                    layer-2-networks
+    ;;    :render-fn               bridge-token-component
+    ;;    :content-container-style style/list-content-container}]
+     ]))
