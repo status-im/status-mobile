@@ -13,14 +13,22 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]))
 
+(defn fiat-format
+  [currency num-value conversion]
+  (str (get common/currency-label currency) (.toFixed (* num-value conversion) 2)))
+
+(defn crypto-format
+  [num-value conversion crypto-decimals token]
+  (str (.toFixed (/ num-value conversion) (or crypto-decimals 2))
+       " "
+       (string/upper-case (or (clj->js token) ""))))
+
 (defn calc-value
-  [crypto? currency token value conversion crypto-decimals]
+  [{:keys [crypto? currency token value conversion crypto-decimals]}]
   (let [num-value (if (string? value) (parse-double (or value "0")) value)]
     (if crypto?
-      (str (get common/currency-label currency) (.toFixed (* num-value conversion) 2))
-      (str (.toFixed (/ num-value conversion) (or crypto-decimals 2))
-           " "
-           (string/upper-case (or (clj->js token) ""))))))
+      (fiat-format currency num-value conversion)
+      (crypto-format num-value conversion crypto-decimals token))))
 
 (defn- view-internal
   [{external-value :value}]
@@ -89,6 +97,11 @@
          {:size   :paragraph-2
           :weight :medium
           :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-         (calc-value @crypto? currency token (or external-value @value) conversion crypto-decimals)]]])))
+         (calc-value {:crypto?         @crypto?
+                      :currency        currency
+                      :token           token
+                      :value           (or external-value @value)
+                      :conversion      conversion
+                      :crypto-decimals crypto-decimals})]]])))
 
 (def view (quo.theme/with-theme view-internal))
