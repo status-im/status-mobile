@@ -90,10 +90,13 @@
 (defn total-token-fiat-value
   "Returns the total token fiat value taking into account all token's chains."
   [currency {:keys [market-values-per-currency] :as token}]
-  (let [price                     (get-in market-values-per-currency
-                                          [currency :price]
-                                          (get-in market-values-per-currency
-                                                  [constants/profile-default-currency :price]))
+  (let [price                     (or (get-in market-values-per-currency
+                                              [currency :price])
+                                      (get-in market-values-per-currency
+                                              [constants/profile-default-currency :price])
+                                      ;; NOTE: adding fallback value (zero) in case prices are
+                                      ;; unavailable and to prevent crash on calculating fiat value
+                                      0)
         total-units-in-all-chains (total-token-units-in-all-chains token)]
     (money/crypto->fiat total-units-in-all-chains price)))
 
@@ -169,9 +172,12 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id  :ethereum
-   constants/optimism-chain-id :optimism
-   constants/arbitrum-chain-id :arbitrum})
+  {constants/mainnet-chain-id       :ethereum
+   constants/goerli-chain-id        :ethereum
+   constants/optimism-chain-id      :optimism
+   constants/optimism-test-chain-id :optimism
+   constants/arbitrum-chain-id      :arbitrum
+   constants/arbitrum-test-chain-id :arbitrum})
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
@@ -202,3 +208,15 @@
      :customization-color color
      :values              {:crypto-value crypto-value
                            :fiat-value   fiat-value}}))
+
+(defn get-multichain-address
+  [networks address]
+  (str (->> networks
+            (map #(str (:short-name %) ":"))
+            (clojure.string/join ""))
+       address))
+
+(defn split-prefix-and-address
+  [input-string]
+  (let [split-result (string/split input-string #"0x")]
+    [(first split-result) (str "0x" (second split-result))]))

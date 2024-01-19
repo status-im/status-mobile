@@ -19,6 +19,7 @@
      (when show-bottom-gradient?
        [rn/pressable
         {:on-press            #(when @input-ref (.focus ^js @input-ref))
+         :style               {:z-index 1}
          :accessibility-label :bottom-gradient}
         [linear-gradient/linear-gradient (style/bottom-gradient)]])]))
 

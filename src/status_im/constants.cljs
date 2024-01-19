@@ -219,7 +219,8 @@
 (def regx-community-universal-link #"((^https?://status.app/)|(^status-app://))c/([\x00-\x7F]+)$")
 (def regx-deep-link #"((^ethereum:.*)|(^status-app://[\x00-\x7F]+$))")
 (def regx-ens #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
-(def regx-address #"^0x[a-fA-F0-9]{40}$")
+(def regx-multichain-address #"^(?:(?:eth:|arb1:|opt:)(?=:|))*0x[0-9a-fA-F]{40}$")
+
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 (def regx-starts-with-uuid #"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 (def regx-full-or-partial-address #"^0x[a-fA-F0-9]{1,40}$")
@@ -337,6 +338,13 @@
 (def ^:const local-pairing-action-sync-device 3)
 (def ^:const local-pairing-action-pairing-installation 4)
 
+(def ^:const serialization-key
+  "We pass this serialization key as a parameter to MultiformatSerializePublicKey
+  function at status-go, This key determines the output base of the serialization.
+  according to https://specs.status.im/spec/2#public-key-serialization we serialize
+  keys with base58btc encoding"
+  "z")
+
 (def ^:const deserialization-key
   "We pass this deserialization key as a parameter to MultiformatDeserializePublicKey
   function at status-go, This key determines the output base of the deserialization.
@@ -432,3 +440,6 @@
 (def ^:const send-type-stickers-buy 4)
 (def ^:const send-type-bridge 5)
 (def ^:const send-type-erc-721-transfer 6)
+
+(def ^:const bridge-name-transfer "Transfer")
+(def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
