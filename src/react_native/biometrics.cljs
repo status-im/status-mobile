@@ -1,13 +1,14 @@
 (ns react-native.biometrics
   (:require
-    ["react-native-biometrics" :default biometrics]
+    ["react-native-biometrics" :default Biometrics]
     [clojure.string :as string]
     [oops.core :as oops]
     [react-native.platform :as platform]
     [schema.core :as schema]))
 
-(def ^:const biometric-error-not-available "biometric-not-available")
-(def ^:const biometric-error-not-enrolled "biometric-not-enrolled")
+(def ^:private ^:const android-not-available-error-message "Biometric hardware unavailable")
+(def ^:private ^:const android-not-enrolled-error-message "No fingerprints enrolled.")
+(def ^:private ^:const ios-not-enrolled-error-message "No identities are enrolled")
 
 (defn get-supported-type
   "Returns a JS promise that resolves with the biometrics types supported by the
@@ -15,55 +16,53 @@
 
   Resolved values: `:Biometrics` `:FaceID` `:TouchID`"
   []
-  (-> (biometrics.)
+  (-> (Biometrics.)
       (.isSensorAvailable)
       (.then (fn [result]
-               (let [type (-> result
-                              (oops/oget "biometryType")
-                              keyword)]
-                 type)))
+               (-> result
+                   (oops/oget :biometryType)
+                   keyword)))
       (.catch (constantly nil))))
 
 (defn get-available
   "Returns a JS promise that resolves to a boolean, which signifies whether
   biometrics is enabled/disabled on the device."
   []
-  (-> (biometrics.)
+  (-> (Biometrics.)
       (.isSensorAvailable)
       (.then (fn [result]
-               (oops/oget result "available")))))
+               (oops/oget result :available)))))
 
 ;; NOTE: the react-native-biometrics package error codes/messages differ across platforms.
 ;; On android we get error messages while on iOS it's a stringified Obj-C error object.
 (defn- convert-auth-error-message
-  [code]
-  (letfn [(includes? [substring string]
-            (string/includes? string substring))]
-    (if platform/android?
-      (condp = code
-        "No fingerprints enrolled."      biometric-error-not-enrolled
-        "Biometric hardware unavailable" biometric-error-not-available
-        code)
+  [message]
+  (ex-info "Failed to authenticate with biometrics"
+           {:orig-error-message message
+            :code               (if platform/android?
+                                  (condp = message
+                                    android-not-enrolled-error-message  ::not-enrolled
+                                    android-not-available-error-message ::not-available
+                                    ::unknown)
 
-      (condp includes? code
-        "No identities are enrolled" biometric-error-not-enrolled
-        code))))
+                                  (condp #(string/includes? %2 %1) message
+                                    ios-not-enrolled-error-message ::not-enrolled
+                                    ::unknown))}))
 
 (defn authenticate
   "Returns a JS promise that resolves with a boolean auth success state: `true` for
   success and `false` when canceled by user."
   [{:keys [prompt-message fallback-prompt-message cancel-button-text]}]
-  (-> (biometrics.)
+  (-> (Biometrics.)
       (.simplePrompt #js
                       {"promptMessage"         prompt-message
                        "fallbackPromptMessage" fallback-prompt-message
                        "cancelButtonText"      cancel-button-text})
       (.then (fn [result]
-               (-> result js->clj (get "success"))))
+               (oops/oget result :success)))
       (.catch (fn [error]
                 (-> (.-message error)
                     convert-auth-error-message
-                    js/Error
                     throw)))))
 
 (schema/=> authenticate
