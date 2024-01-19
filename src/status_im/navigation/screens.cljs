@@ -270,9 +270,11 @@
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   {:theme      :dark
-                 :layout     options/onboarding-layout
-                 :popGesture false}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme      :dark
+                  :layout     options/onboarding-layout
+                  :popGesture false})
      :component syncing-devices/view}
 
     {:name      :syncing-progress-intro
