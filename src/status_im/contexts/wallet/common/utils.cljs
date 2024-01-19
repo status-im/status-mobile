@@ -236,3 +236,10 @@
   [input-string]
   (let [split-result (string/split input-string #"0x")]
     [(first split-result) (str "0x" (second split-result))]))
+
+
+(defn get-balance-for-chain
+  [data chain-id]
+  (->> (vals data)
+       (filter #(= chain-id (:chain-id %)))
+       (first)))

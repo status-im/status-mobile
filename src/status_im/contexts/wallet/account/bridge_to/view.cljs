@@ -14,18 +14,13 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn get-balance-for-chain
-  [data chain-id]
-  (->> (vals data)
-       (filter #(= chain-id (:chain-id %)))
-       (first)))
 
 (defn- bridge-token-component
   []
   (fn [bridge token]
     (let [network           (rf/sub [:wallet/network-details-by-chain-id (:chain-id bridge)])
           all-balances      (:balances-per-chain token)
-          balance-for-chain (get-balance-for-chain all-balances (:chain-id bridge))
+          balance-for-chain (utils/get-balance-for-chain all-balances (:chain-id bridge))
           crypto-formatted  (or (:balance balance-for-chain) "0.00")
           currency          (rf/sub [:profile/currency])
           currency-symbol   (rf/sub [:profile/currency-symbol])
