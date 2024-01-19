@@ -172,9 +172,12 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id  :ethereum
-   constants/optimism-chain-id :optimism
-   constants/arbitrum-chain-id :arbitrum})
+  {constants/mainnet-chain-id       :ethereum
+   constants/goerli-chain-id        :ethereum
+   constants/optimism-chain-id      :optimism
+   constants/optimism-test-chain-id :optimism
+   constants/arbitrum-chain-id      :arbitrum
+   constants/arbitrum-test-chain-id :arbitrum})
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
