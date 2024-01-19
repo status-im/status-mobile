@@ -1,11 +1,12 @@
 (ns quo.components.list-items.network-list.view
   (:require
-    [quo.components.list-items.network-list.style :as style]
-    [quo.components.markdown.text :as text]
-    [quo.foundations.resources :as quo.resources]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+   [quo.components.list-items.network-list.style :as style]
+   [quo.components.markdown.text :as text]
+   [quo.foundations.resources :as quo.resources]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [schema.core :as schema]))
 
 (defn- info
   [{:keys [network-name label]}]
@@ -33,6 +34,27 @@
      :number-of-lines 1}
     fiat-value]])
 
+
+;; (def ?schema
+;;   [:=>
+;;    [:catn
+;;     [:props
+;;      [:map {:closed true}
+;;       [:type [:enum :token :collectible]]
+;;       [:_fiat-value {:optional true} [:maybe [:or :string :int]]]
+;;       [:customization-color {:optional true} [:maybe :string]]
+;; [:state {:optional true} [:maybe :string]]
+
+;;  [:_token-value {:optional true} [:maybe [:or :string :int]]]
+;;       [:_network-name {:optional true} [:maybe :string]]
+
+;;       [:token-img-src {:optional true} [:maybe :schema.common/image-source]]
+;;       [:divider? {:optional true} [:maybe :boolean]]
+;;       [:theme :schema.common/theme]]]]
+;;    :any])
+
+;; on-press state customization-color
+;; _network-name _networks _token-value _fiat-value theme
 (defn- view-internal
   []
   (let [pressed?     (reagent/atom false)
@@ -42,6 +64,7 @@
                  _network-name _networks _token-value _fiat-value theme]
           :as   props
           :or   {customization-color :blue}}]
+      (print _fiat-value)
       (let [internal-state (if @pressed?
                              :pressed
                              state)]
@@ -55,3 +78,6 @@
          [values props]]))))
 
 (def view (quo.theme/with-theme view-internal))
+;; (def view
+;;   (quo.theme/with-theme
+;;     (schema/instrument #'view-internal ?schema)))
