@@ -17,6 +17,7 @@
    [rn/view
     [text/text
      {:weight          :semi-bold
+      :style           {:text-transform :capitalize}
       :number-of-lines 1}
      (if-not (empty? label) label "-")]]])
 
