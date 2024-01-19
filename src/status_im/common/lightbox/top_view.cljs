@@ -51,7 +51,7 @@
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
                                (rf/dispatch
-                                [:chat.ui/save-image-to-gallery
+                                [:lightbox/save-image-to-gallery
                                  uri
                                  #(rf/dispatch [:toasts/upsert
                                                 {:id              :random-id
@@ -63,7 +63,7 @@
   [images index]
   (let [{:keys [image]} (nth images index)
         uri             (url/replace-port image (rf/sub [:mediaserver/port]))]
-    (rf/dispatch [:chat.ui/share-image uri])))
+    (rf/dispatch [:lightbox/share-image uri])))
 
 (defn top-view
   [images insets index animations derived landscape? screen-width]

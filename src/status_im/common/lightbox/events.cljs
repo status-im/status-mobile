@@ -28,10 +28,10 @@
  (fn [{:keys [db]} [value]]
    {:db (assoc db :lightbox/scale value)}))
 
-(rf/reg-event-fx :chat.ui/share-image
+(rf/reg-event-fx :lightbox/share-image
  (fn [_ [uri]]
    {:effects.lightbox/share-image uri}))
 
-(rf/reg-event-fx :chat.ui/save-image-to-gallery
+(rf/reg-event-fx :lightbox/save-image-to-gallery
  (fn [_ [uri on-success]]
    {:effects.lightbox/save-image-to-gallery [uri on-success]}))
