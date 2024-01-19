@@ -39,20 +39,21 @@
         ; to retrigger biometric auth, so they can endlessly repeat this cycle.
         biometrics-login    (fn [on-press-biometrics]
                               (rf/dispatch [:dismiss-keyboard])
-                              (biometrics/authenticate
-                               {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
-                                :on-success     (fn [not-canceled?]
-                                                  (on-close)
-                                                  (when not-canceled?
-                                                    (rf/dispatch [:standard-auth/on-biometric-success
-                                                                  (handle-auth-success true)])))
-                                :on-fail        (fn [error]
-                                                  (on-close)
-                                                  (log/error "Authentication Failed. Error:" error)
-                                                  (when on-auth-fail (on-auth-fail error))
-                                                  (password-login {:on-press-biometrics
-                                                                   #(on-press-biometrics
-                                                                     on-press-biometrics)}))}))]
+                              (rf/dispatch
+                               [:biometric/authenticate
+                                {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
+                                 :on-success     (fn [not-canceled?]
+                                                   (on-close)
+                                                   (when not-canceled?
+                                                     (rf/dispatch [:standard-auth/on-biometric-success
+                                                                   (handle-auth-success true)])))
+                                 :on-fail        (fn [error]
+                                                   (on-close)
+                                                   (log/error "Authentication Failed. Error:" error)
+                                                   (when on-auth-fail (on-auth-fail error))
+                                                   (password-login {:on-press-biometrics
+                                                                    #(on-press-biometrics
+                                                                      on-press-biometrics)}))}]))]
     (if biometric-auth?
       (-> (biometrics/get-supported-type)
           (.then (fn [biometric-type]
