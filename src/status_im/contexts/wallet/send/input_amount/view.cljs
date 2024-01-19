@@ -62,16 +62,18 @@
        (map first)))
 
 (defn- f-view-internal
-  []
+  ;; crypto-decimals and limit-crypto args are needed for component tests only
+  [{:keys [crypto-decimals limit-crypto]}]
   (let [bottom                    (safe-area/get-bottom)
         {:keys [currency]}        (rf/sub [:profile/profile])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         token-symbol              (:symbol token)
-        limit-crypto              (utils/get-standard-crypto-format token (:total-balance token))
+        limit-crypto              (or limit-crypto
+                                      (utils/get-standard-crypto-format token (:total-balance token)))
         conversion-rate           (get-in token [:market-values-per-currency :usd :price])
         limit-fiat                (.toFixed (* (:total-balance token) conversion-rate) 2)
-        crypto-decimals           (utils/get-crypto-decimals-count token)
+        crypto-decimals           (or crypto-decimals (utils/get-crypto-decimals-count token))
         input-value               (reagent/atom "")
         current-limit             (reagent/atom {:amount   limit-crypto
                                                  :currency token-symbol})

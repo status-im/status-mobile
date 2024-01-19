@@ -61,9 +61,9 @@
     (h/setup-subs sub-mocks)
     (let [on-confirm (h/mock-fn)]
       (h/render [input-amount/view
-                 {:on-confirm on-confirm
-                  :rate       10
-                  :limit      1000}])
+                 {:on-confirm      on-confirm
+                  :crypto-decimals 10
+                  :limit-crypto    1000}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -83,9 +83,9 @@
 
     (let [on-confirm (h/mock-fn)]
       (h/render [input-amount/view
-                 {:rate       10
-                  :limit      1000
-                  :on-confirm on-confirm}])
+                 {:crypto-decimals 10
+                  :limit-crypto    1000
+                  :on-confirm      on-confirm}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -103,8 +103,8 @@
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:rate  10
-                :limit 286}])
+               {:crypto-decimals 10
+                :limit-crypto    286}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
@@ -120,9 +120,9 @@
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:rate       10
-                :limit      286
-                :on-confirm #()}])
+               {:crypto-decimals 10
+                :limit-crypto    286
+                :on-confirm      #()}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
@@ -138,9 +138,9 @@
   (h/test "Switch from crypto to fiat and check limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:rate       10
-                :limit      250
-                :on-confirm #()}])
+               {:crypto-decimals 10
+                :limit-crypto    250
+                :on-confirm      #()}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-0))
