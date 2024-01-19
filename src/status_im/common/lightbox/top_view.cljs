@@ -7,7 +7,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im.common.lightbox.animations :as anim]
-    [status-im.common.lightbox.constants :as c]
+    [status-im.common.lightbox.constants :as constants]
     [status-im.common.lightbox.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -16,7 +16,7 @@
 (defn animate-rotation
   [result screen-width screen-height insets
    {:keys [rotate top-view-y top-view-x top-view-width top-view-bg]}]
-  (let [top-x (+ (/ c/top-view-height 2) (:top insets))]
+  (let [top-x (+ (/ constants/top-view-height 2) (:top insets))]
     (cond
       (= result orientation/landscape-left)
       (do

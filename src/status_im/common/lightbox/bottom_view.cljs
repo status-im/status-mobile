@@ -5,7 +5,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im.common.lightbox.animations :as anim]
-    [status-im.common.lightbox.constants :as c]
+    [status-im.common.lightbox.constants :as constants]
     [status-im.common.lightbox.style :as style]
     [status-im.common.lightbox.text-sheet.view :as text-sheet]
     [utils.re-frame :as rf]))
@@ -13,13 +13,13 @@
 (defn get-small-item-layout
   [_ index]
   #js
-   {:length c/small-image-size
-    :offset (* (+ c/small-image-size 8) index)
+   {:length constants/small-image-size
+    :offset (* (+ constants/small-image-size 8) index)
     :index  index})
 
 (defn- f-small-image
   [item index _ {:keys [scroll-index props]}]
-  (let [size (if (= @scroll-index index) c/focused-image-size c/small-image-size)
+  (let [size (if (= @scroll-index index) constants/focused-image-size constants/small-image-size)
         size-value (anim/use-val size)
         {:keys [scroll-index-lock? small-list-ref flat-list-ref]}
         props]
@@ -52,7 +52,7 @@
 (defn bottom-view
   [{:keys [images index scroll-index insets animations derived item-width props state transparent?
            bottom-text-component]}]
-  (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
+  (let [padding-horizontal (- (/ item-width 2) (/ constants/focused-image-size 2))]
     [reanimated/linear-gradient
      {:colors   [colors/neutral-100-opa-100 colors/neutral-100-opa-80 colors/neutral-100-opa-0]
       :location [0.2 0.9]
@@ -68,7 +68,7 @@
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :id
-       :style                             {:height c/small-list-height}
+       :style                             {:height constants/small-list-height}
        :data                              images
        :render-fn                         small-image
        :render-data                       {:scroll-index scroll-index
