@@ -37,17 +37,18 @@
 ;; On android we get error messages while on iOS it's a stringified Obj-C error object.
 (defn- convert-auth-error-message
   [message]
-  (ex-info "Failed to authenticate with biometrics"
-           {:orig-error-message message
-            :code               (if platform/android?
-                                  (condp = message
-                                    android-not-enrolled-error-message  ::not-enrolled
-                                    android-not-available-error-message ::not-available
-                                    ::unknown)
+  (let [cause (if platform/android?
+                (condp = message
+                  android-not-enrolled-error-message  ::not-enrolled
+                  android-not-available-error-message ::not-available
+                  ::unknown)
 
-                                  (condp #(string/includes? %2 %1) message
-                                    ios-not-enrolled-error-message ::not-enrolled
-                                    ::unknown))}))
+                (condp #(string/includes? %2 %1) message
+                  ios-not-enrolled-error-message ::not-enrolled
+                  ::unknown))]
+    (ex-info "Failed to authenticate with biometrics"
+             {:orig-error-message message}
+             cause)))
 
 (defn authenticate
   "Returns a JS promise that resolves with a boolean auth success state: `true` for

@@ -44,8 +44,9 @@
 
 (rf/defn show-message
   {:events [:biometric/show-message]}
-  [_ code]
-  (let [content (if (#{::biometrics/not-enrolled
+  [_ error]
+  (let [code    (ex-cause error)
+        content (if (#{::biometrics/not-enrolled
                        ::biometrics/not-available}
                      code)
                   (i18n/label :t/grant-face-id-permissions)
@@ -68,7 +69,7 @@
                   (on-success))))
        (.catch (fn [err]
                  (when on-fail
-                   (-> err ex-data :code on-fail)))))))
+                   (on-fail err)))))))
 
 (rf/defn authenticate
   {:events [:biometric/authenticate]}

@@ -49,7 +49,9 @@
                                                                    (handle-auth-success true)])))
                                  :on-fail        (fn [error]
                                                    (on-close)
-                                                   (log/error "Authentication Failed. Error:" error)
+                                                   (log/error
+                                                    (ex-message error)
+                                                    (-> error ex-data (assoc :code (ex-cause error))))
                                                    (when on-auth-fail (on-auth-fail error))
                                                    (password-login {:on-press-biometrics
                                                                     #(on-press-biometrics

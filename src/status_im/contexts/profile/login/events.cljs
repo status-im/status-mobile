@@ -212,9 +212,13 @@
 
 (rf/reg-event-fx
  :profile.login/biometric-auth-fail
- (fn [_ [code]]
-   {:dispatch [:biometric/show-message code]}))
-
+ (fn [_ [error]]
+   (log/error (ex-message error)
+              (-> error
+                  ex-data
+                  (assoc :code  (ex-cause error)
+                         :event :profile.login/biometric-auth-fail)))
+   {:dispatch [:biometric/show-message error]}))
 
 (rf/defn verify-database-password
   {:events [:profile.login/verify-database-password]}
