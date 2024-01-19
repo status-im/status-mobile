@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "jm/default-wallet-name",
-    "commit-sha1": "64c8ce2ee345a0129f849a96ae81137db85c2348",
+    "version": "v0.172.6",
+    "commit-sha1": "6e30fbb211b0e0bb1e7966cce4e215c4080aac5c",
     "src-sha256": "1k3hg2m25qvgvqxmy8im3xhjwvdyvaq49yks92642h9rw494nb94"
 }
