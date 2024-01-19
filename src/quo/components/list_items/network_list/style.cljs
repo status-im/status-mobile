@@ -3,10 +3,10 @@
 
 (defn- background-color
   [state customization-color theme]
-  (cond
-    (= state :pressed) (colors/resolve-color customization-color theme 5)
-    (= state :active)  (colors/resolve-color customization-color theme 10)
-    :else              :transparent))
+  (case state
+    :pressed (colors/resolve-color customization-color theme 5)
+    :active  (colors/resolve-color customization-color theme 10)
+    :transparent))
 
 (defn container
   [state customization-color theme]
