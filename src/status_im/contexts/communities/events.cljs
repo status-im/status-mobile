@@ -251,12 +251,19 @@
 
 (defn toggle-selected-permission-address
   [{:keys [db]} [address community-id]]
-  {:db (update-in db
-                  [:communities community-id :selected-permission-addresses]
-                  (fn [selected-addresses]
-                    (if (contains? selected-addresses address)
-                      (disj selected-addresses address)
-                      (conj selected-addresses address))))})
+  (let [selected-permission-addresses
+        (get-in db [:communities community-id :selected-permission-addresses])
+        updated-selected-permission-addresses
+        (if (contains? selected-permission-addresses address)
+          (disj selected-permission-addresses address)
+          (conj selected-permission-addresses address))]
+    {:db (assoc-in db
+          [:communities community-id :selected-permission-addresses]
+          updated-selected-permission-addresses)
+     :fx [(when community-id
+            [:dispatch
+             [:communities/check-permissions-to-join-community community-id
+              updated-selected-permission-addresses :based-on-client-selection]])]}))
 
 (rf/reg-event-fx :communities/toggle-selected-permission-address
  toggle-selected-permission-address)
@@ -266,7 +273,8 @@
    (when community-id
      {:db (assoc-in db
            [:communities community-id :selected-permission-addresses]
-           (get-in db [:communities community-id :previous-permission-addresses]))})))
+           (get-in db [:communities community-id :previous-permission-addresses]))
+      :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
 
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
