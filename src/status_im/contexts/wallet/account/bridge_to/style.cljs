@@ -8,10 +8,7 @@
   {:padding-horizontal 20
    :padding-bottom     12})
 
-(def list-content-container
-  {:padding-horizontal 8})
-
-(def mainnet-container
+(def content-container
   {:padding-horizontal 8})
 
 (def image
