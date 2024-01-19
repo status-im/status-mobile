@@ -55,8 +55,16 @@
 
      (when (and highest-permission-role (seq selected-addresses))
        [rn/view
+        {:style style/highest-role}
         [quo/text
-         (i18n/label :t/eligible-to-join-as {:role highest-permission-role-text})]])
+         {:size  :paragraph-2
+          :style {:color colors/neutral-50}}
+         (i18n/label :t/eligible-to-join-as {:role ""})]
+        [quo/context-tag
+         {:type    :icon
+          :icon    :i/members
+          :size    24
+          :context highest-permission-role-text}]])
 
      (when (empty? selected-addresses)
        [rn/view
