@@ -151,7 +151,7 @@
         (.then (fn []
                  (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
                  (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "205.50 ETH"))))
+                 (h/wait-for #(h/get-by-text "20.50 ETH"))))
         (.then (fn []
                  (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "205.50 ETH")))))))
+                 (h/wait-for #(h/get-by-text "20.50 ETH")))))))
