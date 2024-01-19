@@ -81,16 +81,12 @@
 
 (def transparent-screen-options
   (merge
+   (statusbar-and-navbar-root)
    {:modalPresentationStyle :overCurrentContext
     :theme                  :dark
     :layout                 {:componentBackgroundColor :transparent
                              :orientation              ["portrait"]
-                             :backgroundColor          :transparent}}
-   (if platform/android?
-     {:statusBar {:backgroundColor :transparent
-                  :style           :light
-                  :drawBehind      true}}
-     {:statusBar {:style :light}})))
+                             :backgroundColor          :transparent}}))
 
 (def sheet-options
   {:layout                 {:componentBackgroundColor :transparent
@@ -105,7 +101,7 @@
                              {})})
 
 (def dark-screen
-  (merge (statusbar true)
+  (merge (statusbar-and-navbar-root)
          {:theme  :dark
           :layout {:componentBackgroundColor colors/neutral-95
                    :orientation              ["portrait"]
