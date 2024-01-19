@@ -46,7 +46,7 @@
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state {:optional true :default :default} [:maybe keyword?]]
       [:on-press {:optional true} [:maybe fn?]]
-      [:theme :schema.common/theme]]]]
+      [:theme {:optional true} [:schema.common/theme]]]]]
    :any])
 
 (defn- view-internal
