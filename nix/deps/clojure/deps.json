@@ -90,20 +90,20 @@
   },
 
   {
-    "path": "cider/cider-nrepl/0.25.3/cider-nrepl-0.25.3",
+    "path": "cider/cider-nrepl/0.31.0/cider-nrepl-0.31.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "5ae0efd9377a5e60c084bdaf4a2ce094f759ce23",
-      "sha256": "0drxf9nm23i1pcgrkwbcr09msq37csilzww38709add0hz8spjhq"
+      "sha1": "1f28a4a834a7a46cf24def971b1a705a6795c73a",
+      "sha256": "0h4pyzy8rzzh567khvimw2cs8jr640kqxgaxvbfx1s5yfp56fka2"
     }
   },
 
   {
-    "path": "cider/piggieback/0.4.1/piggieback-0.4.1",
+    "path": "cider/piggieback/0.5.2/piggieback-0.5.2",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "0a02a3e2ecd7a126ab60d8a44793342f20ced79b",
-      "sha256": "142vl5np33akcrnn6pksi0rjfsmmi528villxsj6cwcndvybiw4m"
+      "sha1": "ecfd5c286a85db3f059e75c37fca5722d9e26f79",
+      "sha256": "1ps9yf3cxmlm447hqkidjb5xry90n0wl3jk0jn28fagq31lzylkl"
     }
   },
 
@@ -252,15 +252,6 @@
   },
 
   {
-    "path": "com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1",
-    "host": "https://repo1.maven.org/maven2",
-    "jar": {
-      "sha1": "c9ad4a0850ab676c5c64461a05ca524cdfff59f1",
-      "sha256": "170rflxnqnah0265ik2aylmxkshyqbf2zas9bp2l32xqj9l6jsaf"
-    }
-  },
-
-  {
     "path": "com/google/errorprone/error_prone_annotations/2.15.0/error_prone_annotations-2.15.0",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
@@ -306,11 +297,11 @@
   },
 
   {
-    "path": "com/google/javascript/closure-compiler-unshaded/v20230411/closure-compiler-unshaded-v20230411",
+    "path": "com/google/javascript/closure-compiler-unshaded/v20230802/closure-compiler-unshaded-v20230802",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "2f5d7ab921f9cc07ffeb4e1c0f156f164c650eeb",
-      "sha256": "0gphdrrhr88bcqa1scndachvhbayh7m11zm9hcsmvzn9bw72pabw"
+      "sha1": "0a2498a4d45bf5896042f31da0cd30c5e7b415af",
+      "sha256": "0jvgqq0gnvm4jw2zac4677ds05klvsjalszdzcq3nw8g7fjyjv2x"
     }
   },
 
@@ -333,38 +324,11 @@
   },
 
   {
-    "path": "commons-codec/commons-codec/1.15/commons-codec-1.15",
+    "path": "com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
-      "sha256": "0qzd8v96j4x7jjcfpvvdh9ar1xhwxpxi2rh51nzhj0br7bbgdsdk"
-    }
-  },
-
-  {
-    "path": "commons-fileupload/commons-fileupload/1.4/commons-fileupload-1.4",
-    "host": "https://repo1.maven.org/maven2",
-    "jar": {
-      "sha1": "f95188e3d372e20e7328706c37ef366e5d7859b0",
-      "sha256": "1xyyl54sfxsdcwxdyq6b0azmr31b4dwqns850jjkw9a9dwrh5v54"
-    }
-  },
-
-  {
-    "path": "commons-io/commons-io/2.11.0/commons-io-2.11.0",
-    "host": "https://repo1.maven.org/maven2",
-    "jar": {
-      "sha1": "a2503f302b11ebde7ebc3df41daebe0e4eea3689",
-      "sha256": "020946yakki3qzc652arfndzi594drxanidz9bawbb6vhxnjy6wn"
-    }
-  },
-
-  {
-    "path": "compojure/compojure/1.5.2/compojure-1.5.2",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "0b5258d0616ffc5f64c2b6d95f09de56d24df439",
-      "sha256": "1s2k05lwnlm9a66mxnsss437i9gp70dny8y2rlfkl090s6mdqsaf"
+      "sha1": "c9ad4a0850ab676c5c64461a05ca524cdfff59f1",
+      "sha256": "170rflxnqnah0265ik2aylmxkshyqbf2zas9bp2l32xqj9l6jsaf"
     }
   },
 
@@ -401,6 +365,42 @@
     "jar": {
       "sha1": "8862c6113ca743ebdcfa17bf4779a21fc08a7c7e",
       "sha256": "0i0wsv2g2hswgdik6zlgcs212clj1d7fvckxfcsmyfr0vvpc1dmd"
+    }
+  },
+
+  {
+    "path": "commons-codec/commons-codec/1.15/commons-codec-1.15",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
+      "sha256": "0qzd8v96j4x7jjcfpvvdh9ar1xhwxpxi2rh51nzhj0br7bbgdsdk"
+    }
+  },
+
+  {
+    "path": "commons-fileupload/commons-fileupload/1.4/commons-fileupload-1.4",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "f95188e3d372e20e7328706c37ef366e5d7859b0",
+      "sha256": "1xyyl54sfxsdcwxdyq6b0azmr31b4dwqns850jjkw9a9dwrh5v54"
+    }
+  },
+
+  {
+    "path": "commons-io/commons-io/2.11.0/commons-io-2.11.0",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "a2503f302b11ebde7ebc3df41daebe0e4eea3689",
+      "sha256": "020946yakki3qzc652arfndzi594drxanidz9bawbb6vhxnjy6wn"
+    }
+  },
+
+  {
+    "path": "compojure/compojure/1.5.2/compojure-1.5.2",
+    "host": "https://repo.clojars.org",
+    "jar": {
+      "sha1": "0b5258d0616ffc5f64c2b6d95f09de56d24df439",
+      "sha256": "1s2k05lwnlm9a66mxnsss437i9gp70dny8y2rlfkl090s6mdqsaf"
     }
   },
 
@@ -446,6 +446,15 @@
     "jar": {
       "sha1": "fde761cd9f5c9bd13e8c91e8b9724573a87f1449",
       "sha256": "10vjhnb9g9yzcgjsi1gi394nspvyki0l2m4dhd6dgbsmrrn6kjzp"
+    }
+  },
+
+  {
+    "path": "funcool/promesa/11.0.678/promesa-11.0.678",
+    "host": "https://repo.clojars.org",
+    "jar": {
+      "sha1": "0ee1690ba74b2609c2d85b51edacad13046a18e2",
+      "sha256": "1wif8nwdbpchwg56fz47ymjnflmva0fzy0bw1s6bacnac472pmza"
     }
   },
 
@@ -504,11 +513,11 @@
   },
 
   {
-    "path": "io/undertow/undertow-core/2.2.4.Final/undertow-core-2.2.4.Final",
+    "path": "io/undertow/undertow-core/2.3.10.Final/undertow-core-2.3.10.Final",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "78650b4029dd9280c4769d9425b5559f12cb83bf",
-      "sha256": "1brpkd2l98byf76jga6hj5drv5sj2d93lxlq2xz0rxpqyqas1xm4"
+      "sha1": "96d1d5ca6406a75a285b95ea8f4b39e0fb2d707e",
+      "sha256": "1s1m5hfhmfr7jsp4bn4c6fhdbgiz72mz0a96494nyhfa0b4lql8l"
     }
   },
 
@@ -594,11 +603,11 @@
   },
 
   {
-    "path": "nrepl/nrepl/1.0.0/nrepl-1.0.0",
+    "path": "nrepl/nrepl/0.9.0/nrepl-0.9.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "f47774c43493efdc879d36b95ebd67ea0d9c890a",
-      "sha256": "1fx5ssmixgqmklliw0ng8fjz41kkhys56x8dbwv9yqrfzws9f2x3"
+      "sha1": "49beada131959f08f9a20899affbd1b10c03a668",
+      "sha256": "1phak0479s27ffw9wzz7pi8cqqs6ipsm15dhgw9szxxcfhx529qa"
     }
   },
 
@@ -612,15 +621,6 @@
   },
 
   {
-    "path": "org/apache/ant/ant/1.10.11/ant-1.10.11",
-    "host": "https://repo1.maven.org/maven2",
-    "jar": {
-      "sha1": "b875cd48a0bc955ae9c5c477ad991e1f26fb24d2",
-      "sha256": "0m07pifkdpwghpp8wvqh14sbxazmjbkkpsfakw6ixq5apfdvih48"
-    }
-  },
-
-  {
     "path": "org/apache/ant/ant-launcher/1.10.11/ant-launcher-1.10.11",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
@@ -630,11 +630,11 @@
   },
 
   {
-    "path": "org/babashka/sci/0.7.38/sci-0.7.38",
-    "host": "https://repo.clojars.org",
+    "path": "org/apache/ant/ant/1.10.11/ant-1.10.11",
+    "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "ef2d8c74065b9a7d685a11bff017676db308a923",
-      "sha256": "04pkxwcgkd1p4f4rszsr6pp18fl0vni1az47a390llrhyyrjcckn"
+      "sha1": "b875cd48a0bc955ae9c5c477ad991e1f26fb24d2",
+      "sha256": "0m07pifkdpwghpp8wvqh14sbxazmjbkkpsfakw6ixq5apfdvih48"
     }
   },
 
@@ -644,6 +644,15 @@
     "jar": {
       "sha1": "45a05ece33609c3ad26a6ea4e05130560da82306",
       "sha256": "0pwwqq11rcknpcwbwsbw7pgbgnd7hqiawn0r8yvk14qfwa6p7z46"
+    }
+  },
+
+  {
+    "path": "org/babashka/sci/0.7.38/sci-0.7.38",
+    "host": "https://repo.clojars.org",
+    "jar": {
+      "sha1": "ef2d8c74065b9a7d685a11bff017676db308a923",
+      "sha256": "04pkxwcgkd1p4f4rszsr6pp18fl0vni1az47a390llrhyyrjcckn"
     }
   },
 
@@ -738,20 +747,20 @@
   },
 
   {
-    "path": "org/clojure/google-closure-library/0.0-20230227-c7c0a541/google-closure-library-0.0-20230227-c7c0a541",
-    "host": "https://repo1.maven.org/maven2",
-    "jar": {
-      "sha1": "533ce2bdbb7925db781449abb6527af1e6c5e782",
-      "sha256": "0js19lw8bp9gym3pn47h867vhf65j18qc6x1pfn883vkwyasm18l"
-    }
-  },
-
-  {
     "path": "org/clojure/google-closure-library-third-party/0.0-20230227-c7c0a541/google-closure-library-third-party-0.0-20230227-c7c0a541",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
       "sha1": "f5ea82eb1309b81ada6a14371bb848323c65e38b",
       "sha256": "0jk9v4bfrxvz6wq1s86msry2mf47nwcjfplnn41yabqc44g82hva"
+    }
+  },
+
+  {
+    "path": "org/clojure/google-closure-library/0.0-20230227-c7c0a541/google-closure-library-0.0-20230227-c7c0a541",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "533ce2bdbb7925db781449abb6527af1e6c5e782",
+      "sha256": "0js19lw8bp9gym3pn47h867vhf65j18qc6x1pfn883vkwyasm18l"
     }
   },
 
@@ -783,20 +792,20 @@
   },
 
   {
-    "path": "org/clojure/tools.analyzer/1.1.0/tools.analyzer-1.1.0",
-    "host": "https://repo1.maven.org/maven2",
-    "jar": {
-      "sha1": "692882a35d7b50947d6e4852fba8a51d8d5e3646",
-      "sha256": "08fzw3srrppgq1d11sh1ghnyvi24ixa10kbqsncc7xyx7fybcs0k"
-    }
-  },
-
-  {
     "path": "org/clojure/tools.analyzer.jvm/1.2.2/tools.analyzer.jvm-1.2.2",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
       "sha1": "449691b55d7d526258ce02c69b4699f2897c494d",
       "sha256": "0phfs1z1scvdi00348zjh223xncmgrkmlrnbca4dh7lk701gy34i"
+    }
+  },
+
+  {
+    "path": "org/clojure/tools.analyzer/1.1.0/tools.analyzer-1.1.0",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "692882a35d7b50947d6e4852fba8a51d8d5e3646",
+      "sha256": "08fzw3srrppgq1d11sh1ghnyvi24ixa10kbqsncc7xyx7fybcs0k"
     }
   },
 
@@ -828,11 +837,11 @@
   },
 
   {
-    "path": "org/clojure/tools.reader/1.3.6/tools.reader-1.3.6",
+    "path": "org/clojure/tools.reader/1.3.7/tools.reader-1.3.7",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "927809dcb44fa726e4969d993e3e733636d95ebb",
-      "sha256": "1q5q7fmshybvp55f6qys8i5sbzfaix5v9f9b55dkbhv55hgv7l8i"
+      "sha1": "c60dfd3d79cbc5ec6264ba45c14b8d4c9b6708b2",
+      "sha256": "1mr0qx3gw1myfls07vrx3arwsi5n95b2lwk74ijpj0z3lzpzlj7m"
     }
   },
 
@@ -846,38 +855,38 @@
   },
 
   {
-    "path": "org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final",
+    "path": "org/jboss/logging/jboss-logging/3.4.3.Final/jboss-logging-3.4.3.Final",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "40fd4d696c55793e996d1ff3c475833f836c2498",
-      "sha256": "1f7f4kjn3v6vibhgsr3k8hl0r2xq0c2rbcl82dx0bqg5jdyqgzlf"
+      "sha1": "c4bd7e12a745c0e7f6cf98c45cdcdf482fd827ea",
+      "sha256": "0jdcziqbdzmah981zv3q88k2zrnclr2h1k3h3vjn002m9p54qchb"
     }
   },
 
   {
-    "path": "org/jboss/threads/jboss-threads/3.1.0.Final/jboss-threads-3.1.0.Final",
+    "path": "org/jboss/threads/jboss-threads/3.5.0.Final/jboss-threads-3.5.0.Final",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "9b260c0302f637a84a52d3d118214a3c59217615",
-      "sha256": "0yc0p71y7yjhqjhkvqqi9xqgljavp3aslnik2k7dppbxnkrnlff9"
+      "sha1": "dd23d4788b3eafe9597ef3fe028e46ceb293ba8d",
+      "sha256": "1cchp54dw1578my27siim3h5jbf240aq8q6xd3z2b1ajgxxbcl71"
     }
   },
 
   {
-    "path": "org/jboss/xnio/xnio-api/3.8.0.Final/xnio-api-3.8.0.Final",
+    "path": "org/jboss/xnio/xnio-api/3.8.8.Final/xnio-api-3.8.8.Final",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "e2c29acf42ac6f42c34f0b74ba089e3f3d1b2394",
-      "sha256": "041qnvb74bkgmfxyd23vdl26il55cmfbhi6a4bm3fcmyrpapjfjl"
+      "sha1": "1ba9c8b9a8dea1c6cd656155943e6d4c2c631fa7",
+      "sha256": "0wvqdcbardi55l77aw5404qgw70384hw155xvc66shn7l6z8h6bh"
     }
   },
 
   {
-    "path": "org/jboss/xnio/xnio-nio/3.8.0.Final/xnio-nio-3.8.0.Final",
+    "path": "org/jboss/xnio/xnio-nio/3.8.8.Final/xnio-nio-3.8.8.Final",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "90c57dcf7f8c846b4da331d0e6e048c39842c92a",
-      "sha256": "1zndnb5648wqw23gj80zjqk3yd8gq6grqhz9n4zrcqixx1z586jf"
+      "sha1": "a5d2faf8d02e0a0bb9e9eabca8e38173cb640331",
+      "sha256": "0pxw2iv1q1yzk39knc650rg4vflsyjzhf07mwm2s5aqn5h82sk3i"
     }
   },
 
@@ -909,11 +918,20 @@
   },
 
   {
-    "path": "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36",
+    "path": "org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "6c62681a2f655b49963a5983b8b0950a6120ae14",
-      "sha256": "1h512ry8g0nriazg3dqzs6s96502a77drw8vq26nfya97rg5gvyk"
+      "sha1": "7cf2726fdcfbc8610f9a71fb3ed639871f315340",
+      "sha256": "0v1b7iydpnh2rvyzqvqbqm19vr2qva8icq84690bppnpr06r6608"
+    }
+  },
+
+  {
+    "path": "org/slf4j/slf4j-nop/2.0.9/slf4j-nop-2.0.9",
+    "host": "https://repo1.maven.org/maven2",
+    "jar": {
+      "sha1": "fa0627049304bf501bf6a0e4d1416bcaec9a72a9",
+      "sha256": "10vdg9qkailjbzmf5mfnv328675swmnf1x3g9v7ymhxs29xkc4jn"
     }
   },
 
@@ -927,11 +945,11 @@
   },
 
   {
-    "path": "org/wildfly/common/wildfly-common/1.5.2.Final/wildfly-common-1.5.2.Final",
+    "path": "org/wildfly/common/wildfly-common/1.5.4.Final/wildfly-common-1.5.4.Final",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "8eba40cfe86bcfcc223551e75201e6e7574c7c36",
-      "sha256": "17rkkm9dqbxdzpamwl9jr8z285awsj6hzpavzmc87wcz9469hp5b"
+      "sha1": "735ceee5616d5143bac1bc740e444697073c002f",
+      "sha256": "0sp48y3q7bmp3bjb7a6fpz8gb7ssizvxlw5wdv2xwa6mifpkrnlz"
     }
   },
 
@@ -945,29 +963,11 @@
   },
 
   {
-    "path": "reagent/reagent/1.2.0/reagent-1.2.0",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "1b9a181b5c7ed3557768d2ea0c66f5616aef5e97",
-      "sha256": "0scvkzfqjs613z10rngh7427v3pxdqablf0fcl65pbpkzz16wgav"
-    }
-  },
-
-  {
     "path": "re-com/re-com/2.8.0/re-com-2.8.0",
     "host": "https://repo.clojars.org",
     "jar": {
       "sha1": "fd038eef3c36c460613e94f2c70fc84c6eb35a66",
       "sha256": "0r431yq5hf8zc4j2k3lsi3vni60kk8ncinqrb7xv2qcyjw4qh178"
-    }
-  },
-
-  {
-    "path": "refactor-nrepl/refactor-nrepl/2.5.0/refactor-nrepl-2.5.0",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "6bc3441afc94f7ca024e41a864ca75e05df7e207",
-      "sha256": "0w8hax99y98l53mixxzx2ja0vcnhjv8dnsaz1zj3vqk775ns5w6i"
     }
   },
 
@@ -995,6 +995,24 @@
     "jar": {
       "sha1": "d54aa873a848f624a282c2c2f7df947c976a77b5",
       "sha256": "0yhsqpi3d8x11pl1aq8z23fdyjspvq07dsyvrlkpbyx7rm64i21h"
+    }
+  },
+
+  {
+    "path": "reagent/reagent/1.2.0/reagent-1.2.0",
+    "host": "https://repo.clojars.org",
+    "jar": {
+      "sha1": "1b9a181b5c7ed3557768d2ea0c66f5616aef5e97",
+      "sha256": "0scvkzfqjs613z10rngh7427v3pxdqablf0fcl65pbpkzz16wgav"
+    }
+  },
+
+  {
+    "path": "refactor-nrepl/refactor-nrepl/3.9.1/refactor-nrepl-3.9.1",
+    "host": "https://repo.clojars.org",
+    "jar": {
+      "sha1": "f949af92dd1d6fef59d7447bd0cb62118e34eca1",
+      "sha256": "0dml9yvjmji6xk2sk3cdmkvvnh13rw29szxxl363hap8yg28xcs1"
     }
   },
 
@@ -1035,11 +1053,11 @@
   },
 
   {
-    "path": "thheller/shadow-cljs/2.25.0/shadow-cljs-2.25.0-aot",
+    "path": "thheller/shadow-cljs/2.26.2/shadow-cljs-2.26.2-aot",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "013921db91ce4a3616aec9c72c1832a014a0fece",
-      "sha256": "0ks380z7h8i2ylirvjgmlicq9jjpz9w71gjv521h4xs5fb273cl0"
+      "sha1": "ab6b31649cb03e352369698781207db4f6da6d5f",
+      "sha256": "0mh28nykpillkym7hvplrr7vy5hn6a2ymafyf4yfl5y2kfx4yq42"
     }
   },
 
@@ -1053,11 +1071,11 @@
   },
 
   {
-    "path": "thheller/shadow-undertow/0.3.1/shadow-undertow-0.3.1",
+    "path": "thheller/shadow-undertow/0.3.3/shadow-undertow-0.3.3",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "9be444bea4037bb80b451cc52a8e80359c4c45be",
-      "sha256": "174s2rdxvp7d4jg9kvzjadps42bdsbi05rs2pjy5i0ssq9n23zwa"
+      "sha1": "ba377c3b70fd942b3ca7e38f055412a441626711",
+      "sha256": "10w2slj4znm93j0qq3ldj9hj0i7a50vbnmn6kv8i77fakikdjc48"
     }
   },
 
