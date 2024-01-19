@@ -5,6 +5,18 @@
     [taoensso.timbre :as log]
     [utils.transforms :as transforms]))
 
+(defn promise-get-photos
+  [opts]
+  (-> (.getPhotos CameraRoll (clj->js opts))
+      (.then transforms/js->clj)))
+
+(defn promise-get-albums
+  [opts]
+  (-> (.getAlbums CameraRoll (clj->js opts))
+      (.then transforms/js->clj)))
+
+
+
 (defn get-photos
   [opts callback]
   (-> (.getPhotos CameraRoll (clj->js opts))

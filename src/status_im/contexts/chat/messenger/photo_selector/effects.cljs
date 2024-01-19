@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.messenger.photo-selector.effects
   (:require
     [clojure.string :as string]
+    [promesa.core :as p]
     [react-native.cameraroll :as cameraroll]
     [react-native.core :as rn]
     [react-native.image-resizer :as image-resizer]
@@ -80,9 +81,47 @@
                        (callback @albums))))))
               (callback @albums)))))))))
 
+(defn- get-album-cover-uri
+  [photos]
+  (get-in (first photos) [:node :image :uri]))
+
+(defn- get-album-info
+  [album]
+  ;; Easy promise chains without (.then #(...))
+  (p/->> (cameraroll/promise-get-photos
+          {:first      1
+           :groupTypes "albums"
+           :groupName  (:title album)
+           :assetType  "photos"})
+         :edges
+         (get-album-cover-uri)
+         (assoc album :uri)))
+
+(defn- p-get-albums
+  []
+  ;; Using an "async/await-like" pattern with promesa's let
+  (p/let [smart-album-cover-uri (p/-> (cameraroll/promise-get-photos
+                                       {:first      1
+                                        :groupTypes "All"
+                                        :assetType  "Photos"})
+                                      :edges
+                                      get-album-cover-uri)
+          albums                (cameraroll/promise-get-albums {:assetType "Photos"})
+          album-previews        (p/->> (p/all (map get-album-info albums))
+                                       (sort-by :title))]
+    {:smart-album {:title (i18n/label :t/recent)
+                   :uri   smart-album-cover-uri}
+     :my-albums   album-previews}))
+
 (rf/reg-fx :effects.camera-roll/get-albums
  (fn []
-   (get-albums #(rf/dispatch [:on-camera-roll-get-albums %]))))
+   (-> (p-get-albums)
+       ;; Can still use (.then) just as before
+       (.then #(rf/dispatch [:on-camera-roll-get-albums %]))
+       (.catch #(println "Camera Error: " %)))
+
+   (comment
+     (get-albums #(rf/dispatch [:on-camera-roll-get-albums %])))))
 
 (defn get-photos-count-ios-fx
   [cb]
