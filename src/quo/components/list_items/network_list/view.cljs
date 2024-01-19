@@ -1,12 +1,12 @@
 (ns quo.components.list-items.network-list.view
   (:require
-   [quo.components.list-items.network-list.style :as style]
-   [quo.components.markdown.text :as text]
-   [quo.foundations.resources :as quo.resources]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [schema.core :as schema]))
+    [quo.components.list-items.network-list.style :as style]
+    [quo.components.markdown.text :as text]
+    [quo.foundations.resources :as quo.resources]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn- info
   [{:keys [network-name label]}]
@@ -72,4 +72,4 @@
 
 (def view
   (quo.theme/with-theme
-    (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal ?schema)))
