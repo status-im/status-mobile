@@ -43,7 +43,6 @@
       [:fiat-value {:optional true} [:maybe :string]]
       [:label {:optional true} [:maybe :string]]
       [:token-value {:optional true} [:maybe [:string]]]
-      [:token {:optional true} [:maybe :string]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state {:optional true :default :default} [:maybe keyword?]]
       [:on-press {:optional true} [:maybe fn?]]
