@@ -8,12 +8,12 @@
     [utils.re-frame :as rf]))
 
 (defn- render-item
-  [item _ _ airdrop-address]
+  [item _ _ [airdrop-address community-id]]
   [quo/account-item
    {:account-props item
     :state         (when (= airdrop-address (:address item)) :selected)
     :on-press      (fn []
-                     (rf/dispatch [:communities/set-airdrop-address (:address item)])
+                     (rf/dispatch [:communities/set-airdrop-address (:address item) community-id])
                      (rf/dispatch [:navigate-back]))
     :emoji         (:emoji item)}])
 
@@ -21,8 +21,8 @@
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name images color]} (rf/sub [:communities/community id])
-        selected-accounts           (rf/sub [:communities/selected-permission-accounts])
-        airdrop-address             (rf/sub [:communities/airdrop-address])]
+        selected-accounts           (rf/sub [:communities/selected-permission-accounts id])
+        airdrop-address             (rf/sub [:communities/airdrop-address id])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag
@@ -35,6 +35,6 @@
      [rn/flat-list
       {:data                    selected-accounts
        :render-fn               render-item
-       :render-data             airdrop-address
+       :render-data             [airdrop-address id]
        :content-container-style style/account-list-container
        :key-fn                  :address}]]))
