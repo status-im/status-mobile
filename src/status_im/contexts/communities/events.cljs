@@ -84,7 +84,8 @@
                                       type
                                       constants/community-token-permission-can-view-and-post-channel))))]
        {:db (assoc-in db [:communities id] community)
-        :fx [(when (not joined)
+        :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+             (when (not joined)
                [:dispatch [:chat.ui/spectate-community id]])
              (when (nil? token-permissions-check)
                [:dispatch [:communities/check-permissions-to-join-community id]])
@@ -199,54 +200,62 @@
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
 (defn initialize-permission-addresses
-  [{:keys [db]}]
-  (let [accounts        (get-in db [:wallet :accounts])
-        sorted-accounts (sort-by :position (vals accounts))
-        addresses       (set (map :address sorted-accounts))]
-    {:db (assoc db
-                :communities/previous-permission-addresses addresses
-                :communities/selected-permission-addresses addresses
-                :communities/airdrop-address               (:address (first sorted-accounts)))}))
+  [{:keys [db]} [community-id]]
+  (when community-id
+    (let [accounts        (get-in db [:wallet :accounts])
+          sorted-accounts (sort-by :position (vals accounts))
+          addresses       (set (map :address sorted-accounts))]
+      {:db (update-in db
+                      [:communities community-id]
+                      assoc
+                      :previous-permission-addresses addresses
+                      :selected-permission-addresses addresses
+                      :airdrop-address               (:address (first sorted-accounts)))})))
 
 (rf/reg-event-fx :communities/initialize-permission-addresses
  initialize-permission-addresses)
 
 (defn update-previous-permission-addresses
-  [{:keys [db]}]
-  (let [accounts                      (get-in db [:wallet :accounts])
-        sorted-accounts               (sort-by :position (vals accounts))
-        selected-permission-addresses (get-in db [:communities/selected-permission-addresses])
-        selected-accounts             (filter #(contains? selected-permission-addresses
-                                                          (:address %))
-                                              sorted-accounts)
-        current-airdrop-address       (get-in db [:communities/airdrop-address])]
-    {:db (assoc db
-                :communities/previous-permission-addresses selected-permission-addresses
-                :communities/airdrop-address               (if (contains? selected-permission-addresses
-                                                                          current-airdrop-address)
-                                                             current-airdrop-address
-                                                             (:address (first selected-accounts))))}))
+  [{:keys [db]} [community-id]]
+  (when community-id
+    (let [accounts                      (get-in db [:wallet :accounts])
+          sorted-accounts               (sort-by :position (vals accounts))
+          selected-permission-addresses (get-in db
+                                                [:communities community-id
+                                                 :selected-permission-addresses])
+          selected-accounts             (filter #(contains? selected-permission-addresses (:address %))
+                                                sorted-accounts)
+          current-airdrop-address       (get-in db [:communities community-id :airdrop-address])]
+      {:db (update-in db
+                      [:communities community-id]
+                      assoc
+                      :previous-permission-addresses selected-permission-addresses
+                      :airdrop-address               (if (contains? selected-permission-addresses
+                                                                    current-airdrop-address)
+                                                       current-airdrop-address
+                                                       (:address (first selected-accounts))))})))
 
 (rf/reg-event-fx :communities/update-previous-permission-addresses
  update-previous-permission-addresses)
 
 (defn toggle-selected-permission-address
-  [{:keys [db]} [address]]
-  {:db (update db
-               :communities/selected-permission-addresses
-               (fn [selected-addresses]
-                 (if (contains? selected-addresses address)
-                   (disj selected-addresses address)
-                   (conj selected-addresses address))))})
+  [{:keys [db]} [address community-id]]
+  {:db (update-in db
+                  [:communities community-id :selected-permission-addresses]
+                  (fn [selected-addresses]
+                    (if (contains? selected-addresses address)
+                      (disj selected-addresses address)
+                      (conj selected-addresses address))))})
 
 (rf/reg-event-fx :communities/toggle-selected-permission-address
  toggle-selected-permission-address)
 
 (rf/reg-event-fx :communities/reset-selected-permission-addresses
- (fn [{:keys [db]}]
-   {:db (assoc db
-               :communities/selected-permission-addresses
-               (get-in db [:communities/previous-permission-addresses]))}))
+ (fn [{:keys [db]} [community-id]]
+   (when community-id
+     {:db (assoc-in db
+           [:communities community-id :selected-permission-addresses]
+           (get-in db [:communities community-id :previous-permission-addresses]))})))
 
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
@@ -275,8 +284,8 @@
                                   :event   "share-community-channel-url-with-data"}))}]})))
 
 (rf/reg-event-fx :communities/set-airdrop-address
- (fn [{:keys [db]} [address]]
-   {:db (assoc db :communities/airdrop-address address)}))
+ (fn [{:keys [db]} [address community-id]]
+   {:db (assoc-in db [:communities community-id :airdrop-address] address)}))
 
 (defn community-fetched
   [{:keys [db]} [community-id community]]

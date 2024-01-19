@@ -23,11 +23,8 @@
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name color images]} (rf/sub [:communities/community id])
-        airdrop-account             (rf/sub [:communities/airdrop-account])
-        selected-accounts           (rf/sub [:communities/selected-permission-accounts])]
-    (rn/use-effect (fn []
-                     (rf/dispatch [:communities/initialize-permission-addresses]))
-                   [])
+        airdrop-account             (rf/sub [:communities/airdrop-account id])
+        selected-accounts           (rf/sub [:communities/selected-permission-accounts id])]
     [rn/view {:style style/container}
      [quo/page-nav
       {:text-align          :left
