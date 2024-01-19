@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.common.temp
   (:require
-   [react-native.core :as rn]
-   [status-im.common.resources :as status.resources]
-   [utils.i18n :as i18n]))
+    [react-native.core :as rn]
+    [status-im.common.resources :as status.resources]
+    [utils.i18n :as i18n]))
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
@@ -52,7 +52,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
-    :symbol "SNT"
+    :symbol              "SNT"
     :customization-color :blue}
    {:token               :eth
     :label               "Ethereum"
@@ -60,7 +60,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
-    :symbol "ETH"
+    :symbol              "ETH"
     :customization-color :blue}
    {:token               :dai
     :label               "Dai"
@@ -68,7 +68,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
-    :symbol "DAI"
+    :symbol              "DAI"
     :customization-color :blue}])
 
 (def secret-phrase

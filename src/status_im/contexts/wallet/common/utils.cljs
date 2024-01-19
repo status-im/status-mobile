@@ -106,6 +106,16 @@
         total-units-in-all-chains (total-token-units-in-all-chains token)]
     (money/crypto->fiat total-units-in-all-chains price)))
 
+(defn total-network-fiat-value
+  "Returns the total network fiat value."
+  [currency raw-balance {:keys [market-values-per-currency]}]
+  (let [price (or (get-in market-values-per-currency
+                          [currency :price])
+                  (get-in market-values-per-currency
+                          [constants/profile-default-currency :price])
+                  0)]
+    (money/crypto->fiat raw-balance price)))
+
 (defn calculate-balance-for-account
   [currency {:keys [tokens] :as _account}]
   (->> tokens
