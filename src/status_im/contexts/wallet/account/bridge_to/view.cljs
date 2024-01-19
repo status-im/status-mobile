@@ -22,18 +22,19 @@
 
 (defn- bridge-token-component
   []
-  (fn [network token]
-    (let [network           (rf/sub [:wallet/network-details-by-chain-id (:chain-id network)])
+  (fn [bridge token]
+    (let [network           (rf/sub [:wallet/network-details-by-chain-id (:chain-id bridge)])
           all-balances      (:balances-per-chain token)
-          balance-for-chain (get-balance-for-chain all-balances (:chain-id network))
-          crypto-formatted  (:balance balance-for-chain)
+          balance-for-chain (get-balance-for-chain all-balances (:chain-id bridge))
+          crypto-formatted  (or (:balance balance-for-chain) "0.00")
           currency          (rf/sub [:profile/currency])
           currency-symbol   (rf/sub [:profile/currency-symbol])
-          fiat-value        (utils/total-network-fiat-value currency (:balance balance-for-chain) token)
+          fiat-value        (utils/total-network-fiat-value currency
+                                                            (or (:balance balance-for-chain) 0)
+                                                            token)
           fiat-formatted    (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
-
       [network-list/view
-       {:label        (name (:network-name network))
+       {:label        (name (:network-name bridge))
         :network-name (:network-name network)
         :token-value  (str crypto-formatted " " (:symbol token))
         :fiat-value   fiat-formatted}])))
@@ -61,11 +62,8 @@
        :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:label token)))})}]
 
      [rn/view style/content-container
-      [bridge-token-component (merge {:network-name "Mainnet"} mainnet) account-token]]
+      [bridge-token-component (assoc mainnet :network-name "Mainnet") account-token]]
 
-     ;;  [rn/view
-     ;;   {:style {:border-bottom-width 1
-     ;;            :border-bottom-color colors/neutral-5}}]
      [divider-line/view {:container-style {:margin-vertical 8}}]
 
      [rn/view {:style {:margin-left 20 :padding-vertical 8}}
