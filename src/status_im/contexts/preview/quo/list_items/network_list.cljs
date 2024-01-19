@@ -36,7 +36,6 @@
                              :label               "Mainnet"
                              :token-value         "0.00 ETH"
                              :fiat-value          "€0.00"
-                             :networks            networks-list
                              :state               :default
                              :customization-color :blue})]
     (fn []

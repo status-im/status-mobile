@@ -1,14 +1,12 @@
 (ns quo.components.list-items.network-list.component-spec
   (:require [quo.components.list-items.network-list.view :as network-list]
             [quo.foundations.colors :as colors]
-            [quo.foundations.resources :as resources]
             [test-helpers.component :as h]))
 
 (def props
   {:token       :ethereum
    :state       :default
    :label       "Mainnet"
-   :networks    [(resources/get-network :ethereum)]
    :token-value "100.00 ETH"
    :fiat-value  "€100.00"})
 
