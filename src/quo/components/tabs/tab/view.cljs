@@ -13,22 +13,22 @@
   [{:keys [height width background-color disabled]}]
   ;; Do not add a view-box property, it'll cause an artifact where the SVG is
   ;; rendered slightly smaller than the proper width and height.
-  [svg/svg
+  (svg/svg
    {:width        width
     :height       height
     :fill         background-color
     :fill-opacity (when disabled style/tab-background-opacity)}
-   [svg/path
+   (svg/path
     {:d
      "M 11.468 6.781 C 11.004 6.923 10.511 7 10 7 C 7.239 7 5 4.761 5 2 C 5
      1.489 5.077 0.996 5.219 0.532 C 4.687 0.351 4.134 0.213 3.564 0.123 C 2.787
      0 1.858 0 0 0 L 0 32 C 1.858 32 2.787 32 3.564 31.877 C 7.843 31.199 11.199
      27.843 11.877 23.564 C 12 22.787 12 21.858 12 20 L 12 12 C 12 10.142 12
      9.213 11.877 8.436 C 11.787 7.866 11.649 7.313 11.468 6.781 Z"
-     :clip-path "url(#clip0_5514_84289)"}]
-   [svg/defs
-    [svg/clip-path {:id "clip0_5514_84289"}
-     [svg/rect {:width width :height height :fill :none}]]]])
+     :clip-path "url(#clip0_5514_84289)"})
+   (svg/defs
+    (svg/clip-path {:id "clip0_5514_84289"}
+                  (svg/rect {:width width :height height :fill :none})))))
 
 (defn- content
   [{:keys [size label]} children]

@@ -63,7 +63,7 @@
            background-color              (or (get-in options [:layout :backgroundColor])
                                              (when sheet? :transparent))]
        ^{:key (str "root" screen-key @reloader/cnt)}
-       [theme/provider {:theme (or theme user-theme)}
+       [theme/provider (or theme user-theme)
         [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
@@ -83,7 +83,7 @@
            insets                 (safe-area/get-insets)
            user-theme             (theme/get-theme)]
        ^{:key (str "sheet" @reloader/cnt)}
-       [theme/provider {:theme (or theme user-theme)}
+       [theme/provider (or theme user-theme)
         [inactive]
         [rn/keyboard-avoiding-view
          {:style                    {:position :relative :flex 1}

@@ -3,9 +3,9 @@
     [clojure.string :as string]
     [quo.components.avatars.account-avatar.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.pure :as rn.pure]))
 
-(defn- view-internal
+(defn- view-pure
   "Opts:
    
     :type  - keyword -> :default/:watch-only
@@ -21,15 +21,16 @@
     :or   {size  style/default-size
            emoji "🍑"}
     :as   opts}]
-  (let [emoji-size (style/get-emoji-size size)]
-    [rn/view
+  (let [theme      (quo.theme/use-theme)
+        emoji-size (style/get-emoji-size size)]
+    (rn.pure/view
      {:accessible          true
       :accessibility-label :account-avatar
-      :style               (style/root-container opts)}
-     [rn/text
+      :style               (style/root-container opts theme)}
+     (rn.pure/text
       {:accessibility-label      :account-emoji
        :adjusts-font-size-to-fit true
        :style                    {:font-size emoji-size}}
-      (when emoji (string/trim emoji))]]))
+      (when emoji (string/trim emoji))))))
 
-(def view (quo.theme/with-theme view-internal))
+(defn view [params] (rn.pure/func view-pure params))

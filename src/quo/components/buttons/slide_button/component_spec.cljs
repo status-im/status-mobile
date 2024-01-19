@@ -59,7 +59,7 @@
 
 (def ^:private default-props
   {:on-complete identity
-   :track-text  :test-track-text
+   :track-text  ":test-track-text"
    :track-icon  :face-id})
 
 (h/describe "slide-button"
@@ -67,7 +67,7 @@
 
   (h/test "render the correct text"
     (h/render [slide-button/view default-props])
-    (h/is-truthy (h/get-by-text :test-track-text)))
+    (h/is-truthy (h/get-by-text ":test-track-text")))
 
   (h/test "render the disabled button"
     (h/render [slide-button/view (assoc default-props :disabled? true)])

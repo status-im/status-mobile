@@ -1,7 +1,7 @@
 (ns quo.foundations.customization-colors
   (:require
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]))
+    [react-native.pure :as rn.pure]))
 
 (defn get-overlay-color
   [theme pressed? customization-color]
@@ -12,11 +12,11 @@
 
 (defn overlay
   [{:keys [theme pressed? customization-color border-radius]}]
-  [rn/view
+  (rn.pure/view
    {:position         :absolute
     :top              0
     :left             0
     :right            0
     :bottom           0
     :border-radius    border-radius
-    :background-color (get-overlay-color theme pressed? customization-color)}])
+    :background-color (get-overlay-color theme pressed? customization-color)}))

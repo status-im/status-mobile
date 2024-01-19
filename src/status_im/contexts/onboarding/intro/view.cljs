@@ -33,21 +33,21 @@
                                                    1000))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}
-    [quo/text
+    (quo/text
      {:size   :paragraph-2
       :weight :regular
       :style  style/plain-text}
-     (i18n/label :t/you-already-use-status)]
-    [quo/text {:style style/text-container}
-     [quo/text
-      {:size   :paragraph-2
-       :weight :regular
-       :style  style/plain-text}
-      (i18n/label :t/by-continuing-you-accept)]
-     [quo/text
-      {:on-press #(debounce/dispatch-and-chill [:open-modal :privacy-policy] 1000)
-       :size     :paragraph-2
-       :weight   :regular
-       :style    style/highlighted-text}
-      (i18n/label :t/terms-of-service)]]]
+     (i18n/label :t/you-already-use-status))
+    (quo/text {:style style/text-container}
+              (quo/text
+               {:size   :paragraph-2
+                :weight :regular
+                :style  style/plain-text}
+               (i18n/label :t/by-continuing-you-accept))
+              (quo/text
+               {:on-press #(debounce/dispatch-and-chill [:open-modal :privacy-policy] 1000)
+                :size     :paragraph-2
+                :weight   :regular
+                :style    style/highlighted-text}
+               (i18n/label :t/terms-of-service)))]
    [overlay/view]])

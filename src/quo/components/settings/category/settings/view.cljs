@@ -4,24 +4,25 @@
     [quo.components.settings.category.style :as style]
     [quo.components.settings.settings-item.view :as settings-item]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.pure :as rn.pure]))
 
-(defn- category-internal
-  [{:keys [label data container-style] :as props}]
-  (let [settings-item (filter identity data)]
-    [rn/view {:style (merge (style/container label) container-style)}
+(defn settings-category
+  [{:keys [label data container-style blur?]}]
+  (let [theme (quo.theme/use-theme)
+        items (filter identity data)]
+    (rn.pure/view
+     {:style (merge (style/container label) container-style)}
      (when label
-       [text/text
+       (text/text
         {:weight :medium
          :size   :paragraph-2
-         :style  (style/label props)}
-        label])
-     [rn/view {:style (style/settings-items props)}
-      (for [item settings-item]
-        ^{:key item}
-        [:<>
-         [settings-item/view item]
-         (when-not (= item (last settings-item))
-           [rn/view {:style (style/settings-separator props)}])])]]))
-
-(def settings-category (quo.theme/with-theme category-internal))
+         :style  (style/label theme blur?)}
+        label))
+     (rn.pure/view
+      {:style (style/settings-items theme blur?)}
+      (for [item items]
+        (rn.pure/fragment
+         {:key (:title item)}
+         (settings-item/view item)
+         (when-not (= item (last data))
+           (rn.pure/view {:style (style/settings-separator theme blur?)}))))))))

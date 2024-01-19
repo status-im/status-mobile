@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [quo.theme :as quo.theme]
-            [react-native.core :as rn]
+            [react-native.pure :as rn.pure]
+            [reagent.core :as reagent]
             [status-im.contexts.profile.settings.header.avatar :as header.avatar]
             [status-im.contexts.profile.settings.header.header-shape :as header.shape]
             [status-im.contexts.profile.settings.header.style :as style]
@@ -11,33 +12,38 @@
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.re-frame :as rf]))
 
-(defn- f-view
-  [{:keys [theme scroll-y]}]
-  (let [{:keys [public-key emoji-hash] :as profile} (rf/sub [:profile/profile-with-image])
-        online?                                     (rf/sub [:visibility-status-updates/online?
-                                                             public-key])
-        status                                      (rf/sub
+(defn- view-pure
+  [{:keys [scroll-y]}]
+  (let [theme                                       (quo.theme/use-theme)
+        {:keys [public-key emoji-hash] :as profile} (rf/use-subscription [:profile/profile-with-image])
+        online?                                     (rf/use-subscription
+                                                     [:visibility-status-updates/online?
+                                                      public-key])
+        status                                      (rf/use-subscription
                                                      [:visibility-status-updates/visibility-status-update
                                                       public-key])
-        customization-color                         (rf/sub [:profile/customization-color])
+        customization-color                         (rf/use-subscription [:profile/customization-color])
         full-name                                   (profile.utils/displayed-name profile)
         profile-picture                             (profile.utils/photo profile)
         emoji-string                                (string/join emoji-hash)
         {:keys [status-title status-icon]}          (header.utils/visibility-status-type-data status)]
-    [:<>
-     [header.shape/view
+    (rn.pure/fragment
+     (header.shape/view
       {:scroll-y            scroll-y
        :customization-color customization-color
-       :theme               theme}]
-     [rn/view {:style style/avatar-row-wrapper}
-      [header.avatar/view
-       {:scroll-y            scroll-y
-        :display-name        full-name
-        :online?             online?
-        :customization-color customization-color
-        :profile-picture     profile-picture}]
-      [rn/view {:style {:margin-bottom 4}}
-       [quo/dropdown
+       :theme               theme})
+     (rn.pure/view
+      {:style style/avatar-row-wrapper}
+      (reagent/as-element
+       [header.avatar/view
+        {:scroll-y            scroll-y
+         :display-name        full-name
+         :online?             online?
+         :customization-color customization-color
+         :profile-picture     profile-picture}])
+      (rn.pure/view
+       {:style {:margin-bottom 4}}
+       (quo/dropdown
         {:background     :blur
          :size           :size-32
          :type           :outline
@@ -48,11 +54,14 @@
                                         {:shell?  true
                                          :theme   :dark
                                          :content (fn [] [visibility-sheet/view])}])}
-        status-title]]]
-     [quo/text-combinations
-      {:title-accessibility-label :username
-       :container-style           style/title-container
-       :emoji-hash                emoji-string
-       :title                     full-name}]]))
+        status-title)))
+     (reagent/as-element
+      [quo/text-combinations
+       {:title-accessibility-label :username
+        :container-style           style/title-container
+        :emoji-hash                emoji-string
+        :title                     full-name}]))))
 
-(def view (quo.theme/with-theme f-view))
+(defn view
+  [params]
+  (rn.pure/func view-pure params))

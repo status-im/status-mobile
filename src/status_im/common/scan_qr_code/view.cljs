@@ -237,7 +237,7 @@
           [scan-qr-code-tab @qr-view-finder (when subtitle true)]
           [rn/view {:style style/flex-spacer}]
           (when show-camera?
-            [quo.theme/provider {:theme :light}
+            [quo.theme/provider :light
              [quo/button
               {:icon-only?          true
                :type                :grey

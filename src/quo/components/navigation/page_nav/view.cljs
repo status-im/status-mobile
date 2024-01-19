@@ -10,8 +10,8 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.navigation.page-nav.style :as style]
-    [quo.theme :as theme]
-    [react-native.core :as rn]))
+    [quo.theme :as quo.theme]
+    [react-native.pure :as rn.pure]))
 
 (def ^:private button-type
   {:white       :grey
@@ -26,28 +26,30 @@
   [{:keys [margin-top background on-press accessibility-label icon-name behind-overlay?]
     :or   {background :white}}
    & children]
-  (into [rn/view {:style (style/container margin-top)}
-         (when icon-name
-           [button/button
-            {:type                (button-type background)
-             :icon-only?          true
-             :size                32
-             :on-press            on-press
-             :background          (if behind-overlay?
-                                    :blur
-                                    (button-properties/backgrounds background))
-             :accessibility-label accessibility-label}
-            icon-name])]
-        children))
+  (apply
+   rn.pure/view
+   {:style (style/container margin-top)}
+   (when icon-name
+     (button/button
+      {:type                (button-type background)
+       :icon-only?          true
+       :size                32
+       :on-press            on-press
+       :background          (if behind-overlay?
+                              :blur
+                              (button-properties/backgrounds background))
+       :accessibility-label accessibility-label}
+      icon-name))
+   children))
 
-(defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
+(defn- right-section-spacing [] (rn.pure/view {:style style/right-actions-spacing}))
 
 (defn- add-right-buttons-xf
   [max-actions background behind-overlay?]
   (comp (filter map?)
         (take max-actions)
         (map (fn [{:keys [icon-name label] :as button-props}]
-               [button/button
+               (button/button
                 (assoc button-props
                        :type       (button-type background)
                        :icon-only? icon-name
@@ -56,134 +58,150 @@
                        :background (if behind-overlay?
                                      :blur
                                      (when (button-properties/backgrounds background) background)))
-                (or label icon-name)]))
-        (interpose [right-section-spacing])))
+                (or label icon-name))))
+        (interpose (right-section-spacing))))
 
 (defn- account-switcher-content
   [{:keys [customization-color on-press emoji type]}]
-  [rn/pressable {:on-press on-press}
-   [account-avatar/view
+  (rn.pure/pressable
+   {:on-press on-press}
+   (account-avatar/view
     {:emoji               emoji
      :size                32
      :type                (or type :default)
-     :customization-color customization-color}]])
+     :customization-color customization-color})))
 
 (defn- right-content
   [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
            behind-overlay?]
     :or   {support-account-switcher? true}}]
-  [rn/view (when min-size? {:style style/right-content-min-size})
+  (rn.pure/view
+   (when min-size? {:style style/right-content-min-size})
    (cond
      (and support-account-switcher? (= content :account-switcher))
-     [account-switcher-content account-switcher]
+     (account-switcher-content account-switcher)
 
      (coll? content)
-     (into [rn/view {:style style/right-actions-container}]
-           (add-right-buttons-xf max-actions background behind-overlay?)
-           content)
+     (apply rn.pure/view
+            {:style style/right-actions-container}
+            (into []
+                  (add-right-buttons-xf max-actions background behind-overlay?)
+                  content))
 
      :else
-     nil)])
+     nil)))
 
 (defn- title-center
   [{:keys [centered? title center-opacity]}]
-  [rn/view {:style (style/center-content-container centered? center-opacity)}
-   [text/text
+  (rn.pure/view
+   {:style (style/center-content-container centered? center-opacity)}
+   (text/text
     {:weight          :medium
      :size            :paragraph-1
      :number-of-lines 1}
-    title]])
+    title)))
 
 (defn- dropdown-center
-  [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
-  (let [dropdown-type  (cond
+  [{:keys [background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
+  (let [theme          (quo.theme/use-theme)
+        dropdown-type  (cond
                          (= background :photo)                      :grey
                          (and (= theme :dark) (= background :blur)) :grey
                          :else                                      :ghost)
         dropdown-state (if dropdown-selected? :active :default)]
-    [rn/view {:style (style/center-content-container true center-opacity)}
-     [dropdown/view
+    (rn.pure/view
+     {:style (style/center-content-container true center-opacity)}
+     (dropdown/view
       {:type       dropdown-type
        :state      dropdown-state
        :size       :size-32
        :background (when (dropdown-properties/backgrounds background) background)
        :on-press   dropdown-on-press}
-      dropdown-text]]))
+      dropdown-text))))
 
 (defn- token-center
   [{:keys [theme background token-logo token-name token-abbreviation center-opacity]}]
-  [rn/view {:style (style/center-content-container false center-opacity)}
-   [rn/image {:style style/token-logo :source token-logo}]
-   [text/text
+  (rn.pure/view
+   {:style (style/center-content-container false center-opacity)}
+   (rn.pure/image {:style style/token-logo :source token-logo})
+   (text/text
     {:style           style/token-name
      :weight          :semi-bold
      :size            :paragraph-1
      :number-of-lines 1}
-    token-name]
-   [text/text
+    token-name)
+   (text/text
     {:style           (style/token-abbreviation theme background)
      :weight          :medium
      :size            :paragraph-2
      :number-of-lines 1}
-    token-abbreviation]])
+    token-abbreviation)))
 
 (defn- channel-center
   [{:keys [theme background channel-emoji channel-name channel-icon center-opacity]}]
-  [rn/view {:style (style/center-content-container false center-opacity)}
-   [rn/text {:style style/channel-emoji}
-    channel-emoji]
-   [text/text
+  (rn.pure/view
+   {:style (style/center-content-container false center-opacity)}
+   (rn.pure/text
+    {:style style/channel-emoji}
+    channel-emoji)
+   (text/text
     {:style           style/channel-name
      :weight          :semi-bold
      :size            :paragraph-1
      :number-of-lines 1}
-    (str "# " channel-name)]
-   [icons/icon channel-icon {:size 16 :color (style/channel-icon-color theme background)}]])
+    (str "# " channel-name))
+   (icons/icon channel-icon {:size 16 :color (style/channel-icon-color theme background)})))
 
 (defn- title-description-center
   [{:keys [background theme picture title description center-opacity]}]
-  [rn/view {:style (style/center-content-container false center-opacity)}
+  (rn.pure/view
+   {:style (style/center-content-container false center-opacity)}
    (when picture
-     [rn/view {:style style/group-avatar-picture}
-      [group-avatar/view {:picture picture :size :size-28}]])
-   [rn/view {:style style/title-description-container}
-    [text/text
+     (rn.pure/view
+      {:style style/group-avatar-picture}
+      (group-avatar/view {:picture picture :size :size-28})))
+   (rn.pure/view
+    {:style style/title-description-container}
+    (text/text
      {:style           style/title-description-title
       :weight          :semi-bold
       :size            :paragraph-1
       :number-of-lines 1}
-     title]
-    [text/text
+     title)
+    (text/text
      {:style           (style/title-description-description theme background)
       :weight          :medium
       :size            :paragraph-2
       :number-of-lines 1}
-     description]]])
+     description))))
 
 (defn- community-network-center
   [{:keys [type community-logo network-logo community-name network-name center-opacity]}]
   (let [community? (= type :community)
         shown-logo (if community? community-logo network-logo)
         shown-name (if community? community-name network-name)]
-    [rn/view {:style (style/center-content-container false center-opacity)}
-     [rn/image
+    (rn.pure/view
+     {:style (style/center-content-container false center-opacity)}
+     (rn.pure/image
       {:style  style/community-network-logo
-       :source shown-logo}]
-     [text/text
+       :source shown-logo})
+     (text/text
       {:weight          :semi-bold
        :size            :paragraph-1
        :number-of-lines 1}
-      shown-name]]))
+      shown-name))))
 
 (defn- wallet-networks-center
   [{:keys [networks networks-on-press background center-opacity]}]
-  [rn/view {:style (style/center-content-container true center-opacity)}
-   [network-dropdown/view
+  (rn.pure/view
+   {:style (style/center-content-container true center-opacity)}
+   (network-dropdown/view
     {:state    :default
      :on-press networks-on-press
-     :blur?    (= background :blur)} networks]])
+     :blur?    (= background :blur)}
+    networks)))
 
-(defn- view-internal
+(defn- view-pure
   "behind-overlay is necessary for us to know if the page-nav buttons are under the bottom sheet overlay or not."
   [{:keys [type right-side background text-align account-switcher behind-overlay?]
     :or   {type       :no-title
@@ -193,83 +211,84 @@
     :as   props}]
   (case type
     :no-title
-    [page-nav-base props
-     [right-content
+    (page-nav-base
+     props
+     (right-content
       {:background       background
        :content          right-side
        :max-actions      3
        :behind-overlay?  behind-overlay?
-       :account-switcher account-switcher}]]
+       :account-switcher account-switcher}))
 
     :title
     (let [centered? (= text-align :center)]
-      [page-nav-base props
-       [title-center (assoc props :centered? centered?)]
-       [right-content
-        {:background       background
-         :content          right-side
-         :max-actions      (if centered? 1 3)
-         :min-size?        centered?
-         :account-switcher account-switcher}]])
+      (page-nav-base props
+                     (title-center (assoc props :centered? centered?))
+                     (right-content
+                      {:background       background
+                       :content          right-side
+                       :max-actions      (if centered? 1 3)
+                       :min-size?        centered?
+                       :account-switcher account-switcher})))
 
     :dropdown
-    [page-nav-base props
-     [dropdown-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               1
-       :support-account-switcher? false}]]
+    (page-nav-base props
+                   (dropdown-center props)
+                   (right-content
+                    {:background                background
+                     :content                   right-side
+                     :max-actions               1
+                     :support-account-switcher? false}))
 
     :token
-    [page-nav-base props
-     [token-center props]
-     [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      3
-       :account-switcher account-switcher}]]
+    (page-nav-base props
+                   (token-center props)
+                   (right-content
+                    {:background       background
+                     :content          right-side
+                     :max-actions      3
+                     :account-switcher account-switcher}))
 
     :channel
-    [page-nav-base props
-     [channel-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               3
-       :support-account-switcher? false}]]
+    (page-nav-base props
+                   (channel-center props)
+                   (right-content
+                    {:background                background
+                     :content                   right-side
+                     :max-actions               3
+                     :support-account-switcher? false}))
 
     :title-description
-    [page-nav-base props
-     [title-description-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               2
-       :support-account-switcher? false}]]
+    (page-nav-base props
+                   (title-description-center props)
+                   (right-content
+                    {:background                background
+                     :content                   right-side
+                     :max-actions               2
+                     :support-account-switcher? false}))
 
     :wallet-networks
-    [page-nav-base props
-     [wallet-networks-center props]
-     [right-content
-      {:background       background
-       :content          right-side
-       :max-actions      1
-       :min-size?        true
-       :account-switcher account-switcher}]]
+    (page-nav-base props
+                   (wallet-networks-center props)
+                   (right-content
+                    {:background       background
+                     :content          right-side
+                     :max-actions      1
+                     :min-size?        true
+                     :account-switcher account-switcher}))
 
     (:community :network)
-    [page-nav-base props
-     [community-network-center props]
-     [right-content
-      {:background                background
-       :content                   right-side
-       :max-actions               3
-       :support-account-switcher? false}]]
+    (page-nav-base props
+                   (community-network-center props)
+                   (right-content
+                    {:background                background
+                     :content                   right-side
+                     :max-actions               3
+                     :support-account-switcher? false}))
 
     nil))
 
-(def page-nav
+(defn page-nav
   "Props:
   - type: defaults to `:no-title`.
   - background:
@@ -320,4 +339,5 @@
   `:network`
     - network-name
     - network-logo a valid rn/image `:source` value"
-  (theme/with-theme view-internal))
+  [props]
+  (rn.pure/func view-pure props))

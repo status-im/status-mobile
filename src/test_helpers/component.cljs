@@ -52,9 +52,13 @@
   [component]
   (rtl/render (reagent/as-element component)))
 
+(defn render-pure
+  [component]
+  (rtl/render component))
+
 (defn render-with-theme-provider
   [component theme]
-  (rtl/render (reagent/as-element [quo.theme/provider {:theme theme} component])))
+  (rtl/render (reagent/as-element [quo.theme/provider theme component])))
 
 (def unmount
   "Unmount rendered component.

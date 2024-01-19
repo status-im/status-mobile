@@ -11,13 +11,13 @@
     [utils.i18n :as i18n]))
 
 (def transaction-translation
-  {:receive [i18n/label :t/receive]
-   :send    [i18n/label :t/send]
-   :swap    [i18n/label :t/swap]
-   :bridge  [i18n/label :t/bridge]
-   :buy     [i18n/label :t/buy]
-   :destroy [i18n/label :t/destroy]
-   :mint    [i18n/label :t/mint]})
+  {:receive (i18n/label :t/receive)
+   :send    (i18n/label :t/send)
+   :swap    (i18n/label :t/swap)
+   :bridge  (i18n/label :t/bridge)
+   :buy     (i18n/label :t/buy)
+   :destroy (i18n/label :t/destroy)
+   :mint    (i18n/label :t/mint)})
 
 (def transaction-icon
   {:receive :i/receive
@@ -49,7 +49,7 @@
     {:weight :semi-bold
      :size   :paragraph-1
      :style  (style/transaction-header theme)}
-    (transaction transaction-translation)]
+    (get transaction-translation transaction)]
    (when (> counter 1)
      [rn/view (style/transaction-counter-container theme blur?)
       [text/text

@@ -92,7 +92,7 @@
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
         shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
-    [theme/provider {:theme :dark}
+    [theme/provider :dark
      [rn/view
       {:style {:top              0
                :left             0

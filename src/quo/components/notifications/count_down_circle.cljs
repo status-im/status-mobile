@@ -89,20 +89,20 @@
          {:style {:position :relative
                   :width    size
                   :height   size}}
-         [svg/svg
+         (svg/svg
           {:view-box (str "0 0 " size " " size)
            :width    size
            :height   size}
-          [svg/path
-           {:d path :fill :none :stroke (or trail-color :transparent) :stroke-width stroke-width}]
+          (svg/path
+           {:d path :fill :none :stroke (or trail-color :transparent) :stroke-width stroke-width})
           (when-not (= @display-time duration)
-            [svg/path
+            (svg/path
              {:d                 path
               :fill              :none
               :stroke            (or color (get-in themes [:color theme]))
               :stroke-linecap    :square
               :stroke-width      stroke-width
               :stroke-dasharray  path-length
-              :stroke-dashoffset (linear-ease @display-time 0 path-length duration)}])]])})))
+              :stroke-dashoffset (linear-ease @display-time 0 path-length duration)})))])})))
 
 (def circle-timer (quo.theme/with-theme circle-timer-internal))

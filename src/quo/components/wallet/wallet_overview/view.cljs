@@ -102,7 +102,7 @@
         :size   :paragraph-2
         :style  {:color        (style/color-text-paragraph theme)
                  :margin-right 8}}
-       (time-frame time-frames)]
+       (get time-frames time-frame)]
       (when (and (= state :default) (not= metrics :none))
         [view-metrics
          {:metrics           metrics

@@ -15,22 +15,22 @@
 
 (defn text-with-link
   []
-  [quo/text
+  (quo/text
    {:style {:flex      1
             :flex-wrap :wrap}}
-   [quo/text
+   (quo/text
     {:size   :paragraph-2
      :style  {:flex  1
               :color (colors/alpha colors/white 0.7)}
      :weight :semi-bold}
-    "By continuing you accept our "]
-   [quo/text
+    "By continuing you accept our ")
+   (quo/text
     {:on-press #(js/alert "Terms of use clicked")
      :size     :paragraph-2
      :style    {:flex  1
                 :color colors/white}
      :weight   :semi-bold}
-    "Terms of Use"]])
+    "Terms of Use")))
 
 (defn view
   []
@@ -48,4 +48,4 @@
          :bottom-card {:on-press #(js/alert "bottom card clicked")
                        :heading  (:bottom-heading @state)}}
         (:top-sub-heading @state)
-        [text-with-link]]])))
+        (text-with-link)]])))

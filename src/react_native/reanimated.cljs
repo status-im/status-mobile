@@ -24,6 +24,7 @@
     ["react-native-redash" :refer (withPause)]
     [oops.core :as oops]
     [react-native.flat-list :as rn-flat-list]
+    [react-native.pure :as rn.pure]
     [reagent.core :as reagent]
     [utils.transforms :as transforms]
     [utils.worklets.core :as worklets.core]))
@@ -41,6 +42,7 @@
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
 (def ^:private view* (reagent/adapt-react-class (.-View reanimated)))
+(def view-pure (rn.pure/get-create-element-fn (.-View reanimated)))
 
 (defn view
   []

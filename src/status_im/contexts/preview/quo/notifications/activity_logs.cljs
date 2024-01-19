@@ -173,7 +173,7 @@
           {:flex    1
            :padding 16}
           [preview/customizer state descriptor]]
-         [quo.theme/provider {:theme :dark}
+         [quo.theme/provider :dark
           [rn/view
            {:background-color colors/neutral-90
             :flex-direction   :row

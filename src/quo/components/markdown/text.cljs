@@ -3,11 +3,10 @@
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.pure :as rn.pure]))
 
 (defn text-style
-  [{:keys [size align weight style theme]}]
+  [{:keys [size align weight style]} theme]
   (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
@@ -30,19 +29,18 @@
                   :color
                   (if (= (or theme (quo.theme/get-theme)) :dark) colors/white colors/neutral-100)))))
 
-(defn- text-view-internal
-  [props & children]
-  (let [style (text-style props)]
-    (into [rn/text
-           (merge {:style style}
-                  (dissoc props :style :size :align :weight :color :theme))]
-          children)))
-
-(def ^:private text-view (quo.theme/with-theme text-view-internal))
+(defn text-pure
+  [props children]
+  (let [theme (quo.theme/use-theme)
+        style (text-style props theme)]
+    (apply rn.pure/text
+           (-> props
+               (assoc :style style)
+               (dissoc :size :align :weight :color :theme))
+           children)))
 
 (defn text
-  []
-  (let [this     (reagent/current-component)
-        props    (reagent/props this)
-        children (reagent/children this)]
-    (into [text-view props] children)))
+  [& children]
+  (let [props (first children)
+        props (when (map? props) props)]
+    (rn.pure/func text-pure props (if props (rest children) children))))

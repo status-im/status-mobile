@@ -1,16 +1,16 @@
 (ns react-native.svg
   (:require
     ["react-native-svg" :as Svg]
-    [reagent.core :as reagent]))
+    [react-native.pure :as rn.pure]))
 
-(def svg (reagent/adapt-react-class Svg/default))
-(def path (reagent/adapt-react-class Svg/Path))
-(def rect (reagent/adapt-react-class Svg/Rect))
-(def clip-path (reagent/adapt-react-class Svg/ClipPath))
-(def defs (reagent/adapt-react-class Svg/Defs))
-(def circle (reagent/adapt-react-class Svg/Circle))
-(def svg-xml (reagent/adapt-react-class Svg/SvgXml))
-(def svg-uri (reagent/adapt-react-class Svg/SvgUri))
-(def g (reagent/adapt-react-class Svg/G))
-(def linear-gradient (reagent/adapt-react-class Svg/LinearGradient))
-(def stop (reagent/adapt-react-class Svg/Stop))
+(def svg (rn.pure/get-create-element-fn Svg/default))
+(def path (rn.pure/get-create-element-fn Svg/Path))
+(def rect (rn.pure/get-create-element-fn Svg/Rect))
+(def clippath (rn.pure/get-create-element-fn Svg/ClipPath))
+(def defs (rn.pure/get-create-element-fn Svg/Defs))
+(def circle (rn.pure/get-create-element-fn Svg/Circle))
+(def svg-xml (rn.pure/get-create-element-fn Svg/SvgXml))
+(def svg-uri (rn.pure/get-create-element-fn Svg/SvgUri))
+(def g (rn.pure/get-create-element-fn Svg/G))
+(def linear-gradient (rn.pure/get-create-element-fn Svg/LinearGradient))
+(def stop (rn.pure/get-create-element-fn Svg/Stop))

@@ -32,19 +32,19 @@
   [{:keys [color percentage]}]
   (let [strength-indicator-radius        6.5
         strength-indicator-circumference (* 2 Math/PI strength-indicator-radius)]
-    [svg/svg
+    (svg/svg
      {:view-box  "0 0 16 16"
       :width     14.2
       :transform [{:rotate "270deg"}]
       :height    14.2}
-     [svg/circle
+     (svg/circle
       {:cx           8
        :cy           8
        :r            strength-indicator-radius
        :fill         :transparent
        :stroke-width 1.2
-       :stroke       (colors/alpha color 0.2)}]
-     [svg/circle
+       :stroke       (colors/alpha color 0.2)})
+     (svg/circle
       {:cx                8
        :cy                8
        :r                 strength-indicator-radius
@@ -52,8 +52,8 @@
        :stroke-width      1.2
        :stroke-dasharray  strength-indicator-circumference
        :stroke-dashoffset (* (- 100 percentage) 0.01 strength-indicator-circumference)
-       :stroke            color}]
-     [svg/circle]]))
+       :stroke            color}
+      (svg/circle)))))
 
 (defn strength-indicator
   [type]

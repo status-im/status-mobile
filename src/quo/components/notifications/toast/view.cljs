@@ -80,13 +80,13 @@
                         :positive :i/correct
                         :negative :i/incorrect
                         :neutral  icon)]
-    [quo.theme/provider {:theme context-theme}
+    [quo.theme/provider context-theme
      [toast-container
       {:left            (cond user
                               [user-avatar/user-avatar user]
                               icon-name
-                              [icon/icon icon-name (style/icon type context-theme)]
-                        )
+                              [icon/icon icon-name (style/icon type context-theme)])
+
        :title           title
        :text            text
        :right           (if undo-duration

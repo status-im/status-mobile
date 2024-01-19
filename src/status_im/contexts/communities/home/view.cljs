@@ -16,7 +16,8 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [react-native.pure :as rn.pure]))
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -46,11 +47,11 @@
   [theme]
   {:joined
    {:title       (i18n/label :t/no-communities)
-    :description [:<>
-                  [rn/text {:style {:text-decoration-line :line-through}}
-                   (i18n/label :t/no-communities-description-strikethrough)]
+    :description (rn.pure/text
+                  (rn.pure/text {:style {:text-decoration-line :line-through}}
+                                (i18n/label :t/no-communities-description-strikethrough))
                   " "
-                  (i18n/label :t/no-communities-description)]
+                  (i18n/label :t/no-communities-description))
     :image       (resources/get-themed-image :no-communities theme)}
    :pending
    {:title       (i18n/label :t/no-pending-communities)

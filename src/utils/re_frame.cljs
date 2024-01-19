@@ -1,6 +1,7 @@
 (ns utils.re-frame
   (:require-macros utils.re-frame)
   (:require
+    ["react" :refer (useState useEffect)]
     [re-frame.core :as re-frame]
     [re-frame.interceptor :as interceptor]
     [reagent.core :as reagent]
@@ -94,3 +95,12 @@
 (def dispatch-sync re-frame/dispatch-sync)
 
 (def reg-event-fx re-frame/reg-event-fx)
+
+(defn use-subscription
+  [sub-vec]
+  (let [[state set-state] (useState)]
+    (useEffect (fn []
+                 (let [track (reagent/track! #(set-state @(re-frame/subscribe sub-vec)))]
+                   #(reagent/dispose! track)))
+               #js [])
+    state))

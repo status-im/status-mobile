@@ -13,7 +13,7 @@
 
 (defn input
   []
-  (assoc (text/text-style {})
+  (assoc (text/text-style {} nil)
          :height              32
          :flex-grow           1
          :padding-vertical    5

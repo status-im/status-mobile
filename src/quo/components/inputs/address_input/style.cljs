@@ -29,7 +29,8 @@
 (defn input-text
   [theme]
   (assoc (text/text-style {:size   :paragraph-1
-                           :weight :monospace})
+                           :weight :monospace}
+                          nil)
          :flex         1
          :color        (colors/theme-colors colors/neutral-100 colors/white theme)
          :margin-top   (if platform/ios? 0 -4)

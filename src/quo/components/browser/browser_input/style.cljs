@@ -17,7 +17,8 @@
 (defn input
   [disabled?]
   (assoc (text/text-style {:size   :paragraph-1
-                           :weight :regular})
+                           :weight :regular}
+                          nil)
          :flex       1
          :min-height 36
          :min-width  120
@@ -47,7 +48,8 @@
 (defn text
   []
   (assoc (text/text-style {:size   :paragraph-1
-                           :weight :medium})
+                           :weight :medium}
+                          nil)
          :color
          (colors/theme-colors colors/neutral-100 colors/white)))
 

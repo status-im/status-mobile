@@ -86,7 +86,8 @@
                       {:length                   amount-initials
                        :full-name                full-name
                        :font-size                (:font-size (text/text-style {:size
-                                                                               font-size}))
+                                                                               font-size}
+                                                                              nil))
                        :indicator-size           (when status-indicator?
                                                    (:status-indicator sizes))
                        :indicator-border         (when status-indicator?

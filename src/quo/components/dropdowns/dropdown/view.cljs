@@ -5,12 +5,12 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.foundations.customization-colors :as customization-colors]
-    [quo.theme :as theme]
+    quo.theme
     [react-native.blur :as blur]
-    [react-native.core :as rn]))
+    [react-native.pure :as rn.pure]))
 
-(defn- view-internal
-  [{:keys [type size state background customization-color theme on-press icon-name icon? emoji?
+(defn- view-pure
+  [{:keys [type size state background customization-color on-press icon-name icon? emoji?
            accessibility-label no-icon-color?]
     :or   {type      :grey
            size      :size-40
@@ -20,61 +20,62 @@
            icon-name :i/placeholder}
     :as   props}
    text]
-  (let [{:keys [icon-size text-size emoji-size border-radius]
+  (let [theme                   (quo.theme/use-theme)
+        {:keys [icon-size text-size emoji-size border-radius]
          :as   size-properties} (properties/sizes size)
         {:keys [left-icon-color right-icon-color right-icon-color-2 label-color blur-type
                 blur-overlay-color]
-         :as   colors}          (properties/get-colors props)
+         :as   colors}          (properties/get-colors props theme)
         right-icon              (if (= state :active) :i/pullup :i/dropdown)
         customization-type?     (= type :customization)
         show-blur-background?   (and (= background :photo)
                                      (= type :grey)
                                      (nil? (properties/sizes-to-exclude-blur-in-photo-bg size)))]
-    [rn/pressable
+    (rn.pure/pressable
      {:accessibility-label (or accessibility-label :dropdown)
       :disabled            (= state :disabled)
       :on-press            on-press
       :style               (style/root-container size-properties colors props)}
      (when show-blur-background?
-       [blur/view
+       (blur/view-pure
         {:blur-radius   20
          :blur-type     blur-type
          :overlay-color blur-overlay-color
-         :style         style/blur-view}])
+         :style         style/blur-view}))
      (when customization-type?
-       [customization-colors/overlay
+       (customization-colors/overlay
         {:customization-color customization-color
          :theme               theme
          :pressed?            (= state :active)
-         :border-radius       border-radius}])
+         :border-radius       border-radius}))
      (if emoji?
-       [rn/text
+       (rn.pure/text
         {:adjusts-font-size-to-fit true
          :style                    {:font-size emoji-size}}
-        text]
-       [:<>
+        text)
+       (rn.pure/fragment
         (when icon?
-          [icon/icon
+          (icon/icon
            icon-name
            {:accessibility-label :left-icon
             :color               left-icon-color
             :no-color            no-icon-color?
             :size                icon-size
-            :container-style     style/left-icon}])
-        [text/text
+            :container-style     style/left-icon}))
+        (text/text
          {:size            text-size
           :weight          :medium
           :number-of-lines 1
           :style           (style/right-icon label-color)}
-         text]
-        [icon/icon
+         text)
+        (icon/icon
          right-icon
          {:size                icon-size
           :accessibility-label :right-icon
           :color               right-icon-color
-          :color-2             right-icon-color-2}]])]))
+          :color-2             right-icon-color-2}))))))
 
-(def view
+(defn view
   "Props:
     - type:           :outline |:grey (default) | :ghost | :customization
     - size:           :size-40 (default) | :size-32 | :size-24
@@ -87,4 +88,5 @@
     - on-press:       function
 
     Child: string - used as label or emoji (for emoji only)"
-  (theme/with-theme view-internal))
+  [props text]
+  (rn.pure/func view-pure props text))

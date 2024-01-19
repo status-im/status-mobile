@@ -71,18 +71,15 @@
 
 (defn- network-colored-text
   [network-short-name]
-  [text/text {:style (style/network-short-name-text network-short-name)}
-   (str network-short-name ":")])
+  (text/text
+   {:style (style/network-short-name-text network-short-name)}
+   (str network-short-name ":")))
 
 (defn- wallet-multichain-colored-address
   [full-address]
-  (let [[networks address]  (as-> full-address $
-                              (string/split $ ":")
-                              [(butlast $) (last $)])
-        ->network-hiccup-xf (map #(vector network-colored-text %))]
-    (as-> networks $
-      (into [:<>] ->network-hiccup-xf $)
-      (conj $ address))))
+  (let [[networks address] (let [parts (string/split full-address ":")]
+                             [(butlast parts) (last parts)])]
+    (apply text/text (conj (mapv network-colored-text networks) address))))
 
 (defn- profile-bottom
   [{:keys [component-width qr-data on-text-press on-text-long-press share-qr-type]}]
@@ -111,7 +108,7 @@
     {:width         component-width
      :on-press      on-text-press
      :on-long-press on-text-long-press}
-    [wallet-multichain-colored-address qr-data]]
+    (wallet-multichain-colored-address qr-data)]
    [button/button
     {:icon-only?          true
      :type                :grey
@@ -144,7 +141,7 @@
      [share-button {:on-press on-share-press}]]
     (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
       [header props])
-    [quo.theme/provider {:theme :light}
+    [quo.theme/provider :light
      [qr-code/view
       {:qr-image-uri        qr-image-uri
        :size                (style/qr-code-size component-width)
@@ -195,7 +192,7 @@
   [props]
   (reagent/with-let [component-width     (reagent/atom nil)
                      container-component [rn/view {:background-color style/overlay-color}]]
-    [quo.theme/provider {:theme :dark}
+    [quo.theme/provider :dark
      [rn/view
       {:accessibility-label :share-qr-code
        :style               style/outer-container

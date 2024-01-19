@@ -63,7 +63,8 @@
 (defn input-text
   [disabled?]
   (assoc (text/text-style {:size   :paragraph-1
-                           :weight :regular})
+                           :weight :regular}
+                          nil)
          :flex             1
          :padding-vertical 5
          :min-width        120

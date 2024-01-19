@@ -109,7 +109,7 @@
                          (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn get-colors
-  [{:keys [customization-color theme type state background size]}]
+  [{:keys [customization-color type state background size]} theme]
   (let [active? (= state :active)]
     (cond
       (and (= background :photo) (= type :grey))   (grey-photo theme active? size)
