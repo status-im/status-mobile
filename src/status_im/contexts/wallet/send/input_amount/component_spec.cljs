@@ -138,7 +138,7 @@
   (h/test "Switch from crypto to fiat and check limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:crypto-decimals 10
+               {:crypto-decimals 2
                 :limit-crypto    250
                 :on-confirm      #()}])
 
