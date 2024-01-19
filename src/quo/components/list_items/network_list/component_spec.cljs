@@ -4,11 +4,13 @@
             [test-helpers.component :as h]))
 
 (def props
-  {:token       :ethereum
-   :state       :default
-   :label       "Mainnet"
-   :token-value "100.00 ETH"
-   :fiat-value  "€100.00"})
+  {:state               :default
+   :label               "Mainnet"
+   :network-name        :ethereum
+   :customization-color :blue
+   :token-value         "100.00 ETH"
+   :fiat-value          "€100.00"})
+
 
 (h/describe "List items: Network List"
   (h/test "default state"
