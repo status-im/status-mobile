@@ -387,7 +387,6 @@
   [id]
   (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])]
-    (rn/use-effect #(rf/dispatch [:communities/update-last-opened-at id]) [id])
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [quo/floating-shell-button
