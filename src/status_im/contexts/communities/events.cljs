@@ -362,14 +362,16 @@
      (rf/merge
       cofx
       {:fx [[:dispatch [:communities/fetch-community deserialized-key]]
-            [:dispatch [:navigate-to :community-overview deserialized-key]]]}
+            [:dispatch [:navigate-to :community-overview deserialized-key]]
+            [:dispatch [:communities/update-last-opened-at deserialized-key]]]}
       (navigation/pop-to-root :shell-stack)))))
 
 (rf/reg-event-fx :communities/navigate-to-community-chat
  (fn [{:keys [db]} [chat-id pop-to-root?]]
    (let [{:keys [community-id]} (get-in db [:chats chat-id])]
      {:fx [(when community-id
-             [:dispatch [:communities/fetch-community community-id]])
+             [:dispatch [:communities/fetch-community community-id]]
+             [:dispatch [:communities/update-last-opened-at community-id]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
              [:dispatch [:chat/navigate-to-chat chat-id]])]})))
@@ -432,6 +434,10 @@
  (fn [_ [community-id]]
    {:json-rpc/call [{:method     "wakuext_communityUpdateLastOpenedAt"
                      :params     [community-id]
-                     :on-success #(rf/dispatch [:communities/handle-community (first (:communities %))])
+                     :on-success #(rf/dispatch [:communities/update-last-opened-at-success community-id %])
                      :on-error   #(log/error (str "failed to update last opened at for community "
                                                   %))}]}))
+
+(rf/reg-event-fx :communities/update-last-opened-at-success
+                 (fn [{:keys [db]} [community-id last-opened-at]]
+                   {:db (assoc-in db [:communities community-id :last-opened-at] last-opened-at)}))
