@@ -147,8 +147,13 @@
        :text                 input-text
        :response-to          message-id
        :ens-name             preferred-name
-       :link-previews        (map #(select-keys % [:url :title :description :thumbnail])
-                                  (get-in db [:chat/link-previews :unfurled]))
+       :link-previews        (->> db
+                                  (get-in [:chat/link-previews :unfurled])
+                                  (map #(select-keys %
+                                                     [:url :title :description :thumbnail
+                                                      :status-link-preview?]))
+                                  (filter (fn [preview]
+                                            (not (:status-link-preview? preview)))))
        :status-link-previews (map (fn [{{:keys [community-id color description display-name
                                                 members-count active-members-count icon banner]}
                                         :community
