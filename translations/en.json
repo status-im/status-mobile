@@ -1622,7 +1622,7 @@
     "not-enough-snt": "Not enough SNT",
     "add-new-contact": "Add new contact",
     "add-a-contact": "Add a contact",
-    "enter-a-chat-key": "Add a chatkey or scan a QR",
+    "enter-chat-key": "Enter chat key or scan a QR",
     "you-dont-have-contacts": "You don’t have any contacts yet.",
     "set-max": "Set max",
     "continue-anyway": "Continue anyway",

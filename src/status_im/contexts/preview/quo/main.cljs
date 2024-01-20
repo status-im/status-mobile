@@ -41,6 +41,7 @@
      :as community-membership-list-view]
     [status-im.contexts.preview.quo.community.community-stat :as community-stat]
     [status-im.contexts.preview.quo.community.discover-card :as discover-card]
+    [status-im.contexts.preview.quo.community.list-item :as community-list-item]
     [status-im.contexts.preview.quo.community.token-gating :as token-gating]
     [status-im.contexts.preview.quo.counter.counter :as counter]
     [status-im.contexts.preview.quo.counter.step :as step]
@@ -92,8 +93,6 @@
      account-list-card]
     [status-im.contexts.preview.quo.list-items.address :as address]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
-    [status-im.contexts.preview.quo.list-items.community-list :as
-     community-list]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
     [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
@@ -349,7 +348,7 @@
                         :component channel/view}
                        {:name      :community-list
                         :options   {:insets {:top? true}}
-                        :component community-list/view}
+                        :component community-list-item/view}
                        {:name      :dapp
                         :component dapp/preview}
                        {:name      :preview-lists

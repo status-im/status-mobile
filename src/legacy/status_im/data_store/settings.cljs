@@ -51,3 +51,9 @@
       (visibility-status-updates/<-rpc-settings)
       (set/rename-keys {:compressedKey :compressed-key
                         :emojiHash     :emoji-hash})))
+
+(defn rpc->setting-value
+  [{:keys [name] :as setting}]
+  (condp = name
+    :currency (update setting :value keyword)
+    setting))

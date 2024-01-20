@@ -11,17 +11,17 @@
 (defn token-requirement-list-row
   [tokens padding?]
   [rn/view {:style (style/token-row padding?)}
-   (map-indexed (fn [token-index token]
-                  (let [{:keys [amount sufficient? purchasable?]} token]
-                    ^{:key token-index}
-                    [rn/view {:style style/token-tag-spacing}
-                     [token-tag/view
-                      {:token-symbol (:symbol token)
-                       :token-value  amount
-                       :size         :size-24
-                       :options      (cond
-                                       sufficient?  :hold
-                                       purchasable? :add)}]]))
+   (map-indexed (fn [token-index {:keys [img-src amount sufficient? purchasable?] :as token}]
+                  ^{:key token-index}
+                  [rn/view {:style style/token-tag-spacing}
+                   [token-tag/view
+                    {:token-symbol  (:symbol token)
+                     :token-img-src img-src
+                     :token-value   amount
+                     :size          :size-24
+                     :options       (cond
+                                      sufficient?  :hold
+                                      purchasable? :add)}]])
                 tokens)])
 
 (defn- internal-view

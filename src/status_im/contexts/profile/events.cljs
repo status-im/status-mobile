@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.events
   (:require
+    [legacy.status-im.data-store.settings :as data-store.settings]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.contexts.profile.edit.name.events]
@@ -52,8 +53,10 @@
 
 (rf/defn update-setting-from-backup
   {:events [:profile/update-setting-from-backup]}
-  [{:keys [db]} {{:keys [name value]} :backedUpSettings}]
-  {:db (assoc-in db [:profile/profile (keyword name)] value)})
+  [{:keys [db]} {:keys [backedUpSettings]}]
+  (let [setting              (update backedUpSettings :name keyword)
+        {:keys [name value]} (data-store.settings/rpc->setting-value setting)]
+    {:db (assoc-in db [:profile/profile name] value)}))
 
 (rf/defn update-profile-from-backup
   {:events [:profile/update-profile-from-backup]}

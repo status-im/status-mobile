@@ -67,7 +67,9 @@
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
-    :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
+    :fx [[:dispatch-later
+          {:ms       1
+           :dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]}]]}))
 
 (rf/reg-event-fx :wallet/send-select-token-drawer
  (fn [{:keys [db]} [{:keys [token]}]]

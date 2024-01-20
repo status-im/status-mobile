@@ -41,4 +41,4 @@
         :descriptor                descriptor
         :component-container-style {:padding-vertical   30
                                     :padding-horizontal 15}}
-       [quo/user-list @state]])))
+       [quo/user @state]])))

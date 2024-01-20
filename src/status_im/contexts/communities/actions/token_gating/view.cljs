@@ -6,9 +6,8 @@
     [utils.re-frame :as rf]))
 
 (defn token-requirements
-  [id]
-  (rf/dispatch [:communities/check-permissions-to-join-community id])
-  (fn []
+  []
+  (fn [id]
     (let [{:keys [can-request-access?
                   number-of-hold-tokens tokens]} (rf/sub [:community/token-gated-overview id])]
       [rn/view {:style {:padding-horizontal 12}}

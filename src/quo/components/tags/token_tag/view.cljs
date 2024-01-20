@@ -20,7 +20,7 @@
     - :token-symbol - string"
   []
   (let [container-width (reagent/atom 0)]
-    (fn [{:keys [options size blur? theme token-value token-symbol]
+    (fn [{:keys [options size blur? theme token-value token-img-src token-symbol]
           :or   {size :size-24}}]
       [rn/view
        {:on-layout #(reset! container-width
@@ -42,11 +42,12 @@
                   [])}
         [rn/view {:style (style/container size options blur? theme)}
          [token/view
-          {:style (style/token-img size)
-           :token token-symbol
-           :size  (case size
-                    :size-24 :size-20
-                    :size-32 :size-28)}]
+          {:style        (style/token-img size)
+           :token        token-symbol
+           :size         (case size
+                           :size-24 :size-20
+                           :size-32 :size-28)
+           :image-source token-img-src}]
          [text/text
           {:size   :paragraph-2
            :weight :medium

@@ -1,4 +1,4 @@
-(ns status-im.contexts.preview.quo.list-items.community-list
+(ns status-im.contexts.preview.quo.community.list-item
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
@@ -95,7 +95,7 @@
                              :unread-count        5})]
     (fn []
       [preview/preview-container {:state state :descriptor (descriptors @state)}
-       [quo/community-list-item
+       [quo/community-list
         (merge @state
                {:container-style {:width 335}
                 :logo            (resources/get-mock-image :status-logo)
