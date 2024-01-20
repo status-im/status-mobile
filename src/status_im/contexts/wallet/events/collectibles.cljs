@@ -24,9 +24,11 @@
 
 (defn displayable-collectible?
   [collectible]
-  (let [{:keys [image-url animation-url]} (:collectible-data collectible)]
+  (let [{{:keys [image-url animation-url]} :collectible-data
+         {collection-image-url :image-url} :collection-data} collectible]
     (or (not (string/blank? animation-url))
-        (not (string/blank? image-url)))))
+        (not (string/blank? image-url))
+        (not (string/blank? collection-image-url)))))
 
 (defn- add-collectibles-to-accounts
   [accounts collectibles]
@@ -40,7 +42,7 @@
           collectibles))
 
 (defn store-collectibles
-  [{:keys [db]} [collectibles]]
+  [{:keys [db]} [collectibles]]1
   (let [displayable-collectibles (filter displayable-collectible? collectibles)]
     {:db (update-in db [:wallet :accounts] add-collectibles-to-accounts displayable-collectibles)}))
 
