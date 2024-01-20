@@ -28,6 +28,18 @@
       (update-in [:community :banner] set/rename-keys {:dataUri :data-uri})
       (update-in [:community :icon] set/rename-keys {:dataUri :data-uri})))
 
+(defn ->status-link-previews-rpc
+  [preview]
+  (-> preview
+      (update :community
+              set/rename-keys
+              {:community-id         :communityId
+               :display-name         :displayName
+               :members-count        :membersCount
+               :active-members-count :activeMembersCount})
+      (update-in [:community :banner] set/rename-keys {:data-uri :dataUri})
+      (update-in [:community :icon] set/rename-keys {:data-uri :dataUri})))
+
 (defn- <-link-preview-rpc
   [preview]
   (update preview :thumbnail set/rename-keys {:dataUri :data-uri}))
