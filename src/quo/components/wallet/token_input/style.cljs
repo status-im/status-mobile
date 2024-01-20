@@ -1,8 +1,7 @@
 (ns quo.components.wallet.token-input.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.foundations.typography :as typography]
-    [react-native.platform :as platform]))
+    [quo.foundations.typography :as typography]))
 
 (defn main-container
   [width]
@@ -24,7 +23,7 @@
 
 (def token-label-container
   {:position       :absolute
-   :left           32
+   :left           40 ; token image size + margin
    :right          0
    :bottom         0
    :top            0
@@ -35,16 +34,19 @@
   {:position :absolute
    :top      0
    :bottom   0
-   :left     32 ; token image size
+   :left     40 ; token image size + margin
    :right    0})
 
 (def text-input-dimensions
-  (assoc typography/heading-1
-         :font-weight  "600"
-         :margin-left  8
-         :margin-right (if platform/ios? 6 4)
-         :padding      0
-         :height       "100%"))
+  (-> typography/heading-1
+      (dissoc :letter-spacing)
+      (assoc :font-weight    "600"
+             :margin-right   5
+             :padding-left   0
+             :padding-right  0
+             :padding-top    0
+             :padding-bottom 0
+             :height         "100%")))
 
 (defn text-input
   [theme]

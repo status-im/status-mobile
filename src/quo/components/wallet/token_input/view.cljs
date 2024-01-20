@@ -39,7 +39,7 @@
     {:size   :paragraph-2
      :weight :medium
      :style  (style/fiat-amount theme)}
-    (calc-value {:crypto?         @crypto?
+    (calc-value {:crypto?         crypto?
                  :currency        currency
                  :token           token
                  :value           amount
@@ -60,12 +60,12 @@
    {:style          style/token-label-container
     :pointer-events :none}
    [rn/text-input
-    {:auto-focus true
-     :max-length 12
-     :style      style/text-input-dimensions
-     :editable   false
-     :opacity    0
-     :value      value}]
+    {:max-length  12
+     :style       style/text-input-dimensions
+     :editable    false
+     :placeholder "0"
+     :opacity     0
+     :value       value}]
    [token-name-text theme text]])
 
 (defn input-section
