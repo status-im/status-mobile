@@ -52,7 +52,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
-    :symbol              "SNT"
+    :symbol              "STT"
     :customization-color :blue}
    {:token               :eth
     :label               "Ethereum"
