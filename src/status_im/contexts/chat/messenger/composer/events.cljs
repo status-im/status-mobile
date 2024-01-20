@@ -208,10 +208,6 @@
 (rf/defn send-edited-message
   [{:keys [db]
     :as   cofx} text {:keys [message-id quoted-message chat-id]}]
-  (prn (->> (get-in db [:chat/link-previews :unfurled])
-            (map #(select-keys %
-                               [:url :title :description
-                                :status-link-preview?]))))
   (rf/merge
    cofx
    {:json-rpc/call
