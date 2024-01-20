@@ -383,7 +383,7 @@
         (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
       [community-scroll-page community pending?])))
 
-(defn internal-overview
+(defn overview
   [id]
   (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])]
@@ -394,5 +394,3 @@
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
       style/floating-shell-button]]))
-
-(defn overview [id] [:f> internal-overview id])
