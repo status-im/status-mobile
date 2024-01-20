@@ -51,8 +51,9 @@
 
   (h/test "Default render"
     (h/setup-subs sub-mocks)
-    (h/render [input-amount/view {:crypto-decimals 2
-                                  :limit-crypto    250}])
+    (h/render [input-amount/view
+               {:crypto-decimals 2
+                :limit-crypto    250}])
     (h/is-truthy (h/get-by-text "0"))
     (h/is-truthy (h/get-by-text "ETH"))
     (h/is-truthy (h/get-by-text "$0.00"))
