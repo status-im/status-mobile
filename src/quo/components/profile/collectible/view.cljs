@@ -2,7 +2,9 @@
   (:require
     [quo.components.markdown.text :as text]
     [quo.components.profile.collectible.style :as style]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [react-native.svg :as svg]))
 
 (defn remaining-tiles
   [amount]
@@ -14,12 +16,18 @@
     (str "+" amount)]])
 
 (defn tile
-  [{:keys [style resource size]}]
-  (let [source (if (string? resource) {:uri resource} resource)]
+  [{:keys [style size resource]}]
+  (let [svg? (and (map? resource) (:svg? resource))]
     [rn/view {:style style}
-     [rn/image
-      {:style  (style/tile-style-by-size size)
-       :source source}]]))
+     (if svg?
+       [svg/svg-uri
+        {:uri   (:uri resource)
+         :style (style/tile-style-by-size size)}]
+       [fast-image/fast-image
+        {:style  (style/tile-style-by-size size)
+         :source (if (string? resource)
+                   {:uri resource}
+                   resource)}])]))
 
 (defn two-tiles
   [{:keys [images size]}]
