@@ -35,7 +35,7 @@
        :on-clear             #(rf/dispatch [:link-preview/clear])
        :data                 (map (fn [{:keys [title display-name thumbnail hostname loading? url icon]}]
                                     {:title     (or display-name title)
-                                     :body      (or (and display-name hostname) "status.app")
+                                     :body      (or (when-not display-name hostname) "status.app")
                                      :logo      (:data-uri icon)
                                      :loading?  loading?
                                      :thumbnail (:data-uri thumbnail)
