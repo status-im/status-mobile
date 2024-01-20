@@ -103,6 +103,15 @@
    (get-in messages [chat-id message-id :link-previews])))
 
 (re-frame/reg-sub
+ :chats/message-link-previews?
+ :<- [:messages/messages]
+ (fn [messages [_ chat-id message-id]]
+   (-> messages
+       (get-in [chat-id message-id :link-previews])
+       count
+       pos?)))
+
+(re-frame/reg-sub
  :chats/message-status-link-previews
  :<- [:messages/messages]
  (fn [messages [_ chat-id message-id]]

@@ -33,9 +33,10 @@
        :horizontal-spacing   style/padding-horizontal
        :loading-message      (i18n/label :t/link-preview-loading-message)
        :on-clear             #(rf/dispatch [:link-preview/clear])
-       :data                 (map (fn [{:keys [title thumbnail hostname loading? url]}]
-                                    {:title     title
-                                     :body      hostname
+       :data                 (map (fn [{:keys [title display-name thumbnail hostname loading? url icon]}]
+                                    {:title     (or display-name title)
+                                     :body      (or (and display-name hostname) "status.app")
+                                     :logo      (:data-uri icon)
                                      :loading?  loading?
                                      :thumbnail (:data-uri thumbnail)
                                      :url       url})
