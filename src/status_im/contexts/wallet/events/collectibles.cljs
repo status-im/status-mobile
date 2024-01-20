@@ -42,7 +42,7 @@
           collectibles))
 
 (defn store-collectibles
-  [{:keys [db]} [collectibles]]1
+  [{:keys [db]} [collectibles]]
   (let [displayable-collectibles (filter displayable-collectible? collectibles)]
     {:db (update-in db [:wallet :accounts] add-collectibles-to-accounts displayable-collectibles)}))
 
