@@ -218,11 +218,13 @@
                                                               :response-to quoted-message})
                                                           constants/content-type-emoji
                                                           constants/content-type-text)
-                                    :linkPreviews       (map #(-> %
-                                                                  (select-keys [:url :title :description
-                                                                                :thumbnail])
-                                                                  data-store-messages/->link-preview-rpc)
-                                                             (get-in db [:chat/link-previews :unfurled]))
+                                    :link-previews        (->> db
+                                                               (get-in [:chat/link-previews :unfurled])
+                                                               (map #(select-keys %
+                                                                                  [:url :title :description :thumbnail
+                                                                                   :status-link-preview?]))
+                                                               (filter (fn [preview]
+                                                                         (not (:status-link-preview? preview)))))
                                     :statusLinkPreviews (map
                                                          data-store-messages/<-status-link-previews-rpc
                                                          (get-in db
