@@ -47,7 +47,7 @@ in buildGoPackage {
       -ldflags="$ldflags" \
       -target=${concatStringsSep "," targets} \
       ${optionalString isAndroid "-androidapi=${platformVersion}" } \
-      ${optionalString isIOS "-iosversion=${platformVersion}" } \
+      ${optionalString isIOS "-iosversion=${platformVersion} -tags=netgo" } \
      -tags='${optionalString isIOS "nowatchdog"} gowaku_skip_migrations gowaku_no_rln' \
       -o ${outputFileName} \
       ${source.goPackagePath}/mobile

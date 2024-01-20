@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -795,7 +795,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusImTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StatusIm.app/StatusIm";
 			};
 			name = Debug;
@@ -828,7 +828,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusImTests-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StatusIm.app/StatusIm";
 			};
 			name = Release;
@@ -899,14 +899,15 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lresolv",
 				);
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.2;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "x86_64 arm64";
 				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 ";
@@ -973,14 +974,15 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lresolv",
 				);
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
 				PROVISIONING_PROFILE = "e2202b12-7a66-4ff7-af3c-a52e35f32dc1";
 				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc im.status.ethereum";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.2;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 			};
@@ -1051,13 +1053,14 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lresolv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development im.status.ethereum.pr";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.2;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 			};
@@ -1122,12 +1125,13 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lresolv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
 				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc im.status.ethereum.pr";
 				SWIFT_OBJC_BRIDGING_HEADER = "StatusIm-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.2;
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = arm64;
 			};
@@ -1216,7 +1220,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				DEAD_CODE_STRIPPING = YES;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = arm64;
 				"VALID_ARCHS[sdk=iphonesimulator*]" = x86_64;
@@ -1297,7 +1301,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
-				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				DEAD_CODE_STRIPPING = YES;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
