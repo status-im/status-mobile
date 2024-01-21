@@ -2,6 +2,8 @@
   (:require
     [quo.foundations.colors :as colors]))
 
+(def ^:private message-padding-scaling-ratio 4.5)
+
 (defn message-container
   ([]
    (message-container false nil nil false))
@@ -24,7 +26,7 @@
                                (and
                                 (> 3 window-scale)
                                 six-reactions?))
-                         (* 4.5 window-scale)
+                         (* message-padding-scaling-ratio window-scale)
                          4)
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
