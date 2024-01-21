@@ -89,7 +89,7 @@
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (js/setTimeout
                                  #(rf/dispatch [:wallet/share-account
-                                                {:title share-title :content address}])
+                                                {:title share-title :content multichain-address}])
                                  600))}
         {:add-divider?        (not show-account-selector?)
          :icon                :i/delete

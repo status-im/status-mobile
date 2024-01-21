@@ -2,12 +2,12 @@
   (:require
     [clojure.string :as string]
     [goog.string :as gstring]
-    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [schema.core :as schema]
     [status-im.constants :as constants]
+    [status-im.contexts.communities.events :as communities.events]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
@@ -68,32 +68,6 @@
   (log/info "universal-links: handling community request  " community-id)
   (navigation/navigate-to cofx :community-requests-to-join {:community-id community-id}))
 
-(rf/defn handle-community
-  [cofx {:keys [community-id]}]
-  (log/info "universal-links: handling community" community-id)
-  (navigation/navigate-to cofx :community {:community-id community-id}))
-
-(rf/defn handle-navigation-to-desktop-community-from-mobile
-  {:events [:handle-navigation-to-desktop-community-from-mobile]}
-  [cofx deserialized-key]
-  (rf/merge
-   cofx
-   {:dispatch [:navigate-to :community-overview deserialized-key]}
-   (navigation/pop-to-root :shell-stack)))
-
-(rf/defn handle-desktop-community
-  [_ {:keys [community-id]}]
-  (native-module/deserialize-and-compress-key
-   community-id
-   (fn [deserialized-key]
-     (rf/dispatch [:chat.ui/fetch-community (str deserialized-key)])
-     (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile (str deserialized-key)]))))
-
-(rf/defn handle-community-chat
-  [cofx {:keys [chat-id]}]
-  (log/info "universal-links: handling community chat" chat-id)
-  {:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]})
-
 (rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
   (log/info "universal-links: handling view profile" public-key)
@@ -143,14 +117,13 @@
 
 (rf/defn on-handle
   {:events [::match-value]}
-  [cofx url {:keys [type] :as data}]
+  [cofx url {:keys [type chat-id] :as data}]
   (case type
     :group-chat         (handle-group-chat cofx data)
     :private-chat       (handle-private-chat cofx data)
     :community-requests (handle-community-requests cofx data)
-    :community          (handle-community cofx data)
-    :desktop-community  (handle-desktop-community cofx data)
-    :community-chat     (handle-community-chat cofx data)
+    :community          (communities.events/navigate-to-serialized-community cofx data)
+    :community-chat     {:dispatch [:communities/navigate-to-community-chat chat-id :pop-to-root]}
     :contact            (handle-view-profile cofx data)
     :browser            (handle-browse cofx data)
     :eip681             (handle-eip681 cofx data)

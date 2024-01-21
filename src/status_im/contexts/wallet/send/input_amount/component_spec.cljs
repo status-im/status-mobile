@@ -39,7 +39,9 @@
                                                   :mixedcase-address "0x7bcDfc75c431"
                                                   :public-key "0x04371e2d9d66b82f056bc128064"
                                                   :removed false}
-   :wallet/wallet-send-token                     {:symbol :eth}
+   :wallet/wallet-send-token                     {:symbol                     :eth
+                                                  :total-balance              100
+                                                  :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-loading-suggested-routes? false
    :wallet/wallet-send-route                     {:route []}
    :wallet/wallet-send-suggested-routes          {:candidates []}})
@@ -49,7 +51,9 @@
 
   (h/test "Default render"
     (h/setup-subs sub-mocks)
-    (h/render [input-amount/view {}])
+    (h/render [input-amount/view
+               {:crypto-decimals 2
+                :limit-crypto    250}])
     (h/is-truthy (h/get-by-text "0"))
     (h/is-truthy (h/get-by-text "ETH"))
     (h/is-truthy (h/get-by-text "$0.00"))
@@ -59,9 +63,9 @@
     (h/setup-subs sub-mocks)
     (let [on-confirm (h/mock-fn)]
       (h/render [input-amount/view
-                 {:on-confirm on-confirm
-                  :rate       10
-                  :limit      1000}])
+                 {:on-confirm      on-confirm
+                  :crypto-decimals 10
+                  :limit-crypto    1000}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -81,9 +85,9 @@
 
     (let [on-confirm (h/mock-fn)]
       (h/render [input-amount/view
-                 {:rate       10
-                  :limit      1000
-                  :on-confirm on-confirm}])
+                 {:crypto-decimals 10
+                  :limit-crypto    1000
+                  :on-confirm      on-confirm}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -101,8 +105,8 @@
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:rate  10
-                :limit 286}])
+               {:crypto-decimals 10
+                :limit-crypto    286}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
@@ -118,9 +122,9 @@
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:rate       10
-                :limit      286
-                :on-confirm #()}])
+               {:crypto-decimals 10
+                :limit-crypto    286
+                :on-confirm      #()}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
@@ -136,9 +140,9 @@
   (h/test "Switch from crypto to fiat and check limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:rate       10
-                :limit      250
-                :on-confirm #()}])
+               {:crypto-decimals 2
+                :limit-crypto    250
+                :on-confirm      #()}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-0))
@@ -149,7 +153,7 @@
         (.then (fn []
                  (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
                  (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "205.50 ETH"))))
+                 (h/wait-for #(h/get-by-text "20.50 ETH"))))
         (.then (fn []
                  (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "205.50 ETH")))))))
+                 (h/wait-for #(h/get-by-text "20.50 ETH")))))))

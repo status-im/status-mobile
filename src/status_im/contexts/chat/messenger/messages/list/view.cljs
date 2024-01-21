@@ -267,7 +267,7 @@
 
 (defn on-layout
   [{:keys [event layout-height distance-atom distance-from-list-top
-           calculations-complete? messages-list-on-layout-finished?]}]
+           chat-screen-layout-calculations-complete?]}]
   (let [layout-height-new (oops/oget event "nativeEvent.layout.height")
         change            (- layout-height-new @layout-height)
         new-distance      (- @distance-atom change)]
@@ -275,9 +275,8 @@
       (reanimated/set-shared-value distance-from-list-top new-distance)
       (reset! distance-atom new-distance)
       (reset! layout-height layout-height-new))
-    (when-not (reanimated/get-shared-value calculations-complete?)
-      (reanimated/set-shared-value calculations-complete? true))
-    (js/setTimeout #(reset! messages-list-on-layout-finished? true) 1000)))
+    (when-not (reanimated/get-shared-value chat-screen-layout-calculations-complete?)
+      (reanimated/set-shared-value chat-screen-layout-calculations-complete? true))))
 
 (defn on-scroll-fn
   [distance-atom layout-height-atom]
@@ -288,7 +287,7 @@
 
 (defn f-messages-list-content
   [{:keys [insets distance-from-list-top content-height layout-height cover-bg-color distance-atom
-           calculations-complete? messages-list-on-layout-finished? chat-list-scroll-y]}]
+           chat-screen-layout-calculations-complete? chat-list-scroll-y]}]
   (let [theme                    (quo.theme/use-theme-value)
         chat                     (rf/sub [:chats/current-chat-chat-view])
         {:keys [keyboard-shown]} (hooks/use-keyboard)
@@ -351,8 +350,7 @@
                                               :layout-height layout-height
                                               :distance-atom distance-atom
                                               :distance-from-list-top distance-from-list-top
-                                              :calculations-complete? calculations-complete?
-                                              :messages-list-on-layout-finished?
-                                              messages-list-on-layout-finished?})
+                                              :chat-screen-layout-calculations-complete?
+                                              chat-screen-layout-calculations-complete?})
         :scroll-enabled                    (not recording?)
         :content-inset-adjustment-behavior :never}]]]))
