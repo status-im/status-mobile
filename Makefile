@@ -100,9 +100,16 @@ nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove Nix setup, including /nix directory
 	nix/scripts/purge.sh
 
+nix-clean-gradle-deps: SHELL := /bin/sh
+nix-clean-gradle-deps: ##@nix Clean gradle deps before next run
+	@echo "Restoring gradle files..."
+	@git restore nix/deps/gradle/deps.json nix/deps/gradle/deps.list nix/deps/gradle/deps.urls nix/deps/gradle/proj.list
+
+nix-update-gradle: nix-clean-gradle-deps
 nix-update-gradle: export TARGET := gradle
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
-	nix/deps/gradle/generate.sh
+	@echo "Running generate.sh script..."
+	@nix/deps/gradle/generate.sh
 
 nix-update-clojure: export TARGET := clojure
 nix-update-clojure: ##@nix Update maven Nix expressions based on current clojure setup
