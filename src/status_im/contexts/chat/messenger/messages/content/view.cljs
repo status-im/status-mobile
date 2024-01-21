@@ -121,29 +121,36 @@
     (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
                  show-user-info? preview? theme]}]
       (let [{:keys [content-type quoted-message content
-                    outgoing outgoing-status pinned-by]} message-data
-            first-image                                  (first (:album message-data))
-            outgoing-status                              (if (= content-type
-                                                                constants/content-type-album)
-                                                           (:outgoing-status first-image)
-                                                           outgoing-status)
-            outgoing                                     (if (= content-type
-                                                                constants/content-type-album)
-                                                           (:outgoing first-image)
-                                                           outgoing)
-            context                                      (assoc context
-                                                                :on-long-press
-                                                                #(on-long-press message-data
-                                                                                context
-                                                                                keyboard-shown?))
-            response-to                                  (:response-to content)
-            height                                       (rf/sub [:dimensions/window-height])
-            {window-width :width}                        (rn/get-window)
-            message-container-data                       {:window-width           window-width
-                                                          :padding-right          20
-                                                          :padding-left           20
-                                                          :avatar-container-width 32
-                                                          :message-margin-left    8}]
+                    outgoing outgoing-status pinned-by
+                    message-id chat-id]} message-data
+            first-image                  (first (:album message-data))
+            outgoing-status              (if (= content-type
+                                                constants/content-type-album)
+                                           (:outgoing-status first-image)
+                                           outgoing-status)
+            outgoing                     (if (= content-type
+                                                constants/content-type-album)
+                                           (:outgoing first-image)
+                                           outgoing)
+            context                      (assoc context
+                                                :on-long-press
+                                                #(on-long-press message-data
+                                                                context
+                                                                keyboard-shown?))
+            response-to                  (:response-to content)
+            height                       (rf/sub [:dimensions/window-height])
+            {window-width :width
+             window-scale :scale}        (rn/get-window)
+            message-container-data       {:window-width           window-width
+                                          :padding-right          20
+                                          :padding-left           20
+                                          :avatar-container-width 32
+                                          :message-margin-left    8}
+            reactions                    (rf/sub [:chats/message-reactions message-id
+                                                  chat-id])
+            six-reactions?               (-> reactions
+                                             count
+                                             (= 6))]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -154,7 +161,8 @@
                                  :outgoing        outgoing
                                  :outgoing-status outgoing-status
                                  :small-screen?   rn/small-screen?
-                                 :preview?        preview?})
+                                 :window-scale    window-scale
+                                 :six-reactions?  six-reactions?})
           :on-press            (fn []
                                  (if (and platform/ios? keyboard-shown?)
                                    (do
@@ -228,23 +236,24 @@
 (defn on-long-press
   [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
   (rf/dispatch [:dismiss-keyboard])
-  (rf/dispatch [:show-bottom-sheet
-                {:content (drawers/reactions-and-actions message-data context)
-                 :border-radius 16
-                 :selected-item
-                 (if (or deleted? deleted-for-me?)
-                   (fn [] [content.deleted/deleted-message message-data])
-                   (fn []
-                     [rn/view
-                      {:pointer-events :none
-                       :padding-top    4}
-                      [user-message-content
-                       {:message-data    message-data
-                        :context         context
-                        :keyboard-shown? keyboard-shown?
-                        :show-reactions? true
-                        :show-user-info? true
-                        :preview?        true}]]))}]))
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (drawers/reactions-and-actions message-data context)
+     :border-radius 16
+     :selected-item
+     (if (or deleted? deleted-for-me?)
+       (fn [] [content.deleted/deleted-message message-data])
+       (fn []
+         [rn/view
+          {:pointer-events :none
+           :padding-top    4}
+          [user-message-content
+           {:message-data    message-data
+            :context         context
+            :keyboard-shown? keyboard-shown?
+            :show-reactions? true
+            :show-user-info? true
+            :preview?        true}]]))}]))
 
 (defn system-message?
   [content-type]

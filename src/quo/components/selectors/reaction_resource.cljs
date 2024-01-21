@@ -8,8 +8,8 @@
   {:reaction/thumbs-up   "👍"
    :reaction/thumbs-down "👎"
    :reaction/love        "❤"
-   :reaction/laugh       "😄"
-   :reaction/sad         "😥"
+   :reaction/laugh       "😂"
+   :reaction/sad         "😢"
    :reaction/angry       "😡"})
 
 (defn get-reaction
