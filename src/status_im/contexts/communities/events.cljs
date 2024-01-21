@@ -434,10 +434,11 @@
  (fn [_ [community-id]]
    {:json-rpc/call [{:method     "wakuext_communityUpdateLastOpenedAt"
                      :params     [community-id]
-                     :on-success #(rf/dispatch [:communities/update-last-opened-at-success community-id %])
+                     :on-success #(rf/dispatch [:communities/update-last-opened-at-success community-id
+                                                %])
                      :on-error   #(log/error (str "failed to update last opened at for community "
                                                   %))}]}))
 
 (rf/reg-event-fx :communities/update-last-opened-at-success
-                 (fn [{:keys [db]} [community-id last-opened-at]]
-                   {:db (assoc-in db [:communities community-id :last-opened-at] last-opened-at)}))
+ (fn [{:keys [db]} [community-id last-opened-at]]
+   {:db (assoc-in db [:communities community-id :last-opened-at] last-opened-at)}))
