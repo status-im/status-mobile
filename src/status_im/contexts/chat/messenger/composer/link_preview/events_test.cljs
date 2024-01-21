@@ -6,7 +6,8 @@
 
 (def url-github "https://github.com")
 (def url-gitlab "https://gitlab.com")
-(def url-community "https://status.app/c/iyKACkQKB0Rvb2RsZXMSJ0NvbG9yaW5nIHRoZSB3b3JsZCB3aXRoIGpveSDigKIg4bSXIOKAohiYohsiByMxMzFEMkYqAwEhMwM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11")
+(def url-community
+  "https://status.app/c/iyKACkQKB0Rvb2RsZXMSJ0NvbG9yaW5nIHRoZSB3b3JsZCB3aXRoIGpveSDigKIg4bSXIOKAohiYohsiByMxMzFEMkYqAwEhMwM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11")
 (def preview-github {:url url-github :thumbnail nil})
 (def preview-gitlab {:url url-gitlab :thumbnail nil})
 (def request-id "abc123")
