@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.settings.list-items
   (:require [status-im.common.not-implemented :as not-implemented]
+            [status-im.config :as config]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -89,12 +90,13 @@
      :image       :icon
      :blur?       true
      :image-props :i/toggle}
-    {:title       "Quo preview"
-     :on-press    #(rf/dispatch [:navigate-to :quo-preview])
-     :action      :arrow
-     :image       :icon
-     :blur?       true
-     :image-props :i/light}]
+    (when config/quo-preview-enabled?
+      {:title       "Quo preview"
+       :on-press    #(rf/dispatch [:navigate-to :quo-preview])
+       :action      :arrow
+       :image       :icon
+       :blur?       true
+       :image-props :i/light})]
    [{:title    (i18n/label :t/about)
      :on-press not-implemented/alert
      :action   :arrow}
