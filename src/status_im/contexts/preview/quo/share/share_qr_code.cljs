@@ -141,23 +141,16 @@
         [preview/preview-container
          {:state                     state
           :descriptor                typed-descriptor
-          :component-container-style {:padding-horizontal 0}}
+          :blur?                     true
+          :component-container-style {:padding-horizontal 0}
+          :show-blur-background?     true
+          :blur-dark-only?           true}
          [rn/view
           {:style {:flex               1
                    :justify-content    :flex-end
                    :align-items        :center
                    :padding-horizontal 20
                    :padding-vertical   30}}
-          [rn/view
-           {:style {:position :absolute
-                    :top      0
-                    :bottom   0
-                    :left     0
-                    :right    0}}
-           [rn/image
-            {:style  {:flex        1
-                      :resize-mode :stretch}
-             :source (resources/get-mock-image :dark-blur-bg)}]]
           [quo/share-qr-code
            (assoc @state
                   :qr-image-uri qr-media-server-uri

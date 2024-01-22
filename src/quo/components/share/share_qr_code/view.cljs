@@ -14,6 +14,7 @@
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
@@ -222,20 +223,25 @@
      Sometimes while using a blur layer on top of another on Android, this component looks
      bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
      "
-  [props]
+  [{:keys [customization-color] :as props}]
   (reagent/with-let [component-width     (reagent/atom nil)
                      container-component [rn/view {:background-color style/overlay-color}]]
     [quo.theme/provider {:theme :dark}
-     [rn/view
-      {:accessibility-label :share-qr-code
-       :style               style/outer-container
-       :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
-      (conj container-component
-            (when @component-width
-              [share-qr-code
-               (-> props
-                   (assoc :component-width @component-width)
-                   (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
-
+     [linear-gradient/linear-gradient
+      {:colors [(colors/resolve-color customization-color :dark 6)
+                (colors/resolve-color customization-color :dark 0)]
+       :start  {:x 0 :y 0}
+       :end    {:x 0 :y 1}
+       :style  style/outer-container}
+      [rn/view
+       {:accessibility-label :share-qr-code
+        :style               style/outer-container
+        :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
+       (conj container-component
+             (when @component-width
+               [share-qr-code
+                (-> props
+                    (assoc :component-width @component-width)
+                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]]))
 
 (def view (quo.theme/with-theme view-internal))
