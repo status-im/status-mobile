@@ -117,21 +117,20 @@
     (fn []
       [rn/view
        [rn/flat-list
-        {:horizontal true
-         :deceleration-rate 0.9
-         :snap-to-alignment "start"
-         :snap-to-interval (- width 30)
-         :disable-interval-momentum true
-         :scroll-event-throttle 64
-         :data accounts
-         :directional-lock-enabled true
+        {:horizontal                        true
+         :deceleration-rate                 0.9
+         :snap-to-alignment                 "start"
+         :snap-to-interval                  (- width 30)
+         :disable-interval-momentum         true
+         :scroll-event-throttle             64
+         :data                              accounts
+         :directional-lock-enabled          true
          :shows-horizontal-scroll-indicator false
-         :on-scroll (fn [e]
-                      (reset! current-index (js/Math.ceil
-                                             (/ e.nativeEvent.contentOffset.x
-                                                width))))
-         :render-fn
-         render-item}]
+         :on-scroll                         (fn [e]
+                                              (reset! current-index (js/Math.ceil
+                                                                     (/ e.nativeEvent.contentOffset.x
+                                                                        width))))
+         :render-fn                         render-item}]
        [rn/view
         {:style {:margin-top 20}}
         (indicator-list (count accounts) @current-index)]])))
