@@ -15,9 +15,7 @@
      [:token {:optional true} [:or keyword? string?]]
      [:style {:optional true} map?]
      ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
-     [:image-source {:optional true} [:or :schema.common/image-source :string]]
-     ;; If true, adds `data:image/png;base64,` as prefix to the string passed as `image-source`
-     [:add-b64-prefix? {:optional true} boolean?]]]
+     [:image-source {:optional true} [:or :schema.common/image-source :string]]]]
    :any])
 
 (defn- size->number
@@ -52,28 +50,32 @@
             first
             string/capitalize)]])
 
+(defn- normalize-b64-string
+  [b64-image]
+  (if (string/starts-with? b64-image "data:image/")
+    b64-image
+    (str b64-png-image-prefix b64-image)))
+
 (defn view-internal
   "Render a token image.
    Props:
-   - style:           extra styles to apply to the `rn/image` component.
-   - size:            `:size-nn` or just `nn`, being `nn` any number. Defaults to 32.
-   - token:           string or keyword, it can contain upper case letters or not.
-                      E.g. all of these are valid and resolve to the same:
-                      :token/snt | :snt | :SNT | \"SNT\" | \"snt\".
-   - image-source:    Ignores `token` and uses this as parameter to `rn/image`'s source.
-   - add-b64-prefix?: If true, adds `data:image/png;base64,` as prefix to the string
-                      passed as `image-source`.
+   - style:        extra styles to apply to the `rn/image` component.
+   - size:         `:size-nn` or just `nn`, being `nn` any number. Defaults to 32.
+   - token:        string or keyword, it can contain upper case letters or not.
+                   E.g. all of these are valid and resolve to the same:
+                   :token/snt | :snt | :SNT | \"SNT\" | \"snt\".
+   - image-source: Ignores `token` and uses this as parameter to `rn/image`'s source, it
+                   can be a b64 string representing an image.
   "
-  [{:keys [token size style image-source add-b64-prefix?]
+  [{:keys [token size style image-source]
     :or   {size 32}}]
-  (let [b64-string (if (and image-source add-b64-prefix?)
-                     (str b64-png-image-prefix image-source)
-                     image-source)
-        source     (or b64-string (token-loader/get-token-image token))]
-    (if source
+  (let [img-src (if (string? image-source)
+                  (normalize-b64-string image-source)
+                  image-source)]
+    (if-let [existing-source (or img-src (token-loader/get-token-image token))]
       [rn/image
        {:style  (token-style style size)
-        :source source}]
+        :source existing-source}]
       [temp-empty-symbol token size style])))
 
 (def view (schema/instrument #'view-internal ?schema))

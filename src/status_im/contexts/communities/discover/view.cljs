@@ -21,7 +21,7 @@
        {:community (assoc item :cover cover)
         :width     width
         :on-press  #(rf/dispatch [:communities/navigate-to-community-overview (:id item)])}]
-      [quo/community-list-item
+      [quo/community-list
        {:on-press      (fn []
                          (rf/dispatch [:dismiss-keyboard])
                          (rf/dispatch [:communities/navigate-to-community-overview (:id item)]))
@@ -144,7 +144,7 @@
               {:community (assoc community :cover cover)
                :on-press  #(rf/dispatch [:communities/navigate-to-community-overview (:id community)])}]
 
-             [quo/community-list-item
+             [quo/community-list
               {:on-press      (fn []
                                 (rf/dispatch [:dismiss-keyboard])
                                 (rf/dispatch [:communities/navigate-to-community-overview

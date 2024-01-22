@@ -144,13 +144,12 @@
 
 (defn request-to-join-with-signatures-and-addresses
   [{:keys [db]} [community-id signatures]]
-  (let [airdrop-address     (get-in db [:communities/airdrop-address])
-        addresses-to-reveal (get-in db [:communities/selected-permission-addresses])]
+  (let [{:keys [airdrop-address selected-permission-addresses]} (get-in db [:communities community-id])]
     {:fx [[:json-rpc/call
            [{:method      "wakuext_requestToJoinCommunity"
              :params      [{:communityId       community-id
                             :signatures        signatures
-                            :addressesToReveal addresses-to-reveal
+                            :addressesToReveal selected-permission-addresses
                             :airdropAddress    airdrop-address}]
              :js-response true
              :on-success  [:communities/requested-to-join]
@@ -173,7 +172,7 @@
   [{:keys [db]}
    [{:keys [community-id password]}]]
   (let [pub-key             (get-in db [:profile/profile :public-key])
-        addresses-to-reveal (get-in db [:communities/selected-permission-addresses])]
+        addresses-to-reveal (get-in db [:communities community-id :selected-permission-addresses])]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
              :params     [pub-key community-id addresses-to-reveal]
