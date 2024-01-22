@@ -18,3 +18,17 @@
  :wallet/wallet-send-recipient
  :<- [:wallet/wallet-send]
  :-> :recipient)
+
+(rf/reg-sub
+ :wallet/send-transaction-ids
+ :<- [:wallet/wallet-send]
+ :-> :transaction-ids)
+
+(rf/reg-sub
+ :wallet/send-transaction-progress
+ :<- [:wallet/send-transaction-ids]
+ :<- [:wallet/transactions]
+ (fn [[tx-ids transactions]]
+   (let [send-tx-ids (set (keys transactions))]
+     (select-keys transactions
+                  (filter send-tx-ids tx-ids)))))

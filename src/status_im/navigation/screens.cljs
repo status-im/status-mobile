@@ -366,7 +366,6 @@
      :component wallet-transaction-confirmation/view}
 
     {:name      :wallet-transaction-progress
-     :options   {:insets {:bottom? true}}
      :component wallet-transaction-progress/view}
 
     {:name      :scan-address
