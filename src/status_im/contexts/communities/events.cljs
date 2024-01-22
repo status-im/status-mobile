@@ -79,29 +79,41 @@
    #(set/rename-keys % {:isAirdropAddress :airdrop-address?})
    (js->clj accounts :keywordize-keys true)))
 
-(rf/reg-event-fx :communities/handle-community
- (fn [{:keys [db]}
-      [community-js]]
-   (when community-js
-     (let [{:keys [token-permissions
-                   token-permissions-check joined id]
-            :as   community} (<-rpc community-js)
-           has-channel-perm? (fn [id-perm-tuple]
-                               (let [{:keys [type]} (second id-perm-tuple)]
-                                 (or (= type constants/community-token-permission-can-view-channel)
-                                     (=
-                                      type
-                                      constants/community-token-permission-can-view-and-post-channel))))]
-       {:db (assoc-in db [:communities id] community)
-        :fx [[:dispatch [:communities/initialize-permission-addresses id]]
-             (when (not joined)
-               [:dispatch [:chat.ui/spectate-community id]])
-             (when (nil? token-permissions-check)
-               [:dispatch [:communities/check-permissions-to-join-community id]])
-             (when (some has-channel-perm? token-permissions)
-               [:dispatch [:communities/check-all-community-channels-permissions id]])
-             (when joined
-               [:dispatch [:communities/get-revealed-accounts id]])]}))))
+(defn handle-community
+  [{:keys [db]} [community-js]]
+  (when community-js
+    (let [{:keys [token-permissions
+                  token-permissions-check joined id]
+           :as   community} (<-rpc community-js)
+          has-channel-perm? (fn [id-perm-tuple]
+                              (let [{:keys [type]} (second id-perm-tuple)]
+                                (or (= type constants/community-token-permission-can-view-channel)
+                                    (=
+                                     type
+                                     constants/community-token-permission-can-view-and-post-channel))))]
+      {:db (assoc-in db [:communities id] community)
+       :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+            (when (not joined)
+              [:dispatch [:chat.ui/spectate-community id]])
+            (when (nil? token-permissions-check)
+              [:dispatch [:communities/check-permissions-to-join-community id]])
+            (when (some has-channel-perm? token-permissions)
+              [:dispatch [:communities/check-all-community-channels-permissions id]])
+            (when joined
+              [:dispatch [:communities/get-revealed-accounts id]])]})))
+
+(rf/reg-event-fx :communities/handle-community handle-community)
+
+(schema/=> handle-community
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:catn [:community-js map?]]]]]
+   [:maybe
+    [:map
+     [:db [:map [:communities map?]]]
+     [:fx vector?]]]])
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
