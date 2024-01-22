@@ -49,6 +49,11 @@
  :-> :address-prefix)
 
 (rf/reg-sub
+  :wallet/wallet-send-selected-networks
+  :<- [:wallet/wallet-send]
+  :-> :selected-networks)
+
+(rf/reg-sub
  :wallet/wallet-send-route
  :<- [:wallet/wallet-send]
  :-> :route)

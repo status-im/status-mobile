@@ -2,6 +2,7 @@
   (:require
     [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
+    [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -57,11 +58,14 @@
 
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
-   (let [[prefix to-address] (utils/split-prefix-and-address address)]
+   (let [[prefix to-address] (utils/split-prefix-and-address address)
+         prefix-seq          (string/split prefix #":")
+         selected-networks   (mapv #(utils/short-name->id (keyword %)) prefix-seq)]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :address-prefix] prefix))
+              (assoc-in [:wallet :ui :send :address-prefix] prefix)
+              (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
       :fx [[:navigate-to-within-stack
             (if token
               [:wallet-send-input-amount stack-id]
@@ -92,11 +96,12 @@
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
          account-address         (get-in db [:wallet :ui :send :send-account-address])
+         selected-networks        (get-in db [:wallet :ui :send :selected-networks])
          to-address              (or account-address (get-in db [:wallet :ui :send :to-address]))
          token-decimal           (:decimals token)
          token-id                (:symbol token)
-         network-preferences     []
-         gas-rates               constants/gas-rate-medium
+         network-preferences     selected-networks
+         gas-rates               constants/gas-rate-high
          amount-in               (send-utils/amount-in-hex amount token-decimal)
          from-address            wallet-address
          disabled-from-chain-ids []

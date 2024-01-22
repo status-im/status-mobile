@@ -185,6 +185,11 @@
    constants/arbitrum-chain-id      :arbitrum
    constants/arbitrum-test-chain-id :arbitrum})
 
+(def short-name->id
+  {:eth        constants/mainnet-chain-id
+   :opt        constants/optimism-chain-id
+   :arb1       constants/arbitrum-chain-id})
+
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
   (if (string/includes? crypto-value "<")

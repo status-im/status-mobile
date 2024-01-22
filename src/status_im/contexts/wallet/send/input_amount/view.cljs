@@ -54,6 +54,7 @@
     (normalize-input current v)
     current))
 
+<<<<<<< HEAD
 (defn- find-affordable-networks
   [{:keys [balances-per-chain]} input-value]
   (->> balances-per-chain
@@ -66,6 +67,8 @@
   (reset! input-error
     (> new-value prev-value)))
 
+=======
+>>>>>>> 3c958d834 (wallet: network receiver preferences)
 (defn- f-view-internal
   ;; crypto-decimals and limit-crypto args are needed for component tests only
   [{:keys [crypto-decimals limit-crypto]}]
@@ -168,8 +171,8 @@
          [routes/view
           {:amount           amount
            :routes           suggested-routes
-           :loading-networks (find-affordable-networks token @input-value)
-           :networks         (:networks token)}]
+           :token         token
+           :input-value @input-value}]
          [quo/bottom-actions
           {:actions             :1-action
            :button-one-label    (i18n/label :t/confirm)

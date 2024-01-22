@@ -2453,21 +2453,32 @@
     "share-details": "Share details",
     "what-are-you-waiting-for": "What are you waiting for?",
     "no-relevant-tokens": "No relevant tokens",
+<<<<<<< HEAD
     "on-the-web": "On the web",
     "sending-with-ellipsis": "Sending...",
+=======
+    "sending-with-elipsis": "Sending...",
+>>>>>>> 731849325 (wallet: network receiver preferences)
     "transaction-confirmed": "Transaction confirmed!",
     "transacation-finalised": "Transaction finalised!",
-    "no-relevant-tokens": "No relevant tokens",
     "from-label": "From",
     "to-label": "To",
     "oops-wrong-word": "Oops! Wrong word",
     "time-in-mins": "{{minutes}} min",
     "amount-with-currency-symbol": "{{symbol}} {{amount}}",
     "no-routes-found": "No routes found",
+<<<<<<< HEAD
     "remove-watched-address-title": "Remove watched address",
     "remove-watched-address-desc": "The watched address will be removed from all of your synced devices.",
     "remove-account-title": "Remove account",
     "remove-account-desc": "The account will be removed from all of your synced devices. Make sure you have a backup of your keypair or recovery phrase and derivation path (if it’s not default).",
     "derivation-path-copied": "Derivation path copied",
     "remove-account-confirmation": "I have taken note of the derivation path"
+=======
+    "edit-receiver-networks": "Edit receiver networks",
+    "preferred-by-receiver": "Preferred by receiver",
+    "not-preferred-by-receiver": "Not preferred by receiver",
+    "apply-changes": "Apply changes",
+    "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn’t use"
+>>>>>>> 731849325 (wallet: network receiver preferences)
 }
