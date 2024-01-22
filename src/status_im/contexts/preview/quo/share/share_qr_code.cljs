@@ -1,7 +1,6 @@
 (ns status-im.contexts.preview.quo.share.share-qr-code
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]
@@ -145,13 +144,7 @@
           :component-container-style {:padding-horizontal 0}
           :show-blur-background?     true
           :blur-dark-only?           true}
-         [rn/view
-          {:style {:flex               1
-                   :justify-content    :flex-end
-                   :align-items        :center
-                   :padding-horizontal 20
-                   :padding-vertical   30}}
-          [quo/share-qr-code
-           (assoc @state
-                  :qr-image-uri qr-media-server-uri
-                  :qr-data      qr-url)]]]))))
+         [quo/share-qr-code
+          (assoc @state
+                 :qr-image-uri qr-media-server-uri
+                 :qr-data      qr-url)]]))))
