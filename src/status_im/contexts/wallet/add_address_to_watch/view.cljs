@@ -122,17 +122,17 @@
                                 (rf/dispatch [:wallet/clean-scanned-address])
                                 (rf/dispatch [:wallet/clear-address-activity-check])
                                 (rf/dispatch [:navigate-back]))}]
-         :footer
-         [quo/button
-          {:customization-color customization-color
-           :disabled?           (or (string/blank? @input-value) (some? (validate @input-value)))
-           :on-press            (fn []
-                                  (rf/dispatch [:navigate-to
-                                                :confirm-address-to-watch
-                                                {:address @input-value}])
-                                  (clear-input))
-           :container-style     {:z-index 2}}
-          (i18n/label :t/continue)]}
+         :footer [quo/button
+                  {:customization-color customization-color
+                   :disabled?           (or (string/blank? @input-value)
+                                            (some? (validate @input-value)))
+                   :on-press            (fn []
+                                          (rf/dispatch [:navigate-to
+                                                        :confirm-address-to-watch
+                                                        {:address @input-value}])
+                                          (clear-input))
+                   :container-style     {:z-index 2}}
+                  (i18n/label :t/continue)]}
         [quo/text-combinations
          {:container-style style/header-container
           :title           (i18n/label :t/add-address)

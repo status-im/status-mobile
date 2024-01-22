@@ -32,19 +32,20 @@
     (fn []
       (let [transaction-details (rf/sub [:wallet/send-transaction-progress])]
         [floating-button-page/view
-         {:header              [quo/page-nav
-                                {:type                :no-title
-                                 :background          :blur
-                                 :icon-name           :i/close
-                                 :margin-top          (safe-area/get-top)
-                                 :on-press            leave-page
-                                 :accessibility-label :top-bar}]
-          :footer              [quo/button
-                                {:customization-color color
-                                 :on-press            leave-page}
-                                (i18n/label :t/done)]
-          :customization-color color
-          :gradient-cover?     true}
+         {:footer-container-padding 0
+          :header                   [quo/page-nav
+                                     {:type                :no-title
+                                      :background          :blur
+                                      :icon-name           :i/close
+                                      :margin-top          (safe-area/get-top)
+                                      :on-press            leave-page
+                                      :accessibility-label :top-bar}]
+          :footer                   [quo/button
+                                     {:customization-color color
+                                      :on-press            leave-page}
+                                     (i18n/label :t/done)]
+          :customization-color      color
+          :gradient-cover?          true}
          [rn/view {:style style/content-container}
           [rn/image
            {:source (resources/get-image :transaction-progress)
