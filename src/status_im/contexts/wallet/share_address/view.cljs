@@ -49,7 +49,7 @@
 (defn view
   []
   (let [padding-top       (:top (safe-area/get-insets))
-        wallet-type       (reagent/atom :wallet-legacy)
+        wallet-type       (reagent/atom :legacy)
         ;; Design team is yet to confirm the default selected networks here.
         ;; Should be the current selected for the account or all the networks always
         selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
@@ -87,7 +87,8 @@
             :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
-            {:type                @wallet-type
+            {:type                :wallet
+             :address             @wallet-type
              :qr-image-uri        qr-media-server-uri
              :qr-data             qr-url
              :networks            @selected-networks
@@ -96,6 +97,6 @@
              :full-name           (:name account)
              :customization-color color
              :emoji               emoji
-             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-             :on-multichain-press #(reset! wallet-type :wallet-multichain)
+             :on-legacy-press     #(reset! wallet-type :legacy)
+             :on-multichain-press #(reset! wallet-type :multichain)
              :on-settings-press   #(open-preferences selected-networks)}]]]]))))

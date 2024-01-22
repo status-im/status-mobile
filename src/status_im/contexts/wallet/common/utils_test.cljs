@@ -94,10 +94,10 @@
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"
-    (let [wallet-multichain  {:wallet-type       :wallet-multichain
+    (let [wallet-multichain  {:wallet-type       :multichain
                               :selected-networks [:ethereum :optimism]
                               :address           "x000"}
-          wallet-singlechain {:wallet-type       :wallet-singlechain
+          wallet-singlechain {:wallet-type       :singlechain
                               :selected-networks [:ethereum :optimism]
                               :address           "x000"}]
 
