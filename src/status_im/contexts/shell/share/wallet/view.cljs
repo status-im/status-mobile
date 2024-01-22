@@ -66,7 +66,6 @@
             :networks            @selected-networks
             :on-share-press      #(share-action qr-url share-title)
             :profile-picture     nil
-            :unblur-on-android?  true
             :full-name           (:name account)
             :customization-color (:color account)
             :emoji               (:emoji account)
