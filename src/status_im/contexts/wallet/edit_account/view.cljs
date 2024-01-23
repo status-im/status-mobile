@@ -6,6 +6,7 @@
              :as create-or-edit-account]
             [status-im.contexts.wallet.common.sheets.network-preferences.view
              :as network-preferences]
+            [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.edit-account.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -62,7 +63,12 @@
                                         (= name @edited-account-name))]
         [create-or-edit-account/view
          {:page-nav-right-side [{:icon-name :i/delete
-                                 :on-press  #(js/alert "Delete account: to be implemented")}]
+                                 :on-press
+                                 (fn []
+                                   (rf/dispatch [:show-bottom-sheet
+                                                 {:content
+                                                  (fn []
+                                                    [remove-account/view])}]))}]
           :account-name        account-name
           :account-emoji       emoji
           :account-color       color

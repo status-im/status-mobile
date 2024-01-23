@@ -76,15 +76,19 @@
    (str description " · " (i18n/label :t/on-device))])
 
 (defn- context-tag-subtitle
-  [{:keys [community-logo community-name]}]
-  [rn/view
-   {:accessibility-label :context-tag-wrapper
-    :style               {:flex-wrap :wrap}}
-   [context-tag/view
-    {:type           :community
-     :community-name community-name
-     :community-logo community-logo
-     :size           24}]])
+  [{:keys [context-tag-type community-logo community-name account-name emoji customization-color]}]
+  (let [tag-type (or context-tag-type :account)]
+    [rn/view
+     {:accessibility-label :context-tag-wrapper
+      :style               {:flex-wrap :wrap}}
+     [context-tag/view
+      {:type                tag-type
+       :account-name        account-name
+       :emoji               emoji
+       :community-name      community-name
+       :community-logo      community-logo
+       :size                24
+       :customization-color customization-color}]]))
 
 (defn- description-subtitle
   [{:keys [theme blur? description]}]
@@ -95,7 +99,8 @@
    description])
 
 (defn- subtitle
-  [{:keys [type theme blur? keycard? networks description community-name community-logo]}]
+  [{:keys [type theme blur? keycard? networks description community-name community-logo
+           context-tag-type account-name emoji customization-color]}]
   (cond
     (= :keypair type)
     [keypair-subtitle
@@ -118,8 +123,12 @@
 
     (= :context-tag type)
     [context-tag-subtitle
-     {:community-logo community-logo
-      :community-name community-name}]
+     {:context-tag-type    context-tag-type
+      :community-logo      community-logo
+      :community-name      community-name
+      :account-name        account-name
+      :emoji               emoji
+      :customization-color customization-color}]
 
     (and (not= :label type) description)
     [description-subtitle
@@ -173,6 +182,7 @@
 
 (defn- view-internal
   [{:keys [title title-icon type theme description blur? community-name community-logo button-icon
+           account-name emoji
            on-button-press
            on-button-long-press
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
@@ -196,14 +206,17 @@
       :theme      theme
       :blur?      blur?}]
     [subtitle
-     {:type           type
-      :theme          theme
-      :blur?          blur?
-      :keycard?       keycard?
-      :networks       networks
-      :description    description
-      :community-name community-name
-      :community-logo community-logo}]]
+     {:type                type
+      :theme               theme
+      :blur?               blur?
+      :keycard?            keycard?
+      :networks            networks
+      :description         description
+      :community-name      community-name
+      :community-logo      community-logo
+      :customization-color customization-color
+      :account-name        account-name
+      :emoji               emoji}]]
    [right-icon
     {:theme                theme
      :type                 type
