@@ -41,14 +41,14 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:network-name {:optional true} [:maybe keyword?]]
-      [:fiat-value {:optional true} [:maybe :string]]
-      [:label {:optional true} [:maybe :string]]
-      [:token-value {:optional true} [:maybe [:string]]]
+      [:network-name [:maybe keyword?]]
+      [:fiat-value [:maybe :string]]
+      [:label [:maybe :string]]
+      [:token-value [:maybe [:string]]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state {:optional true :default :default} [:maybe keyword?]]
       [:on-press {:optional true} [:maybe fn?]]
-      [:theme {:optional true} [:schema.common/theme]]]]]
+      [:theme :schema.common/theme]]]]
    :any])
 
 (defn- view-internal
