@@ -111,7 +111,6 @@
                              :full-name           "My User"
                              :customization-color :purple
                              :emoji               "🐈"
-                             :on-info-press       #(js/alert "Info pressed")
                              :on-legacy-press     #(js/alert (str "Tab " % " pressed"))
                              :on-multichain-press #(js/alert (str "Tab " % " pressed"))
                              :networks            (take 2 possible-networks)

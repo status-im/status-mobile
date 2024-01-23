@@ -9,6 +9,7 @@
             [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
+            [quo.components.share.share-qr-code.schema :as component-schema]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
             [quo.foundations.colors :as colors]
@@ -16,6 +17,7 @@
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [reagent.core :as reagent]
+            [schema.core :as schema]
             [utils.i18n :as i18n]))
 
 (defn- header
@@ -244,4 +246,6 @@
                     (assoc :component-width @component-width)
                     (clojure.set/rename-keys {:type :share-qr-type}))]))]]]))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))
