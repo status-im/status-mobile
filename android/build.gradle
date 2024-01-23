@@ -46,6 +46,61 @@ subprojects {
     }
 }
 
+task printUniquePluginsAndDependencies {
+    doLast {
+       def allItems = []
+       // Kotlin plugin version check
+       if (project.hasProperty('kotlinPluginVersion')) {
+           def kotlinVersion = project.kotlinPluginVersion
+           // since we are not using the plugins DSL we have to manually add this here
+           allItems.add("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:$kotlinVersion")
+       }
+
+       allprojects { project ->
+           // Collect plugins
+           project.plugins.each { plugin ->
+               allItems.add(plugin.getClass().getName())
+           }
+
+           // Collect artifacts from the buildscript classpath
+           project.buildscript.configurations.classpath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+               allItems.add("${artifact.moduleVersion.id.group}:${artifact.name}:${artifact.moduleVersion.id.version}")
+           }
+
+           // Collect dependencies from all configurations, excluding 'test' configurations
+           project.configurations.each { config ->
+               if (!config.name.toLowerCase().startsWith('test')) {
+                   try {
+                       config.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+                           allItems.add("${artifact.moduleVersion.id.group}:${artifact.name}:${artifact.moduleVersion.id.version}")
+                       }
+                   } catch (Exception e) {
+                       // Handle the case where a configuration is not resolvable
+                   }
+               }
+           }
+       }
+
+        // Filter out specific dependencies and invalid entries
+        def filteredItems = allItems.findAll { item ->
+             !item.startsWith("StatusIm:") && // to strip out status-im:status-go:ea3e59f
+             !item.startsWith("status-im:") && // to strip out StatusIm:react-native-touch-id:unspecified
+             !item.contains("null") && // to strip out com.facebook.react:react-android:null
+             !item.contains("unspecified") && // to strip out com.facebook.react:react-native-gradle-plugin:unspecified
+             !item.endsWith("Inject") &&  // to strip out org.gradle.api.plugins.BasePlugin$Inject
+             !item.endsWith("ReactPlugin") &&  // to strip out com.facebook.react.ReactPlugin
+             !item.endsWith("DownloadTaskPlugin") &&  // to strip out de.undercouch.gradle.tasks.download.DownloadTaskPlugin
+             !item.endsWith("KotlinAndroidPluginWrapper") &&  // to strip out org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
+             !item.contains("com.android.build.gradle.") // to strip out com.android.build.gradle.AppPlugin
+        }
+
+        // Remove duplicates & sort
+        filteredItems.unique().sort().each {
+            println it
+        }
+    }
+}
+
 allprojects {
     beforeEvaluate {
         if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
