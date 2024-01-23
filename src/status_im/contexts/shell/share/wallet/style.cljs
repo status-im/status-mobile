@@ -1,6 +1,6 @@
 (ns status-im.contexts.shell.share.wallet.style
   (:require
-    [legacy.status-im.ui.components.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (defn indicator-wrapper-style
   [active?]
