@@ -8,9 +8,7 @@
    :justify-content :center})
 
 (def tab-icon
-  {:margin-right 4
-   :width        20
-   :height       20})
+  {:margin-right 4})
 
 (defn tab-count
   [active? theme]
