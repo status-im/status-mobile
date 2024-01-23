@@ -32,12 +32,13 @@
 
 (defn- options
   [{:keys [theme show-account-selector? options-height]}]
-  (let [{:keys [name color emoji address watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        network-preference-details                     (rf/sub [:wallet/network-preference-details])
-        multichain-address                             (utils/get-multichain-address
-                                                        network-preference-details
-                                                        address)
-        share-title                                    (str name " " (i18n/label :t/address))]
+  (let [{:keys            [name color emoji address watch-only?]
+         default-account? :wallet} (rf/sub [:wallet/current-viewing-account])
+        network-preference-details (rf/sub [:wallet/network-preference-details])
+        multichain-address         (utils/get-multichain-address
+                                    network-preference-details
+                                    address)
+        share-title                (str name " " (i18n/label :t/address))]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -92,15 +93,16 @@
                                  #(rf/dispatch [:wallet/share-account
                                                 {:title share-title :content multichain-address}])
                                  600))}
-        {:add-divider?        (not show-account-selector?)
-         :icon                :i/delete
-         :accessibility-label :remove-account
-         :label               (i18n/label :t/remove-account)
-         :danger?             true
-         :on-press            #(rf/dispatch [:show-bottom-sheet
-                                             {:content
-                                              (fn []
-                                                [remove-account/view])}])}]]]
+        (when (not default-account?)
+          {:add-divider?        (not show-account-selector?)
+           :icon                :i/delete
+           :accessibility-label :remove-account
+           :label               (i18n/label :t/remove-account)
+           :danger?             true
+           :on-press            #(rf/dispatch [:show-bottom-sheet
+                                               {:content
+                                                (fn []
+                                                  [remove-account/view])}])})]]]
      (when show-account-selector?
        [:<>
         [quo/divider-line {:container-style style/divider-label}]
