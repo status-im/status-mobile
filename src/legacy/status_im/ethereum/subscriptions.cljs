@@ -79,6 +79,10 @@
     "recent-history-ready"                     (recent-history-fetching-ended cofx event)
     "fetching-history-error"                   (fetching-error cofx event)
     "non-archival-node-detected"               (non-archival-node-detected cofx event)
+    "pending-transaction-status-changed"       {:fx
+                                                [[:dispatch
+                                                  [:wallet/pending-transaction-status-changed-received
+                                                   event]]]}
     "wallet-owned-collectibles-filtering-done" {:fx [[:dispatch
                                                       [:wallet/owned-collectibles-filtering-done
                                                        event]]]}

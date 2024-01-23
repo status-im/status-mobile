@@ -4,14 +4,13 @@
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.buttons.button.view :as button]
+            [quo.components.gradient.gradient-cover.view :as gradient-cover]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
             [quo.theme]
-            [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
@@ -126,41 +125,44 @@
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
            profile-picture emoji on-share-press]
     :as   props}]
-  [rn/view {:style style/content-container}
-   [rn/view
-    {:style style/share-qr-container}
+  [:<>
+   [rn/view {:style style/gradient-bg}
+    [gradient-cover/view {:customization-color customization-color :height 463}]]
+   [rn/view {:style style/content-container}
     [rn/view
-     {:style style/share-qr-inner-container}
-     [account-avatar/view
-      {:customization-color customization-color
-       :emoji               emoji
-       :size                32}]
-     [text/text
-      {:size   :heading-2
-       :weight :semi-bold
-       :style  {:margin-left 8}} full-name]]
-    [share-button {:on-press on-share-press}]]
-   (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
-     [header props])
-   [quo.theme/provider {:theme :light}
-    [qr-code/view
-     {:qr-image-uri        qr-image-uri
-      :size                (style/qr-code-size component-width)
-      :avatar              (if (= share-qr-type :profile)
-                             :profile
-                             :wallet-account)
-      :customization-color customization-color
-      :full-name           full-name
-      :profile-picture     profile-picture
-      :emoji               emoji}]]
-   [rn/view {:style style/bottom-container}
-    (case share-qr-type
-      :profile           [profile-bottom props]
-      :wallet-legacy     [wallet-legacy-bottom props]
-      :wallet-multichain [wallet-multichain-bottom props]
-      nil)]])
+     {:style style/share-qr-container}
+     [rn/view
+      {:style style/share-qr-inner-container}
+      [account-avatar/view
+       {:customization-color customization-color
+        :emoji               emoji
+        :size                32}]
+      [text/text
+       {:size   :heading-2
+        :weight :semi-bold
+        :style  {:margin-left 8}} full-name]]
+     [share-button {:on-press on-share-press}]]
+    (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
+      [header props])
+    [quo.theme/provider {:theme :light}
+     [qr-code/view
+      {:qr-image-uri        qr-image-uri
+       :size                (style/qr-code-size component-width)
+       :avatar              (if (= share-qr-type :profile)
+                              :profile
+                              :wallet-account)
+       :customization-color customization-color
+       :full-name           full-name
+       :profile-picture     profile-picture
+       :emoji               emoji}]]
+    [rn/view {:style style/bottom-container}
+     (case share-qr-type
+       :profile           [profile-bottom props]
+       :wallet-legacy     [wallet-legacy-bottom props]
+       :wallet-multichain [wallet-multichain-bottom props]
+       nil)]]])
 
-(defn view
+(defn- view-internal
   "Receives the following properties:
    - type:                :profile | :wallet-legacy | :wallet-multichain
    - qr-image-uri:        Image source value.
@@ -190,16 +192,9 @@
      Sometimes while using a blur layer on top of another on Android, this component looks
      bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
      "
-  [{:keys [unblur-on-android?] :as props}]
+  [props]
   (reagent/with-let [component-width     (reagent/atom nil)
-                     container-component (if (and platform/android? unblur-on-android?)
-                                           [rn/view {:background-color style/overlay-color}]
-                                           [blur/view
-                                            {:blur-radius      20
-                                             :blur-amount      20
-                                             :blur-type        :transparent
-                                             :overlay-color    style/overlay-color
-                                             :background-color style/overlay-color}])]
+                     container-component [rn/view {:background-color style/overlay-color}]]
     [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code
@@ -211,3 +206,6 @@
                (-> props
                    (assoc :component-width @component-width)
                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
+
+
+(def view (quo.theme/with-theme view-internal))
