@@ -3,11 +3,11 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.config :as config]
     [status-im.contexts.wallet.account.style :as style]
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.temp :as temp]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -53,9 +53,9 @@
              :receive-action #(rf/dispatch [:open-modal :wallet-share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
-             :bridge-action  (if (:bridge-token config/wallet-feature-flags)
-                               #(rf/dispatch [:open-modal :wallet-bridge])
-                               #(js/alert "feature disabled in config file"))}])
+             :bridge-action  #(ff/alert :wallet
+                                        :bridge-token
+                                        (fn [] (rf/dispatch [:open-modal :wallet-bridge])))}])
          [quo/tabs
           {:style            style/tabs
            :size             32
