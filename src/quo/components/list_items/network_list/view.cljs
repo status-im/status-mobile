@@ -45,7 +45,7 @@
       [:fiat-value :string]
       [:token-value :string]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:state [:enum :pressed :active :default]]
+      [:state {:optional true} [:enum :pressed :active :default]]
       [:on-press {:optional true} [:maybe fn?]]
       [:theme {:optional true} [:schema.common/theme]]]]]
    :any])

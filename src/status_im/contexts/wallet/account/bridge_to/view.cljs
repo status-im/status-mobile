@@ -1,18 +1,19 @@
 (ns status-im.contexts.wallet.account.bridge-to.view
   (:require
-    [clojure.string :as string]
-    [quo.components.dividers.divider-line.view :as divider-line]
-    [quo.components.list-items.network-list.view :as network-list]
-    [quo.components.markdown.text :as text]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [status-im.contexts.wallet.account.bridge-to.style :as style]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.components.dividers.divider-line.view :as divider-line]
+   [quo.components.list-items.network-list.view :as network-list]
+   [quo.components.markdown.text :as text]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.foundations.resources :as quo.resources]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [status-im.contexts.wallet.account.bridge-to.style :as style]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.utils :as utils]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 
 (defn- bridge-token-component
@@ -30,7 +31,7 @@
           fiat-formatted    (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
       [network-list/view
        {:label        (name (:network-name bridge))
-        :network-name (:network-name network)
+        :network-image (quo.resources/get-network  (:network-name network))
         :token-value  (str crypto-formatted " " (:symbol token))
         :fiat-value   fiat-formatted}])))
 
