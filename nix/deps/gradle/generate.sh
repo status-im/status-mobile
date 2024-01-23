@@ -38,23 +38,6 @@ function gen_deps_list() {
     echo -e "${CLR}Found ${GRN}$(wc -l < "${DEPS_LIST}")${RST} direct dependencies..."
 }
 
-# FIXME: Temporary fix for missing packages.
-# https://github.com/status-im/status-mobile/issues/15447
-function add_deps_hack() {
-    echo -n \
-'com.android.tools.build:gradle:1.3.1
-com.squareup.okio:okio:1.13.0
-com.squareup.okio:okio:1.15.0
-com.squareup.okhttp3:okhttp:3.12.1
-org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.7.22
-com.android.tools.lint:lint-gradle:30.4.2
-com.android.tools.build:gradle:7.4.2
-com.android.tools.build:aapt2:7.4.2-8841542
-org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
-org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.9.0' \
-        >> "${DEPS_LIST}"
-}
-
 # Find download URLs for each dependency.
 function gen_deps_urls() {
     go-maven-resolver < "${DEPS_LIST}" | sort -uV -o "${DEPS_URLS}"
@@ -99,7 +82,6 @@ fi
 # Run each stage in order
 gen_proj_list
 gen_deps_list
-add_deps_hack
 gen_deps_urls
 gen_deps_json
 
