@@ -1,6 +1,7 @@
 (ns quo.components.wallet.token-input.view
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [quo.components.buttons.button.view :as button]
     [quo.components.dividers.divider-line.view :as divider-line]
     [quo.components.markdown.text :as text]
@@ -72,18 +73,25 @@
    [token-name-text theme text]])
 
 (defn input-section
-  [{:keys [on-change-text value value-atom]}]
-  (let [input-ref             (atom nil)
-        set-ref               #(reset! input-ref %)
-        focus-input           #(when-let [ref ^js @input-ref]
-                                 (.focus ref))
-        controlled-input?     (some? value)
-        handle-on-change-text (fn [v]
-                                (when-not controlled-input?
-                                  (reset! value-atom v))
-                                (when on-change-text
-                                  (on-change-text v)))]
-    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?]
+  [{:keys [on-change-text value value-atom on-selection-change]}]
+  (let [input-ref               (atom nil)
+        set-ref                 #(reset! input-ref %)
+        focus-input             #(when-let [ref ^js @input-ref]
+                                   (.focus ref))
+        controlled-input?       (some? value)
+        handle-on-change-text   (fn [v]
+                                  (when-not controlled-input?
+                                    (reset! value-atom v))
+                                  (when on-change-text
+                                    (on-change-text v)))
+        handle-selection-change (fn [^js e]
+                                  (when on-selection-change
+                                    (-> e
+                                        (oops/oget "nativeEvent.selection")
+                                        (js->clj :keywordize-keys true)
+                                        (on-selection-change))))]
+    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?
+                 selection]
           :or   {show-keyboard? true}}]
       [rn/pressable
        {:on-press focus-input
@@ -102,7 +110,9 @@
                   :max-length               12
                   :on-change-text           handle-on-change-text
                   :selection-color          customization-color
-                  :show-soft-input-on-focus show-keyboard?}
+                  :show-soft-input-on-focus show-keyboard?
+                  :on-selection-change      handle-selection-change
+                  :selection                (clj->js selection)}
            controlled-input?       (assoc :value value)
            (not controlled-input?) (assoc :default-value @value-atom))]]
        [token-label

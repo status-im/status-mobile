@@ -36,28 +36,59 @@
         non-numeric?        (re-find not-digits-or-dot-pattern (str v))]
     (not (or non-numeric? extra-dot? extra-leading-zero? length-overflow?))))
 
+(defn- add-char-to-string
+  [s c idx]
+  (let [size (count s)]
+    (if (= size idx)
+      (str s c)
+      (str (subs s 0 idx)
+           c
+           (subs s idx size)))))
+
+(defn- move-input-cursor
+  ([input-selection-atom new-idx]
+   (move-input-cursor input-selection-atom new-idx new-idx))
+  ([input-selection-atom new-start-idx new-end-idx]
+   (let [start-idx (if (< new-start-idx 0) 0 new-start-idx)
+         end-idx   (if (< new-end-idx 0) 0 new-start-idx)]
+     (swap! input-selection-atom assoc :start start-idx :end end-idx))))
+
 (defn- normalize-input
-  [current v]
-  (cond
-    (and (string/blank? current) (= v dot))
-    (str "0" v)
+  [current v input-selection-atom]
+  (let [{:keys [start end]} @input-selection-atom]
+    (if (= start end)
+      (cond
+        (and (string/blank? current) (= v dot))
+        (do
+          (move-input-cursor input-selection-atom 2)
+          (str "0" v))
 
-    (and (= current "0") (not= v dot))
-    (str v)
+        (and (= current "0") (not= v dot))
+        (do
+          (move-input-cursor input-selection-atom 1)
+          (str v))
 
-    :else
-    (str current v)))
+        :else
+        (do
+          (move-input-cursor input-selection-atom (inc start))
+          (add-char-to-string current v start)))
+      current)))
 
 (defn- make-new-input
-  [current v]
+  [current v input-selection-atom]
   (if (valid-input? current v)
-    (normalize-input current v)
+    (normalize-input current v input-selection-atom)
     current))
 
 (defn- reset-input-error
   [new-value prev-value input-error]
   (reset! input-error
     (> new-value prev-value)))
+
+(defn delete-from-string
+  [s idx]
+  (let [size (count s)]
+    (str (subs s 0 (dec idx)) (subs s idx size))))
 
 (defn- f-view-internal
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -72,6 +103,7 @@
         input-value           (reagent/atom "")
         input-error           (reagent/atom false)
         crypto-currency?      (reagent/atom initial-crypto-currency?)
+        input-selection           (reagent/atom {:start 0 :end 0})
         handle-swap           (fn [{:keys [crypto? limit-fiat limit-crypto]}]
                                 (let [num-value     (parse-double @input-value)
                                       current-limit (if crypto? limit-crypto limit-fiat)]
@@ -79,7 +111,7 @@
                                   (reset-input-error num-value current-limit input-error)))
         handle-keyboard-press (fn [v loading-routes? current-limit-amount]
                                 (let [current-value @input-value
-                                      new-value     (make-new-input current-value v)
+                                      new-value     (make-new-input current-value v input-selection)
                                       num-value     (or (parse-double new-value) 0)]
                                   (when (not loading-routes?)
                                     (reset! input-value new-value)
@@ -87,9 +119,12 @@
                                     (reagent/flush))))
         handle-delete         (fn [loading-routes? current-limit-amount]
                                 (when-not loading-routes?
-                                  (swap! input-value #(subs % 0 (dec (count %))))
-                                  (reset-input-error @input-value current-limit-amount input-error)
-                                  (reagent/flush)))
+                                  (let [{:keys [start end]} @input-selection]
+                                    (reset-input-error @input-value current-limit-amount input-error)
+                                    (when (= start end)
+                                      (swap! input-value delete-from-string start)
+                                      (move-input-cursor input-selection (dec start)))
+                                    (reagent/flush))))
         handle-on-change      (fn [v current-limit-amount]
                                 (when (valid-input? @input-value v)
                                   (let [num-value (or (parse-double v) 0)]
@@ -110,7 +145,14 @@
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   @input-value
-                                               :stack-id :wallet-send-input-amount}]))]
+                                               :stack-id :wallet-send-input-amount}]))
+        selection-change          (fn [selection]
+                                    ;; `reagent/flush` is needed to properly propagate the
+                                    ;; input cursor state. Since this is a controlled
+                                    ;; component the cursor will become static if
+                                    ;; `reagent/flush` is removed.
+                                    (reset! input-selection selection)
+                                    (reagent/flush))]
     (fn []
       (let [{fiat-currency :currency} (rf/sub [:profile/profile])
             {:keys [color]}           (rf/sub [:wallet/current-viewing-account])
@@ -164,7 +206,9 @@
            :conversion      conversion-rate
            :show-keyboard?  false
            :value           @input-value
+           :selection           @input-selection
            :on-change-text  #(handle-on-change % current-limit)
+           :on-selection-change selection-change
            :on-swap         #(handle-swap
                               {:crypto?      %
                                :currency     current-currency
