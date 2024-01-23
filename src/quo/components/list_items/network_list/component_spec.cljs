@@ -3,6 +3,10 @@
             [quo.foundations.colors :as colors]
             [test-helpers.component :as h]))
 
+(defn- render
+  [component]
+  (h/render-with-theme-provider component :light))
+
 (def props
   {:state               :transparent
    :label               "Mainnet"
@@ -36,8 +40,4 @@
     (let [on-press (h/mock-fn)]
       (h/render [network-list/view (assoc props :on-press on-press)])
       (h/fire-event :on-press (h/get-by-label-text ::network-list))
-      (h/was-called on-press)))
-
-  (h/test "Empty props"
-    (h/render [network-list/view {}])
-    (h/is-truthy (h/get-by-label-text ::network-list))))
+      (h/was-called on-press))))

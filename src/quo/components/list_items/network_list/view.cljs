@@ -3,17 +3,16 @@
     [clojure.string :as string]
     [quo.components.list-items.network-list.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [schema.core :as schema]))
 
 (defn- info
-  [{:keys [network-name label]}]
+  [{:keys [network-image label]}]
   [rn/view {:style style/info}
    [rn/image
-    {:source (quo.resources/get-network network-name)
+    {:source network-image
      :style  style/network-image}]
    [rn/view
     [text/text
@@ -41,12 +40,12 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:network-name [:maybe keyword?]]
-      [:fiat-value [:maybe :string]]
-      [:label [:maybe :string]]
-      [:token-value [:maybe [:string]]]
-      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:state {:optional true} [:maybe [:enum :pressed :transparent :active]]]
+      [:network-name :keyword]
+      [:fiat-value :string]
+      [:label :string]
+      [:token-value :string]
+      [:customization-color :schema.common/customization-color]
+      [:state {:default :transparent} :keyword]
       [:on-press {:optional true} [:maybe fn?]]
       [:theme :schema.common/theme]]]]
    :any])

@@ -1,14 +1,8 @@
 (ns status-im.contexts.preview.quo.list-items.network-list
   (:require
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
-
-(def networks-list
-  [{:source (quo.resources/get-network :ethereum)}
-   {:source (quo.resources/get-network :optimism)}
-   {:source (quo.resources/get-network :arbitrum)}])
 
 (def descriptor
   [{:key     :state
