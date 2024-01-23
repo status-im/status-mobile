@@ -46,7 +46,7 @@
       [:label [:maybe :string]]
       [:token-value [:maybe [:string]]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:state {:optional true :default :default} [:maybe keyword?]]
+      [:state {:optional true} [:maybe [:enum :pressed :transparent :active]]]
       [:on-press {:optional true} [:maybe fn?]]
       [:theme :schema.common/theme]]]]
    :any])

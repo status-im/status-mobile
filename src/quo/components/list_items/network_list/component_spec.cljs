@@ -4,7 +4,7 @@
             [test-helpers.component :as h]))
 
 (def props
-  {:state               :default
+  {:state               :transparent
    :label               "Mainnet"
    :network-name        :ethereum
    :customization-color :blue
