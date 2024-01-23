@@ -40,7 +40,7 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:network-name :keyword]
+      [:network-image :int]
       [:fiat-value :string]
       [:label :string]
       [:token-value :string]
@@ -61,6 +61,7 @@
       (let [internal-state (if @pressed?
                              :pressed
                              state)]
+
         [rn/pressable
          {:style               (style/container internal-state customization-color theme)
           :on-press-in         on-press-in

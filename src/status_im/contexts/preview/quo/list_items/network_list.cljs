@@ -1,6 +1,7 @@
 (ns status-im.contexts.preview.quo.list-items.network-list
   (:require
     [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
@@ -10,11 +11,14 @@
     :options [{:key :transparent}
               {:key :active}
               {:key :pressed}]}
-   {:key     :network-name
+   {:key     :network-image
     :type    :select
-    :options [{:key :ethereum}
-              {:key :arbitrum}
-              {:key :optimism}]}
+    :options [{:key   (quo.resources/get-network :ethereum)
+               :value :ethereum}
+              {:key   (quo.resources/get-network :arbitrum)
+               :value :arbitrum}
+              {:key   (quo.resources/get-network :optimism)
+               :value :optimism}]}
    {:key  :label
     :type :text}
    {:key  :token-value
@@ -26,7 +30,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:network-name        :ethereum
+  (let [state (reagent/atom {:network-image       (quo.resources/get-network :ethereum)
                              :label               "Mainnet"
                              :token-value         "0.00 ETH"
                              :fiat-value          "€0.00"

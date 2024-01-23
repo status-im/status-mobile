@@ -10,7 +10,7 @@
 (def props
   {:state               :transparent
    :label               "Mainnet"
-   :network-name        :ethereum
+   :network-image       873
    :customization-color :blue
    :token-value         "100.00 ETH"
    :fiat-value          "€100.00"})
