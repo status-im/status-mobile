@@ -41,10 +41,10 @@
     [:props
      [:map {:closed true}
       [:network-image :int]
-      [:fiat-value :string]
       [:label :string]
+      [:fiat-value :string]
       [:token-value :string]
-      [:customization-color :schema.common/customization-color]
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state [:enum :pressed :active :default]]
       [:on-press {:optional true} [:maybe fn?]]
       [:theme :schema.common/theme]]]]
