@@ -464,15 +464,17 @@
            (remove-from-group-entry contact chat-id))])]]))
 
 (defn chat-actions
-  [{:keys [chat-type] :as chat} inside-chat?]
-  (condp = chat-type
-    constants/one-to-one-chat-type
-    [one-to-one-actions chat inside-chat?]
-    constants/private-group-chat-type
-    [private-group-chat-actions chat inside-chat?]
-    constants/community-chat-type
-    [communities-chat-actions/actions chat inside-chat?]
-    nil))
+  ([{:keys [chat-type] :as chat} inside-chat? hide-show-members?]
+   (condp = chat-type
+     constants/one-to-one-chat-type
+     [one-to-one-actions chat inside-chat?]
+     constants/private-group-chat-type
+     [private-group-chat-actions chat inside-chat?]
+     constants/community-chat-type
+     [communities-chat-actions/actions chat inside-chat? hide-show-members?]
+     nil))
+  ([chat inside-chat?]
+   (chat-actions chat inside-chat? nil)))
 
 (defn group-details-actions
   [{:keys [admins] :as group}]
