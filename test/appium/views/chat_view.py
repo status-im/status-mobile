@@ -276,7 +276,7 @@ class ChatElementByText(Text):
                 self.emoji = emoji
                 self.emojis_id = 'emoji-reaction-%s' % str(emojis[self.emoji])
                 super().__init__(driver, prefix=parent_locator,
-                                 xpath="/../..//*[@content-desc='%s']/android.widget.TextView" % self.emojis_id)
+                                 xpath="/../..//*[@content-desc='%s']/android.widget.TextView[2]" % self.emojis_id)
 
             @property
             def text(self):
