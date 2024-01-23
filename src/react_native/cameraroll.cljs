@@ -20,12 +20,14 @@
 (defn get-photos
   [opts callback]
   (-> (.getPhotos CameraRoll (clj->js opts))
+      ;; With callback approach, the value isn't accessible from the returned promise.
       (.then #(callback (transforms/js->clj %)))
       (.catch #(log/warn "could not get camera roll photos" %))))
 
 (defn get-albums
   [opts callback]
   (-> (.getAlbums CameraRoll (clj->js opts))
+      ;; With callback approach, the value isn't accessible from the returned promise.
       (.then #(callback (transforms/js->clj %)))
       (.catch #(log/warn "could not get camera roll albums" %))))
 
