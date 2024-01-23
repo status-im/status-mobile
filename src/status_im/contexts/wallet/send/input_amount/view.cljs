@@ -91,8 +91,7 @@
                                                                :currency token-symbol}
                                                               {:amount   limit-fiat
                                                                :currency currency}))
-                                      (when (> num-value (:amount @current-limit))
-                                        (reset! input-value ""))))
+                                      (reset-input-error num-value (:amount @current-limit) input-error)))
         handle-keyboard-press     (fn [v]
                                     (let [current-value        @input-value
                                           new-value            (make-new-input current-value v)
