@@ -327,9 +327,23 @@
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
 
+(rf/reg-event-fx :wallet/reload
+ (fn [_]
+   {:fx [[:dispatch-n [[:wallet/get-wallet-token]]]]}))
+
+(rf/reg-event-fx :wallet/start-wallet
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method   "wallet_startWallet"
+            :on-error #(log/info "failed to start wallet"
+                                 {:error %
+                                  :event :wallet/start-wallet})}]]]}))
+
 (rf/reg-event-fx :wallet/initialize
  (fn []
-   {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
+   {:fx [[:dispatch [:wallet/start-wallet]]
+         [:dispatch [:wallet/get-ethereum-chains]]
+         [:dispatch [:wallet/get-accounts]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
