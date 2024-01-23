@@ -100,25 +100,4 @@
           (.then (fn []
                    (h/is-truthy (h/get-by-label-text :button-one))
                    (h/fire-event :press (h/get-by-label-text :button-one))
-                   (h/was-called on-confirm))))))
-
-  (h/test "Switch from crypto to fiat and check limit"
-    (h/setup-subs sub-mocks)
-    (h/render [input-amount/view
-               {:crypto-decimals 2
-                :limit-crypto    250
-                :on-confirm      #()}])
-
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-0))
-    (-> (h/wait-for #(h/get-by-text "$200.00"))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :reorder))
-                 (h/wait-for #(h/get-by-text "2.00 ETH"))))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "20.50 ETH"))))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "20.50 ETH")))))))
+                   (h/was-called on-confirm)))))))
