@@ -34,10 +34,9 @@
                                                     (= :pinned use-case)
                                                     theme)
                                     container-style)}
-       [rn/image
-        {:style               {:width 15 :height 15}
-         :accessibility-label :emoji
-         :source              (reaction.resource/get-reaction emoji)}]
+       [rn/text
+        {:accessibility-label :emoji}
+        (reaction.resource/system-emojis emoji)]
        [text/text
         {:size   :paragraph-2
          :weight :semi-bold
