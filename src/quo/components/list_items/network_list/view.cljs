@@ -1,5 +1,6 @@
 (ns quo.components.list-items.network-list.view
   (:require
+    [clojure.string :as string]
     [quo.components.list-items.network-list.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.resources :as quo.resources]
@@ -19,7 +20,7 @@
      {:weight          :semi-bold
       :style           {:text-transform :capitalize}
       :number-of-lines 1}
-     (if-not (empty? label) label "-")]]])
+     (if (string/blank? label) "-" label)]]])
 
 (defn- values
   [{:keys [token-value fiat-value theme]}]
