@@ -1,17 +1,17 @@
 (ns status-im.contexts.shell.share.wallet.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.platform :as platform]
-   [react-native.share :as share]
-   [reagent.core :as reagent]
-   [status-im.contexts.shell.share.style :as style]
-   [status-im.contexts.shell.share.wallet.style :as wallet-style]
-   [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [utils.i18n :as i18n]
-   [utils.image-server :as image-server]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
+    [reagent.core :as reagent]
+    [status-im.contexts.shell.share.style :as style]
+    [status-im.contexts.shell.share.wallet.style :as wallet-style]
+    [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def qr-size 500)
 
@@ -88,7 +88,10 @@
   [rn/view
    {:style wallet-style/indicator-list-style}
    (for [i (range indicator-count)]
-     ^{:key i} [indicator (= current-index i)])])
+     (let [current-index (cond (<= current-index 0)                     0
+                               (>= current-index (dec indicator-count)) (dec indicator-count)
+                               :else                                    current-index)]
+       ^{:key i} [indicator (= current-index i)]))])
 
 (defn render-item
   [item]
