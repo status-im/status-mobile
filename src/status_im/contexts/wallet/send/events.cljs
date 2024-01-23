@@ -71,6 +71,10 @@
               [:wallet-send-input-amount stack-id]
               [:wallet-select-asset stack-id])]]})))
 
+(rf/reg-event-fx :wallet/update-receiver-networks
+ (fn [{:keys [db]} [selected-networks]]
+   {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
+
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
@@ -96,7 +100,7 @@
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
          account-address         (get-in db [:wallet :ui :send :send-account-address])
-         selected-networks        (get-in db [:wallet :ui :send :selected-networks])
+         selected-networks       (get-in db [:wallet :ui :send :selected-networks])
          to-address              (or account-address (get-in db [:wallet :ui :send :to-address]))
          token-decimal           (:decimals token)
          token-id                (:symbol token)

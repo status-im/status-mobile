@@ -11,10 +11,11 @@
 
 (defn network-bridge-add
   [{:keys [network state theme container-style on-press]}]
-  [rn/pressable {:style (merge (style/container network state theme)
-                          (style/add-container theme)
-                          container-style)
-                 :on-press on-press}
+  [rn/pressable
+   {:style    (merge (style/container network state theme)
+                     (style/add-container theme)
+                     container-style)
+    :on-press on-press}
    [icon/icon :i/add-circle {:size 12 :no-color true}]])
 
 (defn- network->text
@@ -31,7 +32,7 @@
      {:style               (merge (style/container network status theme) container-style)
       :accessible          true
       :accessibility-label :container
-      :on-press on-press}
+      :on-press            on-press}
      (if (= status :loading)
        [rn/view
         {:style               (style/loading-skeleton theme)

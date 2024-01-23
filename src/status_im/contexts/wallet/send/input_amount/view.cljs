@@ -132,21 +132,25 @@
                                (<= input-num-value 0)
                                (> input-num-value (:amount @current-limit)))
             amount            (str @input-value " " token-symbol)
+<<<<<<< HEAD
             {:keys [color]}   (rf/sub [:wallet/current-viewing-account])]
+=======
+            fetch-routes      (fn []
+                                (rf/dispatch [:wallet/clean-suggested-routes])
+                                (when-not (or
+                                           (empty? @input-value)
+                                           (<= input-num-value 0)
+                                           (> input-num-value (:amount @current-limit)))
+                                  (debounce/debounce-and-dispatch [:wallet/get-suggested-routes
+                                                                   @input-value]
+                                                                  100)))]
+>>>>>>> 8b53ac7c6 (wallet receiver networks)
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
-        (rn/use-effect (fn []
-                         (rf/dispatch [:wallet/clean-suggested-routes])
-                         (when-not (or
-                                    (empty? @input-value)
-                                    (<= input-num-value 0)
-                                    (> input-num-value (:amount @current-limit)))
-                           (debounce/debounce-and-dispatch [:wallet/get-suggested-routes @input-value]
-                                                           100)))
-                       [@input-value])
+        (rn/use-effect #(fetch-routes) [@input-value])
         [rn/view
          {:style               style/screen
           :accessibility-label (str "container" (when @input-error "-error"))}
@@ -169,10 +173,11 @@
            :on-change-text  (fn [text]
                               (handle-on-change text))}]
          [routes/view
-          {:amount           amount
-           :routes           suggested-routes
-           :token         token
-           :input-value @input-value}]
+          {:amount       amount
+           :routes       suggested-routes
+           :token        token
+           :input-value  @input-value
+           :fetch-routes fetch-routes}]
          [quo/bottom-actions
           {:actions             :1-action
            :button-one-label    (i18n/label :t/confirm)

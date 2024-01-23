@@ -11,11 +11,12 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn match-short-name? [network-name short-names]
+(defn match-short-name?
+  [network-name short-names]
   (some #(string/starts-with? (name network-name) (subs % 0 3)) short-names))
 
 (defn- make-network-item
-  [{:keys [network-name] :as _network}
+  [{:keys [network-name chain-id] :as _network}
    {:keys [title color on-change network-preferences] :as _options}]
   {:title        (or title (string/capitalize (name network-name)))
    :image        :icon-avatar
@@ -24,24 +25,25 @@
    :action       :selector
    :action-props {:type                :checkbox
                   :customization-color color
-                  :checked?            (match-short-name? network-name @network-preferences)
+                  :checked?            (some #(= % chain-id) @network-preferences)
                   :on-change           on-change}})
 
 (defn networks-drawer
-  [theme]
+  [{:keys [fetch-routes theme]}]
   (let [network-details     (rf/sub [:wallet/network-details])
-        {:keys [color]} (rf/sub [:wallet/current-viewing-account])
+        {:keys [color]}     (rf/sub [:wallet/current-viewing-account])
+        selected-networks   (rf/sub [:wallet/wallet-send-selected-networks])
         prefix              (rf/sub [:wallet/wallet-send-address-prefix])
         prefix-seq          (string/split prefix #":")
         preferred           (filter #(contains? (set prefix-seq) (:short-name %)) network-details)
         not-preferred       (filter #(not (contains? (set prefix-seq) (:short-name %))) network-details)
-        network-preferences (reagent/atom (set prefix-seq))
-        toggle-network      (fn [{:keys [short-name]}]
-                              (if (contains? @network-preferences short-name)
-                                (swap! network-preferences disj
-                                       short-name)
-                                (swap! network-preferences conj
-                                       short-name)))]
+        network-preferences (reagent/atom selected-networks)
+        toggle-network      (fn [{:keys [chain-id]}]
+                              (swap! network-preferences
+                                (fn [preferences]
+                                  (if (some #(= % chain-id) preferences)
+                                    (vec (remove #(= % chain-id) preferences))
+                                    (conj preferences chain-id)))))]
     (fn []
       [rn/view
        [quo/drawer-top {:title (i18n/label :t/edit-receiver-networks)}]
@@ -52,8 +54,7 @@
                             (make-network-item network
                                                {:color               color
                                                 :network-preferences network-preferences
-                                                :on-change           #(toggle-network network)
-                                                }))
+                                                :on-change           #(toggle-network network)}))
                           preferred)}]
        (when (pos? (count not-preferred))
          [quo/category
@@ -65,25 +66,32 @@
                                                   :network-preferences network-preferences
                                                   :on-change           #(toggle-network network)}))
                             not-preferred)}])
-       (when (not= (set prefix-seq) @network-preferences)
+       (when (not= selected-networks @network-preferences)
          [rn/view {:style (style/warning-container color theme)}
           [quo/icon :i/info {:color (colors/resolve-color color theme)}]
-          [quo/text {:size  :paragraph-2
-                     :style style/warning-text} (i18n/label :t/receiver-networks-warning)]])
+          [quo/text
+           {:size  :paragraph-2
+            :style style/warning-text} (i18n/label :t/receiver-networks-warning)]])
        [quo/bottom-actions
         {:button-one-label (i18n/label :t/apply-changes)
-         :button-one-props {:disabled?           (= (set prefix-seq) @network-preferences)
-                            :on-press            (fn [])
+         :button-one-props {:disabled?           (= selected-networks @network-preferences)
+                            :on-press            (fn []
+                                                   (rf/dispatch [:wallet/update-receiver-networks
+                                                                 @network-preferences])
+                                                   (rf/dispatch [:hide-bottom-sheet])
+                                                   (fetch-routes))
                             :customization-color color}}]])))
 
 (defn route-item
-  [{:keys [amount from-network to-network status theme]}]
+  [{:keys [amount from-network to-network status theme fetch-routes]}]
   (if (= status :add)
     [quo/network-bridge
      {:status          :add
       :container-style style/add-network
       :on-press        #(rf/dispatch [:show-bottom-sheet
-                                      {:content (fn [] [networks-drawer theme])}])}]
+                                      {:content (fn [] [networks-drawer
+                                                        {:theme        theme
+                                                         :fetch-routes fetch-routes}])}])}]
     [rn/view {:style style/routes-inner-container}
      [quo/network-bridge
       {:amount  amount
@@ -107,12 +115,12 @@
   (->> balances-per-chain
        (filter (fn [[_ {:keys [balance chain-id]}]]
                  (and
-                   (>= (js/parseFloat balance) input-value)
-                   (some #(= % chain-id) selected-networks))))
+                  (>= (js/parseFloat balance) input-value)
+                  (some #(= % chain-id) selected-networks))))
        (map first)))
 
 (defn- view-internal
-  [{:keys [amount routes token input-value theme]}]
+  [{:keys [amount routes token input-value theme fetch-routes]}]
   (let [selected-networks         (rf/sub [:wallet/wallet-send-selected-networks])
         loading-networks          (find-affordable-networks token input-value selected-networks)
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
@@ -135,7 +143,10 @@
                                    [route-item
                                     {:amount       amount
                                      :theme        theme
-                                     :status       (if (= (:status item) :add) :add (if loading-suggested-routes? :loading :default))
+                                     :fetch-routes fetch-routes
+                                     :status       (if (= (:status item) :add)
+                                                     :add
+                                                     (if loading-suggested-routes? :loading :default))
                                      :from-network (if loading-suggested-routes?
                                                      (utils/id->network item)
                                                      (utils/id->network (get-in item [:from :chain-id])))
