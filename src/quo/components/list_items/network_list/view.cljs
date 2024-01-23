@@ -45,7 +45,7 @@
       [:label :string]
       [:token-value :string]
       [:customization-color :schema.common/customization-color]
-      [:state :keyword]
+      [:state [:enum :pressed :active :default]]
       [:on-press {:optional true} [:maybe fn?]]
       [:theme :schema.common/theme]]]]
    :any])

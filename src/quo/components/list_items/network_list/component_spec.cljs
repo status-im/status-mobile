@@ -9,7 +9,7 @@
 
 (def props
   {:theme               :light
-   :state               :transparent
+   :state               :default
    :label               "Mainnet"
    :network-image       873
    :customization-color :blue

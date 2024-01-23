@@ -8,7 +8,7 @@
 (def descriptor
   [{:key     :state
     :type    :select
-    :options [{:key :transparent}
+    :options [{:key :default}
               {:key :active}
               {:key :pressed}]}
    {:key     :network-image
@@ -34,7 +34,7 @@
                              :label               "Mainnet"
                              :token-value         "0.00 ETH"
                              :fiat-value          "€0.00"
-                             :state               :transparent
+                             :state               :default
                              :customization-color :blue})]
     (fn []
       [preview/preview-container
