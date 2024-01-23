@@ -118,3 +118,12 @@ allprojects {
         maven { url 'https://mvnrepository.com/artifact/com.github.gundy/semver4j'}
     }
 }
+
+allprojects {
+    apply plugin: 'project-report'
+
+    task('allDependencies', type: org.gradle.api.tasks.diagnostics.DependencyReportTask) {
+        // Depend on the evaluation of child projects to ensure all configurations are available
+        evaluationDependsOnChildren()
+    }
+}
