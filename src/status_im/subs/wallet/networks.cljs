@@ -55,9 +55,3 @@
  :<- [:wallet/network-details]
  (fn [networks [_ chain-id]]
    (some #(when (= chain-id (:chain-id %)) %) networks)))
-
-(re-frame/reg-sub
- :wallet/networks-chain-id-by-mode
- :<- [:wallet/networks-by-mode]
- (fn [networks]
-   (map :chain-id networks)))

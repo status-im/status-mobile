@@ -54,19 +54,3 @@
              :chain-id     10
              :layer        2}]
            (map #(dissoc % :source :related-chain-id) (rf/sub [sub-name]))))))
-
-(h/deftest-sub :wallet/networks-chain-id-by-mode
-  [sub-name]
-  (testing "returns chain ids in the prod mode"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:profile/profile :test-networks-enabled?] false)
-           (assoc-in [:wallet :networks] network-data)))
-    (is (= [1 42161 10] (rf/sub [sub-name]))))
-
-  (testing "returns chain ids in the test mode"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:profile/profile :test-networks-enabled?] true)
-           (assoc-in [:wallet :networks] network-data)))
-    (is (= [3 4 5] (rf/sub [sub-name])))))

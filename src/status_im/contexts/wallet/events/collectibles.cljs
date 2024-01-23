@@ -3,6 +3,7 @@
             [camel-snake-kebab.extras :as cske]
             [clojure.string :as string]
             [taoensso.timbre :as log]
+            [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
             [utils.transforms :as types]))
 
@@ -65,7 +66,7 @@
          data-type           (collectible-data-types :header)
          fetch-criteria      {:fetch-type            (fetch-type :fetch-if-not-cached)
                               :max-cache-age-seconds max-cache-age-seconds}
-         chain-ids           (rf/sub [:wallet/networks-chain-id-by-mode])
+         chain-ids           (chain/chain-ids db)
          request-params      [request-id
                               chain-ids
                               (keys (get-in db [:wallet :accounts]))
