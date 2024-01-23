@@ -13,6 +13,7 @@ stdenv.mkDerivation {
     "patchKeyChainPhase"
     "patchGlogPhase"
     "patchBoostPodSpec"
+    "patchRNGradlePluginPhase"
     "installPhase"
   ];
 
@@ -84,6 +85,11 @@ stdenv.mkDerivation {
    substituteInPlace ./node_modules/react-native/third-party-podspecs/boost.podspec \
       --replace 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2' \
       'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' \
+  '';
+
+  patchRNGradlePluginPhase = ''
+   substituteInPlace ./node_modules/@react-native/gradle-plugin/build.gradle.kts \
+      --replace '1.7.22' '1.9.0'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
