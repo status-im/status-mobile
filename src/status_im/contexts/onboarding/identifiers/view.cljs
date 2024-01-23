@@ -26,6 +26,8 @@
         paused?              (atom nil)
         is-dragging?         (atom nil)
         drag-amount          (atom nil)
+        window-width         (rf/sub [:dimensions/window-width])
+        window-height        (rf/sub [:dimensions/window-height])
         {:keys [emoji-hash display-name compressed-key
                 public-key]} (rf/sub [:profile/profile])
         {:keys [color]}      (rf/sub [:onboarding/profile])
@@ -42,11 +44,16 @@
        {:animate?     true
         :progress     progress
         :paused?      paused?
-        :gesture      :tappable
+        :gesture      :swipeable
         :is-dragging? is-dragging?
         :drag-amount  drag-amount
-        :header-text  header-text}]
-      [rn/view {:style style/content-container}
+        :header-text  header-text
+        :background   [rn/view
+                       {:style (style/carousel-background window-height
+                                                          (* (count header-text) window-width))}]}]
+      [rn/view
+       {:style          style/content-container
+        :pointer-events :box-none}
        [profile-card/profile-card
         {:profile-picture     photo-path
          :name                display-name

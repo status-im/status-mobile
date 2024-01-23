@@ -30,7 +30,7 @@
                                :status-indicator?   false
                                :customization-color customization-color}]]
     [rn/view
-     {:style style/card-view}
+     {:pointer-events :none :style style/card-view}
      [reanimated/view
       {:style (style/card-container container-background)}
       [rn/view {:style style/card-header}
