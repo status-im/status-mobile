@@ -1,19 +1,16 @@
 (ns status-im.contexts.wallet.account.bridge-to.view
   (:require
-   [clojure.string :as string]
-   [quo.components.dividers.divider-line.view :as divider-line]
-   [quo.components.list-items.network-list.view :as network-list]
-   [quo.components.markdown.text :as text]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.foundations.resources :as quo.resources]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [status-im.contexts.wallet.account.bridge-to.style :as style]
-   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as quo.resources]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [status-im.contexts.wallet.account.bridge-to.style :as style]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 
 (defn- bridge-token-component
@@ -29,11 +26,11 @@
                                                             (or (:balance balance-for-chain) 0)
                                                             token)
           fiat-formatted    (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
-      [network-list/view
-       {:label        (name (:network-name bridge))
-        :network-image (quo.resources/get-network  (:network-name network))
-        :token-value  (str crypto-formatted " " (:symbol token))
-        :fiat-value   fiat-formatted}])))
+      [quo/network-list
+       {:label         (name (:network-name bridge))
+        :network-image (quo.resources/get-network (:network-name network))
+        :token-value   (str crypto-formatted " " (:symbol token))
+        :fiat-value    fiat-formatted}])))
 
 (defn- view-internal
   []
@@ -60,10 +57,11 @@
      [rn/view style/content-container
       [bridge-token-component (assoc mainnet :network-name "Mainnet") account-token]]
 
-     [divider-line/view {:container-style {:margin-vertical 8}}]
+     [quo/divider-line {:container-style {:margin-vertical 8}}]
+
 
      [rn/view {:style {:margin-left 20 :padding-vertical 8}}
-      [text/text
+      [quo/text
        {:style           {:color colors/neutral-50}
         :size            :paragraph-2
         :number-of-lines 1}
