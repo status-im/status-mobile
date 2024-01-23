@@ -52,35 +52,6 @@
  (fn [[image chat-id]]
    (resize-photo (:uri image) #(rf/dispatch [:photo-selector/image-selected chat-id image %]))))
 
-(defn- get-albums
-  [callback]
-  (let [albums (atom {:smart-album []
-                      :my-albums   []})]
-    ;; Get the "recent" album first
-    (cameraroll/get-photos
-     {:first 1 :groupTypes "All" :assetType "Photos"}
-     (fn [res-recent]
-       (swap! albums assoc
-         :smart-album
-         {:title (i18n/label :t/recent)
-          :uri   (get-in (first (:edges res-recent)) [:node :image :uri])})
-       ;; Get albums, then loop over albums and get each one's cover (first photo)
-       (cameraroll/get-albums
-        {:assetType "Photos"}
-        (fn [res-albums]
-          (let [response-count (count res-albums)]
-            (if (pos? response-count)
-              (doseq [album res-albums]
-                (cameraroll/get-photos
-                 {:first 1 :groupTypes "Albums" :groupName (:title album) :assetType "Photos"}
-                 (fn [res]
-                   (let [uri (get-in (first (:edges res)) [:node :image :uri])]
-                     (swap! albums update :my-albums conj (merge album {:uri uri}))
-                     (when (= (count (:my-albums @albums)) response-count)
-                       (swap! albums update :my-albums #(sort-by :title %))
-                       (callback @albums))))))
-              (callback @albums)))))))))
-
 (defn- get-album-cover-uri
   [photos]
   (get-in (first photos) [:node :image :uri]))
@@ -118,10 +89,7 @@
    (-> (p-get-albums)
        ;; Can still use (.then) just as before
        (.then #(rf/dispatch [:on-camera-roll-get-albums %]))
-       (.catch #(println "Camera Error: " %)))
-
-   (comment
-     (get-albums #(rf/dispatch [:on-camera-roll-get-albums %])))))
+       (.catch #(println "Camera Error: " %)))))
 
 (defn get-photos-count-ios-fx
   [cb]
