@@ -231,7 +231,7 @@
   [db]
   (into #{}
         (remove #(= (:type %) :watch)
-                (map #(eip55/address->checksum (:address %)) (get db :profile/wallet-accounts)))))
+                (map #(eip55/address->checksum (:address %)) (vals (get-in db [:wallet :accounts]))))))
 
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
