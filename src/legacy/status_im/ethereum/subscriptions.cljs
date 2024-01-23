@@ -89,4 +89,5 @@
     "wallet-get-collectibles-details-done"     {:fx [[:dispatch
                                                       [:wallet/get-collectible-details-done
                                                        event]]]}
+    "wallet-tick-reload"                       {:fx [[:dispatch [:wallet/reload]]]}
     (log/debug ::unknown-wallet-event :type type :event event)))
