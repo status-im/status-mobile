@@ -2468,7 +2468,7 @@
     "remove-account-title": "Remove account",
     "remove-account-desc": "The account will be removed from all of your synced devices. Make sure you have a backup of your keypair or recovery phrase and derivation path (if it’s not default).",
     "derivation-path-copied": "Derivation path copied",
-    "remove-account-confirmation": "I have taken note of the derivation path"
+    "remove-account-confirmation": "I have taken note of the derivation path",
     "edit-receiver-networks": "Edit receiver networks",
     "preferred-by-receiver": "Preferred by receiver",
     "not-preferred-by-receiver": "Not preferred by receiver",

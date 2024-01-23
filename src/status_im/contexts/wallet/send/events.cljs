@@ -105,7 +105,7 @@
          token-decimal           (:decimals token)
          token-id                (:symbol token)
          network-preferences     selected-networks
-         gas-rates               constants/gas-rate-high
+         gas-rates               constants/gas-rate-medium
          amount-in               (send-utils/amount-in-hex amount token-decimal)
          from-address            wallet-address
          disabled-from-chain-ids []
