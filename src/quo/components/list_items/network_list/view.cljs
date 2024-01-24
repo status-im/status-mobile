@@ -45,9 +45,9 @@
       [:fiat-value :string]
       [:token-value :string]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:state {:optional true} [:enum :pressed :active :default]]
+      [:state [:enum :pressed :active :default]]
       [:on-press {:optional true} [:maybe fn?]]
-      [:theme {:optional true} [:schema.common/theme]]]]]
+      [:theme :schema.common/theme]]]]
    :any])
 
 (defn- view-internal
