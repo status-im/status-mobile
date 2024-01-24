@@ -12,7 +12,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-
 (defn- bridge-token-component
   []
   (fn [bridge token]
@@ -49,24 +48,18 @@
       {:on-press            #(rf/dispatch [:navigate-back-within-stack :wallet-bridge-to])
        :icon-name           :i/arrow-left
        :accessibility-label :top-bar}]
-
      [quo/text-combinations
       {:container-style style/header-container
        :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:label token)))})}]
-
      [rn/view style/content-container
       [bridge-token-component (assoc mainnet :network-name "Mainnet") account-token]]
-
      [quo/divider-line {:container-style {:margin-vertical 8}}]
-
-
      [rn/view {:style {:margin-left 20 :padding-vertical 8}}
       [quo/text
        {:style           {:color colors/neutral-50}
         :size            :paragraph-2
         :number-of-lines 1}
        (i18n/label :t/layer-2)]]
-
      [rn/flat-list
       {:data                    layer-2-networks
        :render-fn               (fn [network]
