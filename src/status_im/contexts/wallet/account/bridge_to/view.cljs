@@ -16,11 +16,11 @@
   []
   (fn [bridge token]
     (let [network           (rf/sub [:wallet/network-details-by-chain-id (:chain-id bridge)])
+          currency          (rf/sub [:profile/currency])
+          currency-symbol   (rf/sub [:profile/currency-symbol])
           all-balances      (:balances-per-chain token)
           balance-for-chain (utils/get-balance-for-chain all-balances (:chain-id bridge))
           crypto-formatted  (or (:balance balance-for-chain) "0.00")
-          currency          (rf/sub [:profile/currency])
-          currency-symbol   (rf/sub [:profile/currency-symbol])
           fiat-value        (utils/total-network-fiat-value currency
                                                             (or (:balance balance-for-chain) 0)
                                                             token)
