@@ -34,13 +34,13 @@
 (defn- view-internal
   []
   (let [send-bridge-data (rf/sub [:wallet/wallet-send])
+        network-details  (rf/sub [:wallet/network-details])
+        account          (rf/sub [:wallet/current-viewing-account])
         token            (:token send-bridge-data)
         token-symbol     (:symbol token)
-        network-details  (rf/sub [:wallet/network-details])
+        tokens           (:tokens account)
         mainnet          (first network-details)
         layer-2-networks (rest network-details)
-        account          (rf/sub [:wallet/current-viewing-account])
-        tokens           (:tokens account)
         account-token    (first (filter #(= token-symbol (% :symbol)) tokens))]
 
     [rn/view
@@ -53,8 +53,8 @@
        :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:label token)))})}]
      [rn/view style/content-container
       [bridge-token-component (assoc mainnet :network-name "Mainnet") account-token]]
-     [quo/divider-line {:container-style {:margin-vertical 8}}]
-     [rn/view {:style {:margin-left 20 :padding-vertical 8}}
+     [quo/divider-line {:container-style style/divider-line-style}]
+     [rn/view {:style style/layer-two-wrapper}
       [quo/text
        {:style           {:color colors/neutral-50}
         :size            :paragraph-2

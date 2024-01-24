@@ -61,6 +61,7 @@
       (let [internal-state (if @pressed?
                              :pressed
                              state)]
+
         [rn/pressable
          {:style               (style/container internal-state customization-color theme)
           :on-press-in         on-press-in
