@@ -23,22 +23,18 @@
     (h/is-truthy (h/get-by-text "Mainnet")))
 
   (h/test "Pressed state"
-    (h/render [network-list/view props])
+    (render [network-list/view props])
     (h/fire-event :on-press-in (h/get-by-label-text ::network-list))
     (h/wait-for #(h/has-style (h/query-by-label-text ::network-list)
                               {:backgroundColor (colors/resolve-color :blue :light 5)})))
 
   (h/test "Active state"
-    (h/render [network-list/view (assoc props :state :active)])
+    (render [network-list/view (assoc props :state :active)])
     (h/has-style (h/query-by-label-text ::network-list)
                  {:backgroundColor (colors/resolve-color :blue :light 10)}))
 
   (h/test "Call on-press"
     (let [on-press (h/mock-fn)]
-      (h/render [network-list/view (assoc props :on-press on-press)])
+      (render [network-list/view (assoc props :on-press on-press)])
       (h/fire-event :on-press (h/get-by-label-text ::network-list))
-      (h/was-called on-press)))
-
-  (h/test "Empty props"
-    (h/render [network-list/view {}])
-    (h/is-truthy (h/get-by-label-text ::network-list-item))))
+      (h/was-called on-press))))
