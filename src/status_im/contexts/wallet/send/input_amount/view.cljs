@@ -64,7 +64,7 @@
 (defn- reset-input-error
   [new-value prev-value input-error]
   (reset! input-error
-          (> new-value prev-value)))
+    (> new-value prev-value)))
 
 (defn- f-view-internal
   ;; crypto-decimals and limit-crypto args are needed for component tests only
@@ -144,7 +144,7 @@
                                                            100)))
                        [@input-value])
         [rn/view
-         {:style style/screen
+         {:style               style/screen
           :accessibility-label (str "container" (when @input-error "-error"))}
          [account-switcher/view
           {:icon-name     :i/arrow-left
