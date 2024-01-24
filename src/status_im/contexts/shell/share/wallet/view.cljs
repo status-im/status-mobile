@@ -122,7 +122,6 @@
                                                                      (/ e.nativeEvent.contentOffset.x
                                                                         width))))
          :render-fn                         render-item}]
-
        (when (> (count accounts) 1)
          [rn/view
           {:style {:margin-top 20}}
