@@ -63,9 +63,8 @@
 
 (defn- reset-input-error
   [new-value prev-value input-error]
-  (if (> new-value prev-value)
-    (reset! input-error true)
-    (reset! input-error false)))
+  (reset! input-error
+          (> new-value prev-value)))
 
 (defn- f-view-internal
   ;; crypto-decimals and limit-crypto args are needed for component tests only
