@@ -21,7 +21,9 @@
    {:key     :currency
     :type    :select
     :options [{:key :usd}
-              {:key :eur}]}])
+              {:key :eur}]}
+   {:key   :error?
+    :type  :boolean}])
 
 (defn view
   []

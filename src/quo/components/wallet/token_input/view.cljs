@@ -32,12 +32,12 @@
       (crypto-format num-value conversion crypto-decimals token))))
 
 (defn- data-info
-  [{:keys [theme token crypto-decimals conversion networks title crypto? currency amount error]}]
+  [{:keys [theme token crypto-decimals conversion networks title crypto? currency amount error?]}]
   [rn/view {:style style/data-container}
    [network-tag/view
     {:networks networks
      :title    title
-     :status   (when error :error)}]
+     :status   (when error? :error)}]
    [text/text
     {:size   :paragraph-2
      :weight :medium
@@ -83,7 +83,7 @@
                                   (reset! value-atom v))
                                 (when on-change-text
                                   (on-change-text v)))]
-    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error]
+    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?]
           :or   {show-keyboard? true}}]
       [rn/pressable
        {:on-press focus-input
@@ -93,7 +93,7 @@
          :size  :size-32}]
        [rn/view {:style style/text-input-container}
         [rn/text-input
-         (cond-> {:style                    (style/text-input theme error)
+         (cond-> {:style                    (style/text-input theme error?)
                   :placeholder-text-color   (style/placeholder-text theme)
                   :auto-focus               true
                   :ref                      set-ref

@@ -155,7 +155,7 @@
            :token           token-symbol
            :currency        currency
            :crypto-decimals crypto-decimals
-           :error           @input-error
+           :error?          @input-error
            :networks        (:networks token)
            :title           (i18n/label :t/send-limit {:limit limit-label})
            :conversion      conversion-rate
