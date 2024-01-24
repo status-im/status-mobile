@@ -30,13 +30,13 @@
 
 (defn circular-progress
   [{:keys [color percentage]}]
-  (let [strength-indicator-radius        6.5
+  (let [strength-indicator-radius        7.5
         strength-indicator-circumference (* 2 Math/PI strength-indicator-radius)]
     [svg/svg
-     {:view-box  "0 0 16 16"
-      :width     14.2
+     {:view-box  "0 0 18 18"
+      :width     15.2
       :transform [{:rotate "270deg"}]
-      :height    14.2}
+      :height    15.2}
      [svg/circle
       {:cx           8
        :cy           8
