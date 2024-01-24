@@ -15,3 +15,8 @@
   {:justify-self      :flex-end
    :margin-bottom     46
    :margin-horizontal 20})
+
+(defn carousel-background
+  [height width]
+  {:height height
+   :width  width})

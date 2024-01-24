@@ -320,7 +320,7 @@
 (defn- f-preview-container
   [{:keys [title state descriptor blur? blur-dark-only?
            component-container-style
-           blur-container-style blur-view-props blur-height show-blur-background?]
+           blur-container-style blur-view-props blur-height show-blur-background? full-screen?]
     :or   {blur-height 200}}
    & children]
   (let [theme (quo.theme/use-theme-value)
@@ -337,8 +337,11 @@
      [common/navigation-bar {:title title}]
      [rn/scroll-view
       {:style                           (style/panel-basic)
-       :shows-vertical-scroll-indicator false}
-      [rn/pressable {:on-press rn/dismiss-keyboard!}
+       :shows-vertical-scroll-indicator false
+       :content-container-style         (when full-screen? {:flex 1})}
+      [rn/pressable
+       {:style    (when full-screen? {:flex 1})
+        :on-press rn/dismiss-keyboard!}
        (when descriptor
          [rn/view {:style style/customizer-container}
           [customizer state descriptor]])

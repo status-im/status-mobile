@@ -2,6 +2,8 @@
   (:require
     [quo.foundations.colors :as colors]))
 
+(def ^:private message-padding-scaling-ratio 4.5)
+
 (defn message-container
   ([]
    (message-container false nil nil false))
@@ -16,10 +18,16 @@
      (assoc :margin-top 4))))
 
 (defn user-message-content
-  [{:keys [outgoing outgoing-status]}]
+  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen?]}]
   {:border-radius      16
    :padding-horizontal 8
-   :padding-vertical   4
+   :padding-top        4
+   :padding-bottom     (if (or small-screen?
+                               (and
+                                (> 3 window-scale)
+                                six-reactions?))
+                         (* message-padding-scaling-ratio window-scale)
+                         4)
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
                          1)})

@@ -94,6 +94,7 @@
     [status-im.contexts.preview.quo.list-items.address :as address]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
+    [status-im.contexts.preview.quo.list-items.network-list :as network-list]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
     [status-im.contexts.preview.quo.list-items.quiz-item :as quiz-item]
     [status-im.contexts.preview.quo.list-items.saved-address :as saved-address]
@@ -351,6 +352,8 @@
                         :component community-list-item/view}
                        {:name      :dapp
                         :component dapp/preview}
+                       {:name      :network-list
+                        :component network-list/view}
                        {:name      :preview-lists
                         :component preview-lists/view}
                        {:name      :quiz-item

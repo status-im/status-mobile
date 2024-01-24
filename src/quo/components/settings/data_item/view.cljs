@@ -20,7 +20,7 @@
            network-image]
     :or   {subtitle-type :default}}]
   [rn/view {:style style/subtitle-container}
-   (when (not= :small size)
+   (when (and subtitle-type (not= :small size))
      [rn/view {:style (style/subtitle-icon-container subtitle-type)}
       (case subtitle-type
         :icon    [icons/icon icon

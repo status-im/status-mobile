@@ -282,11 +282,12 @@ SIMULATOR=iPhone 13
 # TODO: fix IOS_STATUS_GO_TARGETS to be either amd64 or arm64 when RN is upgraded
 run-ios: export TARGET := ios
 run-ios: export IOS_STATUS_GO_TARGETS := ios/arm64;iossimulator/amd64
+run-ios: export XCBeautify=$(shell which xcbeautify) # for react-native-cli to pick this up and to auto format output
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
-	npx react-native run-ios --simulator="$(SIMULATOR)" | xcbeautify
+	npx react-native run-ios --simulator="$(SIMULATOR)"
 else
-	npx react-native run-ios | xcbeautify
+	npx react-native run-ios
 endif
 
 show-ios-devices: ##@other shows connected ios device and its name
