@@ -144,7 +144,8 @@
                                                            100)))
                        [@input-value])
         [rn/view
-         {:style style/screen}
+         {:style style/screen
+          :accessibility-label (str "container" (when @input-error "-error"))}
          [account-switcher/view
           {:icon-name     :i/arrow-left
            :on-press      #(rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount])
