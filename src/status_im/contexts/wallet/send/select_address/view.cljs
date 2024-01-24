@@ -128,26 +128,30 @@
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
             token                 (rf/sub [:wallet/wallet-send-token])
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
         (rn/use-effect (fn []
                          (fn []
                            (rf/dispatch [:wallet/clean-scanned-address])
                            (rf/dispatch [:wallet/clean-local-suggestions]))))
         [floating-button-page/view
-         {:header [account-switcher/view
-                   {:on-press      on-close
-                    :margin-top    (safe-area/get-top)
-                    :switcher-type :select-account}]
-          :footer (when (> (count @input-value) 0)
-                    [quo/button
-                     {:accessibility-label :continue-button
-                      :type                :primary
-                      :disabled?           (not valid-ens-or-address?)
-                      :on-press            #(rf/dispatch [:wallet/select-send-address
-                                                          {:address  @input-value
-                                                           :token    token
-                                                           :stack-id :wallet-select-address}])}
-                     (i18n/label :t/continue)])}
+         {:footer-container-padding 0
+          :header                   [account-switcher/view
+                                     {:on-press      on-close
+                                      :margin-top    (safe-area/get-top)
+                                      :switcher-type :select-account}]
+          :footer                   (when (> (count @input-value) 0)
+                                      [quo/button
+                                       {:accessibility-label :continue-button
+                                        :type                :primary
+                                        :disabled?           (not valid-ens-or-address?)
+                                        :on-press            #(rf/dispatch [:wallet/select-send-address
+                                                                            {:address @input-value
+                                                                             :token token
+                                                                             :stack-id
+                                                                             :wallet-select-address}])
+                                        :customization-color color}
+                                       (i18n/label :t/continue)])}
          [quo/text-combinations
           {:title                     (i18n/label :t/send-to)
            :container-style           style/title-container
