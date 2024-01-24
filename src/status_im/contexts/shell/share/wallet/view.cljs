@@ -122,6 +122,8 @@
                                                                      (/ e.nativeEvent.contentOffset.x
                                                                         width))))
          :render-fn                         render-item}]
-       [rn/view
-        {:style {:margin-top 20}}
-        (indicator-list (count accounts) @current-index)]])))
+
+       (when (> (count accounts) 1)
+         [rn/view
+          {:style {:margin-top 20}}
+          (indicator-list (count accounts) @current-index)])])))
