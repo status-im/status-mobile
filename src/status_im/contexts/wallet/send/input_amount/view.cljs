@@ -61,6 +61,11 @@
                  (>= (js/parseFloat balance) input-value)))
        (map first)))
 
+(defn- reset-input-error
+  [new-value prev-value input-error]
+  (reset! input-error
+    (> new-value prev-value)))
+
 (defn- f-view-internal
   ;; crypto-decimals and limit-crypto args are needed for component tests only
   [{:keys [crypto-decimals limit-crypto]}]
@@ -75,6 +80,7 @@
         limit-fiat                (.toFixed (* (:total-balance token) conversion-rate) 2)
         crypto-decimals           (or crypto-decimals (utils/get-crypto-decimals-count token))
         input-value               (reagent/atom "")
+        input-error               (reagent/atom false)
         current-limit             (reagent/atom {:amount   limit-crypto
                                                  :currency token-symbol})
         handle-swap               (fn [crypto?]
@@ -84,27 +90,30 @@
                                                                :currency token-symbol}
                                                               {:amount   limit-fiat
                                                                :currency currency}))
-                                      (when (> num-value (:amount @current-limit))
-                                        (reset! input-value ""))))
+                                      (reset-input-error num-value
+                                                         (:amount @current-limit)
+                                                         input-error)))
         handle-keyboard-press     (fn [v]
-                                    (let [current-value @input-value
-                                          new-value     (make-new-input current-value v)
-                                          num-value     (or (parse-double new-value) 0)]
-                                      (when (and (not loading-suggested-routes?)
-                                                 (<= num-value (:amount @current-limit)))
+                                    (let [current-value        @input-value
+                                          new-value            (make-new-input current-value v)
+                                          num-value            (or (parse-double new-value) 0)
+                                          current-limit-amount (:amount @current-limit)]
+                                      (when (not loading-suggested-routes?)
                                         (reset! input-value new-value)
+                                        (reset-input-error num-value current-limit-amount input-error)
                                         (reagent/flush))))
         handle-delete             (fn [_]
                                     (when-not loading-suggested-routes?
-                                      (swap! input-value #(subs % 0 (dec (count %))))
-                                      (reagent/flush)))
+                                      (let [current-limit-amount (:amount @current-limit)]
+                                        (swap! input-value #(subs % 0 (dec (count %))))
+                                        (reset-input-error @input-value current-limit-amount input-error)
+                                        (reagent/flush))))
         handle-on-change          (fn [v]
                                     (when (valid-input? @input-value v)
                                       (let [num-value            (or (parse-double v) 0)
                                             current-limit-amount (:amount @current-limit)]
-                                        (if (> num-value current-limit-amount)
-                                          (reset! input-value (str current-limit-amount))
-                                          (reset! input-value v))
+                                        (reset! input-value v)
+                                        (reset-input-error num-value current-limit-amount input-error)
                                         (reagent/flush))))]
     (fn [{:keys [on-confirm]
           :or   {on-confirm #(rf/dispatch [:wallet/send-select-amount
@@ -135,7 +144,8 @@
                                                            100)))
                        [@input-value])
         [rn/view
-         {:style style/screen}
+         {:style               style/screen
+          :accessibility-label (str "container" (when @input-error "-error"))}
          [account-switcher/view
           {:icon-name     :i/arrow-left
            :on-press      #(rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount])
@@ -145,6 +155,7 @@
            :token           token-symbol
            :currency        currency
            :crypto-decimals crypto-decimals
+           :error?          @input-error
            :networks        (:networks token)
            :title           (i18n/label :t/send-limit {:limit limit-label})
            :conversion      conversion-rate
