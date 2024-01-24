@@ -49,8 +49,12 @@
              :height         "100%")))
 
 (defn text-input
-  [theme]
-  (assoc text-input-dimensions :color (colors/theme-colors colors/neutral-100 colors/white theme)))
+  [theme error?]
+  (assoc text-input-dimensions
+         :color
+         (if error?
+           (colors/resolve-color :danger theme)
+           (colors/theme-colors colors/neutral-100 colors/white theme))))
 
 (defn placeholder-text
   [theme]
