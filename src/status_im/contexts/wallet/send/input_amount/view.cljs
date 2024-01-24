@@ -128,7 +128,8 @@
                                (empty? @input-value)
                                (<= input-num-value 0)
                                (> input-num-value (:amount @current-limit)))
-            amount            (str @input-value " " token-symbol)]
+            amount            (str @input-value " " token-symbol)
+            {:keys [color]}   (rf/sub [:wallet/current-viewing-account])]
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -170,10 +171,11 @@
            :loading-networks (find-affordable-networks token @input-value)
            :networks         (:networks token)}]
          [quo/bottom-actions
-          {:actions          :1-action
-           :button-one-label (i18n/label :t/confirm)
-           :button-one-props {:disabled? confirm-disabled?
-                              :on-press  on-confirm}}]
+          {:actions             :1-action
+           :button-one-label    (i18n/label :t/confirm)
+           :button-one-props    {:disabled? confirm-disabled?
+                                 :on-press  on-confirm}
+           :customization-color color}]
          [quo/numbered-keyboard
           {:container-style (style/keyboard-container bottom)
            :left-action     :dot

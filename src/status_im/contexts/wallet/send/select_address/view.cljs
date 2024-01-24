@@ -128,7 +128,8 @@
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
             token                 (rf/sub [:wallet/wallet-send-token])
-            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+            valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
+            {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
         (rn/use-effect (fn []
                          (fn []
                            (rf/dispatch [:wallet/clean-scanned-address])
@@ -146,7 +147,8 @@
                       :on-press            #(rf/dispatch [:wallet/select-send-address
                                                           {:address  @input-value
                                                            :token    token
-                                                           :stack-id :wallet-select-address}])}
+                                                           :stack-id :wallet-select-address}])
+                      :customization-color color}
                      (i18n/label :t/continue)])}
          [quo/text-combinations
           {:title                     (i18n/label :t/send-to)
