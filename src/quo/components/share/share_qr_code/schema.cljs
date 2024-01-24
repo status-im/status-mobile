@@ -12,7 +12,6 @@
    [:full-name :string]
    [:qr-image-uri :string]
    [:qr-data :string]
-   [:theme :schema.common/theme]
    [:on-text-press {:optional true} [:maybe fn?]]
    [:on-text-long-press {:optional true} [:maybe fn?]]
    [:on-share-press {:optional true} [:maybe fn?]]
@@ -29,25 +28,21 @@
 (def ?wallet
   [:map
    [:type [:= :wallet]]
-   [:emoji ?emoji]])
-
-(def ?address-legacy
-  [:map
-   [:address [:= :legacy]]
-   [:on-legacy-press {:optional true} [:maybe fn?]]])
+   [:emoji {:optional true} [:maybe ?emoji]]])
 
 (def ?address-multichain
   [:map
    [:address [:= :multichain]]
-   [:on-multichain-press {:optional true} [:maybe fn?]]])
+   [:on-settings-press {:optional true} fn?]])
 
 (def ?address-base
   [:merge
    [:map
     [:networks [:sequential [:fn valid-network?]]]
+    [:on-legacy-press {:optional true} [:maybe fn?]]
+    [:on-multichain-press {:optional true} [:maybe fn?]]
     [:address [:enum :legacy :multichain]]]
    [:multi {:dispatch :address}
-    [:legacy ?address-legacy]
     [:multichain ?address-multichain]]])
 
 (def ?saved-address
@@ -58,8 +53,7 @@
 (def ?watched-address
   [:map
    [:type [:= :watched-address]]
-   [:on-settings-press {:optional true} fn?]
-   [:emoji ?emoji]])
+   [:emoji {:optional true} [:maybe ?emoji]]])
 
 (def ?schema
   [:=>
