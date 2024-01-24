@@ -57,6 +57,7 @@
     (h/is-truthy (h/get-by-text "0"))
     (h/is-truthy (h/get-by-text "ETH"))
     (h/is-truthy (h/get-by-text "$0.00"))
+    (h/is-truthy (h/get-by-label-text :container))
     (h/is-disabled (h/get-by-label-text :button-one)))
 
   (h/test "Fill token input and confirm"
@@ -77,6 +78,7 @@
       (-> (h/wait-for #(h/get-by-text "$1234.50"))
           (.then (fn []
                    (h/is-truthy (h/get-by-label-text :button-one))
+                   (h/is-truthy (h/get-by-label-text :container))
                    (h/fire-event :press (h/get-by-label-text :button-one))
                    (h/was-called on-confirm))))))
 
@@ -99,61 +101,33 @@
       (-> (h/wait-for #(h/get-by-text "$1234.50"))
           (.then (fn []
                    (h/is-truthy (h/get-by-label-text :button-one))
+                   (h/is-truthy (h/get-by-label-text :container))
                    (h/fire-event :press (h/get-by-label-text :button-one))
                    (h/was-called on-confirm))))))
 
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:crypto-decimals 10
-                :limit-crypto    286}])
+               {:crypto-decimals 1
+                :limit-crypto    1}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
 
-    (-> (h/wait-for #(h/is-truthy (h/get-by-text "$290.00")))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-backspace))
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-8))
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "$2850.00"))))))
-
-  (h/test "Try to fill more than limit"
-    (h/setup-subs sub-mocks)
-    (h/render [input-amount/view
-               {:crypto-decimals 10
-                :limit-crypto    286
-                :on-confirm      #()}])
-
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-
-    (-> (h/wait-for #(h/get-by-text "$290.00"))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-backspace))
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-8))
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "$2850.00"))))))
+    (h/is-truthy (h/get-by-label-text :container-error)))
 
   (h/test "Switch from crypto to fiat and check limit"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:crypto-decimals 2
-                :limit-crypto    250
+               {:crypto-decimals 1
+                :limit-crypto    1
                 :on-confirm      #()}])
 
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
-    (h/fire-event :press (h/query-by-label-text :keyboard-key-0))
-    (-> (h/wait-for #(h/get-by-text "$200.00"))
+    (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
+    (h/is-truthy (h/get-by-label-text :container-error))
+    (h/fire-event :press (h/query-by-label-text :reorder))
+
+    (-> (h/wait-for #(h/get-by-text "Max: 1000.00 USD"))
         (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :reorder))
-                 (h/wait-for #(h/get-by-text "2.00 ETH"))))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "20.50 ETH"))))
-        (.then (fn []
-                 (h/fire-event :press (h/query-by-label-text :keyboard-key-5))
-                 (h/wait-for #(h/get-by-text "20.50 ETH")))))))
+                 (h/wait-for #(h/is-truthy (h/get-by-label-text :container))))))))
