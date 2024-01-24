@@ -35,8 +35,9 @@
         selected-networks   (rf/sub [:wallet/wallet-send-selected-networks])
         prefix              (rf/sub [:wallet/wallet-send-address-prefix])
         prefix-seq          (string/split prefix #":")
-        preferred           (filter #(contains? (set prefix-seq) (:short-name %)) network-details)
-        not-preferred       (filter #(not (contains? (set prefix-seq) (:short-name %))) network-details)
+        grouped-details     (group-by #(contains? (set prefix-seq) (:short-name %)) network-details)
+        preferred           (get grouped-details true [])
+        not-preferred       (get grouped-details false [])
         network-preferences (reagent/atom selected-networks)
         toggle-network      (fn [{:keys [chain-id]}]
                               (swap! network-preferences
@@ -144,9 +145,10 @@
                                     {:amount       amount
                                      :theme        theme
                                      :fetch-routes fetch-routes
-                                     :status       (if (= (:status item) :add)
-                                                     :add
-                                                     (if loading-suggested-routes? :loading :default))
+                                     :status       (cond
+                                                     (= (:status item) :add)   :add
+                                                     loading-suggested-routes? :loading
+                                                     :else                     :default)
                                      :from-network (if loading-suggested-routes?
                                                      (utils/id->network item)
                                                      (utils/id->network (get-in item [:from :chain-id])))
