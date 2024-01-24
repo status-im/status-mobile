@@ -80,6 +80,7 @@
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
     quo.components.list-items.menu-item
+    quo.components.list-items.network-list.view
     quo.components.list-items.preview-list.view
     quo.components.list-items.quiz-item.view
     quo.components.list-items.saved-address.view
@@ -302,6 +303,7 @@
 (def community-list quo.components.list-items.community.view/view)
 (def dapp quo.components.list-items.dapp.view/view)
 (def menu-item quo.components.list-items.menu-item/menu-item)
+(def network-list quo.components.list-items.network-list.view/view)
 (def preview-list quo.components.list-items.preview-list.view/view)
 (def quiz-item quo.components.list-items.quiz-item.view/view)
 (def saved-address quo.components.list-items.saved-address.view/view)
