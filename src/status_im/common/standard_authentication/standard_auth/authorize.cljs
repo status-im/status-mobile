@@ -42,11 +42,10 @@
                               (rf/dispatch
                                [:biometric/authenticate
                                 {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
-                                 :on-success     (fn [not-canceled?]
+                                 :on-success     (fn []
                                                    (on-close)
-                                                   (when not-canceled?
-                                                     (rf/dispatch [:standard-auth/on-biometric-success
-                                                                   (handle-auth-success true)])))
+                                                   (rf/dispatch [:standard-auth/on-biometric-success
+                                                                 (handle-auth-success true)]))
                                  :on-fail        (fn [error]
                                                    (on-close)
                                                    (log/error
