@@ -162,28 +162,30 @@
                                    :address   (utils/get-shortened-address to-address)}]
         [rn/view {:style {:flex 1}}
          [floating-button-page/view
-          {:header              [quo/page-nav
-                                 {:icon-name           :i/arrow-left
-                                  :on-press            on-close
-                                  :margin-top          (safe-area/get-top)
-                                  :background          :blur
-                                  :accessibility-label :top-bar
-                                  :right-side          [{:icon-name           :i/advanced
-                                                         :on-press            #(js/alert
-                                                                                "to be implemented")
-                                                         :accessibility-label :advanced-options}]}]
-           :footer              (if route
-                                  [standard-auth/slide-button
-                                   {:size                :size-48
-                                    :track-text          (i18n/label :t/slide-to-send)
-                                    :container-style     {:z-index 2}
-                                    :customization-color account-color
-                                    :on-auth-success     #(rf/dispatch [:wallet/send-transaction
-                                                                        (security/safe-unmask-data %)])
-                                    :auth-button-label   (i18n/label :t/confirm)}]
-                                  [rn/activity-indicator])
-           :gradient-cover?     true
-           :customization-color (:color account)}
+          {:footer-container-padding 0
+           :header                   [quo/page-nav
+                                      {:icon-name           :i/arrow-left
+                                       :on-press            on-close
+                                       :margin-top          (safe-area/get-top)
+                                       :background          :blur
+                                       :accessibility-label :top-bar
+                                       :right-side          [{:icon-name           :i/advanced
+                                                              :on-press            #(js/alert
+                                                                                     "to be implemented")
+                                                              :accessibility-label :advanced-options}]}]
+           :footer                   (if route
+                                       [standard-auth/slide-button
+                                        {:size                :size-48
+                                         :track-text          (i18n/label :t/slide-to-send)
+                                         :container-style     {:z-index 2}
+                                         :customization-color account-color
+                                         :on-auth-success     #(rf/dispatch [:wallet/send-transaction
+                                                                             (security/safe-unmask-data
+                                                                              %)])
+                                         :auth-button-label   (i18n/label :t/confirm)}]
+                                       [rn/activity-indicator])
+           :gradient-cover?          true
+           :customization-color      (:color account)}
           [rn/view
            [transaction-title
             {:token-symbol token-symbol

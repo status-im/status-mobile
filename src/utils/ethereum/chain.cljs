@@ -84,3 +84,10 @@
 (defn chain-id
   [db]
   (network->chain-id (get-current-network db)))
+
+(defn chain-ids
+  [db]
+  (let [test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+        networks               (get-in db [:wallet :networks])
+        env-networks           (get networks (if test-networks-enabled? :test :prod))]
+    (map :chain-id env-networks)))

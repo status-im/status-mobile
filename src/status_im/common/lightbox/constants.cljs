@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.constants)
+(ns status-im.common.lightbox.constants)
 
 (def ^:const small-image-size 40)
 (def ^:const focused-extra-size 16)

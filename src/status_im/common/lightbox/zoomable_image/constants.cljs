@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.zoomable-image.constants)
+(ns status-im.common.lightbox.zoomable-image.constants)
 
 (def ^:const min-scale 1)
 
