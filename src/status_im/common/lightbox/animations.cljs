@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.animations
+(ns status-im.common.lightbox.animations
   (:require
     [react-native.reanimated :as reanimated]))
 

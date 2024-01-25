@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.text-sheet.view
+(ns status-im.common.lightbox.text-sheet.view
   (:require
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -8,33 +8,31 @@
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.contexts.chat.messenger.lightbox.constants :as constants]
-    [status-im.contexts.chat.messenger.lightbox.text-sheet.style :as style]
-    [status-im.contexts.chat.messenger.lightbox.text-sheet.utils :as utils]
-    [status-im.contexts.chat.messenger.messages.content.text.view :as message-view]))
+    [status-im.common.lightbox.constants :as constants]
+    [status-im.common.lightbox.text-sheet.style :as style]
+    [status-im.common.lightbox.text-sheet.utils :as utils]))
 
 (defn- text-sheet
-  [messages overlay-opacity overlay-z-index text-sheet-lock?]
+  [_]
   (let [text-height (reagent/atom 0)
         expanded?   (reagent/atom false)
         dragging?   (atom false)]
-    (fn []
-      (let [{:keys [chat-id content]} (first messages)
-            insets                    (safe-area/get-insets)
-            window-height             (:height (rn/get-window))
-            max-height                (- window-height
-                                         constants/text-min-height
-                                         constants/top-view-height
-                                         (:bottom insets)
-                                         (when platform/ios? (:top insets)))
-            full-height               (+ constants/bar-container-height
-                                         constants/text-margin
-                                         constants/line-height
-                                         @text-height)
-            expanded-height           (min max-height full-height)
-            animations                (utils/init-animations overlay-opacity)
-            derived                   (utils/init-derived-animations animations)
-            expanding-message?        (> @text-height (* constants/line-height 2))]
+    (fn [{:keys [overlay-opacity overlay-z-index text-sheet-lock? text-component]}]
+      (let [insets           (safe-area/get-insets)
+            window-height    (:height (rn/get-window))
+            max-height       (- window-height
+                                constants/text-min-height
+                                constants/top-view-height
+                                (:bottom insets)
+                                (when platform/ios? (:top insets)))
+            full-height      (+ constants/bar-container-height
+                                constants/text-margin
+                                constants/line-height
+                                @text-height)
+            expanded-height  (min max-height full-height)
+            animations       (utils/init-animations overlay-opacity)
+            derived          (utils/init-derived-animations animations)
+            expandable-text? (> @text-height (* constants/line-height 2))]
         [rn/view
          [reanimated/linear-gradient
           {:colors         [colors/neutral-100-opa-0 colors/neutral-100]
@@ -51,10 +49,10 @@
                                          overlay-z-index
                                          expanded?
                                          dragging?
-                                         expanding-message?)}
+                                         expandable-text?)}
           [gesture/gesture-detector
            {:gesture (-> (gesture/gesture-tap)
-                         (gesture/enabled (and expanding-message? (not @expanded?)))
+                         (gesture/enabled (and expandable-text? (not @expanded?)))
                          (gesture/on-start (fn []
                                              (utils/expand-sheet animations
                                                                  expanded-height
@@ -63,7 +61,7 @@
                                                                  expanded?
                                                                  text-sheet-lock?))))}
            [reanimated/view {:style (style/sheet-container derived)}
-            (when expanding-message?
+            (when expandable-text?
               [rn/view {:style style/bar-container}
                [rn/view {:style style/bar}]])
             [linear-gradient/linear-gradient
@@ -72,19 +70,17 @@
               :end       {:x 0 :y 0}
               :locations [0.7 0.8 1]
               :style     (style/bottom-gradient (:bottom insets))}]
+
             [gesture/scroll-view
              {:scroll-enabled          false
               :scroll-event-throttle   16
               :bounces                 false
               :style                   {:height (- max-height constants/bar-container-height)}
-              :content-container-style {:padding-top (when (not expanding-message?)
+              :content-container-style {:padding-top (when (not expandable-text?)
                                                        constants/bar-container-height)}}
-             [message-view/render-parsed-text
-              {:content        content
-               :chat-id        chat-id
-               :style-override (style/text-style expanding-message?)
-               :on-layout      #(utils/on-layout % text-height)}]]]]]]))))
+             [rn/view {:on-layout #(utils/on-layout % text-height)}
+              text-component]]]]]]))))
 
 (defn view
-  [messages {:keys [overlay-opacity]} {:keys [overlay-z-index]} {:keys [text-sheet-lock?]}]
-  [:f> text-sheet messages overlay-opacity overlay-z-index text-sheet-lock?])
+  [props]
+  [:f> text-sheet props])

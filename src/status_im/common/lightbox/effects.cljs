@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.effects
+(ns status-im.common.lightbox.effects
   (:require [react-native.blob :as blob]
             [react-native.cameraroll :as cameraroll]
             [react-native.fs :as fs]
@@ -10,7 +10,7 @@
   {:trusty platform/ios?
    :path   (str (fs/cache-dir) "/StatusIm_Image.jpeg")})
 
-(rf/reg-fx :effects.chat/share-image
+(rf/reg-fx :effects.lightbox/share-image
  (fn [uri]
    (blob/fetch uri
                config
@@ -20,7 +20,7 @@
                              #(fs/unlink downloaded-url)
                              #(fs/unlink downloaded-url))))))
 
-(rf/reg-fx :effects.chat/save-image-to-gallery
+(rf/reg-fx :effects.lightbox/save-image-to-gallery
  (fn [[uri on-success]]
    (blob/fetch uri
                config

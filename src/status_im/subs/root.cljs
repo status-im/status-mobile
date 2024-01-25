@@ -23,7 +23,7 @@
 ;;view
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :screen-params :navigation/screen-params)
-(reg-root-key-sub :shared-element-id :shared-element-id)
+(reg-root-key-sub :animation-shared-element-id :animation-shared-element-id)
 
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet :bottom-sheet)

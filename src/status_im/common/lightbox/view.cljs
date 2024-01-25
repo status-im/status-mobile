@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.view
+(ns status-im.common.lightbox.view
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
@@ -9,13 +9,13 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [status-im.contexts.chat.messenger.lightbox.animations :as anim]
-    [status-im.contexts.chat.messenger.lightbox.bottom-view :as bottom-view]
-    [status-im.contexts.chat.messenger.lightbox.constants :as constants]
-    [status-im.contexts.chat.messenger.lightbox.style :as style]
-    [status-im.contexts.chat.messenger.lightbox.top-view :as top-view]
-    [status-im.contexts.chat.messenger.lightbox.utils :as utils]
-    [status-im.contexts.chat.messenger.lightbox.zoomable-image.view :as zoomable-image]
+    [status-im.common.lightbox.animations :as anim]
+    [status-im.common.lightbox.bottom-view :as bottom-view]
+    [status-im.common.lightbox.constants :as constants]
+    [status-im.common.lightbox.style :as style]
+    [status-im.common.lightbox.top-view :as top-view]
+    [status-im.common.lightbox.utils :as utils]
+    [status-im.common.lightbox.zoomable-image.view :as zoomable-image]
     [utils.re-frame :as rf]))
 
 (defn get-item-layout
@@ -33,9 +33,10 @@
       (reset! scroll-index index)
       (when @small-list-ref
         (.scrollToIndex ^js @small-list-ref #js {:animated true :index index}))
-      (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oops/oget changed :item))]))))
+      (rf/dispatch [:lightbox/update-animation-shared-element-id
+                    (:id (oops/oget changed :item))]))))
 
-(defn image
+(defn image-view
   [message index _ {:keys [screen-width screen-height] :as args}]
   [rn/view
    {:style (style/image (+ screen-width constants/separator-width) screen-height)}
@@ -43,30 +44,31 @@
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
-  [props {:keys [data transparent? scroll-index set-full-height?] :as state}
-   animations derived messages index handle-items-changed]
-  (let [insets           (safe-area/get-insets)
-        window           (rn/get-window)
-        window-width     (:width window)
-        window-height    (if platform/android?
-                           (+ (:height window) (:top insets))
-                           (:height window))
-        curr-orientation (or (rf/sub [:lightbox/orientation]) orientation/portrait)
-        landscape?       (string/includes? curr-orientation orientation/landscape)
-        horizontal?      (or platform/android? (not landscape?))
-        inverted?        (and platform/ios? (= curr-orientation orientation/landscape-right))
-        screen-width     (if (or platform/ios? (= curr-orientation orientation/portrait))
-                           window-width
-                           window-height)
-        screen-height    (if (or platform/ios? (= curr-orientation orientation/portrait))
-                           window-height
-                           window-width)
-        item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
+  [{:keys [props state animations derived images index handle-items-changed bottom-text-component]}]
+  (let [{:keys [data transparent? scroll-index
+                set-full-height?]} state
+        insets                     (safe-area/get-insets)
+        window                     (rn/get-window)
+        window-width               (:width window)
+        window-height              (if platform/android?
+                                     (+ (:height window) (:top insets))
+                                     (:height window))
+        curr-orientation           (or (rf/sub [:lightbox/orientation]) orientation/portrait)
+        landscape?                 (string/includes? curr-orientation orientation/landscape)
+        horizontal?                (or platform/android? (not landscape?))
+        inverted?                  (and platform/ios? (= curr-orientation orientation/landscape-right))
+        screen-width               (if (or platform/ios? (= curr-orientation orientation/portrait))
+                                     window-width
+                                     window-height)
+        screen-height              (if (or platform/ios? (= curr-orientation orientation/portrait))
+                                     window-height
+                                     window-width)
+        item-width                 (if (and landscape? platform/ios?) screen-height screen-width)]
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:background-color (:background-color animations)}
                                                    {:height screen-height})}
      (when-not @transparent?
-       [:f> top-view/top-view messages insets scroll-index animations derived landscape?
+       [:f> top-view/top-view images insets scroll-index animations derived landscape?
         screen-width])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
@@ -92,7 +94,7 @@
          :scroll-event-throttle             8
          :style                             {:width (+ screen-width constants/separator-width)}
          :data                              @data
-         :render-fn                         image
+         :render-fn                         image-view
          :render-data                       {:opacity-value     (:opacity animations)
                                              :overlay-opacity   (:overlay-opacity animations)
                                              :border-value      (:border animations)
@@ -118,26 +120,47 @@
      ;; NOTE: not un-mounting bottom-view based on `transparent?` (like we do with the top-view
      ;;       above), since we need to save the state of the text-sheet position. Instead, we use
      ;;       the `:display` style property to hide the bottom-sheet.
-     (when (not landscape?)
-       [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
-        item-width props state transparent?])]))
+     (when (and (not landscape?) (or bottom-text-component (> (count images) 1)))
+       [:f> bottom-view/bottom-view
+        {:images                images
+         :index                 index
+         :scroll-index          scroll-index
+         :insets                insets
+         :animations            animations
+         :derived               derived
+         :item-width            item-width
+         :props                 props
+         :state                 state
+         :transparent?          transparent?
+         :bottom-text-component bottom-text-component}])]))
 
 (defn- f-lightbox
   []
-  (let [{:keys [messages index]} (rf/sub [:get-screen-params])
-        props                    (utils/init-props)
-        state                    (utils/init-state messages index)
-        handle-items-changed     (fn [e]
-                                   (on-viewable-items-changed e props state))]
+  (let [{:keys [images index bottom-text-component]} (rf/sub [:get-screen-params])
+        props
+        (utils/init-props)
+        state
+        (utils/init-state images index)
+        handle-items-changed
+        (fn [e]
+          (on-viewable-items-changed e props state))]
     (fn []
-      (let [animations (utils/init-animations (count messages) index)
+      (let [animations (utils/init-animations (count images) index)
             derived    (utils/init-derived-animations animations)]
         (anim/animate (:background-color animations) colors/neutral-100)
-        (reset! (:data state) messages)
+        (reset! (:data state) images)
         (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
           (utils/orientation-change props state animations))
         (utils/effect props animations index)
-        [:f> lightbox-content props state animations derived messages index handle-items-changed]))))
+        [:f> lightbox-content
+         {:props                 props
+          :state                 state
+          :animations            animations
+          :derived               derived
+          :images                images
+          :index                 index
+          :handle-items-changed  handle-items-changed
+          :bottom-text-component bottom-text-component}]))))
 
 (defn lightbox
   []
