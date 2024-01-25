@@ -10,8 +10,12 @@
     [react-native.core :as rn]))
 
 (defn network-bridge-add
-  [{:keys [network state theme]}]
-  [rn/view {:style (merge (style/container network state theme) (style/add-container theme))}
+  [{:keys [network state theme container-style on-press]}]
+  [rn/pressable
+   {:style    (merge (style/container network state theme)
+                     (style/add-container theme)
+                     container-style)
+    :on-press on-press}
    [icon/icon :i/add-circle {:size 12 :no-color true}]])
 
 (defn- network->text
@@ -21,13 +25,14 @@
         :else                 (string/capitalize (name network))))
 
 (defn view-internal
-  [{:keys [theme network status amount container-style] :as args}]
+  [{:keys [theme network status amount container-style on-press] :as args}]
   (if (= status :add)
     [network-bridge-add args]
-    [rn/view
+    [rn/pressable
      {:style               (merge (style/container network status theme) container-style)
       :accessible          true
-      :accessibility-label :container}
+      :accessibility-label :container
+      :on-press            on-press}
      (if (= status :loading)
        [rn/view
         {:style               (style/loading-skeleton theme)

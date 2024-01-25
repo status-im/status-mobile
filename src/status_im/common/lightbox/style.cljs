@@ -1,9 +1,9 @@
-(ns status-im.contexts.chat.messenger.lightbox.style
+(ns status-im.common.lightbox.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.lightbox.constants :as c]))
+    [status-im.common.lightbox.constants :as constants]))
 
 ;;;; VIEW
 (defn image
@@ -33,7 +33,7 @@
    {:position           :absolute
     :padding-horizontal 20
     :top                (if (or platform/ios? (not landscape?)) top-inset 0)
-    :height             c/top-view-height
+    :height             constants/top-view-height
     :z-index            4
     :flex-direction     :row
     :justify-content    :space-between
@@ -44,7 +44,7 @@
 (defn top-gradient
   [insets]
   {:position :absolute
-   :height   (+ c/top-view-height (:top insets) 0)
+   :height   (+ constants/top-view-height (:top insets) 0)
    :top      (- (:top insets))
    :left     0
    :right    0})
@@ -71,12 +71,12 @@
     :display        (if @transparent? :none :flex)
     :bottom         0
     :padding-bottom (:bottom insets)
-    :padding-top    c/text-min-height
+    :padding-top    constants/text-min-height
     :z-index        3}))
 
 (defn content-container
   [padding-horizontal]
-  {:padding-vertical   c/small-list-padding-vertical
+  {:padding-vertical   constants/small-list-padding-vertical
    :padding-horizontal padding-horizontal
    :align-items        :center
    :justify-content    :center})
