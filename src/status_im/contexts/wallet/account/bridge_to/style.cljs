@@ -7,8 +7,3 @@
 (def content-container
   {:padding-horizontal 8})
 
-(def layer-two-wrapper
-  {:margin-left 20 :padding-vertical 8})
-
-(def divider-line-style
-  {:margin-vertical 8})

@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [quo.foundations.resources :as quo.resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -14,19 +13,19 @@
 
 (defn- bridge-token-component
   []
-  (fn [bridge token]
-    (let [network           (rf/sub [:wallet/network-details-by-chain-id (:chain-id bridge)])
+  (fn [{:keys [chain-id network-name]} token]
+    (let [network           (rf/sub [:wallet/network-details-by-chain-id chain-id])
           currency          (rf/sub [:profile/currency])
           currency-symbol   (rf/sub [:profile/currency-symbol])
           all-balances      (:balances-per-chain token)
-          balance-for-chain (utils/get-balance-for-chain all-balances (:chain-id bridge))
+          balance-for-chain (utils/get-balance-for-chain all-balances chain-id)
           crypto-formatted  (or (:balance balance-for-chain) "0.00")
           fiat-value        (utils/total-network-fiat-value currency
                                                             (or (:balance balance-for-chain) 0)
                                                             token)
           fiat-formatted    (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
       [quo/network-list
-       {:label         (name (:network-name bridge))
+       {:label         (name network-name)
         :network-image (quo.resources/get-network (:network-name network))
         :token-value   (str crypto-formatted " " (:symbol token))
         :fiat-value    fiat-formatted}])))
@@ -52,14 +51,9 @@
       {:container-style style/header-container
        :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:label token)))})}]
      [rn/view style/content-container
-      [bridge-token-component (assoc mainnet :network-name "Mainnet") account-token]]
-     [quo/divider-line {:container-style style/divider-line-style}]
-     [rn/view {:style style/layer-two-wrapper}
-      [quo/text
-       {:style           {:color colors/neutral-50}
-        :size            :paragraph-2
-        :number-of-lines 1}
-       (i18n/label :t/layer-2)]]
+      [bridge-token-component (assoc mainnet :network-name :t/mainnet) account-token]]
+
+     [quo/divider-label (i18n/label :t/layer-2)]
      [rn/flat-list
       {:data                    layer-2-networks
        :render-fn               (fn [network]

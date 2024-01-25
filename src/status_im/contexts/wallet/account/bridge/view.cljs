@@ -19,14 +19,7 @@
     (let [on-press #(rf/dispatch [:wallet/select-bridge-to
                                   {:token    token
                                    :stack-id :wallet-bridge}])]
-      [quo/token-network
-       {:token       (:token token)
-        :label       (:label token)
-        :token-value (:token-value token)
-        :fiat-value  (:fiat-value token)
-        :networks    (:networks token)
-        :symbol      (:symbol token)
-        :on-press    on-press}])))
+      [quo/token-network (assoc token :on-press on-press)])))
 
 (defn view
   []
