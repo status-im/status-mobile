@@ -6,6 +6,7 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
+    [react-native.reanimated :as reanimated]
     [react-native.svg :as svg]
     [utils.i18n :as i18n]))
 
@@ -28,10 +29,18 @@
    :info        {:color colors/white-opa-40}
    :alert       {:color colors/danger-60}})
 
-(defn circular-progress
+(defn f-circular-progress
   [{:keys [color percentage]}]
   (let [strength-indicator-radius        7.5
-        strength-indicator-circumference (* 2 Math/PI strength-indicator-radius)]
+        strength-indicator-circumference (* 2 Math/PI strength-indicator-radius)
+        percentage-anim (reanimated/use-shared-value percentage)
+        percentage-in (reanimated/interpolate
+                        percentage-anim
+                        {:inputRange  [0 100]
+                         :outputRange [0 (* (- 100 percentage) 0.01 strength-indicator-circumference)]}
+                        {:extrapolateLeft  "clamp"
+                         :extrapolateRight "clamp"})
+        _ (js/console.log "ALWX PERC" percentage-in)]
     [svg/svg
      {:view-box  "0 0 18 18"
       :width     15.2
@@ -51,9 +60,13 @@
        :fill              :transparent
        :stroke-width      1.2
        :stroke-dasharray  strength-indicator-circumference
-       :stroke-dashoffset (* (- 100 percentage) 0.01 strength-indicator-circumference)
+       :stroke-dashoffset percentage-in
        :stroke            color}]
      [svg/circle]]))
+
+(defn circular-progress
+  [params]
+  [:f> f-circular-progress params])
 
 (defn strength-indicator
   [type]
