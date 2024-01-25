@@ -13,6 +13,7 @@ stdenv.mkDerivation {
     "patchKeyChainPhase"
     "patchGlogPhase"
     "patchBoostPodSpec"
+    "patchReactAndroidPhase"
     "installPhase"
   ];
 
@@ -84,6 +85,12 @@ stdenv.mkDerivation {
    substituteInPlace ./node_modules/react-native/third-party-podspecs/boost.podspec \
       --replace 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2' \
       'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2' \
+  '';
+
+  patchReactAndroidPhase = ''
+   substituteInPlace ./node_modules/react-native/ReactAndroid/hermes-engine/build.gradle \
+      --replace 'src("https://github.com/facebook/hermes/tarball/''${hermesVersion}")' \
+      'src("https://github.com/siddarthkay/hermes/tarball/bump-max-native-stack-depth")' \
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
