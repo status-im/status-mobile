@@ -16,6 +16,7 @@
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.overview.style :as style]
     [status-im.contexts.communities.overview.utils :as utils]
+    [status-im.contexts.communities.utils :as communities.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -142,13 +143,9 @@
     (let [{:keys [can-request-access?
                   number-of-hold-tokens tokens
                   highest-permission-role]} (rf/sub [:community/token-gated-overview id])
-          highest-permission-role-text
+          highest-role-text
           (i18n/label
-           (condp = highest-permission-role
-             constants/community-token-permission-become-token-owner  :t/token-owner
-             constants/community-token-permission-become-token-master :t/token-master
-             constants/community-token-permission-become-admin        :t/admin
-             :t/member))]
+           (communities.utils/role->translation-key highest-permission-role :t/member))]
       [rn/view {:style (style/token-gated-container)}
        [rn/view
         {:style {:padding-horizontal 12
@@ -158,7 +155,7 @@
                  :flex               1}}
         [quo/text {:weight :medium}
          (if can-request-access?
-           (i18n/label :t/you-eligible-to-join-as {:role highest-permission-role-text})
+           (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button]]
        (when (pos? number-of-hold-tokens)

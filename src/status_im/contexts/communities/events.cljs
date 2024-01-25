@@ -1,90 +1,27 @@
 (ns status-im.contexts.communities.events
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [clojure.walk :as walk]
-            [legacy.status-im.data-store.chats :as data-store.chats]
-            [legacy.status-im.mailserver.core :as mailserver]
-            [react-native.platform :as platform]
-            [react-native.share :as share]
-            [schema.core :as schema]
-            [status-im.constants :as constants]
-            [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
-            status-im.contexts.communities.actions.community-options.events
-            status-im.contexts.communities.actions.leave.events
-            [status-im.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
-
-(defn <-request-to-join-community-rpc
-  [r]
-  (set/rename-keys r
-                   {:communityId :community-id
-                    :publicKey   :public-key
-                    :chatId      :chat-id}))
-
-(defn <-requests-to-join-community-rpc
-  [requests key-fn]
-  (reduce #(assoc %1 (key-fn %2) (<-request-to-join-community-rpc %2)) {} requests))
-
-(defn <-chats-rpc
-  [chats]
-  (reduce-kv (fn [acc k v]
-               (assoc acc
-                      (name k)
-                      (-> v
-                          (assoc :can-post? (:canPost v))
-                          (dissoc :canPost)
-                          (update :members walk/stringify-keys))))
-             {}
-             chats))
-
-(defn <-categories-rpc
-  [categ]
-  (reduce-kv #(assoc %1 (name %2) %3) {} categ))
-
-(defn <-rpc
-  [c]
-  (-> c
-      (set/rename-keys {:canRequestAccess            :can-request-access?
-                        :canManageUsers              :can-manage-users?
-                        :canDeleteMessageForEveryone :can-delete-message-for-everyone?
-                        :canJoin                     :can-join?
-                        :requestedToJoinAt           :requested-to-join-at
-                        :isMember                    :is-member?
-                        :adminSettings               :admin-settings
-                        :tokenPermissions            :token-permissions
-                        :communityTokensMetadata     :tokens-metadata
-                        :introMessage                :intro-message
-                        :muteTill                    :muted-till})
-      (update :admin-settings
-              set/rename-keys
-              {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
-      (update :members walk/stringify-keys)
-      (update :chats <-chats-rpc)
-      (update :token-permissions seq)
-      (update :categories <-categories-rpc)
-      (assoc :membership-permissions?
-             (some #(= (:type %) constants/community-token-permission-become-member)
-                   (vals (:tokenPermissions c))))
-      (assoc :token-images
-             (reduce (fn [acc {sym :symbol image :image}]
-                       (assoc acc sym image))
-                     {}
-                     (:communityTokensMetadata c)))))
-
-(defn <-revealed-accounts-rpc
-  [accounts]
-  (mapv
-   #(set/rename-keys % {:isAirdropAddress :airdrop-address?})
-   (js->clj accounts :keywordize-keys true)))
+  (:require
+    [clojure.string :as string]
+    [legacy.status-im.data-store.chats :as data-store.chats]
+    [legacy.status-im.data-store.communities :as data-store.communities]
+    [legacy.status-im.mailserver.core :as mailserver]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
+    [schema.core :as schema]
+    [status-im.constants :as constants]
+    [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
+    status-im.contexts.communities.actions.community-options.events
+    status-im.contexts.communities.actions.leave.events
+    [status-im.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn handle-community
   [{:keys [db]} [community-js]]
   (when community-js
     (let [{:keys [token-permissions
                   token-permissions-check joined id]
-           :as   community} (<-rpc community-js)
+           :as   community} (data-store.communities/<-rpc community-js)
           has-channel-perm? (fn [id-perm-tuple]
                               (let [{:keys [type]} (second id-perm-tuple)]
                                 (or (= type constants/community-token-permission-can-view-channel)
@@ -187,7 +124,7 @@
  (fn [{:keys [db]} [requests]]
    {:db (assoc db
                :communities/my-pending-requests-to-join
-               (<-requests-to-join-community-rpc requests :communityId))}))
+               (data-store.communities/<-requests-to-join-community-rpc requests :communityId))}))
 
 (rf/reg-event-fx :communities/get-user-requests-to-join
  (fn [_]
@@ -475,7 +412,7 @@
             (fn [acc {:keys [address] :as revealed-account}]
               (assoc acc address (dissoc revealed-account :address)))
             {}
-            (<-revealed-accounts-rpc revealed-accounts-js))
+            (data-store.communities/<-revealed-accounts-rpc revealed-accounts-js))
 
            community-with-revealed-accounts
            (-> community

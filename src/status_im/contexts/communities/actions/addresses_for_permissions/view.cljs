@@ -3,8 +3,8 @@
             [quo.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.common.not-implemented :as not-implemented]
-            [status-im.constants :as constants]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
+            [status-im.contexts.communities.utils :as communities.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -28,14 +28,9 @@
         {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
         accounts (rf/sub [:wallet/accounts-with-customization-color])
         selected-addresses (rf/sub [:communities/selected-permission-addresses id])
-        highest-permission-role-text
+        highest-role-text
         (i18n/label
-         (condp = highest-permission-role
-           constants/community-token-permission-become-token-owner  :t/token-owner
-           constants/community-token-permission-become-token-master :t/token-master
-           constants/community-token-permission-become-admin        :t/admin
-           constants/community-token-permission-become-member       :t/member
-           nil))]
+         (communities.utils/role->translation-key highest-permission-role))]
     [rn/safe-area-view {:style style/container}
      [quo/drawer-top
       {:type                :context-tag
@@ -64,7 +59,7 @@
          {:type    :icon
           :icon    :i/members
           :size    24
-          :context highest-permission-role-text}]])
+          :context highest-role-text}]])
 
      (when (empty? selected-addresses)
        [rn/view

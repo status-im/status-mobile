@@ -227,30 +227,23 @@
         (is (match?
              [[:dispatch [:communities/initialize-permission-addresses community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]
-              [:dispatch [:communities/check-permissions-to-join-community community-id]]
-              nil
-              nil]
-             (:fx effects)))))
+              [:dispatch [:communities/check-permissions-to-join-community community-id]]]
+             (filter some? (:fx effects))))))
     (testing "given a joined community"
       (let [community (assoc community :joined true)
             effects   (events/handle-community {} [community])]
         (is (match?
              [[:dispatch [:communities/initialize-permission-addresses community-id]]
-              nil
               [:dispatch [:communities/check-permissions-to-join-community community-id]]
-              nil
               [:dispatch [:communities/get-revealed-accounts community-id]]]
-             (:fx effects)))))
+             (filter some? (:fx effects))))))
     (testing "given a community with token-permissions-check"
       (let [community (assoc community :token-permissions-check :fake-token-permissions-check)
             effects   (events/handle-community {} [community])]
         (is (match?
              [[:dispatch [:communities/initialize-permission-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]
-              nil
-              nil
-              nil]
-             (:fx effects)))))
+              [:dispatch [:chat.ui/spectate-community community-id]]]
+             (filter some? (:fx effects))))))
     (testing "given a community with view channel permission"
       (let [community (assoc community
                              :token-permissions
@@ -261,9 +254,8 @@
               [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]
               [:dispatch
-               [:communities/check-all-community-channels-permissions community-id]]
-              nil]
-             (:fx effects)))))
+               [:communities/check-all-community-channels-permissions community-id]]]
+             (filter some? (:fx effects))))))
 
     (testing "given a community with post in channel permission"
       (let [community (assoc community
@@ -276,6 +268,5 @@
               [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]
               [:dispatch
-               [:communities/check-all-community-channels-permissions community-id]]
-              nil]
-             (:fx effects)))))))
+               [:communities/check-all-community-channels-permissions community-id]]]
+             (filter some? (:fx effects))))))))
