@@ -59,7 +59,7 @@
                                   :port        (rf/sub [:mediaserver/port])
                                   :qr-size     qr-size
                                   :error-level :highest})]
-        [rn/view {:style {:width width :margin-left (if (zero? index) 0 -30)}}
+        [rn/view {:style {:height qr-size :width width :margin-left (if (zero? index) 0 -30)}}
          [rn/view {:style style/qr-code-container}
           [quo/share-qr-code
            {:type                @wallet-type
