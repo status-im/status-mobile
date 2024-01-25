@@ -12,14 +12,17 @@
            :short-name       "eth"
            :network-name     :ethereum
            :related-chain-id 1
+           :chain-id         3
            :layer            1}
           {:test?            true
            :short-name       "arb1"
            :related-chain-id 42161
+           :chain-id         4
            :layer            2}
           {:test?            true
            :short-name       "opt"
            :related-chain-id 10
+           :chain-id         5
            :layer            2}]
    :prod [{:test?      false
            :short-name "eth"
