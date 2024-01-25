@@ -32,27 +32,29 @@
           chain-id                 (rf/sub [:chain-id])
           contacts                 (rf/sub [:contacts/active])]
       [quo/address-input
-       {:on-focus              #(reset! input-focused? true)
-        :on-blur               #(reset! input-focused? false)
-        :on-scan               (fn []
-                                 (rn/dismiss-keyboard!)
-                                 (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:open-modal :scan-address]))
-        :ens-regex             constants/regx-ens
-        :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
-        :address-regex         constants/regx-multichain-address
-        :on-detect-address     #(debounce/debounce-and-dispatch
-                                 [:wallet/validate-address %]
-                                 300)
-        :on-detect-ens         (fn [text cb]
-                                 (debounce/debounce-and-dispatch
-                                  [:wallet/find-ens text contacts chain-id cb]
-                                  300))
-        :on-change-text        (fn [text]
-                                 (when (empty? text)
-                                   (rf/dispatch [:wallet/clean-local-suggestions]))
-                                 (reset! input-value text))
-        :valid-ens-or-address? valid-ens-or-address?}])))
+       {:on-focus               #(reset! input-focused? true)
+        :on-blur                #(reset! input-focused? false)
+        :on-scan                (fn []
+                                  (rn/dismiss-keyboard!)
+                                  (rf/dispatch [:wallet/clean-scanned-address])
+                                  (rf/dispatch [:open-modal :scan-address]))
+        :ens-regex              constants/regx-ens
+        :scanned-value          (or (when recipient-plain-address? send-address) scanned-address)
+        :address-regex          constants/regx-multichain-address
+        :on-detect-address      #(debounce/debounce-and-dispatch
+                                  [:wallet/validate-address %]
+                                  300)
+        :on-detect-ens          (fn [text cb]
+                                  (debounce/debounce-and-dispatch
+                                   [:wallet/find-ens text contacts chain-id cb]
+                                   300))
+        :on-detect-unclassified #(when valid-ens-or-address?
+                                   (rf/dispatch [:wallet/clean-ens-or-address-validation]))
+        :on-change-text         (fn [text]
+                                  (when (empty? text)
+                                    (rf/dispatch [:wallet/clean-local-suggestions]))
+                                  (reset! input-value text))
+        :valid-ens-or-address?  valid-ens-or-address?}])))
 
 (defn- ens-linked-address
   [{:keys [address networks theme]}]
