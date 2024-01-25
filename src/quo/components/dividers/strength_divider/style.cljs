@@ -3,7 +3,7 @@
 (def container
   {:height             40
    :flex-direction     :row
-   :padding-horizontal 16
+   :padding-horizontal 20
    :align-items        :center})
 
 (defn text

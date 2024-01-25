@@ -59,7 +59,7 @@
   [type]
   (let [{:keys [color percentage]} (strength-divider-types type)]
     (case type
-      :info  nil
+      :info  [rn/view {:padding-left 4}]
       :alert [icon/icon :i/alert
               {:color color
                :size  16}]
