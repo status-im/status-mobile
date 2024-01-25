@@ -2,6 +2,7 @@
   (:require
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
     [status-im.contexts.shell.jump-to.utils :as utils]))
 
 (defn bottom-tabs-container
@@ -28,10 +29,11 @@
 
 (defn bottom-tabs-blur-overlay
   [height]
-  [{:height height}
+  (reanimated/apply-animations-to-style
+   {:height height}
    {:position         :absolute
     :left             0
     :right            0
     :bottom           0
     :height           (utils/bottom-tabs-container-height)
-    :background-color colors/neutral-100-opa-70-blur}])
+    :background-color colors/neutral-100-opa-70-blur}))
