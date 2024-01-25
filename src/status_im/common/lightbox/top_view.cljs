@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.top-view
+(ns status-im.common.lightbox.top-view
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -6,10 +6,9 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.lightbox.animations :as anim]
-    [status-im.contexts.chat.messenger.lightbox.constants :as c]
-    [status-im.contexts.chat.messenger.lightbox.style :as style]
-    [utils.datetime :as datetime]
+    [status-im.common.lightbox.animations :as anim]
+    [status-im.common.lightbox.constants :as constants]
+    [status-im.common.lightbox.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.url :as url]))
@@ -17,7 +16,7 @@
 (defn animate-rotation
   [result screen-width screen-height insets
    {:keys [rotate top-view-y top-view-x top-view-width top-view-bg]}]
-  (let [top-x (+ (/ c/top-view-height 2) (:top insets))]
+  (let [top-x (+ (/ constants/top-view-height 2) (:top insets))]
     (cond
       (= result orientation/landscape-left)
       (do
@@ -42,9 +41,9 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn drawer
-  [messages index]
-  (let [{:keys [content]} (nth messages index)
-        uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
+  [images index]
+  (let [{:keys [image]} (nth images index)
+        uri             (url/replace-port image (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/save
         :accessibility-label :save-image
@@ -52,7 +51,7 @@
         :on-press            (fn []
                                (rf/dispatch [:hide-bottom-sheet])
                                (rf/dispatch
-                                [:chat.ui/save-image-to-gallery
+                                [:lightbox/save-image-to-gallery
                                  uri
                                  #(rf/dispatch [:toasts/upsert
                                                 {:id              :random-id
@@ -61,20 +60,19 @@
                                                  :text            (i18n/label :t/photo-saved)}])]))}]]]))
 
 (defn share-image
-  [messages index]
-  (let [{:keys [content]} (nth messages index)
-        uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
-    (rf/dispatch [:chat.ui/share-image uri])))
+  [images index]
+  (let [{:keys [image]} (nth images index)
+        uri             (url/replace-port image (rf/sub [:mediaserver/port]))]
+    (rf/dispatch [:lightbox/share-image uri])))
 
 (defn top-view
-  [messages insets index animations derived landscape? screen-width]
-  (let [{:keys [from timestamp]}  (first messages)
-        [primary-name _]          (rf/sub [:contacts/contact-two-names-by-identity from])
-        bg-color                  (if landscape?
-                                    colors/neutral-100-opa-70
-                                    colors/neutral-100-opa-0)
+  [images insets index animations derived landscape? screen-width]
+  (let [{:keys [description header]} (nth images @index)
+        bg-color                     (if landscape?
+                                       colors/neutral-100-opa-70
+                                       colors/neutral-100-opa-0)
         {:keys [background-color opacity
-                overlay-opacity]} animations]
+                overlay-opacity]}    animations]
     [reanimated/view
      {:style
       (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
@@ -92,7 +90,7 @@
                     (anim/animate opacity 0)
                     (anim/animate overlay-opacity 0)
                     (rf/dispatch (if platform/ios?
-                                   [:chat.ui/exit-lightbox-signal @index]
+                                   [:lightbox/exit-lightbox-signal @index]
                                    [:navigate-back])))
         :style    style/close-container}
        [quo/icon :close {:size 20 :color colors/white}]]
@@ -100,22 +98,22 @@
        [quo/text
         {:weight :semi-bold
          :size   :paragraph-1
-         :style  {:color colors/white}} primary-name]
+         :style  {:color colors/white}} header]
        [quo/text
         {:weight :medium
          :size   :paragraph-2
-         :style  {:color colors/neutral-40}} (when timestamp (datetime/to-short-str timestamp))]]]
+         :style  {:color colors/neutral-40}} description]]]
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity      1
         :accessibility-label :share-image
-        :on-press            #(share-image messages @index)
+        :on-press            #(share-image images @index)
         :style               (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity      1
         :accessibility-label :image-options
         :on-press            #(rf/dispatch [:show-bottom-sheet
-                                            {:content (fn [] [drawer messages @index])}])
+                                            {:content (fn [] [drawer images @index])}])
         :style               style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))

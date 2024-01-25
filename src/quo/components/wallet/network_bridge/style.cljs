@@ -4,7 +4,7 @@
 
 (defn container
   [network state theme]
-  {:flex               1
+  {:width              136
    :height             44
    :border-width       1
    :border-radius      12

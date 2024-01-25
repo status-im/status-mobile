@@ -44,7 +44,8 @@
                                                   :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-loading-suggested-routes? false
    :wallet/wallet-send-route                     {:route []}
-   :wallet/wallet-send-suggested-routes          {:candidates []}})
+   :wallet/wallet-send-suggested-routes          {:candidates []}
+   :wallet/wallet-send-selected-networks         []})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)

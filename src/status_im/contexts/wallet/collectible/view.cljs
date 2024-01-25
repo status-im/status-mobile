@@ -75,12 +75,14 @@
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn []
-      (let [collectible               (rf/sub [:wallet/last-collectible-details])
+      (let [collectible                  (rf/sub [:wallet/last-collectible-details])
+            animation-shared-element-id  (rf/sub [:animation-shared-element-id])
             {:keys [collectible-data preview-url
-                    collection-data]} collectible
+                    collection-data id]} collectible
+            token-id                     (:token-id id)
             {collection-image :image-url
-             collection-name  :name}  collection-data
-            {collectible-name :name}  collectible-data]
+             collection-name  :name}     collection-data
+            {collectible-name :name}     collectible-data]
         [scroll-page/scroll-page
          {:navigate-back? true
           :height         148
@@ -95,9 +97,26 @@
                            :picture     preview-url}}
          [rn/view {:style style/container}
           [rn/view {:style style/preview-container}
-           [rn/image
-            {:source preview-url
-             :style  style/preview}]]
+           [rn/touchable-opacity
+            {:active-opacity 1
+             :on-press       #(rf/dispatch [:lightbox/navigate-to-lightbox
+                                            token-id
+                                            {:images [{:image        preview-url
+                                                       :image-width  300 ; collectibles don't have
+                                                                         ; width/height but we need
+                                                                         ; to pass something
+                                                       :image-height 300 ; without it animation
+                                                                         ; doesn't work smoothly and
+                                                                         ; :border-radius not
+                                                                         ; applied
+                                                       :id           token-id
+                                                       :header       collectible-name
+                                                       :description  collection-name}]
+                                             :index  0}])}
+            [rn/image
+             {:source    preview-url
+              :style     style/preview
+              :native-ID (when (= animation-shared-element-id token-id) :shared-element)}]]]
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs
