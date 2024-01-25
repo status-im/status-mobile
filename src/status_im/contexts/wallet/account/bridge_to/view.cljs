@@ -20,9 +20,9 @@
           all-balances      (:balances-per-chain token)
           balance-for-chain (utils/get-balance-for-chain all-balances chain-id)
           crypto-formatted  (or (:balance balance-for-chain) "0.00")
-          fiat-value        (utils/total-network-fiat-value currency
-                                                            (or (:balance balance-for-chain) 0)
-                                                            token)
+          fiat-value        (utils/token-fiat-value currency
+                                                    (or (:balance balance-for-chain) 0)
+                                                    token)
           fiat-formatted    (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
       [quo/network-list
        {:label         (name network-name)
