@@ -54,21 +54,11 @@
     (normalize-input current v)
     current))
 
-<<<<<<< HEAD
-(defn- find-affordable-networks
-  [{:keys [balances-per-chain]} input-value]
-  (->> balances-per-chain
-       (filter (fn [[_ {:keys [balance]}]]
-                 (>= (js/parseFloat balance) input-value)))
-       (map first)))
-
 (defn- reset-input-error
   [new-value prev-value input-error]
   (reset! input-error
     (> new-value prev-value)))
 
-=======
->>>>>>> 3c958d834 (wallet: network receiver preferences)
 (defn- f-view-internal
   ;; crypto-decimals and limit-crypto args are needed for component tests only
   [{:keys [crypto-decimals limit-crypto]}]
@@ -132,9 +122,7 @@
                                (<= input-num-value 0)
                                (> input-num-value (:amount @current-limit)))
             amount            (str @input-value " " token-symbol)
-<<<<<<< HEAD
-            {:keys [color]}   (rf/sub [:wallet/current-viewing-account])]
-=======
+            {:keys [color]}   (rf/sub [:wallet/current-viewing-account])
             fetch-routes      (fn []
                                 (rf/dispatch [:wallet/clean-suggested-routes])
                                 (when-not (or
@@ -144,7 +132,6 @@
                                   (debounce/debounce-and-dispatch [:wallet/get-suggested-routes
                                                                    @input-value]
                                                                   100)))]
->>>>>>> 8b53ac7c6 (wallet receiver networks)
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))

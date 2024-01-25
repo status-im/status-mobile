@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [react-native.core :as rn]
