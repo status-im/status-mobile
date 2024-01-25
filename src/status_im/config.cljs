@@ -15,6 +15,11 @@
 (goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
 (goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
 (goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_ETHEREUM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
+(goog-define RARIBLE_MAINNET_API_KEY "")
+(goog-define RARIBLE_TESTNET_API_KEY "")
 (goog-define OPENSEA_API_KEY "")
 
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))

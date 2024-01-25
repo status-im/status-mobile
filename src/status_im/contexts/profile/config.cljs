@@ -13,10 +13,15 @@
    :openseaAPIKey               config/opensea-api-key
    :poktToken                   config/POKT_TOKEN
    :infuraToken                 config/INFURA_TOKEN
+   :raribleMainnetApiKey        config/RARIBLE_MAINNET_API_KEY
+   :raribleTestnetApiKey        config/RARIBLE_TESTNET_API_KEY
    :alchemyOptimismMainnetToken config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
    :alchemyOptimismGoerliToken  config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
    :alchemyArbitrumMainnetToken config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
-   :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN})
+   :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN
+   :alchemyEthereumSepoliaToken config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN
+   :alchemyArbitrumSepoliaToken config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN
+   :alchemyOptimismSepoliaToken config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN})
 
 (defn create
   []
