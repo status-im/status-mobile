@@ -45,20 +45,27 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append("Profile was not opened by the profile url %s" % url)
             self.home.navigate_back_to_chat_view()
 
-        closed_community_urls = [
-            "https://status.app/c/G8EAAGTiXKuwNbVVAu0GNLD-XzX4oz_E8oC1-7qSLikaTnCuG9Ag13ZgQKrMd8En9Qcpuaj3Qx3mfZ1atZzH8Zw-x_sFJ_MDv0P_7YfqoV-pNr3V4dsza-jVk41GaCGWasJb92Oer8qggaoNWf0tYCgSH19VonXciKPUz3ITdgke#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "https://status.app/c#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "https://status.app/c/ixiACjAKCHRlc3RDb21tEhZkemZ4Z2Nodmpra2xra2xrbCAgbGxsGAYiByM4OEIwRkYqARQD#zQ3shuK3RAMBGtNWJ5QAKtuGeyEhiwko5gXhyGg6T89Q2xrHq"
-        ]
-        for url in closed_community_urls:
+        closed_community_urls = {
+            "https://status.app/c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":
+                "Status mobile QA community max",
+            "https://status.app/c/GyoAAORtA48geFrtWr2mu-G5DnFaI0sgqUIIaBFX_DJ_mRbXmzoMnCJnqwI=#zQ3shQhL414wEjDJMEpgTjd14aHCiBDnk6Bq5YTWoi4b7wvnu":
+                "test_comm_enc",
+            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shspPKCZ1VPVQ9dLXGufUGvGphjxVwrcZ6rkZc7S39T4b3":
+                "closed community",
+            "https://status.app/c/GyAAAOQbK4dMy1OMI8s2nGvJR3QRqBQqbExff0-cgmN0T-4C#zQ3shqQ4voo845RAkip2JkYTjL4dpiGnRhaNHjVDxPdEZ1xvP":
+                "e2e_open",
+            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shgkDFQEnwxji7CvMTokMrShmC2UgxiJ549X5Aw746zQrK":
+                "open community"
+        }
+        for url, text in closed_community_urls.items():
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
-            if not self.channel.element_by_translation_id(
-                    "community-admins-will-review-your-request").is_element_displayed(10):
+            if not self.community_view.join_button.is_element_displayed(
+                    10) or self.community_view.community_title.text != text:
                 self.errors.append("Closed community was not requested to join by the url %s" % url)
-            self.home.jump_to_card_by_text(self.community_name)
+            if text != "open community":  # the last one
+                self.home.jump_to_card_by_text(self.community_name)
 
         self.errors.verify_no_errors()
 
@@ -84,16 +91,22 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append("Profile was not opened by the profile deep link %s" % link)
             self.browser_view.click_system_back_button()
 
-        community_links = [
-            "status-app://c/G8EAAGTiXKuwNbVVAu0GNLD-XzX4oz_E8oC1-7qSLikaTnCuG9Ag13ZgQKrMd8En9Qcpuaj3Qx3mfZ1atZzH8Zw-x_sFJ_MDv0P_7YfqoV-pNr3V4dsza-jVk41GaCGWasJb92Oer8qggaoNWf0tYCgSH19VonXciKPUz3ITdgke#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "status-app://c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "status-app://c#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK",
-            "status-app://c/ixiACjAKCHRlc3RDb21tEhZkemZ4Z2Nodmpra2xra2xrbCAgbGxsGAYiByM4OEIwRkYqARQD#zQ3shuK3RAMBGtNWJ5QAKtuGeyEhiwko5gXhyGg6T89Q2xrHq"
-        ]
-        for link in community_links:
+        community_links = {
+            "status.app://c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":
+                "Status mobile QA community max",
+            "status.app://c/GyoAAORtA48geFrtWr2mu-G5DnFaI0sgqUIIaBFX_DJ_mRbXmzoMnCJnqwI=#zQ3shQhL414wEjDJMEpgTjd14aHCiBDnk6Bq5YTWoi4b7wvnu":
+                "test_comm_enc",
+            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shspPKCZ1VPVQ9dLXGufUGvGphjxVwrcZ6rkZc7S39T4b3":
+                "closed community",
+            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shgkDFQEnwxji7CvMTokMrShmC2UgxiJ549X5Aw746zQrK":
+                "open community",
+            "status.app://c/GyAAAOQbK4dMy1OMI8s2nGvJR3QRqBQqbExff0-cgmN0T-4C#zQ3shqQ4voo845RAkip2JkYTjL4dpiGnRhaNHjVDxPdEZ1xvP":
+                "e2e_open"
+        }
+        for link, text in community_links.items():
             self.browser_view.open_url(link)
-            if not self.channel.element_by_translation_id(
-                    "community-admins-will-review-your-request").is_element_displayed(10):
+            if not self.community_view.join_button.is_element_displayed(
+                    10) or self.community_view.community_title.text != text:
                 self.errors.append("Closed community was not requested to join by the deep link %s" % link)
             self.home.navigate_back_to_home_view()
             self.home.browser_tab.click()

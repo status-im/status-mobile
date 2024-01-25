@@ -3,7 +3,6 @@
             [quo.theme]
             [react-native.core :as rn]
             [status-im.contexts.wallet.collectible.tabs.about.style :as style]
-            [status-im.contexts.wallet.temp :as temp]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -14,7 +13,8 @@
   (let [window-width               (rf/sub [:dimensions/window-width])
         item-width                 (- (/ window-width 2) link-card-space)
         {:keys [collectible-data]} (rf/sub [:wallet/last-collectible-details])
-        link-card-container-style  (style/link-card item-width)]
+        link-card-container-style  (style/link-card item-width)
+        collectible-about          {:cards []}]
     [:<>
      [rn/view {:style style/title}
       [quo/text
@@ -25,12 +25,13 @@
       [quo/text
        {:size :paragraph-2}
        (:description collectible-data)]]
-     [quo/section-label
-      {:container-style style/section-label
-       :section         (i18n/label :t/on-the-web)}]
-     [rn/view {:style style/link-cards-container}
-      (for [item (:cards temp/collectible-about)]
-        ^{:key (:title item)}
-        [quo/link-card (assoc item :container-style link-card-container-style)])]]))
+     (when (count collectible-about)
+       [quo/section-label
+        {:container-style style/section-label
+         :section         (i18n/label :t/on-the-web)}]
+       [rn/view {:style style/link-cards-container}
+        (for [item (:cards collectible-about)]
+          ^{:key (:title item)}
+          [quo/link-card (assoc item :container-style link-card-container-style)])])]))
 
 (def view (quo.theme/with-theme view-internal))
