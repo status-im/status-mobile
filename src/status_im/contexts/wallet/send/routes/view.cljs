@@ -12,10 +12,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- match-short-name?
-  [network-name short-names]
-  (some #(string/starts-with? (name network-name) (subs % 0 3)) short-names))
-
 (defn- find-affordable-networks
   [{:keys [balances-per-chain]} input-value selected-networks]
   (->> balances-per-chain
