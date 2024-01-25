@@ -12,9 +12,18 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn match-short-name?
+(defn- match-short-name?
   [network-name short-names]
   (some #(string/starts-with? (name network-name) (subs % 0 3)) short-names))
+
+(defn- find-affordable-networks
+  [{:keys [balances-per-chain]} input-value selected-networks]
+  (->> balances-per-chain
+       (filter (fn [[_ {:keys [balance chain-id]}]]
+                 (and
+                   (>= (js/parseFloat balance) input-value)
+                   (some #(= % chain-id) selected-networks))))
+       (map first)))
 
 (defn- make-network-item
   [{:keys [network-name chain-id] :as _network}
@@ -111,15 +120,6 @@
        :network         to-network
        :status          status
        :container-style {:right 12}}]]))
-
-(defn- find-affordable-networks
-  [{:keys [balances-per-chain]} input-value selected-networks]
-  (->> balances-per-chain
-       (filter (fn [[_ {:keys [balance chain-id]}]]
-                 (and
-                  (>= (js/parseFloat balance) input-value)
-                  (some #(= % chain-id) selected-networks))))
-       (map first)))
 
 (defn- view-internal
   [{:keys [amount routes token input-value theme fetch-routes]}]
