@@ -6,7 +6,6 @@
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
-    [status-im.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
@@ -242,30 +241,15 @@
 
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
- (fn [{:keys [db]} [address]]
+ (fn [{:keys [db]} [_address]]
    {:db (assoc db
-               :wallet/local-suggestions
-               (cond
-                 (= address
-                    (get-in
-                     temp/address-local-suggestion-saved-contact-address-mock
-                     [:accounts 0 :address]))
-                 [temp/address-local-suggestion-saved-contact-address-mock]
-                 (= address
-                    (get temp/address-local-suggestion-saved-address-mock
-                         :address))
-                 [temp/address-local-suggestion-saved-address-mock]
-                 :else (temp/find-matching-addresses address))
-               :wallet/valid-ens-or-address?
-               false)}))
+               :wallet/local-suggestions     nil
+               :wallet/valid-ens-or-address? false)}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
- (fn [{:keys [db]} [ens]]
+ (fn [{:keys [db]} [_ens]]
    {:db (assoc db
-               :wallet/local-suggestions     (if (= ens
-                                                    (:ens temp/ens-local-suggestion-saved-address-mock))
-                                               [temp/ens-local-suggestion-saved-address-mock]
-                                               [temp/ens-local-suggestion-mock])
+               :wallet/local-suggestions     nil
                :wallet/valid-ens-or-address? true)}))
 
 (rf/reg-event-fx :wallet/address-validation-success
