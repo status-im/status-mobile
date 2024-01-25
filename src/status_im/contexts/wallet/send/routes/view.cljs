@@ -2,9 +2,9 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -21,8 +21,8 @@
   (->> balances-per-chain
        (filter (fn [[_ {:keys [balance chain-id]}]]
                  (and
-                   (>= (js/parseFloat balance) input-value)
-                   (some #(= % chain-id) selected-networks))))
+                  (>= (js/parseFloat balance) input-value)
+                  (some #(= % chain-id) selected-networks))))
        (map first)))
 
 (defn- make-network-item
