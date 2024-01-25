@@ -28,13 +28,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- scroll-to-end
-  [props]
-  ;; Needs to be queued, Otherwise might not be called on the right time.
-  (js/setTimeout #(when-let [ref @(:composer-scrollview-ref props)]
-                    (.scrollToEnd ref #js {:animated :true}))
-                 10))
-
 (defn sheet-component
   [{:keys [insets
            chat-list-scroll-y
@@ -75,7 +68,14 @@
         ;; Cursor position, needed to determine where to display the mentions view
         cursor-pos               (utils/cursor-y-position-relative-to-container
                                   props
-                                  state)]
+                                  state)
+        scroll-to-end            (fn []
+                                   ;; Needs to be queued, Otherwise might not be called on the right
+                                   ;; time.
+                                   (js/setTimeout #(when @(:composer-scrollview-ref props)
+                                                     (.scrollToEnd @(:composer-scrollview-ref props)))
+                                                  50))
+        chat-screen-loaded?      (rf/sub [:shell/chat-screen-loaded?])]
     (effects/did-mount props)
     (effects/initialize props
                         state
@@ -97,8 +97,7 @@
       {:style style/composer-sheet-and-jump-to-container}
       [sub-view/shell-button state chat-list-scroll-y window-height]
       [gesture/gesture-detector
-       {:gesture
-        (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
+       {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
        [reanimated/view
         {:style     (style/sheet-container insets state animations theme)
          :on-layout #(handler/layout % state blur-height)}
@@ -127,38 +126,36 @@
             :ref                             #(reset! (:composer-scrollview-ref props) %)
             :shows-vertical-scroll-indicator false}
            [rn/text-input
-            {:ref #(reset! (:input-ref props) %)
-             :default-value @(:text-value state)
-             :on-focus
-             #(handler/focus props state animations dimensions show-floating-scroll-down-button?)
-             :on-blur #(handler/blur state animations dimensions subscriptions)
-             :on-change-text #(handler/change-text % props state scroll-to-end)
-             :on-selection-change #(handler/selection-change % props state)
-             :on-content-size-change #(handler/content-size-change %
-                                                                   state
-                                                                   animations
-                                                                   dimensions
-                                                                   (or keyboard-shown
-                                                                       (:edit subscriptions)))
-             :on-selection #(selection/on-selection % props state)
-             :keyboard-appearance (quo.theme/theme-value :light :dark)
+            {:ref                      #(reset! (:input-ref props) %)
+             :default-value            @(:text-value state)
+             :on-focus                 #(handler/focus props state animations dimensions)
+             :on-blur                  #(handler/blur state animations dimensions subscriptions)
+             :on-change-text           #(handler/change-text % props state scroll-to-end)
+             :on-selection-change      #(handler/selection-change % props state)
+             :on-content-size-change   #(handler/content-size-change %1
+                                                                     state
+                                                                     animations
+                                                                     dimensions
+                                                                     (or keyboard-shown
+                                                                         (:edit subscriptions)))
+             :on-selection             #(selection/on-selection % props state)
+             :keyboard-appearance      (quo.theme/theme-value :light :dark)
              :max-font-size-multiplier 1
-             :multiline true
-             :scroll-enabled false
-             :placeholder (i18n/label :t/type-something)
-             :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50)
-             :style (style/input-text state
-                                      {:max-height max-height
-                                       :theme      theme})
-             :max-length constants/max-text-size
-             :accessibility-label :chat-message-input}]]]]
+             :multiline                true
+             :scroll-enabled           false
+             :placeholder              (i18n/label :t/type-something)
+             :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
+             :style                    (style/input-text state
+                                                         {:max-height max-height
+                                                          :theme      theme})
+             :max-length               constants/max-text-size
+             :accessibility-label      :chat-message-input}]]]]
         (when chat-screen-loaded?
           [:<>
            [gradients/view props state animations show-bottom-gradient?]
            [link-preview/view]
            [images/images-list]])
-        [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
-         subscriptions]]]]]))
+        [:f> actions/view props state animations window-height insets subscriptions]]]]]))
 
 (defn f-composer
   [props]
