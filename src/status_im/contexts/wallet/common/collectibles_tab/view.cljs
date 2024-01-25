@@ -33,6 +33,7 @@
         :render-fn               (fn [{:keys [preview-url] :as collectible}]
                                    [quo/collectible
                                     {:images   [preview-url]
-                                     :on-press #(on-collectible-press collectible)}])}])))
+                                     :on-press #(when on-collectible-press
+                                                  (on-collectible-press collectible))}])}])))
 
 (def view (quo.theme/with-theme view-internal))

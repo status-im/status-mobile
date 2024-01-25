@@ -51,8 +51,7 @@
       [icons/icon :main-icons2/untrustworthy
        {:size            12
         :no-color        true
-        :container-style (style/icon-container contact?)}])
-   ]
+        :container-style (style/icon-container contact?)}])]
    (when (and (not verified?) short-chat-key)
      [text/text
       {:weight          :monospace

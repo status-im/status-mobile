@@ -73,7 +73,8 @@
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
-           :padding-top padding-top}
+           :padding-top padding-top
+           :key         :share-adress}
           [quo/page-nav
            {:icon-name           :i/close
             :on-press            #(rf/dispatch [:navigate-back])
@@ -92,7 +93,6 @@
              :networks            @selected-networks
              :on-share-press      #(share-action qr-url share-title)
              :profile-picture     nil
-             :unblur-on-android?  true
              :full-name           (:name account)
              :customization-color color
              :emoji               emoji

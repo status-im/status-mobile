@@ -17,19 +17,19 @@
   (fn [^js data]
     (let [^js section (.-section data)]
       (reagent/as-element [f
-                           {:title (.-title section)
+                           {:index (.-index section)
+                            :title (.-title section)
                             :data  (.-data section)}]))))
 
 (defn- wrap-per-section-render-fn
-  [props]
-  (update
-   (if-let [f (:render-fn props)]
-     (assoc (dissoc props :render-fn :render-data)
-            :renderItem
-            (memo-wrap-render-fn f (:render-data props)))
-     props)
-   :data
-   to-array))
+  [index props]
+  (-> (if-let [f (:render-fn props)]
+        (assoc (dissoc props :render-fn :render-data)
+               :renderItem
+               (memo-wrap-render-fn f (:render-data props)))
+        props)
+      (update :data to-array)
+      (assoc :index index)))
 
 (defn section-list
   "A wrapper for SectionList.
@@ -42,6 +42,8 @@
           props
           (when render-section-footer-fn
             {:renderSectionFooter (wrap-render-section-header-fn render-section-footer-fn)})
-          {:sections            (clj->js (map wrap-per-section-render-fn sections))
+          {:sections            (->> sections
+                                     (map-indexed wrap-per-section-render-fn)
+                                     (clj->js))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)
            :style               style})])

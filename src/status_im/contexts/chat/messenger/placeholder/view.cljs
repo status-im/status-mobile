@@ -15,9 +15,9 @@
     :animated?     false}])
 
 (defn f-view
-  [calculations-complete?]
+  [chat-screen-layout-calculations-complete?]
   (let [top     (safe-area/get-top)
-        opacity (worklets/placeholder-opacity calculations-complete?)
-        z-index (worklets/placeholder-z-index calculations-complete?)]
+        opacity (worklets/placeholder-opacity chat-screen-layout-calculations-complete?)
+        z-index (worklets/placeholder-z-index chat-screen-layout-calculations-complete?)]
     [reanimated/view {:style (style/container top opacity z-index)}
      [loading-skeleton]]))

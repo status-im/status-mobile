@@ -52,7 +52,8 @@
      :remove-listeners    remove-listeners}))
 
 (defn view
-  [{:keys [header footer customization-color gradient-cover?]} &
+  [{:keys [header footer customization-color footer-container-padding gradient-cover?]
+    :or   {footer-container-padding (safe-area/get-top)}} &
    children]
   (reagent/with-let [window-height                (:height (rn/get-window))
                      footer-container-height      (reagent/atom 0)
@@ -94,7 +95,7 @@
                children)]
         [rn/keyboard-avoiding-view
          {:style                    style/keyboard-avoiding-view
-          :keyboard-vertical-offset (if platform/ios? (safe-area/get-top) 0)
+          :keyboard-vertical-offset (if platform/ios? footer-container-padding 0)
           :pointer-events           :box-none}
          [floating-container/view
           {:on-layout       set-footer-container-height

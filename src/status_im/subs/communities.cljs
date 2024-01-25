@@ -8,7 +8,7 @@
 
 (re-frame/reg-sub
  :communities/fetching-community
- :<- [:communities/resolve-community-info]
+ :<- [:communities/fetching-community]
  (fn [info [_ id]]
    (get info id)))
 
@@ -335,3 +335,33 @@
  :<- [:communities]
  (fn [communities [_ community-id]]
    (get-in communities [community-id :intro-message])))
+
+(re-frame/reg-sub
+ :communities/selected-permission-addresses
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [selected-permission-addresses]}] _]
+   selected-permission-addresses))
+
+(re-frame/reg-sub
+ :communities/selected-permission-accounts
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+    (re-frame/subscribe [:communities/selected-permission-addresses community-id])])
+ (fn [[accounts selected-permission-addresses]]
+   (filter #(contains? selected-permission-addresses (:address %)) accounts)))
+
+(re-frame/reg-sub
+ :communities/airdrop-address
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [airdrop-address]}] _]
+   airdrop-address))
+
+(re-frame/reg-sub
+ :communities/airdrop-account
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+    (re-frame/subscribe [:communities/airdrop-address community-id])])
+ (fn [[accounts airdrop-address]]
+   (first (filter #(= (:address %) airdrop-address) accounts))))

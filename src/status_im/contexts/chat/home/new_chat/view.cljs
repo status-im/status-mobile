@@ -16,33 +16,38 @@
 
 (defn- no-contacts-view
   [{:keys [theme]}]
-  [rn/view
-   {:style (style/no-contacts)}
-   [rn/image {:source (resources/get-themed-image :no-contacts theme)}]
-   [quo/text
-    {:weight :semi-bold
-     :size   :paragraph-1
-     :style  {:margin-bottom 2
-              :margin-top    12}}
-    (i18n/label :t/you-have-no-contacts)]
-   [quo/text
-    {:weight :regular
-     :size   :label}
-    (i18n/label :t/dont-yell-at-me)]
-   [quo/button
-    {:type            :primary
-     :size            32
-     :container-style {:margin-top    20
-                       :margin-bottom 12}
-     :on-press        #(rf/dispatch [:invite.events/share-link])}
-    (i18n/label :t/invite-friends)]
-   [quo/button
-    {:type     :grey
-     :size     32
-     :on-press #(do
-                  (rf/dispatch [:navigate-back])
-                  (rf/dispatch [:open-modal :new-contact]))}
-    (i18n/label :t/add-a-contact)]])
+  (let [customization-color (rf/sub [:profile/customization-color])]
+    [rn/view
+     {:style (style/no-contacts)}
+     [rn/image {:source (resources/get-themed-image :no-contacts-to-chat theme)}]
+     [quo/text
+      {:weight :semi-bold
+       :size   :paragraph-1
+       :style  {:margin-bottom 2
+                :margin-top    12}}
+      (i18n/label :t/you-have-no-contacts)]
+     [quo/text
+      {:weight :regular
+       :size   :paragraph-2}
+      (i18n/label :t/dont-yell-at-me)]
+     [quo/button
+      {:customization-color customization-color
+       :theme               theme
+       :type                :primary
+       :size                32
+       :container-style     {:margin-top    20
+                             :margin-bottom 12}
+       :on-press            #(rf/dispatch [:invite.events/share-link])}
+      (i18n/label :t/invite-friends)]
+     [quo/button
+      {:customization-color customization-color
+       :theme               theme
+       :type                :grey
+       :size                32
+       :on-press            #(do
+                               (rf/dispatch [:navigate-back])
+                               (rf/dispatch [:open-modal :new-contact]))}
+      (i18n/label :t/add-a-contact)]]))
 
 (defn contact-item-render
   [_]
