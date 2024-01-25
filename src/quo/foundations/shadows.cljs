@@ -6,6 +6,10 @@
     [react-native.platform :as platform]
     [utils.number]))
 
+;; Set radius coefficient based on Android Version.
+;; A good way to know is to check if shadow color is supported i.e API level 28 (Android 9) above
+(def ^:private shadow-radius-coefficient (if platform/is-shadow-color-supported? 0.8 0.1))
+
 (defn- get-shadow-color
   "Calculates the shadow color based on a given color and opacity, with an optional coefficient.
   - Arity [color opacity]: Uses a default coefficient value of 5 (empirically determined) to compute the shadow color.
@@ -22,11 +26,11 @@
 
 (defn- get-shadow-radius
   "Computes shadow radius and elevation properties based on a given radius, with an optional coefficient.
-  - Arity [radius]: Uses a default coefficient of 0.8 (empirically determined) to compute the elevation.
+  - Arity [radius]: Uses a default coefficient of 0.8 for API level 28 and above and 0.1 otherwise (empirically determined) to compute the elevation.
   - Arity [radius coefficient]: Uses the specified coefficient to compute the elevation.
   Returns a map with :elevation, computed as the product of radius and coefficient, and :shadow-radius keys."
   ([radius]
-   (get-shadow-radius radius 0.8))
+   (get-shadow-radius radius shadow-radius-coefficient))
   ([radius coefficient]
    {:elevation     (* radius coefficient)
     :shadow-radius radius}))
