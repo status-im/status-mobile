@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
+            [status-im.contexts.communities.utils :as communities.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -22,10 +23,14 @@
 
 (defn view
   []
-  (let [{id :community-id}          (rf/sub [:get-screen-params])
+  (let [{id :community-id} (rf/sub [:get-screen-params])
         {:keys [name color images]} (rf/sub [:communities/community id])
-        accounts                    (rf/sub [:wallet/accounts-with-customization-color])
-        selected-addresses          (rf/sub [:communities/selected-permission-addresses id])]
+        {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+        accounts (rf/sub [:wallet/accounts-with-customization-color])
+        selected-addresses (rf/sub [:communities/selected-permission-addresses id])
+        highest-role-text
+        (i18n/label
+         (communities.utils/role->translation-key highest-permission-role))]
     [rn/safe-area-view {:style style/container}
      [quo/drawer-top
       {:type                :context-tag
@@ -42,6 +47,19 @@
        :content-container-style {:padding 20}
        :key-fn                  :address
        :data                    accounts}]
+
+     (when (and highest-permission-role (seq selected-addresses))
+       [rn/view
+        {:style style/highest-role}
+        [quo/text
+         {:size  :paragraph-2
+          :style {:color colors/neutral-50}}
+         (i18n/label :t/eligible-to-join-as {:role ""})]
+        [quo/context-tag
+         {:type    :icon
+          :icon    :i/members
+          :size    24
+          :context highest-role-text}]])
 
      (when (empty? selected-addresses)
        [rn/view

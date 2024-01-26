@@ -15,7 +15,7 @@
      [:token {:optional true} [:or keyword? string?]]
      [:style {:optional true} map?]
      ;; Ignores `token` and uses this as parameter to `rn/image`'s source.
-     [:image-source {:optional true} [:or :schema.common/image-source :string]]]]
+     [:image-source {:optional true} [:maybe [:or :schema.common/image-source :string]]]]]
    :any])
 
 (defn- size->number
