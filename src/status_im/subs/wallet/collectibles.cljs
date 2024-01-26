@@ -8,6 +8,11 @@
   (and (not (string/blank? url))
        (string/includes? media-type "svg")))
 
+(defn- animation?
+  [url media-type]
+  (and (not (string/blank? url))
+       (not (string/blank? media-type))))
+
 (defn- preview-url
   [{{collectible-image-url :image-url
      animation-url         :animation-url
@@ -17,6 +22,9 @@
     (svg-animation? animation-url animation-media-type)
     {:uri  animation-url
      :svg? true}
+
+    (animation? animation-url animation-media-type)
+    {:uri animation-url}
 
     (not (string/blank? collectible-image-url))
     {:uri collectible-image-url}
