@@ -1,96 +1,56 @@
 (ns status-im.contexts.communities.events
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [clojure.walk :as walk]
-            [legacy.status-im.data-store.chats :as data-store.chats]
-            [legacy.status-im.mailserver.core :as mailserver]
-            [react-native.platform :as platform]
-            [react-native.share :as share]
-            [schema.core :as schema]
-            [status-im.constants :as constants]
-            [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
-            status-im.contexts.communities.actions.community-options.events
-            status-im.contexts.communities.actions.leave.events
-            [status-im.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [legacy.status-im.data-store.chats :as data-store.chats]
+    [legacy.status-im.data-store.communities :as data-store.communities]
+    [legacy.status-im.mailserver.core :as mailserver]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
+    [schema.core :as schema]
+    [status-im.constants :as constants]
+    [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
+    status-im.contexts.communities.actions.community-options.events
+    status-im.contexts.communities.actions.leave.events
+    [status-im.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
-(defn <-request-to-join-community-rpc
-  [r]
-  (set/rename-keys r
-                   {:communityId :community-id
-                    :publicKey   :public-key
-                    :chatId      :chat-id}))
+(defn handle-community
+  [{:keys [db]} [community-js]]
+  (when community-js
+    (let [{:keys [token-permissions
+                  token-permissions-check joined id]
+           :as   community} (data-store.communities/<-rpc community-js)
+          has-channel-perm? (fn [id-perm-tuple]
+                              (let [{:keys [type]} (second id-perm-tuple)]
+                                (or (= type constants/community-token-permission-can-view-channel)
+                                    (=
+                                     type
+                                     constants/community-token-permission-can-view-and-post-channel))))]
+      {:db (assoc-in db [:communities id] community)
+       :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+            (when (not joined)
+              [:dispatch [:chat.ui/spectate-community id]])
+            (when (nil? token-permissions-check)
+              [:dispatch [:communities/check-permissions-to-join-community id]])
+            (when (some has-channel-perm? token-permissions)
+              [:dispatch [:communities/check-all-community-channels-permissions id]])
+            (when joined
+              [:dispatch [:communities/get-revealed-accounts id]])]})))
 
-(defn <-requests-to-join-community-rpc
-  [requests key-fn]
-  (reduce #(assoc %1 (key-fn %2) (<-request-to-join-community-rpc %2)) {} requests))
+(rf/reg-event-fx :communities/handle-community handle-community)
 
-(defn <-chats-rpc
-  [chats]
-  (reduce-kv (fn [acc k v]
-               (assoc acc
-                      (name k)
-                      (-> v
-                          (assoc :can-post? (:canPost v))
-                          (dissoc :canPost)
-                          (update :members walk/stringify-keys))))
-             {}
-             chats))
-
-(defn <-categories-rpc
-  [categ]
-  (reduce-kv #(assoc %1 (name %2) %3) {} categ))
-
-(defn <-rpc
-  [c]
-  (-> c
-      (set/rename-keys {:canRequestAccess            :can-request-access?
-                        :canManageUsers              :can-manage-users?
-                        :canDeleteMessageForEveryone :can-delete-message-for-everyone?
-                        :canJoin                     :can-join?
-                        :requestedToJoinAt           :requested-to-join-at
-                        :isMember                    :is-member?
-                        :adminSettings               :admin-settings
-                        :tokenPermissions            :token-permissions
-                        :communityTokensMetadata     :tokens-metadata
-                        :introMessage                :intro-message
-                        :muteTill                    :muted-till})
-      (update :admin-settings
-              set/rename-keys
-              {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
-      (update :members walk/stringify-keys)
-      (update :chats <-chats-rpc)
-      (update :token-permissions seq)
-      (update :categories <-categories-rpc)
-      (assoc :token-images
-             (reduce (fn [acc {sym :symbol image :image}]
-                       (assoc acc sym image))
-                     {}
-                     (:communityTokensMetadata c)))))
-
-(rf/reg-event-fx :communities/handle-community
- (fn [{:keys [db]}
-      [community-js]]
-   (when community-js
-     (let [{:keys [token-permissions
-                   token-permissions-check joined id]
-            :as   community} (<-rpc community-js)
-           has-channel-perm? (fn [id-perm-tuple]
-                               (let [{:keys [type]} (second id-perm-tuple)]
-                                 (or (= type constants/community-token-permission-can-view-channel)
-                                     (=
-                                      type
-                                      constants/community-token-permission-can-view-and-post-channel))))]
-       {:db (assoc-in db [:communities id] community)
-        :fx [[:dispatch [:communities/initialize-permission-addresses id]]
-             (when (not joined)
-               [:dispatch [:chat.ui/spectate-community id]])
-             (when (nil? token-permissions-check)
-               [:dispatch [:communities/check-permissions-to-join-community id]])
-             (when (some has-channel-perm? token-permissions)
-               [:dispatch [:communities/check-all-community-channels-permissions id]])]}))))
+(schema/=> handle-community
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:catn [:community-js map?]]]]]
+   [:maybe
+    [:map
+     [:db [:map [:communities map?]]]
+     [:fx vector?]]]])
 
 (rf/defn handle-removed-chats
   [{:keys [db]} chat-ids]
@@ -164,7 +124,7 @@
  (fn [{:keys [db]} [requests]]
    {:db (assoc db
                :communities/my-pending-requests-to-join
-               (<-requests-to-join-community-rpc requests :communityId))}))
+               (data-store.communities/<-requests-to-join-community-rpc requests :communityId))}))
 
 (rf/reg-event-fx :communities/get-user-requests-to-join
  (fn [_]
@@ -240,12 +200,19 @@
 
 (defn toggle-selected-permission-address
   [{:keys [db]} [address community-id]]
-  {:db (update-in db
-                  [:communities community-id :selected-permission-addresses]
-                  (fn [selected-addresses]
-                    (if (contains? selected-addresses address)
-                      (disj selected-addresses address)
-                      (conj selected-addresses address))))})
+  (let [selected-permission-addresses
+        (get-in db [:communities community-id :selected-permission-addresses])
+        updated-selected-permission-addresses
+        (if (contains? selected-permission-addresses address)
+          (disj selected-permission-addresses address)
+          (conj selected-permission-addresses address))]
+    {:db (assoc-in db
+          [:communities community-id :selected-permission-addresses]
+          updated-selected-permission-addresses)
+     :fx [(when community-id
+            [:dispatch
+             [:communities/check-permissions-to-join-community community-id
+              updated-selected-permission-addresses :based-on-client-selection]])]}))
 
 (rf/reg-event-fx :communities/toggle-selected-permission-address
  toggle-selected-permission-address)
@@ -255,7 +222,8 @@
    (when community-id
      {:db (assoc-in db
            [:communities community-id :selected-permission-addresses]
-           (get-in db [:communities community-id :previous-permission-addresses]))})))
+           (get-in db [:communities community-id :previous-permission-addresses]))
+      :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
 
 (rf/reg-event-fx :communities/share-community-channel-url-with-data
  (fn [_ [chat-id]]
@@ -405,3 +373,54 @@
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
              [:dispatch [:chat/navigate-to-chat chat-id]])]})))
+
+(defn get-revealed-accounts
+  [{:keys [db]} [community-id]]
+  (let [{:keys [joined fetching-revealed-accounts]
+         :as   community} (get-in db [:communities community-id])]
+    (when (and community joined (not fetching-revealed-accounts))
+      {:db (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
+       :json-rpc/call
+       [{:method      "wakuext_getRevealedAccounts"
+         :params      [community-id (get-in db [:profile/profile :public-key])]
+         :js-response true
+         :on-success  [:communities/get-revealed-accounts-success community-id]
+         :on-error    (fn [err]
+                        (log/error {:message      "failed to fetch revealed accounts"
+                                    :community-id community-id
+                                    :err          err})
+                        (rf/dispatch [:communities/get-revealed-accounts-failed community-id]))}]})))
+
+(rf/reg-event-fx :communities/get-revealed-accounts get-revealed-accounts)
+
+(schema/=> get-revealed-accounts
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:schema [:catn [:community-id [:? :string]]]]]]
+   [:maybe
+    [:map
+     [:db map?]
+     [:json-rpc/call :schema.common/rpc-call]]]])
+
+(rf/reg-event-fx :communities/get-revealed-accounts-success
+ (fn [{:keys [db]} [community-id revealed-accounts-js]]
+   (when-let [community (get-in db [:communities community-id])]
+     (let [revealed-accounts
+           (reduce
+            (fn [acc {:keys [address] :as revealed-account}]
+              (assoc acc address (dissoc revealed-account :address)))
+            {}
+            (data-store.communities/<-revealed-accounts-rpc revealed-accounts-js))
+
+           community-with-revealed-accounts
+           (-> community
+               (assoc :revealed-accounts revealed-accounts)
+               (dissoc :fetching-revealed-accounts))]
+       {:db (assoc-in db [:communities community-id] community-with-revealed-accounts)}))))
+
+(rf/reg-event-fx :communities/get-revealed-accounts-failed
+ (fn [{:keys [db]} [community-id]]
+   (when (get-in db [:communities community-id])
+     {:db (update-in db [:communities community-id] dissoc :fetching-revealed-accounts)})))
