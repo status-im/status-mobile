@@ -57,8 +57,7 @@
         animation-duration (when-let [deleted-till (or deleted-undoable-till
                                                        deleted-for-me-undoable-till)]
                              (- deleted-till (datetime/timestamp)))
-        ;; enable long press only when
-        ;; undo delete timer timedout
+        ;; enable long press only when undo delete timer timedout
         ;; message pinned and user has permission to unpin
         on-long-press      (when (and (not animation-duration)
                                       (or (and (or in-pinned-view? pinned) message-pin-enabled)

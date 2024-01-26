@@ -158,9 +158,8 @@
       (let [{:keys [id message
                     contact-verification-status]} notification
             challenger?                           (:outgoing message)]
-        ;; TODO(@ilmotta): Declined challenges should only be displayed for the
-        ;; challengee, not the challenger.
-        ;; https://github.com/status-im/status-mobile/issues/14354
+        ;; TODO(@ilmotta): Declined challenges should only be displayed for the challengee, not the
+        ;; challenger. Https://github.com/status-im/status-mobile/issues/14354
         (when-not
           (and challenger?
                (= contact-verification-status constants/contact-verification-status-declined))

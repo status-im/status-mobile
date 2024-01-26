@@ -163,9 +163,8 @@
            on-request-record-audio-permission on-check-audio-permissions
            audio-file on-lock max-duration-ms theme]}]
   [:f>
-   ;; TODO we need to refactor this, and use :f> with defined function, currenly state is reseted each
-   ;; time parent component
-   ;; is re-rendered
+   ;; TODO we need to refactor this, and use :f> with defined function, currenly state is reseted
+   ;; each time parent component is re-rendered
    (fn []
      (let [recording? (reagent/atom false)
            locked? (reagent/atom false)

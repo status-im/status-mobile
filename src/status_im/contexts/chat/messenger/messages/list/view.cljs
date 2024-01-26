@@ -47,8 +47,8 @@
 
 (defn list-on-end-reached
   [distance-from-list-top]
-  ;; FIXME: that's a bit of a hack but we need to update `distance-from-list-top` once the new messages
-  ;; are fetched in order for the header to work properly
+  ;; FIXME: that's a bit of a hack but we need to update `distance-from-list-top` once the new
+  ;; messages are fetched in order for the header to work properly
   (let [on-loaded (fn [n]
                     (reanimated/set-shared-value distance-from-list-top
                                                  (+ (reanimated/get-shared-value distance-from-list-top)

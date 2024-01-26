@@ -78,8 +78,8 @@
            {:on-press            on-submit
             :accessibility-label :next-button
             :disabled            (or (not next-enabled?)
-                                     ;; disable on resetting? so the user cannot press the next button
-                                     ;; recklessly
+                                     ;; disable on resetting? so the user cannot press the next
+                                     ;; button recklessly
                                      ;; https://github.com/status-im/status-mobile/pull/12245#issuecomment-874827573
                                      resetting?)
             :type                :secondary

@@ -100,8 +100,8 @@
 
      (and title subtitle)
      [:<>
-      ;; FIXME(Ferossgp): ReactNative 63 will support view inside text on andrid, remove thess if when
-      ;; migrating
+      ;; FIXME(Ferossgp): ReactNative 63 will support view inside text on andrid, remove thess if
+      ;; when migrating
       (if (string? title)
         [text/text
          {:weight              (or title-text-weight :medium)
@@ -179,13 +179,13 @@
      {:style (merge {:align-items     :center
                      :justify-content :flex-end
                      :flex-direction  :row
-                     ;; Grow to occupy full space, shrink when need be, but always maitaining 16px left
-                     ;; gutter
+                     ;; Grow to occupy full space, shrink when need be, but always maitaining 16px
+                     ;; left gutter
                      :flex-grow       1
                      :flex-shrink     0
                      :margin-left     16
-                     ;; When the left-side leaves no room for right-side, the rendered element is pushed
-                     ;; out. A flex-basis ensures that there is some room reserved.
+                     ;; When the left-side leaves no room for right-side, the rendered element is
+                     ;; pushed out. A flex-basis ensures that there is some room reserved.
                      ;; The number 80px was determined by trial and error.
                      :flex-basis      80}
                     accessory-style)}

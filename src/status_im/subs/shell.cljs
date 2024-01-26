@@ -40,8 +40,7 @@
          {:content-type constants/content-type-text
           :data         content}
 
-         ;; Currently mock image is used as placeholder,
-         ;; as last-message don't have image
+         ;; Currently mock image is used as placeholder, as last-message don't have image
          ;; https://github.com/status-im/status-mobile/issues/14625
          (= content-type constants/content-type-image)
          {:content-type constants/content-type-image
@@ -234,7 +233,8 @@
 
               (and (not muted)
                    (= chat-type constants/one-to-one-chat-type))
-              ;; Note - for 1-1 chats, all unread messages are counted as mentions and shown with counter
+              ;; Note - for 1-1 chats, all unread messages are counted as mentions and shown with
+              ;; counter
               (-> acc
                   (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
                   (update-in [:chats-stack :unviewed-mentions-count] + unviewed-messages-count))

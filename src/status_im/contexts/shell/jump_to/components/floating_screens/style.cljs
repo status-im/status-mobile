@@ -16,11 +16,10 @@
     :z-index       screen-z-index}
    {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
     :overflow         :hidden
-    ;; KeyboardAvoidingView which is used for chat screen composer,
-    ;; not working when we use :absolute layout. One fix is to add
-    ;; KeyboardAvoidingView :behaviour height in android, which is also
-    ;; recommended in the documentation. It fixes KeyboardAvoidingView but
-    ;; the pushing of views by the keyboard is not smooth & while animating it creates a weird jump.
+    ;; KeyboardAvoidingView which is used for chat screen composer, not working when we use
+    ;; :absolute layout. One fix is to add. KeyboardAvoidingView :behaviour height in android, which
+    ;; is also recommended in the documentation. It fixes KeyboardAvoidingView but the pushing of
+    ;; views by the keyboard is not smooth & while animating it creates a weird jump.
     :position         (if (= screen-id shell.constants/chat-screen) :relative :absolute)
     :flex             -1}))
 

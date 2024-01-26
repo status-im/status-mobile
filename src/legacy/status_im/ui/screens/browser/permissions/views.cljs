@@ -50,18 +50,17 @@
     {:UNSAFE_componentWillUpdate (fn [_ [_ _ {:keys [requested-permission]}]]
                                    (cond
                                      @update?
-                                     ;; the component has been updated with a new permission, we show the
-                                     ;; panel
+                                     ;; the component has been updated with a new permission, we
+                                     ;; show the panel
                                      (do (reset! update? false)
                                          (show-panel-anim bottom-anim-value alpha-value))
 
                                      (and @current-permission requested-permission)
-                                     ;; a permission has been accepted/denied by the user, and there is
-                                     ;; another permission that needs to be processed by the user
-                                     ;; we hide the processed permission with an animation and update
-                                     ;; `current-permission` with a delay so that the information is
-                                     ;; still
-                                     ;; available during the animation
+                                     ;; a permission has been accepted/denied by the user, and there
+                                     ;; is another permission that needs to be processed by the user
+                                     ;; we hide the processed permission with an animation and
+                                     ;; update `current-permission` with a delay so that the
+                                     ;; information is still available during the animation
                                      (do (reset! update? true)
                                          (js/setTimeout #(reset! current-permission
                                                            (permission-details requested-permission))
@@ -70,20 +69,18 @@
 
                                      requested-permission
                                      ;; the dapp is asking for a permission, we put it in
-                                     ;; current-permission
-                                     ;; and start the show-animation
+                                     ;; current-permission and start the show-animation
                                      (do (reset! current-permission
                                            (get browser.permissions/supported-permissions
                                                 requested-permission))
                                          (show-panel-anim bottom-anim-value alpha-value))
 
                                      :else
-                                     ;; a permission has been accepted/denied by the user, and there is
-                                     ;; no other permission that needs to be processed by the user
-                                     ;; we hide the processed permission with an animation and update
-                                     ;; `current-permission` with a delay so that the information is
-                                     ;; still
-                                     ;; available during the animation
+                                     ;; a permission has been accepted/denied by the user, and there
+                                     ;; is no other permission that needs to be processed by the
+                                     ;; user we hide the processed permission with an animation and
+                                     ;; update `current-permission` with a delay so that the
+                                     ;; information is still available during the animation
                                      (do (js/setTimeout #(reset! current-permission nil) 500)
                                          (hide-panel-anim bottom-anim-value alpha-value))))}
     (when @current-permission

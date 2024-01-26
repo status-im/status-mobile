@@ -57,7 +57,8 @@
   (let [theme                   (quo.theme/use-theme-value)
         window-height           (:height (rn/get-window))
         {:keys [top bottom]}    (safe-area/get-insets)
-        ;; view height calculation is different because window height is different on iOS and Android:
+        ;; view height calculation is different because window height is different on iOS and
+        ;; Android:
         view-height             (if platform/ios?
                                   (- window-height bottom)
                                   (+ window-height top))

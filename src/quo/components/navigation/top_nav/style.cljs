@@ -5,8 +5,7 @@
   (let [right-offset (cond
                        (> unread-count max-value)
                        -14
-                       ;; Greater than 9 means we'll need 2 digits to represent
-                       ;; the text.
+                       ;; Greater than 9 means we'll need 2 digits to represent the text.
                        (> unread-count 9)
                        -10
                        :else -6)]

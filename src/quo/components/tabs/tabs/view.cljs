@@ -164,9 +164,8 @@
              :style style
              ;; The padding-top workaround is needed because on Android
              ;; {:overflow :visible} doesn't work on components inheriting
-             ;; from ScrollView (e.g. FlatList). There are open issues, here's
-             ;; just one about this topic:
-             ;; https://github.com/facebook/react-native/issues/31218
+             ;; from ScrollView (e.g. FlatList). There are open issues, here's just one about this
+             ;; topic: Https://github.com/facebook/react-native/issues/31218
              :content-container-style
              (assoc container-style :padding-top (dec unread-count-offset))
              :horizontal true

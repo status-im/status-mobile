@@ -26,8 +26,9 @@
 
 (defn topbar
   [{:keys [navigation use-insets right-accessories modal? content border-bottom? new-ui?] ;; remove
-                                                                                          ;; new-ui? key,
-                                                                                          ;; temp fix
+                                                                                          ;; new-ui?
+                                                                                          ;; key, temp
+                                                                                          ;; fix
     :or   {border-bottom? true
            new-ui?        false}
     :as   props}]

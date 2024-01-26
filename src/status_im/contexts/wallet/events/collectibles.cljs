@@ -34,7 +34,8 @@
   [accounts collectibles]
   (reduce (fn [acc {:keys [ownership] :as collectible}]
             (->> ownership
-                 (map :address) ; In ERC1155 tokens a collectible can be owned by multiple addresses.
+                 (map :address) ; In ERC1155 tokens a collectible can be owned by multiple
+                                ; addresses.
                  (reduce (fn add-collectible-to-address [acc address]
                            (update-in acc [address :collectibles] conj collectible))
                          acc)))

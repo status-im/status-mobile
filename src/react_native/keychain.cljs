@@ -20,24 +20,20 @@
 ;;   see this article for more details:
 ;;   https://developer.apple.com/documentation/security/keychain_services/keychain_items/restricting_keychain_item_accessibility?language=objc
 (def keychain-restricted-availability
-  ;; From Apple's documentation:
-  ;; > The kSecAttrAccessible attribute enables you to control item availability
-  ;; > relative to the lock state of the device.
-  ;; > It also lets you specify eligibility for restoration to a new device.
-  ;; > If the attribute ends with the string ThisDeviceOnly,
-  ;; > the item can be restored to the same device that created a backup,
-  ;; > but it isn’t migrated when restoring another device’s backup data.
-  ;; > ...
-  ;; > For extremely sensitive data
-  ;; > THAT YOU NEVER WANT STORED IN iCloud,
-  ;; > you might choose kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly.
-  ;; That is exactly what we use there.
-  ;; Note that the password won't be stored if the device isn't locked by a passcode.
+  ;; From Apple's documentation: > The kSecAttrAccessible attribute enables you to control item
+  ;; availability > relative to the lock state of the device. > It also lets you specify eligibility
+  ;; for restoration to a new device. > If the attribute ends with the string ThisDeviceOnly, > the
+  ;; item can be restored to the same device that created a backup, > but it isn’t migrated when
+  ;; restoring another device’s backup data. > ... > For extremely sensitive data > THAT YOU NEVER
+  ;; WANT STORED IN iCloud, > you might choose kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly. That
+  ;; is exactly what we use there. Note that the password won't be stored if the device isn't locked
+  ;; by a passcode.
   #js {:accessible (enum-val "ACCESSIBLE" "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY")})
 
 (def keychain-secure-hardware
   ;; (Android) Requires storing the encryption key for the entry in secure hardware
-  ;; or StrongBox (see https://developer.android.com/training/articles/keystore#ExtractionPrevention)
+  ;; or StrongBox (see
+  ;; https://developer.android.com/training/articles/keystore#ExtractionPrevention)
   #js {:accessible (enum-val "SECURITY_LEVEL" "SECURE_HARDWARE")})
 
 ;; Android only

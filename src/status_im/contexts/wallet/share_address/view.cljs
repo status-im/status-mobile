@@ -50,8 +50,8 @@
   []
   (let [padding-top       (:top (safe-area/get-insets))
         wallet-type       (reagent/atom :wallet-legacy)
-        ;; Design team is yet to confirm the default selected networks here.
-        ;; Should be the current selected for the account or all the networks always
+        ;; Design team is yet to confirm the default selected networks here. Should be the current
+        ;; selected for the account or all the networks always
         selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
     (fn []
       (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])

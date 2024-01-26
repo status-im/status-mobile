@@ -22,13 +22,15 @@
   {:positive-01    "rgba(68,208,88,1)"     ; Primary Positive, text, icons color
    :positive-02    "rgba(78,188,96,0.1)"   ; Secondary Positive, Supporting color for success
    ; illustrations
-   :positive-03    "rgba(78,188,96,1)"     ; Lighter Positive, Supporting color for success illustrations
+   :positive-03    "rgba(78,188,96,1)"     ; Lighter Positive, Supporting color for success
+                                           ; illustrations
    :negative-01    "rgba(255,45,85,1)"     ; Primary Negative, text, icons color
    :negative-02    "rgba(255,45,85,0.1))"  ; Secondary Negative, Supporting color for errors
    ; illustrations
    :warning-01     "rgba(255, 202, 15, 1)"
    :warning-02     "rgba(255, 202, 15, 0.1)"
-   :interactive-01 "rgba(67,96,223,1)"     ; Accent color, buttons, own message, actions,active state
+   :interactive-01 "rgba(67,96,223,1)"     ; Accent color, buttons, own message, actions,active
+                                           ; state
    :interactive-02 "rgba(236,239,252,1)"   ; Light Accent, buttons background, actions background,
    ; messages
    :interactive-03 "rgba(255,255,255,0.1)" ; Background for interactive above accent
@@ -130,12 +132,14 @@
 (def mentioned-background (:mentioned-background old-colors-mapping-light))
 (def mentioned-border (:mentioned-border old-colors-mapping-light))
 
-(def red-light "#ffe5ea")                                   ;; error tooltip TODO (andrey) should be white, but shadow needed
+(def red-light "#ffe5ea")                                   ;; error tooltip TODO (andrey) should be white, but shadow
+                                   ;; needed
 
 ;; BLACK
 (def black (:text-01 light-theme))                                  ;; Used as the default text color
 (def black-persist (:ui-background dark-theme))                           ;; this doesn't with theme
-(def black-transparent (:ui-02 light-theme))                   ;; Used as background color for rounded button on dark background and as background
+(def black-transparent (:ui-02 light-theme))                   ;; Used as background color for rounded button on dark background and as
+                   ;; background
 ;; color for containers like "Backup recovery phrase"
 (def black-transparent-20 (:backdrop light-theme))                ; accounts divider
 (def black-transparent-40 (:backdrop light-theme))
@@ -145,7 +149,8 @@
 (def black-transparent-86 (:ui-03 light-theme))
 
 ;; DARK GREY
-(def gray (:text-02 light-theme))                                    ;; Dark grey, used as a background for a light foreground and as
+(def gray (:text-02 light-theme))                                    ;; Dark grey, used as a background for a light foreground and
+                                    ;; as
 ;; section header and secondary text color
 (def gray-transparent-10 (alpha gray 0.1))
 (def gray-transparent-40 (alpha gray 0.4))
@@ -153,7 +158,8 @@
 (def gray-lighter (:ui-01 light-theme))                    ;; Light Grey, used as a background or shadow
 
 ;; ACCENT BLUE
-(def blue (:interactive-01 light-theme))                                    ;; Accent blue, used as main wallet color, and ios home add button
+(def blue (:interactive-01 light-theme))                                    ;; Accent blue, used as main wallet color, and ios home add
+                                    ;; button
 (def blue-persist (:interactive-01 light-theme))
 ;; LIGHT BLUE
 (def blue-light (:interactive-02 light-theme))                        ;; Light Blue

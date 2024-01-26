@@ -73,7 +73,8 @@
   (testing "Downsampling works with large input data and max-array-size (randomized test)"
     (let [large-data      (range 1000)
           max-array-size  500
-          expected-output (range 0 1000 2)] ; expected-output contains every 2nd element from 0 to 1000
+          expected-output (range 0 1000 2)] ; expected-output contains every 2nd element from 0 to
+                                            ; 1000
       (is (= (utils/downsample-data large-data max-array-size) expected-output)))))
 
 (deftest format-compact-number
