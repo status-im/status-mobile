@@ -51,19 +51,18 @@
                                               :updated-key :name
                                               :new-value   @edited-account-name}))]
     (fn []
-      (let [{:keys            [name emoji address color watch-only?]
-             default-account? :wallet
-             :as              account} (rf/sub [:wallet/current-viewing-account])
-            network-details            (rf/sub [:wallet/network-preference-details])
-            test-networks-enabled?     (rf/sub [:profile/test-networks-enabled?])
-            network-preferences-key    (if test-networks-enabled?
-                                         :test-preferred-chain-ids
-                                         :prod-preferred-chain-ids)
-            account-name               (or @edited-account-name name)
-            button-disabled?           (or (nil? @edited-account-name)
-                                           (= name @edited-account-name))]
+      (let [{:keys [name emoji address color watch-only? default-account?]
+             :as   account}         (rf/sub [:wallet/current-viewing-account])
+            network-details         (rf/sub [:wallet/network-preference-details])
+            test-networks-enabled?  (rf/sub [:profile/test-networks-enabled?])
+            network-preferences-key (if test-networks-enabled?
+                                      :test-preferred-chain-ids
+                                      :prod-preferred-chain-ids)
+            account-name            (or @edited-account-name name)
+            button-disabled?        (or (nil? @edited-account-name)
+                                        (= name @edited-account-name))]
         [create-or-edit-account/view
-         {:page-nav-right-side [(when (not default-account?)
+         {:page-nav-right-side [(when-not default-account?
                                   {:icon-name :i/delete
                                    :on-press
                                    (fn []

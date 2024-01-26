@@ -32,13 +32,13 @@
 
 (defn- options
   [{:keys [theme show-account-selector? options-height]}]
-  (let [{:keys            [name color emoji address watch-only?]
-         default-account? :wallet} (rf/sub [:wallet/current-viewing-account])
+  (let [{:keys [name color emoji address watch-only?
+                default-account?]} (rf/sub [:wallet/current-viewing-account])
         network-preference-details (rf/sub [:wallet/network-preference-details])
         multichain-address         (utils/get-multichain-address
                                     network-preference-details
                                     address)
-        share-title                (str name " " (i18n/label :t/address))]
+        share-title                (i18n/label :t/share-address-title {:address name})]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -93,7 +93,7 @@
                                  #(rf/dispatch [:wallet/share-account
                                                 {:title share-title :content multichain-address}])
                                  600))}
-        (when (not default-account?)
+        (when-not default-account?
           {:add-divider?        (not show-account-selector?)
            :icon                :i/delete
            :accessibility-label :remove-account

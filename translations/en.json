@@ -2480,5 +2480,6 @@
     "apply-changes": "Apply changes",
     "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn't use",
     "watched-account-removed": "Watched address has been removed",
-    "account-removed": "Account has been removed"
+    "account-removed": "Account has been removed",
+    "share-address-title": "{{address}} address"
 }

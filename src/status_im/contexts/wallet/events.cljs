@@ -86,24 +86,24 @@
 
 (rf/reg-event-fx
  :wallet/show-account-deleted-toast
- (fn [_ [message]]
-   {:dispatch [:toasts/upsert {:type :positive :text message}]}))
+ (fn [_ [toast-message]]
+   {:fx [[:dispatch [:toasts/upsert {:type :positive :text toast-message}]]]}))
 
 (rf/reg-event-fx
  :wallet/remove-account-success
- (fn [_ [toast _]]
+ (fn [_ [toast-message _]]
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:pop-to-root :shell-stack]]
          [:dispatch [:wallet/get-accounts]]
-         [:dispatch [:wallet/show-account-deleted-toast toast]]]}))
+         [:dispatch [:wallet/show-account-deleted-toast toast-message]]]}))
 
 (rf/reg-event-fx
  :wallet/remove-account
- (fn [_ [{:keys [address toast]}]]
+ (fn [_ [{:keys [address toast-message]}]]
    {:fx [[:json-rpc/call
           [{:method     "accounts_deleteAccount"
             :params     [address]
-            :on-success [:wallet/remove-account-success toast]
+            :on-success [:wallet/remove-account-success toast-message]
             :on-error   #(log/info "failed to remove account "
                                    {:error %
                                     :event :wallet/remove-account})}]]]}))

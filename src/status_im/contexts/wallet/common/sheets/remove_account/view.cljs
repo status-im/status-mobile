@@ -11,7 +11,7 @@
     [utils.re-frame :as rf]))
 
 (defn- footer
-  [{:keys [address submit-disabled? toast]}]
+  [{:keys [address submit-disabled? toast-message]}]
   [quo/bottom-actions
    {:actions             :2-actions
     :customization-color :danger
@@ -19,8 +19,8 @@
     :button-one-props    {:on-press
                           (fn []
                             (rf/dispatch [:wallet/remove-account
-                                          {:address address
-                                           :toast   toast}]))
+                                          {:address       address
+                                           :toast-message toast-message}]))
                           :type :danger
                           :disabled? submit-disabled?}
     :button-two-label    (i18n/label :t/cancel)
@@ -71,7 +71,7 @@
          [footer
           {:submit-disabled? (not @confirmed?)
            :address          address
-           :toast            (i18n/label :t/account-removed)}]]))))
+           :toast-message    (i18n/label :t/account-removed)}]]))))
 
 (defn- watched-address-flow
   [{:keys [address name emoji color] :as _account}]
@@ -89,7 +89,7 @@
    [footer
     {:submit-disabled? false
      :address          address
-     :toast            (i18n/label :t/watched-account-removed)}]])
+     :toast-message    (i18n/label :t/watched-account-removed)}]])
 
 (defn- view-internal
   []
