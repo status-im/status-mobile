@@ -17,14 +17,15 @@
 
 (defn tile
   [{:keys [style size resource]}]
-  (let [svg? (and (map? resource) (:svg? resource))]
+  (let [svg?        (and (map? resource) (:svg? resource))
+        image-style (style/tile-style-by-size size)]
     [rn/view {:style style}
      (if svg?
-       [svg/svg-uri
-        {:uri   (:uri resource)
-         :style (style/tile-style-by-size size)}]
+       [rn/view {:style {:border-radius (:border-radius image-style)
+                         :overflow      :hidden}}
+        [svg/svg-uri (assoc image-style :uri (:uri resource))]]
        [fast-image/fast-image
-        {:style  (style/tile-style-by-size size)
+        {:style  image-style
          :source (if (string? resource)
                    {:uri resource}
                    resource)}])]))
