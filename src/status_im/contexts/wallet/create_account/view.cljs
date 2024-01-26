@@ -32,8 +32,7 @@
                         :size                :xxs
                         :customization-color account-color}
     :action            :button
-    :action-props      {:on-press    #(ff/alert :wallet
-                                                :edit-default-keypair
+    :action-props      {:on-press    #(ff/alert ::ff/wallet.edit-default-keypair
                                                 (fn []
                                                   (rf/dispatch [:navigate-to :wallet-select-keypair])))
                         :button-text (i18n/label :t/edit)

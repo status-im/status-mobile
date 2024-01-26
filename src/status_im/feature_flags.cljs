@@ -1,32 +1,36 @@
 (ns status-im.feature-flags
   (:require
+    [clojure.string :as string]
     [react-native.config :as config]
     [reagent.core :as reagent]))
 
-(defn- enabled? [v] (= "1" v))
+(defn- enabled-in-env?
+  [k]
+  (= "1" (config/get-config k)))
 
-(defn check-env [k] (enabled? (config/get-config k)))
-
-(def ^:private feature-flags-config
+(defonce ^:private feature-flags-config
   (reagent/atom
-   {:wallet
-    {:edit-default-keypair (check-env :DEV_FF_EDIT_DEFAULT_KEYPAIR)
-     :bridge-token         (check-env :DEV_FF_BRIDGE_TOKEN)}}))
+   {::wallet.edit-default-keypair (enabled-in-env? :FLAG_EDIT_DEFAULT_KEYPAIR_ENABLED)
+    ::wallet.bridge-token         (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)}))
 
 (defn feature-flags [] @feature-flags-config)
 
-(defn get-flag
-  [section flag]
-  (get-in (feature-flags) [section flag]))
+(def feature-flags-categories
+  (set (map
+        (fn [k]
+          (first (string/split (str (name k)) ".")))
+        (keys @feature-flags-config))))
 
-(defn update-flag
-  [section flag]
-  (swap! feature-flags-config
-    (fn [a]
-      (update-in a [section flag] not))))
+(defn enabled?
+  [flag]
+  (get (feature-flags) flag))
+
+(defn toggle
+  [flag]
+  (swap! feature-flags-config update flag not))
 
 (defn alert
-  [context flag action]
-  (if (get-flag context flag)
+  [flag action]
+  (if (enabled? flag)
     (action)
     (js/alert (str flag " is currently feature flagged off"))))

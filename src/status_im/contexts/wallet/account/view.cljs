@@ -53,8 +53,7 @@
              :receive-action #(rf/dispatch [:open-modal :wallet-share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
-             :bridge-action  #(ff/alert :wallet
-                                        :bridge-token
+             :bridge-action  #(ff/alert ::ff/wallet.bridge-token
                                         (fn [] (rf/dispatch [:open-modal :wallet-bridge])))}])
          [quo/tabs
           {:style            style/tabs
