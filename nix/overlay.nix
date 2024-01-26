@@ -63,15 +63,7 @@ in {
   };
 
   # Package version adjustments
-  gradle = super.gradle.overrideAttrs (oldAttrs: rec {
-    version = "8.0.1";
-
-    src = super.fetchurl {
-      url = "https://services.gradle.org/distributions/gradle-${version}-bin.zip";
-      sha256 = "sha256-G2tVi+k/KUONPflLff7gLnlLlNmspGEaks23m2uI6Qk=";
-    };
-  });
-
+  gradle = super.gradle_8;
   nodejs = super.nodejs-18_x;
   ruby = super.ruby_3_1;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };

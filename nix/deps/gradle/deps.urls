@@ -798,7 +798,7 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.13.0/pro
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.17.2/protobuf-bom-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.19.2/protobuf-bom-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/3.19.3/protobuf-bom-3.19.3.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/4.0.0-rc-2/protobuf-bom-4.0.0-rc-2.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/4.26.0-RC1/protobuf-bom-4.26.0-RC1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/3.17.2/protobuf-javalite-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/3.19.2/protobuf-javalite-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.4.0/protobuf-java-util-3.4.0.pom
@@ -815,7 +815,7 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.13.0/pr
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.17.2/protobuf-java-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.19.2/protobuf-java-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.19.3/protobuf-java-3.19.3.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/4.0.0-rc-2/protobuf-java-4.0.0-rc-2.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/4.26.0-RC1/protobuf-java-4.26.0-RC1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-lite/3.0.1/protobuf-lite-3.0.1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.0.0/protobuf-parent-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.4.0/protobuf-parent-3.4.0.pom
@@ -826,9 +826,9 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.13.0/
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.17.2/protobuf-parent-3.17.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.19.2/protobuf-parent-3.19.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.19.3/protobuf-parent-3.19.3.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/4.0.0-rc-2/protobuf-parent-4.0.0-rc-2.pom
-https://repo.maven.apache.org/maven2/com/google/truth/truth-parent/1.2.0/truth-parent-1.2.0.pom
-https://repo.maven.apache.org/maven2/com/google/truth/truth/1.2.0/truth-1.2.0.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/4.26.0-RC1/protobuf-parent-4.26.0-RC1.pom
+https://repo.maven.apache.org/maven2/com/google/truth/truth-parent/1.3.0/truth-parent-1.3.0.pom
+https://repo.maven.apache.org/maven2/com/google/truth/truth/1.3.0/truth-1.3.0.pom
 https://repo.maven.apache.org/maven2/com/ibm/icu/icu4j/53.1/icu4j-53.1.pom
 https://repo.maven.apache.org/maven2/com/intellij/annotations/12.0/annotations-12.0.pom
 https://repo.maven.apache.org/maven2/com/parse/bolts/bolts-tasks/1.4.0/bolts-tasks-1.4.0.pom
@@ -1411,7 +1411,7 @@ https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.po
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/2.1.0/stax-ex-2.1.0.pom
 https://repo.maven.apache.org/maven2/org/mockito/mockito-core/3.12.4/mockito-core-3.12.4.pom
 https://repo.maven.apache.org/maven2/org/mockito/mockito-core/4.0.0/mockito-core-4.0.0.pom
-https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.9.0/mockito-core-5.9.0.pom
+https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.10.0/mockito-core-5.10.0.pom
 https://repo.maven.apache.org/maven2/org/mockito/mockito-inline/4.0.0/mockito-inline-4.0.0.pom
 https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/3.2/objenesis-parent-3.2.pom
 https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/3.3/objenesis-parent-3.3.pom

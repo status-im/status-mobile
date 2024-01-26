@@ -12676,12 +12676,12 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-bom/4.0.0-rc-2",
+    "path": "com/google/protobuf/protobuf-bom/4.26.0-RC1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "protobuf-bom-4.0.0-rc-2.pom": {
-        "sha1": "1cf14b7774313bc34805dd58fffa3cbc35601184",
-        "sha256": "sha256-45/pSYKw70HwkoTPbtPkj0Bsu/ZtioKD0MYmk04KYTI="
+      "protobuf-bom-4.26.0-RC1.pom": {
+        "sha1": "95b890ee6f318b67514a9d3573c78aebfd8cf4c1",
+        "sha256": "sha256-rGscgQUEAvrvFw6SnyMSbIw7N0J6SEgo4bo8nmAbO04="
       }
     }
   },
@@ -12927,16 +12927,16 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-java/4.0.0-rc-2",
+    "path": "com/google/protobuf/protobuf-java/4.26.0-RC1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "protobuf-java-4.0.0-rc-2.pom": {
-        "sha1": "8fab0fe0746b1d370663a3db7dd483c2c4d34a6f",
-        "sha256": "sha256-q//aKX5NdsCktWMRsnjG/L3jNI9g/ucIGLN119ZzT50="
+      "protobuf-java-4.26.0-RC1.pom": {
+        "sha1": "9b053265705abd2eb8dd06831b4728ed19e8f79a",
+        "sha256": "sha256-cexXywR1/FPS885SUYezfvvww1TAjy6gAtAmxJVxn0Y="
       },
-      "protobuf-java-4.0.0-rc-2.jar": {
-        "sha1": "ae590f34383d2d6fde2b3b8e2ffb668e64579099",
-        "sha256": "sha256-PMJSvvZfetM8UwzuxxZkzR2gsmUhrWZzpl2fpJMegio="
+      "protobuf-java-4.26.0-RC1.jar": {
+        "sha1": "a4718e6e4943736bb27aa3c7f8ef3c0a851c35b1",
+        "sha256": "sha256-cgTa51zMiegEQa2I9pyGy9psCQ5tPJU9MfMoC8DyDDg="
       }
     }
   },
@@ -13056,38 +13056,38 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-parent/4.0.0-rc-2",
+    "path": "com/google/protobuf/protobuf-parent/4.26.0-RC1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "protobuf-parent-4.0.0-rc-2.pom": {
-        "sha1": "c5391c7917ca1197cbbda4efc6454a87e7e7107e",
-        "sha256": "sha256-4NJwgSugXAqrlx4wtRyl0VcmYBkGxiGsIM3LLkq2fi8="
+      "protobuf-parent-4.26.0-RC1.pom": {
+        "sha1": "80963cafb79bc1b0f5dd2c1c82c67016c2362ad4",
+        "sha256": "sha256-n+4hEMufYvUwFQts4WiDUYKyGGnivQQhyc2bS7fODMs="
       }
     }
   },
 
   {
-    "path": "com/google/truth/truth-parent/1.2.0",
+    "path": "com/google/truth/truth-parent/1.3.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "truth-parent-1.2.0.pom": {
-        "sha1": "d24447b2a11846a354e503575ed95e393ba5158d",
-        "sha256": "sha256-Q8/2l2yxZ5ETlTWluYDpwTW8Fgxk7hGc/6qNHv9aquI="
+      "truth-parent-1.3.0.pom": {
+        "sha1": "3eb6e48814b6005f14adf4ba341ce94bfba11fc1",
+        "sha256": "sha256-AkeLKjmvUUp+DUrXYdLkJeFjjZbS8Ij5ZR8SUlAhO4k="
       }
     }
   },
 
   {
-    "path": "com/google/truth/truth/1.2.0",
+    "path": "com/google/truth/truth/1.3.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "truth-1.2.0.pom": {
-        "sha1": "44853be2a0532449235377b3eea680b679cefa7e",
-        "sha256": "sha256-4snQPEXLKYR49KPOM37mXXsk+nVA/PSEy/OkvuQCuVo="
+      "truth-1.3.0.pom": {
+        "sha1": "1ef03cb5f8557ca11a8f696cb2d0af38b16919d5",
+        "sha256": "sha256-AFPHBE31NpSm1Q09e7GwKRuoXnNuV9YCZMS7XFK3P3I="
       },
-      "truth-1.2.0.jar": {
-        "sha1": "0135db6c1dfab1b3ca326c8ce51c09381d332d43",
-        "sha256": "sha256-tGEIQNXjffFOZqqwuEDA7j+l6Vl9o6KQIGQYcXHCM5o="
+      "truth-1.3.0.jar": {
+        "sha1": "a92487a9c1b8a5edc7238e632a3b46696a0f022e",
+        "sha256": "sha256-XnS0h50fgkl4cD16+5kyejftdbT9MxmKwA3+gQSvvsk="
       }
     }
   },
@@ -21703,16 +21703,16 @@
   },
 
   {
-    "path": "org/mockito/mockito-core/5.9.0",
+    "path": "org/mockito/mockito-core/5.10.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "mockito-core-5.9.0.pom": {
-        "sha1": "2054dcc15b9ede899cb9ec6e8e960e36c68b4574",
-        "sha256": "sha256-BJDEL+Yu7WRzQdpAojcHGW2BO0TbKj3KMB2IFz56yPc="
+      "mockito-core-5.10.0.pom": {
+        "sha1": "25e309d012d326eef980de463edeb2a592cf9cdb",
+        "sha256": "sha256-D4gyKTuHHyO2/0QkET7mXBdfq9G2uswY7Dg8s5akOq8="
       },
-      "mockito-core-5.9.0.jar": {
-        "sha1": "faa88b96db3aeb96a93e83dec7491345bfbfc414",
-        "sha256": "sha256-u62Rhe1zSWX6x+Nn8OUVlvaVMeUdiyy87BBI3W+0Hyw="
+      "mockito-core-5.10.0.jar": {
+        "sha1": "b3812fa2ee069f1d0b41c1c0155da79d0e1dcde0",
+        "sha256": "sha256-AyP1kbBNOg18qevuu56fNKB8DskWm3RE7jlRtx1MrVY="
       }
     }
   },
