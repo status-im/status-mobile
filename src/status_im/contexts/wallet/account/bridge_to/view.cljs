@@ -40,7 +40,8 @@
         tokens           (:tokens account)
         mainnet          (first network-details)
         layer-2-networks (rest network-details)
-        account-token    (first (filter #(= token-symbol (% :symbol)) tokens))]
+        account-token    (some #(when (= token-symbol (:symbol %)) %) tokens)]
+
 
     [rn/view
      [account-switcher/view

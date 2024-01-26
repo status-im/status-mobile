@@ -244,6 +244,4 @@
 
 (defn get-balance-for-chain
   [data chain-id]
-  (->> (vals data)
-       (filter #(= chain-id (:chain-id %)))
-       (first)))
+  (some #(when (= chain-id (:chain-id %)) %) (vals data)))
