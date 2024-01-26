@@ -3,13 +3,18 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+<<<<<<< HEAD
     [react-native.svg :as svg]
+=======
+    [react-native.platform :as platform]
+>>>>>>> 49161eff7 (Options component moved out of lightbox)
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.url :as url]))
 
 (defn header
   [collectible-name collection-name collection-image-url]
@@ -71,6 +76,32 @@
       :accessibility-label :share-details
       :label               (i18n/label :t/share-details)}]]])
 
+(defn options-drawer
+  [images index]
+  (let [{:keys [image]} (nth images index)
+        uri             (url/replace-port image (rf/sub [:mediaserver/port]))]
+    [quo/action-drawer
+     [[{:icon                :i/link
+        :accessibility-label :view-on-etherscan
+        :label               (i18n/label :t/view-on-eth)}]
+      [{:icon                :i/save
+        :accessibility-label :save-image
+        :label               (i18n/label :t/save-image-to-photos)
+        :on-press            (fn []
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (rf/dispatch
+                                [:lightbox/save-image-to-gallery
+                                 uri
+                                 #(rf/dispatch [:toasts/upsert
+                                                {:id              :random-id
+                                                 :type            :positive
+                                                 :container-style {:bottom (when platform/android? 20)}
+                                                 :text            (i18n/label :t/photo-saved)}])]))}]
+      [{:icon                :i/share
+        :accessibility-label :share-collectible
+        :label               (i18n/label :t/share-collectible)
+        :right-icon          :i/external}]]]))
+
 (defn view-internal
   [{:keys [theme] :as _props}]
   (let [selected-tab  (reagent/atom :overview)
@@ -120,7 +151,8 @@
                                                           :id           token-id
                                                           :header       collectible-name
                                                           :description  collection-name}]
-                                                :index  0}])))}
+                                                :index  0
+                                                :options-drawer-component options-drawer}])))}
             (if svg?
               [rn/view
                {:style     (assoc style/preview :overflow :hidden)

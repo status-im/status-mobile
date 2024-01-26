@@ -9,7 +9,6 @@
     [status-im.common.lightbox.animations :as anim]
     [status-im.common.lightbox.constants :as constants]
     [status-im.common.lightbox.style :as style]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.url :as url]))
 
@@ -40,25 +39,6 @@
         (anim/animate top-view-width screen-width)
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
-(defn drawer
-  [images index]
-  (let [{:keys [image]} (nth images index)
-        uri             (url/replace-port image (rf/sub [:mediaserver/port]))]
-    [quo/action-drawer
-     [[{:icon                :i/save
-        :accessibility-label :save-image
-        :label               (i18n/label :t/save-image-library)
-        :on-press            (fn []
-                               (rf/dispatch [:hide-bottom-sheet])
-                               (rf/dispatch
-                                [:lightbox/save-image-to-gallery
-                                 uri
-                                 #(rf/dispatch [:toasts/upsert
-                                                {:id              :random-id
-                                                 :type            :positive
-                                                 :container-style {:bottom (when platform/android? 20)}
-                                                 :text            (i18n/label :t/photo-saved)}])]))}]]]))
-
 (defn share-image
   [images index]
   (let [{:keys [image]} (nth images index)
@@ -66,7 +46,7 @@
     (rf/dispatch [:lightbox/share-image uri])))
 
 (defn top-view
-  [images insets index animations derived landscape? screen-width]
+  [images insets index animations derived landscape? screen-width options-drawer-component]
   (let [{:keys [description header]} (nth images @index)
         bg-color                     (if landscape?
                                        colors/neutral-100-opa-70
@@ -114,6 +94,6 @@
        {:active-opacity      1
         :accessibility-label :image-options
         :on-press            #(rf/dispatch [:show-bottom-sheet
-                                            {:content (fn [] [drawer images @index])}])
+                                            {:content (fn [] [options-drawer-component images @index])}])
         :style               style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))

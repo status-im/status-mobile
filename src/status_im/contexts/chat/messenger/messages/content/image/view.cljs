@@ -57,7 +57,8 @@
                                        :index 0
                                        :insets insets
                                        :bottom-text-component
-                                       [lightbox/bottom-text-for-lightbox message]}])}
+                                       [lightbox/bottom-text-for-lightbox message]
+                                       :options-drawer-component lightbox/drawer}])}
       [fast-image/fast-image
        {:source              {:uri image-local-url}
         :style               (merge dimensions {:border-radius 12})

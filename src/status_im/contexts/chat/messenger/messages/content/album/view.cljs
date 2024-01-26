@@ -66,7 +66,8 @@
                                                   album-messages))
                                    :bottom-text-component
                                    [lightbox/bottom-text-for-lightbox
-                                    first-image]}])}
+                                    first-image]
+                                   :options-drawer-component lightbox/drawer}])}
               [fast-image/fast-image
                {:style     (style/image dimensions index portrait? images-count)
                 :source    {:uri (url/replace-port (:image (:content item)) media-server-port)}
