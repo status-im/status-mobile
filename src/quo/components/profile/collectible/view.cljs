@@ -27,7 +27,8 @@
        [fast-image/fast-image
         {:style  image-style
          :source (if (string? resource)
-                   {:uri resource}
+                   {:uri      resource
+                    :priority :low}
                    resource)}])]))
 
 (defn two-tiles
