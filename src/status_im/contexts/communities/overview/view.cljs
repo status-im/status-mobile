@@ -16,6 +16,7 @@
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.overview.style :as style]
     [status-im.contexts.communities.overview.utils :as utils]
+    [status-im.contexts.communities.utils :as communities.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -140,7 +141,11 @@
   []
   (fn [{:keys [id color]}]
     (let [{:keys [can-request-access?
-                  number-of-hold-tokens tokens]} (rf/sub [:community/token-gated-overview id])]
+                  number-of-hold-tokens tokens
+                  highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+          highest-role-text
+          (i18n/label
+           (communities.utils/role->translation-key highest-permission-role :t/member))]
       [rn/view {:style (style/token-gated-container)}
        [rn/view
         {:style {:padding-horizontal 12
@@ -150,7 +155,7 @@
                  :flex               1}}
         [quo/text {:weight :medium}
          (if can-request-access?
-           (i18n/label :t/you-eligible-to-join)
+           (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button]]
        (when (pos? number-of-hold-tokens)
@@ -163,23 +168,26 @@
         {:tokens   tokens
          :padding? true}]
        [quo/button
-        {:on-press            #(join-gated-community id)
+        {:on-press
+         (if config/community-accounts-selection-enabled?
+           #(rf/dispatch [:open-modal :community-account-selection {:community-id id}])
+           #(join-gated-community id))
          :accessibility-label :join-community-button
          :customization-color color
-         :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
-         :disabled?           (not can-request-access?)
-         :icon-left           (if can-request-access? :i/unlocked :i/locked)}
+         :container-style {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+         :disabled? (not can-request-access?)
+         :icon-left (if can-request-access? :i/unlocked :i/locked)}
         (i18n/label :t/join-open-community)]])))
 
 (defn join-community
-  [{:keys [joined color permissions token-permissions id] :as community}
+  [{:keys [joined color permissions token-permissions membership-permissions? id] :as community}
    pending?]
   (let [access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
         invite-only?    (= access-type :invite-only)]
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
-       (if (seq token-permissions)
+       (if membership-permissions?
          [token-gates community]
          [quo/button
           {:on-press
@@ -190,7 +198,7 @@
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
            :icon-left :i/communities}
-          (i18n/label :t/request-to-join-community)]))
+          (i18n/label :t/request-to-join)]))
 
      (when (not (or joined pending? token-permissions))
        [quo/text
