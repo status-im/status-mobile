@@ -34,26 +34,31 @@
                                         :communities/check-all-community-channels-permissions}))}]]]})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-success
- (fn [{:keys [db]} [community-id result]]
-   {:db (-> db
-            (assoc-in [:communities community-id :checking-permissions?] false)
-            (assoc-in [:communities community-id :token-permissions-check] result))}))
+ (fn [{:keys [db]} [community-id based-on-client-selection? result]]
+   (let [token-permissions-check (cond-> result
+                                   based-on-client-selection? (assoc :based-on-client-selection? true))]
+     {:db (-> db
+              (assoc-in [:communities community-id :checking-permissions?] false)
+              (assoc-in [:communities community-id :token-permissions-check]
+                        token-permissions-check))})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-failed
  (fn [{:keys [db]} [community-id]]
    {:db (assoc-in db [:communities community-id :checking-permissions?] false)}))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community
- (fn [{:keys [db]} [community-id]]
+ (fn [{:keys [db]} [community-id addresses based-on-client-selection?]]
    (when-let [community (get-in db [:communities community-id])]
      (when-not (:checking-permissions? community)
        {:db            (-> db
                            (assoc-in [:communities community-id :checking-permissions?] true)
                            (assoc-in [:communities community-id :can-request-access?] false))
         :json-rpc/call [{:method     "wakuext_checkPermissionsToJoinCommunity"
-                         :params     [{:communityId community-id}]
+                         :params     [(cond-> {:communityId community-id}
+                                        addresses
+                                        (assoc :addresses addresses))]
                          :on-success [:communities/check-permissions-to-join-community-success
-                                      community-id]
+                                      community-id based-on-client-selection?]
                          :on-error   (fn [err]
                                        (rf/dispatch
                                         [:communities/check-permissions-to-join-community-failed
