@@ -159,6 +159,9 @@
     community-token-permission-become-token-master
     community-token-permission-become-token-owner})
 
+(def ^:const community-token-type-erc20 1)
+(def ^:const community-token-type-erc721 2)
+
 ;; Community rules for joining
 (def ^:const community-rule-ens-only "ens-only")
 

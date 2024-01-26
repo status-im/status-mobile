@@ -22,7 +22,7 @@
    {:min 1}
    [:map
     {:closed true}
-    [:method :string]
+    [:method [:or :keyword :string]]
     [:params [:sequential :any]]
     [:js-response {:optional true} :any]
     [:on-success [:or fn? [:cat keyword? [:* :any]]]]
