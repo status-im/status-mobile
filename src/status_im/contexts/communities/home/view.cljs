@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
+    [react-native.pure :as rn.pure]
     [react-native.reanimated :as reanimated]
     [status-im.common.home.banner.view :as common.banner]
     [status-im.common.home.empty-state.view :as common.empty-state]
@@ -16,8 +16,7 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.number]
-    [utils.re-frame :as rf]
-    [react-native.pure :as rn.pure]))
+    [utils.re-frame :as rf]))
 
 (defn item-render
   [{:keys [id] :as item}]
