@@ -180,9 +180,9 @@
 
 (rf/reg-event-fx :wallet/select-bridge-to
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :token] token))
+   {:db (assoc-in db [:wallet :ui :send :token] token)
     :fx [[:navigate-to-within-stack [:wallet-bridge-to stack-id]]]}))
+
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
