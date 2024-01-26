@@ -248,9 +248,13 @@
      :margin-bottom 12}
     :avatar logo
     :title title
-    :description description
-    :title-accessibility-label :community-title
-    :description-accessibility-label :community-description}])
+    :title-number-of-lines 2
+    :description
+    description
+    :title-accessibility-label
+    :community-title
+    :description-accessibility-label
+    :community-description}])
 
 (defn- community-content
   [id]
