@@ -81,13 +81,13 @@
             {:keys [id
                     preview-url
                     collection-data
-                    collectible-data]} collectible
-            {svg?         :svg?
+                    collectible-data]}  collectible
+            {svg?        :svg?
              preview-uri :uri}          preview-url
             token-id                    (:token-id id)
             {collection-image :image-url
-             collection-name  :name} collection-data
-            {collectible-name :name} collectible-data]
+             collection-name  :name}    collection-data
+            {collectible-name :name}    collectible-data]
         [scroll-page/scroll-page
          {:navigate-back? true
           :height         148
@@ -122,9 +122,10 @@
                                                           :description  collection-name}]
                                                 :index  0}])))}
             (if svg?
-              [rn/view {:style     (assoc style/preview :overflow :hidden)
-                        :native-ID (when (= animation-shared-element-id token-id)
-                                     :shared-element)}
+              [rn/view
+               {:style     (assoc style/preview :overflow :hidden)
+                :native-ID (when (= animation-shared-element-id token-id)
+                             :shared-element)}
                [svg/svg-uri (assoc style/preview :uri preview-uri)]]
               [rn/image
                {:source    preview-uri

@@ -21,8 +21,9 @@
         image-style (style/tile-style-by-size size)]
     [rn/view {:style style}
      (if svg?
-       [rn/view {:style {:border-radius (:border-radius image-style)
-                         :overflow      :hidden}}
+       [rn/view
+        {:style {:border-radius (:border-radius image-style)
+                 :overflow      :hidden}}
         [svg/svg-uri (assoc image-style :uri (:uri resource))]]
        [fast-image/fast-image
         {:style  image-style
