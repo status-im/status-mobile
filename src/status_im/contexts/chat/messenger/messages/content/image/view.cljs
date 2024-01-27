@@ -4,6 +4,8 @@
     [react-native.fast-image :as fast-image]
     [react-native.safe-area :as safe-area]
     [status-im.constants :as constants]
+    [status-im.contexts.chat.messenger.messages.content.lightbox.utils :as lightbox-utils]
+    [status-im.contexts.chat.messenger.messages.content.lightbox.view :as lightbox]
     [status-im.contexts.chat.messenger.messages.content.text.view :as text]
     [utils.re-frame :as rf]
     [utils.url :as url]))
@@ -39,7 +41,7 @@
                                                             image-height
                                                             max-container-width
                                                             max-container-height)
-        shared-element-id             (rf/sub [:shared-element-id])
+        animation-shared-element-id   (rf/sub [:animation-shared-element-id])
         image-local-url               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
@@ -48,13 +50,16 @@
       {:active-opacity 1
        :style          {:margin-top 4}
        :on-long-press  on-long-press
-       :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
+       :on-press       #(rf/dispatch [:lightbox/navigate-to-lightbox
                                       message-id
-                                      {:messages [message]
-                                       :index    0
-                                       :insets   insets}])}
+                                      {:images [(lightbox-utils/convert-message-to-lightbox-image
+                                                 message)]
+                                       :index 0
+                                       :insets insets
+                                       :bottom-text-component
+                                       [lightbox/bottom-text-for-lightbox message]}])}
       [fast-image/fast-image
        {:source              {:uri image-local-url}
         :style               (merge dimensions {:border-radius 12})
-        :native-ID           (when (= shared-element-id message-id) :shared-element)
+        :native-ID           (when (= animation-shared-element-id message-id) :shared-element)
         :accessibility-label :image-message}]]]))

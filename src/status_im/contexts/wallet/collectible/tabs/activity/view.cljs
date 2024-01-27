@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.collectible.tabs.activity.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
-            [status-im.contexts.wallet.temp :as temp]))
+            [react-native.core :as rn]))
 
 (defn activity-item
   [item]
@@ -12,6 +11,6 @@
 (defn view
   []
   [rn/flat-list
-   {:data      temp/collectible-activities
+   {:data      nil
     :style     {:flex 1}
     :render-fn activity-item}])

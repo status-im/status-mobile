@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.zoomable-image.view
+(ns status-im.common.lightbox.zoomable-image.view
   (:require
     [oops.core :refer [oget]]
     [react-native.core :as rn]
@@ -7,10 +7,10 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as r]
-    [status-im.contexts.chat.messenger.lightbox.animations :as anim]
-    [status-im.contexts.chat.messenger.lightbox.zoomable-image.constants :as c]
-    [status-im.contexts.chat.messenger.lightbox.zoomable-image.style :as style]
-    [status-im.contexts.chat.messenger.lightbox.zoomable-image.utils :as utils]
+    [status-im.common.lightbox.animations :as anim]
+    [status-im.common.lightbox.zoomable-image.constants :as c]
+    [status-im.common.lightbox.zoomable-image.style :as style]
+    [status-im.common.lightbox.zoomable-image.utils :as utils]
     [utils.re-frame :as rf]
     [utils.url :as url]))
 
@@ -206,7 +206,7 @@
              (anim/animate-decay pan-y-start velocity [lower-bound upper-bound]))))))))
 
 (defn- f-zoomable-image
-  [dimensions animations state rescale curr-orientation content focused? index render-data
+  [dimensions animations state rescale curr-orientation image focused? index render-data
    image-dimensions-nil?]
   (let [{:keys [transparent? set-full-height?]} render-data
         portrait? (= curr-orientation orientation/portrait)
@@ -229,7 +229,7 @@
                                (= curr-orientation orientation/portrait))}
       [reanimated/fast-image
        (merge
-        {:source    {:uri (url/replace-port (:image content) (rf/sub [:mediaserver/port]))}
+        {:source    {:uri (url/replace-port image (rf/sub [:mediaserver/port]))}
          :native-ID (when focused? :shared-element)
          :style     (style/image dimensions animations render-data index)}
         (when image-dimensions-nil?
@@ -238,12 +238,12 @@
 (defn zoomable-image
   []
   (let [state (utils/init-state)]
-    (fn [{:keys [image-width image-height content message-id]} index render-data]
-      (let [shared-element-id                           (rf/sub [:shared-element-id])
+    (fn [{:keys [image-width image-height image id]} index render-data]
+      (let [animation-shared-element-id                 (rf/sub [:animation-shared-element-id])
             exit-lightbox-signal                        (rf/sub [:lightbox/exit-signal])
             zoom-out-signal                             (rf/sub [:lightbox/zoom-out-signal])
             {:keys [set-full-height? curr-orientation]} render-data
-            focused?                                    (= shared-element-id message-id)
+            focused?                                    (= animation-shared-element-id id)
             ;; TODO - remove `image-dimensions` check, once
             ;; https://github.com/status-im/status-desktop/issues/10944 is fixed
             image-dimensions-nil?                       (not (and image-width image-height))
@@ -269,5 +269,5 @@
                                              rescale
                                              set-full-height?))
         (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
-        [:f> f-zoomable-image dimensions animations state rescale curr-orientation content focused?
+        [:f> f-zoomable-image dimensions animations state rescale curr-orientation image focused?
          index render-data image-dimensions-nil?]))))

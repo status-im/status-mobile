@@ -41,10 +41,12 @@
 
 (defn view
   [item]
-  [quo/token-value
-   (merge item
-          {:on-long-press
-           #(rf/dispatch
-             [:show-bottom-sheet
-              {:content       (fn [] [token-value-drawer item])
-               :selected-item (fn [] [quo/token-value item])}])})])
+  (let [{:keys [watch-only?]} (rf/sub [:wallet/current-viewing-account])]
+    [quo/token-value
+     (cond-> item
+       (not watch-only?)
+       (assoc :on-long-press
+              #(rf/dispatch
+                [:show-bottom-sheet
+                 {:content       (fn [] [token-value-drawer item])
+                  :selected-item (fn [] [quo/token-value item])}])))]))

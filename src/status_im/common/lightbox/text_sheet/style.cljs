@@ -1,8 +1,8 @@
-(ns status-im.contexts.chat.messenger.lightbox.text-sheet.style
+(ns status-im.common.lightbox.text-sheet.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.lightbox.constants :as constants]))
+    [status-im.common.lightbox.constants :as constants]))
 
 (defn sheet-container
   [{:keys [height top]}]
@@ -14,10 +14,10 @@
     :right    0}))
 
 (defn text-style
-  [expanding-message?]
+  [expandable-text?]
   {:color             colors/white
    :margin-horizontal 20
-   :align-items       (when-not expanding-message? :center)
+   :align-items       (when-not expandable-text? :center)
    :flex-grow         1})
 
 (def bar-container
