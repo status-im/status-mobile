@@ -44,6 +44,16 @@
  :-> :to-address)
 
 (rf/reg-sub
+ :wallet/wallet-send-address-prefix
+ :<- [:wallet/wallet-send]
+ :-> :address-prefix)
+
+(rf/reg-sub
+ :wallet/wallet-send-selected-networks
+ :<- [:wallet/wallet-send]
+ :-> :selected-networks)
+
+(rf/reg-sub
  :wallet/wallet-send-route
  :<- [:wallet/wallet-send]
  :-> :route)
@@ -214,3 +224,8 @@
    (map (fn [{:keys [color] :as account}]
           (assoc account :customization-color color))
         accounts)))
+
+(rf/reg-sub
+ :wallet/transactions
+ :<- [:wallet]
+ :-> :transactions)

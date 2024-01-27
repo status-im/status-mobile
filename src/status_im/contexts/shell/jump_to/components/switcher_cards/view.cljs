@@ -197,10 +197,10 @@
     (rf/dispatch [:chat/navigate-to-chat id])
 
     (= card-type shell.constants/community-channel-card)
-    (rf/dispatch [:chat/navigate-to-chat channel-id])
+    (rf/dispatch [:communities/navigate-to-community-chat channel-id])
 
     (= card-type shell.constants/community-card)
-    (rf/dispatch [:navigate-to :community-overview id])))
+    (rf/dispatch [:communities/navigate-to-community-overview id])))
 
 (defn calculate-card-position-and-open-screen
   [card-ref card-type id channel-id]

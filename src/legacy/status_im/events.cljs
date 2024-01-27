@@ -43,6 +43,7 @@
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
     [status-im.common.biometric.events :as biometric]
+    status-im.common.serialization
     status-im.common.standard-authentication.events
     [status-im.common.theme.core :as theme]
     [status-im.common.universal-links :as universal-links]

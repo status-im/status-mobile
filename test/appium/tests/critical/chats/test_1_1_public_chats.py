@@ -567,7 +567,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702783)
-    @marks.xfail(reason="Data delivery issue")
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
         # self.chat_2.jump_to_card_by_text(self.username_1)
         # self.chat_1.jump_to_card_by_text(self.username_2)

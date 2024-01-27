@@ -2,9 +2,9 @@
   (:require [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske]
             [clojure.string :as string]
-            [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [utils.ethereum.chain :as chain]
+            [utils.re-frame :as rf]
             [utils.transforms :as types]))
 
 (def collectible-data-types
@@ -24,9 +24,11 @@
 
 (defn displayable-collectible?
   [collectible]
-  (let [{:keys [image-url animation-url]} (:collectible-data collectible)]
+  (let [{{:keys [image-url animation-url]} :collectible-data
+         {collection-image-url :image-url} :collection-data} collectible]
     (or (not (string/blank? animation-url))
-        (not (string/blank? image-url)))))
+        (not (string/blank? image-url))
+        (not (string/blank? collection-image-url)))))
 
 (defn- add-collectibles-to-accounts
   [accounts collectibles]
@@ -66,8 +68,9 @@
          data-type           (collectible-data-types :header)
          fetch-criteria      {:fetch-type            (fetch-type :fetch-if-not-cached)
                               :max-cache-age-seconds max-cache-age-seconds}
+         chain-ids           (chain/chain-ids db)
          request-params      [request-id
-                              [(chain/chain-id db)]
+                              chain-ids
                               (keys (get-in db [:wallet :accounts]))
                               collectibles-filter
                               start-at-index

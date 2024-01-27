@@ -283,7 +283,6 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702808)
-    @marks.xfail(reason="Data delivery issue")
     def test_group_chat_offline_pn(self):
         for i in range(1, 3):
             self.homes[i].navigate_back_to_home_view()
@@ -294,6 +293,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         message_1, message_2 = 'message from old member', 'message from new member'
 
         self.homes[0].just_fyi("Put admin device to offline and send messages from members")
+        self.homes[0].navigate_back_to_home_view()
         app_package = self.drivers[0].current_package
         self.homes[0].driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
         self.chats[1].send_message(message_1)

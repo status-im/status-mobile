@@ -7,7 +7,7 @@
     [status-im.contexts.chat.messenger.composer.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.worklets.chat.messages :as worklets]))
+    [utils.worklets.chat.messenger.composer :as worklets]))
 
 (defn bar
   [theme]

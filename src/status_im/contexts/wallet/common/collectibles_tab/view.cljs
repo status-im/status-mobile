@@ -30,9 +30,10 @@
         :style                   {:flex 1}
         :content-container-style {:align-items :center}
         :num-columns             2
-        :render-fn               (fn [{:keys [preview-url id]}]
+        :render-fn               (fn [{:keys [preview-url] :as collectible}]
                                    [quo/collectible
                                     {:images   [preview-url]
-                                     :on-press #(on-collectible-press id)}])}])))
+                                     :on-press #(when on-collectible-press
+                                                  (on-collectible-press collectible))}])}])))
 
 (def view (quo.theme/with-theme view-internal))

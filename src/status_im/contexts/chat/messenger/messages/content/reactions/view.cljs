@@ -52,7 +52,7 @@
          (get constants/reactions (:emoji-id reaction))))
 
 (defn- view-internal
-  [{:keys [message-id chat-id pinned-by theme]} user-message-content]
+  [{:keys [message-id chat-id pinned-by preview? theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
@@ -60,7 +60,7 @@
         {:container-style {:margin-left 44
                            :margin-top  8}
          :reactions       (map add-emoji-key reactions)
-         :add-reaction?   true
+         :add-reaction?   (not preview?)
          :use-case        (when pinned-by :pinned)
          :on-press        #(on-press (assoc % :message-id message-id))
          :on-long-press   #(on-long-press (assoc %

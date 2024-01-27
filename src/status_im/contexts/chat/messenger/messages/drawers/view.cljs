@@ -34,10 +34,10 @@
            {:id                  reaction-type-int
             :accessibility-label (keyword (str "authors-for-reaction-" reaction-type-int))
             :label               [rn/view {:style style/tab}
-                                  [rn/image
-                                   {:source (reactions.resource/get-reaction
-                                             (get constants/reactions reaction-type-int))
-                                    :style  style/tab-icon}]
+                                  [rn/text
+                                   {:style style/tab-icon}
+                                   (reactions.resource/system-emojis
+                                    (get constants/reactions reaction-type-int))]
                                   [quo/text
                                    {:weight :medium
                                     :size   :paragraph-1

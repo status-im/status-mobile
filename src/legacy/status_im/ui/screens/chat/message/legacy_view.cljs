@@ -246,7 +246,7 @@
         [rn/touchable-opacity
          {:on-press #(do
                        (rf/dispatch [:pop-to-root :shell-stack])
-                       (rf/dispatch [:navigate-to :community-overview (:id community)])
+                       (rf/dispatch [:communities/navigate-to-community-overview (:id community)])
                        (rf/dispatch [:chat/close]))}
          [rn/text
           {:style {:text-align :center

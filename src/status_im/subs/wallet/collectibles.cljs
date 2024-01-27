@@ -3,17 +3,39 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]))
 
+(defn- svg-animation?
+  [url media-type]
+  (and (not (string/blank? url))
+       (string/includes? media-type "svg")))
+
+(defn- animation?
+  [url media-type]
+  (and (not (string/blank? url))
+       (not (string/blank? media-type))))
+
 (defn- preview-url
-  [{:keys [image-url animation-url animation-media-type]}]
-  (if (and (not (string/blank? animation-url))
-           (not= animation-media-type "image/svg+xml"))
-    animation-url
-    image-url))
+  [{{collectible-image-url :image-url
+     animation-url         :animation-url
+     animation-media-type  :animation-media-type} :collectible-data
+    {collection-image-url :image-url}             :collection-data}]
+  (cond
+    (svg-animation? animation-url animation-media-type)
+    {:uri  animation-url
+     :svg? true}
+
+    (animation? animation-url animation-media-type)
+    {:uri animation-url}
+
+    (not (string/blank? collectible-image-url))
+    {:uri collectible-image-url}
+
+    :else
+    {:uri collection-image-url}))
 
 (defn add-collectibles-preview-url
   [collectibles]
-  (map (fn [{:keys [collectible-data] :as collectible}]
-         (assoc collectible :preview-url (preview-url collectible-data)))
+  (map (fn [collectible]
+         (assoc collectible :preview-url (preview-url collectible)))
        collectibles))
 
 (re-frame/reg-sub
@@ -47,7 +69,7 @@
  :<- [:wallet]
  (fn [wallet]
    (let [last-collectible (:last-collectible-details wallet)]
-     (assoc last-collectible :preview-url (preview-url (:collectible-data last-collectible))))))
+     (assoc last-collectible :preview-url (preview-url last-collectible)))))
 
 (re-frame/reg-sub
  :wallet/last-collectible-details-chain-id

@@ -73,7 +73,7 @@
                                               :shared-value scroll-shared-value})}])))
 
 (defn contact-item-render
-  [{:keys [public-key] :as item}]
+  [{:keys [public-key] :as item} theme]
   (let [current-pk           (rf/sub [:multiaccount/public-key])
         show-profile-actions #(rf/dispatch [:show-bottom-sheet
                                             {:content (fn [] [actions/contact-actions item])}])]
@@ -83,7 +83,8 @@
         :on-long-press show-profile-actions
         :accessory     {:type     :options
                         :on-press show-profile-actions}})
-     item]))
+     item
+     theme]))
 
 (defn contacts
   [{:keys [theme pending-contact-requests set-scroll-ref scroll-shared-value]}]
@@ -105,7 +106,8 @@
         :sections                          items
         :sticky-section-headers-enabled    false
         :render-section-header-fn          contact-list/contacts-section-header
-        :render-fn                         contact-item-render
+        :render-fn                         (fn [data]
+                                             (contact-item-render data theme))
         :scroll-event-throttle             8
         :on-scroll                         #(common.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")

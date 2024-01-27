@@ -22,7 +22,7 @@
     :network
     [rn/image
      {:source image-source
-      :style  style/token-image}]
+      :style  style/network}]
     :saved-address
     [wallet-user-avatar/wallet-user-avatar
      {:full-name           label

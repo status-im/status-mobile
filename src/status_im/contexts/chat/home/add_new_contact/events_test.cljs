@@ -132,7 +132,7 @@
                              :type            :compressed-key
                              :public-key      nil ; not yet...
                              :state           :decompress-key}))
-                :effects.contacts/decompress-public-key
+                :serialization/decompress-public-key
                 {:compressed-key user-ckey
                  :on-success     [:contacts/set-new-identity-success user-ckey]
                  :on-error       [:contacts/set-new-identity-error user-ckey]}})))

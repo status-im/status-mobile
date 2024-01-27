@@ -31,12 +31,12 @@
 (defn sheet-component
   [{:keys [insets
            chat-list-scroll-y
+           chat-screen-layout-calculations-complete?
            window-height
            blur-height
            opacity
            background-y
-           theme
-           messages-list-on-layout-finished?]} props state]
+           theme]} props state]
   (let [subscriptions            (utils/init-subs)
         content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
@@ -75,8 +75,8 @@
                         animations
                         dimensions
                         subscriptions)
-    (effects/use-edit props state subscriptions messages-list-on-layout-finished?)
-    (effects/use-reply props animations subscriptions messages-list-on-layout-finished?)
+    (effects/use-edit props state subscriptions chat-screen-layout-calculations-complete?)
+    (effects/use-reply props animations subscriptions chat-screen-layout-calculations-complete?)
     (effects/update-input-mention props state subscriptions)
     (effects/link-previews props state animations subscriptions)
     (effects/use-images props state animations subscriptions)
@@ -145,22 +145,20 @@
         [:f> actions/view props state animations window-height insets subscriptions]]]]]))
 
 (defn f-composer
-  [{:keys [insets chat-list-scroll-y messages-list-on-layout-finished?]}]
+  [props]
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
         opacity       (reanimated/use-shared-value 0)
         background-y  (reanimated/use-shared-value (- window-height)) ; Y position of background
                                                                       ; overlay
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
-                                                      (:bottom insets)))
-        extra-params  {:insets                            insets
-                       :window-height                     window-height
-                       :chat-list-scroll-y                chat-list-scroll-y
-                       :blur-height                       blur-height
-                       :opacity                           opacity
-                       :background-y                      background-y
-                       :theme                             theme
-                       :messages-list-on-layout-finished? messages-list-on-layout-finished?}
+                                                      (:bottom (:insets props))))
+        extra-params  (assoc props
+                             :window-height window-height
+                             :blur-height   blur-height
+                             :opacity       opacity
+                             :background-y  background-y
+                             :theme         theme)
         props         (utils/init-non-reactive-state)
         state         (utils/init-reactive-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})

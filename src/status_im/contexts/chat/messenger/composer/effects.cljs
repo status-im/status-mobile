@@ -16,13 +16,19 @@
 (defn reenter-screen-effect
   [{:keys [text-value saved-cursor-position maximized?]}
    {:keys [content-height]}
-   {:keys [input-content-height input-text input-maximized?]}]
-  (when (and (empty? @text-value) (not= input-text nil))
-    (reset! text-value input-text)
-    (reset! content-height input-content-height)
-    (reset! saved-cursor-position (count input-text)))
-  (when input-maximized?
-    (reset! maximized? true)))
+   {:keys [input-content-height input-text input-maximized?]}
+   {:keys [height]}]
+  (let [lines            (utils/calc-lines input-content-height)
+        minimized-height (if (or (= lines 1) (empty? input-text))
+                           constants/input-height
+                           constants/multiline-minimized-height)]
+    (when (and (empty? @text-value) (not= input-text nil))
+      (reset! text-value input-text)
+      (reset! content-height input-content-height)
+      (reset! saved-cursor-position (count input-text))
+      (reanimated/set-shared-value height minimized-height))
+    (when input-maximized?
+      (reset! maximized? true))))
 
 (defn maximized-effect
   [{:keys [maximized?]}
@@ -101,16 +107,15 @@
    [max-height])
   (rn/use-effect
    (fn []
-     (reenter-screen-effect state dimensions subscriptions))
+     (reenter-screen-effect state dimensions subscriptions animations))
    [max-height subscriptions]))
 
 (defn use-edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position cursor-position]}
    {:keys [edit input-with-mentions]}
-   messages-list-on-layout-finished?]
-  (let [mention?              (some #(= :mention (first %)) (seq input-with-mentions))
-        composer-just-opened? (not @messages-list-on-layout-finished?)]
+   chat-screen-layout-calculations-complete?]
+  (let [mention? (some #(= :mention (first %)) (seq input-with-mentions))]
     (rn/use-effect
      (fn []
        (let [mention-text     (reduce (fn [acc item]
@@ -122,7 +127,9 @@
                                 ;; NOTE: using text-value for cases when the user
                                 ;; leaves the app with an unfinished edit and re-opens
                                 ;; the chat.
-                                (and (seq @text-value) composer-just-opened?)
+                                (and (seq @text-value)
+                                     (not (reanimated/get-shared-value
+                                           chat-screen-layout-calculations-complete?)))
                                 @text-value
                                 :else (get-in edit [:content :text]))
              selection-pos    (count edit-text)
@@ -144,7 +151,9 @@
            ;; UI. This way, `on-focus` will trigger first without changing the height, after which
            ;; `on-content-size-change` will animate the height of the input based on the injected
            ;; text.
-           (js/setTimeout #(do (when @messages-list-on-layout-finished? (.focus ^js @input-ref))
+           (js/setTimeout #(do (when (reanimated/get-shared-value
+                                      chat-screen-layout-calculations-complete?)
+                                 (.focus ^js @input-ref))
                                (reagent/next-tick inject-edit-text))
                           600))))
      [(:message-id edit)])))
@@ -153,12 +162,12 @@
   [{:keys [input-ref]}
    {:keys [container-opacity]}
    {:keys [reply]}
-   messages-list-on-layout-finished?]
+   chat-screen-layout-calculations-complete?]
   (rn/use-effect
    (fn []
      (when reply
        (reanimated/animate container-opacity 1))
-     (when (and reply @input-ref @messages-list-on-layout-finished?)
+     (when (and reply @input-ref (reanimated/get-shared-value chat-screen-layout-calculations-complete?))
        (js/setTimeout #(.focus ^js @input-ref) 600)))
    [(:message-id reply)]))
 

@@ -2,10 +2,10 @@
   (:require
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
+    [react-native.platform :as platform]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
-    [status-im.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
@@ -129,9 +129,7 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (-> db
-           (dissoc :wallet/scanned-address :wallet/send-address)
-           (update-in [:wallet :ui :send] dissoc :to-address))})
+  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
@@ -243,30 +241,15 @@
 
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
- (fn [{:keys [db]} [address]]
+ (fn [{:keys [db]} [_address]]
    {:db (assoc db
-               :wallet/local-suggestions
-               (cond
-                 (= address
-                    (get-in
-                     temp/address-local-suggestion-saved-contact-address-mock
-                     [:accounts 0 :address]))
-                 [temp/address-local-suggestion-saved-contact-address-mock]
-                 (= address
-                    (get temp/address-local-suggestion-saved-address-mock
-                         :address))
-                 [temp/address-local-suggestion-saved-address-mock]
-                 :else (temp/find-matching-addresses address))
-               :wallet/valid-ens-or-address?
-               false)}))
+               :wallet/local-suggestions     nil
+               :wallet/valid-ens-or-address? false)}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
- (fn [{:keys [db]} [ens]]
+ (fn [{:keys [db]} [_ens]]
    {:db (assoc db
-               :wallet/local-suggestions     (if (= ens
-                                                    (:ens temp/ens-local-suggestion-saved-address-mock))
-                                               [temp/ens-local-suggestion-saved-address-mock]
-                                               [temp/ens-local-suggestion-mock])
+               :wallet/local-suggestions     nil
                :wallet/valid-ens-or-address? true)}))
 
 (rf/reg-event-fx :wallet/address-validation-success
@@ -301,10 +284,6 @@
      (background-timer/clear-timeout current-timeout)
      {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
 
-(rf/reg-event-fx :wallet/clean-account-selection
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :send-account-address)}))
-
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
    {:db (assoc-in db
@@ -332,6 +311,34 @@
    {:fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
 
+(rf/reg-event-fx :wallet/reload
+ (fn [_]
+   {:fx [[:dispatch-n [[:wallet/get-wallet-token]]]]}))
+
+(rf/reg-event-fx :wallet/start-wallet
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method   "wallet_startWallet"
+            :on-error #(log/info "failed to start wallet"
+                                 {:error %
+                                  :event :wallet/start-wallet})}]]]}))
+
 (rf/reg-event-fx :wallet/initialize
  (fn []
-   {:fx [[:dispatch-n [[:wallet/get-ethereum-chains] [:wallet/get-accounts]]]]}))
+   {:fx [[:dispatch [:wallet/start-wallet]]
+         [:dispatch [:wallet/get-ethereum-chains]]
+         [:dispatch [:wallet/get-accounts]]]}))
+
+(rf/reg-event-fx :wallet/share-account
+ (fn [_ [{:keys [content title]}]]
+   {:fx [[:effects.share/open
+          (if platform/ios?
+            {:activityItemSources
+             [{:placeholderItem {:type    "text"
+                                 :content content}
+               :item            {:default {:type    "text"
+                                           :content content}}
+               :linkMetadata    {:title title}}]}
+            {:title   title
+             :subject title
+             :message content})]]}))

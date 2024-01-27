@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.resources :as resources]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
@@ -20,21 +21,35 @@
    {:key     :currency
     :type    :select
     :options [{:key :usd}
-              {:key :eur}]}])
+              {:key :eur}]}
+   {:key  :error?
+    :type :boolean}])
 
 (defn view
   []
-  (let [state (reagent/atom {:token               :eth
-                             :currency            :usd
-                             :conversion          0.02
-                             :networks            networks
-                             :title               title
-                             :customization-color :blue})]
+  (let [state     (reagent/atom {:token               :eth
+                                 :currency            :usd
+                                 :conversion          0.02
+                                 :networks            networks
+                                 :title               title
+                                 :customization-color :blue
+                                 :show-keyboard?      false})
+        value     (reagent/atom "")
+        set-value (fn [v]
+                    (swap! value str v))
+        delete    (fn [_]
+                    (swap! value #(subs % 0 (dec (count %)))))]
     (fn []
       [preview/preview-container
        {:state                     state
         :descriptor                descriptor
-        :component-container-style {:padding-horizontal 20
-                                    :margin-top         50
-                                    :align-items        :center}}
-       [quo/token-input @state]])))
+        :full-screen?              true
+        :component-container-style {:flex            1
+                                    :justify-content :space-between}}
+       [quo/token-input (assoc @state :value @value)]
+       [quo/numbered-keyboard
+        {:container-style {:padding-bottom (safe-area/get-top)}
+         :left-action     :dot
+         :delete-key?     true
+         :on-press        set-value
+         :on-delete       delete}]])))
