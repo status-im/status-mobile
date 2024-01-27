@@ -5,6 +5,7 @@
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
     status-im.subs.communities
+    [status-im.subs.profile-test :as profile-test]
     [test-helpers.unit :as h]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -482,3 +483,52 @@
       (is
        (match? []
                (rf/sub [sub-name community-id]))))))
+
+(h/deftest-sub :communities/sorted-community-members-section-list
+  [sub-name]
+  (testing "returns sorted community members per online status"
+    (let [token-image-eth "data:image/jpeg;base64,/9j/2w"
+          community       {:id                  community-id
+                           :permissions         {:access 3}
+                           :token-images        {"ETH" token-image-eth}
+                           :name                "Community super name"
+                           :chats               {"89f98a1e-6776-4e5f-8626-8ab9f855253f"
+                                                 {:description "x"
+                                                  :emoji       "🎲"
+                                                  :permissions {:access 1}
+                                                  :color       "#88B0FF"
+                                                  :name        "random"
+                                                  :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                  :id          "89f98a1e-6776-4e5f-8626-8ab9f855253f"
+                                                  :position    4
+                                                  :can-post?   false
+                                                  :members     {"0x04" {"roles" [1]}}}
+                                                 "a076358e-4638-470e-a3fb-584d0a542ce6"
+                                                 {:description "General channel for the community"
+                                                  :emoji       "🥔"
+                                                  :permissions {:access 1}
+                                                  :color       "#4360DF"
+                                                  :name        "general"
+                                                  :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                  :id          "a076358e-4638-470e-a3fb-584d0a542ce6"
+                                                  :position    0
+                                                  :can-post?   false
+                                                  :members     {"0x04" {"roles" [1]}}}}
+                           :members             {"0x01" {"roles" [1]}
+                                                 "0x02" {"roles" [1]}
+                                                 "0x03" {"roles" [1]}
+                                                 "0x04" {"roles" [1]}}
+                           :can-request-access? false
+                           :outroMessage        "bla"
+                           :verified            false}]
+      (swap! rf-db/app-db assoc-in [:communities community-id] community)
+      (swap! rf-db/app-db assoc :profile/profile profile-test/sample-profile)
+      (swap! rf-db/app-db assoc
+        :visibility-status-updates
+        {"0x01" {:status-type 3}
+         "0x02" {:status-type 3}})
+      (is (= '({:title :Offline
+                :data  ("0x03" "0x04")}
+               {:title :Online
+                :data  ("0x01" "0x02")})
+             (rf/sub [sub-name community-id]))))))
