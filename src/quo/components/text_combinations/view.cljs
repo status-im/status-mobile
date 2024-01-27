@@ -7,25 +7,15 @@
     [react-native.core :as rn]))
 
 (defn icon
-  [source size emoji? emoji-background-color]
-  (if emoji?
-    [rn/view
-     {:style {:border-radius    50
-              :border-width     0
-              :border-color     :transparent
-              :width            size
-              :height           size
-              :justify-content  :center
-              :align-items      :center
-              :background-color emoji-background-color}}
+  [{:keys [source size emoji-background-color]}]
+  (if emoji-background-color
+    [rn/view {:style (style/textual-emoji size emoji-background-color)}
      [text/text
       {:style {:margin-left 1
                :margin-top  1}}
       source]]
     [rn/image
-     {:source (if (string? source)
-                {:uri source}
-                source)
+     {:source source
       :style  {:border-radius 50
                :border-width  0
                :border-color  :transparent
@@ -58,10 +48,10 @@
     [rn/view {:style style/title-container}
      (when avatar
        [rn/view {:style style/avatar-container}
-        [icon avatar 32 nil nil]])
+        [icon {:source avatar :size 32}]])
      (when emoji
        [rn/view {:style style/avatar-container}
-        [icon emoji 32 true emoji-background-color]])
+        [icon {:source emoji :size 32 :emoji-background-color emoji-background-color}]])
      [text/text
       {:accessibility-label title-accessibility-label
        :weight              :semi-bold
