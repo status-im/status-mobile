@@ -63,7 +63,7 @@
         item-height  (reagent/atom 0)]
     (fn [{:keys [hide? insets theme]}
          {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-                 gradient-cover? customization-color hide-handle? blur-radius blur-bg?]
+                 gradient-cover? customization-color hide-handle? blur-radius]
           :or   {border-radius 12}}]
       (let [{window-height :height}           (rn/get-window)
             bg-opacity                        (reanimated/use-shared-value 0)
@@ -107,13 +107,10 @@
                     (style/sheet insets window-height selected-item))}
            (when shell?
              [blur/ios-view
-              (cond-> {:style style/shell-bg}
-                blur-bg? (assoc :blur-radius
-                                blur-radius
-                                :blur-type
-                                :transparent
-                                :overlay-color
-                                :transparent))])
+              {:style         style/shell-bg
+               :blur-radius   (or blur-radius 20)
+               :blur-type     :transparent
+               :overlay-color :transparent}])
            (when selected-item
              [rn/view
               {:on-layout #(reset! item-height (.-nativeEvent.layout.height ^js %))

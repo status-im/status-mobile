@@ -43,7 +43,6 @@
                                           {:content     drawer/options
                                            :theme       :dark
                                            :shell?      true
-                                           :blur-bg?    true
                                            :blur-radius 20}])}
      :i/options]]
    [quo/text
