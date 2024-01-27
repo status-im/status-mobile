@@ -13,8 +13,8 @@
   ;; `:customization-color` key is non-existent. While deleting an account the key exists
   ;; and has a `nil` value.
   (when customization-color
-    (let [color-top    (colors/custom-color customization-color 50 20)
-          color-bottom (colors/custom-color customization-color 50 0)]
+    (let [color-top    (colors/resolve-color customization-color 50 20)
+          color-bottom (colors/resolve-color customization-color 50 0)]
       [linear-gradient/linear-gradient
        {:accessibility-label :gradient-cover
         :colors              [color-top color-bottom]
