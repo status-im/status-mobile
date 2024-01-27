@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.actions.channel-view-details.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
@@ -10,7 +11,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn contact-item-render
+(defn- contact-item-render
   [public-key]
   (let [show-profile-actions          #(rf/dispatch [:show-bottom-sheet
                                                      {:content (fn [] [home.actions/contact-actions
@@ -29,11 +30,11 @@
       :added?         added?}
      {:public-key public-key}]))
 
-(defn footer
+(defn- footer
   []
   [rn/view {:style style/footer}])
 
-(defn members
+(defn- members
   [items]
   [rn/section-list
    {:key-fn                            :public-key
@@ -51,17 +52,16 @@
     :render-fn                         contact-item-render
     :scroll-event-throttle             8}])
 
-(defn f-view
-  [{:keys [chat-id community-id theme]}]
-  (let [{:keys [description chat-name emoji muted
-                chat-type]
-         :as   chat}  (rf/sub [:chats/chat-by-id
-                               chat-id])
-        pins-count    (rf/sub [:chats/pin-messages-count chat-id])
-        items         (rf/sub [:communities/sorted-community-members-section-list
-                               community-id])
-        profile-color (rf/sub [:profile/customization-color])]
-    (fn [chat-id]
+(defn- view-internal
+  [_args]
+  (fn [{:keys [theme]}]
+    (let [{:keys [chat-id community-id]} (rf/sub [:get-screen-params :view-channel-members-and-details])
+          {:keys [description chat-name emoji muted chat-type]
+           :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
+          pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
+          items                          (rf/sub [:communities/sorted-community-members-section-list
+                                                  community-id])
+          profile-color                  (rf/sub [:profile/customization-color])]
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:background :blur
@@ -78,7 +78,7 @@
          :title                           [quo/channel-name
                                            {:channel-name chat-name
                                             :unlocked?    true}]
-         :emoji                           (when (seq emoji) emoji)
+         :emoji                           (when (not (string/blank? emoji)) emoji)
          :emoji-background-color          (colors/resolve-color profile-color theme 10)
          :title-accessibility-label       :welcome-title
          :description                     description
@@ -96,7 +96,7 @@
                                        (rf/dispatch [:dismiss-keyboard])
                                        (rf/dispatch [:pin-message/show-pins-bottom-sheet
                                                      chat-id]))}
-                     {:label    (i18n/label :t/mute-channel)
+                     {:label    (if muted (i18n/label :t/unmute-channel) (i18n/label :t/mute-channel))
                       :color    profile-color
                       :icon     (if muted :i/muted :i/activity-center)
                       :on-press (fn []
@@ -104,10 +104,5 @@
                                     (home.actions/unmute-chat-action chat-id)
                                     (home.actions/mute-chat-action chat-id chat-type muted)))}]}]]]
        [members items profile-color]])))
-
-(defn view-internal
-  [args]
-  (let [screen-params (rf/sub [:get-screen-params :view-channel-members-and-details])]
-    [:f> f-view (merge args screen-params)]))
 
 (defn view [] (quo.theme/with-theme view-internal))
