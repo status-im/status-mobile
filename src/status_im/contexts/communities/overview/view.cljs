@@ -238,23 +238,19 @@
 (defn- community-header
   [title logo description]
   [quo/text-combinations
-   {:container-style
-    {:margin-top
-     (if logo
-       12
-       (+ scroll-page.style/picture-radius
-          scroll-page.style/picture-border-width
-          12))
-     :margin-bottom 12}
-    :avatar logo
-    :title title
-    :title-number-of-lines 2
-    :description
-    description
-    :title-accessibility-label
-    :community-title
-    :description-accessibility-label
-    :community-description}])
+   {:container-style                 {:margin-top
+                                      (if logo
+                                        12
+                                        (+ scroll-page.style/picture-radius
+                                           scroll-page.style/picture-border-width
+                                           12))
+                                      :margin-bottom 12}
+    :avatar                          logo
+    :title                           title
+    :title-number-of-lines           2
+    :description                     description
+    :title-accessibility-label       :community-title
+    :description-accessibility-label :community-description}])
 
 (defn- community-content
   [id]
