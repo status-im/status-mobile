@@ -1,6 +1,7 @@
 (ns status-im.subs.communities-test
   (:require
     [cljs.test :refer [is testing]]
+    matcher-combinators.test
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
     status-im.subs.communities
@@ -17,7 +18,7 @@
       (swap! rf-db/app-db assoc
         :communities
         raw-communities)
-      (is (= raw-communities (rf/sub [sub-name]))))))
+      (is (match? raw-communities (rf/sub [sub-name]))))))
 
 (h/deftest-sub :communities/section-list
   [sub-name]
@@ -26,29 +27,29 @@
       :communities
       {"0x1" {:name "civilized monkeys"}
        "0x2" {:name "Civilized rats"}})
-    (is (= [{:title "C"
-             :data  [{:name "civilized monkeys"}
-                     {:name "Civilized rats"}]}]
-           (rf/sub [sub-name]))))
+    (is (match? [{:title "C"
+                  :data  [{:name "civilized monkeys"}
+                          {:name "Civilized rats"}]}]
+                (rf/sub [sub-name]))))
 
   (testing "sorts by section ascending"
     (swap! rf-db/app-db assoc
       :communities
       {"0x3" {:name "Memorable"}
        "0x1" {:name "Civilized monkeys"}})
-    (is (= [{:title "C" :data [{:name "Civilized monkeys"}]}
-            {:title "M" :data [{:name "Memorable"}]}]
-           (rf/sub [sub-name]))))
+    (is (match? [{:title "C" :data [{:name "Civilized monkeys"}]}
+                 {:title "M" :data [{:name "Memorable"}]}]
+                (rf/sub [sub-name]))))
 
   (testing "builds default section for communities without a name"
     (swap! rf-db/app-db assoc
       :communities
       {"0x2" {:id "0x2"}
        "0x1" {:id "0x1"}})
-    (is (= [{:title ""
-             :data  [{:id "0x2"}
-                     {:id "0x1"}]}]
-           (rf/sub [sub-name])))))
+    (is (match? [{:title ""
+                  :data  [{:id "0x2"}
+                          {:id "0x1"}]}]
+                (rf/sub [sub-name])))))
 
 (h/deftest-sub :communities/unviewed-counts
   [sub-name]
@@ -64,17 +65,17 @@
        "0x102" {:community-id            community-id
                 :unviewed-mentions-count 5
                 :unviewed-messages-count 1}})
-    (is (= {:unviewed-messages-count 3
-            :unviewed-mentions-count 8}
-           (rf/sub [sub-name community-id]))))
+    (is (match? {:unviewed-messages-count 3
+                 :unviewed-mentions-count 8}
+                (rf/sub [sub-name community-id]))))
 
   (testing "defaults to zero when count keys are not present"
     (swap! rf-db/app-db assoc
       :chats
       {"0x100" {:community-id community-id}})
-    (is (= {:unviewed-messages-count 0
-            :unviewed-mentions-count 0}
-           (rf/sub [sub-name community-id])))))
+    (is (match? {:unviewed-messages-count 0
+                 :unviewed-mentions-count 0}
+                (rf/sub [sub-name community-id])))))
 
 (h/deftest-sub :communities/categorized-channels
   [sub-name]
@@ -350,16 +351,16 @@
     (swap! rf-db/app-db assoc
       :communities/my-pending-requests-to-join
       {})
-    (is (= {}
-           (rf/sub [sub-name]))))
+    (is (match? {}
+                (rf/sub [sub-name]))))
   (testing "users requests to join different communities"
     (swap! rf-db/app-db assoc
       :communities/my-pending-requests-to-join
       {:community-id-1 {:id :request-id-1}
        :community-id-2 {:id :request-id-2}})
-    (is (= {:community-id-1 {:id :request-id-1}
-            :community-id-2 {:id :request-id-2}}
-           (rf/sub [sub-name])))))
+    (is (match? {:community-id-1 {:id :request-id-1}
+                 :community-id-2 {:id :request-id-2}}
+                (rf/sub [sub-name])))))
 
 (h/deftest-sub :communities/my-pending-request-to-join
   [sub-name]
@@ -367,15 +368,15 @@
     (swap! rf-db/app-db assoc
       :communities/my-pending-requests-to-join
       {})
-    (is (= nil
-           (rf/sub [sub-name :community-id-1]))))
+    (is (match? nil
+                (rf/sub [sub-name :community-id-1]))))
   (testing "users request to join a specific communities"
     (swap! rf-db/app-db assoc
       :communities/my-pending-requests-to-join
       {:community-id-1 {:id :request-id-1}
        :community-id-2 {:id :request-id-2}})
-    (is (= :request-id-1
-           (rf/sub [sub-name :community-id-1])))))
+    (is (match? :request-id-1
+                (rf/sub [sub-name :community-id-1])))))
 
 (h/deftest-sub :community/token-gated-overview
   [sub-name]
@@ -385,6 +386,7 @@
      community {:id                      community-id
                 :checking-permissions?   checking-permissions?
                 :permissions             {:access 3}
+                :highest-permission-role constants/community-token-permission-become-admin
                 :token-images            {"ETH" token-image-eth}
                 :token-permissions       [[:permission-id-01
                                            {:id "permission-id-01"
@@ -451,11 +453,53 @@
                 :outroMessage            "bla"
                 :verified                false}]
     (swap! rf-db/app-db assoc-in [:communities community-id] community)
-    (is (= {:can-request-access?   true
-            :number-of-hold-tokens 2
-            :tokens                [[{:symbol      "ETH"
-                                      :amount      "0.001"
-                                      :sufficient? nil
-                                      :loading?    checking-permissions?
-                                      :img-src     token-image-eth}]]}
-           (rf/sub [sub-name community-id])))))
+    (is (match? {:can-request-access?   true
+                 :number-of-hold-tokens 2
+                 :tokens                [[{:symbol      "ETH"
+                                           :amount      "0.001"
+                                           :sufficient? nil
+                                           :loading?    checking-permissions?
+                                           :img-src     token-image-eth}]]}
+                (rf/sub [sub-name community-id])))))
+
+(h/deftest-sub :communities/airdrop-account
+  [sub-name]
+  (testing "returns airdrop account"
+    (swap! rf-db/app-db assoc-in [:communities community-id :airdrop-address] "0x1")
+    (swap! rf-db/app-db assoc
+      :wallet
+      {:accounts {"0x1" {:address "0x1"
+                         :color   :blue
+                         :name    "account1"}
+                  "0x2" {:address "0x2"
+                         :color   :orange
+                         :name    "account2"}}})
+    (is (match? {:address                   "0x1"
+                 :network-preferences-names #{}
+                 :name                      "account1"
+                 :color                     :blue
+                 :customization-color       :blue}
+                (rf/sub [sub-name community-id])))))
+
+(h/deftest-sub :communities/selected-permission-accounts
+  [sub-name]
+  (testing "returns selected permission accounts"
+    (swap! rf-db/app-db assoc-in
+      [:communities community-id :selected-permission-addresses]
+      #{"0x1" "0x3"})
+    (swap! rf-db/app-db assoc
+      :wallet
+      {:accounts {"0x1" {:address "0x1" :color :blue :name "account1"}
+                  "0x2" {:address "0x2" :color :orange :name "account2"}
+                  "0x3" {:address "0x3" :color :purple :name "account3"}}})
+    (is (match? [{:address                   "0x1"
+                  :color                     :blue
+                  :customization-color       :blue
+                  :network-preferences-names #{}
+                  :name                      "account1"}
+                 {:address                   "0x3"
+                  :color                     :purple
+                  :customization-color       :purple
+                  :network-preferences-names #{}
+                  :name                      "account3"}]
+                (rf/sub [sub-name community-id])))))

@@ -38,6 +38,9 @@
    :no-contacts
    {:light (js/require "../resources/images/ui2/no-contacts-light.png")
     :dark  (js/require "../resources/images/ui2/no-contacts-dark.png")}
+   :no-contacts-to-chat
+   {:light (js/require "../resources/images/ui2/no-contacts-to-chat-light.png")
+    :dark  (js/require "../resources/images/ui2/no-contacts-to-chat-dark.png")}
    :keycard-chip
    {:light (js/require "../resources/images/ui2/keycard-chip-light.png")
     :dark  (js/require "../resources/images/ui2/keycard-chip-dark.png")}

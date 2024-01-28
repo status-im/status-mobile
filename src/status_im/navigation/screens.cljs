@@ -2,13 +2,13 @@
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
     [status-im.common.emoji-picker.view :as emoji-picker]
+    [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
     [status-im.contexts.chat.group-details.view :as group-details]
     [status-im.contexts.chat.home.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
     [status-im.contexts.chat.home.add-new-contact.views :as add-new-contact]
     [status-im.contexts.chat.home.new-chat.view :as new-chat]
     [status-im.contexts.chat.messenger.camera.view :as camera-screen]
-    [status-im.contexts.chat.messenger.lightbox.view :as lightbox]
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
@@ -119,7 +119,7 @@
      :component lightbox/lightbox}
 
     {:name      :photo-selector
-     :options   {:sheet? true}
+     :options   (merge {:sheet? true} (options/statusbar-and-navbar-root))
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
@@ -202,14 +202,17 @@
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:theme                  :dark
-                 :layout                 options/onboarding-transparent-layout
-                 :animations             (merge transitions/new-to-status-modal-animations
-                                                transitions/push-animations-for-transparent-background)
-                 :popGesture             false
-                 :modalPresentationStyle :overCurrentContext
-                 :hardwareBackButton     {:dismissModalOnPress false
-                                          :popStackOnPress     false}}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme                  :dark
+                  :layout                 options/onboarding-transparent-layout
+                  :animations             (merge
+                                           transitions/new-to-status-modal-animations
+                                           transitions/push-animations-for-transparent-background)
+                  :popGesture             false
+                  :modalPresentationStyle :overCurrentContext
+                  :hardwareBackButton     {:dismissModalOnPress false
+                                           :popStackOnPress     false}})
      :component enable-biometrics/view}
 
     {:name      :generating-keys
@@ -229,11 +232,14 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:theme                  :dark
-                 :layout                 options/onboarding-transparent-layout
-                 :animations             (merge transitions/new-to-status-modal-animations
-                                                transitions/push-animations-for-transparent-background)
-                 :modalPresentationStyle :overCurrentContext}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme                  :dark
+                  :layout                 options/onboarding-transparent-layout
+                  :animations             (merge
+                                           transitions/new-to-status-modal-animations
+                                           transitions/push-animations-for-transparent-background)
+                  :modalPresentationStyle :overCurrentContext})
      :component enable-notifications/view}
 
     {:name      :identifiers
@@ -264,9 +270,11 @@
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   {:theme      :dark
-                 :layout     options/onboarding-layout
-                 :popGesture false}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme      :dark
+                  :layout     options/onboarding-layout
+                  :popGesture false})
      :component syncing-devices/view}
 
     {:name      :syncing-progress-intro
@@ -281,9 +289,11 @@
      :component syncing-results/view}
 
     {:name      :welcome
-     :options   {:theme      :dark
-                 :layout     options/onboarding-transparent-layout
-                 :animations transitions/push-animations-for-transparent-background}
+     :options   (merge
+                 (options/statusbar-and-navbar-root)
+                 {:theme      :dark
+                  :layout     options/onboarding-transparent-layout
+                  :animations transitions/push-animations-for-transparent-background})
      :component welcome/view}
 
     {:name      :emoji-picker
@@ -356,7 +366,6 @@
      :component wallet-transaction-confirmation/view}
 
     {:name      :wallet-transaction-progress
-     :options   {:insets {:bottom? true}}
      :component wallet-transaction-progress/view}
 
     {:name      :scan-address

@@ -19,6 +19,5 @@
                                (swap! pressed? not)
                                (when on-press
                                  (on-press e)))}
-       [rn/image
-        {:source (reactions.resource/get-reaction emoji)
-         :style  {:width 20 :height 20}}]])))
+       [rn/text
+        (reactions.resource/system-emojis emoji)]])))

@@ -29,7 +29,7 @@
      {:icon                :i/add-user
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-a-contact)
-      :sub-label           (i18n/label :t/enter-a-chat-key)
+      :sub-label           (i18n/label :t/enter-chat-key)
       :add-divider?        true
       :on-press            #(debounce/dispatch-and-chill
                              [:open-modal :new-contact]

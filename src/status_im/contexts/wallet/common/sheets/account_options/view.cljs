@@ -10,6 +10,7 @@
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
+            [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.common.utils :as utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -89,13 +90,17 @@
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (js/setTimeout
                                  #(rf/dispatch [:wallet/share-account
-                                                {:title share-title :content address}])
+                                                {:title share-title :content multichain-address}])
                                  600))}
         {:add-divider?        (not show-account-selector?)
          :icon                :i/delete
          :accessibility-label :remove-account
          :label               (i18n/label :t/remove-account)
-         :danger?             true}]]]
+         :danger?             true
+         :on-press            #(rf/dispatch [:show-bottom-sheet
+                                             {:content
+                                              (fn []
+                                                [remove-account/view])}])}]]]
      (when show-account-selector?
        [:<>
         [quo/divider-line {:container-style style/divider-label}]

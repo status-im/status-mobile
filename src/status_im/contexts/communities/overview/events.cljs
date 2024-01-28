@@ -34,26 +34,31 @@
                                         :communities/check-all-community-channels-permissions}))}]]]})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-success
- (fn [{:keys [db]} [community-id result]]
-   {:db (-> db
-            (assoc-in [:communities community-id :checking-permissions?] false)
-            (assoc-in [:communities community-id :token-permissions-check] result))}))
+ (fn [{:keys [db]} [community-id based-on-client-selection? result]]
+   (let [token-permissions-check (cond-> result
+                                   based-on-client-selection? (assoc :based-on-client-selection? true))]
+     {:db (-> db
+              (assoc-in [:communities community-id :checking-permissions?] false)
+              (assoc-in [:communities community-id :token-permissions-check]
+                        token-permissions-check))})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-failed
  (fn [{:keys [db]} [community-id]]
    {:db (assoc-in db [:communities community-id :checking-permissions?] false)}))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community
- (fn [{:keys [db]} [community-id]]
+ (fn [{:keys [db]} [community-id addresses based-on-client-selection?]]
    (when-let [community (get-in db [:communities community-id])]
      (when-not (:checking-permissions? community)
        {:db            (-> db
                            (assoc-in [:communities community-id :checking-permissions?] true)
                            (assoc-in [:communities community-id :can-request-access?] false))
         :json-rpc/call [{:method     "wakuext_checkPermissionsToJoinCommunity"
-                         :params     [{:communityId community-id}]
+                         :params     [(cond-> {:communityId community-id}
+                                        addresses
+                                        (assoc :addresses addresses))]
                          :on-success [:communities/check-permissions-to-join-community-success
-                                      community-id]
+                                      community-id based-on-client-selection?]
                          :on-error   (fn [err]
                                        (rf/dispatch
                                         [:communities/check-permissions-to-join-community-failed
@@ -64,12 +69,11 @@
 
 (defn request-to-join
   [{:keys [db]}
-   [{:keys [community-id password addresses-to-reveal]
-     :or   {addresses-to-reveal []}}]]
+   [{:keys [community-id password]}]]
   (let [pub-key (get-in db [:profile/profile :public-key])]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
-             :params     [pub-key community-id addresses-to-reveal]
+             :params     [pub-key community-id []]
              :on-success [:communities/sign-data community-id password]
              :on-error   [:communities/requested-to-join-error community-id]}]]]}))
 
@@ -116,9 +120,6 @@
            :params      [{:communityId       community-id
                           :signatures        signatures
                           :addressesToReveal addresses-to-reveal
-                          ;; NOTE: At least one airdrop address is required.
-                          ;; This is a temporary solution while the address
-                          ;; selection feature is not implemented in mobile.
                           :airdropAddress    (first addresses-to-reveal)}]
            :js-response true
            :on-success  [:communities/requested-to-join]
@@ -145,3 +146,42 @@
                                :event        :communities/toggle-collapsed-category
                                :category-id  category-id
                                :collapse?    collapse?})}]}))
+
+(defn request-to-join-with-signatures-and-addresses
+  [{:keys [db]} [community-id signatures]]
+  (let [{:keys [airdrop-address selected-permission-addresses]} (get-in db [:communities community-id])]
+    {:fx [[:json-rpc/call
+           [{:method      "wakuext_requestToJoinCommunity"
+             :params      [{:communityId       community-id
+                            :signatures        signatures
+                            :addressesToReveal selected-permission-addresses
+                            :airdropAddress    airdrop-address}]
+             :js-response true
+             :on-success  [:communities/requested-to-join]
+             :on-error    [:communities/requested-to-join-error community-id]}]]]}))
+
+(rf/reg-event-fx :communities/request-to-join-with-signatures-and-addresses
+ request-to-join-with-signatures-and-addresses)
+
+(defn sign-data-with-addresses
+  [_ [community-id password sign-params]]
+  {:fx [[:json-rpc/call
+         [{:method     "wakuext_signData"
+           :params     [(map #(assoc % :password password) sign-params)]
+           :on-success [:communities/request-to-join-with-signatures-and-addresses community-id]
+           :on-error   [:communities/requested-to-join-error community-id]}]]]})
+
+(rf/reg-event-fx :communities/sign-data-with-addresses sign-data-with-addresses)
+
+(defn request-to-join-with-addresses
+  [{:keys [db]}
+   [{:keys [community-id password]}]]
+  (let [pub-key             (get-in db [:profile/profile :public-key])
+        addresses-to-reveal (get-in db [:communities community-id :selected-permission-addresses])]
+    {:fx [[:json-rpc/call
+           [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
+             :params     [pub-key community-id addresses-to-reveal]
+             :on-success [:communities/sign-data-with-addresses community-id password]
+             :on-error   [:communities/requested-to-join-error community-id]}]]]}))
+
+(rf/reg-event-fx :communities/request-to-join-with-addresses request-to-join-with-addresses)

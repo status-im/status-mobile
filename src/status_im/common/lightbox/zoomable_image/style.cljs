@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.zoomable-image.style
+(ns status-im.common.lightbox.zoomable-image.style
   (:require
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]))

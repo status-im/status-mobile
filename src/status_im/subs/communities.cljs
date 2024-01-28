@@ -8,7 +8,7 @@
 
 (re-frame/reg-sub
  :communities/fetching-community
- :<- [:communities/resolve-community-info]
+ :<- [:communities/fetching-community]
  (fn [info [_ id]]
    (get info id)))
 
@@ -297,32 +297,62 @@
  (fn [collapsed-categories [_ community-id]]
    (get collapsed-categories community-id)))
 
+(defn- permission-id->permission-value
+  [token-permissions permission-id]
+  (get (into {} token-permissions) permission-id))
+
 (re-frame/reg-sub
  :community/token-gated-overview
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [[{:keys [token-permissions-check token-permissions checking-permissions? token-images]}] _]
-   {:can-request-access?   (:satisfied token-permissions-check)
-    :number-of-hold-tokens (reduce
-                            (fn [acc [_ {:keys [criteria]}]]
-                              (reduce #(+ %1 (if %2 1 0)) acc criteria))
-                            0
-                            (:permissions token-permissions-check))
-    :tokens                (->> token-permissions
-                                (filter (fn [[_ {:keys [type]}]]
-                                          (= type constants/community-token-permission-become-member)))
-                                (map (fn [[perm-key {:keys [token_criteria]}]]
-                                       (let [check-criteria (get-in token-permissions-check
-                                                                    [:permissions perm-key :criteria])]
-                                         (map
-                                          (fn [{sym :symbol amount :amount} sufficient?]
-                                            {:symbol      sym
-                                             :sufficient? (when (seq check-criteria) sufficient?)
-                                             :loading?    checking-permissions?
-                                             :amount      amount
-                                             :img-src     (get token-images sym)})
-                                          token_criteria
-                                          (or check-criteria token_criteria))))))}))
+   (let [can-request-access? (:satisfied token-permissions-check)
+         role-permissions #{constants/community-token-permission-become-admin
+                            constants/community-token-permission-become-member
+                            constants/community-token-permission-become-token-master
+                            constants/community-token-permission-become-token-owner}
+         highest-permission-role
+         (when can-request-access?
+           (->> token-permissions-check
+                :permissions
+                (reduce-kv
+                 (fn [highest-permission-role permission-id {:keys [criteria]}]
+                   (if-let [permission-type
+                            (and (first criteria)
+                                 (some #{(:type (permission-id->permission-value token-permissions
+                                                                                 permission-id))}
+                                       role-permissions))]
+                     (if highest-permission-role
+                       (min highest-permission-role permission-type)
+                       permission-type)
+                     highest-permission-role))
+                 nil)))
+         highest-permission-role (if (and can-request-access? (nil? highest-permission-role))
+                                   constants/community-token-permission-become-member
+                                   highest-permission-role)]
+     {:can-request-access?     can-request-access?
+      :highest-permission-role highest-permission-role
+      :number-of-hold-tokens   (reduce
+                                (fn [acc [_ {:keys [criteria]}]]
+                                  (reduce #(+ %1 (if %2 1 0)) acc criteria))
+                                0
+                                (:permissions token-permissions-check))
+      :tokens                  (->>
+                                 token-permissions
+                                 (filter (fn [[_ {:keys [type]}]]
+                                           (= type constants/community-token-permission-become-member)))
+                                 (map (fn [[perm-key {:keys [token_criteria]}]]
+                                        (let [check-criteria (get-in token-permissions-check
+                                                                     [:permissions perm-key :criteria])]
+                                          (map
+                                           (fn [{sym :symbol amount :amount} sufficient?]
+                                             {:symbol      sym
+                                              :sufficient? (when (seq check-criteria) sufficient?)
+                                              :loading?    checking-permissions?
+                                              :amount      amount
+                                              :img-src     (get token-images sym)})
+                                           token_criteria
+                                           (or check-criteria token_criteria))))))})))
 
 (re-frame/reg-sub
  :community/images
@@ -335,3 +365,33 @@
  :<- [:communities]
  (fn [communities [_ community-id]]
    (get-in communities [community-id :intro-message])))
+
+(re-frame/reg-sub
+ :communities/selected-permission-addresses
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [selected-permission-addresses]}] _]
+   selected-permission-addresses))
+
+(re-frame/reg-sub
+ :communities/selected-permission-accounts
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+    (re-frame/subscribe [:communities/selected-permission-addresses community-id])])
+ (fn [[accounts selected-permission-addresses]]
+   (filter #(contains? selected-permission-addresses (:address %)) accounts)))
+
+(re-frame/reg-sub
+ :communities/airdrop-address
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [airdrop-address]}] _]
+   airdrop-address))
+
+(re-frame/reg-sub
+ :communities/airdrop-account
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+    (re-frame/subscribe [:communities/airdrop-address community-id])])
+ (fn [[accounts airdrop-address]]
+   (first (filter #(= (:address %) airdrop-address) accounts))))

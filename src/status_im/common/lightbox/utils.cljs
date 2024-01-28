@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.lightbox.utils
+(ns status-im.common.lightbox.utils
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
@@ -9,9 +9,9 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.contexts.chat.messenger.lightbox.animations :as anim]
-    [status-im.contexts.chat.messenger.lightbox.constants :as constants]
-    [status-im.contexts.chat.messenger.lightbox.top-view :as top-view]
+    [status-im.common.lightbox.animations :as anim]
+    [status-im.common.lightbox.constants :as constants]
+    [status-im.common.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.lightbox :as worklet]))
 
@@ -46,7 +46,7 @@
                       (if platform/ios? 250 100)))
      (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
      (fn []
-       (rf/dispatch [:chat.ui/zoom-out-signal nil])
+       (rf/dispatch [:lightbox/zoom-out-signal nil])
        (when platform/android?
          (rf/dispatch [:chat.ui/lightbox-scale 1]))
        (clear-timers timers)))))
@@ -69,7 +69,7 @@
         landscape?    (string/includes? result orientation/landscape)
         item-width    (if (and landscape? platform/ios?) screen-height screen-width)]
     (when (or landscape? (= result orientation/portrait))
-      (rf/dispatch [:chat.ui/orientation-change result]))
+      (rf/dispatch [:lightbox/orientation-change result]))
     (cond
       landscape?
       (orientation/lock-to-landscape "lightbox")
@@ -148,11 +148,11 @@
    :timers             (atom {})})
 
 (defn init-state
-  [messages index]
+  [images index]
   ;; The initial value of data is the image that was pressed (and not the whole album) in order
   ;; for the transition animation to execute properly, otherwise it would animate towards
   ;; outside the screen (even if we have `initialScrollIndex` set).
-  {:data             (reagent/atom (if (number? index) [(nth messages index)] []))
+  {:data             (reagent/atom (if (number? index) [(nth images index)] []))
    :scroll-index     (reagent/atom index)
    :transparent?     (reagent/atom false)
    :set-full-height? (reagent/atom false)

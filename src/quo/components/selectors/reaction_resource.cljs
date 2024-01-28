@@ -4,6 +4,14 @@
 (def ^:private reactions
   (resolve-all-reactions))
 
+(def system-emojis
+  {:reaction/thumbs-up   "👍"
+   :reaction/thumbs-down "👎"
+   :reaction/love        "❤"
+   :reaction/laugh       "😂"
+   :reaction/sad         "😢"
+   :reaction/angry       "😡"})
+
 (defn get-reaction
   [reaction]
   (assert (keyword? reaction) "Reaction should be a keyword")

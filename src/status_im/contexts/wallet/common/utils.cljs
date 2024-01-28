@@ -65,6 +65,12 @@
              "")
            ""))))
 
+(defn get-crypto-decimals-count
+  [{:keys [market-values-per-currency]}]
+  (let [price          (get-in market-values-per-currency [:usd :price])
+        one-cent-value (if (pos? price) (/ 0.01 price) 0)]
+    (calc-max-crypto-decimals one-cent-value)))
+
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
@@ -90,10 +96,13 @@
 (defn total-token-fiat-value
   "Returns the total token fiat value taking into account all token's chains."
   [currency {:keys [market-values-per-currency] :as token}]
-  (let [price                     (get-in market-values-per-currency
-                                          [currency :price]
-                                          (get-in market-values-per-currency
-                                                  [constants/profile-default-currency :price]))
+  (let [price                     (or (get-in market-values-per-currency
+                                              [currency :price])
+                                      (get-in market-values-per-currency
+                                              [constants/profile-default-currency :price])
+                                      ;; NOTE: adding fallback value (zero) in case prices are
+                                      ;; unavailable and to prevent crash on calculating fiat value
+                                      0)
         total-units-in-all-chains (total-token-units-in-all-chains token)]
     (money/crypto->fiat total-units-in-all-chains price)))
 
@@ -169,9 +178,17 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id  :ethereum
-   constants/optimism-chain-id :optimism
-   constants/arbitrum-chain-id :arbitrum})
+  {constants/mainnet-chain-id       :ethereum
+   constants/goerli-chain-id        :ethereum
+   constants/optimism-chain-id      :optimism
+   constants/optimism-test-chain-id :optimism
+   constants/arbitrum-chain-id      :arbitrum
+   constants/arbitrum-test-chain-id :arbitrum})
+
+(def short-name->id
+  {:eth  constants/mainnet-chain-id
+   :opt  constants/optimism-chain-id
+   :arb1 constants/arbitrum-chain-id})
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]

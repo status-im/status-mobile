@@ -19,6 +19,7 @@
     [status-im.contexts.profile.push-notifications.events :as notifications]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
+    status-im.contexts.wallet.signals
     status-im.events
     status-im.navigation.core
     [status-im.setup.dev :as dev]

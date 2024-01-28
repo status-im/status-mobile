@@ -207,24 +207,12 @@
    (link-preview/reset-unfurled)
    (cancel-message-edit)))
 
-(rf/defn replace-mentions-and-send-current-message
+(rf/defn send-current-message
   "Sends message from current chat input"
-  {:events [:chat.ui/replace-mentions-and-send-current-message]}
-  [{{:keys [current-chat-id] :as db} :db}]
-  (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])]
-    {:json-rpc/call [{:method     "wakuext_chatMentionReplaceWithPublicKey"
-                      :params     [current-chat-id input-text]
-                      :on-error   #(log/error "[wakuext_chatMentionReplaceWithPublicKey] on-error" %)
-                      :on-success #(rf/dispatch [:chat.ui/send-current-message-with-mentions
-                                                 current-chat-id
-                                                 (:editing-message metadata)
-                                                 input-text
-                                                 %])}]}))
-
-(rf/defn send-current-message-with-mentions
-  {:events [:chat.ui/send-current-message-with-mentions]}
-  [{:keys [db] :as cofx} current-chat-id editing-message input-text new-text]
-  (rf/merge cofx
-            (if editing-message
-              (send-edited-message new-text editing-message)
-              (send-messages new-text current-chat-id))))
+  {:events [:chat.ui/send-current-message]}
+  [{{:keys [current-chat-id] :as db} :db :as cofx}]
+  (let [{:keys [input-text metadata]} (get-in db [:chat/inputs current-chat-id])
+        editing-message               (:editing-message metadata)]
+    (if editing-message
+      (send-edited-message cofx input-text editing-message)
+      (send-messages cofx input-text current-chat-id))))

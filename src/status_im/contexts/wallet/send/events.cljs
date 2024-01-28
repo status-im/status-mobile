@@ -2,6 +2,7 @@
   (:require
     [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
+    [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -10,9 +11,12 @@
     [utils.number]
     [utils.re-frame :as rf]))
 
+(rf/reg-event-fx :wallet/clean-send-data
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui] dissoc :send)}))
+
 (rf/reg-event-fx :wallet/select-address-tab
  (fn [{:keys [db]} [tab]]
-
    {:db (assoc-in db [:wallet :ui :send :select-address-tab] tab)}))
 
 (rf/reg-event-fx :wallet/suggested-routes-success
@@ -54,20 +58,29 @@
 
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
-   (let [[prefix to-address] (utils/split-prefix-and-address address)]
+   (let [[prefix to-address] (utils/split-prefix-and-address address)
+         prefix-seq          (string/split prefix #":")
+         selected-networks   (mapv #(utils/short-name->id (keyword %)) prefix-seq)]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
-              (assoc-in [:wallet :ui :send :address-prefix] prefix))
+              (assoc-in [:wallet :ui :send :address-prefix] prefix)
+              (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
       :fx [[:navigate-to-within-stack
             (if token
               [:wallet-send-input-amount stack-id]
               [:wallet-select-asset stack-id])]]})))
 
+(rf/reg-event-fx :wallet/update-receiver-networks
+ (fn [{:keys [db]} [selected-networks]]
+   {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
+
 (rf/reg-event-fx :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
-    :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
+    :fx [[:dispatch-later
+          {:ms       1
+           :dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]}]]}))
 
 (rf/reg-event-fx :wallet/send-select-token-drawer
  (fn [{:keys [db]} [{:keys [token]}]]
@@ -87,10 +100,11 @@
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
          account-address         (get-in db [:wallet :ui :send :send-account-address])
+         selected-networks       (get-in db [:wallet :ui :send :selected-networks])
          to-address              (or account-address (get-in db [:wallet :ui :send :to-address]))
          token-decimal           (:decimals token)
          token-id                (:symbol token)
-         network-preferences     []
+         network-preferences     selected-networks
          gas-rates               constants/gas-rate-medium
          amount-in               (send-utils/amount-in-hex amount token-decimal)
          from-address            wallet-address
@@ -124,14 +138,21 @@
 
 (rf/reg-event-fx :wallet/add-authorized-transaction
  (fn [{:keys [db]} [transaction]]
-   (let [transaction-hashes (:hashes transaction)
-         chain-id           (key (first transaction-hashes))
-         tx-id              (first (val (first transaction-hashes)))
-         transaction-detes  {:status   :pending
-                             :id       (:id transaction)
-                             :chain-id chain-id}]
-     {:db (assoc-in db [:wallet :transactions tx-id] transaction-detes)
-      :fx [[:dispatch [:navigate-to :wallet-transaction-progress]]]})))
+   (let [transaction-batch-id (:id transaction)
+         transaction-hashes   (:hashes transaction)
+         transaction-ids      (flatten (vals transaction-hashes))
+         transaction-details  (send-utils/map-multitransaction-by-ids transaction-batch-id
+                                                                      transaction-hashes)]
+     {:db (-> db
+              (assoc-in [:wallet :transactions] transaction-details)
+              (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
+      :fx [[:dispatch
+            [:navigate-to-within-stack
+             [:wallet-transaction-progress :wallet-transaction-confirmation]]]]})))
+
+(rf/reg-event-fx :wallet/close-transaction-progress-page
+ (fn [_]
+   {:fx [[:dispatch [:dismiss-modal :wallet-transaction-progress]]]}))
 
 (defn- transaction-bridge
   [{:keys [from-address to-address route]}]

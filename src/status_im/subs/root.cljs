@@ -23,7 +23,7 @@
 ;;view
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :screen-params :navigation/screen-params)
-(reg-root-key-sub :shared-element-id :shared-element-id)
+(reg-root-key-sub :animation-shared-element-id :animation-shared-element-id)
 
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet :bottom-sheet)
@@ -140,12 +140,11 @@
 (reg-root-key-sub :communities/channels-permissions :community-channels-permissions)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
-(reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
+(reg-root-key-sub :communities/fetching-community :communities/fetching-community)
 (reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
-(reg-root-key-sub :communities/selected-permission-addresses :communities/selected-permission-addresses)
 
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)

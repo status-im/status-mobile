@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+    [status-im.config :as config]
     [status-im.contexts.wallet.account.style :as style]
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
@@ -46,11 +47,15 @@
          [quo/wallet-graph {:time-frame :empty}]
          (when (not watch-only?)
            [quo/wallet-ctas
-            {:send-action    #(rf/dispatch [:open-modal :wallet-select-address])
+            {:send-action    (fn []
+                               (rf/dispatch [:wallet/clean-send-data])
+                               (rf/dispatch [:open-modal :wallet-select-address]))
              :receive-action #(rf/dispatch [:open-modal :wallet-share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
-             :bridge-action  #(rf/dispatch [:open-modal :wallet-bridge])}])
+             :bridge-action  (if (:bridge-token config/wallet-feature-flags)
+                               #(rf/dispatch [:open-modal :wallet-bridge])
+                               #(js/alert "feature disabled in config file"))}])
          [quo/tabs
           {:style            style/tabs
            :size             32
