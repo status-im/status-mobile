@@ -5,8 +5,7 @@
     [quo.components.tags.base-tag :as base-tag]
     [quo.foundations.colors :as colors]
     [quo.theme]
-    [react-native.core :as rn]
-    [status-im.ui.components.react :as react]))
+    [react-native.core :as rn]))
 
 (def themes
   {:light {:default  {:border-color         colors/neutral-20
@@ -28,6 +27,19 @@
                       :blurred-border-color colors/white-opa-10
                       :text-color           {:style {:color colors/white}}}}})
 
+(defn- emoji-comp
+  [size resource]
+  (let [dimension (case size
+                    32 20
+                    24 12
+                    nil)]
+    (if (string? resource)
+      [rn/text {:style {:margin-right 4 :font-size dimension}}
+       resource]
+      [rn/image
+       {:source resource
+        :style  {:margin-right 4 :width dimension :height dimension}}])))
+
 (defn tag-resources
   [size type resource icon-color label text-color labelled?]
   [rn/view
@@ -48,22 +60,7 @@
                           24 12)
        :color           icon-color}])
    (when (= type :emoji)
-     (let [image-emoji? (int? resource)]
-       (if image-emoji?
-         [react/image
-          {:source resource
-           :style  (merge {:margin-right 4}
-                          (case size
-                            32 {:width 20 :height 20}
-                            24 {:width 12 :height 12}
-                            nil))}]
-         [rn/text
-          {:style {:margin-right 4
-                   :font-size    (case size
-                                   32 20
-                                   24 12
-                                   nil)}}
-          resource])))
+     [emoji-comp size resource])
    (when labelled?
      [text/text
       (merge {:size            (case size
@@ -117,4 +114,3 @@
       [tag-resources size type resource icon-color label text-color labelled?]]]))
 
 (def tag (quo.theme/with-theme tag-internal))
-
