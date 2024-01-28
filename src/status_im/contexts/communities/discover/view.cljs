@@ -5,6 +5,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.communities.actions.community-options.view :as options]
@@ -33,7 +34,7 @@
 (defn screen-title
   []
   [rn/view
-   {:style style/screen-title-container}
+   {:style (style/screen-title-container (safe-area/get-top))}
    [quo/text
     {:accessibility-label :communities-screen-title
      :weight              :semi-bold
@@ -183,7 +184,6 @@
    view-type]
   (fn []
     [rn/view
-     {:style style/render-communities-container}
      [discover-communities-header
       {:selected-tab               selected-tab
        :view-type                  view-type
@@ -196,7 +196,7 @@
   (fn []
     (when (> @scroll-height 360)
       [rn/view
-       {:style (style/blur-tabs-header)}
+       {:style (style/blur-tabs-header (safe-area/get-top))}
        [discover-communities-segments selected-tab true]])))
 
 (defn discover-screen-content
