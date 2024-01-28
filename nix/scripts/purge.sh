@@ -25,8 +25,8 @@ nix_purge_darwin_multi_user_service() {
     cd /Library/LaunchDaemons
     NIX_SERVICES=(org.nixos.darwin-store.plist org.nixos.nix-daemon.plist)
     for NIX_SERVICE in "${NIX_SERVICES[@]}"; do
-        sudo launchctl unload "${NIX_SERVICE}" || true
-        sudo launchctl remove "${NIX_SERVICE}" || true
+        sudo launchctl unload "${NIX_SERVICE}"
+        sudo launchctl remove "${NIX_SERVICE}"
     done
 }
 
@@ -71,9 +71,9 @@ nix_purge_darwin_multi_user_volumes() {
 
 nix_purge_multi_user() {
     if [[ $(uname -s) == "Darwin" ]]; then
-        nix_purge_darwin_multi_user_service || true
-        nix_purge_darwin_multi_user_users || true
-        nix_purge_darwin_multi_user_volumes || true
+        nix_purge_darwin_multi_user_service
+        nix_purge_darwin_multi_user_users
+        nix_purge_darwin_multi_user_volumes
     else
         nix_purge_linux_multi_user_service
         nix_purge_linux_multi_user_users
