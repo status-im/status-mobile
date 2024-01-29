@@ -4,7 +4,6 @@
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/nix/scripts/lib.sh"
 source "${GIT_ROOT}/scripts/colors.sh"
-source "${GIT_ROOT}/nix/scripts/kill_proc_prompt.sh"
 
 nix_purge_linux_multi_user_service() {
     NIX_SERVICES=(nix-daemon.service nix-daemon.socket)
@@ -47,9 +46,9 @@ nix_purge_darwin_multi_user_volumes() {
 
         # Identify the process using the volume
         local pid=$(lsof +D /nix | awk 'NR==2{print $2}')
-        if [ -n "$pid" ]; then
+        if [[ -n "$pid" ]]; then
             echo "The volume /nix is in use by process ID $pid."
-            kill_proc_prompt "$pid" || return 1
+            "${GIT_ROOT}/nix/scripts/kill_proc_prompt.sh" "${pid}" || return 1
 
         else
             echo "No process found using /nix. Manual intervention required."
