@@ -20,7 +20,8 @@
        (merge
         props
         {:source   (if (string? source)
-                     {:uri source}
+                     {:uri      source
+                      :priority :high}
                      source)
          :on-error (fn [e]
                      (when-let [on-error (:on-error props)]

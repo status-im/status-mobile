@@ -6,6 +6,7 @@
     [legacy.status-im.chat.models.message :as models.message]
     [legacy.status-im.data-store.activities :as data-store.activities]
     [legacy.status-im.data-store.chats :as data-store.chats]
+    [legacy.status-im.data-store.communities :as data-store.communities]
     [legacy.status-im.data-store.invitations :as data-store.invitations]
     [legacy.status-im.group-chats.core :as models.group]
     [legacy.status-im.multiaccounts.update.core :as update.core]
@@ -127,7 +128,7 @@
       (seq requests-to-join-community)
       (let [requests (->> requests-to-join-community
                           types/js->clj
-                          (map communities/<-request-to-join-community-rpc))]
+                          (map data-store.communities/<-request-to-join-community-rpc))]
         (js-delete response-js "requestsToJoinCommunity")
         (rf/merge cofx
                   (process-next response-js sync-handler)
