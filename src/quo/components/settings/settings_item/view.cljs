@@ -102,13 +102,14 @@
      nil)])
 
 (defn- internal-view
-  [{:keys [title on-press action-props accessibility-label blur? container-style] :as props}]
+  [{:keys [image-right title on-press action-props accessibility-label blur? container-style] :as props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style (style/left-sub-container props)}
-    [image-component props]
+    (when-not image-right
+      [image-component props])
     [rn/view {:style (style/left-container (:image props))}
      [text/text
       {:weight :medium
@@ -117,6 +118,8 @@
      [tag-component props]]]
    [rn/view {:style (style/sub-container (:alignment action-props))}
     [label-component props]
-    [action-component props]]])
+    [action-component props]
+    (when image-right
+      [image-component props])]])
 
 (def view (quo.theme/with-theme internal-view))
