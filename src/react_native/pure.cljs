@@ -1,5 +1,5 @@
 (ns react-native.pure
-  (:require ["react" :refer (Fragment useState createElement)]
+  (:require ["react" :refer (Fragment useState createElement memo)]
             ["react-native" :refer
              (ActivityIndicator
               View
@@ -45,10 +45,14 @@
      (assoc props :source {:uri source})
      props)))
 
+(def memo-fn-cache (atom {}))
+
 (defn func
   [component-fn & props]
-  ;;idk if it's ok to pass props like this, time will show
-  (createElement #(apply component-fn props) nil))
+  (when-not (get @memo-fn-cache component-fn)
+    (swap! memo-fn-cache assoc component-fn (memo #(apply component-fn (.-props %))
+                                                  #(= (.-props %1) (.-props %2)))))
+  (createElement (get @memo-fn-cache component-fn) #js {:props props}))
 
 (defn flat-list
   [props]
