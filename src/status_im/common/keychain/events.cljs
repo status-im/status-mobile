@@ -70,17 +70,13 @@
   {:db                        (assoc db :auth-method method)
    :keychain/save-auth-method [key-uid method]})
 
-(re-frame/reg-fx
- :keychain/get-auth-method
- (fn [[key-uid callback]]
-   (can-save-user-password?
-    (fn [can-save?]
-      (if can-save?
-        (keychain/get-credentials
-         (str key-uid "-auth")
-         (fn [value]
-           (callback (if value (oops/oget value "password") auth-method-none))))
-        (callback nil))))))
+(defn get-auth-method!
+  [key-uid]
+  (-> (str key-uid "-auth")
+      (keychain/get-credentials)
+      (.then (fn [value]
+               (if value (oops/oget value "password") auth-method-none)))
+      (.catch (constantly auth-method-none))))
 
 (defn save-user-password!
   [key-uid password]
@@ -101,7 +97,7 @@
    (get-user-password! key-uid callback)))
 
 (rf/defn get-user-password
-  [_ key-uid callback]
+  [_ [key-uid callback]]
   {:keychain/get-user-password [key-uid callback]})
 
 (defn- password-migration-key-name
