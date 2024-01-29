@@ -10,6 +10,7 @@
 (defn view
   []
   (let [profile               (rf/sub [:profile/profile-with-image])
+        customization-color   (rf/sub [:profile/customization-color])
         full-name             (profile.utils/displayed-name profile)
         profile-picture       (profile.utils/photo profile)
         has-picture?          (rf/sub [:profile/has-picture])
@@ -23,11 +24,12 @@
      [quo/text-combinations {:title (i18n/label :t/edit-profile)}]
      [rn/view style/avatar-wrapper
       [quo/user-avatar
-       {:full-name         full-name
-        :profile-picture   profile-picture
-        :status-indicator? false
-        :ring?             true
-        :size              :big}]
+       {:full-name           full-name
+        :profile-picture     profile-picture
+        :customization-color customization-color
+        :status-indicator?   false
+        :ring?               true
+        :size                :big}]
       [quo/button
        {:on-press        (fn []
                            (rf/dispatch

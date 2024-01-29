@@ -15,8 +15,8 @@
   [{:keys [db]} [name]]
   {:db (assoc-in db [:profile/profile :display-name] name)
    :fx [[:json-rpc/call
-         [{:method     "wakuext_setDisplayName"
-           :params     [name]
+         [{:method     "wakuext_updateDisplayName"
+           :params     [{:displayName name}]
            :on-success [:profile/edit-profile-name-success]}]]]})
 
 (rf/reg-event-fx :profile/edit-name edit-profile-name)

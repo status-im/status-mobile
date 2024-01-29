@@ -8,8 +8,8 @@
         cofx     {:db {:profile/profile {:display-name "Old name"}}}
         expected {:db {:profile/profile {:display-name new-name}}
                   :fx [[:json-rpc/call
-                        [{:method     "wakuext_setDisplayName"
-                          :params     [name]
+                        [{:method     "wakuext_updateDisplayName"
+                          :params     [{:displayName name}]
                           :on-success [:profile/edit-profile-name-success]}]]]}]
     (is (match? expected
                 (sut/edit-profile-name cofx [new-name])))))
