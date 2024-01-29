@@ -35,7 +35,7 @@
 (defn normalize-children
   [children]
   (if (vector? (first children))
-    (reagent/as-element (into [:<>] children))
+    [(reagent/as-element (into [:<>] children))]
     children))
 
 (defn text-pure
