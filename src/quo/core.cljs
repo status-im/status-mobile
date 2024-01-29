@@ -340,6 +340,7 @@
 
 ;;;; Overlay
 (def overlay quo.components.overlay.view/view)
+(def overlay-pure quo.components.overlay.view/view-pure)
 
 ;;;; Password
 (def tips quo.components.password.tips.view/view)

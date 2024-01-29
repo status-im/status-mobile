@@ -4,6 +4,7 @@
     [quo.components.profile.collectible.style :as style]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
+    [react-native.pure :as rn.pure]
     [react-native.svg :as svg]))
 
 (defn remaining-tiles
@@ -19,18 +20,19 @@
   [{:keys [style size resource]}]
   (let [svg?        (and (map? resource) (:svg? resource))
         image-style (style/tile-style-by-size size)]
-    [rn/view {:style style}
+    (rn.pure/view
+     {:style style}
      (if svg?
-       [rn/view
+       (rn.pure/view
         {:style {:border-radius (:border-radius image-style)
                  :overflow      :hidden}}
-        [svg/svg-uri (assoc image-style :uri (:uri resource))]]
-       [fast-image/fast-image
+        (svg/svg-uri (assoc image-style :uri (:uri resource))))
+       (fast-image/fast-image
         {:style  image-style
          :source (if (string? resource)
                    {:uri      resource
                     :priority :low}
-                   resource)}])]))
+                   resource)})))))
 
 (defn two-tiles
   [{:keys [images size]}]

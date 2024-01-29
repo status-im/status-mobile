@@ -27,8 +27,9 @@
      9.213 11.877 8.436 C 11.787 7.866 11.649 7.313 11.468 6.781 Z"
      :clip-path "url(#clip0_5514_84289)"})
    (svg/defs
-    (svg/clip-path {:id "clip0_5514_84289"}
-                  (svg/rect {:width width :height height :fill :none})))))
+    (svg/clip-path
+     {:id "clip0_5514_84289"}
+     (svg/rect {:width width :height height :fill :none})))))
 
 (defn- content
   [{:keys [size label]} children]

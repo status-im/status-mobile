@@ -42,7 +42,7 @@
         on-scroll           (partial scroll-handler scroll-y)
         header              (partial settings.header/view {:scroll-y scroll-y})
         key-extractor       #(:title (first %1))]
-    (quo/overlay
+    (quo/overlay-pure
      {:type :shell}
      (rn.pure/view
       {:key   :header

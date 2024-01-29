@@ -50,8 +50,10 @@
 (defn func
   [component-fn & props]
   (when-not (get @memo-fn-cache component-fn)
-    (swap! memo-fn-cache assoc component-fn (memo #(apply component-fn (.-props %))
-                                                  #(= (.-props %1) (.-props %2)))))
+    (swap! memo-fn-cache assoc
+      component-fn
+      (memo #(apply component-fn (.-props %))
+            #(= (.-props %1) (.-props %2)))))
   (createElement (get @memo-fn-cache component-fn) #js {:props props}))
 
 (defn flat-list
