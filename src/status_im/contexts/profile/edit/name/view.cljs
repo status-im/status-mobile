@@ -43,7 +43,7 @@
         {:key   :content
          :style style/screen-container}
         [rn/view {:style {:gap 22}}
-         [quo/text-combinations {:title (i18n/label :t/name)}]
+         [quo/text-combinations {:title (i18n/label :t/edit-profile-name)}]
          [quo/input
           {:theme           :dark
            :blur?           true
