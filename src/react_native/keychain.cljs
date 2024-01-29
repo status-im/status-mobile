@@ -72,9 +72,11 @@
 
 (defn get-credentials
   "Gets the credentials for a specified server from the Keychain"
-  [server callback]
-  (-> (.getInternetCredentials ^js react-native-keychain (string/lower-case server))
-      (.then callback)))
+  ([server]
+   (get-credentials server identity))
+  ([server callback]
+   (-> (.getInternetCredentials ^js react-native-keychain (string/lower-case server))
+       (.then callback))))
 
 (defn reset-credentials
   [server]

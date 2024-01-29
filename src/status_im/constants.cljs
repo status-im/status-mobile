@@ -378,10 +378,10 @@
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
 
-(def ^:const biometric-error-user-canceled "USER_CANCELED")
-(def ^:const biometric-error-user-fallback "USER_USER_FALLBACK")
-(def ^:const biometric-error-not-available "NOT_AVAILABLE")
-(def ^:const biometric-error-not-enrolled "NOT_ENROLLED")
+;; NOTE all android biometrics falls under :Biometrics
+(def ^:const biometrics-type-android :Biometrics)
+(def ^:const biometrics-type-touch-id :TouchID)
+(def ^:const biometrics-type-face-id :FaceID)
 
 (def ^:const onboarding-generating-keys-animation-duration-ms 7000)
 (def ^:const onboarding-generating-keys-navigation-retry-ms 3000)
