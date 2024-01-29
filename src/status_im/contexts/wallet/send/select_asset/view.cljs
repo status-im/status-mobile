@@ -26,7 +26,6 @@
           crypto-formatted (utils/get-standard-crypto-format token token-units)
           fiat-value       (utils/total-token-fiat-value currency token)
           fiat-formatted   (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
-
       [quo/token-network
        {:token       (:symbol token)
         :label       (:name token)
