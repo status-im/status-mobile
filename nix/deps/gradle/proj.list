@@ -1,6 +1,7 @@
 app
 react-native-async-storage_async-storage
 react-native-background-timer
+react-native-biometrics
 react-native-blob-util
 react-native-blur
 react-native-camera-kit
@@ -36,6 +37,5 @@ react-native-static-safe-area-insets
 react-native-status
 react-native-status-keycard
 react-native-svg
-react-native-touch-id
 react-native-transparent-video
 react-native-webview
