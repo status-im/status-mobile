@@ -9,6 +9,8 @@
 (def app-db
   {:activity-center                    {:filter {:status (:filter-status activity-center/defaults)
                                                  :type   (:filter-type activity-center/defaults)}}
+   :ens/names                          {"seanstrom.eth"  {:name "seanstrom.eth"}
+                                        "hagstromsg.eth" {:name "hagstromsg.eth"}}
    :contacts/contacts                  {}
    :pairing/installations              {}
    :group/selected-contacts            #{}
