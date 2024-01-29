@@ -4,6 +4,7 @@
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/nix/scripts/lib.sh"
 source "${GIT_ROOT}/scripts/colors.sh"
+source "${GIT_ROOT}/nix/scripts/kill_proc_prompt.sh"
 
 nix_purge_linux_multi_user_service() {
     NIX_SERVICES=(nix-daemon.service nix-daemon.socket)
@@ -22,12 +23,10 @@ nix_purge_linux_multi_user_users() {
 }
 
 nix_purge_darwin_multi_user_service() {
-    cd /Library/LaunchDaemons
-    NIX_SERVICES=(org.nixos.darwin-store.plist org.nixos.nix-daemon.plist)
-    for NIX_SERVICE in "${NIX_SERVICES[@]}"; do
-        sudo launchctl unload "${NIX_SERVICE}"
-        sudo launchctl remove "${NIX_SERVICE}"
-    done
+    sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    sudo rm /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    sudo launchctl unload /Library/LaunchDaemons/org.nixos.darwin-store.plist
+    sudo rm /Library/LaunchDaemons/org.nixos.darwin-store.plist
 }
 
 nix_purge_darwin_multi_user_users() {
@@ -50,16 +49,8 @@ nix_purge_darwin_multi_user_volumes() {
         local pid=$(lsof +D /nix | awk 'NR==2{print $2}')
         if [ -n "$pid" ]; then
             echo "The volume /nix is in use by process ID $pid."
+            kill_proc_prompt "$pid" || return 1
 
-            # Ask the user whether to terminate the process
-            read -p "Do you want to terminate this process? (y/n): " choice
-            if [[ $choice == "y" ]]; then
-                sudo kill $pid
-                echo "Process $pid terminated."
-            else
-                echo "Process not terminated. Please close it manually and retry."
-                return 1
-            fi
         else
             echo "No process found using /nix. Manual intervention required."
             return 1
@@ -117,7 +108,7 @@ if (return 0 2>/dev/null); then
     return
 fi
 
-# Confirm user decission, unless --force is used.
+# Confirm user decision, unless --force is used.
 if [[ "${1}" != "--force" ]]; then
     echo -e "${YLW}Are you sure you want to purge Nix?${RST}" >&2
     read -p "[y/n]: " -n 1 -r
@@ -129,7 +120,7 @@ if [[ "${1}" != "--force" ]]; then
 fi
 
 NIX_INSTALL_TYPE=$(nix_install_type)
-# Purging /nix on NixOS would be disasterous.
+# Purging /nix on NixOS would be disastrous.
 if [[ "${NIX_INSTALL_TYPE}" == "nixos" ]]; then
     echo -e "${RED}You should not purge Nix files on NixOS!${RST}" >&2
     exit
