@@ -37,7 +37,9 @@
     [status-im.contexts.preview.status-im.main :as status-im-preview]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
+    [status-im.contexts.profile.edit.ens.view :as edit-ens]
     [status-im.contexts.profile.edit.name.view :as edit-name]
+    [status-im.contexts.profile.edit.names.view :as edit-names]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
@@ -195,6 +197,14 @@
     {:name      :edit-bio
      :options   options/transparent-modal-screen-options
      :component edit-bio/view}
+
+    {:name      :edit-names
+     :options   options/transparent-screen-options
+     :component edit-names/view}
+
+    {:name      :edit-ens
+     :options   options/transparent-screen-options
+     :component edit-ens/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark

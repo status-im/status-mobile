@@ -332,6 +332,18 @@
    (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts)))
 
 (re-frame/reg-sub
+ :profile/profile-user-names
+ :<- [:profile/profile]
+ :<- [:ens/names]
+ (fn [[profile ens-names] _]
+   (-> (map (fn [{:keys [name]}]
+              {:name      name
+               :ens-name? true})
+            (vals ens-names))
+       (conj {:name      (:display-name profile)
+              :ens-name? false}))))
+
+(re-frame/reg-sub
  :profile/login-profile
  :<- [:profile/login]
  :<- [:profile/profiles-overview]
