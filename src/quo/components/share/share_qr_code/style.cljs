@@ -16,6 +16,12 @@
    :padding-top        12
    :padding-bottom     8})
 
+(def gradient-bg
+  {:position :absolute
+   :top      0
+   :left     0
+   :right    0})
+
 ;;; Header
 (def header-container
   {:flex-direction :row

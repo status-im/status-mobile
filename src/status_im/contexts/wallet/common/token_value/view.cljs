@@ -18,6 +18,7 @@
          :label               (i18n/label :t/send)
          :on-press            (fn []
                                 (rf/dispatch [:hide-bottom-sheet])
+                                (rf/dispatch [:wallet/clean-send-data])
                                 (rf/dispatch [:wallet/send-select-token-drawer {:token token-data}])
                                 (rf/dispatch [:open-modal :wallet-select-address]))}
         {:icon                :i/receive
@@ -40,10 +41,12 @@
 
 (defn view
   [item]
-  [quo/token-value
-   (merge item
-          {:on-long-press
-           #(rf/dispatch
-             [:show-bottom-sheet
-              {:content       (fn [] [token-value-drawer item])
-               :selected-item (fn [] [quo/token-value item])}])})])
+  (let [{:keys [watch-only?]} (rf/sub [:wallet/current-viewing-account])]
+    [quo/token-value
+     (cond-> item
+       (not watch-only?)
+       (assoc :on-long-press
+              #(rf/dispatch
+                [:show-bottom-sheet
+                 {:content       (fn [] [token-value-drawer item])
+                  :selected-item (fn [] [quo/token-value item])}])))]))

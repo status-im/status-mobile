@@ -159,7 +159,7 @@
                                                     unmute-chat-label
                                                     mute-chat-label))
                  :color               cover-bg-color
-                 :icon                (if muted? :i/muted :i/activity-center)
+                 :icon                (if muted? :i/activity-center :i/muted)
                  :on-press            (fn []
                                         (if muted?
                                           (home.actions/unmute-chat-action chat-id)
