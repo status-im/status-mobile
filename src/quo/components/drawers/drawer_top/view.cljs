@@ -182,7 +182,7 @@
 
 (defn- view-internal
   [{:keys [title title-icon type theme description blur? community-name community-logo button-icon
-           account-name emoji
+           account-name emoji context-tag-type
            on-button-press
            on-button-long-press
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
@@ -214,6 +214,7 @@
       :description         description
       :community-name      community-name
       :community-logo      community-logo
+      :context-tag-type    context-tag-type
       :customization-color customization-color
       :account-name        account-name
       :emoji               emoji}]]

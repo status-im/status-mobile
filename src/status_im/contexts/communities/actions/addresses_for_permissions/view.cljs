@@ -35,6 +35,7 @@
      [quo/drawer-top
       {:type                :context-tag
        :title               (i18n/label :t/addresses-for-permissions)
+       :context-tag-type    :community
        :community-name      name
        :button-icon         :i/info
        :on-button-press     not-implemented/alert
