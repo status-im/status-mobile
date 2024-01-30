@@ -455,7 +455,11 @@
     (swap! rf-db/app-db assoc-in [:communities community-id] community)
     (is (match? {:can-request-access?   true
                  :number-of-hold-tokens 2
-                 :tokens                [[{:symbol      "ETH"
+                 :tokens                [[{:symbol      "DAI"
+                                           :amount      "5.0"
+                                           :sufficient? nil
+                                           :loading?    checking-permissions?}]
+                                         [{:symbol      "ETH"
                                            :amount      "0.001"
                                            :sufficient? nil
                                            :loading?    checking-permissions?
