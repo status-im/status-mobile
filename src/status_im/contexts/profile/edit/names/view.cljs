@@ -9,7 +9,7 @@
    [utils.re-frame :as rf]))
 
 (defn- name-item
-  [{:keys [name ens-name? ]}]
+  [{:keys [name ens-name?]}]
   ^{:key name}
   [quo/settings-item
    {:title           name
