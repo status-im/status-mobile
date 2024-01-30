@@ -328,7 +328,6 @@
      :options   {:insets {:top? true}}
      :component bridge-to/view}
 
-
     {:name      :wallet-bridge-send
      :options   {:insets {:top? true}}
      :component bridge-send/view}
