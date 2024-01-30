@@ -10,6 +10,7 @@
 (def ^:const account-initials-action "/accountInitials")
 (def ^:const contact-images-action "/contactImages")
 (def ^:const generate-qr-action "/GenerateQRCode")
+(def ^:const image-preview-action "/image-preview")
 
 (defn get-font-file-ready
   "setup font file and get the absolute path to it
@@ -294,3 +295,14 @@
                                     "&size="
                                     qr-size)]
     media-server-url))
+
+(defn get-preview-image-for-url
+  [{:keys [url size port]}]
+  (let [encoded-url (js/encodeURIComponent url)]
+    (str image-server-uri-prefix
+         port
+         image-preview-action
+         "?image_url="
+         encoded-url
+         "&size="
+         size)))
