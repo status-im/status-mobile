@@ -4,6 +4,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.style :as style]
     [utils.re-frame :as rf]))
@@ -59,7 +60,7 @@
         [rn/view {:style {:margin-top 0}}
          top-nav]
         [quo/page-nav
-         (cond-> {:margin-top     44
+         (cond-> {:margin-top     (safe-area/get-top)
                   :type           :no-title
                   :background     (if (= 1 (reanimated/get-shared-value opacity-animation))
                                     :blur
