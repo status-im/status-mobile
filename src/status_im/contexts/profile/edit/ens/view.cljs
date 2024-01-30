@@ -31,5 +31,6 @@
            :blur?     true
            :icon-left :i/delete
            :on-press  (fn []
-                        (rf/dispatch [:ens/remove-ens user-name]))}
+                        (rf/dispatch [:ens/remove-ens user-name])
+                        (rf/dispatch [:navigate-back]))}
           (i18n/label :t/remove)]]]])))
