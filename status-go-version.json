@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "feat/media-server-image-preview-gen",
+    "commit-sha1": "26fec07fed62eb430e93a7176768d9f656a33645",
+    "src-sha256": "0k2iwk2wlrij4bk1jz2yax06fdpl6d3mxls2yhx18p7yqkk901w4"
+}
