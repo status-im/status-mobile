@@ -9,6 +9,7 @@
     [status-im.common.home.actions.view :as actions]
     [status-im.common.scroll-page.style :as scroll-page.style]
     [status-im.common.scroll-page.view :as scroll-page]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.chat.view :as chat-actions]
     [status-im.contexts.communities.actions.community-options.view :as options]
@@ -139,8 +140,10 @@
       {:tokens   tokens
        :padding? true}]
      [quo/button
-      {:on-press            #(rf/dispatch [:open-modal :community-account-selection
-                                           {:community-id id}])
+      {:on-press            (if config/community-accounts-selection-enabled?
+                              #(rf/dispatch [:open-modal :community-account-selection
+                                             {:community-id id}])
+                              #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
        :accessibility-label :join-community-button
        :customization-color color
        :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
@@ -159,8 +162,10 @@
        (if role-permissions?
          [token-requirements community]
          [quo/button
-          {:on-press            #(rf/dispatch [:open-modal :community-account-selection
-                                               {:community-id id}])
+          {:on-press            (if config/community-accounts-selection-enabled?
+                                  #(rf/dispatch [:open-modal :community-account-selection
+                                                 {:community-id id}])
+                                  #(rf/dispatch [:open-modal :community-requests-to-join community]))
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
            :icon-left           :i/communities}
