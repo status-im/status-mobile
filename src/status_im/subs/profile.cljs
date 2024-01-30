@@ -342,10 +342,12 @@
                  (vals ens-names))
             (conj {:name      (:display-name profile)
                    :ens-name? false}))
-        (map (fn [name-item]
-               (merge name-item
-                      {:selected? (= (:name name-item)
-                                     (:preferred-name profile))}))))))
+        (map (fn [{:keys [name ens-name?] :as name-item}]
+               (let [preferred-name (:preferred-name profile)]
+                 (merge name-item
+                        (if (nil? preferred-name)
+                          {:selected? (not ens-name?)}
+                          {:selected? (= name preferred-name)}))))))))
 
 (re-frame/reg-sub
  :profile/login-profile
