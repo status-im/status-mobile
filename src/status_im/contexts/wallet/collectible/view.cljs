@@ -3,11 +3,8 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-<<<<<<< HEAD
-    [react-native.svg :as svg]
-=======
     [react-native.platform :as platform]
->>>>>>> 49161eff7 (Options component moved out of lightbox)
+    [react-native.svg :as svg]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
@@ -138,21 +135,27 @@
              :on-press       (fn []
                                (if svg?
                                  (js/alert "Can't visualize SVG images in lightbox")
-                                 (rf/dispatch [:lightbox/navigate-to-lightbox
-                                               token-id
-                                               {:images [{:image        preview-uri
-                                                          :image-width  300 ; collectibles don't have
-                                                          ; width/height but we need
-                                                          ; to pass something
-                                                          :image-height 300 ; without it animation
-                                                          ; doesn't work smoothly and
-                                                          ; :border-radius not
-                                                          ; applied
-                                                          :id           token-id
-                                                          :header       collectible-name
-                                                          :description  collection-name}]
-                                                :index  0
-                                                :options-drawer-component options-drawer}])))}
+                                 (rf/dispatch
+                                  [:lightbox/navigate-to-lightbox
+                                   token-id
+                                   {:images           [{:image        preview-uri
+                                                        :image-width  300 ; collectibles don't have
+                                                                          ; width/height but we need
+                                                                          ; to pass something
+                                                        :image-height 300 ; without it animation
+                                                                          ; doesn't work smoothly
+                                                                          ; and :border-radius not
+                                                                          ; applied
+                                                        :id           token-id
+                                                        :header       collectible-name
+                                                        :description  collection-name}]
+                                    :index            0
+                                    :on-options-press (fn [images index]
+                                                        (rf/dispatch [:show-bottom-sheet
+                                                                      {:content (fn []
+                                                                                  [options-drawer
+                                                                                   images
+                                                                                   index])}]))}])))}
             (if svg?
               [rn/view
                {:style     (assoc style/preview :overflow :hidden)

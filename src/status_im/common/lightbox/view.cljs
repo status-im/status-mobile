@@ -45,7 +45,7 @@
 
 (defn lightbox-content
   [{:keys [props state animations derived images index handle-items-changed bottom-text-component
-           options-drawer-component]}]
+           on-options-press]}]
   (let [{:keys [data transparent? scroll-index
                 set-full-height?]} state
         insets                     (safe-area/get-insets)
@@ -70,7 +70,7 @@
                                                    {:height screen-height})}
      (when-not @transparent?
        [:f> top-view/top-view images insets scroll-index animations derived landscape?
-        screen-width options-drawer-component])
+        screen-width on-options-press])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
       [reanimated/view
@@ -137,7 +137,7 @@
 
 (defn- f-lightbox
   []
-  (let [{:keys [images index bottom-text-component options-drawer-component]}
+  (let [{:keys [images index bottom-text-component on-options-press]}
         (rf/sub [:get-screen-params])
         props
         (utils/init-props)
@@ -155,15 +155,15 @@
           (utils/orientation-change props state animations))
         (utils/effect props animations index)
         [:f> lightbox-content
-         {:props                    props
-          :state                    state
-          :animations               animations
-          :derived                  derived
-          :images                   images
-          :index                    index
-          :handle-items-changed     handle-items-changed
-          :bottom-text-component    bottom-text-component
-          :options-drawer-component options-drawer-component}]))))
+         {:props                 props
+          :state                 state
+          :animations            animations
+          :derived               derived
+          :images                images
+          :index                 index
+          :handle-items-changed  handle-items-changed
+          :bottom-text-component bottom-text-component
+          :on-options-press      on-options-press}]))))
 
 (defn lightbox
   []

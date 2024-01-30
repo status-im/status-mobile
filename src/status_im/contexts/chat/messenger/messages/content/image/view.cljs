@@ -58,7 +58,12 @@
                                        :insets insets
                                        :bottom-text-component
                                        [lightbox/bottom-text-for-lightbox message]
-                                       :options-drawer-component lightbox/drawer}])}
+                                       :on-options-press (fn [images index]
+                                                           (rf/dispatch [:show-bottom-sheet
+                                                                         {:content (fn []
+                                                                                     [lightbox/drawer
+                                                                                      images
+                                                                                      index])}]))}])}
       [fast-image/fast-image
        {:source              {:uri image-local-url}
         :style               (merge dimensions {:border-radius 12})

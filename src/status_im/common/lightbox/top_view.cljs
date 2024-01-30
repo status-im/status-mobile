@@ -46,7 +46,7 @@
     (rf/dispatch [:lightbox/share-image uri])))
 
 (defn top-view
-  [images insets index animations derived landscape? screen-width options-drawer-component]
+  [images insets index animations derived landscape? screen-width on-options-press]
   (let [{:keys [description header]} (nth images @index)
         bg-color                     (if landscape?
                                        colors/neutral-100-opa-70
@@ -93,7 +93,6 @@
       [rn/touchable-opacity
        {:active-opacity      1
         :accessibility-label :image-options
-        :on-press            #(rf/dispatch [:show-bottom-sheet
-                                            {:content (fn [] [options-drawer-component images @index])}])
+        :on-press            #(on-options-press images @index)
         :style               style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))
