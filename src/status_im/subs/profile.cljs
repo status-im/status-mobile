@@ -336,12 +336,16 @@
  :<- [:profile/profile]
  :<- [:ens/names]
  (fn [[profile ens-names] _]
-   (-> (map (fn [{:keys [name]}]
-              {:name      name
-               :ens-name? true})
-            (vals ens-names))
-       (conj {:name      (:display-name profile)
-              :ens-name? false}))))
+   (->> (-> (map (fn [{:keys [name]}]
+                   {:name      name
+                    :ens-name? true})
+                 (vals ens-names))
+            (conj {:name      (:display-name profile)
+                   :ens-name? false}))
+        (map (fn [name-item]
+               (merge name-item
+                      {:selected? (= (:name name-item)
+                                     (:preferred-name profile))}))))))
 
 (re-frame/reg-sub
  :profile/login-profile

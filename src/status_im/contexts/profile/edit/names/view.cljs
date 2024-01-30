@@ -8,7 +8,7 @@
    [utils.re-frame :as rf]))
 
 (defn- name-item
-  [{:keys [name ens-name?]}]
+  [{:keys [name ens-name? selected?]}]
   ^{:key name}
   [quo/settings-item
    {:title           name
@@ -18,7 +18,12 @@
     :image-right?    true
     :on-press        #(rf/dispatch [:open-modal (if ens-name? :edit-ens :edit-name) name])
     :action          :selector
-    :action-props    {:type :radio :blur? true}
+    :action-props    {:type :radio
+                      :blur? true
+                      :checked? selected?
+                      :on-change (fn [checked?]
+                                   (when checked?
+                                     (rf/dispatch [:profile.settings/profile-update :preferred-name name])))}
     :container-style style/item-container}])
 
 (defn- header-view []
