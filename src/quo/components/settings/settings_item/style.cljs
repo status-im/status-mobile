@@ -55,6 +55,14 @@
             colors/white-opa-70
             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
 
+(defn image-color 
+  [blur? image-right? theme]
+  {:color (if blur?
+            (if image-right?
+              colors/white-opa-40
+              colors/white-opa-70)
+            (color blur? theme))})
+
 (defn label-dot
   [background-color]
   {:width            15

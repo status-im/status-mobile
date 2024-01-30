@@ -53,7 +53,7 @@
   [rn/view
    {:style (style/image-container image image-right? tag description)}
    (case image
-     :icon        [icon/icon image-props (style/color blur? theme)]
+     :icon        [icon/icon image-props (style/image-color blur? image-right? theme)]
      :avatar      [user-avatar/user-avatar image-props]
      :icon-avatar [icon-avatar/icon-avatar image-props]
      nil)])
