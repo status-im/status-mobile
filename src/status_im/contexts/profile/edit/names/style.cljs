@@ -1,4 +1,5 @@
-(ns status-im.contexts.profile.edit.names.style)
+(ns status-im.contexts.profile.edit.names.style
+  (:require [quo.foundations.colors :as colors]))
 
 (defn page-wrapper
   [insets]
@@ -14,6 +15,6 @@
    :justify-content    :space-between})
 
 (def item-container
-  {:background-color "rgba(255, 255, 255, 0.05)"
+  {:background-color colors/white-opa-5
    :border-radius    16
    :margin-bottom    4})
