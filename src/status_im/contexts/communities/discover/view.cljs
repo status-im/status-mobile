@@ -209,6 +209,7 @@
       [scroll-page/scroll-page
        {:theme            theme
         :on-scroll        #(reset! scroll-height %)
+        :page-nav-props   {:background :blur}
         :navigate-back?   :true
         :height           (if (> @scroll-height 360)
                             208
