@@ -165,7 +165,7 @@
           {:on-press            (if config/community-accounts-selection-enabled?
                                   #(rf/dispatch [:open-modal :community-account-selection
                                                  {:community-id id}])
-                                  #(rf/dispatch [:open-modal :community-requests-to-join community]))
+                                  #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
            :icon-left           :i/communities}
