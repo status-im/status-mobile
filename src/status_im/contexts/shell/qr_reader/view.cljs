@@ -4,6 +4,7 @@
     [re-frame.core :as rf]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
+    [status-im.common.router :as router]
     [status-im.common.scan-qr-code.view :as scan-qr-code]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
     [status-im.navigation.events :as navigation]
@@ -11,11 +12,13 @@
 
 (defn community-qr-code?
   [scanned-text]
-  false)
+  (string/starts-with? scanned-text "https://status.app/c/"))
+
+;;(some string/starts-with? (router/path-urls router/user-with-data-path))
 
 (defn channel-qr-code?
   [scanned-text]
-  false)
+  (string/starts-with? scanned-text "https://status.app/cc/"))
 
 (defn profile-qr-code?
   [scanned-text]
