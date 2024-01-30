@@ -9,26 +9,47 @@
     [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]))
 
-(defn legacy-wallet?
-  [qr-string]
-  (wallet-validation/eth-address? qr-string))
+(defn community-qr-code?
+  [scanned-text]
+  false)
+
+(defn channel-qr-code?
+  [scanned-text]
+  false)
 
 (defn profile-qr-code?
-  [qr-string]
-  (string/starts-with? qr-string "https://status.app/u/"))
+  [scanned-text]
+  (string/starts-with? scanned-text "https://status.app/u/"))
+
+(defn legacy-eth-address?
+  [scanned-text]
+  (wallet-validation/eth-address? scanned-text))
+
+(defn pairing-qr-code?
+  [scanned-text]
+  false)
 
 (defn extracted-id
-  [qr-string]
-  (let [index (string/index-of qr-string "#")]
-    (subs qr-string index)))
+  [scanned-text]
+  (let [index (string/index-of scanned-text "#")]
+    (subs scanned-text index)))
 
-(defn on-qr-code-scanned [qr-string]
+(defn on-qr-code-scanned [scanned-text]
   (cond
-    (profile-qr-code? qr-string)
-    (rf/dispatch [:chat.ui/show-profile (extracted-id qr-string)])
+    (community-qr-code? scanned-text)
+    false
 
-    (legacy-wallet? qr-string)
+    (channel-qr-code? scanned-text)
+    false
+
+    (profile-qr-code? scanned-text)
+    (rf/dispatch [:chat.ui/show-profile (extracted-id scanned-text)])
+
+    (legacy-eth-address? scanned-text)
     (navigation/change-tab :wallet-stack)
+
+    (pairing-qr-code? scanned-text)
+    false
 
     :else
     #(rf/dispatch [:toasts/upsert {:type  :negative
