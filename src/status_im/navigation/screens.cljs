@@ -44,6 +44,7 @@
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
     [status-im.contexts.shell.share.view :as share]
+    [status-im.contexts.shell.qr-reader.view :as shell-qr-reader]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
@@ -90,6 +91,10 @@
 
     {:name      :shell-stack
      :component shell/shell-stack}
+
+    {:name      :shell-qr-reader
+     :options   (assoc options/dark-screen :modalPresentationStyle :overCurrentContext)
+     :component shell-qr-reader/view}
 
     {:name      :chat
      :options   {:insets     {:top? true}
