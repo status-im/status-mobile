@@ -347,15 +347,11 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
 
-<<<<<<< HEAD
-    {:name      :wallet-share-address
-=======
     {:name      :wallet-check-your-backup
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-check-your-backup/view}
 
-    {:name      :wallet-receive
->>>>>>> 462646700 (feat: new keypair flow)
+    {:name      :wallet-share-address
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
 
