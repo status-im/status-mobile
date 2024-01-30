@@ -31,8 +31,8 @@
 
 (defn image-container
   [image image-right? tag description]
-  {:height     (if (= image :icon-avatar) 32 20)
-   :margin-top (if (or tag description) 1 0)
+  {:height      (if (= image :icon-avatar) 32 20)
+   :margin-top  (if (or tag description) 1 0)
    :margin-left (if image-right? 8 0)})
 
 (def status-container
@@ -55,7 +55,7 @@
             colors/white-opa-70
             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
 
-(defn image-color 
+(defn image-color
   [blur? image-right? theme]
   {:color (if blur?
             (if image-right?

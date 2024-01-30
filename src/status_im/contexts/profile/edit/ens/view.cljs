@@ -1,11 +1,11 @@
 (ns status-im.contexts.profile.edit.ens.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.contexts.profile.edit.ens.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.contexts.profile.edit.ens.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

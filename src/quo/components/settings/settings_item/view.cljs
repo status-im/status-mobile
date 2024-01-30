@@ -102,7 +102,8 @@
      nil)])
 
 (defn- internal-view
-  [{:keys [image-right? title on-press action-props accessibility-label blur? container-style] :as props}]
+  [{:keys [image-right? title on-press action-props accessibility-label blur? container-style]
+    :as   props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            on-press

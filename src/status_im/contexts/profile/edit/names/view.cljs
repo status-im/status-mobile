@@ -1,11 +1,11 @@
 (ns status-im.contexts.profile.edit.names.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.contexts.profile.edit.names.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.contexts.profile.edit.names.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- name-item
   [{:keys [name ens-name? selected?]}]
@@ -18,19 +18,22 @@
     :image-right?    true
     :on-press        #(rf/dispatch [:open-modal (if ens-name? :edit-ens :edit-name) name])
     :action          :selector
-    :action-props    {:type :radio
-                      :blur? true
-                      :checked? selected?
+    :action-props    {:type      :radio
+                      :blur?     true
+                      :checked?  selected?
                       :on-change (fn [checked?]
                                    (when checked?
-                                     (rf/dispatch [:profile.settings/profile-update :preferred-name name])))}
+                                     (rf/dispatch [:profile.settings/profile-update :preferred-name
+                                                   name])))}
     :container-style style/item-container}])
 
-(defn- header-view []
+(defn- header-view
+  []
   [rn/view {:style {:margin-bottom 8}}
    [quo/text-combinations {:title (i18n/label :t/name)}]])
 
-(defn view []
+(defn view
+  []
   (let [insets             (safe-area/get-insets)
         profile-user-names (rf/sub [:profile/profile-user-names])]
     [quo/overlay
@@ -42,7 +45,7 @@
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])}]
      [rn/view
-      {:key  :content
+      {:key   :content
        :style style/screen-container}
       [rn/flat-list
        {:key                             :list

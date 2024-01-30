@@ -5,7 +5,7 @@
 
 (deftest edit-name-test
   (let [new-name "test.eth"
-        cofx     {:db {:ens/names {"test.eth" {:name "test.eth"}
+        cofx     {:db {:ens/names {"test.eth"  {:name "test.eth"}
                                    "test2.eth" {:name "test2.eth"}}}}
         expected {:db {:ens/names {"test2.eth" {:name "test2.eth"}}}}]
     (is (match? expected
