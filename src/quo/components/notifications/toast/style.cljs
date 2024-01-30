@@ -47,7 +47,7 @@
 
 (def left-side-container
   {:padding     2
-   :padding-top 4})
+   :padding-top 3})
 
 (def right-side-container
   {:padding 4

@@ -5,6 +5,7 @@
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.alert.effects :as alert.effects]
     [status-im.common.device-permissions :as device-permissions]
@@ -158,8 +159,11 @@
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
                  :type            :negative
-                 :container-style {:top (when platform/ios? 20)}
-                 :text            (i18n/label :t/only-6-photos)}]))
+                 :container-style {:top (if platform/ios?
+                                          (- (safe-area/get-top) 40)
+                                          (- (safe-area/get-top) 40))}
+                 :text            (i18n/label :t/hit-photos-limit
+                                              {:max-photos constants/max-album-photos})}]))
 
 
 (defn go-to-camera
