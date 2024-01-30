@@ -29,7 +29,7 @@
 
 (defn- header-view
   []
-  [rn/view {:style {:margin-bottom 8}}
+  [rn/view {:style style/header-wrapper}
    [quo/text-combinations {:title (i18n/label :t/name)}]])
 
 (defn view

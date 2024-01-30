@@ -18,3 +18,6 @@
   {:background-color colors/white-opa-5
    :border-radius    16
    :margin-bottom    4})
+
+(def header-wrapper
+  {:margin-bottom 20})

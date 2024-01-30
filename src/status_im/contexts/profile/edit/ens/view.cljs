@@ -22,7 +22,7 @@
      [rn/view
       {:key   :content
        :style style/screen-container}
-      [rn/view {:style {:gap 22}}
+      [rn/view
        [quo/text-combinations {:title user-name}]]
       [rn/view {:style style/button-wrapper}
        [quo/button
