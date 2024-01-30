@@ -74,7 +74,7 @@
      :account-props account-props}]])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees token amount to-address route theme]}]
+  [{:keys [estimated-time-min max-fees token-symbol amount to-address route theme]}]
   (let [currency-symbol (rf/sub [:profile/currency-symbol])
         route-loaded?   (some? route)]
     [rn/view
@@ -123,7 +123,7 @@
            :status          :default
            :size            :small
            :title           (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)})
-           :subtitle        (str amount " " (:symbol token))}]]
+           :subtitle        (str amount " " token-symbol)}]]
         [rn/activity-indicator {:style {:align-self :center}}])]]))
 
 (defn- view-internal
@@ -213,7 +213,7 @@
            [transaction-details
             {:estimated-time-min estimated-time-min
              :max-fees           max-fees
-             :token              token
+             :token-symbol       token-symbol
              :amount             amount
              :to-address         to-address
              :theme              theme
