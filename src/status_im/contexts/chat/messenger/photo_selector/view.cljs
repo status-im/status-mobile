@@ -4,7 +4,6 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.linear-gradient :as linear-gradient]
-    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -17,13 +16,12 @@
 
 (def min-scroll-to-blur 5)
 
-(defn show-toast
+(defn show-photo-limit-toast
   []
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
                  :type            :negative
-                 :container-style {:top (if platform/ios?
-                                          (- (safe-area/get-top) 40))}
+                 :container-style style/photo-limit-toast-container
                  :text            (i18n/label :t/hit-photos-limit
                                               {:max-photos constants/max-album-photos})}]))
 
@@ -76,7 +74,7 @@
                              (if item-selected?
                                (swap! selected remove-selected item)
                                (if (>= (count @selected) constants/max-album-photos)
-                                 (show-toast)
+                                 (show-photo-limit-toast)
                                  (swap! selected conj item))))
       :accessibility-label (str "image-" index)}
      [rn/image

@@ -1,6 +1,8 @@
 (ns status-im.contexts.chat.messenger.composer.actions.style
   (:require
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [status-im.contexts.chat.messenger.composer.constants :as constants]))
 
 (def actions-container
@@ -30,3 +32,7 @@
    :right            -20
    :bottom           0
    :height           constants/composer-default-height})
+
+(def photo-limit-toast-container
+  {:top (+ (safe-area/get-top)
+           (if platform/ios? -40 14))})

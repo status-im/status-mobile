@@ -5,7 +5,6 @@
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.alert.effects :as alert.effects]
     [status-im.common.device-permissions :as device-permissions]
@@ -154,14 +153,12 @@
                                                   50)}]))
        :max-duration-ms                    constants/audio-max-duration-ms}]]))
 
-(defn images-limit-toast
+(defn photo-limit-toast
   []
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
                  :type            :negative
-                 :container-style {:top (if platform/ios?
-                                          (- (safe-area/get-top) 40)
-                                          (- (safe-area/get-top) 40))}
+                 :container-style style/photo-limit-toast-container
                  :text            (i18n/label :t/hit-photos-limit
                                               {:max-photos constants/max-album-photos})}]))
 
@@ -169,7 +166,7 @@
 (defn go-to-camera
   [images-count]
   (device-permissions/camera #(if (>= images-count constants/max-album-photos)
-                                (images-limit-toast)
+                                (photo-limit-toast)
                                 (rf/dispatch [:navigate-to :camera-screen]))))
 
 (defn camera-button
