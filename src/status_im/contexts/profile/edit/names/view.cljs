@@ -28,22 +28,21 @@
 (defn view []
   (let [insets             (safe-area/get-insets)
         profile-user-names (rf/sub [:profile/profile-user-names])]
-    (fn []
-      [quo/overlay
-       {:type            :shell
-        :container-style (style/page-wrapper insets)}
-       [quo/page-nav
-        {:key        :header
-         :background :blur
-         :icon-name  :i/arrow-left
-         :on-press   #(rf/dispatch [:navigate-back])}]
-       [rn/view
-        {:key  :content
-         :style style/screen-container}
-        [rn/flat-list
-         {:key                             :list
-          :header                          (header-view)
-          :data                            profile-user-names
-          :key-fn                          :name
-          :shows-vertical-scroll-indicator false
-          :render-fn                       name-item}]]])))
+    [quo/overlay
+     {:type            :shell
+      :container-style (style/page-wrapper insets)}
+     [quo/page-nav
+      {:key        :header
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   #(rf/dispatch [:navigate-back])}]
+     [rn/view
+      {:key  :content
+       :style style/screen-container}
+      [rn/flat-list
+       {:key                             :list
+        :header                          (header-view)
+        :data                            profile-user-names
+        :key-fn                          :name
+        :shows-vertical-scroll-indicator false
+        :render-fn                       name-item}]]]))
