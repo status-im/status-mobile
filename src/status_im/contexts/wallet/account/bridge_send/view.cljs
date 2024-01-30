@@ -17,7 +17,9 @@
         crypto-decimals  (utils/get-crypto-decimals-count token)]
     [rn/view {:style style/bridge-send-wrapper}
      [account-switcher/view
-      {:on-press            #(rf/dispatch [:navigate-back-within-stack :wallet-bridge-send])
+      {:on-press            #(rf/dispatch [:navigate-back])
+       ;;  need to pass token back
+       ;;  :on-press    #(rf/dispatch [:navigate-back-within-stack :wallet-bridge-send token])
        :icon-name           :i/arrow-left
        :accessibility-label :top-bar}]
      [input-amount/view
