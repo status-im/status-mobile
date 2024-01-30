@@ -144,9 +144,9 @@ used for keycard
 used for svg icons, mostly collectibles are using svg
 TODO: updating requires a pod update on iOS
 
-## "react-native-touch-id": "^4.4.1"
+## "react-native-biometrics": "^3.0.1"
 
-used for touch-id identification
+used for biometric authentication on Android and iOS 
 
 ## "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v8.0.7_3"
 

@@ -19,4 +19,4 @@ trap show_gradle_log ERR
 ./gradlew projects --no-daemon --console plain 2>&1 \
     | tee "${GRADLE_LOG_FILE}" \
     | grep "Project ':" \
-    | sed -E "s;^.--- Project '\:([@_a-zA-Z0-9\-]+)';\1;"
+    | sed -E "s;^.--- Project '\:([@_a-zA-Z0-9\-]+)'.*;\1;"
