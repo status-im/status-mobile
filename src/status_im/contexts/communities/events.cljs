@@ -7,6 +7,7 @@
     [react-native.platform :as platform]
     [react-native.share :as share]
     [schema.core :as schema]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
     status-im.contexts.communities.actions.community-options.events
