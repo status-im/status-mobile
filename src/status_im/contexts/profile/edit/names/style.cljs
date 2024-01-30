@@ -16,4 +16,4 @@
 (def item-container
   {:background-color "rgba(255, 255, 255, 0.05)"
    :border-radius    16
-   :margin-bottom    8})
+   :margin-bottom    4})

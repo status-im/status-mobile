@@ -30,9 +30,10 @@
    :justify-content   :flex-start})
 
 (defn image-container
-  [image tag description]
+  [image image-right? tag description]
   {:height     (if (= image :icon-avatar) 32 20)
-   :margin-top (if (or tag description) 1 0)})
+   :margin-top (if (or tag description) 1 0)
+   :margin-left (if image-right? 8 0)})
 
 (def status-container
   {:flex-direction :row

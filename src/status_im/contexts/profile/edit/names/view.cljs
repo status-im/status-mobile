@@ -16,7 +16,7 @@
     :image-props     (if ens-name? :i/chevron-right :i/edit)
     :image           :icon
     :blur?           true
-    :image-right     true
+    :image-right?    true
     :on-press        #(rf/dispatch [:open-modal (if ens-name? :edit-ens :edit-name) name])
     :action          :selector
     :action-props    {:type :radio :blur? true}

@@ -49,9 +49,9 @@
     nil))
 
 (defn image-component
-  [{:keys [image image-props description tag blur? theme]}]
+  [{:keys [image image-right? image-props description tag blur? theme]}]
   [rn/view
-   {:style (style/image-container description tag image)}
+   {:style (style/image-container image image-right? tag description)}
    (case image
      :icon        [icon/icon image-props (style/color blur? theme)]
      :avatar      [user-avatar/user-avatar image-props]
@@ -102,13 +102,13 @@
      nil)])
 
 (defn- internal-view
-  [{:keys [image-right title on-press action-props accessibility-label blur? container-style] :as props}]
+  [{:keys [image-right? title on-press action-props accessibility-label blur? container-style] :as props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style (style/left-sub-container props)}
-    (when-not image-right
+    (when-not image-right?
       [image-component props])
     [rn/view {:style (style/left-container (:image props))}
      [text/text
@@ -119,7 +119,7 @@
    [rn/view {:style (style/sub-container (:alignment action-props))}
     [label-component props]
     [action-component props]
-    (when image-right
+    (when image-right?
       [image-component props])]])
 
 (def view (quo.theme/with-theme internal-view))
