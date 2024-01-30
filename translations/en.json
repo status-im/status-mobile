@@ -2505,7 +2505,18 @@
 =======
     "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn't use",
     "check-your-backup": "Check your backup",
+<<<<<<< HEAD
     "confirm-the-position": "Confirm the position of certain words in your recovery phrase"
 >>>>>>> 01d360e85 (rebase)
+<<<<<<< HEAD
 >>>>>>> 88d8b4a03 (rebase)
+=======
+=======
+    "confirm-the-position": "Confirm the position of certain words in your recovery phrase",
+    "do-not-cheat": "Don't try to cheat",
+    "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",
+    "see-recovery-phrase-again": "See recovery phrase again"
+
+>>>>>>> 7ab566cc0 (generate new keypair)
+>>>>>>> d375eaf68 (generate new keypair)
 }

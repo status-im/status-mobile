@@ -35,15 +35,15 @@
    [quo/text {:style {:margin-left 12}} (i18n/label item)]])
 
 (defn- view-internal
-  [{:keys [theme]}]
+  [{:keys [revealed? theme]}]
   (let [step-labels                   [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
                                        :t/backup-step-4]
         checked?                      (reagent/atom
-                                        {:0 false
-                                         :1 false
-                                         :2 false
-                                         :3 false})
-        revealed?                     (reagent/atom false)
+                                       {:0 false
+                                        :1 false
+                                        :2 false
+                                        :3 false})
+        revealed?                     (reagent/atom revealed?)
         {:keys [customization-color]} (rf/sub [:profile/profile])]
     (fn []
       [rn/view {:style {:flex 1}}
@@ -80,7 +80,8 @@
            {:button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
-                               :on-press            #(rf/dispatch [:navigate-to :wallet-check-your-backup])}}]
+                               :on-press            #(rf/dispatch [:navigate-to
+                                                                   :wallet-check-your-backup])}}]
           [quo/text
            {:size  :paragraph-2
             :style (style/description-text theme)}
