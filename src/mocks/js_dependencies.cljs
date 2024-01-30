@@ -164,7 +164,7 @@
    {:MediaStates        {}
     :PlaybackCategories {}})
 (def net-info #js {})
-(def touchid #js {})
+(def react-native-biometrics #js {:default {}})
 (def react-native-image-viewing #js {:default {}})
 (def react-native-static-safe-area-insets #js {:default {}})
 
@@ -391,7 +391,7 @@
     "react-native-fetch-polyfill"                      fetch
     "react-native-status-keycard"                      status-keycard
     "react-native-keychain"                            keychain
-    "react-native-touch-id"                            touchid
+    "react-native-biometrics"                          react-native-biometrics
     "@react-native-community/netinfo"                  net-info
     "react-native-dialogs"                             dialogs
     "react-native"                                     react-native

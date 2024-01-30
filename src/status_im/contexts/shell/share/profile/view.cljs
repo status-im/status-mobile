@@ -15,12 +15,12 @@
 (defn profile-tab
   []
   (let [{:keys [emoji-hash
-                customization-color
                 universal-profile-url]
-         :as   profile}   (rf/sub [:profile/profile])
-        abbreviated-url   (address/get-abbreviated-profile-url
-                           universal-profile-url)
-        emoji-hash-string (string/join emoji-hash)]
+         :as   profile}     (rf/sub [:profile/profile-with-image])
+        customization-color (rf/sub [:profile/customization-color])
+        abbreviated-url     (address/get-abbreviated-profile-url
+                             universal-profile-url)
+        emoji-hash-string   (string/join emoji-hash)]
     [rn/scroll-view
      {:content-container-style {:padding-bottom 16}}
      [rn/view {:style style/qr-code-container}

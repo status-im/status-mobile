@@ -52,6 +52,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
+    :symbol              "STT"
     :customization-color :blue}
    {:token               :eth
     :label               "Ethereum"
@@ -59,6 +60,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
+    :symbol              "ETH"
     :customization-color :blue}
    {:token               :dai
     :label               "Dai"
@@ -66,6 +68,7 @@
     :fiat-value          "€0.00"
     :networks            networks-list
     :state               :default
+    :symbol              "DAI"
     :customization-color :blue}])
 
 (def secret-phrase

@@ -168,14 +168,13 @@
              [local-suggestions-list]]]
            [:<>
             [quo/tabs
-             {:style            style/tabs
-              :container-style  style/tabs-content
-              :size             32
-              :default-active   selected-tab
-              :data             tabs-data
-              :scrollable?      true
-              :scroll-on-press? true
-              :on-change        on-change-tab}]
+             {:style           style/tabs
+              :container-style style/tabs-content
+              :size            32
+              :default-active  selected-tab
+              :data            tabs-data
+              :scrollable?     true
+              :on-change       on-change-tab}]
             [tabs/view {:selected-tab selected-tab}]])]))))
 
 (defn view
