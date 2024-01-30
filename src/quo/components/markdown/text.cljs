@@ -34,7 +34,7 @@
 ;reagent library
 (defn normalize-children
   [children]
-  (if (vector? (first children))
+  (if (some vector? children)
     [(reagent/as-element (into [:<>] children))]
     children))
 
