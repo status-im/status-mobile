@@ -7,7 +7,6 @@
             [status-im.common.validation.profile :as profile-validator]
             [status-im.constants :as constants]
             [status-im.contexts.profile.edit.name.style :as style]
-            [status-im.contexts.profile.utils :as profile.utils]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -17,7 +16,7 @@
   (let [insets              (safe-area/get-insets)
         profile             (rf/sub [:profile/profile-with-image])
         customization-color (rf/sub [:profile/customization-color])
-        display-name        (profile.utils/displayed-name profile)
+        display-name        (:display-name profile)
         full-name           (reagent/atom display-name)
         error-msg           (reagent/atom nil)
         typing?             (reagent/atom false)
