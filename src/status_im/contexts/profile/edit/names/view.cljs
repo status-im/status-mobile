@@ -1,7 +1,6 @@
 (ns status-im.contexts.profile.edit.names.view
   (:require
    [quo.core :as quo]
-   [quo.theme :as quo.theme]
    [react-native.core :as rn]
    [react-native.safe-area :as safe-area]
    [status-im.contexts.profile.edit.names.style :as style]
@@ -26,8 +25,7 @@
   [rn/view {:style {:margin-bottom 8}}
    [quo/text-combinations {:title (i18n/label :t/name)}]])
 
-(defn- internal-view
-  [_theme]
+(defn view []
   (let [insets             (safe-area/get-insets)
         profile-user-names (rf/sub [:profile/profile-user-names])]
     (fn []
@@ -49,5 +47,3 @@
           :key-fn                          :name
           :shows-vertical-scroll-indicator false
           :render-fn                       name-item}]]])))
-
-(def view (quo.theme/with-theme internal-view))
