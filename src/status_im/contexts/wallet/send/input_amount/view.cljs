@@ -7,7 +7,6 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [utils.debounce :as debounce]
@@ -60,7 +59,6 @@
     (> new-value prev-value)))
 
 (defn- f-view-internal
-  ;; crypto-decimals and limit-crypto args are needed for component tests only
   [{:keys [crypto-decimals limit-crypto type]}]
   (let [bottom                    (safe-area/get-bottom)
         navigate-back-route       (case type
@@ -70,11 +68,10 @@
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         token-symbol              (:symbol token)
-        limit-crypto              (or limit-crypto
-                                      (utils/get-standard-crypto-format token (:total-balance token)))
+        limit-crypto              limit-crypto
         conversion-rate           (get-in token [:market-values-per-currency :usd :price])
         limit-fiat                (.toFixed (* (:total-balance token) conversion-rate) 2)
-        crypto-decimals           (or crypto-decimals (utils/get-crypto-decimals-count token))
+        crypto-decimals           crypto-decimals
         input-value               (reagent/atom "")
         input-error               (reagent/atom false)
         current-limit             (reagent/atom {:amount   limit-crypto
