@@ -427,7 +427,7 @@
  :chats/status-link-previews-unfurled
  :<- [:chat/status-link-previews]
  (fn [previews]
-   (get previews :unfurled)))
+   (:unfurled previews)))
 
 (re-frame/reg-sub
  :chats/link-previews?

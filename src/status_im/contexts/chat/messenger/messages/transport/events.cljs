@@ -8,6 +8,7 @@
     [legacy.status-im.data-store.chats :as data-store.chats]
     [legacy.status-im.data-store.communities :as data-store.communities]
     [legacy.status-im.data-store.invitations :as data-store.invitations]
+    [legacy.status-im.data-store.messages :as data-store.messages]
     [legacy.status-im.group-chats.core :as models.group]
     [legacy.status-im.multiaccounts.update.core :as update.core]
     [legacy.status-im.pairing.core :as models.pairing]
@@ -365,24 +366,11 @@
           (fn [thumbnail]
             (image->rpc thumbnail))))
 
-(defn- status-link-preview->rpc
-  [preview]
-  (update preview
-          :community
-          (fn [community]
-            (-> community
-                (set/rename-keys {:community-id         :communityId
-                                  :display-name         :displayName
-                                  :members-count        :membersCount
-                                  :active-members-count :activeMembersCount})
-                (update :banner image->rpc)
-                (update :icon image->rpc)))))
-
 (defn build-message
   [msg]
   (-> msg
       (update :link-previews #(map link-preview->rpc %))
-      (update :status-link-previews #(set (map status-link-preview->rpc %)))
+      (update :status-link-previews #(set (map data-store.messages/->status-link-previews-rpc %)))
       (set/rename-keys
        {:album-id             :albumId
         :audio-duration-ms    :audioDurationMs

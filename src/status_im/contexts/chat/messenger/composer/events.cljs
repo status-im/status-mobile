@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.messenger.composer.events
   (:require [clojure.string :as string]
             [legacy.status-im.chat.models.mentions :as mentions]
-            [legacy.status-im.data-store.messages :as data-store-messages]
             [legacy.status-im.data-store.messages :as data-store.messages]
             [status-im.constants :as constants]
             [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
@@ -226,11 +225,10 @@
                                               (map data-store.messages/->link-preview-rpc)
                                               (filter (fn [preview]
                                                         (not (:status-link-preview? preview)))))
-                     :statusLinkPreviews (map
-                                          data-store-messages/->status-link-previews-rpc
-                                          (get-in db
-                                                  [:chat/status-link-previews
-                                                   :unfurled]))}]
+                     :statusLinkPreviews (map data-store.messages/->status-link-previews-rpc
+                                              (get-in db
+                                                      [:chat/status-link-previews
+                                                       :unfurled]))}]
       :js-response true
       :on-error    #(log/error "failed to edit message " %)
       :on-success  (fn [result]
