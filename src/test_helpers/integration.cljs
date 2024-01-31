@@ -9,7 +9,7 @@
    status-im.events
    status-im.navigation.core
    status-im.subs.root
-   [status-im.tests.integration-test.constants :as constants]
+   [tests.integration-test.constants :as constants]
    [taoensso.timbre :as log]))
 
 (defn initialize-app!

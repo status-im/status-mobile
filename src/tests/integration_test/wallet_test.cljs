@@ -1,4 +1,4 @@
-(ns status-im.tests.contract-test.wallet-test
+(ns tests.integration-test.wallet-test
   (:require
    [cljs.test :refer [deftest is]]
    [day8.re-frame.test :as rf-test]
@@ -8,11 +8,12 @@
    status-im.events
    status-im.navigation.core
    status-im.subs.root
-   [status-im.tests.contract-test.utils :as contract-utils]
-   [test-helpers.integration :as h]))
+   [test-helpers.integration :as h]
+   [tests.contract-test.utils :as contract-utils]))
 
 (defn assert-accounts-contract
   [result]
+  (prn "sxxxxxxx")
   (is (true? (some :wallet result)))
   (is (true? (some :chat result)))
   (is (= 2 (count result))))
@@ -26,5 +27,7 @@
         {:rpc-endpoint "accounts_getAccounts"
          :check-result assert-accounts-contract}
         (fn []
+          (prn "++++++")
+
           (h/logout)
           (rf-test/wait-for [::logout/logout-method])))))))

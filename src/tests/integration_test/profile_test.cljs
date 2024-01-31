@@ -1,4 +1,4 @@
-(ns status-im.tests.integration-test.profile-test
+(ns tests.integration-test.profile-test
   (:require
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]

@@ -1,4 +1,4 @@
-(ns status-im.tests.integration-test.chat-test
+(ns tests.integration-test.chat-test
   (:require
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]

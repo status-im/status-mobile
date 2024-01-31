@@ -1,4 +1,4 @@
-(ns status-im.tests.integration-test.constants)
+(ns tests.integration-test.constants)
 
 (def password "testabc")
 

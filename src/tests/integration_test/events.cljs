@@ -1,4 +1,4 @@
-(ns status-im.tests.integration-test.events
+(ns tests.integration-test.events
   (:require
     [utils.number]
     [utils.re-frame :as rf]))
