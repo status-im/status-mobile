@@ -88,7 +88,8 @@
   manually call `setup!`, otherwise you won't see any changes. It is safe and
   even expected you will call `setup!` multiple times in REPLs."
   []
-  (try
+  nil
+  #_(try
     (schema.registry/init-global-registry)
     (register-schemas)
 
