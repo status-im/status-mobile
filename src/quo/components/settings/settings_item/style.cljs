@@ -57,10 +57,8 @@
 
 (defn image-color
   [blur? image-right? theme]
-  {:color (if blur?
-            (if image-right?
-              colors/white-opa-40
-              colors/white-opa-70)
+  {:color (if (and blur? image-right?)
+            colors/white-opa-40
             (color blur? theme))})
 
 (defn label-dot
