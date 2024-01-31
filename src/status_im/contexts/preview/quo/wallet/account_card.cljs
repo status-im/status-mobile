@@ -83,4 +83,5 @@
        [preview/preview-container
         {:state      state
          :descriptor descriptor}
-        [quo/account-card @state]])]))
+        [quo/account-card {:loading? "true"
+                           :name true}]])]))
