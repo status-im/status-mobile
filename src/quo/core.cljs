@@ -61,6 +61,7 @@
     quo.components.info.info-message
     quo.components.info.information-box.view
     quo.components.inputs.address-input.view
+    quo.components.inputs.amount-input.view
     quo.components.inputs.input.view
     quo.components.inputs.locked-input.view
     quo.components.inputs.profile-input.view
@@ -281,6 +282,7 @@
 (def recovery-phrase-input quo.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo.components.inputs.search-input.view/search-input)
 (def title-input quo.components.inputs.title-input.view/view)
+(def amount-input quo.components.inputs.amount-input.view/view)
 
 ;;;; iOS
 (def drawer-bar quo.components.ios.drawer-bar.view/view)

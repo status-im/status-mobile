@@ -73,6 +73,7 @@
     [status-im.contexts.preview.quo.info.info-message :as info-message]
     [status-im.contexts.preview.quo.info.information-box :as information-box]
     [status-im.contexts.preview.quo.inputs.address-input :as address-input]
+    [status-im.contexts.preview.quo.inputs.amount-input :as amount-input]
     [status-im.contexts.preview.quo.inputs.input :as input]
     [status-im.contexts.preview.quo.inputs.locked-input :as locked-input]
     [status-im.contexts.preview.quo.inputs.profile-input :as profile-input]
@@ -311,6 +312,8 @@
                         :component input/view}
                        {:name      :address-input
                         :component address-input/view}
+                       {:name      :amount-input
+                        :component amount-input/view}
                        {:name      :locked-input
                         :component locked-input/view}
                        {:name      :profile-input
