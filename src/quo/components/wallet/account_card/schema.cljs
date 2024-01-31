@@ -2,20 +2,19 @@
 
 (def ?base
   [:map {:closed true}
-   [:type :enum :default :watch-only :add-account :empty :missing-keypair]
+   [:type {:optional true} [:enum :default :watch-only :add-account :empty :missing-keypair]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:theme :schema.common/theme]
    [:metrics? {:optional true} [:maybe :boolean]]
    [:on-press {:optional true} [:maybe fn?]]])
 
 (def ?amount
-  [:map
-   [:amount {:optional true} [:maybe :string]]])
+  [:amount {:optional true} [:maybe :string]])
 
 (def ?card
-  [:map 
+  [:map
    [:balance {:optional true} [:maybe :string]]
-   [:loading {:optional true} [:maybe :boolean]]
+   [:loading? {:optional true} [:maybe :boolean]]
    [:name {:optional true} [:maybe :string]]
    [:percentage-value {:optional true} [:maybe :string]]
    [:emoji {:optional true} [:maybe :string]]])
