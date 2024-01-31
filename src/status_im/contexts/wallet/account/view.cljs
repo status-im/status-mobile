@@ -1,15 +1,15 @@
 (ns status-im.contexts.wallet.account.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im.config :as config]
-    [status-im.contexts.wallet.account.style :as style]
-    [status-im.contexts.wallet.account.tabs.view :as tabs]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.config :as config]
+   [status-im.contexts.wallet.account.style :as style]
+   [status-im.contexts.wallet.account.tabs.view :as tabs]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.temp :as temp]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn buy-drawer
   []
@@ -54,7 +54,7 @@
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
              :bridge-action  (if (:bridge-token config/wallet-feature-flags)
-                               #(rf/dispatch [:open-modal :wallet-bridge])
+                               #(rf/dispatch [:wallet/start-bridge])
                                #(js/alert "feature disabled in config file"))}])
          [quo/tabs
           {:style            style/tabs

@@ -1,18 +1,18 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.send.input-amount.style :as style]
-    [status-im.contexts.wallet.send.routes.view :as routes]
-    [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [reagent.core :as reagent]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.utils :as utils]
+   [status-im.contexts.wallet.send.input-amount.style :as style]
+   [status-im.contexts.wallet.send.routes.view :as routes]
+   [utils.debounce :as debounce]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- make-limit-label
   [{:keys [amount currency]}]
@@ -57,12 +57,14 @@
 (defn- reset-input-error
   [new-value prev-value input-error]
   (reset! input-error
-    (> new-value prev-value)))
+          (> new-value prev-value)))
 
 (defn- f-view-internal
   ;; crypto-decimals and limit-crypto args are needed for component tests only
   [{:keys [crypto-decimals limit-crypto type]}]
   (let [bottom                    (safe-area/get-bottom)
+        navigate-back-route (case type  :bridge :wallet-bridge-send
+                                  :wallet-send-input-amount)
         {:keys [currency]}        (rf/sub [:profile/profile])
         token                     (rf/sub [:wallet/wallet-send-token])
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
@@ -141,11 +143,10 @@
         [rn/view
          {:style               style/screen
           :accessibility-label (str "container" (when @input-error "-error"))}
-         (when (not (= type :bridge))
-           [account-switcher/view
-            {:icon-name     :i/arrow-left
-             :on-press      #(rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount])
-             :switcher-type :select-account}])
+         [account-switcher/view
+          {:icon-name     :i/arrow-left
+           :on-press      #(rf/dispatch [:navigate-back-within-stack navigate-back-route])
+           :switcher-type :select-account}]
          [quo/token-input
           {:container-style style/input-container
            :token           token-symbol

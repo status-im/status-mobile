@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.account.bridge.view
   (:require
-    [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
-    [react-native.core :as rn]
-    [status-im.contexts.wallet.account.bridge.style :as style]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [quo.foundations.resources :as quo.resources]
+   [react-native.core :as rn]
+   [status-im.contexts.wallet.account.bridge.style :as style]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.temp :as temp]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn network-logo
   [item]
@@ -19,7 +19,7 @@
     (let [on-press #(rf/dispatch [:wallet/select-bridge-to
                                   {:token    token
                                    :stack-id :wallet-bridge}])]
-      [quo/token-network (assoc token :on-press on-press)])))
+      [quo/token-network (assoc token :label (:name token) :on-press on-press)])))
 
 (defn view
   []
