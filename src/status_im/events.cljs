@@ -28,7 +28,6 @@
     status-im.contexts.wallet.send.events
     status-im.contexts.wallet.signals
     [status-im.db :as db]
-    status-im.integration-test.events
     [utils.re-frame :as rf]))
 
 (rf/defn start-app

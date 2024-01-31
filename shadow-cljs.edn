@@ -176,9 +176,8 @@
                                       ;; option setupFilesAfterEnv.
                                       test-helpers.component-tests-preload
                                       status-im.setup.schema-preload
-
                                       quo.core-spec
-                                      status-im.core-spec]
+                                      status-im.tests.core-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"
                    :closure-defines  {schema.core/throw-on-error? true}
