@@ -1,15 +1,15 @@
 (ns status-im.contexts.wallet.account.bridge-to.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.foundations.resources :as quo.resources]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [status-im.contexts.wallet.account.bridge-to.style :as style]
-   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [status-im.contexts.wallet.account.bridge-to.style :as style]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- bridge-token-component
   []
