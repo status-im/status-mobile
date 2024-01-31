@@ -4,6 +4,7 @@
             [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
             [quo.components.selectors.selectors.view :as selectors]
+            [quo.components.wallet.account-permissions.schema :as component-schema]
             [quo.components.wallet.account-permissions.style :as style]
             [quo.components.wallet.address-text.view :as address-text]
             [quo.components.wallet.required-tokens.view :as required-tokens]
@@ -12,26 +13,6 @@
             [react-native.core :as rn]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
-
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map {:closed true}
-      [:account
-       [:map {:closed true}
-        [:name [:maybe :string]]
-        [:address [:maybe :string]]
-        [:emoji [:maybe :string]]
-        [:customization-color [:maybe [:or :string :keyword]]]]]
-      [:token-details {:optional true} [:maybe [:vector required-tokens/?schema]]]
-      [:keycard? {:optional true} [:maybe :boolean]]
-      [:checked? {:optional true} [:maybe :boolean]]
-      [:disabled? {:optional true} [:maybe :boolean]]
-      [:on-change {:optional true} [:maybe fn?]]
-      [:container-style {:optional true} [:maybe :map]]
-      [:theme :schema.common/theme]]]]
-   :any])
 
 (defn- token-details-section
   [tokens]
@@ -93,4 +74,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal component-schema/?schema)))
