@@ -1,13 +1,16 @@
 (ns status-im.contexts.communities.discover.style
   (:require
-    [react-native.platform :as platform]
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]))
 
-(def screen-title-container
-  {:height            56
+(def header-height 56)
+
+(defn screen-title-container
+  [safe-area-top]
+  {:height            header-height
    :padding-vertical  12
    :justify-content   :center
-   :margin-horizontal 20})
+   :margin-horizontal 20
+   :margin-top        (+ header-height safe-area-top)})
 
 (def featured-communities-header
   {:flex-direction  :row
@@ -40,7 +43,7 @@
   [fixed?]
   (merge
    {:padding-vertical 12
-    :height           56
+    :height           header-height
     :background-color :transparent}
    (when-not fixed?
      {:margin-top        12
@@ -60,15 +63,12 @@
   {:align-items     :center
    :justify-content :center})
 
-(def render-communities-container
-  {:margin-top (if platform/ios? 57 104)})
-
 (defn blur-tabs-header
-  []
+  [safe-area-top]
   {:padding-horizontal 20
    :position           :absolute
-   :top                (if platform/ios? 100 104)
-   :height             56
+   :top                (+ header-height safe-area-top)
+   :height             header-height
    :right              0
    :left               0
    :justify-content    :center

@@ -14,3 +14,5 @@
 (def low-device? (and android? (< version 29)))
 
 (def is-below-android-13? (and android? (< version 33)))
+
+(def is-shadow-color-supported? (and android? (> version 27)))

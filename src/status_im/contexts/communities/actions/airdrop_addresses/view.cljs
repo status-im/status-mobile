@@ -26,6 +26,7 @@
     [:<>
      [quo/drawer-top
       {:type                :context-tag
+       :context-tag-type    :community
        :title               (i18n/label :t/airdrop-addresses)
        :community-name      name
        :button-icon         :i/info
