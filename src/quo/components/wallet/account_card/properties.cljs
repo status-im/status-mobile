@@ -3,17 +3,13 @@
 
 (defn gradient-start-color
   [theme customization-color]
-  (colors/theme-colors
-   (colors/resolve-color customization-color theme 0)
-   colors/neutral-95
-   theme))
+  (colors/resolve-color customization-color theme 0))
 
 (defn gradient-end-color
   [theme customization-color]
-  (colors/theme-colors
-   (colors/resolve-color customization-color theme 6)
-   colors/neutral-95
-   theme))
+  (colors/theme-colors (colors/resolve-color customization-color theme 6)
+                       (colors/resolve-color customization-color theme 6)
+                       theme))
 
 (defn alert-icon-color
   [theme]
