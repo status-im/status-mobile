@@ -187,8 +187,6 @@
             (assoc-in [:wallet :ui :send :to-address] to-address))
       :fx [[:navigate-to-within-stack [:wallet-bridge-to stack-id]]]})))
 
-
-
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :type] :bridge)

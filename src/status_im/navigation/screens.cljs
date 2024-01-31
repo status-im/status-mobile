@@ -363,8 +363,6 @@
                                           :bottom? true}}
      :component wallet-send-input-amount/view}
 
-
-
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top? true}}
