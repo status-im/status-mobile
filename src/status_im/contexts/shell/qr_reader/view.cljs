@@ -6,23 +6,18 @@
     [react-native.hooks :as hooks]
     [status-im.common.router :as router]
     [status-im.common.scan-qr-code.view :as scan-qr-code]
+    [status-im.contexts.communities.events]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
     [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]))
 
-(defn community-qr-code?
-  [scanned-text]
-  (string/starts-with? scanned-text "https://status.app/c/"))
+(defn- text-for-path? [text path]
+  (some #(string/starts-with? text %) (router/path-urls path)))
 
-;;(some string/starts-with? (router/path-urls router/user-with-data-path))
-
-(defn channel-qr-code?
+(defn- extract-id
   [scanned-text]
-  (string/starts-with? scanned-text "https://status.app/cc/"))
-
-(defn profile-qr-code?
-  [scanned-text]
-  (string/starts-with? scanned-text "https://status.app/u/"))
+  (let [index (string/index-of scanned-text "#")]
+    (subs scanned-text index)))
 
 (defn legacy-eth-address?
   [scanned-text]
@@ -32,32 +27,30 @@
   [scanned-text]
   false)
 
-(defn extracted-id
-  [scanned-text]
-  (let [index (string/index-of scanned-text "#")]
-    (subs scanned-text index)))
-
 (defn on-qr-code-scanned [scanned-text]
-  (cond
-    (community-qr-code? scanned-text)
-    false
+  (let [address (extract-id scanned-text)]
+    (cond
+      (text-for-path? scanned-text router/community-with-data-path)
+      (rf/dispatch [:communities/navigate-to-community-overview address])
 
-    (channel-qr-code? scanned-text)
-    false
+      (text-for-path? scanned-text router/channel-path)
+      nil
 
-    (profile-qr-code? scanned-text)
-    (rf/dispatch [:chat.ui/show-profile (extracted-id scanned-text)])
+      (text-for-path? scanned-text router/user-with-data-path)
+      (rf/dispatch [:chat.ui/show-profile address])
 
-    (legacy-eth-address? scanned-text)
-    (navigation/change-tab :wallet-stack)
+      (legacy-eth-address? scanned-text)
+      ;; :wallet/scan-address-success
+      (rf/dispatch [:navigate-to :wallet-accounts address])
 
-    (pairing-qr-code? scanned-text)
-    false
+      (pairing-qr-code? scanned-text)
+      ;; :syncing/input-connection-string-for-bootstrapping
+      nil
 
-    :else
-    #(rf/dispatch [:toasts/upsert {:type  :negative
-                                   :theme :dark
-                                   :text  (i18n/label :t/invalid-qr)}])))
+      :else
+      (rf/dispatch [:toasts/upsert {:type  :negative
+                                    :theme :dark
+                                    :text  (i18n/label :t/invalid-qr)}]))))
 
 (defn- f-internal-view
   []

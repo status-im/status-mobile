@@ -35,7 +35,7 @@
 (def web-urls (map #(str % web2-domain "/") web-prefixes))
 
 (defn path-urls [path]
-  (map #(str % "/" path) web-urls))
+  (map #(str % path) web-urls))
 
 (def handled-schemes (set (into uri-schemes web-urls)))
 
