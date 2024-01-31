@@ -68,47 +68,39 @@
         bottom                (safe-area/get-bottom)
         input-value           (reagent/atom "")
         input-error           (reagent/atom false)
-        current-limit         (reagent/atom {})
-        handle-swap           (fn [{:keys [crypto? currency token-symbol limit-fiat limit-crypto]}]
-                                (let [num-value (parse-double @input-value)]
-                                  (reset! current-limit (if crypto?
-                                                          {:amount   limit-crypto
-                                                           :currency token-symbol}
-                                                          {:amount   limit-fiat
-                                                           :currency currency}))
-                                  (reset-input-error num-value
-                                                     (:amount @current-limit)
-                                                     input-error)))
-        handle-keyboard-press (fn [v loading-routes?]
-                                (let [current-value        @input-value
-                                      new-value            (make-new-input current-value v)
-                                      num-value            (or (parse-double new-value) 0)
-                                      current-limit-amount (:amount @current-limit)]
+        crypto-currency?      (reagent/atom true)
+        handle-swap           (fn [{:keys [crypto? limit-fiat limit-crypto]}]
+                                (let [num-value     (parse-double @input-value)
+                                      current-limit (if crypto? limit-crypto limit-fiat)]
+                                  (reset! crypto-currency? crypto?)
+                                  (reset-input-error num-value current-limit input-error)))
+        handle-keyboard-press (fn [v loading-routes? current-limit-amount]
+                                (let [current-value @input-value
+                                      new-value     (make-new-input current-value v)
+                                      num-value     (or (parse-double new-value) 0)]
                                   (when (not loading-routes?)
                                     (reset! input-value new-value)
                                     (reset-input-error num-value current-limit-amount input-error)
                                     (reagent/flush))))
-        handle-delete         (fn [loading-routes?]
+        handle-delete         (fn [loading-routes? current-limit-amount]
                                 (when-not loading-routes?
-                                  (let [current-limit-amount (:amount @current-limit)]
-                                    (swap! input-value #(subs % 0 (dec (count %))))
-                                    (reset-input-error @input-value current-limit-amount input-error)
-                                    (reagent/flush))))
-        handle-on-change      (fn [v]
+                                  (swap! input-value #(subs % 0 (dec (count %))))
+                                  (reset-input-error @input-value current-limit-amount input-error)
+                                  (reagent/flush)))
+        handle-on-change      (fn [v current-limit-amount]
                                 (when (valid-input? @input-value v)
-                                  (let [num-value            (or (parse-double v) 0)
-                                        current-limit-amount (:amount @current-limit)]
+                                  (let [num-value (or (parse-double v) 0)]
                                     (reset! input-value v)
                                     (reset-input-error num-value current-limit-amount input-error)
                                     (reagent/flush))))
         on-navigate-back      (fn []
                                 (rf/dispatch [:wallet/clean-selected-token])
                                 (rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount]))
-        fetch-routes          (fn [input-num-value]
+        fetch-routes          (fn [input-num-value current-limit-amount]
                                 (rf/dispatch [:wallet/clean-suggested-routes])
                                 (when-not (or (empty? @input-value)
                                               (<= input-num-value 0)
-                                              (> input-num-value (:amount @current-limit)))
+                                              (> input-num-value current-limit-amount))
                                   (debounce/debounce-and-dispatch
                                    [:wallet/get-suggested-routes @input-value]
                                    100)))
@@ -117,28 +109,31 @@
                                               {:amount   @input-value
                                                :stack-id :wallet-send-input-amount}]))]
     (fn []
-      (let [{:keys [currency]}        (rf/sub [:profile/profile])
+      (let [{fiat-currency :currency} (rf/sub [:profile/profile])
             {:keys [color]}           (rf/sub [:wallet/current-viewing-account])
             {token-balance  :total-balance
              token-symbol   :symbol
              token-networks :networks
              :as            token}    (rf/sub [:wallet/wallet-send-token])
             conversion-rate           (-> token :market-values-per-currency :usd :price)
-            loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+            loading-routes?           (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
             suggested-routes          (rf/sub [:wallet/wallet-send-suggested-routes])
             route                     (rf/sub [:wallet/wallet-send-route])
             on-confirm                (or default-on-confirm handle-on-confirm)
             crypto-decimals           (or default-crypto-decimals
                                           (utils/get-crypto-decimals-count token))
-            limit-crypto              (or default-limit-crypto
+            crypto-limit              (or default-limit-crypto
                                           (utils/get-standard-crypto-format token token-balance))
-            limit-fiat                (.toFixed (* token-balance conversion-rate) 2)
-            limit-label               (make-limit-label @current-limit)
+            fiat-limit                (.toFixed (* token-balance conversion-rate) 2)
+            current-limit             (if @crypto-currency? crypto-limit fiat-limit)
+            current-currency          (if @crypto-currency? token-symbol fiat-currency)
+            limit-label               (make-limit-label {:amount   current-limit
+                                                         :currency current-currency})
             input-num-value           (parse-double @input-value)
             confirm-disabled?         (or (nil? route)
                                           (empty? @input-value)
                                           (<= input-num-value 0)
-                                          (> input-num-value (:amount @current-limit)))
+                                          (> input-num-value current-limit))
             amount-text               (str @input-value " " token-symbol)]
         (rn/use-effect
          (fn []
@@ -146,7 +141,7 @@
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
         (rn/use-effect
-         #(fetch-routes input-num-value)
+         #(fetch-routes input-num-value current-limit)
          [@input-value])
         [rn/view
          {:style               style/screen
@@ -158,7 +153,7 @@
          [quo/token-input
           {:container-style style/input-container
            :token           token-symbol
-           :currency        currency
+           :currency        current-currency
            :crypto-decimals crypto-decimals
            :error?          @input-error
            :networks        token-networks
@@ -166,19 +161,19 @@
            :conversion      conversion-rate
            :show-keyboard?  false
            :value           @input-value
-           :on-change-text  handle-on-change
+           :on-change-text  #(handle-on-change % current-limit)
            :on-swap         #(handle-swap
                               {:crypto?      %
-                               :currency     currency
+                               :currency     current-currency
                                :token-symbol token-symbol
-                               :limit-fiat   limit-fiat
-                               :limit-crypto limit-crypto})}]
+                               :limit-fiat   fiat-limit
+                               :limit-crypto crypto-limit})}]
          [routes/view
           {:amount       amount-text
            :routes       suggested-routes
            :token        token
            :input-value  @input-value
-           :fetch-routes fetch-routes}]
+           :fetch-routes #(fetch-routes % current-limit)}]
          [quo/bottom-actions
           {:actions             :1-action
            :customization-color color
@@ -189,8 +184,8 @@
           {:container-style (style/keyboard-container bottom)
            :left-action     :dot
            :delete-key?     true
-           :on-press        #(handle-keyboard-press % loading-suggested-routes?)
-           :on-delete       #(handle-delete loading-suggested-routes?)}]]))))
+           :on-press        #(handle-keyboard-press % loading-routes? current-limit)
+           :on-delete       #(handle-delete loading-routes? current-limit)}]]))))
 
 (defn- view-internal
   [props]
