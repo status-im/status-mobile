@@ -13,26 +13,31 @@
   (h/test "Renders with default value"
     (let [text-expected 0]
       (render [amount-input/view {:init-value text-expected}])
-      (h/is-truthy (h/query-by-label-text :amount-input)) 
+      (h/is-truthy (h/query-by-label-text :amount-input))
       (h/is-equal (oops/oget (h/get-by-label-text :amount-input) "props" "value")
-                  (str text-expected)))) 
-            
-  (h/test "When the value = minimum dec button is disabled" 
-    (render [amount-input/view {:init-value 0
-                                  :min-value 0}])
-    (h/is-truthy (oops/oget (h/get-by-label-text :amount-input-dec-button) "props" "accessibilityState" "disabled"))) 
-            
+                  (str text-expected))))
+
+  (h/test "When the value = minimum dec button is disabled"
+    (render [amount-input/view
+             {:init-value 0
+              :min-value  0}])
+    (h/is-truthy
+     (oops/oget (h/get-by-label-text :amount-input-dec-button) "props" "accessibilityState" "disabled")))
+
   (h/test "When the value = maximim inc button is disabled"
-          (render [amount-input/view {:init-value 100
-                                        :max-value 100}])
-          (h/is-truthy (oops/oget (h/get-by-label-text :amount-input-inc-button) "props" "accessibilityState" "disabled"))) 
-            
+    (render [amount-input/view
+             {:init-value 100
+              :max-value  100}])
+    (h/is-truthy
+     (oops/oget (h/get-by-label-text :amount-input-inc-button) "props" "accessibilityState" "disabled")))
+
   (h/test "Renders the error state"
-          (render [amount-input/view {:status :error}])
-          (h/is-equal colors/danger-60 (oops/oget (h/get-by-label-text :amount-input) "props" "style" "color")))   
-  
+    (render [amount-input/view {:status :error}])
+    (h/is-equal colors/danger-60
+                (oops/oget (h/get-by-label-text :amount-input) "props" "style" "color")))
+
   (h/test "on-change-text function is fired"
-          (let [on-change-text (h/mock-fn)]
-            (render [amount-input/view {:on-change-text on-change-text}]) 
-            (h/fire-event :change-text (h/get-by-label-text :amount-input) "100") 
-            (h/was-called on-change-text))))
+    (let [on-change-text (h/mock-fn)]
+      (render [amount-input/view {:on-change-text on-change-text}])
+      (h/fire-event :change-text (h/get-by-label-text :amount-input) "100")
+      (h/was-called on-change-text))))
