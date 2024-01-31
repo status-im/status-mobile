@@ -525,8 +525,8 @@
       (swap! rf-db/app-db assoc :profile/profile profile-test/sample-profile)
       (swap! rf-db/app-db assoc
         :visibility-status-updates
-        {"0x01" {:status-type 3}
-         "0x02" {:status-type 3}})
+        {"0x01" {:status-type constants/visibility-status-always-online}
+         "0x02" {:status-type constants/visibility-status-always-online}})
       (is (= '({:title :Offline
                 :data  ("0x03" "0x04")}
                {:title :Online

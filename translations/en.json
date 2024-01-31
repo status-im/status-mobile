@@ -2568,5 +2568,7 @@
     "key-name-error-emoji": "Emojis are not allowed",
     "key-name-error-special-char": "Special characters are not allowed",
     "display": "Display",
-    "testnet-mode-enabled": "Testnet mode enabled"
+    "testnet-mode-enabled": "Testnet mode enabled",
+    "online-community-member": "Online",
+    "offline-community-member": "Offline"
 }

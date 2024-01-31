@@ -65,6 +65,22 @@
  (fn [[{:keys [members]}] _]
    members))
 
+(defn keys->names
+  [public-keys profile]
+  (reduce (fn [acc contact-identity]
+            (assoc acc
+                   contact-identity
+                   (when (= (:public-key profile) contact-identity)
+                     (:primary-name profile)
+                     contact-identity)))
+          {}
+          public-keys))
+
+(defn sort-members-by-name
+  [names descending? members]
+  (if descending?
+    (sort-by #(get names (first %)) #(compare %2 %1) members)
+    (sort-by #(get names (first %)) members)))
 
 (re-frame/reg-sub
  :communities/sorted-community-members
@@ -73,16 +89,9 @@
          members (re-frame/subscribe [:communities/community-members community-id])]
      [profile members]))
  (fn [[profile members] _]
-   (let [names (reduce (fn [acc contact-identity]
-                         (assoc acc
-                                contact-identity
-                                (when (= (:public-key profile) contact-identity)
-                                  (:primary-name profile)
-                                  contact-identity)))
-                       {}
-                       (keys members))]
+   (let [names (keys->names (keys members) profile)]
      (->> members
-          (sort-by #(get names (get % 0)))
+          (sort-members-by-name names false)
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
 
 (re-frame/reg-sub
@@ -95,30 +104,23 @@
      [profile members visibility-status-updates my-status-update]))
  (fn [[profile members visibility-status-updates my-status-update] _]
    (let [online? (fn [public-key]
-                   (let [status-update          (if (or (string/blank? (:public-key profile))
-                                                        (= (:public-key profile) public-key))
-                                                  my-status-update
-                                                  (get visibility-status-updates public-key))
-                         visibility-status-type (:status-type status-update)]
-                     (or (= visibility-status-type constants/visibility-status-automatic)
-                         (= visibility-status-type constants/visibility-status-always-online))))
-         names   (reduce (fn [acc contact-identity]
-                           (assoc acc
-                                  contact-identity
-                                  (when (= (:public-key profile) contact-identity)
-                                    (:primary-name profile)
-                                    contact-identity)))
-                         {}
-                         (keys members))]
+                   (let [{visibility-status-type :status-type} (if (or
+                                                                    (string/blank? (:public-key profile))
+                                                                    (= (:public-key profile) public-key))
+                                                                 my-status-update
+                                                                 (get visibility-status-updates
+                                                                      public-key))]
+                     (general-subs/online? visibility-status-type)))
+         names   (keys->names (keys members) profile)]
      (->> members
-          (sort-by #(get names (get % 0)))
+          (sort-members-by-name names true)
           keys
-          (group-by (fn [item]
-                      (online? item)))
-          reverse
+          (group-by online?)
           (map (fn [[k v]]
-                 {:title (if k :Online :Offline)
-                  :data  (flatten v)}))))))
+                 {:title (if k
+                           (i18n/label :t/online-community-member)
+                           (i18n/label :t/offline-community-member))
+                  :data  v}))))))
 
 (re-frame/reg-sub
  :communities/featured-contract-communities
