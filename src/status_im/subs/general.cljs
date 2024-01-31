@@ -19,14 +19,18 @@
      my-status-update
      (get status-updates public-key))))
 
+(defn online?
+  [visibility-status-type]
+  (or (= visibility-status-type constants/visibility-status-automatic)
+      (= visibility-status-type constants/visibility-status-always-online)))
+
 (re-frame/reg-sub
  :visibility-status-updates/online?
  (fn [[_ public-key]]
    [(re-frame/subscribe [:visibility-status-updates/visibility-status-update public-key])])
  (fn [[status-update]]
    (let [visibility-status-type (:status-type status-update)]
-     (or (= visibility-status-type constants/visibility-status-automatic)
-         (= visibility-status-type constants/visibility-status-always-online)))))
+     (online? visibility-status-type))))
 
 (re-frame/reg-sub
  :multiaccount/logged-in?
