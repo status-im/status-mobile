@@ -8,14 +8,16 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn random-selection
+(def secret-words-count 12)
+
+(defn- random-selection
   []
-  (->> (range 12)
+  (->> (range secret-words-count)
        (shuffle)
        (take 4)
        vec))
 
-(defn random-words-with-string
+(defn- random-words-with-string
   [array given-string]
   (let [random-words (->> array
                           (remove #(= % given-string))
@@ -26,22 +28,23 @@
          (shuffle)
          vec)))
 
-(defn cheat-warning
+(defn- cheat-warning
   []
-  [rn/view
-   [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
-   [quo/text
-    {:style {:padding-horizontal 20
-             :padding-top        4
-             :padding-bottom     8}} (i18n/label :t/do-not-cheat-description)]
-   [quo/bottom-actions
-    {:button-one-label (i18n/label :t/see-recovery-phrase-again)
-     :button-one-props {:customization-color :blue
-                        :on-press            (fn []
-                                               (rf/dispatch [:hide-bottom-sheet])
-                                               (rf/dispatch [:navigate-back {:revealed? true}]))}}]])
+  (let [{:keys [color]} (rf/sub [:wallet/current-viewing-account])]
+    [rn/view
+     [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
+     [quo/text
+      {:style {:padding-horizontal 20
+               :padding-top        4
+               :padding-bottom     8}} (i18n/label :t/do-not-cheat-description)]
+     [quo/bottom-actions
+      {:button-one-label (i18n/label :t/see-recovery-phrase-again)
+       :button-one-props {:customization-color color
+                          :on-press            (fn []
+                                                 (rf/dispatch [:hide-bottom-sheet])
+                                                 (rf/dispatch [:navigate-back {:revealed? true}]))}}]]))
 
-(defn button
+(defn- button
   [{:keys [word current-word quiz-index incorrect-count show-error? margin-right]}]
   [quo/button
    {:type            :grey
@@ -59,7 +62,7 @@
                            (reset! show-error? true))))
     :container-style (style/button margin-right)} word])
 
-(defn buttons-row
+(defn- buttons-row
   [{:keys [margin-bottom options] :as params}]
   [rn/view {:style (style/buttons-inner-container margin-bottom)}
    [button

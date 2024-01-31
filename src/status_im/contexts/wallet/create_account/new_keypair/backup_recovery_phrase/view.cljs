@@ -35,7 +35,7 @@
    [quo/text {:style {:margin-left 12}} (i18n/label item)]])
 
 (defn- view-internal
-  [{:keys [revealed? theme]}]
+  [{:keys [default-revealed? theme]}]
   (let [step-labels                   [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
                                        :t/backup-step-4]
         checked?                      (reagent/atom
@@ -43,7 +43,7 @@
                                         :1 false
                                         :2 false
                                         :3 false})
-        revealed?                     (reagent/atom revealed?)
+        revealed?                     (reagent/atom default-revealed?)
         {:keys [customization-color]} (rf/sub [:profile/profile])]
     (fn []
       [rn/view {:style {:flex 1}}
