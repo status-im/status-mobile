@@ -167,9 +167,15 @@
            :fetch-routes fetch-routes}]
          [quo/bottom-actions
           {:actions             :1-action
-           :button-one-label    (i18n/label :t/confirm)
+           :button-one-label    (case type
+                                  :bridge (i18n/label :t/confirm-bridge)
+                                  (i18n/label :t/confirm))
            :button-one-props    {:disabled? confirm-disabled?
-                                 :on-press  on-confirm}
+                                 :on-press on-confirm
+                                 :icon-left
+                                 (case type
+                                   :bridge :i/bridge
+                                   nil)}
            :customization-color color}]
          [quo/numbered-keyboard
           {:container-style (style/keyboard-container bottom)
