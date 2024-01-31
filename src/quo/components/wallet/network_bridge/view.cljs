@@ -7,7 +7,8 @@
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn network-bridge-add
   [{:keys [network state theme container-style on-press]}]
@@ -23,6 +24,19 @@
   (cond (not network)         ""
         (= network :ethereum) "Mainnet"
         :else                 (string/capitalize (name network))))
+
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:theme [:schema.common/theme]]
+      [:network [:maybe :keyword]]
+      [:status [:enum :add :loading :locked]]
+      [:amount [:maybe :string]]
+      [:container-style [:maybe :map]]
+      [:on-press [:maybe :fn]]]]
+    :any]])
 
 (defn view-internal
   [{:keys [theme network status amount container-style on-press] :as args}]
@@ -62,4 +76,6 @@
         :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
        (network->text network)]]]))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal ?schema)))

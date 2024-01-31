@@ -8,7 +8,8 @@
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- network-amount
   [{:keys [network amount divider? theme]}]
@@ -51,6 +52,18 @@
          :amount  (str (:amount arbitrum) " " (or (:token-symbol arbitrum) "ARB"))
          :theme   theme}])]))
 
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:theme [:schema.common/theme]]
+      [:type [:keyword]]
+      [:account-props [:map]]
+      [:networks? [:maybe :boolean]]
+      [:values [:maybe :any]]]]
+    :any]])
+
 (defn- view-internal
   [{:keys [theme type account-props networks? values]}]
   [rn/view
@@ -91,4 +104,6 @@
        {:style (style/line-divider theme)}]
       [networks values theme]])])
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal ?schema)))

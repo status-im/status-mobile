@@ -8,6 +8,7 @@
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
+    [schema.core :as schema]
     [utils.number]))
 
 (def ^:private timeouts (atom {}))
@@ -172,6 +173,16 @@
             [rn/view {:style (style/max-limit-bar-background network-name)}]
             [dashed-line network-name]])]))))
 
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:networks [:maybe :coll-of :any]]
+      [:container-style [:maybe :map]]
+      [:theme [:schema.common/theme]]]]
+    :any]])
+
 (defn view-internal
   [{:keys [networks container-style theme] :as params}]
   (reagent/with-let [total-width (reagent/atom nil)]
@@ -186,4 +197,6 @@
      (doseq [[_ living-timeout] @timeouts]
        (js/clearTimeout living-timeout)))))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal ?schema)))
