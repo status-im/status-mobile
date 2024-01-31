@@ -111,33 +111,32 @@
          :value (if controlled-input? value @value-atom)}]])))
 
 (defn- view-internal
-  [{:keys [on-swap]}]
-  (let [width          (:width (rn/get-window))
-        value-atom     (reagent/atom nil)
-        crypto?        (reagent/atom true)
-        handle-on-swap (fn []
-                         (swap! crypto? not)
-                         (when on-swap
-                           (on-swap @crypto?)))]
-    (fn [{:keys [theme container-style value] :as props}]
-      [rn/view {:style (merge (style/main-container width) container-style)}
-       [rn/view {:style style/amount-container}
-        [input-section
-         (assoc props
-                :value-atom value-atom
-                :crypto?    @crypto?)]
-        [button/button
-         {:icon                true
-          :icon-only?          true
-          :size                32
-          :on-press            handle-on-swap
-          :type                :outline
-          :accessibility-label :reorder}
-         :i/reorder]]
-       [divider-line/view {:container-style (style/divider theme)}]
-       [data-info
-        (assoc props
-               :crypto? @crypto?
-               :amount  (or value @value-atom))]])))
+  []
+  (let [width      (:width (rn/get-window))
+        value-atom (reagent/atom nil)
+        crypto?    (reagent/atom true)]
+    (fn [{:keys [theme container-style value on-swap] :as props}]
+      (let [handle-on-swap (fn []
+                             (swap! crypto? not)
+                             (when on-swap (on-swap @crypto?)))]
+        [rn/view {:style (merge (style/main-container width) container-style)}
+         [rn/view {:style style/amount-container}
+          [input-section
+           (assoc props
+                  :value-atom value-atom
+                  :crypto?    @crypto?)]
+          [button/button
+           {:icon                true
+            :icon-only?          true
+            :size                32
+            :on-press            handle-on-swap
+            :type                :outline
+            :accessibility-label :reorder}
+           :i/reorder]]
+         [divider-line/view {:container-style (style/divider theme)}]
+         [data-info
+          (assoc props
+                 :crypto? @crypto?
+                 :amount  (or value @value-atom))]]))))
 
 (def view (quo.theme/with-theme view-internal))
