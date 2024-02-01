@@ -70,10 +70,10 @@
           :input-mode :numeric
           :on-change-text (fn [input-value]
                             (let [processed-amount (process-amount input-value min-value max-value)]
-                              (reset! value processed-amount) 
+                              (reset! value processed-amount)
                               (when on-change-text
                                 (on-change-text processed-amount))
-                              (reagent/flush))) ;; Fixes the input flickering issue when typing 
+                              (reagent/flush))) ;; Fixes the input flickering issue when typing
           :selection-color (style/get-selection-color customization-color theme)}]]
        [amount-button
         {:theme               theme
