@@ -143,7 +143,7 @@
      :component communities.discover/view}
 
     {:name      :community-overview
-     :component communities.overview/overview}
+     :component communities.overview/view}
 
     {:name      :settings
      :options   options/transparent-screen-options
