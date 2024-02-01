@@ -49,7 +49,7 @@
        :style style/screen-container}
       [rn/flat-list
        {:key                             :list
-        :header                          (header-view)
+        :header                          [header-view]
         :data                            profile-user-names
         :key-fn                          :name
         :shows-vertical-scroll-indicator false
