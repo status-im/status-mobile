@@ -1,4 +1,4 @@
-(ns status-im.contexts.onboarding.select-photo.method-menu.view
+(ns status-im.common.profile-picture-picker.view
   (:require
     ["react-native-image-crop-picker" :default image-picker]
     [quo.core :as quo]
@@ -59,7 +59,7 @@
    crop-opts))
 
 (defn view
-  [update-profile-pic-callback]
+  [{:keys [update-profile-pic-callback has-picture?]}]
   [quo/action-drawer
    [[{:icon                :i/camera
       :accessibility-label :take-photo-button
@@ -86,5 +86,15 @@
                                :on-allowed  (fn [] (pick-pic update-profile-pic-callback))
                                :on-denied   (fn []
                                               (log/info
-                                               "user has denied permissions to select picture"))}))}]]])
+                                               "user has denied permissions to select picture"))}))}
+     (when has-picture?
+       {:accessibility-label :remove-profile-picture
+        :add-divider?        true
+        :danger?             true
+        :blur?               true
+        :icon                :i/delete
+        :label               (i18n/label :t/profile-pic-remove)
+        :on-press            (fn []
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (update-profile-pic-callback nil))})]]])
 
