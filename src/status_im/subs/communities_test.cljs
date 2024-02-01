@@ -528,7 +528,7 @@
         {"0x01" {:status-type constants/visibility-status-always-online}
          "0x02" {:status-type constants/visibility-status-always-online}})
       (is (= [{:title :Offline
-                :data  ("0x03" "0x04")}
-               {:title :Online
-                :data  ("0x01" "0x02")}]
+               :data  ["0x03" "0x04"]}
+              {:title :Online
+               :data  ["0x01" "0x02"]}]
              (rf/sub [sub-name community-id]))))))
