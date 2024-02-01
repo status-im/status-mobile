@@ -14,7 +14,7 @@
        :blur-type     :transparent
        :overlay-color :transparent
        :style         style/container}
-      [rn/view {:style (merge style/blur-container container-style)}
-       children]]
-     [rn/view {:style (merge style/container container-style)}
-      children])])
+      (into [rn/view {:style (merge style/blur-container container-style)}]
+            children)]
+     (into [rn/view {:style (merge style/container container-style)}]
+           children))])
