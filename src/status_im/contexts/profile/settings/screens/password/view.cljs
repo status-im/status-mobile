@@ -3,7 +3,7 @@
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im.common.biometric.events :as biometric]
+            [status-im.common.biometric.utils :as biometric]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.common.standard-authentication.standard-auth.authorize :as authorize]
             [status-im.constants :as constants]

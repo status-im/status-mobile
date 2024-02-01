@@ -51,10 +51,10 @@
                  [:onboarding/finalize-setup]
                  [:onboarding/create-account-and-login])}))
 
-(rf/defn biometrics-fail
-  {:events [:onboarding/biometrics-fail]}
-  [cofx code]
-  (biometric/show-message cofx code))
+(rf/reg-event-fx
+ :onboarding/biometrics-fail
+ (fn [_ [code]]
+   {:dispatch [:biometric/show-message code]}))
 
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}

@@ -39,7 +39,7 @@
    {:db db/app-db
     :theme/init-theme nil
     :network/listen-to-network-info nil
-    :biometric/get-supported-biometric-type nil
+    :biometric/get-supported-type nil
     ;;app starting flow continues in get-profiles-overview
     :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
     :effects.font/get-font-file-for-initials-avatar

@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.common.biometric.events :as biometric]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.common.parallax.blacklist :as blacklist]
     [status-im.common.parallax.view :as parallax]
     [status-im.common.resources :as resources]
