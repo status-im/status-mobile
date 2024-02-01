@@ -9,7 +9,6 @@
 
 (defn- name-item
   [{:keys [name ens-name? selected?]}]
-  ^{:key name}
   [quo/settings-item
    {:title           name
     :image-props     (if ens-name? :i/chevron-right :i/edit)
@@ -40,16 +39,13 @@
      {:type            :shell
       :container-style (style/page-wrapper insets)}
      [quo/page-nav
-      {:key        :header
-       :background :blur
+      {:background :blur
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])}]
      [rn/view
-      {:key   :content
-       :style style/screen-container}
+      {:style style/screen-container}
       [rn/flat-list
-       {:key                             :list
-        :header                          [header-view]
+       {:header                          [header-view]
         :data                            profile-user-names
         :key-fn                          :name
         :shows-vertical-scroll-indicator false

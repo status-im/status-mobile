@@ -15,13 +15,11 @@
      {:type            :shell
       :container-style (style/page-wrapper insets)}
      [quo/page-nav
-      {:key        :header
-       :background :blur
+      {:background :blur
        :icon-name  :i/close
        :on-press   #(rf/dispatch [:navigate-back])}]
      [rn/view
-      {:key   :content
-       :style style/screen-container}
+      {:style style/screen-container}
       [rn/view
        [quo/text-combinations {:title user-name}]]
       [rn/view {:style style/button-wrapper}
