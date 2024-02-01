@@ -24,7 +24,7 @@
     (h/is-truthy
      (oops/oget (h/get-by-label-text :amount-input-dec-button) "props" "accessibilityState" "disabled")))
 
-  (h/test "When the value = maximim inc button is disabled"
+  (h/test "When the value = maximum inc button is disabled"
     (render [amount-input/view
              {:init-value 100
               :max-value  100}])
