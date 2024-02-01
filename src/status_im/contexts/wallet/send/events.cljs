@@ -58,7 +58,8 @@
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
 
-(rf/reg-event-fx :wallet/select-send-address
+(rf/reg-event-fx
+ :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          prefix-seq          (string/split prefix #":")
@@ -75,7 +76,8 @@
               [:wallet-send-input-amount stack-id]
               [:wallet-select-asset stack-id])]]})))
 
-(rf/reg-event-fx :wallet/update-receiver-networks
+(rf/reg-event-fx
+ :wallet/update-receiver-networks
  (fn [{:keys [db]} [selected-networks]]
    {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
 
@@ -84,11 +86,10 @@
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
-    :fx [[:dispatch-later
-          {:ms       1
-           :dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]}]]}))
+    :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
 
-(rf/reg-event-fx :wallet/send-select-token-drawer
+(rf/reg-event-fx
+ :wallet/send-select-token-drawer
  (fn [{:keys [db]} [{:keys [token]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)}))
 
