@@ -524,9 +524,9 @@
       (swap! rf-db/app-db assoc-in [:communities community-id] community)
       (swap! rf-db/app-db assoc :profile/profile profile-test/sample-profile)
       (swap! rf-db/app-db assoc
-             :visibility-status-updates
-             {"0x01" {:status-type constants/visibility-status-always-online}
-              "0x02" {:status-type constants/visibility-status-always-online}})
+        :visibility-status-updates
+        {"0x01" {:status-type constants/visibility-status-always-online}
+         "0x02" {:status-type constants/visibility-status-always-online}})
       (is (= [{:title (i18n/label :t/online-community-member)
                :data  ["0x01" "0x02"]}
               {:title (i18n/label :t/offline-community-member)
