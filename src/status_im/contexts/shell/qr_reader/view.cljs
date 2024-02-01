@@ -9,6 +9,7 @@
     [status-im.contexts.communities.events]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
     [status-im.navigation.events :as navigation]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]))
 
 (defn- text-for-path? [text path]
@@ -17,7 +18,7 @@
 (defn- extract-id
   [scanned-text]
   (let [index (string/index-of scanned-text "#")]
-    (subs scanned-text index)))
+    (subs scanned-text (inc index))))
 
 (defn legacy-eth-address?
   [scanned-text]
@@ -31,26 +32,29 @@
   (let [address (extract-id scanned-text)]
     (cond
       (text-for-path? scanned-text router/community-with-data-path)
-      (rf/dispatch [:communities/navigate-to-community-overview address])
+      (debounce/debounce-and-dispatch [:communities/navigate-to-community-overview address] 300)
 
       (text-for-path? scanned-text router/channel-path)
       nil
 
       (text-for-path? scanned-text router/user-with-data-path)
-      (rf/dispatch [:chat.ui/show-profile address])
+      (do
+        (js/console.log "ALWX" scanned-text address)
+        (debounce/debounce-and-dispatch [:chat.ui/show-profile address] 300))
 
       (legacy-eth-address? scanned-text)
       ;; :wallet/scan-address-success
-      (rf/dispatch [:navigate-to :wallet-accounts address])
+      (debounce/debounce-and-dispatch [:navigate-to :wallet-accounts address] 300)
 
       (pairing-qr-code? scanned-text)
       ;; :syncing/input-connection-string-for-bootstrapping
       nil
 
       :else
-      (rf/dispatch [:toasts/upsert {:type  :negative
-                                    :theme :dark
-                                    :text  (i18n/label :t/invalid-qr)}]))))
+      (debounce/debounce-and-dispatch [:toasts/upsert {:type  :negative
+                                                       :theme :dark
+                                                       :text  (i18n/label :t/invalid-qr)}]
+                                      300))))
 
 (defn- f-internal-view
   []
