@@ -1,62 +1,44 @@
 (ns status-im.common.biometric.events
   (:require
-    [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [react-native.biometrics :as biometrics]
-    [react-native.platform :as platform]
+    [status-im.common.biometric.utils :as utils]
     [status-im.common.keychain.events :as keychain]
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(def android-device-blacklisted?
-  (and platform/android? (= (:brand (native-module/get-device-model-info)) "bannedbrand")))
-
-(defn get-label-by-type
-  [biometric-type]
-  (condp = biometric-type
-    constants/biometrics-type-android (i18n/label :t/biometric-fingerprint)
-    constants/biometrics-type-face-id (i18n/label :t/biometric-faceid)
-    (i18n/label :t/biometric-touchid)))
-
-(defn get-icon-by-type
-  [biometric-type]
-  (condp = biometric-type
-    constants/biometrics-type-face-id :i/face-id
-    :i/touch-id))
-
-(re-frame/reg-fx
- :biometric/get-supported-biometric-type
+(rf/reg-fx
+ :biometric/get-supported-type
  (fn []
    ;;NOTE: if we can't save user password, we can't use biometric
    (keychain/can-save-user-password?
     (fn [can-save?]
-      (when (and can-save? (not android-device-blacklisted?))
+      (when (and can-save? (not utils/android-device-blacklisted?))
         (-> (biometrics/get-supported-type)
             (.then (fn [type]
-                     (rf/dispatch [:biometric/get-supported-biometric-type-success type])))))))))
+                     (rf/dispatch [:biometric/set-supported-type type])))))))))
 
-(rf/defn get-supported-biometric-auth-success
-  {:events [:biometric/get-supported-biometric-type-success]}
-  [{:keys [db]} supported-type]
-  {:db (assoc db :biometric/supported-type supported-type)})
+(rf/reg-event-fx
+ :biometric/set-supported-type
+ (fn [{:keys [db]} [supported-type]]
+   {:db (assoc db :biometric/supported-type supported-type)}))
 
-(rf/defn show-message
-  {:events [:biometric/show-message]}
-  [_ error]
-  (let [code    (ex-cause error)
-        content (if (#{::biometrics/not-enrolled
-                       ::biometrics/not-available}
-                     code)
-                  (i18n/label :t/grant-face-id-permissions)
-                  (i18n/label :t/biometric-auth-error {:code code}))]
-    {:effects.utils/show-popup
-     {:title   (i18n/label :t/biometric-auth-login-error-title)
-      :content content}}))
+(rf/reg-event-fx
+ :biometric/show-message
+ (fn [_ [error]]
+   (let [code    (ex-cause error)
+         content (if (#{::biometrics/not-enrolled
+                        ::biometrics/not-available}
+                      code)
+                   (i18n/label :t/grant-face-id-permissions)
+                   (i18n/label :t/biometric-auth-error {:code code}))]
+     {:effects.utils/show-popup
+      {:title   (i18n/label :t/biometric-auth-login-error-title)
+       :content content}})))
 
 
-(re-frame/reg-fx
+(rf/reg-fx
  :biometric/authenticate
  (fn [{:keys [on-success on-fail prompt-message]}]
    (-> (biometrics/authenticate
@@ -71,10 +53,10 @@
                  (when on-fail
                    (on-fail err)))))))
 
-(rf/defn authenticate
-  {:events [:biometric/authenticate]}
-  [_ opts]
-  {:biometric/authenticate opts})
+(rf/reg-event-fx
+ :biometric/authenticate
+ (fn [_ [opts]]
+   {:biometric/authenticate opts}))
 
 (rf/reg-event-fx
  :biometric/on-enable-success
