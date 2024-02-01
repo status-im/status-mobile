@@ -25,7 +25,6 @@
       [rn/view {:style style/button-wrapper}
        [quo/button
         {:type      :danger
-         :blur?     true
          :icon-left :i/delete
          :on-press  (fn []
                       (rf/dispatch [:ens/remove-ens user-name])
