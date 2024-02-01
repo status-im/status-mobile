@@ -8,6 +8,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import marks, run_in_parallel, transl
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from views.base_element import Button
 from views.sign_in_view import SignInView
 
 
@@ -161,13 +162,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi("Check 'Open in Status' option")
         # url_to_open = 'http://status.app'
-        url_to_open = 'https://www.ethereum.org/en/run-a-node/'
+        url_to_open = 'https://github.com/status-im/status-mobile'
         self.chat_1.send_message(url_to_open)
         chat_element = self.chat_2.chat_element_by_text(url_to_open)
         if chat_element.is_element_displayed(120):
             chat_element.click_on_link_inside_message_body()
             web_view = self.chat_2.open_in_status_button.click()
-            if not web_view.element_by_text("Take full control. Run your own node.").is_element_displayed(60):
+            text_element = web_view.element_by_text("a free (libre) open source, mobile OS for Ethereum")
+            sign_in_button = Button(self.chat_2.driver, xpath="//android.view.View[@content-desc='Sign in']")
+            if not text_element.is_element_displayed(30) or not sign_in_button.is_element_displayed(30):
                 self.errors.append('URL was not opened from 1-1 chat')
         else:
             self.errors.append("Message with URL was not received")
