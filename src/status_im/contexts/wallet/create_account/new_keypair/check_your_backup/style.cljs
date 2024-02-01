@@ -21,3 +21,8 @@
   [margin-right]
   {:flex         0.5
    :margin-right margin-right})
+
+(def cheat-description
+  {:padding-horizontal 20
+   :padding-top        4
+   :padding-bottom     8})

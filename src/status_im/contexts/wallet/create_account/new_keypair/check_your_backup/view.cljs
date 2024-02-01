@@ -34,9 +34,8 @@
     [rn/view
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
      [quo/text
-      {:style {:padding-horizontal 20
-               :padding-top        4
-               :padding-bottom     8}} (i18n/label :t/do-not-cheat-description)]
+      {:style style/cheat-description}
+      (i18n/label :t/do-not-cheat-description)]
      [quo/bottom-actions
       {:button-one-label (i18n/label :t/see-recovery-phrase-again)
        :button-one-props {:customization-color color
@@ -96,19 +95,23 @@
            :description     (i18n/label :t/confirm-the-position)}]
          [rn/flat-list
           {:data                    random-indices
-           :render-fn               (fn [num index] [quo/quiz-item
-                                                     {:state    (if (= @quiz-index index)
-                                                                  (if (and (pos? @incorrect-count)
-                                                                           @show-error?)
-                                                                    :error
-                                                                    :empty)
-                                                                  (if (> @quiz-index index)
-                                                                    :success
-                                                                    :disabled))
-                                                      :word     (get temp/secret-phrase num)
-                                                      :number   (inc num)
-                                                      :on-press #(when (= @quiz-index index)
-                                                                   (reset! show-error? false))}])
+           :render-fn               (fn [num index]
+                                      [quo/quiz-item
+                                       {:state    (cond
+                                                    (= @quiz-index index)
+                                                    (if (and (pos? @incorrect-count) @show-error?)
+                                                      :error
+                                                      :empty)
+
+                                                    (> @quiz-index index)
+                                                    :success
+
+                                                    :else
+                                                    :disabled)
+                                        :word     (get temp/secret-phrase num)
+                                        :number   (inc num)
+                                        :on-press #(when (= @quiz-index index)
+                                                     (reset! show-error? false))}])
            :separator               [rn/view {:style {:height 8}}]
            :content-container-style {:padding-horizontal 20}}]
          [rn/view {:style style/buttons-container}
