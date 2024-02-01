@@ -1,6 +1,7 @@
 (ns status-im.subs.profile
   (:require
     [cljs.spec.alpha :as spec]
+    [cljs.test :refer [is testing]]
     [clojure.string :as string]
     [legacy.status-im.fleet.core :as fleet]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
@@ -8,10 +9,13 @@
     [legacy.status-im.wallet.utils :as wallet.utils]
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
+    [re-frame.db :as rf-db]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
+    [test-helpers.unit :as h]
     [utils.address :as address]
     [utils.image-server :as image-server]
+    [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
 (re-frame/reg-sub
@@ -345,6 +349,37 @@
               :ens-name? false
               :selected? (or (nil? preferred-name)
                              (= display-name preferred-name))}))))
+
+(h/deftest-sub :profile/profile-user-names
+  [sub-name]
+  (testing "when a user profile has no preferred name"
+    (let [display-name "test-display-name"
+          ens-name     "test.eth"]
+      (swap! rf-db/app-db assoc
+        :profile/profile {:display-name display-name}
+        :ens/names       {ens-name {:name ens-name}})
+      (is (= [{:name      display-name
+               :ens-name? false
+               :selected? true}
+              {:name      ens-name
+               :ens-name? true
+               :selected? false}]
+             (rf/sub [sub-name])))))
+
+  (testing "when a user profile has a preferred name"
+    (let [display-name "test-display-name"
+          ens-name     "test.eth"]
+      (swap! rf-db/app-db assoc
+        :profile/profile {:display-name   display-name
+                          :preferred-name ens-name}
+        :ens/names       {ens-name {:name ens-name}})
+      (is (= [{:name      display-name
+               :ens-name? false
+               :selected? false}
+              {:name      ens-name
+               :ens-name? true
+               :selected? true}]
+             (rf/sub [sub-name]))))))
 
 (re-frame/reg-sub
  :profile/login-profile
