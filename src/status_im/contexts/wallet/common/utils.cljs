@@ -200,10 +200,27 @@
    constants/arbitrum-goerli-chain-id  :arbitrum
    constants/arbitrum-sepolia-chain-id :arbitrum})
 
+<<<<<<< HEAD
 (def short-name->id
   {:eth  constants/ethereum-mainnet-chain-id
    :opt  constants/optimism-mainnet-chain-id
    :arb1 constants/arbitrum-mainnet-chain-id})
+=======
+(defn get-chain-id
+  [test-net?]
+  (if test-net?
+    {:eth  constants/goerli-chain-id
+     :opt  constants/optimism-test-chain-id
+     :arb1 constants/arbitrum-test-chain-id}
+    {:eth  constants/mainnet-chain-id
+     :opt  constants/optimism-chain-id
+     :arb1 constants/arbitrum-chain-id}))
+
+(defn short-name->id
+  [short-name test-net?]
+  (let [chain-id-map (get-chain-id test-net?)]
+    (get chain-id-map short-name)))
+>>>>>>> c02141d20 (fix: test net networks)
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
