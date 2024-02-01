@@ -2,9 +2,9 @@
   (:require [quo.foundations.colors :as colors]))
 
 (defn page-wrapper
-  [insets]
-  {:padding-top        (:top insets)
-   :padding-bottom     (:bottom insets)
+  [{:keys [top bottom]}]
+  {:padding-top        top
+   :padding-bottom     bottom
    :padding-horizontal 1
    :flex               1})
 
