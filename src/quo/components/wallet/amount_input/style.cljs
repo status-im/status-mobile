@@ -1,4 +1,4 @@
-(ns quo.components.inputs.amount-input.style
+(ns quo.components.wallet.amount-input.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))

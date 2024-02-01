@@ -1,4 +1,4 @@
-(ns status-im.contexts.preview.quo.inputs.amount-input
+(ns status-im.contexts.preview.quo.wallet.amount-input
   (:require
     [quo.core :as quo]
     [reagent.core :as reagent]

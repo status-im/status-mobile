@@ -1,7 +1,7 @@
-(ns quo.components.inputs.amount-input.component-spec
+(ns quo.components.wallet.amount-input.component-spec
   (:require
     [oops.core :as oops]
-    [quo.components.inputs.amount-input.view :as amount-input]
+    [quo.components.wallet.amount-input.view :as amount-input]
     [quo.foundations.colors :as colors]
     [test-helpers.component :as h]))
 

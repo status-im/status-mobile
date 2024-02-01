@@ -1,4 +1,4 @@
-(ns quo.components.inputs.amount-input.schema)
+(ns quo.components.wallet.amount-input.schema)
 
 (def ?schema
   [:=>

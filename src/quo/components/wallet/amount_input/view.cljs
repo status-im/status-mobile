@@ -1,9 +1,9 @@
-(ns quo.components.inputs.amount-input.view
+(ns quo.components.wallet.amount-input.view
   (:require
     [quo.components.buttons.button.view :as button]
-    [quo.components.inputs.amount-input.schema :as amount-input.schema]
-    [quo.components.inputs.amount-input.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.amount-input.schema :as amount-input.schema]
+    [quo.components.wallet.amount-input.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
