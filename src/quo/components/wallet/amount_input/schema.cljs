@@ -12,6 +12,6 @@
       [:auto-focus {:optional true} [:maybe :boolean]]
       [:min-value {:optional true} [:maybe :int]]
       [:max-value {:optional true} [:maybe :int]]
-      [:return-key-type {:optional true} [:maybe :string]]
+      [:return-key-type {:optional true} [:maybe :keyword]]
       [:init-value {:optional true} [:maybe :int]]]]]
    :any])

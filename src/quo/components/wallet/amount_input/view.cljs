@@ -36,8 +36,9 @@
            init-value
            return-key-type
            container-style]
-    :or   {auto-focus false
-           init-value 0}}]
+    :or   {auto-focus      false
+           init-value      0
+           return-key-type :done}}]
   (let [value (reagent/atom init-value)]
     (fn [{:keys [customization-color theme status min-value max-value]
           :or   {status    :default
@@ -59,8 +60,6 @@
             :weight :semi-bold
             :align  :center
             :style  (style/input-text theme status)})
-          :auto-capitalize :none
-          :keyboard-type :numeric
           :accessibility-label :amount-input
           :editable true
           :auto-focus auto-focus
