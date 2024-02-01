@@ -44,7 +44,8 @@
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
-  [{:keys [props state animations derived images index handle-items-changed bottom-text-component]}]
+  [{:keys [props state animations derived images index handle-items-changed bottom-text-component
+           on-options-press]}]
   (let [{:keys [data transparent? scroll-index
                 set-full-height?]} state
         insets                     (safe-area/get-insets)
@@ -69,7 +70,7 @@
                                                    {:height screen-height})}
      (when-not @transparent?
        [:f> top-view/top-view images insets scroll-index animations derived landscape?
-        screen-width])
+        screen-width on-options-press])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
       [reanimated/view
@@ -136,7 +137,8 @@
 
 (defn- f-lightbox
   []
-  (let [{:keys [images index bottom-text-component]} (rf/sub [:get-screen-params])
+  (let [{:keys [images index bottom-text-component on-options-press]}
+        (rf/sub [:get-screen-params])
         props
         (utils/init-props)
         state
@@ -160,7 +162,8 @@
           :images                images
           :index                 index
           :handle-items-changed  handle-items-changed
-          :bottom-text-component bottom-text-component}]))))
+          :bottom-text-component bottom-text-component
+          :on-options-press      on-options-press}]))))
 
 (defn lightbox
   []
