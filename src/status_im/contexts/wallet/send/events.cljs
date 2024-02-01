@@ -144,7 +144,6 @@
                                   network-preferences
                                   gas-rates
                                   from-locked-amount]]
-     (println "qqq" selected-networks)
      {:db            (-> db
                          (assoc-in [:wallet :ui :send :loading-suggested-routes?] true)
                          (assoc-in [:wallet :ui :send :suggested-routes-call-timestamp] now))
