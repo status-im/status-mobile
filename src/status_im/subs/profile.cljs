@@ -335,18 +335,16 @@
  :profile/profile-user-names
  :<- [:profile/profile]
  :<- [:ens/names]
- (fn [[profile ens-names] _]
-   (let [display-name   (:display-name profile)
-         preferred-name (:preferred-name profile)]
-     (-> (map (fn [{:keys [name]}]
-                {:name      name
-                 :ens-name? true
-                 :selected? (= name preferred-name)})
-              (vals ens-names))
-         (conj {:name      (:display-name profile)
-                :ens-name? false
-                :selected? (or (nil? preferred-name)
-                               (= display-name preferred-name))})))))
+ (fn [[{:keys [display-name preferred-name]} ens-names] _]
+   (-> (map (fn [{:keys [name]}]
+              {:name      name
+               :ens-name? true
+               :selected? (= name preferred-name)})
+            (vals ens-names))
+       (conj {:name      display-name
+              :ens-name? false
+              :selected? (or (nil? preferred-name)
+                             (= display-name preferred-name))}))))
 
 (re-frame/reg-sub
  :profile/login-profile
