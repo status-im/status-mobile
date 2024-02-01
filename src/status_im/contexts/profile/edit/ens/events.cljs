@@ -3,6 +3,6 @@
 
 (defn remove-ens-name
   [{:keys [db]} [name]]
-  {:db (update-in db [:ens/names] dissoc name)})
+  {:db (update db :ens/names dissoc name)})
 
 (rf/reg-event-fx :ens/remove-ens remove-ens-name)
