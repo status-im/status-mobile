@@ -10,7 +10,11 @@ const config = {
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: false,
-        inlineRequires: true,
+        /**
+         * Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
+         * https://github.com/status-im/status-mobile/issues/18493
+         */
+        inlineRequires: false,
       },
     }),
   },
