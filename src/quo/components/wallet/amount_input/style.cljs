@@ -20,5 +20,5 @@
   [theme type]
   {:padding 0
    :color   (if (= type :error)
-              (colors/resolve-color :danger theme 60)
+              (colors/resolve-color :danger theme)
               (colors/theme-colors colors/neutral-100 colors/white theme))})
