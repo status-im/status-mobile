@@ -15,7 +15,7 @@
 
 (def screens-map
   {shell.constants/chat-screen                 chat/chat
-   shell.constants/community-screen            communities.overview/overview
+   shell.constants/community-screen            communities.overview/view
    shell.constants/discover-communities-screen communities.discover/view})
 
 (defn f-screen
