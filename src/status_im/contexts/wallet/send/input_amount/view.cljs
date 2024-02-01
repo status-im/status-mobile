@@ -60,15 +60,18 @@
     (> new-value prev-value)))
 
 (defn- f-view-internal
-  ;; crypto-decimals and limit-crypto args are needed for component tests only
-  [{default-on-confirm      :on-confirm
-    default-limit-crypto    :limit-crypto
-    default-crypto-decimals :crypto-decimals}]
+  ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
+  ;; for component tests only
+  [{default-on-confirm       :on-confirm
+    default-limit-crypto     :limit-crypto
+    default-crypto-decimals  :crypto-decimals
+    initial-crypto-currency? :initial-crypto-currency?
+    :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
         bottom                (safe-area/get-bottom)
         input-value           (reagent/atom "")
         input-error           (reagent/atom false)
-        crypto-currency?      (reagent/atom true)
+        crypto-currency?      (reagent/atom initial-crypto-currency?)
         handle-swap           (fn [{:keys [crypto? limit-fiat limit-crypto]}]
                                 (let [num-value     (parse-double @input-value)
                                       current-limit (if crypto? limit-crypto limit-fiat)]
