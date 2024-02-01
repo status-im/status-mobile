@@ -3,7 +3,7 @@
             matcher-combinators.test
             [status-im.contexts.profile.edit.ens.events :as sut]))
 
-(deftest edit-name-test
+(deftest remove-ens-name-test
   (let [new-name "test.eth"
         cofx     {:db {:ens/names {"test.eth"  {:name "test.eth"}
                                    "test2.eth" {:name "test2.eth"}}}}
