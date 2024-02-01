@@ -79,6 +79,9 @@ in stdenv.mkDerivation rec {
   STATUS_GO_SRC_OVERRIDE = statusGoSrcOverride;
   ANDROID_ABI_SPLIT = androidAbiSplit;
   ANDROID_ABI_INCLUDE = androidAbiInclude;
+  # Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
+  # https://github.com/status-im/status-mobile/issues/18493
+  ORG_GRADLE_PROJECT_hermesEnabled = true;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
