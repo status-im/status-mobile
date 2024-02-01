@@ -30,7 +30,7 @@
 
 (defn- cheat-warning
   []
-  (let [{:keys [color]} (rf/sub [:wallet/current-viewing-account])]
+  (let [{:keys [customization-color]} (rf/sub [:profile/profile])]
     [rn/view
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
      [quo/text
@@ -38,7 +38,7 @@
       (i18n/label :t/do-not-cheat-description)]
      [quo/bottom-actions
       {:button-one-label (i18n/label :t/see-recovery-phrase-again)
-       :button-one-props {:customization-color color
+       :button-one-props {:customization-color customization-color
                           :on-press            (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:navigate-back {:revealed? true}]))}}]]))
