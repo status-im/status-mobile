@@ -33,7 +33,7 @@
 
   (h/test "Renders the error state"
     (render [amount-input/view {:status :error}])
-    (h/is-equal (colors/resolve-color :danger :light 60)
+    (h/is-equal (colors/resolve-color :danger :light)
                 (oops/oget (h/get-by-label-text :amount-input) "props" "style" "color")))
 
   (h/test "on-change-text function is fired"
