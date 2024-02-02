@@ -53,8 +53,8 @@
 
 (rf/reg-event-fx
  :onboarding/biometrics-fail
- (fn [_ [code]]
-   {:dispatch [:biometric/show-message code]}))
+ (fn [_ [error]]
+   {:dispatch [:biometric/show-message (ex-cause error)]}))
 
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}

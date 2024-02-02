@@ -1,6 +1,7 @@
 (ns status-im.common.biometric.events
   (:require
     [react-native.biometrics :as biometrics]
+    [schema.core :as schema]
     [status-im.common.biometric.utils :as utils]
     [status-im.common.keychain.events :as keychain]
     [status-im.constants :as constants]
@@ -24,19 +25,26 @@
  (fn [{:keys [db]} [supported-type]]
    {:db (assoc db :biometric/supported-type supported-type)}))
 
-(rf/reg-event-fx
- :biometric/show-message
- (fn [_ [error]]
-   (let [code    (ex-cause error)
-         content (if (#{::biometrics/not-enrolled
-                        ::biometrics/not-available}
-                      code)
-                   (i18n/label :t/grant-face-id-permissions)
-                   (i18n/label :t/biometric-auth-error {:code code}))]
-     {:effects.utils/show-popup
-      {:title   (i18n/label :t/biometric-auth-login-error-title)
-       :content content}})))
+(defn show-message
+  [_ [code]]
+  (let [content (if (#{::biometrics/not-enrolled
+                       ::biometrics/not-available}
+                     code)
+                  (i18n/label :t/grant-face-id-permissions)
+                  (i18n/label :t/biometric-auth-error {:code code}))]
+    {:fx [[:effects.utils/show-popup
+           {:title   (i18n/label :t/biometric-auth-login-error-title)
+            :content content}]]}))
 
+(schema/=> show-message
+  [:=>
+   [:catn
+    [:cofx :schema.re-frame/cofx]
+    [:args
+     [:tuple keyword?]]]
+   :schema.re-frame/event-fx])
+
+(rf/reg-event-fx :biometric/show-message show-message)
 
 (rf/reg-fx
  :biometric/authenticate
@@ -72,7 +80,7 @@
  (fn [_ [password]]
    {:dispatch [:biometric/authenticate
                {:on-success #(rf/dispatch [:biometric/on-enable-success password])
-                :on-fail    #(rf/dispatch [:biometric/show-message %])}]}))
+                :on-fail    #(rf/dispatch [:biometric/show-message (ex-cause %)])}]}))
 
 (rf/reg-event-fx
  :biometric/disable
