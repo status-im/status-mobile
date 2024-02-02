@@ -1,13 +1,13 @@
-(ns quo.components.wallet.account-permissions.schema 
+(ns quo.components.wallet.account-permissions.schema
   (:require [quo.components.wallet.required-tokens.view :as required-tokens]))
 
 (def ?schema
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
+     [:map
       [:account
-       [:map {:closed true}
+       [:map
         [:name [:maybe :string]]
         [:address [:maybe :string]]
         [:emoji [:maybe :string]]

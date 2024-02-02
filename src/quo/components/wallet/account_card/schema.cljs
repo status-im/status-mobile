@@ -1,7 +1,7 @@
 (ns quo.components.wallet.account-card.schema)
 
 (def ?base
-  [:map {:closed true}
+  [:map
    [:type {:optional true} [:enum :default :watch-only :add-account :empty :missing-keypair]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:theme :schema.common/theme]
@@ -9,7 +9,8 @@
    [:on-press {:optional true} [:maybe fn?]]])
 
 (def ?amount
-  [:amount {:optional true} [:maybe :string]])
+  [:map
+   [:amount {:optional true} [:maybe :string]]])
 
 (def ?card
   [:map
@@ -28,5 +29,5 @@
       [:watch-only [:merge ?base ?amount ?card]]
       [:missing-keypair [:merge ?base ?amount ?card]]
       [:empty [:merge ?base ?card]]
-      [:add-account [:merge ?base]]]]]
+      [:add-account ?base]]]]
    :any])

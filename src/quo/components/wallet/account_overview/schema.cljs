@@ -15,5 +15,6 @@
       [:metrics {:optional true} [:enum :negative :positive]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:account {:optional true} [:enum :default :watched-address]]
-      [:time-frame {:optional true} [:enum :one-week :one-month :three-months :one-year :all-time :custom]]]]]
+      [:time-frame {:optional true}
+       [:enum :one-week :one-month :three-months :one-year :all-time :custom]]]]]
    :any])

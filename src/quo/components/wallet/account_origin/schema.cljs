@@ -1,9 +1,9 @@
 (ns quo.components.wallet.account-origin.schema)
 
 (def ?base
-  [:map {:closed true}
+  [:map
    [:type {:optional true} [:enum :default-keypair :recovery-phrase :private-key]]
-   [:stored {:optional true} [:enum :on-device :on-keycard]] 
+   [:stored {:optional true} [:enum :on-device :on-keycard]]
    [:theme :schema.common/theme]])
 
 (def ?default-keypair

@@ -9,5 +9,5 @@
       [:blur? {:optional true} [:maybe :boolean]]
       [:format {:optional true} [:enum :short :long]]
       [:theme :schema.common/theme]
-      [:networks {:optional true} [:sequential [:map {:closed true} [:name :keyword] [:short-name :string]]]]]]]
+      [:networks {:optional true} [:sequential [:map [:name :keyword] [:short-name :string]]]]]]]
    :any])

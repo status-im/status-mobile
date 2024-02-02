@@ -2,7 +2,7 @@
   (:require [quo.components.wallet.confirmation-progress.schema :as component-schema]
             [quo.components.wallet.confirmation-progress.style :as style]
             [quo.components.wallet.progress-bar.view :as progress-box]
-            [quo.theme :as quo.theme] 
+            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [schema.core :as schema]))
 
@@ -70,4 +70,4 @@
 
 (def view
   (quo.theme/with-theme
-    (schema/instrument #'view-internal component-schema/?schema)))
+   (schema/instrument #'view-internal component-schema/?schema)))
