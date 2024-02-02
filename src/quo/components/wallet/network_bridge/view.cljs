@@ -25,17 +25,20 @@
         (= network :ethereum) "Mainnet"
         :else                 (string/capitalize (name network))))
 
+(def ^:private ?network-bridge-status
+  [:enum :add :loading :locked :disabled :default])
+
 (def ?schema
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
+     [:map {:closed false}
       [:theme [:schema.common/theme]]
       [:network [:maybe :keyword]]
-      [:status [:enum :add :loading :locked]]
-      [:amount [:maybe :string]]
-      [:container-style [:maybe :map]]
-      [:on-press [:maybe :fn]]]]
+      [:status {:optional true} [:maybe ?network-bridge-status]]
+      [:amount {:optional true} [:maybe fn?]]
+      [:container-style {:optional true} [:maybe :map]]
+      [:on-press {:optional true} [:maybe fn?]]]]
     :any]])
 
 (defn view-internal

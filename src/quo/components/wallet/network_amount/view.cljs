@@ -13,8 +13,8 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:amount [:string]]
-      [:token [:keyword]]
+      [:amount {:optional true} [:string]]
+      [:token {:optional true} [:or keyword? string?]]
       [:theme [:schema.common/theme]]]]]
    :any])
 

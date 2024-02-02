@@ -56,12 +56,12 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
-      [:theme [:schema.common/theme]]
-      [:type [:keyword]]
-      [:account-props [:map]]
-      [:networks? [:maybe :boolean]]
-      [:values [:maybe :any]]]]
+     [:map {:closed false}
+      [:theme :schema.common/theme]
+      [:type [:enum :status-account :saved-account :account]]
+      [:account-props {:optional true} [:maybe :map]]
+      [:networks? {:optional true} [:maybe :boolean]]
+      [:values {:optional true} [:maybe :any]]]]
     :any]])
 
 (defn- view-internal

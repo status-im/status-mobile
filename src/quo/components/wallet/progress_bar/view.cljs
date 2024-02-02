@@ -9,8 +9,11 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
-      [:full-width? [:maybe :boolean]]]]
+     [:map {:closed false}
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
+      [:theme :schema.common/theme]
+      [:progressed-value {:optional true} [:maybe :number]]
+      [:full-width? {:optional true} [:maybe :boolean]]]]
     :any]])
 
 (defn- view-internal
