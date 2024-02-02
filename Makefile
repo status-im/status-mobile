@@ -273,6 +273,9 @@ run-re-frisk: ##@run Start re-frisk server
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
+# Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
+# https://github.com/status-im/status-mobile/issues/18493
+run-android: export ORG_GRADLE_PROJECT_hermesEnabled := false
 # INFO: If it's empty (no devices attached, parsing issues, script error) - for Nix it's the same as not set.
 run-android: export ANDROID_ABI_INCLUDE ?= $(shell ./scripts/adb_devices_abis.sh)
 run-android: ##@run Build Android APK and start it on the device

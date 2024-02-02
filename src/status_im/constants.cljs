@@ -153,6 +153,11 @@
 (def ^:const community-token-permission-can-view-and-post-channel 4)
 (def ^:const community-token-permission-become-token-master 5)
 (def ^:const community-token-permission-become-token-owner 6)
+(def ^:const community-role-permissions
+  #{community-token-permission-become-admin
+    community-token-permission-become-member
+    community-token-permission-become-token-master
+    community-token-permission-become-token-owner})
 
 ;; Community rules for joining
 (def ^:const community-rule-ens-only "ens-only")
@@ -405,12 +410,15 @@
 (def ^:const ens-action-type-set-pub-key 2)
 
 ;; wallet
-(def ^:const mainnet-chain-id 1)
-(def ^:const optimism-chain-id 10)
-(def ^:const optimism-test-chain-id 420)
-(def ^:const arbitrum-chain-id 42161)
-(def ^:const arbitrum-test-chain-id 421613)
-(def ^:const goerli-chain-id 5)
+(def ^:const ethereum-mainnet-chain-id 1)
+(def ^:const ethereum-goerli-chain-id 5)
+(def ^:const ethereum-sepolia-chain-id 11155111)
+(def ^:const arbitrum-mainnet-chain-id 42161)
+(def ^:const arbitrum-goerli-chain-id 421613)
+(def ^:const arbitrum-sepolia-chain-id 421614)
+(def ^:const optimism-mainnet-chain-id 10)
+(def ^:const optimism-goerli-chain-id 420)
+(def ^:const optimism-sepolia-chain-id 11155420)
 
 (def ^:const mainnet-short-name "eth")
 (def ^:const optimism-short-name "opt")
