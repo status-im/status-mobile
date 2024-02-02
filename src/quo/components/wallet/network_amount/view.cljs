@@ -15,7 +15,7 @@
      [:map {:closed true}
       [:amount {:optional true} [:maybe :string]]
       [:token {:optional true} [:or keyword? string?]]
-      [:theme [:schema.common/theme]]]]]
+      [:theme {:optional true} :schema.common/theme]]]]
    :any])
 
 (defn- view-internal

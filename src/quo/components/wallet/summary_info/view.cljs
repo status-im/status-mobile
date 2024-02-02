@@ -57,7 +57,7 @@
    [:catn
     [:props
      [:map {:closed false}
-      [:theme :schema.common/theme]
+      [:theme {:optional true} :schema.common/theme]
       [:type [:enum :status-account :saved-account :account]]
       [:account-props {:optional true} [:maybe :map]]
       [:networks? {:optional true} [:maybe :boolean]]

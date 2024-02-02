@@ -34,7 +34,7 @@
     [:props
      [:map {:closed false}
       [:theme [:schema.common/theme]]
-      [:network [:maybe :keyword]]
+      [:network {:optional true} [:maybe :keyword]]
       [:status {:optional true} [:maybe ?network-bridge-status]]
       [:amount {:optional true} [:maybe :string]]
       [:container-style {:optional true} [:maybe :map]]

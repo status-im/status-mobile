@@ -180,7 +180,7 @@
      [:map {:closed false}
       [:networks {:optional true} [:maybe [:sequential :any]]]
       [:container-style {:optional true} [:maybe :map]]
-      [:theme [:schema.common/theme]]]]
+      [:theme {:optional true} :schema.common/theme]]]
     :any]])
 
 (defn view-internal

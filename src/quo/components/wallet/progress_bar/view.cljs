@@ -11,7 +11,7 @@
     [:props
      [:map {:closed false}
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:theme :schema.common/theme]
+      [:theme {:optional true} :schema.common/theme]
       [:progressed-value {:optional true} [:maybe :number]]
       [:full-width? {:optional true} [:maybe :boolean]]]]
     :any]])
