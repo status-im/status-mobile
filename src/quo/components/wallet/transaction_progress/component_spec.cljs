@@ -10,6 +10,7 @@
    :tag-name            "Doodle"
    :tag-number          "120"
    :network             network
+   :theme               :light
    :customization-color :blue
    :networks            [{:network      :mainnet
                           :state        state

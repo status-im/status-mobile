@@ -4,7 +4,7 @@
   [:map
    [:type {:optional true} [:enum :default :watch-only :add-account :empty :missing-keypair]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-   [:theme {:optional true} :schema.common/theme]
+   [:theme :schema.common/theme]
    [:metrics? {:optional true} [:maybe :boolean]]
    [:on-press {:optional true} [:maybe fn?]]])
 

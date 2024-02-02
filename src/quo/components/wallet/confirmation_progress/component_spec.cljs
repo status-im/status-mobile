@@ -11,6 +11,7 @@
    :progress-value      "10"
    :network             network
    :state               state
+   :theme               :light
    :customization-color :blue})
 
 (h/describe "Confirmation Progress"

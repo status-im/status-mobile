@@ -4,7 +4,7 @@
   [:map
    [:type {:optional true} [:enum :default-keypair :recovery-phrase :private-key]]
    [:stored {:optional true} [:enum :on-device :on-keycard]]
-   [:theme {:optional true} :schema.common/theme]])
+   [:theme :schema.common/theme]])
 
 (def ^:private ?default-keypair
   [:map
