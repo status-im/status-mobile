@@ -1,6 +1,7 @@
 (ns quo.components.wallet.token-input.view
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [quo.components.buttons.button.view :as button]
     [quo.components.dividers.divider-line.view :as divider-line]
     [quo.components.markdown.text :as text]
@@ -72,18 +73,25 @@
    [token-name-text theme text]])
 
 (defn input-section
-  [{:keys [on-change-text value value-atom]}]
-  (let [input-ref             (atom nil)
-        set-ref               #(reset! input-ref %)
-        focus-input           #(when-let [ref ^js @input-ref]
-                                 (.focus ref))
-        controlled-input?     (some? value)
-        handle-on-change-text (fn [v]
-                                (when-not controlled-input?
-                                  (reset! value-atom v))
-                                (when on-change-text
-                                  (on-change-text v)))]
-    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?]
+  [{:keys [on-change-text value value-atom on-selection-change]}]
+  (let [input-ref               (atom nil)
+        set-ref                 #(reset! input-ref %)
+        focus-input             #(when-let [ref ^js @input-ref]
+                                   (.focus ref))
+        controlled-input?       (some? value)
+        handle-on-change-text   (fn [v]
+                                  (when-not controlled-input?
+                                    (reset! value-atom v))
+                                  (when on-change-text
+                                    (on-change-text v)))
+        handle-selection-change (fn [^js e]
+                                  (when on-selection-change
+                                    (-> e
+                                        (oops/oget "nativeEvent.selection")
+                                        (js->clj :keywordize-keys true)
+                                        (on-selection-change))))]
+    (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?
+                 selection]
           :or   {show-keyboard? true}}]
       [rn/pressable
        {:on-press focus-input
@@ -102,7 +110,9 @@
                   :max-length               12
                   :on-change-text           handle-on-change-text
                   :selection-color          customization-color
-                  :show-soft-input-on-focus show-keyboard?}
+                  :show-soft-input-on-focus show-keyboard?
+                  :on-selection-change      handle-selection-change
+                  :selection                (clj->js selection)}
            controlled-input?       (assoc :value value)
            (not controlled-input?) (assoc :default-value @value-atom))]]
        [token-label
@@ -111,33 +121,32 @@
          :value (if controlled-input? value @value-atom)}]])))
 
 (defn- view-internal
-  [{:keys [on-swap]}]
-  (let [width          (:width (rn/get-window))
-        value-atom     (reagent/atom nil)
-        crypto?        (reagent/atom true)
-        handle-on-swap (fn []
-                         (swap! crypto? not)
-                         (when on-swap
-                           (on-swap @crypto?)))]
-    (fn [{:keys [theme container-style value] :as props}]
-      [rn/view {:style (merge (style/main-container width) container-style)}
-       [rn/view {:style style/amount-container}
-        [input-section
-         (assoc props
-                :value-atom value-atom
-                :crypto?    @crypto?)]
-        [button/button
-         {:icon                true
-          :icon-only?          true
-          :size                32
-          :on-press            handle-on-swap
-          :type                :outline
-          :accessibility-label :reorder}
-         :i/reorder]]
-       [divider-line/view {:container-style (style/divider theme)}]
-       [data-info
-        (assoc props
-               :crypto? @crypto?
-               :amount  (or value @value-atom))]])))
+  []
+  (let [width      (:width (rn/get-window))
+        value-atom (reagent/atom nil)
+        crypto?    (reagent/atom true)]
+    (fn [{:keys [theme container-style value on-swap] :as props}]
+      (let [handle-on-swap (fn []
+                             (swap! crypto? not)
+                             (when on-swap (on-swap @crypto?)))]
+        [rn/view {:style (merge (style/main-container width) container-style)}
+         [rn/view {:style style/amount-container}
+          [input-section
+           (assoc props
+                  :value-atom value-atom
+                  :crypto?    @crypto?)]
+          [button/button
+           {:icon                true
+            :icon-only?          true
+            :size                32
+            :on-press            handle-on-swap
+            :type                :outline
+            :accessibility-label :reorder}
+           :i/reorder]]
+         [divider-line/view {:container-style (style/divider theme)}]
+         [data-info
+          (assoc props
+                 :crypto? @crypto?
+                 :amount  (or value @value-atom))]]))))
 
 (def view (quo.theme/with-theme view-internal))
