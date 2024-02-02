@@ -40,7 +40,7 @@
            init-value      0
            return-key-type :done}}]
   (let [value (reagent/atom init-value)]
-    (fn [{:keys [customization-color theme status min-value max-value]
+    (fn [{:keys [theme status min-value max-value]
           :or   {status    :default
                  min-value 0
                  max-value 999999999}}]
@@ -72,8 +72,7 @@
                               (reset! value processed-amount)
                               (when on-change-text
                                 (on-change-text processed-amount))
-                              (reagent/flush))) ;; Fixes the input flickering issue when typing
-          :selection-color (style/get-selection-color customization-color theme)}]]
+                              (reagent/flush)))}]] ;; Fixes the input flickering issue when typing
        [amount-button
         {:theme               theme
          :icon                :i/add

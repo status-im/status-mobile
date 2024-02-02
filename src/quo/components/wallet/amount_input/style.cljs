@@ -1,13 +1,6 @@
 (ns quo.components.wallet.amount-input.style
   (:require
-    [quo.foundations.colors :as colors]
-    [react-native.platform :as platform]))
-
-(defn get-selection-color
-  [customization-color theme]
-  (colors/resolve-color customization-color
-                        theme
-                        (if platform/ios? 1 0.2)))
+    [quo.foundations.colors :as colors]))
 
 (def container
   {:flex-direction  :row
