@@ -67,20 +67,13 @@
    {:biometric/authenticate opts}))
 
 (rf/reg-event-fx
- :biometric/on-enable-success
+ :biometric/enable
  (fn [{:keys [db]} [password]]
    (let [key-uid (get-in db [:profile/profile :key-uid])]
      {:db       (assoc db :auth-method constants/auth-method-biometric)
       :dispatch [:keychain/save-password-and-auth-method
                  {:key-uid         key-uid
                   :masked-password password}]})))
-
-(rf/reg-event-fx
- :biometric/enable
- (fn [_ [password]]
-   {:dispatch [:biometric/authenticate
-               {:on-success #(rf/dispatch [:biometric/on-enable-success password])
-                :on-fail    #(rf/dispatch [:biometric/show-message (ex-cause %)])}]}))
 
 (rf/reg-event-fx
  :biometric/disable

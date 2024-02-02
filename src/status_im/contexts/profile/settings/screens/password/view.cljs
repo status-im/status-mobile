@@ -23,7 +23,10 @@
       :on-auth-success   (fn [password]
                            (rf/dispatch [:hide-bottom-sheet])
                            (rf/dispatch [:standard-auth/reset-login-password])
-                           (rf/dispatch [:biometric/enable password]))})))
+                           (rf/dispatch
+                            [:biometric/authenticate
+                             {:on-success #(rf/dispatch [:biometric/enable password])
+                              :on-fail    #(rf/dispatch [:biometric/show-message (ex-cause %)])}]))})))
 
 (defn- get-biometric-item
   [theme]
