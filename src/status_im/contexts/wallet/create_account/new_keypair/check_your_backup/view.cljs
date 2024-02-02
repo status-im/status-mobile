@@ -68,7 +68,7 @@
     (merge params
            {:word         (first options)
             :margin-right 12})]
-   [button (merge params {:word (second options)})]])
+   [button (assoc params :word (second options))]])
 
 (defn- view-internal
   []
@@ -119,6 +119,6 @@
            (merge button-params
                   {:margin-bottom 12
                    :options       (subvec options 0 2)})]
-          [buttons-row (merge button-params {:options (subvec options 2 4)})]]]))))
+          [buttons-row (assoc button-params :options (subvec options 2 4))]]]))))
 
 (def view (quo.theme/with-theme view-internal))
