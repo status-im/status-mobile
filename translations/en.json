@@ -2482,9 +2482,8 @@
     "preferred-by-receiver": "Preferred by receiver",
     "not-preferred-by-receiver": "Not preferred by receiver",
     "apply-changes": "Apply changes",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn't use",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "no-routes-found-confirmation": "No routes found. Token type may not be supported or you may don't have enough ETH to cover gas.",
     "watched-account-removed": "Watched address has been removed",
@@ -2512,11 +2511,18 @@
 >>>>>>> 88d8b4a03 (rebase)
 =======
 =======
+=======
+    "no-routes-found-confirmation": "No routes found. Token type may not be supported or you may don't have enough ETH to cover gas.",
+    "check-your-backup": "Check your backup",
+>>>>>>> b9b6128eb (lint)
     "confirm-the-position": "Confirm the position of certain words in your recovery phrase",
     "do-not-cheat": "Don't try to cheat",
     "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",
     "see-recovery-phrase-again": "See recovery phrase again"
+<<<<<<< HEAD
 
 >>>>>>> 7ab566cc0 (generate new keypair)
 >>>>>>> d375eaf68 (generate new keypair)
+=======
+>>>>>>> b9b6128eb (lint)
 }
