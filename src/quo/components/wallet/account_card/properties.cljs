@@ -7,9 +7,7 @@
 
 (defn gradient-end-color
   [theme customization-color]
-  (colors/theme-colors (colors/resolve-color customization-color theme 6)
-                       (colors/resolve-color customization-color theme 6)
-                       theme))
+  (colors/resolve-color customization-color theme 6))
 
 (defn alert-icon-color
   [theme]
