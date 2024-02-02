@@ -36,7 +36,7 @@
       [:theme [:schema.common/theme]]
       [:network [:maybe :keyword]]
       [:status {:optional true} [:maybe ?network-bridge-status]]
-      [:amount {:optional true} [:maybe fn?]]
+      [:amount {:optional true} [:maybe :string]]
       [:container-style {:optional true} [:maybe :map]]
       [:on-press {:optional true} [:maybe fn?]]]]
     :any]])
