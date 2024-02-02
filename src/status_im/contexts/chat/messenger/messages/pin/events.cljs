@@ -128,4 +128,4 @@
 (rf/defn show-pins-bottom-sheet
   {:events [:pin-message/show-pins-bottom-sheet]}
   [cofx chat-id]
-  (navigation/show-bottom-sheet cofx {:content (fn [] [pinned-messages-menu/pinned-messages chat-id])}))
+  (navigation/show-bottom-sheet cofx {:content (fn [] [pinned-messages-menu/view {:chat-id chat-id}])}))
