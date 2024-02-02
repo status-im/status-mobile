@@ -110,10 +110,10 @@
                                   (reset! crypto-currency? crypto?)
                                   (reset-input-error num-value current-limit input-error)))
         handle-keyboard-press (fn [v loading-routes? current-limit-amount]
-                                (let [current-value @input-value
-                                      new-value     (make-new-input current-value v input-selection)
-                                      num-value     (or (parse-double new-value) 0)]
-                                  (when (not loading-routes?)
+                                (when-not loading-routes?
+                                  (let [current-value @input-value
+                                        new-value     (make-new-input current-value v input-selection)
+                                        num-value     (or (parse-double new-value) 0)]
                                     (reset! input-value new-value)
                                     (reset-input-error num-value current-limit-amount input-error)
                                     (reagent/flush))))
