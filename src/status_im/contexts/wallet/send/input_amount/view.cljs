@@ -103,7 +103,7 @@
         input-value           (reagent/atom "")
         input-error           (reagent/atom false)
         crypto-currency?      (reagent/atom initial-crypto-currency?)
-        input-selection           (reagent/atom {:start 0 :end 0})
+        input-selection       (reagent/atom {:start 0 :end 0})
         handle-swap           (fn [{:keys [crypto? limit-fiat limit-crypto]}]
                                 (let [num-value     (parse-double @input-value)
                                       current-limit (if crypto? limit-crypto limit-fiat)]
@@ -146,13 +146,13 @@
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   @input-value
                                                :stack-id :wallet-send-input-amount}]))
-        selection-change          (fn [selection]
-                                    ;; `reagent/flush` is needed to properly propagate the
-                                    ;; input cursor state. Since this is a controlled
-                                    ;; component the cursor will become static if
-                                    ;; `reagent/flush` is removed.
-                                    (reset! input-selection selection)
-                                    (reagent/flush))]
+        selection-change      (fn [selection]
+                                ;; `reagent/flush` is needed to properly propagate the
+                                ;; input cursor state. Since this is a controlled
+                                ;; component the cursor will become static if
+                                ;; `reagent/flush` is removed.
+                                (reset! input-selection selection)
+                                (reagent/flush))]
     (fn []
       (let [{fiat-currency :currency} (rf/sub [:profile/profile])
             {:keys [color]}           (rf/sub [:wallet/current-viewing-account])
@@ -196,25 +196,25 @@
            :on-press      on-navigate-back
            :switcher-type :select-account}]
          [quo/token-input
-          {:container-style style/input-container
-           :token           token-symbol
-           :currency        current-currency
-           :crypto-decimals crypto-decimals
-           :error?          @input-error
-           :networks        token-networks
-           :title           (i18n/label :t/send-limit {:limit limit-label})
-           :conversion      conversion-rate
-           :show-keyboard?  false
-           :value           @input-value
+          {:container-style     style/input-container
+           :token               token-symbol
+           :currency            current-currency
+           :crypto-decimals     crypto-decimals
+           :error?              @input-error
+           :networks            token-networks
+           :title               (i18n/label :t/send-limit {:limit limit-label})
+           :conversion          conversion-rate
+           :show-keyboard?      false
+           :value               @input-value
            :selection           @input-selection
-           :on-change-text  #(handle-on-change % current-limit)
+           :on-change-text      #(handle-on-change % current-limit)
            :on-selection-change selection-change
-           :on-swap         #(handle-swap
-                              {:crypto?      %
-                               :currency     current-currency
-                               :token-symbol token-symbol
-                               :limit-fiat   fiat-limit
-                               :limit-crypto crypto-limit})}]
+           :on-swap             #(handle-swap
+                                  {:crypto?      %
+                                   :currency     current-currency
+                                   :token-symbol token-symbol
+                                   :limit-fiat   fiat-limit
+                                   :limit-crypto crypto-limit})}]
          [routes/view
           {:amount       amount-text
            :routes       suggested-routes
