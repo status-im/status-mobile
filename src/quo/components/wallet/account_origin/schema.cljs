@@ -1,12 +1,12 @@
 (ns quo.components.wallet.account-origin.schema)
 
-(def ?base
+(def ^:private ?base
   [:map
    [:type {:optional true} [:enum :default-keypair :recovery-phrase :private-key]]
    [:stored {:optional true} [:enum :on-device :on-keycard]]
-   [:theme :schema.common/theme]])
+   [:theme {:optional true} :schema.common/theme]])
 
-(def ?default-keypair
+(def ^:private ?default-keypair
   [:map
    [:user-name {:optional true} [:maybe :string]]
    [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
@@ -14,7 +14,7 @@
    [:on-press {:optional true} [:maybe fn?]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]])
 
-(def ?recovery-phrase
+(def ^:private ?recovery-phrase
   [:map
    [:derivation-path {:optional true} [:maybe :string]]
    [:on-press {:optional true} [:maybe fn?]]])

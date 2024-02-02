@@ -11,5 +11,5 @@
       [:network {:optional true} [:enum :mainnet :optimism :arbitrum]]
       [:state {:optional true} [:enum :pending :sending :confirmed :finalising :finalized :error]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:theme :schema.common/theme]]]]
+      [:theme {:optional true} :schema.common/theme]]]]
    :any])

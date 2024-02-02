@@ -8,6 +8,6 @@
       [:address :string]
       [:blur? {:optional true} [:maybe :boolean]]
       [:format {:optional true} [:enum :short :long]]
-      [:theme :schema.common/theme]
+      [:theme {:optional true} :schema.common/theme]
       [:networks {:optional true} [:sequential [:map [:name :keyword] [:short-name :string]]]]]]]
    :any])
