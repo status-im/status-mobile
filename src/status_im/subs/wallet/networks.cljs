@@ -30,11 +30,22 @@
    :short-name   constants/optimism-short-name
    :network-name constants/optimism-network-name})
 
-(def network-list
-  {constants/mainnet-chain-id  mainnet-network-details
-   constants/goerli-chain-id   mainnet-network-details
-   constants/arbitrum-chain-id arbitrum-network-details
-   constants/optimism-chain-id optimism-network-details})
+(defn get-network-details
+  [chain-id]
+  (case chain-id
+    (constants/ethereum-mainnet-chain-id constants/ethereum-goerli-chain-id
+                                         constants/ethereum-sepolia-chain-id)
+    mainnet-network-details
+
+    (constants/arbitrum-mainnet-chain-id constants/arbitrum-goerli-chain-id
+                                         constants/arbitrum-sepolia-chain-id)
+    arbitrum-network-details
+
+    (constants/optimism-mainnet-chain-id constants/optimism-goerli-chain-id
+                                         constants/optimism-sepolia-chain-id)
+    optimism-network-details
+
+    nil))
 
 (re-frame/reg-sub
  :wallet/network-details
@@ -43,7 +54,7 @@
    (->> networks
         (keep
          (fn [{:keys [chain-id related-chain-id layer test?]}]
-           (let [network-details (get network-list (if test? related-chain-id chain-id))]
+           (let [network-details (get-network-details (if test? related-chain-id chain-id))]
              (assoc network-details
                     :chain-id         chain-id
                     :related-chain-id related-chain-id
