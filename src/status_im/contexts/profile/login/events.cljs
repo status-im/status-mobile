@@ -218,7 +218,7 @@
                   ex-data
                   (assoc :code  (ex-cause error)
                          :event :profile.login/biometric-auth-fail)))
-   {:dispatch [:biometric/show-message error]}))
+   {:dispatch [:biometric/show-message (ex-cause error)]}))
 
 (rf/defn verify-database-password
   {:events [:profile.login/verify-database-password]}
