@@ -23,9 +23,9 @@ in mkShell {
       # build specific utilities
       clojure maven watchman
       # other nice to have stuff
-      yarn nodejs python310
+      yarn nodejs python310 maestro
     ] # and some special cases
-      ++ lib.optionals   stdenv.isDarwin ([ cocoapods clang tcl ] ++ appleSDKFrameworks)
+      ++ lib.optionals   stdenv.isDarwin ([ cocoapods clang tcl idb-companion ] ++ appleSDKFrameworks)
       ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]
     );
 

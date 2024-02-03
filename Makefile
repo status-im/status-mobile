@@ -457,3 +457,18 @@ repl-clojure: ##@repl Start Clojure repl for mobile App
 	yarn shadow-cljs cljs-repl mobile
 
 repl-nix: nix-repl ##@repl Start an interactive Nix REPL
+
+#--------------
+# Dev Automation Flows
+#--------------
+
+auto-login: export TARGET := default
+auto-login: ##@auto runs flow for login or onboarding app on simulator/emulator
+	maestro test "maestro/create-account-or-login.yaml"
+
+auto-custom: export TARGET := default
+auto-custom: ##@auto runs any custom maestro automation flow on simulator/emulator
+ifndef FLOW
+	$(error Usage: make automate FLOW=your-maestro-flow-file.yaml)
+endif
+	maestro test "$(FLOW)"
