@@ -1090,8 +1090,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703629)
-    @marks.xfail(
-        reason="Can't join a community if admin goes offline, https://github.com/status-im/status-mobile/issues/17678")
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
@@ -1143,7 +1141,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         else:
             self.errors.append("Community channel is not displayed for user before join")
         self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
-        self.community_2.close_community_view_button.click()
+        self.community_2.close_community_view_button.click_until_absense_of_element(
+            self.community_2.close_community_view_button)
         self.home_2.pending_communities_tab.click()
         if self.home_2.get_chat(community_name, community=True).is_element_displayed():
             self.home_2.get_chat(community_name, community=True).click()
@@ -1166,7 +1165,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         # ToDo: add verification when toast is fixed
         if not self.community_2.community_status_joined.is_element_displayed():
             self.errors.append("Joined status is not displayed")
-        self.community_2.close_community_view_button.click()
+        self.community_2.close_community_view_button.click_until_absense_of_element(
+            self.community_2.close_community_view_button)
         self.home_2.joined_communities_tab.click()
         chat_element = self.home_2.get_chat(community_name, community=True)
         if chat_element.is_element_displayed(30):

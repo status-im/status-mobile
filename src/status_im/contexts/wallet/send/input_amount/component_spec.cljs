@@ -53,8 +53,9 @@
   (h/test "Default render"
     (h/setup-subs sub-mocks)
     (h/render [input-amount/view
-               {:crypto-decimals 2
-                :limit-crypto    250}])
+               {:crypto-decimals          2
+                :limit-crypto             250
+                :initial-crypto-currency? false}])
     (h/is-truthy (h/get-by-text "0"))
     (h/is-truthy (h/get-by-text "ETH"))
     (h/is-truthy (h/get-by-text "$0.00"))
@@ -65,9 +66,10 @@
     (h/setup-subs sub-mocks)
     (let [on-confirm (h/mock-fn)]
       (h/render [input-amount/view
-                 {:on-confirm      on-confirm
-                  :crypto-decimals 10
-                  :limit-crypto    1000}])
+                 {:on-confirm               on-confirm
+                  :crypto-decimals          10
+                  :limit-crypto             1000
+                  :initial-crypto-currency? false}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -88,9 +90,10 @@
 
     (let [on-confirm (h/mock-fn)]
       (h/render [input-amount/view
-                 {:crypto-decimals 10
-                  :limit-crypto    1000
-                  :on-confirm      on-confirm}])
+                 {:crypto-decimals          10
+                  :limit-crypto             1000
+                  :on-confirm               on-confirm
+                  :initial-crypto-currency? false}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
