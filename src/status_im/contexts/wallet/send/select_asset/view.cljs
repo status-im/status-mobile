@@ -17,21 +17,22 @@
    {:id :tab/collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}])
 
 (defn- asset-component
-  [token _ _ {:keys [currency currency-symbol]}]
-  (let [on-press         #(rf/dispatch [:wallet/send-select-token
-                                        {:token    token
-                                         :stack-id :wallet-select-asset}])
-        token-units      (utils/total-token-units-in-all-chains token)
-        crypto-formatted (utils/get-standard-crypto-format token token-units)
-        fiat-value       (utils/total-token-fiat-value currency token)
-        fiat-formatted   (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
-    [quo/token-network
-     {:token       (:symbol token)
-      :label       (:name token)
-      :token-value (str crypto-formatted " " (:symbol token))
-      :fiat-value  fiat-formatted
-      :networks    (:networks token)
-      :on-press    on-press}]))
+  []
+  (fn [token _ _ {:keys [currency currency-symbol]}]
+    (let [on-press         #(rf/dispatch [:wallet/send-select-token
+                                          {:token    token
+                                           :stack-id :wallet-select-asset}])
+          token-units      (utils/total-token-units-in-all-chains token)
+          crypto-formatted (utils/get-standard-crypto-format token token-units)
+          fiat-value       (utils/total-token-fiat-value currency token)
+          fiat-formatted   (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
+      [quo/token-network
+       {:token       (:symbol token)
+        :label       (:name token)
+        :token-value (str crypto-formatted " " (:symbol token))
+        :fiat-value  fiat-formatted
+        :networks    (:networks token)
+        :on-press    on-press}])))
 
 (defn- asset-list
   [search-text]
