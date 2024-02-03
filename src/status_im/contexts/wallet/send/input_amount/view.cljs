@@ -90,14 +90,6 @@
   (let [size (count s)]
     (str (subs s 0 (dec idx)) (subs s idx size))))
 
-;;  navigate-back-route       (case type
-;;                             :bridge :wallet-bridge-send
-;;                             :wallet-send-input-amount)
-
-;;  #(rf/dispatch [:navigate-back-within-stack navigate-back-route])
-
-;; type
-
 (defn- f-view-internal
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
