@@ -2,9 +2,11 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [react-native.gesture :as gesture]
+    [status-im.common.resources :as resources]
     [status-im.contexts.chat.messenger.menus.pinned-messages.style :as style]
     [status-im.contexts.chat.messenger.messages.content.view :as message]
     [utils.i18n :as i18n]
@@ -24,26 +26,18 @@
   [message/message message context (atom false)])
 
 (defn empty-pinned-messages-state
-  [{:keys [community?]}]
+  [{:keys [theme community?]}]
   [rn/view {:style style/no-pinned-messages-container}
-   [rn/view {:style style/no-pinned-messages-icon}
-    [quo/icon :i/placeholder]]
-   [rn/view {:style style/no-pinned-messages-content}
-    [quo/text
-     {:size   :paragraph-1
-      :weight :semi-bold
-      :style  style/no-pinned-messages-title}
-     (i18n/label :t/no-pinned-messages)]
-    [quo/text
-     {:size  :paragraph-2
-      :style style/no-pinned-messages-text}
-     (i18n/label
-      (if community?
-        :t/no-pinned-messages-community-desc
-        :t/no-pinned-messages-desc))]]])
+   [quo/empty-state
+    {:blur?       false
+     :image       (resources/get-themed-image :no-pinned-messages theme)
+     :title       (i18n/label :t/no-pinned-messages)
+     :description (i18n/label (if community?
+                                :t/no-pinned-messages-community-desc
+                                :t/no-pinned-messages-desc))}]])
 
-(defn pinned-messages
-  [chat-id]
+(defn f-pinned-messages
+  [{:keys [theme chat-id]}]
   (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
         current-chat           (rf/sub [:chats/chat-by-id chat-id])
@@ -83,4 +77,11 @@
          :key-fn      list-key-fn
          :separator   [quo/separator {:style {:margin-vertical 8}}]}]
        [empty-pinned-messages-state
-        {:community? (boolean community)}])]))
+        {:community? (boolean community)
+         :theme      theme}])]))
+
+(defn- internal-pinned-messages
+  [params]
+  [:f> f-pinned-messages params])
+
+(def view (quo.theme/with-theme internal-pinned-messages))

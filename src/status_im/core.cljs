@@ -13,7 +13,8 @@
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
     [reagent.impl.batching :as batching]
-    [status-im.common.log :as log]
+    [status-im.common.log :as logging]
+    [taoensso.timbre :as log]
     [status-im.common.universal-links :as universal-links]
     [status-im.config :as config]
     [status-im.contexts.profile.push-notifications.events :as notifications]
@@ -34,12 +35,17 @@
 
 (def adjust-resize 16)
 
+(defn is-hermes
+  []
+  (boolean (.-HermesInternal js/global)))
+
 (defn init
   []
+
   (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
   (when platform/android?
     (native-module/set-soft-input-mode adjust-resize))
-  (log/setup config/log-level)
+  (logging/setup config/log-level)
   (global-error/register-handler)
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
@@ -54,5 +60,6 @@
   (async-storage/get-item :screen-height #(reset! shell.state/screen-height %))
 
   (dev/setup)
+  (log/info "hermesEnabled ->" (is-hermes))
 
   (re-frame/dispatch-sync [:app-started]))

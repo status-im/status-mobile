@@ -19,7 +19,8 @@
            transactions-management-enabled?
            current-fleet
            webview-debug
-           test-networks-enabled?]}]
+           test-networks-enabled?
+           is-sepolia-enabled?]}]
   (keep
    identity
    [{:size :small
@@ -110,6 +111,14 @@
      #(re-frame/dispatch [:profile.settings/toggle-test-networks])
      :accessory :switch
      :active test-networks-enabled?}
+    {:size :small
+     :title "Enable Sepolia as test network"
+     :accessibility-label :enable-sepolia-as-test-network
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch [:profile.settings/toggle-sepolia-test-network])
+     :accessory :switch
+     :active is-sepolia-enabled?}
     {:size                :small
      :title               (i18n/label :t/set-currency)
      :accessibility-label :wallet-change-currency
@@ -130,6 +139,7 @@
 (views/defview advanced-settings
   []
   (views/letsubs [test-networks-enabled?           [:profile/test-networks-enabled?]
+                  is-sepolia-enabled?              [:profile/is-sepolia-enabled?]
                   light-client-enabled?            [:profile/light-client-enabled?]
                   webview-debug                    [:profile/webview-debug]
                   network-name                     [:network-name]
@@ -145,6 +155,7 @@
                    :current-fleet                    current-fleet
                    :dev-mode?                        false
                    :webview-debug                    webview-debug
-                   :test-networks-enabled?           test-networks-enabled?})
+                   :test-networks-enabled?           test-networks-enabled?
+                   :is-sepolia-enabled?              is-sepolia-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))
