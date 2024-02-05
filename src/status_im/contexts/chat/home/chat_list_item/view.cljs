@@ -18,7 +18,7 @@
   [chat-id]
   (fn []
     (rf/dispatch [:dismiss-keyboard])
-    (debounce/dispatch-and-chill [:chat/navigate-to-chat chat-id] 500)))
+    (debounce/throttle-and-dispatch [:chat/navigate-to-chat chat-id] 500)))
 
 (defn parsed-text-to-one-line
   [parsed-text]

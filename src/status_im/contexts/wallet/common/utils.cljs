@@ -190,17 +190,30 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id       :ethereum
-   constants/goerli-chain-id        :ethereum
-   constants/optimism-chain-id      :optimism
-   constants/optimism-test-chain-id :optimism
-   constants/arbitrum-chain-id      :arbitrum
-   constants/arbitrum-test-chain-id :arbitrum})
+  {constants/ethereum-chain-id         :ethereum
+   constants/goerli-chain-id           :ethereum
+   constants/ethereum-sepolia-chain-id :ethereum
+   constants/optimism-chain-id         :optimism
+   constants/optimism-testnet-chain-id :optimism
+   constants/optimism-sepolia-chain-id :optimism
+   constants/arbitrum-chain-id         :arbitrum
+   constants/arbitrum-testnet-chain-id :arbitrum
+   constants/arbitrum-sepolia-chain-id :arbitrum})
 
-(def short-name->id
-  {:eth  constants/mainnet-chain-id
-   :opt  constants/optimism-chain-id
-   :arb1 constants/arbitrum-chain-id})
+(defn- get-chain-id
+  [test-net?]
+  (if test-net?
+    {:eth  constants/goerli-chain-id
+     :opt  constants/optimism-testnet-chain-id
+     :arb1 constants/arbitrum-testnet-chain-id}
+    {:eth  constants/ethereum-chain-id
+     :opt  constants/optimism-chain-id
+     :arb1 constants/arbitrum-chain-id}))
+
+(defn short-name->id
+  [short-name test-net?]
+  (let [chain-id-map (get-chain-id test-net?)]
+    (get chain-id-map short-name)))
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]

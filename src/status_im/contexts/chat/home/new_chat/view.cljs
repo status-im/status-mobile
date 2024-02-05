@@ -57,10 +57,11 @@
                             (re-frame/dispatch [:deselect-contact public-key])
                             (re-frame/dispatch [:select-contact public-key]))]
       [contact-list-item/contact-list-item
-       {:on-press  on-toggle
-        :accessory {:type     :checkbox
-                    :checked? user-selected?
-                    :on-check on-toggle}}
+       {:on-press                on-toggle
+        :allow-multiple-presses? true
+        :accessory               {:type     :checkbox
+                                  :checked? user-selected?
+                                  :on-check on-toggle}}
        item])))
 
 (defn- view-internal

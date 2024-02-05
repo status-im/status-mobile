@@ -199,7 +199,7 @@
     (assoc :on-press      (when joined-or-spectated
                             (fn []
                               (rf/dispatch [:dismiss-keyboard])
-                              (debounce/dispatch-and-chill
+                              (debounce/throttle-and-dispatch
                                [:communities/navigate-to-community-chat (str community-id id)]
                                1000)))
            :on-long-press #(rf/dispatch

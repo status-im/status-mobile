@@ -6,7 +6,7 @@
     [legacy.status-im.ui.screens.network.styles :as st]
     [legacy.status-im.ui.screens.network.views :as network-settings]
     [re-frame.core :as re-frame]
-    [utils.debounce :refer [dispatch-and-chill]]
+    [utils.debounce :refer [throttle-and-dispatch]]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
@@ -25,7 +25,7 @@
           :connected? connected?}]
         (when-not connected?
           [react/touchable-highlight
-           {:on-press #(dispatch-and-chill [::network/connect-network-pressed id] 1000)}
+           {:on-press #(throttle-and-dispatch [::network/connect-network-pressed id] 1000)}
            [react/view st/connect-button-container
             [react/view
              {:style               st/connect-button

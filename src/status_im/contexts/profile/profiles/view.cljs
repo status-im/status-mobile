@@ -50,13 +50,13 @@
       :on-press            (fn []
                              (when @push-animation-fn-atom
                                (@push-animation-fn-atom))
-                             (debounce/dispatch-and-chill
+                             (debounce/throttle-and-dispatch
                               [:open-modal :new-to-status]
                               1000))
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
-      :on-press            #(debounce/dispatch-and-chill
+      :on-press            #(debounce/throttle-and-dispatch
                              [:open-modal :sign-in]
                              1000)
       :accessibility-label :multi-profile}]]])
