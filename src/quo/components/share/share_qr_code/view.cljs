@@ -15,7 +15,7 @@
             [quo.components.tabs.tab.view :as tab]
             [quo.foundations.colors :as colors]
             [quo.theme]
-            [react-native.core :as rn] 
+            [react-native.core :as rn]
             [reagent.core :as reagent]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
@@ -150,60 +150,60 @@
            profile-picture emoji on-share-press address]
     :as   props}]
   [:<>
-  [rn/view {:style style/gradient-bg}
-   [gradient-cover/view {:customization-color customization-color :height 463}]]
-  [rn/view {:style style/content-container}
-   [rn/view {:style style/share-qr-container}
-    [rn/view {:style style/share-qr-inner-container}
-     [header-icon props]
-     [text/text
-      {:size   :heading-2
-       :weight :semi-bold
-       :style  {:margin-left 8}} full-name]
-     (when (= share-qr-type :watched-address)
-       [icons/icon
-        :i/reveal
-        {:color           colors/white-opa-40
-         :container-style style/watched-account-icon}])]
-    [share-button {:on-press on-share-press}]]
-   (when (not= share-qr-type :profile)
-     [header props])
-   [quo.theme/provider {:theme :light}
-    [qr-code/view
-     {:qr-image-uri        qr-image-uri
-      :size                (style/qr-code-size component-width)
-      :avatar              (case share-qr-type
-                             :profile                   :profile
-                             (:watched-address :wallet) :wallet-account
-                             :saved-address             :saved-address
-                             nil)
-      :customization-color customization-color
-      :full-name           full-name
-      :profile-picture     profile-picture
-      :emoji               emoji}]]
-   [rn/view {:style style/bottom-container}
-    (if (= share-qr-type :profile)
-      [profile-bottom props]
-      (case address
-        :legacy     [wallet-legacy-bottom props]
-        :multichain [wallet-multichain-bottom props]
-        nil))]]])
+   [rn/view {:style style/gradient-bg}
+    [gradient-cover/view {:customization-color customization-color :height 463}]]
+   [rn/view {:style style/content-container}
+    [rn/view {:style style/share-qr-container}
+     [rn/view {:style style/share-qr-inner-container}
+      [header-icon props]
+      [text/text
+       {:size   :heading-2
+        :weight :semi-bold
+        :style  {:margin-left 8}} full-name]
+      (when (= share-qr-type :watched-address)
+        [icons/icon
+         :i/reveal
+         {:color           colors/white-opa-40
+          :container-style style/watched-account-icon}])]
+     [share-button {:on-press on-share-press}]]
+    (when (not= share-qr-type :profile)
+      [header props])
+    [quo.theme/provider {:theme :light}
+     [qr-code/view
+      {:qr-image-uri        qr-image-uri
+       :size                (style/qr-code-size component-width)
+       :avatar              (case share-qr-type
+                              :profile                   :profile
+                              (:watched-address :wallet) :wallet-account
+                              :saved-address             :saved-address
+                              nil)
+       :customization-color customization-color
+       :full-name           full-name
+       :profile-picture     profile-picture
+       :emoji               emoji}]]
+    [rn/view {:style style/bottom-container}
+     (if (= share-qr-type :profile)
+       [profile-bottom props]
+       (case address
+         :legacy     [wallet-legacy-bottom props]
+         :multichain [wallet-multichain-bottom props]
+         nil))]]])
 
 (defn- view-internal
   [props]
   (reagent/with-let [component-width     (reagent/atom nil)
                      container-component [rn/view {:background-color style/overlay-color}]]
     [quo.theme/provider {:theme :dark}
-      [rn/view
-       {:accessibility-label :share-qr-code
-        :style               style/outer-container
-        :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
-       (conj container-component
-             (when @component-width
-               [share-qr-code
-                (-> props
-                    (assoc :component-width @component-width)
-                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
+     [rn/view
+      {:accessibility-label :share-qr-code
+       :style               style/outer-container
+       :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
+      (conj container-component
+            (when @component-width
+              [share-qr-code
+               (-> props
+                   (assoc :component-width @component-width)
+                   (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
 
 (def view
   (quo.theme/with-theme
