@@ -180,8 +180,8 @@
      [:map {:closed false}
       [:networks {:optional true} [:maybe [:sequential :any]]]
       [:container-style {:optional true} [:maybe :map]]
-      [:theme :schema.common/theme]]]
-    :any]])
+      [:theme :schema.common/theme]]]]
+   :any])
 
 (defn view-internal
   [{:keys [networks container-style theme] :as params}]

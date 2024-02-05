@@ -38,8 +38,8 @@
       [:status {:optional true} [:maybe ?network-bridge-status]]
       [:amount {:optional true} [:maybe :string]]
       [:container-style {:optional true} [:maybe :map]]
-      [:on-press {:optional true} [:maybe fn?]]]]
-    :any]])
+      [:on-press {:optional true} [:maybe fn?]]]]]
+   :any])
 
 (defn view-internal
   [{:keys [theme network status amount container-style on-press] :as args}]

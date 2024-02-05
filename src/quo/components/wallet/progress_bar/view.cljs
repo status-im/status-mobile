@@ -13,8 +13,8 @@
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:theme :schema.common/theme]
       [:progressed-value {:optional true} [:maybe :number]]
-      [:full-width? {:optional true} [:maybe :boolean]]]]
-    :any]])
+      [:full-width? {:optional true} [:maybe :boolean]]]]]
+   :any])
 
 (defn- view-internal
   [{:keys [full-width?] :as props}]
