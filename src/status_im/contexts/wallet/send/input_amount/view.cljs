@@ -96,12 +96,12 @@
   [{default-on-confirm       :on-confirm
     default-limit-crypto     :limit-crypto
     default-crypto-decimals  :crypto-decimals
-    type                     :type
+    transfer-type            :transfer-type
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
         bottom                (safe-area/get-bottom)
-        navigate-back-route   (case type
+        navigate-back-route   (case transfer-type
                                 :bridge :wallet-bridge-send
                                 :wallet-send-input-amount)
         input-value           (reagent/atom "")
@@ -136,7 +136,7 @@
                                     (reset-input-error num-value current-limit-amount input-error)
                                     (reagent/flush))))
         on-navigate-back      (fn []
-                                (case type
+                                (case transfer-type
                                   :bridge (rf/dispatch [:navigate-back-within-stack navigate-back-route])
                                   (do
                                     (rf/dispatch [:wallet/clean-selected-token])
@@ -230,13 +230,13 @@
            :fetch-routes #(fetch-routes % current-limit)}]
          [quo/bottom-actions
           {:actions             :1-action
-           :button-one-label    (case type
+           :button-one-label    (case transfer-type
                                   :bridge (i18n/label :t/confirm-bridge)
                                   (i18n/label :t/confirm))
            :button-one-props    {:disabled? confirm-disabled?
                                  :on-press on-confirm
                                  :icon-left
-                                 (case type
+                                 (case transfer-type
                                    :bridge :i/bridge
                                    nil)}
            :customization-color color}]

@@ -1,10 +1,10 @@
 (ns status-im.contexts.wallet.account.bridge-send.view
   (:require
-   [quo.theme]
-   [react-native.core :as rn]
-   [status-im.contexts.wallet.account.bridge-send.style :as style]
-   [status-im.contexts.wallet.send.input-amount.view :as input-amount]
-   [utils.re-frame :as rf]))
+    [quo.theme]
+    [react-native.core :as rn]
+    [status-im.contexts.wallet.account.bridge-send.style :as style]
+    [status-im.contexts.wallet.send.input-amount.view :as input-amount]
+    [utils.re-frame :as rf]))
 
 (defn- view-internal
   []
@@ -12,6 +12,6 @@
         send-type        (:type send-bridge-data)]
     [rn/view {:style style/bridge-send-wrapper}
      [input-amount/view
-      {:type send-type}]]))
+      {:transfer-type send-type}]]))
 
 (def view (quo.theme/with-theme view-internal))
