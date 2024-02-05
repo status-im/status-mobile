@@ -79,10 +79,11 @@
       (let [on-toggle #(group-chat-member-toggle member? (swap! checked? not) public-key)]
         [contact-list-item/contact-list-item
          (when (not= current-pk public-key)
-           {:on-press  on-toggle
-            :accessory {:type     :checkbox
-                        :checked? @checked?
-                        :on-check on-toggle}})
+           {:on-press                on-toggle
+            :allow-multiple-presses? true
+            :accessory               {:type     :checkbox
+                                      :checked? @checked?
+                                      :on-check on-toggle}})
          item]))))
 
 (defn add-manage-members
@@ -135,10 +136,11 @@
                                                               extra-data])}])]
     [contact-list-item/contact-list-item
      (when (not= public-key current-pk)
-       {:on-press      #(rf/dispatch [:chat.ui/show-profile public-key])
-        :on-long-press show-profile-actions
-        :accessory     {:type     :options
-                        :on-press show-profile-actions}})
+       {:on-press                #(rf/dispatch [:chat.ui/show-profile public-key])
+        :allow-multiple-presses? true
+        :on-long-press           show-profile-actions
+        :accessory               {:type     :options
+                                  :on-press show-profile-actions}})
      item]))
 
 (defn group-details

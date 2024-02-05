@@ -190,16 +190,17 @@
        {:accessibility-label :audio-message-container
         :style               (style/container)}
        [rn/touchable-opacity
-        {:accessibility-label :play-pause-audio-message-button
-         :on-press            #(play-pause-player {:player-key        player-key
-                                                   :player-state      player-state
-                                                   :progress          progress
-                                                   :message-id        message-id
-                                                   :audio-duration-ms duration
-                                                   :seeking-audio?    seeking-audio?
-                                                   :user-interaction? true
-                                                   :mediaserver-port  mediaserver-port})
-         :style               (style/play-pause-container)}
+        {:accessibility-label     :play-pause-audio-message-button
+         :allow-multiple-presses? true
+         :on-press                #(play-pause-player {:player-key        player-key
+                                                       :player-state      player-state
+                                                       :progress          progress
+                                                       :message-id        message-id
+                                                       :audio-duration-ms duration
+                                                       :seeking-audio?    seeking-audio?
+                                                       :user-interaction? true
+                                                       :mediaserver-port  mediaserver-port})
+         :style                   (style/play-pause-container)}
         [quo/icon
          (cond
            (= @player-state :preparing)

@@ -70,6 +70,15 @@
                                        {:on-success on-success}])
              :on-cancel nil}]]})))
 
+(rf/reg-event-fx :profile.settings/toggle-sepolia-test-network
+ (fn [{:keys [db]}]
+   (let [value      (get-in db [:profile/profile :is-sepolia-enabled?])
+         on-success #(rf/dispatch [:wallet/initialize])]
+     {:fx [[:dispatch
+            [:profile.settings/profile-update :is-sepolia-enabled?
+             (not value)
+             {:on-success on-success}]]]})))
+
 (rf/defn change-preview-privacy-flag
   {:events [:profile.settings/change-preview-privacy]}
   [{:keys [db] :as cofx} private?]
@@ -79,7 +88,6 @@
              :preview-privacy?
              (boolean private?)
              {})))
-
 
 (rf/defn change-profile-pictures-show-to
   {:events [:profile.settings/change-profile-pictures-show-to]}
