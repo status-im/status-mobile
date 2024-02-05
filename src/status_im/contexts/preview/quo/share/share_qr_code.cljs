@@ -140,6 +140,7 @@
          {:state                     state
           :descriptor                typed-descriptor
           :blur?                     true
+          :blur-height               500
           :component-container-style {:padding-horizontal 0}
           :show-blur-background?     true
           :blur-dark-only?           true}
