@@ -65,9 +65,9 @@
   [{:keys [margin-bottom options] :as params}]
   [rn/view {:style (style/buttons-inner-container margin-bottom)}
    [button
-    (merge params
-           {:word         (first options)
-            :margin-right 12})]
+    (assoc params
+           :word         (first options)
+           :margin-right 12)]
    [button (assoc params :word (second options))]])
 
 (defn- view-internal
@@ -98,10 +98,13 @@
            :render-fn               (fn [num index]
                                       [quo/quiz-item
                                        {:state    (cond
+                                                    (and (= @quiz-index index)
+                                                         (pos? @incorrect-count)
+                                                         @show-error?)
+                                                    :error
+
                                                     (= @quiz-index index)
-                                                    (if (and (pos? @incorrect-count) @show-error?)
-                                                      :error
-                                                      :empty)
+                                                    :empty
 
                                                     (> @quiz-index index)
                                                     :success
@@ -116,9 +119,9 @@
            :content-container-style {:padding-horizontal 20}}]
          [rn/view {:style style/buttons-container}
           [buttons-row
-           (merge button-params
-                  {:margin-bottom 12
-                   :options       (subvec options 0 2)})]
+           (assoc button-params
+                  :margin-bottom 12
+                  :options       (subvec options 0 2))]
           [buttons-row (assoc button-params :options (subvec options 2 4))]]]))))
 
 (def view (quo.theme/with-theme view-internal))
