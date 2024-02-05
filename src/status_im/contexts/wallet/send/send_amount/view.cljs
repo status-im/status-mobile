@@ -8,6 +8,7 @@
   []
   [input-amount/view
    {:on-navigate-back (fn []
+                        (rf/dispatch [:wallet/clean-selected-token])
                         (rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount]))}])
 
 (def view (quo.theme/with-theme view-internal))
