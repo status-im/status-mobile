@@ -19,16 +19,16 @@
                             (reset! scan-sync-code/dismiss-animations reset-top-animation-fn))
      :animations-duration constants/onboarding-modal-animation-duration
      :animations-delay    constants/onboarding-modal-animation-delay
-     :top-card            {:on-press            #(debounce/dispatch-and-chill [:open-modal
-                                                                               :sign-in-intro]
-                                                                              2000)
+     :top-card            {:on-press            #(debounce/throttle-and-dispatch [:open-modal
+                                                                                  :sign-in-intro]
+                                                                                 2000)
                            :heading             (i18n/label :t/sign-in)
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
      :bottom-card         {:on-press            (fn []
                                                   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
                                                     (blur-show-fn))
-                                                  (debounce/dispatch-and-chill
+                                                  (debounce/throttle-and-dispatch
                                                    [:open-modal :new-to-status]
                                                    1000))
                            :heading             (i18n/label :t/new-to-status)
@@ -45,7 +45,7 @@
        :style  style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
-      {:on-press #(debounce/dispatch-and-chill [:open-modal :privacy-policy] 1000)
+      {:on-press #(debounce/throttle-and-dispatch [:open-modal :privacy-policy] 1000)
        :size     :paragraph-2
        :weight   :regular
        :style    style/highlighted-text}

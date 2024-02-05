@@ -39,13 +39,15 @@
 
 (defn user
   [{:keys [short-chat-key primary-name secondary-name photo-path online? contact? verified?
-           untrustworthy? on-press on-long-press accessory customization-color theme]}]
+           untrustworthy? on-press on-long-press accessory customization-color theme
+           allow-multiple-presses?]}]
   [rn/touchable-highlight
-   {:style               container-style
-    :underlay-color      (colors/resolve-color customization-color theme 5)
-    :accessibility-label :user-list
-    :on-press            (when on-press on-press)
-    :on-long-press       (when on-long-press on-long-press)}
+   {:style                   container-style
+    :underlay-color          (colors/resolve-color customization-color theme 5)
+    :allow-multiple-presses? allow-multiple-presses?
+    :accessibility-label     :user-list
+    :on-press                (when on-press on-press)
+    :on-long-press           (when on-long-press on-long-press)}
    [:<>
     [user-avatar/user-avatar
      {:full-name       primary-name
