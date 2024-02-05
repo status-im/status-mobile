@@ -14,8 +14,8 @@
     [:props
      [:map {:closed true}
       [:amount {:optional true} [:maybe :string]]
-      [:token {:optional true} [:or keyword? string?]]
-      [:theme {:optional true} :schema.common/theme]]]]
+      [:token {:optional true} [:or :keyword :string]]
+      [:theme :schema.common/theme]]]]
    :any])
 
 (defn- view-internal

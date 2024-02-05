@@ -33,7 +33,7 @@
    [:catn
     [:props
      [:map {:closed false}
-      [:theme [:schema.common/theme]]
+      [:theme :schema.common/theme]
       [:network {:optional true} [:maybe :keyword]]
       [:status {:optional true} [:maybe ?network-bridge-status]]
       [:amount {:optional true} [:maybe :string]]
