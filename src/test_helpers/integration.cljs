@@ -1,16 +1,16 @@
 (ns test-helpers.integration
   (:require-macros [test-helpers.integration])
   (:require
-   [cljs.test :refer [is]]
-   legacy.status-im.events
-   legacy.status-im.subs.root
-   [native-module.core :as native-module]
-   [re-frame.core :as rf]
-   status-im.events
-   status-im.navigation.core
-   status-im.subs.root
-   [tests.integration-test.constants :as constants]
-   [taoensso.timbre :as log]))
+    [cljs.test :refer [is]]
+    legacy.status-im.events
+    legacy.status-im.subs.root
+    [native-module.core :as native-module]
+    [re-frame.core :as rf]
+    status-im.events
+    status-im.navigation.core
+    status-im.subs.root
+    [taoensso.timbre :as log]
+    [tests.integration-test.constants :as constants]))
 
 (defn initialize-app!
   []

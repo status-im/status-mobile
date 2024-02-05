@@ -1,7 +1,7 @@
 (ns tests.contract-test.utils
   (:require
-   [status-im.common.json-rpc.events :as rpc-events]
-   [utils.number]))
+    [status-im.common.json-rpc.events :as rpc-events]
+    [utils.number]))
 
 (defn call-rpc-endpoint
   [{:keys [rpc-endpoint
