@@ -31,9 +31,10 @@
                                          theme))]
 
     [rn/pressable
-     {:style               (style/color-button hex-color selected? idx window-width)
-      :accessibility-label :color-picker-item
-      :on-press            #(on-press color)}
+     {:style                   (style/color-button hex-color selected? idx window-width)
+      :accessibility-label     :color-picker-item
+      :allow-multiple-presses? true
+      :on-press                #(on-press color)}
      (if (and (= :feng-shui color) (not selected?))
        [feng-shui
         (assoc props

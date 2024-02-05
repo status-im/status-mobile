@@ -26,8 +26,9 @@
     [quo/communities-membership-list-item
      {:customization-color customization-color
       :style               {:padding-horizontal 20}
-      :on-press            #(debounce/dispatch-and-chill [:communities/navigate-to-community-overview id]
-                                                         500)
+      :on-press            #(debounce/throttle-and-dispatch [:communities/navigate-to-community-overview
+                                                             id]
+                                                            500)
       :on-long-press       #(rf/dispatch
                              [:show-bottom-sheet
                               {:content       (fn []
