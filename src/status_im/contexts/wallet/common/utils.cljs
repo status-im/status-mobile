@@ -201,12 +201,16 @@
    constants/arbitrum-sepolia-chain-id :arbitrum})
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (def short-name->id
   {:eth  constants/ethereum-mainnet-chain-id
    :opt  constants/optimism-mainnet-chain-id
    :arb1 constants/arbitrum-mainnet-chain-id})
 =======
 (defn get-chain-id
+=======
+(defn- get-chain-id
+>>>>>>> 4e4121ec9 (review)
   [test-net?]
   (if test-net?
     {:eth  constants/goerli-chain-id
