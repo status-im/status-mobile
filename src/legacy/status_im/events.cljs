@@ -8,7 +8,6 @@
     legacy.status-im.chat.models.loading
     legacy.status-im.contact.block
     legacy.status-im.currency.core
-    legacy.status-im.ethereum.subscriptions
     legacy.status-im.fleet.core
     [legacy.status-im.keycard.core :as keycard]
     legacy.status-im.log-level.core

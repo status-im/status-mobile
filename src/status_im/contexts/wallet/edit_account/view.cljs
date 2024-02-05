@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im.config :as config]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
              :as create-or-edit-account]
             [status-im.contexts.wallet.common.sheets.network-preferences.view
@@ -51,7 +52,7 @@
                                               :updated-key :name
                                               :new-value   @edited-account-name}))]
     (fn []
-      (let [{:keys [name emoji address color watch-only?]
+      (let [{:keys [name emoji address color watch-only? default-account?]
              :as   account}         (rf/sub [:wallet/current-viewing-account])
             network-details         (rf/sub [:wallet/network-preference-details])
             test-networks-enabled?  (rf/sub [:profile/test-networks-enabled?])
@@ -62,13 +63,16 @@
             button-disabled?        (or (nil? @edited-account-name)
                                         (= name @edited-account-name))]
         [create-or-edit-account/view
-         {:page-nav-right-side [{:icon-name :i/delete
-                                 :on-press
-                                 (fn []
-                                   (rf/dispatch [:show-bottom-sheet
-                                                 {:content
-                                                  (fn []
-                                                    [remove-account/view])}]))}]
+         {:page-nav-right-side [(when-not default-account?
+                                  {:icon-name :i/delete
+                                   :on-press
+                                   (fn []
+                                     (if (:remove-account config/wallet-feature-flags)
+                                       (rf/dispatch [:show-bottom-sheet
+                                                     {:content
+                                                      (fn []
+                                                        [remove-account/view])}])
+                                       (js/alert "Feature disabled in config file")))})]
           :account-name        account-name
           :account-emoji       emoji
           :account-color       color
