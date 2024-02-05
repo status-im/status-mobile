@@ -33,16 +33,16 @@
 (defn get-network-details
   [chain-id]
   (case chain-id
-    (constants/ethereum-mainnet-chain-id constants/ethereum-goerli-chain-id
-                                         constants/ethereum-sepolia-chain-id)
+    (constants/ethereum-chain-id constants/ethereum-goerli-chain-id
+                                 constants/ethereum-sepolia-chain-id)
     mainnet-network-details
 
-    (constants/arbitrum-mainnet-chain-id constants/arbitrum-goerli-chain-id
-                                         constants/arbitrum-sepolia-chain-id)
+    (constants/arbitrum-chain-id constants/arbitrum-goerli-chain-id
+                                 constants/arbitrum-sepolia-chain-id)
     arbitrum-network-details
 
-    (constants/optimism-mainnet-chain-id constants/optimism-goerli-chain-id
-                                         constants/optimism-sepolia-chain-id)
+    (constants/mainnet-chain-id constants/optimism-goerli-chain-id
+                                constants/optimism-sepolia-chain-id)
     optimism-network-details
 
     nil))
