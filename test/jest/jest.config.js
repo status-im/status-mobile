@@ -4,6 +4,7 @@ const transformIgnorePatterns = () => {
     '@react-native-community',
     '@react-native-community/blur',
     'react-native',
+    'react-native-config',
     'react-native-background-timer',
     'react-native-gifted-charts',
     'react-native-haptic-feedback',

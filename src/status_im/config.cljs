@@ -172,4 +172,5 @@
 
 (def wallet-feature-flags
   {:edit-default-keypair false
-   :bridge-token         false})
+   :bridge-token         false
+   :remove-account       false})
