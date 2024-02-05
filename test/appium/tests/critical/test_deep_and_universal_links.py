@@ -50,12 +50,12 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 "Status mobile QA community max",
             "https://status.app/c/GyoAAORtA48geFrtWr2mu-G5DnFaI0sgqUIIaBFX_DJ_mRbXmzoMnCJnqwI=#zQ3shQhL414wEjDJMEpgTjd14aHCiBDnk6Bq5YTWoi4b7wvnu":
                 "test_comm_enc",
-            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shspPKCZ1VPVQ9dLXGufUGvGphjxVwrcZ6rkZc7S39T4b3":
-                "closed community",
             "https://status.app/c/GyAAAOQbK4dMy1OMI8s2nGvJR3QRqBQqbExff0-cgmN0T-4C#zQ3shqQ4voo845RAkip2JkYTjL4dpiGnRhaNHjVDxPdEZ1xvP":
                 "e2e_open",
-            "https://status.app/c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shgkDFQEnwxji7CvMTokMrShmC2UgxiJ549X5Aw746zQrK":
-                "open community"
+            "https://status.app/c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
+                "Open community for e2e",
+            "https://status.app/c/G0UAAGS9MeHbo_RoNMnOhOKTCo-fDDbgBCCyNNSN7qrzTqIgLem56TyzYYLf36askV7yGcros8muAdgB#zQ3shVWCcsH94vjf7WrFqBXx5MMAui2EPYMBme8ntACNWWVN3":
+                "Closed communtiy for e2e"
         }
         for url, text in closed_community_urls.items():
             self.channel.chat_message_input.clear()
@@ -63,7 +63,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
             if not self.community_view.join_button.is_element_displayed(
                     10) or self.community_view.community_title.text != text:
-                self.errors.append("Closed community was not requested to join by the url %s" % url)
+                self.errors.append("Community '%s' was not requested to join by the url %s" % (text, url))
             if text != "open community":  # the last one
                 self.home.jump_to_card_by_text(self.community_name)
 
@@ -96,18 +96,18 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 "Status mobile QA community max",
             "status.app://c/GyoAAORtA48geFrtWr2mu-G5DnFaI0sgqUIIaBFX_DJ_mRbXmzoMnCJnqwI=#zQ3shQhL414wEjDJMEpgTjd14aHCiBDnk6Bq5YTWoi4b7wvnu":
                 "test_comm_enc",
-            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shspPKCZ1VPVQ9dLXGufUGvGphjxVwrcZ6rkZc7S39T4b3":
-                "closed community",
-            "status.app://c/G0UAAMTyNsn2QZDEG0EXftOl8pOEfwEBOOSA_YTfIk85xmADDgINGmxpUHAXzK36bN0fK42Xf4YD2yjPk1z2pbFwFw==#zQ3shgkDFQEnwxji7CvMTokMrShmC2UgxiJ549X5Aw746zQrK":
-                "open community",
             "status.app://c/GyAAAOQbK4dMy1OMI8s2nGvJR3QRqBQqbExff0-cgmN0T-4C#zQ3shqQ4voo845RAkip2JkYTjL4dpiGnRhaNHjVDxPdEZ1xvP":
-                "e2e_open"
+                "e2e_open",
+            "status.app://c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
+                "Open community for e2e",
+            "status.app://c/G0UAAGS9MeHbo_RoNMnOhOKTCo-fDDbgBCCyNNSN7qrzTqIgLem56TyzYYLf36askV7yGcros8muAdgB#zQ3shVWCcsH94vjf7WrFqBXx5MMAui2EPYMBme8ntACNWWVN3":
+                "Closed communtiy for e2e"
         }
         for link, text in community_links.items():
             self.browser_view.open_url(link)
             if not self.community_view.join_button.is_element_displayed(
                     10) or self.community_view.community_title.text != text:
-                self.errors.append("Closed community was not requested to join by the deep link %s" % link)
+                self.errors.append("Community '%s' was not requested to join by the deep link %s" % (text, link))
             self.home.navigate_back_to_home_view()
             self.home.browser_tab.click()
 
