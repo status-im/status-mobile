@@ -6,6 +6,7 @@
             [quo.components.avatars.user-avatar.view :as user-avatar]
             [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
             [quo.components.buttons.button.view :as button]
+            [quo.components.gradient.gradient-cover.view :as gradient-cover]
             [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
@@ -14,8 +15,7 @@
             [quo.components.tabs.tab.view :as tab]
             [quo.foundations.colors :as colors]
             [quo.theme]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
+            [react-native.core :as rn] 
             [reagent.core :as reagent]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
@@ -149,6 +149,9 @@
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
            profile-picture emoji on-share-press address]
     :as   props}]
+  [:<>
+  [rn/view {:style style/gradient-bg}
+   [gradient-cover/view {:customization-color customization-color :height 463}]]
   [rn/view {:style style/content-container}
    [rn/view {:style style/share-qr-container}
     [rn/view {:style style/share-qr-inner-container}
@@ -184,57 +187,13 @@
       (case address
         :legacy     [wallet-legacy-bottom props]
         :multichain [wallet-multichain-bottom props]
-        nil))]])
+        nil))]]])
 
 (defn- view-internal
-  "Receives the following properties:
-   - type:                  :profile | :wallet | :saved-address | :watched-address
-   - qr-image-uri:          Image source value.
-   - qr-data:               Text to show below the QR code.
-   - on-text-press:         Callback for the `qr-data` text.
-   - on-text-long-press:    Callback for the `qr-data` text.
-   - on-share-press:        Callback for the share button.
-   - customization-color:   Custom color for the QR code component.
-   - unblur-on-android?:    [Android only] disables blur for this component.
-   - full-name:             User full name.
-
-   Depending on the `type`, different properties are accepted:
-   `:profile`
-     - profile-picture:     map ({:source image-source}) or any image source.
-   `:wallet`
-     - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
-     - emoji:               Emoji in a string to show in the QR code.
-     - on-legacy-press:     Callback for the legacy tab.
-     - on-multichain-press: Callback for the multichain tab.
-     - address:             :legacy | :multichain
-   `:saved-address`
-     - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
-     - on-settings-press:   Callback for the settings button.
-     - on-legacy-press:     Callback for the legacy tab.
-     - address:             :legacy | :multichain
-     - on-multichain-press: Callback for the multichain tab.
-   `:watched-address`
-     - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
-     - on-settings-press:   Callback for the settings button.
-     - emoji:               Emoji in a string to show in the QR code.
-     - on-legacy-press:     Callback for the legacy tab.
-     - address:             :legacy | :multichain
-     - on-multichain-press: Callback for the multichain tab.
-
-     WARNING on Android:
-     Sometimes while using a blur layer on top of another on Android, this component looks
-     bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
-     "
-  [{:keys [customization-color] :as props}]
+  [props]
   (reagent/with-let [component-width     (reagent/atom nil)
                      container-component [rn/view {:background-color style/overlay-color}]]
     [quo.theme/provider {:theme :dark}
-     [linear-gradient/linear-gradient
-      {:colors [(colors/resolve-color customization-color :dark 6)
-                (colors/resolve-color customization-color :dark 0)]
-       :start  {:x 0 :y 0}
-       :end    {:x 0 :y 1}
-       :style  style/outer-container}
       [rn/view
        {:accessibility-label :share-qr-code
         :style               style/outer-container
@@ -244,7 +203,7 @@
                [share-qr-code
                 (-> props
                     (assoc :component-width @component-width)
-                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]]))
+                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
 
 (def view
   (quo.theme/with-theme
