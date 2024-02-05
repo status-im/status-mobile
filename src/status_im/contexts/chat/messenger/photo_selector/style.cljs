@@ -78,5 +78,4 @@
    :right    8})
 
 (def photo-limit-toast-container
-  {:top (+ (safe-area/get-top)
-           (if platform/ios? -40 14))})
+  {:top (if platform/ios? 6 16)})

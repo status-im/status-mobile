@@ -156,11 +156,10 @@
 (defn photo-limit-toast
   []
   (rf/dispatch [:toasts/upsert
-                {:id              :random-id
-                 :type            :negative
-                 :container-style style/photo-limit-toast-container
-                 :text            (i18n/label :t/hit-photos-limit
-                                              {:max-photos constants/max-album-photos})}]))
+                {:id   :random-id
+                 :type :negative
+                 :text (i18n/label :t/hit-photos-limit
+                                   {:max-photos constants/max-album-photos})}]))
 
 
 (defn go-to-camera

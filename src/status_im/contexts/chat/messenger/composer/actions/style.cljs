@@ -32,7 +32,3 @@
    :right            -20
    :bottom           0
    :height           constants/composer-default-height})
-
-(def photo-limit-toast-container
-  {:top (+ (safe-area/get-top)
-           (if platform/ios? -40 14))})
