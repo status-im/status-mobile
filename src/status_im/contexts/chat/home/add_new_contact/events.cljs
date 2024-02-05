@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.home.add-new-contact.events
   (:require
     [clojure.string :as string]
+    [re-frame.core :as re-frame]
     [status-im.common.validators :as validators]
     [status-im.contexts.chat.contacts.events :as data-store.contacts]
     status-im.contexts.chat.home.add-new-contact.effects
@@ -89,18 +90,15 @@
 
 (defn dispatcher [event input] (fn [arg] (rf/dispatch [event input arg])))
 
-(rf/defn set-new-identity
-  {:events [:contacts/set-new-identity]}
-  [{:keys [db]} input scanned]
+(defn set-new-identity
+  [{:keys [db]} [input]]
   (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
          :as   contact} (-> {:user-public-key user-public-key
-                             :input           input
-                             :scanned         scanned}
+                             :input           input}
                             init-contact
                             validate-contact)]
     (case state
-
       :empty            {:db (dissoc db :contacts/new-identity)}
       (:valid :invalid) {:db (assoc db :contacts/new-identity contact)}
       :decompress-key   {:db (assoc db :contacts/new-identity contact)
@@ -119,7 +117,7 @@
                           :on-error
                           (dispatcher :contacts/set-new-identity-error input)}})))
 
-
+(re-frame/reg-event-fx :contacts/set-new-identity set-new-identity)
 
 (rf/defn build-contact
   {:events [:contacts/build-contact]}
@@ -169,13 +167,6 @@
   {:events [:contacts/clear-new-identity :contacts/new-chat-focus]}
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
-
-(rf/defn qr-code-scanned
-  {:events [:contacts/qr-code-scanned]}
-  [{:keys [db] :as cofx} scanned]
-  (rf/merge cofx
-            (set-new-identity scanned scanned)
-            (navigation/navigate-back)))
 
 (rf/defn set-new-identity-reconnected
   [{:keys [db]}]

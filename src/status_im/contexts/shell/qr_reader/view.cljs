@@ -38,9 +38,7 @@
       nil
 
       (text-for-path? scanned-text router/user-with-data-path)
-      (do
-        (js/console.log "ALWX" scanned-text address)
-        (debounce/debounce-and-dispatch [:chat.ui/show-profile address] 300))
+      (debounce/debounce-and-dispatch [:contacts/set-new-identity address] 300)
 
       (legacy-eth-address? scanned-text)
       ;; :wallet/scan-address-success
