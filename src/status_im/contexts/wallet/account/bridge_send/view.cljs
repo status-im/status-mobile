@@ -12,6 +12,8 @@
         send-type        (:type send-bridge-data)]
     [rn/view {:style style/bridge-send-wrapper}
      [input-amount/view
-      {:transfer-type send-type}]]))
+      {:transfer-type    send-type
+       :on-navigate-back (fn []
+                           (rf/dispatch [:navigate-back-within-stack :wallet-bridge-send]))}]]))
 
 (def view (quo.theme/with-theme view-internal))

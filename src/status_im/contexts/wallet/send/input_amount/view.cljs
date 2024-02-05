@@ -97,13 +97,11 @@
     default-limit-crypto     :limit-crypto
     default-crypto-decimals  :crypto-decimals
     transfer-type            :transfer-type
+    on-navigate-back         :on-navigate-back
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
         bottom                (safe-area/get-bottom)
-        navigate-back-route   (case transfer-type
-                                :bridge :wallet-bridge-send
-                                :wallet-send-input-amount)
         input-value           (reagent/atom "")
         input-error           (reagent/atom false)
         crypto-currency?      (reagent/atom initial-crypto-currency?)
@@ -135,12 +133,7 @@
                                     (reset! input-value v)
                                     (reset-input-error num-value current-limit-amount input-error)
                                     (reagent/flush))))
-        on-navigate-back      (fn []
-                                (case transfer-type
-                                  :bridge (rf/dispatch [:navigate-back-within-stack navigate-back-route])
-                                  (do
-                                    (rf/dispatch [:wallet/clean-selected-token])
-                                    (rf/dispatch [:navigate-back-within-stack navigate-back-route]))))
+        on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount]
                                 (rf/dispatch [:wallet/clean-suggested-routes])
                                 (when-not (or (empty? @input-value)
