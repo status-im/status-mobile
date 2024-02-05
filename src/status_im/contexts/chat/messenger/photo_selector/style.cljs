@@ -1,8 +1,7 @@
 (ns status-im.contexts.chat.messenger.photo-selector.style
   (:require
     [quo.foundations.colors :as colors]
-    [react-native.platform :as platform]
-    [react-native.safe-area :as safe-area]))
+    [react-native.platform :as platform]))
 
 (defn gradient-container
   [bottom-inset]
