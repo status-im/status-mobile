@@ -212,7 +212,7 @@
         (js-delete response-js "customizationColor")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (rf/dispatch [:profile/edit-accent-colour customization-color]))))))
+                  (rf/dispatch [:profile/save-local-accent-color (keyword customization-color)]))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"
