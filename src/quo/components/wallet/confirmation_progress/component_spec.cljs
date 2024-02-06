@@ -17,62 +17,72 @@
 (h/describe "Confirmation Progress"
   (h/test "component renders when state is sending and network is optimism"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :sending
-                               :network :optimism})] theme)
+                                   (get-test-data {:state   :sending
+                                                   :network :optimism})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is confirmed and network is optimism"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :confirmed
-                               :network :optimism})] theme)
+                                   (get-test-data {:state   :confirmed
+                                                   :network :optimism})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is finalising and network is optimism"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :finalising
-                               :network :optimism})] theme)
+                                   (get-test-data {:state   :finalising
+                                                   :network :optimism})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is finalized and network is optimism"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :finalized
-                               :network :optimism})] theme)
+                                   (get-test-data {:state   :finalized
+                                                   :network :optimism})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is error and network is optimism"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :error
-                               :network :optimism})] theme)
+                                   (get-test-data {:state   :error
+                                                   :network :optimism})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is sending and network is arbitrum"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :sending
-                               :network :arbitrum})] theme)
+                                   (get-test-data {:state   :sending
+                                                   :network :arbitrum})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is confirmed and network is arbitrum"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :confirmed
-                               :network :arbitrum})] theme)
+                                   (get-test-data {:state   :confirmed
+                                                   :network :arbitrum})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is finalising and network is arbitrum"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :finalising
-                               :network :arbitrum})] theme)
+                                   (get-test-data {:state   :finalising
+                                                   :network :arbitrum})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is finalized and network is arbitrum"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :finalized
-                               :network :arbitrum})] theme)
+                                   (get-test-data {:state   :finalized
+                                                   :network :arbitrum})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is error and network is arbitrum"
     (h/render-with-theme-provider [quo/confirmation-propgress
-               (get-test-data {:state   :error
-                               :network :arbitrum})] theme)
+                                   (get-test-data {:state   :error
+                                                   :network :arbitrum})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :progress-box)))
 
   (h/test "component renders when state is pending and network is mainnet"
@@ -88,7 +98,8 @@
     (h/is-truthy (h/get-by-label-text :mainnet-progress-box)))
 
   (h/test "component renders when state is finalising and network is mainnet"
-    (h/render-with-theme-provider [quo/confirmation-propgress (get-test-data {:state :finalising})] theme)
+    (h/render-with-theme-provider [quo/confirmation-propgress (get-test-data {:state :finalising})]
+                                  theme)
     (h/is-truthy (h/get-by-label-text :mainnet-progress-box)))
 
   (h/test "component renders when state is finalized and network is mainnet"

@@ -30,8 +30,9 @@
 
   (h/test "render with state :active and blur? enabled"
     (h/render-with-theme-provider [account/view
-               {:blur? true
-                :state :active}] theme)
+                                   {:blur? true
+                                    :state :active}]
+                                  theme)
     (h/has-style (h/query-by-label-text :container)
                  {:backgroundColor colors/white-opa-10}))
 
@@ -77,8 +78,9 @@
   (h/test "renders options button if type :action"
     (let [on-options-press (h/mock-fn)]
       (h/render-with-theme-provider [account/view
-                 {:type             :action
-                  :on-options-press on-options-press}] theme)
+                                     {:type             :action
+                                      :on-options-press on-options-press}]
+                                    theme)
       (h/is-truthy (h/query-by-label-text :options-button))
       (h/fire-event :on-press (h/get-by-label-text :options-button))
       (h/was-called on-options-press))))
