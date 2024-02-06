@@ -160,10 +160,12 @@ pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
 	cd ios && pod install; cd --
 
+FLEETS_FILE := ./resources/config/fleets.json
 update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
 	curl -s https://fleets.status.im/ \
 		| sed 's/"warning": "/"warning": "DO NOT EDIT! /' \
-		> resources/config/fleets.json
+		> $(FLEETS_FILE)
+	echo >> $(FLEETS_FILE)
 
 $(KEYSTORE_PATH): export TARGET := keytool
 $(KEYSTORE_PATH):
