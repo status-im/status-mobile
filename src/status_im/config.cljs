@@ -173,12 +173,14 @@
 =======
 
 (def wallet-feature-flags
-<<<<<<< HEAD
-  {:edit-default-keypair false
+  {:edit-default-keypair true
    :bridge-token         false
    :remove-account       false})
+<<<<<<< HEAD
 =======
   {:edit-default-keypair true
    :bridge-token         false})
 >>>>>>> d375eaf68 (generate new keypair)
 >>>>>>> be69de4a8 (generate new keypair)
+=======
+>>>>>>> 03773dbca (lint)
