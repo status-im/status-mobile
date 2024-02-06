@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feat/change-accent-colour",
-    "commit-sha1": "3b9d813f4b1d815c11f56abc93c4d6bfe16d4b5b",
-    "src-sha256": "0grzw3fa9b25ph6i64inwbsr9nrgs2jzgz9v3db88q8jwlwn15sz"
+    "version": "v0.174.1",
+    "commit-sha1": "70ee70a19aeafb34e51db1e771b5472fd2568ba9",
+    "src-sha256": "1v2mg106r4dzl0hf36nr0jz5wnszk03nmasqvwsvzsrypkcd01c4"
 }

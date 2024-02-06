@@ -34,7 +34,7 @@
           {:key   :content
            :style style/screen-container}
           [rn/view {:style {:flex 1}}
-           [rn/view {:style style/padding-right}
+           [rn/view {:style style/padding-horizontal}
             [quo/text-combinations {:title (i18n/label :t/accent-colour)}]
             [quo/profile-card
              {:profile-picture     profile-picture
@@ -50,6 +50,7 @@
             {:blur?            true
              :default-selected @unsaved-custom-color
              :on-change        on-change
+             :container-style  style/padding-horizontal
              :window-width     window-width}]]
           [rn/view {:style style/button-wrapper}
            [quo/button

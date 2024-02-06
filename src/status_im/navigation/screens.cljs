@@ -174,15 +174,15 @@
      :component profiles/view}
 
     {:name      :edit-profile
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-profile/view}
 
     {:name      :edit-accent-colour
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-accent-colour/view}
 
     {:name      :edit-name
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-name/view}
 
     {:name      :new-to-status
