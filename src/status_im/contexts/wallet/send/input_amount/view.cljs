@@ -155,6 +155,12 @@
                                       (swap! input-value delete-from-string start)
                                       (move-input-cursor input-selection (dec start)))
                                     (reagent/flush))))
+        on-long-press-delete  (fn [loading-routes?]
+                                (when-not loading-routes?
+                                  (reset! input-value "")
+                                  (reset! input-error false)
+                                  (move-input-cursor input-selection 0)
+                                  (reagent/flush)))
         handle-on-change      (fn [v current-limit-amount]
                                 (when (valid-input? @input-value v)
                                   (let [num-value (or (parse-double v) 0)]
@@ -287,11 +293,12 @@
                               :on-press            on-confirm
                               :customization-color color}}]
          [quo/numbered-keyboard
-          {:container-style (style/keyboard-container bottom)
-           :left-action     :dot
-           :delete-key?     true
-           :on-press        #(handle-keyboard-press % loading-routes? current-limit)
-           :on-delete       #(handle-delete loading-routes? current-limit)}]]))))
+          {:container-style      (style/keyboard-container bottom)
+           :left-action          :dot
+           :delete-key?          true
+           :on-press             #(handle-keyboard-press % loading-routes? current-limit)
+           :on-delete            #(handle-delete loading-routes? current-limit)
+           :on-long-press-delete #(on-long-press-delete loading-routes?)}]]))))
 
 (defn- view-internal
   [props]

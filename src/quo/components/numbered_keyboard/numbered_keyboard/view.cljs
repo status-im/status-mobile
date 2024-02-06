@@ -6,18 +6,19 @@
     [react-native.core :as rn]))
 
 (defn keyboard-item
-  [{:keys [item type disabled? on-press blur? theme]}]
+  [{:keys [item type disabled? on-press on-long-press blur? theme]}]
   [keyboard-key/view
-   {:disabled? disabled?
-    :on-press  on-press
-    :blur?     blur?
-    :theme     theme
-    :type      type}
+   {:disabled?     disabled?
+    :on-press      on-press
+    :on-long-press on-long-press
+    :blur?         blur?
+    :theme         theme
+    :type          type}
    item])
 
 (defn- view-internal
   []
-  (fn [{:keys [disabled? theme blur? left-action delete-key? on-press on-delete
+  (fn [{:keys [disabled? theme blur? left-action delete-key? on-press on-delete on-long-press-delete
                container-style]
         :or   {left-action :none}}]
     [rn/view
@@ -62,12 +63,13 @@
         :theme     theme}]
       (if delete-key?
         [keyboard-item
-         {:item      :i/backspace
-          :type      :key
-          :disabled? disabled?
-          :on-press  on-delete
-          :blur?     blur?
-          :theme     theme}]
+         {:item          :i/backspace
+          :type          :key
+          :disabled?     disabled?
+          :on-press      on-delete
+          :on-long-press on-long-press-delete
+          :blur?         blur?
+          :theme         theme}]
         [keyboard-item])]]))
 
 (def view (quo.theme/with-theme view-internal))
