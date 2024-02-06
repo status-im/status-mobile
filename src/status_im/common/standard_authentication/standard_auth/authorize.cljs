@@ -1,13 +1,14 @@
 (ns status-im.common.standard-authentication.standard-auth.authorize
   (:require
     [react-native.biometrics :as biometrics]
+    [schema.core :as schema]
     [status-im.common.standard-authentication.enter-password.view :as enter-password]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(defn reset-password
+(defn- reset-password
   []
   (rf/dispatch [:set-in [:profile/login :password] nil])
   (rf/dispatch [:set-in [:profile/login :error] ""]))
@@ -65,3 +66,17 @@
                        (password-login {})))))
           (.catch #(password-login {})))
       (password-login {}))))
+
+(schema/=> authorize
+  [:=>
+   [:cat
+    [:map {:closed true}
+     [:biometric-auth? {:optional true} [:maybe boolean?]]
+     [:on-auth-success fn?]
+     [:on-auth-fail {:optional true} [:maybe fn?]]
+     [:on-close {:optional true} [:maybe fn?]]
+     [:auth-button-label {:optional true} [:maybe string?]]
+     [:theme {:optional true} [:maybe :schema.common/theme]]
+     [:blur? {:optional true} [:maybe boolean?]]
+     [:auth-button-icon-left {:optional true} [:maybe keyword?]]]]
+   :any])
