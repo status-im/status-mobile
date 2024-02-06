@@ -38,7 +38,7 @@
   [:map-of
    ?account-address
    [:sequential
-    [:map {:closed true}
+    [:map
      [:type int?]
      [:symbol string?]
      [:decimals int?]
@@ -50,11 +50,9 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:schema
-      [:?
-       [:catn
-        [:community-id string?]
-        [:response ?permissioned-balances-response]]]]]]
-   [:map {:closed true}
-    [:db map?]]])
+      [:catn
+       [:community-id string?]
+       [:response ?permissioned-balances-response]]]]]
+   map?])
 
 (rf/reg-event-fx :communities/get-permissioned-balances-success get-permissioned-balances-success)
