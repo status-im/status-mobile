@@ -30,7 +30,8 @@
                                                  :theme               theme})]
         [rn/pressable
          (when-not disabled?
-           {:on-press #(handle-press on-change internal-checked? actual-checked?)})
+           {:on-press                #(handle-press on-change internal-checked? actual-checked?)
+            :allow-multiple-presses? true})
          [rn/view
           {:style                             outer-styles
            :needs-offscreen-alpha-compositing true

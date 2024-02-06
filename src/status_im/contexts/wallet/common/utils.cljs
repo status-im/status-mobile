@@ -74,11 +74,13 @@
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
-  (let [price          (get-in market-values-per-currency [:usd :price])
-        one-cent-value (if (pos? price) (/ 0.01 price) 0)
-        decimals-count (calc-max-crypto-decimals one-cent-value)]
-    (if (money/equal-to token-units 0)
-      "0"
+  (if (or (nil? token-units)
+          (nil? market-values-per-currency)
+          (money/equal-to token-units 0))
+    "0"
+    (let [price          (-> market-values-per-currency :usd :price)
+          one-cent-value (if (pos? price) (/ 0.01 price) 0)
+          decimals-count (calc-max-crypto-decimals one-cent-value)]
       (if (< token-units one-cent-value)
         (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
         (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
@@ -188,17 +190,30 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id       :ethereum
-   constants/goerli-chain-id        :ethereum
-   constants/optimism-chain-id      :optimism
-   constants/optimism-test-chain-id :optimism
-   constants/arbitrum-chain-id      :arbitrum
-   constants/arbitrum-test-chain-id :arbitrum})
+  {constants/ethereum-chain-id         :ethereum
+   constants/goerli-chain-id           :ethereum
+   constants/ethereum-sepolia-chain-id :ethereum
+   constants/optimism-chain-id         :optimism
+   constants/optimism-testnet-chain-id :optimism
+   constants/optimism-sepolia-chain-id :optimism
+   constants/arbitrum-chain-id         :arbitrum
+   constants/arbitrum-testnet-chain-id :arbitrum
+   constants/arbitrum-sepolia-chain-id :arbitrum})
 
-(def short-name->id
-  {:eth  constants/mainnet-chain-id
-   :opt  constants/optimism-chain-id
-   :arb1 constants/arbitrum-chain-id})
+(defn- get-chain-id
+  [test-net?]
+  (if test-net?
+    {:eth  constants/goerli-chain-id
+     :opt  constants/optimism-testnet-chain-id
+     :arb1 constants/arbitrum-testnet-chain-id}
+    {:eth  constants/ethereum-chain-id
+     :opt  constants/optimism-chain-id
+     :arb1 constants/arbitrum-chain-id}))
+
+(defn short-name->id
+  [short-name test-net?]
+  (let [chain-id-map (get-chain-id test-net?)]
+    (get chain-id-map short-name)))
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]

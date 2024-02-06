@@ -12,12 +12,13 @@
                  accessibility-label]
           :or   {accessibility-label :reaction}}]
       [rn/pressable
-       {:accessibility-label accessibility-label
-        :style               (merge (style/container @pressed?)
-                                    container-style)
-        :on-press            (fn [e]
-                               (swap! pressed? not)
-                               (when on-press
-                                 (on-press e)))}
+       {:accessibility-label     accessibility-label
+        :allow-multiple-presses? true
+        :style                   (merge (style/container @pressed?)
+                                        container-style)
+        :on-press                (fn [e]
+                                   (swap! pressed? not)
+                                   (when on-press
+                                     (on-press e)))}
        [rn/text
         (reactions.resource/system-emojis emoji)]])))

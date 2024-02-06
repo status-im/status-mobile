@@ -139,9 +139,9 @@
            {:type                :secondary
             :accessibility-label :create-group-chat-button
             :disabled            group-name-empty?
-            :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/create-pressed
-                                                                group-name]
-                                                               300)}
+            :on-press            #(debounce/throttle-and-dispatch [:group-chats.ui/create-pressed
+                                                                   group-name]
+                                                                  300)}
            (i18n/label :t/create-group-chat)]}]]])))
 
 (defn searchable-contact-list

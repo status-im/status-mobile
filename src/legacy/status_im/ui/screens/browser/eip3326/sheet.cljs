@@ -63,6 +63,6 @@
        [quo/button
         {:theme    :positive
          :style    {:margin-horizontal 8}
-         :on-press #(debounce/dispatch-and-chill [::network/connect-network-pressed target-network-id]
-                                                 1000)}
+         :on-press #(debounce/throttle-and-dispatch [::network/connect-network-pressed target-network-id]
+                                                    1000)}
         (i18n/label :t/allow)]]]]))
