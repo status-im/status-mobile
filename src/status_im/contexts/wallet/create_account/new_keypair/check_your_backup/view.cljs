@@ -10,11 +10,13 @@
 
 (def secret-words-count 12)
 
+(def questions-count 4)
+
 (defn- random-selection
   []
   (->> (range secret-words-count)
        (shuffle)
-       (take 4)
+       (take questions-count)
        vec))
 
 (defn- random-words-with-string
@@ -22,7 +24,7 @@
   (let [random-words (->> array
                           (remove #(= % given-string))
                           (shuffle)
-                          (take 3))
+                          (take (dec questions-count)))
         result       (conj random-words given-string)]
     (->> result
          (shuffle)
@@ -31,7 +33,7 @@
 (defn- cheat-warning
   []
   (let [{:keys [customization-color]} (rf/sub [:profile/profile])]
-    [rn/view
+    [:<>
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
      [quo/text
       {:style style/cheat-description}
@@ -44,21 +46,10 @@
                                                  (rf/dispatch [:navigate-back {:revealed? true}]))}}]]))
 
 (defn- button
-  [{:keys [word current-word quiz-index incorrect-count show-error? margin-right]}]
+  [{:keys [word margin-right on-press]}]
   [quo/button
    {:type            :grey
-    :on-press        (fn []
-                       (if (= word current-word)
-                         (do
-                           (reset! quiz-index (inc @quiz-index))
-                           (reset! incorrect-count 0)
-                           (reset! show-error? false))
-                         (do
-                           (when (> @incorrect-count 0)
-                             (rf/dispatch [:show-bottom-sheet
-                                           {:content cheat-warning}]))
-                           (reset! incorrect-count (inc @incorrect-count))
-                           (reset! show-error? true))))
+    :on-press        #(on-press word)
     :container-style (style/button margin-right)} word])
 
 (defn- buttons-row
@@ -77,13 +68,21 @@
         incorrect-count (reagent/atom 0)
         show-error?     (reagent/atom false)]
     (fn []
-      (let [current-word-index (get random-indices (min @quiz-index 3))
+      (let [current-word-index (get random-indices (min @quiz-index (dec questions-count)))
             current-word       (get temp/secret-phrase current-word-index)
             options            (random-words-with-string temp/random-words current-word)
-            button-params      {:quiz-index      quiz-index
-                                :current-word    current-word
-                                :incorrect-count incorrect-count
-                                :show-error?     show-error?}]
+            on-button-press    (fn [word]
+                                 (if (= word current-word)
+                                   (do
+                                     (reset! quiz-index (inc @quiz-index))
+                                     (reset! incorrect-count 0)
+                                     (reset! show-error? false))
+                                   (do
+                                     (when (> @incorrect-count 0)
+                                       (rf/dispatch [:show-bottom-sheet
+                                                     {:content cheat-warning}]))
+                                     (reset! incorrect-count (inc @incorrect-count))
+                                     (reset! show-error? true))))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left
@@ -119,9 +118,11 @@
            :content-container-style {:padding-horizontal 20}}]
          [rn/view {:style style/buttons-container}
           [buttons-row
-           (assoc button-params
-                  :margin-bottom 12
-                  :options       (subvec options 0 2))]
-          [buttons-row (assoc button-params :options (subvec options 2 4))]]]))))
+           {:on-press      on-button-press
+            :margin-bottom 12
+            :options       (subvec options 0 2)}]
+          [buttons-row
+           {:on-press on-button-press
+            :options  (subvec options 2 4)}]]]))))
 
 (def view (quo.theme/with-theme view-internal))
