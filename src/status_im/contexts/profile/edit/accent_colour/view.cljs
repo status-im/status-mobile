@@ -34,17 +34,18 @@
           {:key   :content
            :style style/screen-container}
           [rn/view {:style {:flex 1}}
-           [quo/text-combinations {:title (i18n/label :t/accent-colour)}]
-           [quo/profile-card
-            {:profile-picture     profile-picture
-             :name                display-name
-             :card-style          style/profile-card
-             :customization-color @unsaved-custom-color}]
-           [quo/text
-            {:size   :paragraph-2
-             :weight :medium
-             :style  style/color-title}
-            (i18n/label :t/accent-colour)]
+           [rn/view {:style style/padding-right}
+            [quo/text-combinations {:title (i18n/label :t/accent-colour)}]
+            [quo/profile-card
+             {:profile-picture     profile-picture
+              :name                display-name
+              :card-style          style/profile-card
+              :customization-color @unsaved-custom-color}]
+            [quo/text
+             {:size   :paragraph-2
+              :weight :medium
+              :style  style/color-title}
+             (i18n/label :t/accent-colour)]]
            [quo/color-picker
             {:blur?            true
              :default-selected @unsaved-custom-color

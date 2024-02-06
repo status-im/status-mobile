@@ -9,10 +9,13 @@
    :flex               1})
 
 (def screen-container
-  {:flex               1
-   :padding-top        14
-   :padding-horizontal 20
-   :justify-content    :space-between})
+  {:flex            1
+   :padding-top     14
+   :padding-left    20
+   :justify-content :space-between})
+
+(def padding-right
+  {:padding-right 20})
 
 (def color-title
   {:color         colors/white-70-blur
@@ -20,7 +23,8 @@
    :margin-bottom 16})
 
 (def button-wrapper
-  {:margin-vertical 12})
+  {:margin-vertical 12
+   :padding-right   20})
 
 (def profile-card
   {:margin-top    22
