@@ -3,69 +3,66 @@
     [react-native.biometrics :as biometrics]
     [schema.core :as schema]
     [status-im.common.standard-authentication.enter-password.view :as enter-password]
-    [taoensso.timbre :as log]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(defn- reset-password
-  []
-  (rf/dispatch [:set-in [:profile/login :password] nil])
-  (rf/dispatch [:set-in [:profile/login :error] ""]))
+(defn- enter-password-view
+  [{:keys [on-press-biometrics on-auth-success auth-button-label auth-button-icon-left]}]
+  (let [handle-password-success (fn [password]
+                                  (-> password security/hash-masked-password on-auth-success))]
+    [enter-password/view
+     {:on-enter-password   handle-password-success
+      :on-press-biometrics on-press-biometrics
+      :button-icon-left    auth-button-icon-left
+      :button-label        auth-button-label}]))
+
+(defn- show-password-sheet
+  "Shows password input in a bottom sheet.
+
+  If `on-press-biometrics` is passed, biometrics can be triggered from the the bottom sheet."
+  [{:keys [on-close theme blur?] :as args}]
+  (rf/dispatch [:standard-auth/reset-login-password])
+  (rf/dispatch [:show-bottom-sheet
+                {:on-close on-close
+                 :theme    theme
+                 :shell?   blur?
+                 :content  #(enter-password-view args)}]))
+
+(defn- show-biometric
+  "Shows biometrics prompt.
+
+  If failed or canceled, falling back to password sheet. Passing itself to allow the user to
+  trigger the biometric check again from the input."
+  [{:keys [on-close on-auth-success on-auth-fail] :as args}]
+  (let [show-password-sheet-with-biometric (fn []
+                                             (show-password-sheet
+                                              (assoc args
+                                                     :on-press-biometrics
+                                                     #(show-biometric args))))]
+    (rf/dispatch [:standard-auth/biometric-auth
+                  {:on-password-retrieved (fn [password]
+                                            (on-close)
+                                            (on-auth-success password))
+                   :on-fail               (fn [error]
+                                            (when on-auth-fail (on-auth-fail error))
+                                            (show-password-sheet-with-biometric))
+                   :on-cancel             show-password-sheet-with-biometric}])))
 
 (defn authorize
-  [{:keys [biometric-auth? on-auth-success on-auth-fail on-close
-           auth-button-label theme blur? auth-button-icon-left]}]
-  (let [handle-auth-success (fn [biometric?]
-                              (fn [entered-password]
-                                (let [sha3-masked-password (if biometric?
-                                                             entered-password
-                                                             (security/hash-masked-password
-                                                              entered-password))]
-                                  (on-auth-success sha3-masked-password))))
-        password-login      (fn [{:keys [on-press-biometrics]}]
-                              (rf/dispatch [:show-bottom-sheet
-                                            {:on-close on-close
-                                             :theme    theme
-                                             :shell?   blur?
-                                             :content  (fn []
-                                                         [enter-password/view
-                                                          {:on-enter-password   (handle-auth-success
-                                                                                 false)
-                                                           :on-press-biometrics on-press-biometrics
-                                                           :button-icon-left    auth-button-icon-left
-                                                           :button-label        auth-button-label}])}]))
-        ; biometrics-login recursively passes itself as a parameter because if the user
-        ; fails biometric auth they will be shown the password bottom sheet with an option
-        ; to retrigger biometric auth, so they can endlessly repeat this cycle.
-        biometrics-login    (fn [on-press-biometrics]
-                              (rf/dispatch [:dismiss-keyboard])
-                              (rf/dispatch
-                               [:biometric/authenticate
-                                {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
-                                 :on-success     (fn []
-                                                   (on-close)
-                                                   (rf/dispatch [:standard-auth/on-biometric-success
-                                                                 (handle-auth-success true)]))
-                                 :on-fail        (fn [error]
-                                                   (on-close)
-                                                   (log/error
-                                                    (ex-message error)
-                                                    (-> error ex-data (assoc :code (ex-cause error))))
-                                                   (when on-auth-fail (on-auth-fail error))
-                                                   (password-login {:on-press-biometrics
-                                                                    #(on-press-biometrics
-                                                                      on-press-biometrics)}))}]))]
-    (if biometric-auth?
-      (-> (biometrics/get-supported-type)
-          (.then (fn [biometric-type]
-                   (if biometric-type
-                     (biometrics-login biometrics-login)
-                     (do
-                       (reset-password)
-                       (password-login {})))))
-          (.catch #(password-login {})))
-      (password-login {}))))
+  "Prompts either biometric (if specified and available) or password authentication.
+
+  Biometrics can be triggered if available by passing `biometric-auth?`. If biometric
+  authentication fails or is canceled, falling back to password authentication."
+  [{:keys [biometric-auth?]
+    :as   args}]
+  (if biometric-auth?
+    (-> (biometrics/get-supported-type)
+        (.then (fn [biometric-type]
+                 (if biometric-type
+                   (show-biometric args)
+                   (show-password-sheet args))))
+        (.catch #(show-password-sheet args)))
+    (show-password-sheet args)))
 
 (schema/=> authorize
   [:=>
