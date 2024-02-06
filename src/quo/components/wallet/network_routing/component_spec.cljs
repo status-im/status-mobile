@@ -10,8 +10,10 @@
                        :total-amount       500
                        :requesting-data?   false
                        ;; NOTE: <shivekkhurana>
-                       ;; Need to pass `:theme` here otherwise the test will fail when `rerender-fn` is called
-                       ;; This is because theme is a required prop, but without the HOC, theme will be `nil`
+                       ;; Need to pass `:theme` here otherwise,
+                       ;; the test will fail when `rerender-fn` is called
+                       ;; This is because theme is a required prop,
+                       ;; but without the HOC, theme will be `nil`
                        :theme              :light
                        :on-amount-selected (fn [_new-amount _network-idx] nil)}]
     (h/test "Renders Default"
