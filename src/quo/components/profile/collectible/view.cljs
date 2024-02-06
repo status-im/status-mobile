@@ -3,7 +3,6 @@
     [quo.components.markdown.text :as text]
     [quo.components.profile.collectible.style :as style]
     [react-native.core :as rn]
-    [react-native.fast-image :as fast-image]
     [react-native.svg :as svg]))
 
 (defn remaining-tiles
@@ -25,7 +24,12 @@
         {:style {:border-radius (:border-radius image-style)
                  :overflow      :hidden}}
         [svg/svg-uri (assoc image-style :uri (:uri resource))]]
-       [fast-image/fast-image
+       ;; NOTE: using react-native-fast-image here causes a crash on devices when used inside a
+       ;; large flatlist. The library seems to have issues with memory consumption when used with
+       ;; large images/GIFs.
+       ;;
+       ;; https://github.com/DylanVann/react-native-fast-image/issues/195
+       [rn/image
         {:style  image-style
          :source (if (string? resource)
                    {:uri      resource
