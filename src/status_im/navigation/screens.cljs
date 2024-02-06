@@ -31,6 +31,7 @@
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im.contexts.onboarding.welcome.view :as welcome]
+    [status-im.contexts.preview.feature-flags.view :as feature-flags]
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
@@ -406,4 +407,9 @@
      status-im-preview/screens)
 
    (when config/quo-preview-enabled?
-     status-im-preview/main-screens)))
+     status-im-preview/main-screens)
+
+   (when config/quo-preview-enabled?
+     [{:name      :feature-flags
+       :options   {:insets {:top? true}}
+       :component feature-flags/view}])))
