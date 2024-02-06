@@ -41,12 +41,14 @@
 
 (deftest authenticate-biometrics-test
   (testing "passing the right args to authenticate"
-    (let [cofx     {:db {}}
-          args     {:on-success     identity
-                    :on-fail        identity
-                    :prompt-message "test"}
-          expected [:fx [[:biometric-authenticate args]]]]
-      (is (match? expected (sut/authenticate cofx [args]))))))
+    (let [cofx   {:db {}}
+          args   {:on-success     identity
+                  :on-fail        identity
+                  :prompt-message "test"}
+          result (sut/authenticate cofx [args])]
+      (is (= (:prompt-message args) (get-in result [:fx 0 1 :prompt-message])))
+      (is (not (nil? (get-in result [:fx 0 1 :on-success]))))
+      (is (not (nil? (get-in result [:fx 0 1 :on-fail])))))))
 
 (deftest enable-biometrics-test
   (testing "successfully enabling biometrics"
@@ -56,7 +58,7 @@
           expected-db (assoc (:db cofx) :auth-method constants/auth-method-biometric)
           result      (sut/enable-biometrics cofx [password])]
       (is (match? expected-db (:db result)))
-      (is (= password (get-in (:fx result) [0 1 1 :masked-password])))))
+      (is (= password (get-in result [:fx 0 1 1 :masked-password])))))
 
   (testing "throws error if raw password is passed"
     (let [key-uid  "test-uid"
