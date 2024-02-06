@@ -3,6 +3,8 @@
     [quo.components.wallet.keypair.view :as keypair]
     [test-helpers.component :as h]))
 
+(def ^:private theme :light)
+
 (def accounts
   [{:account-props {:customization-color :turquoise
                     :size                32
@@ -23,41 +25,41 @@
 
 (h/describe "Wallet: Keypair"
   (h/test "Default keypair title renders"
-    (h/render [keypair/view
+    (h/render-with-theme-provider [keypair/view
                {:accounts            accounts
                 :customization-color :blue
                 :type                :default-keypair
                 :stored              :on-device
                 :action              :selector
-                :details             default-details}])
+                :details             default-details}] theme)
     (h/is-truthy (h/get-by-label-text :title)))
 
   (h/test "On device renders"
-    (h/render [keypair/view
+    (h/render-with-theme-provider [keypair/view
                {:accounts            accounts
                 :customization-color :blue
                 :type                :other
                 :stored              :on-device
                 :action              :selector
-                :details             other-details}])
+                :details             other-details}] theme)
     (h/is-truthy (h/get-by-label-text :details)))
 
   (h/test "Selector action renders"
-    (h/render [keypair/view
+    (h/render-with-theme-provider [keypair/view
                {:accounts            accounts
                 :customization-color :blue
                 :type                :other
                 :stored              :on-keycard
                 :action              :selector
-                :details             other-details}])
+                :details             other-details}] theme)
     (h/is-truthy (h/get-by-label-text :radio-on)))
 
   (h/test "Options action renders"
-    (h/render [keypair/view
+    (h/render-with-theme-provider [keypair/view
                {:accounts            accounts
                 :customization-color :blue
                 :type                :other
                 :stored              :on-keycard
                 :action              :options
-                :details             other-details}])
+                :details             other-details}] theme)
     (h/is-truthy (h/get-by-label-text :options-button))))

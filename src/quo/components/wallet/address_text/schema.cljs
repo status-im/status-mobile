@@ -4,10 +4,10 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed true}
-      [:address :string]
+     [:map
+      [:address {:optional true} [:maybe :string]]
       [:blur? {:optional true} [:maybe :boolean]]
       [:format {:optional true} [:enum :short :long]]
       [:theme :schema.common/theme]
-      [:networks {:optional true} [:sequential [:map [:name :keyword] [:short-name :string]]]]]]]
+      [:networks {:optional true} [:maybe [:sequential [:map [:name :keyword] [:short-name :string]]]]]]]]
    :any])
