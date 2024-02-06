@@ -56,7 +56,7 @@
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/multi-profile :on-press #(rf/dispatch [:open-modal :sign-in])}
                      {:icon-name :i/qr-code
-                      :on-press  #(debounce/dispatch-and-chill [:open-modal :share-shell] 1000)}
+                      :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
                      {:icon-name :i/share :on-press not-implemented/alert}]}]]
      [rn/flat-list
       {:key                             :list
@@ -74,7 +74,7 @@
        :jump-to
        {:on-press            (fn []
                                (rf/dispatch [:navigate-back])
-                               (debounce/dispatch-and-chill [:shell/navigate-to-jump-to] 500))
+                               (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to] 500))
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
       {:position :absolute

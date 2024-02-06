@@ -2042,7 +2042,7 @@
     "shell-placeholder-title": "Your open tabs will be here",
     "shell-placeholder-subtitle": "Jump between your communities, messages,\nwallet accounts and browser tabs",
     "no-pinned-messages-desc": "This chat doesn’t have any\npinned messages.",
-    "no-pinned-messages-community-desc": "This channel doesn’t have any\npinned messages.",
+    "no-pinned-messages-community-desc": "Just keep pinning, just keep pinning \nWhat do we do? We pin, pin, pin",
     "invite-friends-to-status": "Invite friends to Status",
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
@@ -2483,5 +2483,8 @@
     "not-preferred-by-receiver": "Not preferred by receiver",
     "apply-changes": "Apply changes",
     "receiver-networks-warning": "Changing these settings may result in sending tokens to networks the recipient doesn't use",
-    "no-routes-found-confirmation": "No routes found. Token type may not be supported or you may don't have enough ETH to cover gas."
+    "no-routes-found-confirmation": "No routes found. Token type may not be supported or you may don't have enough ETH to cover gas.",
+    "watched-account-removed": "Watched address has been removed",
+    "account-removed": "Account has been removed",
+    "share-address-title": "{{address}} address"
 }
