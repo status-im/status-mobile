@@ -267,25 +267,24 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation "androidx.core:core-splashscreen:1.0.0"
-
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-      } else {
-      implementation jscFlavor
-    }
+    implementation("androidx.core:core-splashscreen:1.0.0")
+    // we don't use hermes for debug but we need its pom file for release builds
+    // https://github.com/status-im/status-mobile/pull/18675
+    implementation("com.facebook.react:hermes-android")
+    // FIXME: implementing both hermes & JSC increases bundle size by ~ 2MB
+    implementation(jscFlavor)
 
     // react-native-screens
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
-    implementation 'androidx.multidex:multidex:2.0.1' // required by status-mobile/android/app/src/main/java/im/status/ethereum/MainApplication.java
+    implementation("androidx.appcompat:appcompat:1.1.0-rc01")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02")
+    implementation("androidx.multidex:multidex:2.0.1") // required by status-mobile/android/app/src/main/java/im/status/ethereum/MainApplication.java
     implementation project(':react-native-blur')
     implementation project(':react-native-status')
     implementation project(':react-native-status-keycard')
-    implementation 'com.github.status-im:function:0.0.1'
-    implementation 'com.facebook.fresco:fresco:2.5.0'
-    implementation 'com.facebook.fresco:animated-gif:2.5.0'
-    implementation "com.squareup.okhttp3:okhttp-tls:4.9.2"
+    implementation("com.github.status-im:function:0.0.1")
+    implementation("com.facebook.fresco:fresco:2.5.0")
+    implementation("com.facebook.fresco:animated-gif:2.5.0")
+    implementation("com.squareup.okhttp3:okhttp-tls:4.9.2")
     implementation("com.google.prefab:cli:2.0.0")
 }
 
