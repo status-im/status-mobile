@@ -62,15 +62,16 @@
 
 (rf/reg-fx
  :biometric/authenticate
- (fn [{:keys [on-success on-fail prompt-message]}]
+ (fn [{:keys [on-success on-fail on-cancel prompt-message]}]
    (-> (biometrics/authenticate
         {:prompt-message          (or prompt-message (i18n/label :t/biometric-auth-reason-login))
          :fallback-prompt-message (i18n/label
                                    :t/biometric-auth-login-ios-fallback-label)
          :cancel-button-text      (i18n/label :t/cancel)})
        (.then (fn [not-canceled?]
-                (when (and on-success not-canceled?)
-                  (on-success))))
+                (if not-canceled?
+                  (when on-success (on-success))
+                  (when on-cancel (on-cancel)))))
        (.catch (fn [err]
                  (when on-fail
                    (on-fail err)))))))
@@ -88,6 +89,7 @@
       [:map {:closed true}
        [:on-success {:optional true} fn?]
        [:on-fail {:optional true} fn?]
+       [:on-cancel {:optional true} fn?]
        [:prompt-message {:optional true} :string]]]]]
    :schema.re-frame/event-fx])
 
