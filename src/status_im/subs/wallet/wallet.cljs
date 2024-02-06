@@ -30,8 +30,7 @@
 
 (rf/reg-sub
  :wallet/scanned-address
- :<- [:wallet]
- :<- [:ui]
+ :<- [:wallet/ui]
  :-> :scanned-address)
 
 (rf/reg-sub
