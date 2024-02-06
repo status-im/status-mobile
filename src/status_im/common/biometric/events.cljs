@@ -98,7 +98,6 @@
 (defn enable-biometrics
   [{:keys [db]} [password]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    (println "inside: " password)
     {:db (assoc db :auth-method constants/auth-method-biometric)
      :fx [[:dispatch
            [:keychain/save-password-and-auth-method
