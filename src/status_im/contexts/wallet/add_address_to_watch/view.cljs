@@ -59,7 +59,7 @@
        :button              (when empty-input?
                               {:on-press paste-on-input
                                :text     (i18n/label :t/paste)})
-       :value               @input-value}]
+       :value               (or scanned-address @input-value)}]
      [quo/button
       {:type            :outline
        :on-press        (fn []

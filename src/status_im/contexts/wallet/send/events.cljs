@@ -62,10 +62,11 @@
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
+         test-net?           (get-in db [:profile/profile :test-networks-enabled?])
          prefix-seq          (string/split prefix #":")
          selected-networks   (->> prefix-seq
                                   (remove string/blank?)
-                                  (mapv #(utils/short-name->id (keyword %))))]
+                                  (mapv #(utils/short-name->id (keyword %) test-net?)))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)

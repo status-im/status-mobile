@@ -84,7 +84,7 @@
                                        (zero? (count selected)))
              :accessibility-label :share-community-link
              :type                :secondary
-             :on-press            #(debounce/dispatch-and-chill
+             :on-press            #(debounce/throttle-and-dispatch
                                     [(if can-invite?
                                        ::communities/invite-people-confirmation-pressed
                                        ::communities/share-community-confirmation-pressed) @user-pk

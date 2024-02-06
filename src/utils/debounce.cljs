@@ -22,15 +22,15 @@
     (clear event-key)
     (swap! timeout assoc event-key (js/setTimeout #(re-frame/dispatch event) duration-ms))))
 
-(def chill (atom {}))
+(def throttle (atom {}))
 
-(defn dispatch-and-chill
+(defn throttle-and-dispatch
   "Dispatches event and ignores subsequent calls for the duration of `duration-ms`."
   [event duration-ms]
   (let [event-key (first event)]
-    (when-not (get @chill event-key)
-      (swap! chill assoc event-key true)
-      (js/setTimeout #(swap! chill assoc event-key false) duration-ms)
+    (when-not (get @throttle event-key)
+      (swap! throttle assoc event-key true)
+      (js/setTimeout #(swap! throttle dissoc event-key) duration-ms)
       (re-frame/dispatch event))))
 
 (defn debounce

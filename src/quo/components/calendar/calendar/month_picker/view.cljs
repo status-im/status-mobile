@@ -15,11 +15,12 @@
     [rn/view
      {:style style/container}
      [button/button
-      {:icon                true
-       :type                :outline
-       :accessibility-label :previous-month-button
-       :size                24
-       :on-press            #(on-change (utils/previous-month year month))}
+      {:icon                    true
+       :type                    :outline
+       :accessibility-label     :previous-month-button
+       :allow-multiple-presses? true
+       :size                    24
+       :on-press                #(on-change (utils/previous-month year month))}
       :i/chevron-left]
      [text/text
       {:weight :semi-bold
@@ -27,11 +28,12 @@
        :style  (style/text theme)}
       (utils/format-month-year year month)]
      [button/button
-      {:icon                true
-       :accessibility-label :next-month-button
-       :size                24
-       :type                :outline
-       :on-press            #(on-change (utils/next-month year month))}
+      {:icon                    true
+       :accessibility-label     :next-month-button
+       :allow-multiple-presses? true
+       :size                    24
+       :type                    :outline
+       :on-press                #(on-change (utils/next-month year month))}
       :i/chevron-right]]))
 
 (def view (theme/with-theme view-internal))
