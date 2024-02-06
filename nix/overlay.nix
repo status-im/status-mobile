@@ -97,4 +97,5 @@ in {
   patchMavenSources = callPackage ./pkgs/patch-maven-srcs { };
   goMavenResolver = callPackage ./pkgs/go-maven-resolver { };
   xcbeautify = callPackage ./pkgs/xcbeautify { };
+  idb-companion = callPackage ./pkgs/idb-companion { };
 }
