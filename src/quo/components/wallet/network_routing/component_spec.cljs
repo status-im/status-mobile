@@ -11,11 +11,11 @@
                        :requesting-data?   false
                        :on-amount-selected (fn [_new-amount _network-idx] nil)}]
     (h/test "Renders Default"
-      (h/render [network-routing/view default-props])
+      (h/render-with-theme-provider [network-routing/view default-props])
       (h/is-truthy (h/get-by-label-text :network-routing)))
 
     (h/test "Renders bars inside"
-      (let [component   (h/render [network-routing/view default-props])
+      (let [component   (h/render-with-theme-provider [network-routing/view default-props])
             rerender-fn #((oops/oget component "rerender") (reagent/as-element %))
             component   (h/get-by-label-text :network-routing)]
         ;; Fires on-layout callback since the total width is required
