@@ -96,8 +96,9 @@
   [{default-on-confirm       :on-confirm
     default-limit-crypto     :limit-crypto
     default-crypto-decimals  :crypto-decimals
-    transfer-type            :transfer-type
     on-navigate-back         :on-navigate-back
+    button-one-label         :button-one-label
+    button-one-props         :button-one-props
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
@@ -223,15 +224,10 @@
            :fetch-routes #(fetch-routes % current-limit)}]
          [quo/bottom-actions
           {:actions             :1-action
-           :button-one-label    (case transfer-type
-                                  :bridge (i18n/label :t/confirm-bridge)
-                                  (i18n/label :t/confirm))
-           :button-one-props    {:disabled? confirm-disabled?
-                                 :on-press on-confirm
-                                 :icon-left
-                                 (case transfer-type
-                                   :bridge :i/bridge
-                                   nil)}
+           :button-one-label    button-one-label
+           :button-one-props    (merge button-one-props
+                                       {:disabled? confirm-disabled?
+                                        :on-press  on-confirm})
            :customization-color color}]
          [quo/numbered-keyboard
           {:container-style (style/keyboard-container bottom)
