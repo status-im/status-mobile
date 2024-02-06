@@ -148,12 +148,14 @@
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
   [{:keys [db]} address]
-  {:db (assoc db :wallet/scanned-address address)})
+  {:db (assoc-in db [:wallet :ui :scanned-address] address)})
 
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
+  {:db (-> db
+           (update-in [:wallet :ui] dissoc :scanned-address)
+           (dissoc :wallet/send-address))})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
