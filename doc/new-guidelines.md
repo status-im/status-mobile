@@ -83,19 +83,19 @@ Instead, use `(or value some-default-value)` in a `let` expression or as a param
 ```clojure
 ;; bad (unreliable)
 (defn- view-internal
-  [{:keys [auto-focus
+  [{:keys [auto-focus?
            init-value
            return-key-type]
-    :or   {auto-focus      false
+    :or   {auto-focus?     false
            init-value      0
            return-key-type :done}}])
 
 ;; good
 (defn- view-internal
-  [{:keys [auto-focus
+  [{:keys [auto-focus?
            init-value
            return-key-type]}])
-    (let [auto-focus (or auto-focus? false)
+    (let [auto-focus? (or auto-focus? false)
           init-value (or init-value 0)
           return-key-type (or return-key-type :done)])
 ```
