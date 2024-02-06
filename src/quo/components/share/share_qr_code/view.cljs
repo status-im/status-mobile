@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
+            [quo.components.avatars.user-avatar.view :as user-avatar]
             [quo.components.buttons.button.view :as button]
             [quo.components.gradient.gradient-cover.view :as gradient-cover]
             [quo.components.markdown.text :as text]
@@ -133,10 +134,19 @@
      {:style style/share-qr-container}
      [rn/view
       {:style style/share-qr-inner-container}
-      [account-avatar/view
-       {:customization-color customization-color
-        :emoji               emoji
-        :size                32}]
+      (if (= :profile share-qr-type)
+        [user-avatar/user-avatar
+         {:profile-picture      profile-picture
+          :customization-color customization-color
+          :full-name           full-name
+          :size                :small
+          :status-indicator?   false
+          :online?             false
+          :ring?               true}]
+        [account-avatar/view
+         {:customization-color customization-color
+          :emoji               emoji
+          :size                32}])
       [text/text
        {:size   :heading-2
         :weight :semi-bold
