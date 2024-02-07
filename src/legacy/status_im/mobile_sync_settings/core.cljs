@@ -5,7 +5,6 @@
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.mobile-sync :as utils]
-    [legacy.status-im.wallet.core :as wallet]
     [status-im.contexts.chat.home.add-new-contact.events :as add-new-contact]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
@@ -35,7 +34,6 @@
        (and logged-in? initialized?)
        [(mailserver/process-next-messages-request)
         (bottom-sheet/hide-bottom-sheet-old)
-        (wallet/restart-wallet-service nil)
         #(add-new-contact/set-new-identity-reconnected %)]
 
        logged-in?
@@ -67,8 +65,7 @@
          (boolean remember-choice?)
          {})
         (when (and cellular? sync?)
-          (mailserver/process-next-messages-request))
-        (wallet/restart-wallet-service nil))))))
+          (mailserver/process-next-messages-request)))))))
 
 (rf/defn mobile-network-continue-syncing
   {:events [:mobile-network/continue-syncing]}

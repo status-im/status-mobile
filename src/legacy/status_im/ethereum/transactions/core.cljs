@@ -4,7 +4,6 @@
     [legacy.status-im.ethereum.decode :as decode]
     [legacy.status-im.ethereum.encode :as encode]
     [legacy.status-im.utils.mobile-sync :as utils.mobile-sync]
-    [legacy.status-im.wallet.core :as wallet]
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
@@ -256,23 +255,12 @@
   (let [checksum        (eip55/address->checksum address)
         max-known-block (get-max-block-with-transfers db address)
         effects         (cond-> [(when (seq transfers)
-                                   (set-lowest-fetched-block checksum transfers))
-                                 (wallet/set-max-block-with-transfers checksum transfers)]
+                                   (set-lowest-fetched-block checksum transfers))]
 
                           (seq transfers)
                           (concat
                            []
                            (mapv add-transfer transfers))
-
-                          (and max-known-block
-                               (some #(> (:block %) max-known-block) transfers))
-                          (conj (wallet/update-balances
-                                 [address]
-                                 (zero? max-known-block)))
-
-                          (and (zero? max-known-block)
-                               (empty? transfers))
-                          (conj (wallet/set-zero-balances {:address address}))
 
                           (< (count transfers) limit)
                           (conj (tx-history-end-reached checksum)))]
@@ -282,8 +270,7 @@
   {:events [::new-transfers]}
   [cofx transfers params]
   (rf/merge cofx
-            (handle-new-transfer transfers params)
-            (wallet/stop-fetching-on-empty-tx-history transfers)))
+            (handle-new-transfer transfers params)))
 
 (rf/defn tx-fetching-failed
   {:events [::tx-fetching-failed]}

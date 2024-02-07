@@ -9,8 +9,6 @@
     [legacy.status-im.ui.screens.reset-password.views :as reset-password.views]
     [legacy.status-im.ui.screens.signing.sheets :as signing-sheets]
     [legacy.status-im.ui.screens.signing.views :as signing]
-    [legacy.status-im.ui.screens.wallet.request.views :as request]
-    [legacy.status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [reagent.core :as reagent]))
@@ -130,12 +128,6 @@
                 (cond
                   (vector? view)
                   view
-
-                  (= :signing-phrase view)
-                  [signing-phrase/signing-phrase]
-
-                  (= :share-account view)
-                  [request/share-address]
 
                   (= :share-chat-key view)
                   [profile.user/share-chat-key]

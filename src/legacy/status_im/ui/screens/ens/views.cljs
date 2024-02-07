@@ -16,7 +16,6 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.chat.utils :as chat.utils]
     [legacy.status-im.ui.screens.profile.components.views :as profile.components]
-    [legacy.status-im.ui.screens.wallet.send.sheets :as sheets]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -292,9 +291,7 @@
       :title    (:name account)
       :subtitle (utils/get-shortened-checksum-address (:address account))
       :chevron  true
-      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
-                                     {:content (fn [] [sheets/accounts-list :from
-                                                       ::ens/change-address])}])}]))
+      :on-press #(js/alert "funcitonality no longer supported")}]))
 
 (defn- registration
   [checked contract address public-key]

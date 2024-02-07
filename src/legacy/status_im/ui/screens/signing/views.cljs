@@ -2,7 +2,6 @@
   (:require-macros [legacy.status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
-    [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.signing.eip1559 :as eip1559]
     [legacy.status-im.ui.components.bottom-panel.views :as bottom-panel]
@@ -15,10 +14,8 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.signing.sheets :as sheets]
     [legacy.status-im.ui.screens.signing.styles :as styles]
-    [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.utils :as utils]
-    [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.contexts.profile.utils :as profile.utils]
@@ -57,11 +54,7 @@
                      :style {:margin-right 8}}
                     display-symbol]
                    (if icon
-                     [wallet.components/token-icon
-                      (assoc icon
-                             :style       {:background-color colors/gray-lighter
-                                           :border-radius    16}
-                             :image-style {:width 24 :height 24})]
+                     [react/view]
                      [chat-icon/custom-icon-view-list (:name token) color 32])]}]
      [separator]]))
 
@@ -328,7 +321,6 @@
   [{:keys [from contact amount token cancel?] :as tx}]
   (views/letsubs [fee [:signing/fee]
                   sign [:signing/sign]
-                  chain [:current-network]
                   {:keys [amount-error gas-error gas-error-state insufficient-balalce?]}
                   [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]
@@ -337,8 +329,8 @@
                   mainnet? [:mainnet?]
                   prices-loading? [:prices-loading?]
                   management-enabled? [:wallet-legacy/transactions-management-enabled?]]
-    (let [display-symbol     (wallet.utils/display-symbol token)
-          fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
+    (let [display-symbol     nil
+          fee-display-symbol nil]
       [react/view (styles/sheet)
        [header sign tx display-symbol fee fee-display-symbol]
        [separator]

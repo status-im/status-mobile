@@ -49,19 +49,6 @@
     [legacy.status-im.ui.screens.sync-settings.views :as sync-settings]
     [legacy.status-im.ui.screens.wakuv2-settings.edit-node.views :as edit-wakuv2-node]
     [legacy.status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
-    [legacy.status-im.ui.screens.wallet.account-settings.views :as account-settings]
-    [legacy.status-im.ui.screens.wallet.account.views :as wallet.account]
-    [legacy.status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
-    [legacy.status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-    [legacy.status-im.ui.screens.wallet.add-new.views :as add-account]
-    [legacy.status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
-    [legacy.status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
-    [legacy.status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
-    [legacy.status-im.ui.screens.wallet.recipient.views :as recipient]
-    [legacy.status-im.ui.screens.wallet.send.views :as wallet.send]
-    [legacy.status-im.ui.screens.wallet.settings.views :as wallet-settings]
-    [legacy.status-im.ui.screens.wallet.swap.views :as wallet.swap]
-    [legacy.status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
     [status-im.contexts.chat.group-details.view :as group-details]
     [utils.i18n :as i18n]))
 
@@ -106,85 +93,10 @@
     ;;TODO custom subtitle
     :component group-chat/new-group}
 
-   ;;WALLET
-
-   {:name      :wallet-legacy
-    :on-focus  [:wallet-legacy/tab-opened]
-    ;;TODO wallet redesign
-    ;;:options   {:statusBar {:backgroundColor quo.colors/neutral-5}}
-    :component wallet.accounts/accounts-overview-old}
-   {:name      :wallet-account
-    ;;TODO dynamic titleaccounts-overview
-    :options   {:insets {:top? true}}
-    :component wallet.account/account}
-   {:name      :add-new-account
-    ;;TODO dynamic title
-    :options   {:insets {:top? true :bottom? true}}
-    :component add-account/add-account-view}
-   {:name      :add-new-account-pin
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component add-account/pin}
-   {:name      :account-settings
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component account-settings/account-settings}
-   {:name      :wallet-transaction-details
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component wallet-transactions/transaction-details}
-   {:name      :wallet-settings-assets
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component wallet-settings/manage-assets}
-   {:name      :wallet-add-custom-token
-    :on-focus  [:wallet-legacy/wallet-add-custom-token]
-    :options   {:topBar {:title {:text (i18n/label :t/add-custom-token)}}
-                :insets {:top? true}}
-    :component custom-tokens/add-custom-token}
-   {:name      :wallet-custom-token-details
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component custom-tokens/custom-token-details}
    {:name      :currency-settings
     :options   {:topBar {:title {:text (i18n/label :t/main-currency)}}
                 :insets {:top? true}}
     :component currency-settings/currency-settings}
-
-   {:name      :manage-accounts
-    :options   {:topBar {:title {:text (i18n/label :t/wallet-manage-accounts)}}
-                :insets {:top? true}}
-    :component accounts-manage/manage}
-
-   {:name      :token-swap
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component wallet.swap/swap}
-
-   {:name      :token-swap-advanced-nonce
-    :options   {:topBar {:title {:text (i18n/label :t/nonce)}}
-                :insets {:top? true}}
-    :component wallet.swap/nonce-modal}
-
-   {:name      :token-swap-advanced-approve-token
-    :options   {:topBar {:title {:text (i18n/label :t/approve-token)}}
-                :insets {:top? true}}
-    :component wallet.swap/approve-token-modal}
-
-   {:name      :token-swap-advanced-transaction-fee
-    :options   {:topBar {:title {:text (i18n/label :t/transaction-fee)}}
-                :insets {:top? true}}
-    :component wallet.swap/transaction-fee-modal}
-
-   {:name      :token-swap-advanced-swap-details
-    :options   {:topBar {:title {:text (i18n/label :t/swap-details)}}
-                :insets {:top? true}}
-    :component wallet.swap/swap-details-modal}
-
-   {:name      :swap-asset-selector
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component wallet.swap/asset-selector}
 
    ;;PROFILE
 
@@ -404,20 +316,6 @@
                          :top?    true}}
     :component communities.invite/legacy-invite}
 
-   ;[Wallet] Recipient
-   {:name      :recipient
-    ;;TODO accessories
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component recipient/recipient}
-
-   ;[Wallet] New favourite
-   {:name      :new-favourite
-    :options   {:topBar {:title {:text (i18n/label :t/new-favourite)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component recipient/new-favourite}
-
    ;QR Scanner
    {:name      :qr-scanner
     ;;TODO custom topbar
@@ -437,44 +335,6 @@
                 :insets             {:bottom? true
                                      :top?    true}}
     :component notifications-settings/notifications-settings}
-
-   ;[Wallet] Prepare Transaction
-   {:name        :prepare-send-transaction
-    :on-dissmiss [:wallet-legacy/cancel-transaction-command]
-    :options     {:topBar             {:title {:text (i18n/label :t/send-transaction)}}
-                  :swipeToDismiss     false
-                  :hardwareBackButton {:dismissModalOnPress false}
-                  :insets             {:bottom? true
-                                       :top?    true}}
-    :component   wallet.send/prepare-send-transaction}
-
-   ;[Wallet] Request Transaction
-   {:name        :request-transaction
-    :on-dissmiss [:wallet-legacy/cancel-transaction-command]
-    :options     {:topBar             {:title {:text (i18n/label :t/request-transaction)}}
-                  :swipeToDismiss     false
-                  :hardwareBackButton {:dismissModalOnPress false}
-                  :insets             {:bottom? true
-                                       :top?    true}}
-    :component   wallet.send/request-transaction}
-
-   ;[Wallet] Buy crypto
-   {:name      :buy-crypto
-    :insets    {:bottom? true}
-    :component wallet.buy-crypto/container}
-
-   ;[Wallet] Buy crypto website
-   {:name      :buy-crypto-website
-    ;;TODO subtitle
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component wallet.buy-crypto/website}
-
-   {:name      :nft-details
-    ;;TODO dynamic title
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component wallet.collectibles/nft-details-modal}
 
    ;[Browser] New bookmark
    {:name      :new-bookmark

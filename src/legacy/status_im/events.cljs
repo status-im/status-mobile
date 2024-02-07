@@ -32,10 +32,6 @@
     legacy.status-im.visibility-status-popover.core
     legacy.status-im.visibility-status-updates.core
     legacy.status-im.waku.core
-    legacy.status-im.wallet.accounts.core
-    legacy.status-im.wallet.choose-recipient.core
-    [legacy.status-im.wallet.core :as wallet]
-    legacy.status-im.wallet.custom-tokens.core
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
@@ -141,7 +137,6 @@
     (rf/merge cofx
               {:db (dissoc db :app-in-background-since)}
               (mailserver/process-next-messages-request)
-              (wallet/restart-wallet-service-after-background app-in-background-since)
               (when-not new-account?
                 (universal-links/process-stored-event))
               #(when-let [chat-id (:current-chat-id db)]
@@ -198,10 +193,8 @@
                :reset-card                    (keycard/reset-card-screen-did-load %)
                :enter-pin-settings            (keycard/enter-pin-screen-did-load %)
                :keycard-login-pin             (keycard/login-pin-screen-did-load %)
-               :add-new-account-pin           (keycard/enter-pin-screen-did-load %)
                :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
                :multiaccounts                 (keycard/multiaccounts-screen-did-load %)
-               :wallet-legacy                 (wallet/wallet-will-focus %)
                nil)))
 
 ;;TODO :replace by named events

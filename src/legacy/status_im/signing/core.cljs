@@ -10,9 +10,6 @@
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.hex :as utils.hex]
     [legacy.status-im.utils.utils :as utils]
-    [legacy.status-im.wallet.core :as wallet]
-    [legacy.status-im.wallet.prices :as prices]
-    [legacy.status-im.wallet.utils :as wallet.utils]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
@@ -83,7 +80,7 @@
   [{{:signing/keys [sign tx] :as db} :db}]
   (let [{{:keys [data typed? from v4]} :message} tx
         {:keys [in-progress? password]}          sign
-        from                                     (or from (wallet.utils/default-address db))
+        from                                     from
         hashed-password                          (native-module/sha3 (security/safe-unmask-data
                                                                       password))]
     (when-not in-progress?
@@ -335,7 +332,7 @@
         :dismiss-keyboard   nil}
        #(when-not wallet-set-up-passed?
           {:dispatch-later [{:dispatch [:show-popover {:view :signing-phrase}] :ms 200}]})
-       (prices/update-prices)
+
        #(when-not gas
           {:db                           (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
            :signing/update-estimated-gas {:obj           (-> tx-obj
@@ -395,7 +392,6 @@
                :signing/show-transaction-result nil}
               (prepare-unconfirmed-transaction result tx-obj symbol amount)
               (check-queue)
-              (wallet/watch-tx (get from :address) result)
               #(when on-result
                  {:dispatch (conj on-result result)}))))
 
@@ -408,7 +404,6 @@
     (rf/merge
      cofx
      {:db (dissoc db :signing/tx :signing/sign)}
-     (wallet/watch-tx (get from :address) transaction-hash)
      (if (keycard.common/keycard-multiaccount? db)
        (signing.keycard/hash-message
         {:data data
@@ -511,8 +506,8 @@
                  {:dispatch (conj on-error "transaction was cancelled by user")}))))
 
 (defn normalize-tx-obj
-  [db tx]
-  (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (wallet.utils/default-address db)))))
+  [_db tx]
+  (update-in tx [:tx-obj :from] #(eip55/address->checksum %)))
 
 (rf/defn sign
   "Signing transaction or message, shows signing sheet

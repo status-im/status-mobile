@@ -1,7 +1,6 @@
 (ns legacy.status-im.stickers.core
   (:require
     [legacy.status-im.utils.utils :as utils]
-    [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [utils.ethereum.chain :as chain]
@@ -38,15 +37,6 @@
                    {:method     "stickers_recent"
                     :params     []
                     :on-success #(re-frame/dispatch [:stickers/stickers-recent-success %])}]})
-
-(rf/defn buy-pack
-  {:events [:stickers/buy-pack]}
-  [{db :db} pack-id]
-  {:json-rpc/call [{:method     "stickers_buyPrepareTx"
-                    :params     [(chain/chain-id db) (wallet.utils/default-address db) (int pack-id)]
-                    :on-success #(re-frame/dispatch [:signing.ui/sign
-                                                     {:tx-obj    %
-                                                      :on-result [:stickers/pending-pack pack-id]}])}]})
 
 (rf/defn pending-pack
   {:events [:stickers/pending-pack]}

@@ -401,15 +401,12 @@
    (merge
     args
     {:on-success
-     (fn [response]
+     (fn [_response]
        (log/debug "[keycard response succ] export-key")
-       (re-frame/dispatch [:keycard.callback/on-export-key-success
-                           response]))
+       (js/alert "feature no longer supported"))
      :on-failure
-     (fn [response]
-       (log/debug "[keycard response fail] export-key")
-       (re-frame/dispatch [:keycard.callback/on-export-key-error
-                           (error-object->map response)]))})))
+     (fn [_response]
+       (log/debug "[keycard response fail] export-key"))})))
 
 (defn unpair-and-delete
   [args]

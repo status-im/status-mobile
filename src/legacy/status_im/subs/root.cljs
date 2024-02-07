@@ -7,10 +7,6 @@
     legacy.status-im.subs.mailservers
     legacy.status-im.subs.networks
     legacy.status-im.subs.stickers
-    legacy.status-im.subs.wallet.search
-    legacy.status-im.subs.wallet.signing
-    legacy.status-im.subs.wallet.transactions
-    legacy.status-im.subs.wallet.wallet
     [re-frame.core :as re-frame]))
 
 (defn reg-root-key-sub

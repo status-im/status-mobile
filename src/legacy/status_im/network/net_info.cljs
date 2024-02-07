@@ -2,7 +2,6 @@
   (:require
     ["@react-native-community/netinfo" :default net-info]
     [legacy.status-im.mobile-sync-settings.core :as mobile-network]
-    [legacy.status-im.wallet.core :as wallet]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [taoensso.timbre :as log]
@@ -14,9 +13,7 @@
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (when (and is-connected?
                        (or (not= (count (get-in db [:wallet-legacy :accounts]))
-                                 (count (get db :profile/wallet-accounts)))
-                           (wallet/has-empty-balances? db)))
-              (wallet/update-balances nil nil))))
+                                 (count (get db :profile/wallet-accounts))))))))
 
 (rf/defn change-network-type
   [{:keys [db] :as cofx} old-network-type network-type expensive?]
