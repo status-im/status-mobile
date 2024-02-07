@@ -106,7 +106,7 @@ The convention is `:size-<number>`, e.g size `20` is `:size-20`
 - Try to make all other vars private because they should almost never be used
   directly.
 
-### Default value when destructuring
+## Default value when destructuring
 
 Too often callers pass nil values because values can be wrapped in a `when` for example.
 In this case, the default value is not applied, because :or macro will use default only when the value is absent.
