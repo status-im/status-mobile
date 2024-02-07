@@ -169,18 +169,8 @@
 
 (def community-accounts-selection-enabled? (enabled? (get-config :ACCOUNT_SELECTION_ENABLED "0")))
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
-<<<<<<< HEAD
-=======
 
 (def wallet-feature-flags
   {:edit-default-keypair false
    :bridge-token         false
    :remove-account       false})
-<<<<<<< HEAD
-=======
-  {:edit-default-keypair true
-   :bridge-token         false})
->>>>>>> d375eaf68 (generate new keypair)
->>>>>>> be69de4a8 (generate new keypair)
-=======
->>>>>>> 03773dbca (lint)
