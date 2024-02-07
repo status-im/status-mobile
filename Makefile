@@ -160,10 +160,12 @@ pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
 	cd ios && pod install; cd --
 
+FLEETS_FILE := ./resources/config/fleets.json
 update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
 	curl -s https://fleets.status.im/ \
 		| sed 's/"warning": "/"warning": "DO NOT EDIT! /' \
-		> resources/config/fleets.json
+		> $(FLEETS_FILE)
+	echo >> $(FLEETS_FILE)
 
 $(KEYSTORE_PATH): export TARGET := keytool
 $(KEYSTORE_PATH):
@@ -455,3 +457,18 @@ repl-clojure: ##@repl Start Clojure repl for mobile App
 	yarn shadow-cljs cljs-repl mobile
 
 repl-nix: nix-repl ##@repl Start an interactive Nix REPL
+
+#--------------
+# Dev Automation Flows
+#--------------
+
+auto-login: export TARGET := default
+auto-login: ##@auto runs flow for login or onboarding app on simulator/emulator
+	maestro test "maestro/create-account-or-login.yaml"
+
+auto-custom: export TARGET := default
+auto-custom: ##@auto runs any custom maestro automation flow on simulator/emulator
+ifndef FLOW
+	$(error Usage: make automate FLOW=your-maestro-flow-file.yaml)
+endif
+	maestro test "$(FLOW)"

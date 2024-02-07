@@ -61,24 +61,30 @@
         value    (reagent/atom "")
         focused? (atom false)]
     (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan
-                 on-detect-ens on-detect-address address-regex valid-ens-or-address?
-                 container-style]}]
+                 on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
+                 valid-ens-or-address? container-style]}]
       (let [on-change              (fn [text]
                                      (when (not= @value text)
                                        (let [address? (when address-regex
-                                                        (boolean (re-matches address-regex text)))]
+                                                        (boolean (re-matches address-regex text)))
+                                             ens?     (when ens-regex
+                                                        (boolean (re-matches ens-regex text)))]
                                          (if (> (count text) 0)
                                            (reset! status :typing)
                                            (reset! status :active))
                                          (reset! value text)
                                          (when on-change-text
                                            (on-change-text text))
-                                         (when (and on-detect-ens (> (count text) 0))
+                                         (when (and on-detect-ens ens?)
                                            (reset! status :loading)
                                            (on-detect-ens text #(reset! status :typing)))
                                          (when (and address? on-detect-address)
                                            (reset! status :loading)
-                                           (on-detect-address text)))))
+                                           (on-detect-address text))
+                                         (when (and (not address?)
+                                                    (not ens?)
+                                                    on-detect-unclassified)
+                                           (on-detect-unclassified text)))))
             on-paste               (fn []
                                      (clipboard/get-string
                                       (fn [clipboard]

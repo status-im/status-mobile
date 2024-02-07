@@ -182,7 +182,7 @@
 
 (defn get-wallet-qr
   [{:keys [wallet-type selected-networks address]}]
-  (if (= wallet-type :wallet-multichain)
+  (if (= wallet-type :multichain)
     (as-> selected-networks $
       (map qr-codes/get-network-short-name-url $)
       (apply str $)

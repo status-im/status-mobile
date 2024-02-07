@@ -2,13 +2,13 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im.config :as config]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
              :as create-or-edit-account]
             [status-im.contexts.wallet.common.sheets.network-preferences.view
              :as network-preferences]
             [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.edit-account.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -66,13 +66,12 @@
          {:page-nav-right-side [(when-not default-account?
                                   {:icon-name :i/delete
                                    :on-press
-                                   (fn []
-                                     (if (:remove-account config/wallet-feature-flags)
-                                       (rf/dispatch [:show-bottom-sheet
-                                                     {:content
-                                                      (fn []
-                                                        [remove-account/view])}])
-                                       (js/alert "Feature disabled in config file")))})]
+                                   #(ff/alert ::ff/wallet.remove-account
+                                              (fn []
+                                                (rf/dispatch [:show-bottom-sheet
+                                                              {:content
+                                                               (fn []
+                                                                 [remove-account/view])}])))})]
           :account-name        account-name
           :account-emoji       emoji
           :account-color       color
