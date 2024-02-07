@@ -48,7 +48,7 @@
   [props]
   (let [{:keys [account width index]} props
         selected-networks             (reagent/atom [:ethereum :optimism :arbitrum])
-        wallet-type                   (reagent/atom :wallet-legacy)]
+        wallet-type                   (reagent/atom :legacy)]
     (fn []
       (let [share-title         (str (:name account) " " (i18n/label :t/address))
             qr-url              (utils/get-wallet-qr {:wallet-type       @wallet-type
@@ -62,7 +62,8 @@
         [rn/view {:style {:height qr-size :width width :margin-left (if (zero? index) 0 -30)}}
          [rn/view {:style style/qr-code-container}
           [quo/share-qr-code
-           {:type                @wallet-type
+           {:type                :wallet
+            :address             @wallet-type
             :qr-image-uri        qr-media-server-uri
             :qr-data             qr-url
             :networks            @selected-networks
@@ -71,8 +72,8 @@
             :full-name           (:name account)
             :customization-color (:color account)
             :emoji               (:emoji account)
-            :on-multichain-press #(reset! wallet-type :wallet-multichain)
-            :on-legacy-press     #(reset! wallet-type :wallet-legacy)
+            :on-multichain-press #(reset! wallet-type :multichain)
+            :on-legacy-press     #(reset! wallet-type :legacy)
             :on-settings-press   #(open-preferences @selected-networks)}]]]))))
 
 (def wallet-qr-code-item (memoize wallet-qr-code-item-internal))
