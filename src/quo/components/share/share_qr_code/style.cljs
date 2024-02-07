@@ -106,3 +106,6 @@
   {:color (-> network-short-name
               (get-network-full-name :unknown)
               (colors/resolve-color nil))})
+
+(def watched-account-icon
+  {:margin-left 4})
