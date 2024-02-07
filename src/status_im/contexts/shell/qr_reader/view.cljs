@@ -32,13 +32,16 @@
   (let [address (extract-id scanned-text)]
     (cond
       (text-for-path? scanned-text router/community-with-data-path)
-      (debounce/debounce-and-dispatch [:communities/navigate-to-community-overview address] 300)
+      nil
+      ;;(debounce/debounce-and-dispatch [:communities/navigate-to-community-overview address] 300)
 
       (text-for-path? scanned-text router/channel-path)
       nil
 
       (text-for-path? scanned-text router/user-with-data-path)
-      (debounce/debounce-and-dispatch [:contacts/set-new-identity address] 300)
+      (debounce/debounce-and-dispatch [:contacts/set-new-identity {:input address
+                                                                   :build-success-fn (fn [{:keys [public-key ens-name] :as contact}]
+                                                                                       {:dispatch-n [[:chat.ui/show-profile public-key ens-name]]})}] 300)
 
       (legacy-eth-address? scanned-text)
       ;; :wallet/scan-address-success

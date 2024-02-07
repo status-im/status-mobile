@@ -49,6 +49,7 @@
    [quo/text (style/text-title) (i18n/label :t/add-a-contact)]
    [quo/text (style/text-subtitle) (i18n/label :t/find-your-friends)]])
 
+;; TODO(alwx): check why it is not filled
 (defn- search-input
   []
   (reagent/with-let [input-value    (reagent/atom nil)
@@ -59,7 +60,7 @@
                      paste-on-input #(clipboard/get-string
                                       (fn [clipboard-text]
                                         (reset! input-value clipboard-text)
-                                        (rf/dispatch [:contacts/set-new-identity clipboard-text nil])))]
+                                        (rf/dispatch [:contacts/set-new-identity {:input clipboard-text}])))]
     (let [{:keys [scanned]} (rf/sub [:contacts/new-identity])
           empty-input?      (and (string/blank? @input-value)
                                  (string/blank? scanned))]
@@ -86,10 +87,10 @@
          :value               (or scanned @input-value)
          :on-change-text      (fn [new-text]
                                 (reset! input-value new-text)
-                                (as-> [:contacts/set-new-identity new-text nil] $
-                                  (if (string/blank? scanned)
-                                    (debounce/debounce-and-dispatch $ 600)
-                                    (rf/dispatch-sync $))))}]
+                                (as-> [:contacts/set-new-identity {:input new-text}] $
+                                      (if (string/blank? scanned)
+                                        (debounce/debounce-and-dispatch $ 600)
+                                        (rf/dispatch-sync $))))}]
        [rn/view {:style style/scan-button-container}
         [quo/button
          {:type       :outline
@@ -97,8 +98,8 @@
           :size       40
           :on-press   #(rf/dispatch [:open-modal :scan-profile-qr-code])}
          :i/scan]]])
-    (finally
-     (rf/dispatch [:contacts/clear-new-identity]))))
+                    (finally
+                      (rf/dispatch [:contacts/clear-new-identity]))))
 
 (defn- invalid-text
   [message]
@@ -110,7 +111,7 @@
 (defn new-contact
   []
   (let [{:keys [public-key ens state msg]} (rf/sub [:contacts/new-identity])
-        customization-color                (rf/sub [:profile/customization-color])]
+        customization-color (rf/sub [:profile/customization-color])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
       [rn/view {:style (style/container-outer)}
@@ -119,7 +120,7 @@
         [search-input]
         (case state
           :invalid [invalid-text msg]
-          :valid   [found-contact public-key]
+          :valid [found-contact public-key]
           nil)]
        [quo/button
         {:type                :primary

@@ -91,7 +91,7 @@
 
 (deftest set-new-identity-test
   (with-redefs [events/dispatcher (fn [& args] args)]
-    (are [i edb] (match? (events/set-new-identity {:db db} i nil) edb)
+    (are [i edb] (match? (events/set-new-identity {:db db} [{:input i}]) edb)
 
      ""        {:db db}
 

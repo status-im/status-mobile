@@ -81,5 +81,8 @@
       {:db       (-> db
                      (assoc :contacts/identity identity)
                      (assoc :contacts/ens-name ens-name))
-       :dispatch [:contacts/build-contact identity ens-name true]}
+       :dispatch [:contacts/build-contact {:pubkey     identity
+                                           :ens        ens-name
+                                           :success-fn (fn [contact]
+                                                         {:dispatch [:open-modal :profile]})}]}
       {:dispatch [:navigate-to :my-profile]})))

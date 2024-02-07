@@ -88,10 +88,8 @@
 
 (def validate-contact (comp ->state ->type ->id))
 
-(defn dispatcher [event input] (fn [arg] (rf/dispatch [event input arg])))
-
 (defn set-new-identity
-  [{:keys [db]} [input]]
+  [{:keys [db]} [{:keys [input build-success-fn]}]]
   (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
          :as   contact} (-> {:user-public-key user-public-key
@@ -105,48 +103,49 @@
                          :serialization/decompress-public-key
                          {:compressed-key id
                           :on-success
-                          (dispatcher :contacts/set-new-identity-success input)
+                          #(rf/dispatch [:contacts/set-new-identity-success input % build-success-fn])
                           :on-error
-                          (dispatcher :contacts/set-new-identity-error input)}}
+                          #(rf/dispatch [:contacts/set-new-identity-error input %])}}
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
                          :effects.contacts/resolve-public-key-from-ens
                          {:chain-id (chain/chain-id db)
                           :ens ens
                           :on-success
-                          (dispatcher :contacts/set-new-identity-success input)
+                          #(rf/dispatch [:contacts/set-new-identity-success input % build-success-fn])
                           :on-error
-                          (dispatcher :contacts/set-new-identity-error input)}})))
+                          #(rf/dispatch [:contacts/set-new-identity-error input %])}})))
 
 (re-frame/reg-event-fx :contacts/set-new-identity set-new-identity)
 
 (rf/defn build-contact
   {:events [:contacts/build-contact]}
-  [_ pubkey ens open-profile-modal?]
+  [_ {:keys [pubkey ens success-fn]}]
+  (js/console.log "ALWX ens" ens)
   {:json-rpc/call [{:method      "wakuext_buildContact"
                     :params      [{:publicKey pubkey
                                    :ENSName   ens}]
                     :js-response true
-                    :on-success  #(rf/dispatch [:contacts/contact-built
-                                                pubkey
-                                                open-profile-modal?
-                                                (data-store.contacts/<-rpc-js %)])}]})
+                    :on-success  #(rf/dispatch [:contacts/build-contact-success
+                                                {:pubkey     pubkey
+                                                 :contact    (data-store.contacts/<-rpc-js %)
+                                                 :success-fn success-fn}])}]})
 
-(rf/defn contact-built
-  {:events [:contacts/contact-built]}
-  [{:keys [db]} pubkey open-profile-modal? contact]
+(rf/defn build-contact-success
+  {:events [:contacts/build-contact-success]}
+  [{:keys [db]} {:keys [pubkey contact success-fn]}]
   (merge {:db (assoc-in db [:contacts/contacts pubkey] contact)}
-         (when open-profile-modal?
-           {:dispatch [:open-modal :profile]})))
+         (when success-fn
+           (success-fn contact))))
 
 (rf/defn set-new-identity-success
   {:events [:contacts/set-new-identity-success]}
-  [{:keys [db]} input pubkey]
+  [{:keys [db]} input pubkey build-success-fn]
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
-      (rf/merge {:db (assoc db
-                            :contacts/new-identity
-                            (->state (assoc contact :public-key pubkey)))}
-                (build-contact pubkey (:ens contact) false)))))
+      (rf/merge {:db (assoc db :contacts/new-identity (->state (assoc contact :public-key pubkey)))}
+                (build-contact {:pubkey     pubkey
+                                :ens        (:ens contact)
+                                :success-fn build-success-fn})))))
 
 (rf/defn set-new-identity-error
   {:events [:contacts/set-new-identity-error]}
@@ -171,4 +170,4 @@
 (rf/defn set-new-identity-reconnected
   [{:keys [db]}]
   (let [input (get-in db [:contacts/new-identity :input])]
-    (rf/dispatch [:contacts/set-new-identity input])))
+    (rf/dispatch [:contacts/set-new-identity {:input input}])))
