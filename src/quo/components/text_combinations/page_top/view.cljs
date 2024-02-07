@@ -112,10 +112,10 @@
         emojis))
 
 (defn- view-internal
-  [{:keys  [theme description input blur? input-props]
+  [{:keys  [theme description input blur? input-props container-style]
     emojis :emoji-dash
     :as    props}]
-  [rn/view
+  [rn/view {:style container-style}
    [rn/view {:style style/top-container}
     [header props]
     (when description
