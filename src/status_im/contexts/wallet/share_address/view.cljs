@@ -82,8 +82,9 @@
             :right-side          [{:icon-name :i/scan
                                    :on-press  #(js/alert "To be implemented")}]
             :accessibility-label :top-bar}]
-          [quo/page-top {:title           title
-                         :container-style style/header-container}]
+          [quo/page-top
+           {:title           title
+            :container-style style/header-container}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
             {:type                (if watch-only? :watched-address :wallet)
