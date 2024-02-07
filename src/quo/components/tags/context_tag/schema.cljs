@@ -38,7 +38,7 @@
 
 (def ^:private ?token
   [:map
-   [:amount {:optional true} [:maybe :string]]
+   [:amount {:optional true} [:maybe [:or :string :int]]]
    [:token {:optional true} [:maybe :string]]])
 
 (def ^:private ?network
