@@ -32,6 +32,6 @@
       :style                        {:flex 1}
       :content-container-style      {:padding-horizontal 8}
       :keyboard-should-persist-taps :handled
-      :key-fn                       :id
+      :key-fn                       :symbol
       :on-scroll-to-index-failed    identity
       :render-fn                    asset-component}]))
