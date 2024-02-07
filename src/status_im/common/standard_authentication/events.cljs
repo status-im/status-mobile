@@ -2,6 +2,7 @@
   (:require
     [schema.core :as schema]
     [status-im.common.standard-authentication.enter-password.view :as enter-password]
+    [status-im.common.standard-authentication.events-schema :as events-schema]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -15,25 +16,8 @@
             :on-success [:standard-auth/authorize-with-biometric args]
             :on-fail    [:standard-auth/authorize-with-password args]}]]}))
 
+(schema/=> authorize events-schema/?authorize)
 (rf/reg-event-fx :standard-auth/authorize authorize)
-
-(def ?authorize-map
-  [:map {:closed true}
-   [:on-auth-success fn?]
-   [:on-auth-fail {:optional true} [:maybe fn?]]
-   [:on-close {:optional true} [:maybe fn?]]
-   [:auth-button-label {:optional true} [:maybe string?]]
-   [:auth-button-icon-left {:optional true} [:maybe keyword?]]
-   [:blur? {:optional true} [:maybe boolean?]]
-   [:theme {:optional true} [:maybe :schema.common/theme]]])
-
-(schema/=> authorize
-  [:=>
-   [:catn
-    [:cofx :schema.re-frame/cofx]
-    [:args
-     [:tuple ?authorize-map]]]
-   :schema.re-frame/event-fx])
 
 (defn authorize-with-biometric
   [_ [{:keys [on-auth-success on-auth-fail] :as args}]]
@@ -49,14 +33,7 @@
              :on-success     [:standard-auth/on-biometric-success on-auth-success]
              :on-fail        [:standard-auth/on-biometric-fail on-auth-fail]}]]]}))
 
-(schema/=> authorize-with-biometric
-  [:=>
-   [:catn
-    [:cofx :schema.re-frame/cofx]
-    [:args
-     [:tuple ?authorize-map]]]
-   :schema.re-frame/event-fx])
-
+(schema/=> authorize-with-biometric events-schema/?authorize-with-biometric)
 (rf/reg-event-fx :standard-auth/authorize-with-biometric authorize-with-biometric)
 
 (defn on-biometric-success
@@ -64,14 +41,7 @@
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:keychain/get-user-password [key-uid on-auth-success]]]}))
 
-(schema/=> on-biometric-success
-  [:=>
-   [:catn
-    [:cofx :schema.re-frame/cofx]
-    [:args
-     [:tuple fn?]]]
-   :schema.re-frame/event-fx])
-
+(schema/=> on-biometric-success events-schema/?on-biometric-success)
 (rf/reg-event-fx :standard-auth/on-biometric-success on-biometric-success)
 
 (defn on-biometric-fail
@@ -85,16 +55,7 @@
                         :event :standard-auth/on-biometric-fail)))
   {:fx [[:dispatch [:biometric/show-message (ex-cause error)]]]})
 
-(schema/=> on-biometric-fail
-  [:=>
-   [:catn
-    [:cofx :schema.re-frame/cofx]
-    [:args
-     [:tuple
-      [:maybe fn?]
-      [:maybe :schema.common/error]]]]
-   :schema.re-frame/event-fx])
-
+(schema/=> on-biometric-fail events-schema/?on-biometrics-fail)
 (rf/reg-event-fx :standard-auth/on-biometric-fail on-biometric-fail)
 
 (defn- bottom-sheet-password-view
@@ -118,15 +79,8 @@
            :shell?   blur?
            :content  #(bottom-sheet-password-view args)}]]]})
 
+(schema/=> authorize-with-password events-schema/?authorize-with-password)
 (rf/reg-event-fx :standard-auth/authorize-with-password authorize-with-password)
-
-(schema/=> authorize-with-password
-  [:=>
-   [:catn
-    [:cofx :schema.re-frame/cofx]
-    [:args
-     [:tuple ?authorize-map]]]
-   :schema.re-frame/event-fx])
 
 (rf/reg-event-fx
  :standard-auth/reset-login-password
