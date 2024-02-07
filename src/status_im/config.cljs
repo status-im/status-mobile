@@ -169,10 +169,7 @@
 
 (def community-accounts-selection-enabled? (enabled? (get-config :ACCOUNT_SELECTION_ENABLED "0")))
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
-<<<<<<< HEAD
-=======
 
 (def wallet-feature-flags
   {:edit-default-keypair false
-   :bridge-token         true})
->>>>>>> a622d61d8 (feat: bridge assets)
+   :bridge-token         false})
