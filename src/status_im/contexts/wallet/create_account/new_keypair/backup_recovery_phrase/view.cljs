@@ -68,7 +68,8 @@
                    :padding-top        20}}
           [quo/text
            {:weight :semi-bold
-            :style  {:margin-bottom 8}} (i18n/label :t/how-to-backup)]
+            :style  {:margin-bottom 8}}
+           (i18n/label :t/how-to-backup)]
           [rn/flat-list
            {:data           step-labels
             :render-fn      step-item
