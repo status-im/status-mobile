@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.create-account.backup-recovery-phrase.style
+(ns status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
