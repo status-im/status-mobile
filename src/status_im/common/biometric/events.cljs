@@ -44,22 +44,29 @@
 
 (rf/reg-fx
  :biometric/authenticate
- (fn [{:keys [on-success on-fail on-cancel prompt-message]}]
+ (fn [{:keys [on-success on-fail on-cancel prompt-message on-done]}]
    (-> (biometrics/authenticate
         {:prompt-message          (or prompt-message (i18n/label :t/biometric-auth-reason-login))
          :fallback-prompt-message (i18n/label
                                    :t/biometric-auth-login-ios-fallback-label)
          :cancel-button-text      (i18n/label :t/cancel)})
        (.then (fn [not-canceled?]
+                (utils/handle-cb on-done)
                 (if not-canceled?
                   (utils/handle-cb on-success)
                   (utils/handle-cb on-cancel))))
        (.catch (fn [err]
+                 (utils/handle-cb on-done)
                  (utils/handle-cb on-fail err))))))
 
 (defn authenticate
-  [_ [opts]]
-  {:fx [[:biometric/authenticate opts]]})
+  [{:keys [db]} [opts]]
+  (let [pending? (get db :biometric/auth-pending?)]
+    ;;NOTE: prompting biometric check while another one is pending triggers error
+    (when-not pending?
+      {:db (assoc db :biometric/auth-pending? true)
+       :fx [[:biometric/authenticate
+             (assoc opts :on-done [:set :biometric/auth-pending? false])]]})))
 
 (schema/=> authenticate events-schema/?authenticate)
 (rf/reg-event-fx :biometric/authenticate authenticate)

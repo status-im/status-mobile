@@ -58,6 +58,7 @@
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :tooltips :tooltips)
 (reg-root-key-sub :biometric/supported-type :biometric/supported-type)
+(reg-root-key-sub :biometric/auth-pending? :biometric/auth-pending?)
 (reg-root-key-sub :app-state :app-state)
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
