@@ -8,6 +8,7 @@
             [quo.components.markdown.text :as text]
             [quo.components.tags.context-tag.view :as context-tag]
             [quo.components.text-combinations.page-top.style :as style]
+            [quo.components.text-combinations.standard-title.view :as standard-title]
             [quo.theme]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
@@ -32,18 +33,19 @@
          (format-counter counter-bottom))]])
 
 (defn- header
-  [{:keys        [title input counter-top counter-bottom]
+  [{:keys        [title input counter-top counter-bottom
+                  title-right title-right-props]
     avatar-props :avatar}]
-  [rn/view {:style style/header}
-   [rn/view {:style style/header-title}
-    (when avatar-props
-      [channel-avatar/view (assoc avatar-props :size :size-32)])
-    [text/text
-     {:weight :semi-bold
-      :size   :heading-1}
-     title]]
-   (when (= input :recovery-phrase)
-     [header-counter counter-top counter-bottom])])
+  (let [title-props (assoc title-right-props
+                           :title title
+                           :right title-right)]
+    [rn/view {:style style/header}
+     [rn/view {:style style/header-title}
+      (when avatar-props
+        [channel-avatar/view (assoc avatar-props :size :size-32)])
+      [standard-title/view title-props]]
+     (when (= input :recovery-phrase)
+       [header-counter counter-top counter-bottom])]))
 
 (defn- summary-description
   [{:keys [row-1 row-2] :as _summary-props} blur?]
