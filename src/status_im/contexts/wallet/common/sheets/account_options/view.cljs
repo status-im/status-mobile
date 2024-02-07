@@ -9,10 +9,10 @@
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im.config :as config]
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -100,13 +100,12 @@
            :accessibility-label :remove-account
            :label               (i18n/label :t/remove-account)
            :danger?             true
-           :on-press            (fn []
-                                  (if (:remove-account config/wallet-feature-flags)
-                                    (rf/dispatch [:show-bottom-sheet
-                                                  {:content
-                                                   (fn []
-                                                     [remove-account/view])}])
-                                    (js/alert "Feature disabled in config file")))})]]]
+           :on-press            #(ff/alert ::ff/wallet.remove-account
+                                           (fn []
+                                             (rf/dispatch [:show-bottom-sheet
+                                                           {:content
+                                                            (fn []
+                                                              [remove-account/view])}])))})]]]
      (when show-account-selector?
        [:<>
         [quo/divider-line {:container-style style/divider-label}]

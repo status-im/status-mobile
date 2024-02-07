@@ -74,3 +74,6 @@
 (def secret-phrase
   ["witch" "collapse" "practice" "feed" "shame" "open" "lion"
    "collapse" "umbrella" "fabric" "sadness" "obligue"])
+(def random-words
+  ["cousin" "roof" "minute" "swallow" "wing" "motion" "stomach"
+   "abuse" "banner" "noble" "poet" "wrist"])

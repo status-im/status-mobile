@@ -169,8 +169,3 @@
 
 (def community-accounts-selection-enabled? (enabled? (get-config :ACCOUNT_SELECTION_ENABLED "0")))
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
-
-(def wallet-feature-flags
-  {:edit-default-keypair false
-   :bridge-token         false
-   :remove-account       false})

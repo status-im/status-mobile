@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.create-account.backup-recovery-phrase.view
+(ns status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.temp :as temp]
-    [status-im.contexts.wallet.create-account.backup-recovery-phrase.style :as style]
+    [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -80,7 +80,8 @@
            {:button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
-                               :on-press            #(js/alert "To be implemented")}}]
+                               :on-press            #(rf/dispatch [:navigate-to
+                                                                   :wallet-check-your-backup])}}]
           [quo/text
            {:size  :paragraph-2
             :style (style/description-text theme)}

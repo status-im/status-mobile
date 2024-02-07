@@ -36,6 +36,7 @@
         :on-blur               #(reset! input-focused? false)
         :on-scan               (fn []
                                  (rn/dismiss-keyboard!)
+                                 (rf/dispatch [:wallet/clean-scanned-address])
                                  (rf/dispatch [:open-modal :scan-address]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)

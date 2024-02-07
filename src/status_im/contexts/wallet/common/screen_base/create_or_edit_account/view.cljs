@@ -29,7 +29,7 @@
       {:customization-color account-color
        :container-style     (style/gradient-cover-container margin-top)}]
      (into
-      [rn/scroll-view {:bounces false}
+      [:<>
        [rn/view {:style style/account-avatar-container}
         [quo/account-avatar
          {:customization-color account-color
