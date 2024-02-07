@@ -83,6 +83,6 @@
                      (assoc :contacts/ens-name ens-name))
        :dispatch [:contacts/build-contact {:pubkey     identity
                                            :ens        ens-name
-                                           :success-fn (fn [contact]
+                                           :success-fn (fn [_]
                                                          {:dispatch [:open-modal :profile]})}]}
       {:dispatch [:navigate-to :my-profile]})))

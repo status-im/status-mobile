@@ -8,9 +8,12 @@
     [status-im.common.scan-qr-code.view :as scan-qr-code]
     [status-im.contexts.communities.events]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
-    [status-im.navigation.events :as navigation]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]))
+
+(def invalid-qr-toast {:type  :negative
+                       :theme :dark
+                       :text  (i18n/label :t/invalid-qr)})
 
 (defn- text-for-path? [text path]
   (some #(string/starts-with? text %) (router/path-urls path)))
@@ -28,20 +31,33 @@
   [scanned-text]
   false)
 
+(defn load-and-show-profile [address]
+  (debounce/debounce-and-dispatch
+    [:contacts/set-new-identity
+     {:input            address
+      :build-success-fn (fn [{:keys [public-key ens-name]}]
+                          {:dispatch-n [[:chat.ui/show-profile public-key ens-name]
+                                        [:contacts/clear-new-identity]]})
+      :failure-fn       (fn []
+                          {:dispatch [:toasts/upsert invalid-qr-toast]})}]
+    300))
+
+(defn show-invalid-qr-toast []
+  (debounce/debounce-and-dispatch
+    [:toasts/upsert invalid-qr-toast] 300))
+
 (defn on-qr-code-scanned [scanned-text]
   (let [address (extract-id scanned-text)]
     (cond
       (text-for-path? scanned-text router/community-with-data-path)
-      nil
       ;;(debounce/debounce-and-dispatch [:communities/navigate-to-community-overview address] 300)
+      nil
 
       (text-for-path? scanned-text router/channel-path)
       nil
 
       (text-for-path? scanned-text router/user-with-data-path)
-      (debounce/debounce-and-dispatch [:contacts/set-new-identity {:input address
-                                                                   :build-success-fn (fn [{:keys [public-key ens-name] :as contact}]
-                                                                                       {:dispatch-n [[:chat.ui/show-profile public-key ens-name]]})}] 300)
+      (load-and-show-profile address)
 
       (legacy-eth-address? scanned-text)
       ;; :wallet/scan-address-success
@@ -52,10 +68,7 @@
       nil
 
       :else
-      (debounce/debounce-and-dispatch [:toasts/upsert {:type  :negative
-                                                       :theme :dark
-                                                       :text  (i18n/label :t/invalid-qr)}]
-                                      300))))
+      (show-invalid-qr-toast))))
 
 (defn- f-internal-view
   []

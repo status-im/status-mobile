@@ -110,7 +110,7 @@
 
 (defn new-contact
   []
-  (let [{:keys [public-key ens state msg]} (rf/sub [:contacts/new-identity])
+  (let [{:keys [public-key ens state msg] :as i} (rf/sub [:contacts/new-identity])
         customization-color (rf/sub [:profile/customization-color])]
     [rn/keyboard-avoiding-view {:style {:flex 1}}
      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

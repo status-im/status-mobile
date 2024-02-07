@@ -6,10 +6,14 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.mobile-sync :as utils]
     [legacy.status-im.wallet.core :as wallet]
-    [status-im.contexts.chat.home.add-new-contact.events :as add-new-contact]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
+
+(rf/defn set-new-identity-reconnected
+  [{:keys [db]}]
+  (let [input (get-in db [:contacts/new-identity :input])]
+    (rf/dispatch [:contacts/set-new-identity {:input input}])))
 
 (rf/defn sheet-defaults
   [{:keys [db]}]
@@ -36,7 +40,7 @@
        [(mailserver/process-next-messages-request)
         (bottom-sheet/hide-bottom-sheet-old)
         (wallet/restart-wallet-service nil)
-        (add-new-contact/set-new-identity-reconnected)]
+        (set-new-identity-reconnected)]
 
        logged-in?
        [(mailserver/process-next-messages-request)
