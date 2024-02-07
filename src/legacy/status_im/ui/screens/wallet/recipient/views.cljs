@@ -55,7 +55,8 @@
        :on-change      (fn [text]
                          (re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed text])
                          (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
-                         (debounce/debounce-and-dispatch [:contacts/set-new-identity {:input text}] 300))}]]))
+                         (debounce/debounce-and-dispatch [:contacts/set-new-identity {:input text}]
+                                                         300))}]]))
 
 (defn section
   [_ _ _]
@@ -63,7 +64,7 @@
     (fn [title cnt content]
       [react/view {:padding-vertical 8}
        [list.item/list-item
-        {:title    title
+        {:title title
          :on-press #(swap! opened? not)
          :accessory
          [react/view {:flex-direction :row :align-items :center}

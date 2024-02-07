@@ -7,7 +7,6 @@
     status-im.contexts.chat.home.add-new-contact.effects
     [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
-    [utils.re-frame :as rf]
     [utils.string :as utils.string]))
 
 (defn init-contact
@@ -99,35 +98,35 @@
                             init-contact
                             validate-contact)]
     (case state
-      :empty {:db (dissoc db :contacts/new-identity)}
+      :empty            {:db (dissoc db :contacts/new-identity)}
       (:valid :invalid) {:db (assoc db :contacts/new-identity contact)}
-      :decompress-key {:db (assoc db :contacts/new-identity contact)
-                       :serialization/decompress-public-key
-                       {:compressed-key id
-                        :on-success
-                        #(re-frame/dispatch [:contacts/set-new-identity-success
-                                             {:input            input
-                                              :pubkey           %
-                                              :build-success-fn build-success-fn}])
-                        :on-error
-                        #(re-frame/dispatch [:contacts/set-new-identity-error
-                                             {:input      input
-                                              :pubkey     %
-                                              :failure-fn failure-fn}])}}
-      :resolve-ens {:db (assoc db :contacts/new-identity contact)
-                    :effects.contacts/resolve-public-key-from-ens
-                    {:chain-id (chain/chain-id db)
-                     :ens      ens
-                     :on-success
-                     #(re-frame/dispatch [:contacts/set-new-identity-success
-                                          {:input            input
-                                           :pubkey           %
-                                           :build-success-fn build-success-fn}])
-                     :on-error
-                     #(re-frame/dispatch [:contacts/set-new-identity-error
-                                          {:input      input
-                                           :pubkey     %
-                                           :failure-fn failure-fn}])}})))
+      :decompress-key   {:db (assoc db :contacts/new-identity contact)
+                         :serialization/decompress-public-key
+                         {:compressed-key id
+                          :on-success
+                          #(re-frame/dispatch [:contacts/set-new-identity-success
+                                               {:input            input
+                                                :pubkey           %
+                                                :build-success-fn build-success-fn}])
+                          :on-error
+                          #(re-frame/dispatch [:contacts/set-new-identity-error
+                                               {:input      input
+                                                :pubkey     %
+                                                :failure-fn failure-fn}])}}
+      :resolve-ens      {:db (assoc db :contacts/new-identity contact)
+                         :effects.contacts/resolve-public-key-from-ens
+                         {:chain-id (chain/chain-id db)
+                          :ens ens
+                          :on-success
+                          #(re-frame/dispatch [:contacts/set-new-identity-success
+                                               {:input            input
+                                                :pubkey           %
+                                                :build-success-fn build-success-fn}])
+                          :on-error
+                          #(re-frame/dispatch [:contacts/set-new-identity-error
+                                               {:input      input
+                                                :pubkey     %
+                                                :failure-fn failure-fn}])}})))
 
 (re-frame/reg-event-fx :contacts/set-new-identity set-new-identity)
 
