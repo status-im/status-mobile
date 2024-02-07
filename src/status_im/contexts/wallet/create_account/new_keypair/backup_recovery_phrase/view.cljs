@@ -51,10 +51,10 @@
         {:icon-name           :i/close
          :on-press            #(rf/dispatch [:navigate-back])
          :accessibility-label :top-bar}]
-       [quo/text-combinations
-        {:container-style style/header-container
-         :title           (i18n/label :t/backup-recovery-phrase)
-         :description     (i18n/label :t/backup-recovery-phrase-description)}]
+       [quo/page-top
+        {:title            (i18n/label :t/backup-recovery-phrase)
+         :description      :text
+         :description-text (i18n/label :t/backup-recovery-phrase-description)}]
        [rn/view {:style (style/seed-phrase-container theme)}
         [words-column temp/secret-phrase true]
         [rn/view {:style (style/separator theme)}]
