@@ -2,7 +2,6 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.common.biometric.events :as biometric]
     [status-im.constants :as constants]
     [status-im.contexts.profile.create.events :as profile.create]
     [status-im.contexts.profile.recover.events :as profile.recover]
