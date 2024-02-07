@@ -29,10 +29,15 @@
     [:on-success [:or fn? [:cat keyword? [:* :any]]]]
     [:on-error [:or fn? [:cat keyword? [:* :any]]]]]])
 
+(def ^:private ?error
+  [:fn {:error/message "schema.common/error should be of type js/Error"}
+   (fn [v] (instance? js/Error v))])
+
 (defn register-schemas
   []
   (registry/register ::theme ?theme)
   (registry/register ::customization-color ?customization-color)
   (registry/register ::public-key ?public-key)
   (registry/register ::image-source ?image-source)
-  (registry/register ::rpc-call ?rpc-call))
+  (registry/register ::rpc-call ?rpc-call)
+  (registry/register ::error ?error))
