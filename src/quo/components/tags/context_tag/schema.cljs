@@ -59,7 +59,7 @@
   [:map
    [:collectible {:optional true} [:maybe [:or :schema.common/image-source :string]]]
    [:collectible-name {:optional true} [:maybe :string]]
-   [:collectible-number {:optional true} [:maybe :string]]])
+   [:collectible-number {:optional true} [:maybe [:or :string :int]]]])
 
 (def ^:private ?address
   [:map
