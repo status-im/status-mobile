@@ -406,7 +406,7 @@
 (def page-top quo.components.text-combinations.page-top.view/view)
 (def standard-title quo.components.text-combinations.standard-title.view/view)
 (def ^{:deprecated "quo.components.text-combinations.page-top.view should be used instead"}
-  text-combinations
+     text-combinations
   quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)
 
