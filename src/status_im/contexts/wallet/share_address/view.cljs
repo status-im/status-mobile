@@ -40,9 +40,10 @@
                          {:blur?             true
                           :selected-networks (set @selected-networks)
                           :on-save           on-save}])]
-    (rf/dispatch [:show-bottom-sheet {:theme   :dark
-                                      :shell?  true
-                                      :content sheet-content}])))
+    (rf/dispatch [:show-bottom-sheet
+                  {:theme   :dark
+                   :shell?  true
+                   :content sheet-content}])))
 
 
 (defn view
