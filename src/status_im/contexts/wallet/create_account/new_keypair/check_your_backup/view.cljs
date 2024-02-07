@@ -25,10 +25,8 @@
                           (remove #(= % given-string))
                           (shuffle)
                           (take (dec questions-count)))
-        result       (conj random-words given-string)]
-    (->> result
-         (shuffle)
-         vec)))
+        result       (shuffle (conj random-words given-string))]
+    [(subvec result 0 2) (subvec result 2 4)]))
 
 (defn- cheat-warning
   []
@@ -43,7 +41,7 @@
        :button-one-props {:customization-color customization-color
                           :on-press            (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
-                                                 (rf/dispatch [:navigate-back {:revealed? true}]))}}]]))
+                                                 (rf/dispatch [:navigate-back]))}}]]))
 
 (defn- button
   [{:keys [word margin-right on-press]}]
@@ -68,21 +66,21 @@
         incorrect-count (reagent/atom 0)
         show-error?     (reagent/atom false)]
     (fn []
-      (let [current-word-index (get random-indices (min @quiz-index (dec questions-count)))
-            current-word       (get temp/secret-phrase current-word-index)
-            options            (random-words-with-string temp/random-words current-word)
-            on-button-press    (fn [word]
-                                 (if (= word current-word)
-                                   (do
-                                     (reset! quiz-index (inc @quiz-index))
-                                     (reset! incorrect-count 0)
-                                     (reset! show-error? false))
-                                   (do
-                                     (when (> @incorrect-count 0)
-                                       (rf/dispatch [:show-bottom-sheet
-                                                     {:content cheat-warning}]))
-                                     (reset! incorrect-count (inc @incorrect-count))
-                                     (reset! show-error? true))))]
+      (let [current-word-index        (get random-indices (min @quiz-index (dec questions-count)))
+            current-word              (get temp/secret-phrase current-word-index)
+            [options-r-0 options-r-1] (random-words-with-string temp/random-words current-word)
+            on-button-press           (fn [word]
+                                        (if (= word current-word)
+                                          (do
+                                            (reset! quiz-index (inc @quiz-index))
+                                            (reset! incorrect-count 0)
+                                            (reset! show-error? false))
+                                          (do
+                                            (when (> @incorrect-count 0)
+                                              (rf/dispatch [:show-bottom-sheet
+                                                            {:content cheat-warning}]))
+                                            (reset! incorrect-count (inc @incorrect-count))
+                                            (reset! show-error? true))))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left
@@ -120,9 +118,9 @@
           [buttons-row
            {:on-press      on-button-press
             :margin-bottom 12
-            :options       (subvec options 0 2)}]
+            :options       options-r-0}]
           [buttons-row
            {:on-press on-button-press
-            :options  (subvec options 2 4)}]]]))))
+            :options  options-r-1}]]]))))
 
 (def view (quo.theme/with-theme view-internal))
