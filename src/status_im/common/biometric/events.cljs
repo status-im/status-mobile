@@ -70,11 +70,10 @@
          :cancel-button-text      (i18n/label :t/cancel)})
        (.then (fn [not-canceled?]
                 (if not-canceled?
-                  (when on-success (on-success))
-                  (when on-cancel (on-cancel)))))
+                  (utils/handle-cb on-success)
+                  (utils/handle-cb on-cancel))))
        (.catch (fn [err]
-                 (when on-fail
-                   (on-fail err)))))))
+                 (utils/handle-cb on-fail err))))))
 
 (defn authenticate
   [_ [opts]]
@@ -130,22 +129,32 @@
 
 (rf/reg-event-fx :biometric/disable disable-biometrics)
 
+;;TODO: add schema
 (rf/reg-fx
  :biometric/check-if-available
- (fn [[key-uid callback]]
+ (fn [{:keys [key-uid on-success on-fail]}]
    (keychain/can-save-user-password?
     (fn [can-save?]
-      (when can-save?
+      (if-not can-save?
+        (utils/handle-cb on-fail
+                         (ex-info "cannot-save-user-password"
+                                  {:fx :biometric/check-if-available}))
         (-> (biometrics/get-available)
             (.then (fn [available?]
                      (when-not available?
                        (throw (js/Error. "biometric-not-available")))))
             (.then #(keychain/get-auth-method! key-uid))
             (.then (fn [auth-method]
-                     (when auth-method (callback auth-method))))
+                     (when auth-method
+                       (utils/handle-cb on-success auth-method))))
             (.catch (fn [err]
-                      (when-not (= (.-message err) "biometric-not-available")
-                        (log/error "Failed to check if biometrics is available"
-                                   {:error   err
-                                    :key-uid key-uid
-                                    :event   :profile.login/check-biometric}))))))))))
+                      (let [message (.-message err)]
+                        (utils/handle-cb on-fail
+                                         (ex-info message
+                                                  {:err err
+                                                   :fx  :biometric/check-if-available}))
+                        (when-not (= message "biometric-not-available")
+                          (log/error "Failed to check if biometrics is available"
+                                     {:error   err
+                                      :key-uid key-uid
+                                      :event   :profile.login/check-biometric})))))))))))
