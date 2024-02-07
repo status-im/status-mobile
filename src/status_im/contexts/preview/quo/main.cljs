@@ -157,7 +157,7 @@
     [status-im.contexts.preview.quo.switcher.switcher-cards :as switcher-cards]
     [status-im.contexts.preview.quo.tabs.account-selector :as account-selector]
     [status-im.contexts.preview.quo.tabs.segmented-tab :as segmented]
-    [status-im.contexts.preview.quo.tabs.tabs :as tabs] 
+    [status-im.contexts.preview.quo.tabs.tabs :as tabs]
     [status-im.contexts.preview.quo.tags.collectible-tag :as collectible-tag]
     [status-im.contexts.preview.quo.tags.context-tags :as context-tags]
     [status-im.contexts.preview.quo.tags.network-tags :as network-tags]
@@ -459,7 +459,7 @@
                        {:name      :account-selector
                         :component account-selector/view}]
    :tags              [{:name      :collectible-tag
-                        :component collectible-tag/view} 
+                        :component collectible-tag/view}
                        {:name      :context-tags
                         :component context-tags/view}
                        {:name      :network-tags
