@@ -129,32 +129,41 @@
 
 (rf/reg-event-fx :biometric/disable disable-biometrics)
 
-;;TODO: add schema
-(rf/reg-fx
- :biometric/check-if-available
- (fn [{:keys [key-uid on-success on-fail]}]
-   (keychain/can-save-user-password?
-    (fn [can-save?]
-      (if-not can-save?
-        (utils/handle-cb on-fail
-                         (ex-info "cannot-save-user-password"
-                                  {:fx :biometric/check-if-available}))
-        (-> (biometrics/get-available)
-            (.then (fn [available?]
-                     (when-not available?
-                       (throw (js/Error. "biometric-not-available")))))
-            (.then #(keychain/get-auth-method! key-uid))
-            (.then (fn [auth-method]
-                     (when auth-method
-                       (utils/handle-cb on-success auth-method))))
-            (.catch (fn [err]
-                      (let [message (.-message err)]
-                        (utils/handle-cb on-fail
-                                         (ex-info message
-                                                  {:err err
-                                                   :fx  :biometric/check-if-available}))
-                        (when-not (= message "biometric-not-available")
-                          (log/error "Failed to check if biometrics is available"
-                                     {:error   err
-                                      :key-uid key-uid
-                                      :event   :profile.login/check-biometric})))))))))))
+(defn check-if-biometrics-available
+  [{:keys [key-uid on-success on-fail]}]
+  (keychain/can-save-user-password?
+   (fn [can-save?]
+     (if-not can-save?
+       (utils/handle-cb on-fail
+                        (ex-info "cannot-save-user-password"
+                                 {:fx :biometric/check-if-available}))
+       (-> (biometrics/get-available)
+           (.then (fn [available?]
+                    (when-not available?
+                      (throw (js/Error. "biometric-not-available")))))
+           (.then #(keychain/get-auth-method! key-uid))
+           (.then (fn [auth-method]
+                    (when auth-method
+                      (utils/handle-cb on-success auth-method))))
+           (.catch (fn [err]
+                     (let [message (.-message err)]
+                       (utils/handle-cb on-fail
+                                        (ex-info message
+                                                 {:err err
+                                                  :fx  :biometric/check-if-available}))
+                       (when-not (= message "biometric-not-available")
+                         (log/error "Failed to check if biometrics is available"
+                                    {:error   err
+                                     :key-uid key-uid
+                                     :event   :profile.login/check-biometric}))))))))))
+
+(schema/=> check-if-biometrics-available
+  [:=>
+   [:cat
+    [:map {:closed true}
+     [:key-uid string?]
+     [:on-success {:optional true} [:maybe fn?]]
+     [:on-fail {:optional true} [:maybe fn?]]]]
+   :any])
+
+(rf/reg-fx :biometric/check-if-available check-if-biometrics-available)
