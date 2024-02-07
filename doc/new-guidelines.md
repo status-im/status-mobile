@@ -74,32 +74,6 @@ This mistake mostly happens with functional components.
 
 It's important to name functional components with `f-` prefix.
 
-### Default value when destructuring
-
-Too often callers pass nil values because values can be wrapped in a `when` for example.
-In this case, the default value is not applied, because :or macro will use default only when the value is absent.
-Instead, use `(or value some-default-value)` in a `let` expression or as a parameter value.
-
-```clojure
-;; bad (unreliable)
-(defn- view-internal
-  [{:keys [auto-focus?
-           init-value
-           return-key-type]
-    :or   {auto-focus?     false
-           init-value      0
-           return-key-type :done}}])
-
-;; good
-(defn- view-internal
-  [{:keys [auto-focus?
-           init-value
-           return-key-type]}])
-    (let [auto-focus? (or auto-focus? false)
-          init-value (or init-value 0)
-          return-key-type (or return-key-type :done)])
-```
-
 ### Component props and API scheme to match Figma as closely as possible
 
 Ideally, the prop names for components (particularly in quo Design System)
