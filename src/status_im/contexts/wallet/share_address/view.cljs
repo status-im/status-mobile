@@ -74,8 +74,7 @@
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
-           :padding-top padding-top
-           :key         :share-adress}
+           :padding-top padding-top}
           [quo/page-nav
            {:icon-name           :i/close
             :on-press            #(rf/dispatch [:navigate-back])
@@ -83,9 +82,8 @@
             :right-side          [{:icon-name :i/scan
                                    :on-press  #(js/alert "To be implemented")}]
             :accessibility-label :top-bar}]
-          [quo/text-combinations
-           {:container-style style/header-container
-            :title           title}]
+          [quo/page-top {:title           title
+                         :container-style style/header-container}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
             {:type                (if watch-only? :watched-address :wallet)
