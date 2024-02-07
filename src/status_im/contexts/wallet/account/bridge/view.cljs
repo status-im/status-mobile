@@ -28,7 +28,7 @@
        [asset-list/view
         {:search-text    @search-text
          :on-token-press (fn [token]
-                           (rf/dispatch [:wallet/select-bridge-to
+                           (rf/dispatch [:wallet/bridge-select-token
                                          {:token    token
                                           :stack-id :wallet-bridge}]))}]])))
 
