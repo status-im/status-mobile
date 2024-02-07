@@ -54,9 +54,11 @@
     [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
     [status-im.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
-    [status-im.contexts.wallet.create-account.backup-recovery-phrase.view :as
-     wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
+    [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
+    [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
+     wallet-check-your-backup]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
@@ -345,6 +347,10 @@
     {:name      :wallet-backup-recovery-phrase
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
+
+    {:name      :wallet-check-your-backup
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-check-your-backup/view}
 
     {:name      :wallet-share-address
      :options   options/transparent-screen-options
