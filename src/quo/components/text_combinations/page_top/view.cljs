@@ -33,12 +33,13 @@
          (format-counter counter-bottom))]])
 
 (defn- header
-  [{:keys        [title input counter-top counter-bottom
+  [{:keys        [title title-accessibility-label input counter-top counter-bottom
                   title-right title-right-props]
     avatar-props :avatar}]
   (let [title-props (assoc title-right-props
-                           :title title
-                           :right title-right)]
+                           :title               title
+                           :right               title-right
+                           :accessibility-label title-accessibility-label)]
     [rn/view {:style style/header}
      [rn/view {:style style/header-title}
       (when avatar-props
