@@ -48,7 +48,12 @@
           result (sut/authenticate cofx [args])]
       (is (= (:prompt-message args) (get-in result [:fx 0 1 :prompt-message])))
       (is (not (nil? (get-in result [:fx 0 1 :on-success]))))
-      (is (not (nil? (get-in result [:fx 0 1 :on-fail])))))))
+      (is (not (nil? (get-in result [:fx 0 1 :on-fail]))))))
+
+  (testing "skips biometric check if another one pending"
+    (let [cofx   {:db {:biometric/auth-pending? true}}
+          result (sut/authenticate cofx [{}])]
+      (is (nil? result)))))
 
 (deftest enable-biometrics-test
   (testing "successfully enabling biometrics"

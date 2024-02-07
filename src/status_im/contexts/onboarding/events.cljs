@@ -32,8 +32,10 @@
 (rf/defn enable-biometrics
   {:events [:onboarding/enable-biometrics]}
   [_]
-  {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding/biometrics-done])
-                            :on-fail    #(rf/dispatch [:onboarding/biometrics-fail %])}})
+  {:fx [[:dispatch
+         [:biometric/authenticate
+          {:on-success #(rf/dispatch [:onboarding/biometrics-done])
+           :on-fail    #(rf/dispatch [:onboarding/biometrics-fail %])}]]]})
 
 (rf/defn navigate-to-enable-notifications
   {:events [:onboarding/navigate-to-enable-notifications]}
