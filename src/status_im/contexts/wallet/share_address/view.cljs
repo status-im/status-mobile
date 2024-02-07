@@ -32,18 +32,17 @@
 
 (defn- open-preferences
   [selected-networks]
-  (rf/dispatch [:show-bottom-sheet
-                {:theme :dark
-                 :shell? true
-                 :content
-                 (fn []
-                   [network-preferences/view
-                    {:blur?             true
-                     :selected-networks (set @selected-networks)
-                     :on-save           (fn [chain-ids]
-                                          (rf/dispatch [:hide-bottom-sheet])
-                                          (reset! selected-networks (map #(get utils/id->network %)
-                                                                         chain-ids)))}])}]))
+  (let [on-save       (fn [chain-ids]
+                        (rf/dispatch [:hide-bottom-sheet])
+                        (reset! selected-networks (map utils/id->network chain-ids)))
+        sheet-content (fn []
+                        [network-preferences/view
+                         {:blur?             true
+                          :selected-networks (set @selected-networks)
+                          :on-save           on-save}])]
+    (rf/dispatch [:show-bottom-sheet {:theme   :dark
+                                      :shell?  true
+                                      :content sheet-content}])))
 
 
 (defn view
