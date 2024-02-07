@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view
   (:require
     [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.temp :as temp]
@@ -20,8 +21,8 @@
        vec))
 
 (defn- random-words-with-string
-  [array given-string]
-  (let [random-words (->> array
+  [words given-string]
+  (let [random-words (->> words
                           (remove #(= % given-string))
                           (shuffle)
                           (take (dec questions-count)))
