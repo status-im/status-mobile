@@ -173,7 +173,7 @@
 =======
 
 (def wallet-feature-flags
-  {:edit-default-keypair true
+  {:edit-default-keypair false
    :bridge-token         false
    :remove-account       false})
 <<<<<<< HEAD
