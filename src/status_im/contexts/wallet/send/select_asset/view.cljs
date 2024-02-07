@@ -93,28 +93,24 @@
         on-close       #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])]
     (fn []
       [rn/safe-area-view {:style style/container}
-       [rn/scroll-view
-        {:content-container-style      {:flex 1}
-         :keyboard-should-persist-taps :handled
-         :scroll-enabled               false}
-        [account-switcher/view
-         {:icon-name     :i/arrow-left
-          :on-press      on-close
-          :switcher-type :select-account}]
-        [quo/text-combinations
-         {:title                     (i18n/label :t/select-asset)
-          :container-style           style/title-container
-          :title-accessibility-label :title-label}]
-        [quo/segmented-control
-         {:size            32
-          :blur?           false
-          :symbol          false
-          :default-active  :tab/assets
-          :container-style {:margin-horizontal 20
-                            :margin-vertical   8}
-          :data            tabs-data
-          :on-change       on-change-tab}]
-        [tab-view @search-text @selected-tab on-change-text]]])))
+       [account-switcher/view
+        {:icon-name     :i/arrow-left
+         :on-press      on-close
+         :switcher-type :select-account}]
+       [quo/text-combinations
+        {:title                     (i18n/label :t/select-asset)
+         :container-style           style/title-container
+         :title-accessibility-label :title-label}]
+       [quo/segmented-control
+        {:size            32
+         :blur?           false
+         :symbol          false
+         :default-active  :tab/assets
+         :container-style {:margin-horizontal 20
+                           :margin-vertical   8}
+         :data            tabs-data
+         :on-change       on-change-tab}]
+       [tab-view @search-text @selected-tab on-change-text]])))
 
 (defn- view-internal
   []
