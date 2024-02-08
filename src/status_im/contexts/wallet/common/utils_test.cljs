@@ -106,3 +106,12 @@
 
       (is (= (utils/get-wallet-qr wallet-singlechain)
              "x000")))))
+
+(deftest test-prettify-percentage-change
+  (testing "prettify-percentage-change function"
+    (is (= (utils/prettify-percentage-change nil) "0.00"))
+    (is (= (utils/prettify-percentage-change "") "0.00"))
+    (is (= (utils/prettify-percentage-change 0.5) "0.50"))
+    (is (= (utils/prettify-percentage-change 1.113454) "1.11"))
+    (is (= (utils/prettify-percentage-change -0.35) "0.35"))
+    (is (= (utils/prettify-percentage-change -0.78234) "0.78"))))
