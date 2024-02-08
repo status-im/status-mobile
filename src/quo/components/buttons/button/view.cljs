@@ -37,13 +37,10 @@
                pressed? on-press-in on-press-out allow-multiple-presses?]
         :or   {type                :primary
                size                40
-               customization-color (cond (= type :primary)  :blue
-                                         (= type :positive) :success
-                                         (= type :danger)   :danger
-                                         :else              nil)}}
+               customization-color (if (= type :primary) :blue nil)}}
        children]
       (let [{:keys [icon-color background-color label-color border-color blur-type
-                    blur-overlay-color border-radius]}
+                    blur-overlay-color border-radius overlay-customization-color]}
             (button-properties/get-values {:customization-color customization-color
                                            :background          background
                                            :type                type
@@ -79,9 +76,9 @@
                                             :icon-left        icon-left
                                             :icon-right       icon-right})
                     inner-style)}
-           (when customization-color
+           (when overlay-customization-color
              [customization-colors/overlay
-              {:customization-color customization-color
+              {:customization-color overlay-customization-color
                :theme               theme
                :pressed?            (if pressed? pressed? @pressed-state?)}])
            (when (= background :photo)

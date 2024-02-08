@@ -55,7 +55,7 @@
         [quo/text
          {:size  :paragraph-2
           :style {:color colors/neutral-50}}
-         (i18n/label :t/eligible-to-join-as {:role ""})]
+         (i18n/label :t/eligible-to-join-as)]
         [quo/context-tag
          {:type    :icon
           :icon    :i/members

@@ -2,7 +2,8 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.platform :as platform]))
+    [react-native.platform :as platform]
+    [status-im.navigation.transitions :as transitions]))
 
 (defn default-options
   []
@@ -87,6 +88,13 @@
     :layout                 {:componentBackgroundColor :transparent
                              :orientation              ["portrait"]
                              :backgroundColor          :transparent}}))
+
+(def transparent-modal-screen-options
+  (merge
+   transparent-screen-options
+   {:animations (merge
+                 transitions/new-to-status-modal-animations
+                 transitions/push-animations-for-transparent-background)}))
 
 (def sheet-options
   {:layout                 {:componentBackgroundColor :transparent
