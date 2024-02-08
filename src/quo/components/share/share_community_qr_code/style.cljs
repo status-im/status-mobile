@@ -20,8 +20,7 @@
   (- total-width (* 2 padding-horizontal)))
 
 (def share-qr-container
-  {:flex-direction  :row
-   :justify-content :space-between})
+  {:padding-bottom 12})
 
 (def share-qr-inner-container
   {:flex-direction :row
