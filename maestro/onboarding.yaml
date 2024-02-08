@@ -1,0 +1,15 @@
+appId: im.status.ethereum.debug
+---
+- tapOn: "I’m new to Status"
+- tapOn: "small-option-card"
+- tapOn: "Your name"
+- inputText: "DeviceA"
+- tapOn: "submit-create-profile-button"
+- inputText: "password123"
+- tapOn: "Repeat password"
+- inputText: "password123"
+- tapOn: "disclaimer-touchable-opacity"
+- tapOn: "Confirm password"
+- tapOn: "skip-identifiers"
+- tapOn: "enable-notifications-later-button"
+- tapOn: "welcome-button"

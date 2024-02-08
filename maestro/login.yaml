@@ -1,0 +1,5 @@
+appId: im.status.ethereum.debug
+---
+- tapOn: "password-input"
+- inputText: "password123" # update your account password here
+- tapOn: login-button

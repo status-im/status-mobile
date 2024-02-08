@@ -410,12 +410,15 @@
 (def ^:const ens-action-type-set-pub-key 2)
 
 ;; wallet
-(def ^:const mainnet-chain-id 1)
-(def ^:const optimism-chain-id 10)
-(def ^:const optimism-test-chain-id 420)
-(def ^:const arbitrum-chain-id 42161)
-(def ^:const arbitrum-test-chain-id 421613)
+(def ^:const ethereum-chain-id 1)
 (def ^:const goerli-chain-id 5)
+(def ^:const arbitrum-chain-id 42161)
+(def ^:const arbitrum-testnet-chain-id 421613)
+(def ^:const optimism-chain-id 10)
+(def ^:const optimism-testnet-chain-id 420)
+(def ^:const ethereum-sepolia-chain-id 11155111)
+(def ^:const arbitrum-sepolia-chain-id 421614)
+(def ^:const optimism-sepolia-chain-id 11155420)
 
 (def ^:const mainnet-short-name "eth")
 (def ^:const optimism-short-name "opt")

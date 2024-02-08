@@ -43,6 +43,7 @@
     [status-im.contexts.preview.quo.community.discover-card :as discover-card]
     [status-im.contexts.preview.quo.community.list-item :as community-list-item]
     [status-im.contexts.preview.quo.community.token-gating :as token-gating]
+    [status-im.contexts.preview.quo.counter.collectible-counter :as collectible-counter]
     [status-im.contexts.preview.quo.counter.counter :as counter]
     [status-im.contexts.preview.quo.counter.step :as step]
     [status-im.contexts.preview.quo.dividers.date :as divider-date]
@@ -261,7 +262,9 @@
                        {:name      :channel-actions
                         :options   {:insets {:bottom? true}}
                         :component channel-actions/view}]
-   :counter           [{:name      :counter
+   :counter           [{:name      :collectible-counter
+                        :component collectible-counter/view}
+                       {:name      :counter
                         :component counter/view}
                        {:name      :step
                         :component step/view}]

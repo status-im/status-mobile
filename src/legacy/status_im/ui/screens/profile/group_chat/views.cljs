@@ -109,7 +109,7 @@
 (defn hide-sheet-and-dispatch-old
   [event]
   (re-frame/dispatch [:bottom-sheet/hide-old])
-  (debounce/dispatch-and-chill event 2000))
+  (debounce/throttle-and-dispatch event 2000))
 
 (defn invitation-sheet
   [{:keys [id]} contact]

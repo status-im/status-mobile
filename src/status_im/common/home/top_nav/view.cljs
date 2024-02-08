@@ -4,7 +4,6 @@
     [status-im.common.home.top-nav.style :as style]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
-    [utils.debounce :refer [dispatch-and-chill]]
     [utils.re-frame :as rf]))
 
 (defn view
@@ -36,7 +35,7 @@
      {:avatar-on-press          #(rf/dispatch [:open-modal :settings])
       :scan-on-press            #(js/alert "to be implemented")
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
-      :qr-code-on-press         #(dispatch-and-chill [:open-modal :share-shell] 1000)
+      :qr-code-on-press         #(rf/dispatch [:open-modal :share-shell])
       :container-style          (merge style/top-nav-container container-style)
       :blur?                    blur?
       :jump-to?                 jump-to?

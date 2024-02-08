@@ -31,9 +31,11 @@
     [status-im.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im.contexts.onboarding.welcome.view :as welcome]
+    [status-im.contexts.preview.feature-flags.view :as feature-flags]
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
@@ -53,9 +55,11 @@
     [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
     [status-im.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
-    [status-im.contexts.wallet.create-account.backup-recovery-phrase.view :as
-     wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
+    [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
+    [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
+     wallet-check-your-backup]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
@@ -170,11 +174,15 @@
      :component profiles/view}
 
     {:name      :edit-profile
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-profile/view}
 
+    {:name      :edit-accent-colour
+     :options   options/transparent-modal-screen-options
+     :component edit-accent-colour/view}
+
     {:name      :edit-name
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-name/view}
 
     {:name      :new-to-status
@@ -345,6 +353,10 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
 
+    {:name      :wallet-check-your-backup
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-check-your-backup/view}
+
     {:name      :wallet-share-address
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
@@ -406,4 +418,9 @@
      status-im-preview/screens)
 
    (when config/quo-preview-enabled?
-     status-im-preview/main-screens)))
+     status-im-preview/main-screens)
+
+   (when config/quo-preview-enabled?
+     [{:name      :feature-flags
+       :options   {:insets {:top? true}}
+       :component feature-flags/view}])))

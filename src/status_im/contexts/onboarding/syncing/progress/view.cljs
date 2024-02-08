@@ -35,8 +35,8 @@
                              in-onboarding? (rf/dispatch [:navigate-back-to :sign-in-intro])
                              :else          (do
                                               (rf/dispatch [:navigate-back])
-                                              (debounce/dispatch-and-chill [:open-modal :sign-in]
-                                                                           1000))))
+                                              (debounce/throttle-and-dispatch [:open-modal :sign-in]
+                                                                              1000))))
     :accessibility-label :try-again-later-button
     :customization-color profile-color
     :container-style     style/try-again-button}

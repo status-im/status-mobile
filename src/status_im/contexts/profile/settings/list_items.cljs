@@ -96,6 +96,13 @@
        :action      :arrow
        :image       :icon
        :blur?       true
+       :image-props :i/light})
+    (when config/quo-preview-enabled?
+      {:title       "Feature Flags"
+       :on-press    #(rf/dispatch [:navigate-to :feature-flags])
+       :action      :arrow
+       :image       :icon
+       :blur?       true
        :image-props :i/light})]
    [{:title    (i18n/label :t/about)
      :on-press not-implemented/alert

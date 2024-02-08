@@ -7,6 +7,7 @@
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
+    [react-native.utils :as utils]
     [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
@@ -33,11 +34,27 @@
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
 (def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
 
-(def pressable (reagent/adapt-react-class (.-Pressable ^js react-native)))
-(def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
-(def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
-(def touchable-without-feedback
+(def pressable-class (reagent/adapt-react-class (.-Pressable ^js react-native)))
+(def touchable-opacity-class (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
+(def touchable-highlight-class (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
+(def touchable-without-feedback-class
   (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js react-native)))
+
+(defn pressable
+  [props & children]
+  (into [pressable-class (utils/custom-pressable-props props)] children))
+
+(defn touchable-opacity
+  [props & children]
+  (into [touchable-opacity-class (utils/custom-pressable-props props)] children))
+
+(defn touchable-highlight
+  [props & children]
+  (into [touchable-highlight-class (utils/custom-pressable-props props)] children))
+
+(defn touchable-without-feedback
+  [props & children]
+  (into [touchable-without-feedback-class (utils/custom-pressable-props props)] children))
 
 (def flat-list flat-list/flat-list)
 
