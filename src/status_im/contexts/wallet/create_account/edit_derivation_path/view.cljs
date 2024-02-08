@@ -72,7 +72,7 @@
          :default
          [quo/bottom-actions
           {:theme            theme
-           :actions          :1-action
+           :actions          :one-action
            :button-one-label (i18n/label :t/reveal-address)
            :button-one-props {:type      :outline
                               :icon-left :i/keycard-card
@@ -81,7 +81,7 @@
          :empty
          [quo/bottom-actions
           {:theme            theme
-           :actions          :1-action
+           :actions          :one-action
            :button-one-label (i18n/label :t/derive-addresses)
            :button-one-props {:type      :outline
                               :icon-left :i/keycard-card
@@ -111,7 +111,7 @@
        [rn/view {:style (style/save-button-container bottom)}
         [quo/bottom-actions
          {:theme            theme
-          :actions          :1-action
+          :actions          :one-action
           :button-one-label (i18n/label :t/save)
           :button-one-props {:type      :primary
                              :on-press  #(js/alert "Save!")
