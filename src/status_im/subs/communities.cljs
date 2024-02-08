@@ -363,6 +363,11 @@
  (fn [communities [_ community-id]]
    (get-in communities [community-id :intro-message])))
 
+(re-frame/reg-sub :communities/permissioned-balances-by-address
+ :<- [:communities/permissioned-balances]
+ (fn [balances [_ community-id account-address]]
+   (get-in balances [community-id (keyword account-address)])))
+
 (re-frame/reg-sub
  :communities/selected-permission-addresses
  (fn [[_ community-id]]

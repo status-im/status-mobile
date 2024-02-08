@@ -24,7 +24,7 @@
         [:address [:maybe :string]]
         [:emoji [:maybe :string]]
         [:customization-color [:maybe [:or :string :keyword]]]]]
-      [:token-details {:optional true} [:maybe [:vector required-tokens/?schema]]]
+      [:token-details {:optional true} [:maybe [:sequential required-tokens/?schema]]]
       [:keycard? {:optional true} [:maybe :boolean]]
       [:checked? {:optional true} [:maybe :boolean]]
       [:disabled? {:optional true} [:maybe :boolean]]
@@ -47,14 +47,16 @@
          (i18n/label :t/no-relevant-tokens)]
 
         (let [token-length (dec (count tokens))]
-          (map-indexed (fn [idx {:keys [token amount]}]
+          (map-indexed (fn [idx {:keys [type token amount collectible-name collectible-img-src]}]
                          ^{:key idx}
                          [required-tokens/view
-                          {:container-style style/token-and-text
-                           :type            :token
-                           :amount          amount
-                           :token           token
-                           :divider?        (not= token-length idx)}])
+                          {:container-style     style/token-and-text
+                           :type                type
+                           :amount              amount
+                           :token               token
+                           :collectible-img-src collectible-img-src
+                           :collectible-name    collectible-name
+                           :divider?            (not= token-length idx)}])
                        tokens)))]]))
 
 (defn- view-internal

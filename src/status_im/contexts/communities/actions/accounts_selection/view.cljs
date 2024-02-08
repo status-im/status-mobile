@@ -18,7 +18,7 @@
                                           {:community-id id :password %}])}])
   (rf/dispatch [:navigate-back]))
 
-(defn f-view-internal
+(defn view
   []
   (let [{id :community-id}                (rf/sub [:get-screen-params])
         {:keys [name color images]}       (rf/sub [:communities/community id])
@@ -83,7 +83,3 @@
         :track-icon          :i/face-id
         :customization-color color
         :on-complete         #(join-community-and-navigate-back id)}]]]))
-
-(defn view
-  []
-  [:f> f-view-internal])
