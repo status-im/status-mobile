@@ -1,7 +1,7 @@
 (ns quo.components.community.style
   (:require
-    [quo.foundations.colors :as colors]
-    [quo.foundations.shadows :as shadows]))
+   [quo.foundations.colors :as colors]
+   [quo.foundations.shadows :as shadows]))
 
 (defn community-card
   [radius theme]
@@ -248,3 +248,4 @@
   {:width       20
    :display     :flex
    :align-items :center})
+
