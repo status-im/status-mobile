@@ -1,11 +1,11 @@
-(ns status-im.contexts.wallet.share-community.view
+(ns status-im.contexts.wallet.share-community-channel.view
   (:require
    [quo.core :as quo]
    [react-native.core :as rn]
    [react-native.safe-area :as safe-area]
    [reagent.core :as reagent]
    [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.share-community.style :as style]
+   [status-im.contexts.wallet.share-community-channel.style :as style]
    [utils.i18n :as i18n]
    [utils.image-server :as image-server]
    [utils.re-frame :as rf]))
@@ -32,7 +32,7 @@
                                   :port        (rf/sub [:mediaserver/port])
                                   :qr-size     qr-size
                                   :error-level :highest})
-            title               "Share community"]
+            title               "Share channel"]
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1

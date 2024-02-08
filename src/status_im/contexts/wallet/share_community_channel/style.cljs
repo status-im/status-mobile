@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.share-community.style)
+(ns status-im.contexts.wallet.share-community-channel.style)
 
 (def header-container
   {:padding-horizontal 20

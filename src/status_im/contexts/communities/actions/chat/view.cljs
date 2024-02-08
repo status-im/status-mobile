@@ -1,13 +1,13 @@
 (ns status-im.contexts.communities.actions.chat.view
   (:require
-    [quo.core :as quo]
-    [status-im.common.mute-drawer.view :as mute-drawer]
-    [status-im.common.muting.helpers :refer [format-mute-till]]
-    [status-im.common.not-implemented :as not-implemented]
-    [status-im.config :as config]
-    [status-im.contexts.chat.actions.view :as chat-actions]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [status-im.common.mute-drawer.view :as mute-drawer]
+   [status-im.common.muting.helpers :refer [format-mute-till]]
+   [status-im.common.not-implemented :as not-implemented]
+   [status-im.config :as config]
+   [status-im.contexts.chat.actions.view :as chat-actions]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -97,7 +97,8 @@
   []
   {:icon                :i/qr-code
    :accessibility-label :chat-show-qr-code
-   :on-press            not-implemented/alert
+  ;;  :on-press            not-implemented/alert
+   :on-press            #(rf/dispatch [:open-modal :community-share])
    :label               (i18n/label :t/show-qr)})
 
 (defn- action-share
