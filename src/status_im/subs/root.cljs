@@ -7,6 +7,7 @@
     status-im.subs.contact
     status-im.subs.general
     status-im.subs.messages
+    status-im.subs.navigation
     status-im.subs.onboarding
     status-im.subs.pairing
     status-im.subs.profile
@@ -22,6 +23,7 @@
 
 ;;view
 (reg-root-key-sub :view-id :view-id)
+(reg-root-key-sub :modal-view-ids :modal-view-ids)
 (reg-root-key-sub :screen-params :navigation/screen-params)
 (reg-root-key-sub :animation-shared-element-id :animation-shared-element-id)
 

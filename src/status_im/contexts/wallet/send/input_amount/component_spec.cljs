@@ -45,7 +45,8 @@
    :wallet/wallet-send-loading-suggested-routes? false
    :wallet/wallet-send-route                     {:route []}
    :wallet/wallet-send-suggested-routes          {:candidates []}
-   :wallet/wallet-send-selected-networks         []})
+   :wallet/wallet-send-selected-networks         []
+   :navigation/current-screen-id                 :wallet-send-input-amount})
 
 (defn- render
   [component]

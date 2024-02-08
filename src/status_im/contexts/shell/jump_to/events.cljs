@@ -149,7 +149,9 @@
                           (not hidden-screen?)
                           (:current-chat-id db))
                      (conj [:chat/close]))})
-    {:db          (assoc db :view-id go-to-view-id)
+    {:db          (-> db
+                      (assoc :view-id go-to-view-id)
+                      (dissoc :modal-view-ids))
      :navigate-to go-to-view-id}))
 
 (rf/defn shell-navigate-back
@@ -174,7 +176,8 @@
                shell.constants/close-screen-with-slide-to-right-animation))}
        (when (and current-chat-id community-id)
          {:dispatch [:shell/add-switcher-card shell.constants/community-screen community-id]}))
-      {:navigate-back nil})))
+      {:navigate-back nil
+       :db            (dissoc db :modal-view-ids)})))
 
 (rf/defn floating-screen-opened
   {:events [:shell/floating-screen-opened]}
