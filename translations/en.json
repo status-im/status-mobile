@@ -2266,6 +2266,8 @@
     "you-not-eligible-to-join": "You’re not eligible to join",
     "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
     "addresses-dont-contain-tokens-needed": "These addresses don’t contain tokens needed to join",
+    "you-hodl": "You hodl:",
+    "network-not-supported": "Networks not supported",
     "token-gated-communities": "Token gated communities",
     "read-more": "Read more",
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
