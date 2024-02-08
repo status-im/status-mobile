@@ -56,11 +56,11 @@
   (let [address (extract-id scanned-text)]
     (cond
       (text-for-url-path? scanned-text router/community-with-data-path)
-      ;; TODO(alwx): community link, to be implemented
+      ;; TODO: https://github.com/status-im/status-mobile/issues/18743
       nil
 
       (text-for-url-path? scanned-text router/channel-path)
-      ;; TODO(alwx): channel link, to be implemented
+      ;; TODO: https://github.com/status-im/status-mobile/issues/18743
       nil
 
       (text-for-url-path? scanned-text router/user-with-data-path)
@@ -74,7 +74,7 @@
       (debounce/debounce-and-dispatch [:navigate-to :wallet-accounts address] 300)
 
       (pairing-qr-code? scanned-text)
-      ;; TODO(alwx): pairing link, to be implemented
+      ;; TODO: https://github.com/status-im/status-mobile/issues/18744
       nil
 
       :else

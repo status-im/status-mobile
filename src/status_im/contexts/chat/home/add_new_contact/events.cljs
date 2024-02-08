@@ -88,7 +88,7 @@
 
 (declare build-contact)
 
-(defn set-new-identity
+(defn- set-new-identity
   [{:keys [db]} [{:keys [input build-success-fn failure-fn]}]]
   (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
@@ -130,18 +130,18 @@
 
 (re-frame/reg-event-fx :contacts/set-new-identity set-new-identity)
 
-(defn set-new-identity-success
+(defn- set-new-identity-success
   [{:keys [db]} [{:keys [input pubkey build-success-fn]}]]
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
-      (merge {:db (assoc db :contacts/new-identity (->state (assoc contact :public-key pubkey)))}
-             (build-contact {:pubkey     pubkey
-                             :ens        (:ens contact)
-                             :success-fn build-success-fn})))))
+      {:db (assoc db :contacts/new-identity (->state (assoc contact :public-key pubkey)))
+       :dispatch [:contacts/build-contact {:pubkey     pubkey
+                                           :ens        (:ens contact)
+                                           :success-fn build-success-fn}]})))
 
 (re-frame/reg-event-fx :contacts/set-new-identity-success set-new-identity-success)
 
-(defn set-new-identity-error
+(defn- set-new-identity-error
   [{:keys [db]} [{:keys [input err failure-fn]}]]
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
@@ -159,8 +159,8 @@
 
 (re-frame/reg-event-fx :contacts/set-new-identity-error set-new-identity-error)
 
-(defn build-contact
-  [{:keys [pubkey ens success-fn]}]
+(defn- build-contact
+  [_ [{:keys [pubkey ens success-fn]}]]
   {:json-rpc/call [{:method      "wakuext_buildContact"
                     :params      [{:publicKey pubkey
                                    :ENSName   ens}]
@@ -170,9 +170,9 @@
                                                        :contact    (data-store.contacts/<-rpc-js %)
                                                        :success-fn success-fn}])}]})
 
-(re-frame/reg-event-fx :contacts/build-contact (fn [_ [contact-data]] (build-contact contact-data)))
+(re-frame/reg-event-fx :contacts/build-contact build-contact)
 
-(defn build-contact-success
+(defn- build-contact-success
   [{:keys [db]} [{:keys [pubkey contact success-fn]}]]
   (merge {:db (assoc-in db [:contacts/contacts pubkey] contact)}
          (when success-fn
@@ -180,7 +180,7 @@
 
 (re-frame/reg-event-fx :contacts/build-contact-success build-contact-success)
 
-(defn clear-new-identity
+(defn- clear-new-identity
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
 

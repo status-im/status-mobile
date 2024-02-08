@@ -358,7 +358,6 @@
 
 (rf/reg-event-fx :communities/navigate-to-community-overview
  (fn [cofx [deserialized-key]]
-   (js/console.log "ALWX KEY" deserialized-key)
    (if (string/starts-with? deserialized-key constants/serialization-key)
      (navigate-to-serialized-community cofx deserialized-key)
      (rf/merge
