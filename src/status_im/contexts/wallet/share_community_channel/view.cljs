@@ -1,38 +1,27 @@
 (ns status-im.contexts.wallet.share-community-channel.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.share-community-channel.style :as style]
-   [utils.i18n :as i18n]
-   [utils.image-server :as image-server]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.contexts.wallet.share-community-channel.style :as style]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def qr-size 500)
 
-
 (defn view
   []
-  (let [padding-top       (:top (safe-area/get-insets))
-        wallet-type       (reagent/atom :legacy)
-        ;; Design team is yet to confirm the default selected networks here.
-        ;; Should be the current selected for the account or all the networks always
-        selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
+  (let [padding-top (:top (safe-area/get-insets))]
     (fn []
-      (let [{:keys [address color emoji watch-only?]
-             :as   account}     (rf/sub [:wallet/current-viewing-account])
-            qr-url              (utils/get-wallet-qr {:wallet-type @wallet-type
-                                                      :selected-networks
-                                                      @selected-networks
-                                                      :address address})
-            qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
-                                 {:url         qr-url
-                                  :port        (rf/sub [:mediaserver/port])
-                                  :qr-size     qr-size
-                                  :error-level :highest})
-            title               "Share channel"]
+      (let [{:keys [emoji watch-only?]} (rf/sub [:wallet/current-viewing-account])
+            {:keys [url]}               (rf/sub [:get-screen-params])
+            qr-media-server-uri         (image-server/get-qr-image-uri-for-any-url
+                                         {:url         url
+                                          :port        (rf/sub [:mediaserver/port])
+                                          :qr-size     qr-size
+                                          :error-level :highest})
+            title                       (i18n/label :t/share-channel)]
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
@@ -50,11 +39,7 @@
             :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-community-qr-code
-            {:type                (if watch-only? :watched-address :wallet)
-             :qr-image-uri        qr-media-server-uri
-             :qr-data             qr-url
-             :networks            @selected-networks
-             :profile-picture     nil
-             :full-name           (:name account)
-             :customization-color color
-             :emoji               emoji}]]]]))))
+            {:type         (if watch-only? :watched-address :wallet)
+             :qr-image-uri qr-media-server-uri
+             :qr-data      url
+             :emoji        emoji}]]]]))))

@@ -1,14 +1,14 @@
 (ns status-im.contexts.communities.actions.community-options.view
   (:require
-   [quo.core :as quo]
-   [status-im.common.mute-drawer.view :as mute-options]
-   [status-im.common.muting.helpers :refer [format-mute-till]]
-   [status-im.constants :as constants]
-   [status-im.contexts.communities.actions.leave.view :as leave-menu]
-   [status-im.contexts.communities.actions.see-rules.view :as see-rules]
-   [status-im.contexts.communities.actions.token-gating.view :as token-gating]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [status-im.common.mute-drawer.view :as mute-options]
+    [status-im.common.muting.helpers :refer [format-mute-till]]
+    [status-im.constants :as constants]
+    [status-im.contexts.communities.actions.leave.view :as leave-menu]
+    [status-im.contexts.communities.actions.see-rules.view :as see-rules]
+    [status-im.contexts.communities.actions.token-gating.view :as token-gating]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]

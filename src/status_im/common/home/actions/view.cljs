@@ -1,17 +1,17 @@
 (ns status-im.common.home.actions.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [status-im.common.confirmation-drawer.view :as confirmation-drawer]
-   [status-im.common.mute-drawer.view :as mute-drawer]
-   [status-im.common.muting.helpers :refer [format-mute-till]]
-   [status-im.config :as config]
-   [status-im.constants :as constants]
-   [status-im.contexts.chat.actions.view :as chat-actions]
-   [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]
-   [status-im.contexts.communities.actions.chat.view :as communities-chat-actions]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [status-im.common.confirmation-drawer.view :as confirmation-drawer]
+    [status-im.common.mute-drawer.view :as mute-drawer]
+    [status-im.common.muting.helpers :refer [format-mute-till]]
+    [status-im.config :as config]
+    [status-im.constants :as constants]
+    [status-im.contexts.chat.actions.view :as chat-actions]
+    [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]
+    [status-im.contexts.communities.actions.chat.view :as communities-chat-actions]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -282,8 +282,7 @@
   []
   (entry {:icon                :i/qr-code
           :label               (i18n/label :t/show-qr)
-          ;; :on-press            #(js/alert "TODO: to be implemented, requires design input")
-          :on-press            #(rf/dispatch [:open-modal :community-share])
+          :on-press            #(js/alert "TODO: to be implemented, requires design input")
           :danger?             false
           :accessibility-label :show-qr-code
           :sub-label           nil

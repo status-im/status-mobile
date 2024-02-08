@@ -251,6 +251,21 @@
                                   :chat-id chat-id
                                   :event   "share-community-channel-url-with-data"}))}]})))
 
+(rf/reg-event-fx :communities/community-channel-url-qr-code-with-data
+ (fn [_ [chat-id]]
+   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
+     {:json-rpc/call
+      [{:method     "wakuext_shareCommunityChannelURLWithData"
+        :params     [{:CommunityID community-id :ChannelID channel-id}]
+        :on-success (fn [url]
+                      (rf/dispatch [:open-modal :share-community-channel {:url url}]))
+        :on-error   (fn [err]
+                      (log/error "failed to retrieve community channel url with data"
+                                 {:error   err
+                                  :chat-id chat-id
+                                  :event   "communities/community-channel-url-qr-code-with-data"}))}]})))
+
+
 (rf/reg-event-fx :communities/set-airdrop-address
  (fn [{:keys [db]} [address community-id]]
    {:db (assoc-in db [:communities community-id :airdrop-address] address)}))
