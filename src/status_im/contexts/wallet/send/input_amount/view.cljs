@@ -223,12 +223,11 @@
            :input-value  @input-value
            :fetch-routes #(fetch-routes % current-limit)}]
          [quo/bottom-actions
-          {:actions             :one-action
-           :button-one-label    button-one-label
-           :button-one-props    (merge button-one-props
-                                       {:disabled? confirm-disabled?
-                                        :on-press  on-confirm})
-           :customization-color color}]
+          {:actions          :one-action
+           :button-one-label button-one-label
+           :button-one-props (merge button-one-props
+                                    {:disabled? confirm-disabled?
+                                     :on-press  on-confirm})}]
          [quo/numbered-keyboard
           {:container-style (style/keyboard-container bottom)
            :left-action     :dot
