@@ -31,4 +31,3 @@
                            (rf/dispatch [:wallet/bridge-select-token
                                          {:token    token
                                           :stack-id :wallet-bridge}]))}]])))
-

@@ -14,8 +14,7 @@
 (defn- bridge-token-component
   []
   (fn [{:keys [chain-id network-name]} token]
-    (let [token-data        (first (rf/sub [:wallet/tokens-filtered (:name token)]))
-          network           (rf/sub [:wallet/network-details-by-chain-id chain-id])
+    (let [network           (rf/sub [:wallet/network-details-by-chain-id chain-id])
           currency          (rf/sub [:profile/currency])
           currency-symbol   (rf/sub [:profile/currency-symbol])
           all-balances      (:balances-per-chain token)
@@ -30,9 +29,9 @@
         :network-image (quo.resources/get-network (:network-name network))
         :token-value   (str crypto-formatted " " (:symbol token))
         :fiat-value    fiat-formatted
-        :on-press      #(rf/dispatch [:wallet/select-bridge-send
-                                      {:token    token-data
-                                       :stack-id :wallet-bridge}])}])))
+        :on-press      #(rf/dispatch [:wallet/select-bridge-network
+                                      {:network-chain-id chain-id
+                                       :stack-id         :wallet-bridge}])}])))
 
 (defn- view-internal
   []
