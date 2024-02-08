@@ -3,10 +3,12 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.account-origin.schema :as component-schema]
     [quo.components.wallet.account-origin.style :as style]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 (defn- row-title
@@ -107,14 +109,5 @@
        [card-view theme derivation-path secondary-color on-press])]))
 
 (def view
-  "Create an account-origin UI component.
-  | key                   | values                                         |
-  | ----------------------|------------------------------------------------|
-  | :type                 | :default-keypair :recovery-phrase :private-key 
-  | :stored               | :on-device :on-keycard
-  | :profile-picture      | image source
-  | :customization-color  | profile color
-  | :derivation-path      | string
-  | :user-name            | string
-  | :on-press             | function"
-  (quo.theme/with-theme view-internal))
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))
