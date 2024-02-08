@@ -223,7 +223,7 @@
            :input-value  @input-value
            :fetch-routes #(fetch-routes % current-limit)}]
          [quo/bottom-actions
-          {:actions             :1-action
+          {:actions             :one-action
            :button-one-label    button-one-label
            :button-one-props    (merge button-one-props
                                        {:disabled? confirm-disabled?

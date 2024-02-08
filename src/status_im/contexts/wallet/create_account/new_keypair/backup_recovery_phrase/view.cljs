@@ -77,7 +77,8 @@
        (if @revealed?
          [rn/view {:style style/slide-button}
           [quo/bottom-actions
-           {:button-one-label (i18n/label :t/i-have-written)
+           {:actions          :one-action
+            :button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
                                :on-press            #(rf/dispatch [:navigate-to
@@ -87,7 +88,8 @@
             :style (style/description-text theme)}
            (i18n/label :t/next-you-will)]]
          [quo/bottom-actions
-          {:button-one-label (i18n/label :t/reveal-phrase)
+          {:actions          :one-action
+           :button-one-label (i18n/label :t/reveal-phrase)
            :button-one-props {:disabled?           (some false? (vals @checked?))
                               :customization-color customization-color
                               :on-press            #(reset! revealed? true)}
