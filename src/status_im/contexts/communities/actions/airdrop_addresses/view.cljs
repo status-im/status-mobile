@@ -1,20 +1,20 @@
 (ns status-im.contexts.communities.actions.airdrop-addresses.view
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.contexts.communities.actions.airdrop-addresses.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- render-item
+(defn- address-item
   [item _ _ [airdrop-address community-id]]
   [quo/account-item
    {:account-props item
     :state         (when (= airdrop-address (:address item)) :selected)
     :on-press      (fn []
                      (rf/dispatch [:communities/set-airdrop-address (:address item) community-id])
-                     (rf/dispatch [:navigate-back]))
+                     (rf/dispatch [:hide-bottom-sheet]))
     :emoji         (:emoji item)}])
 
 (defn view
@@ -33,9 +33,9 @@
        :on-button-press     not-implemented/alert
        :community-logo      (get-in images [:thumbnail :uri])
        :customization-color color}]
-     [rn/flat-list
+     [gesture/flat-list
       {:data                    selected-accounts
-       :render-fn               render-item
+       :render-fn               address-item
        :render-data             [airdrop-address id]
        :content-container-style style/account-list-container
        :key-fn                  :address}]]))

@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
             [status-im.contexts.communities.utils :as communities.utils]
@@ -31,7 +32,7 @@
         highest-role-text
         (i18n/label
          (communities.utils/role->translation-key highest-permission-role))]
-    [rn/safe-area-view {:style style/container}
+    [:<>
      [quo/drawer-top
       {:type                :context-tag
        :title               (i18n/label :t/addresses-for-permissions)
@@ -42,7 +43,7 @@
        :community-logo      (get-in images [:thumbnail :uri])
        :customization-color color}]
 
-     [rn/flat-list
+     [gesture/flat-list
       {:render-fn               account-item
        :render-data             [selected-addresses id]
        :content-container-style {:padding 20}
@@ -80,7 +81,7 @@
         :container-style {:flex 1}
         :on-press        (fn []
                            (rf/dispatch [:communities/reset-selected-permission-addresses id])
-                           (rf/dispatch [:navigate-back]))}
+                           (rf/dispatch [:hide-bottom-sheet]))}
        (i18n/label :t/cancel)]
       [quo/button
        {:container-style     {:flex 1}
@@ -88,5 +89,5 @@
         :disabled?           (empty? selected-addresses)
         :on-press            (fn []
                                (rf/dispatch [:communities/update-previous-permission-addresses id])
-                               (rf/dispatch [:navigate-back]))}
+                               (rf/dispatch [:hide-bottom-sheet]))}
        (i18n/label :t/confirm-changes)]]]))

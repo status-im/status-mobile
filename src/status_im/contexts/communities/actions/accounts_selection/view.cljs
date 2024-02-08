@@ -5,6 +5,8 @@
     [react-native.gesture :as gesture]
     [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
+    [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
+    [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.i18n :as i18n]
@@ -52,8 +54,9 @@
        [quo/category
         {:list-type :settings
          :data      [{:title             (i18n/label :t/join-as-a {:role highest-role-text})
-                      :on-press          #(rf/dispatch [:open-modal :addresses-for-permissions
-                                                        {:community-id id}])
+                      :on-press          #(rf/dispatch [:show-bottom-sheet
+                                                        {:community-id id
+                                                         :content      addresses-for-permissions/view}])
                       :description       :text
                       :action            :arrow
                       :label             :preview
@@ -61,8 +64,9 @@
                                           :data selected-accounts}
                       :description-props {:text (i18n/label :t/all-addresses)}}
                      {:title             (i18n/label :t/for-airdrops)
-                      :on-press          #(rf/dispatch [:open-modal :airdrop-addresses
-                                                        {:community-id id}])
+                      :on-press          #(rf/dispatch [:show-bottom-sheet
+                                                        {:community-id id
+                                                         :content      airdrop-addresses/view}])
                       :description       :text
                       :action            :arrow
                       :label             :preview
