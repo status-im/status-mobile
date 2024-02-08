@@ -134,10 +134,11 @@
   [{:keys [db]} [{:keys [input pubkey build-success-fn]}]]
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
-      {:db (assoc db :contacts/new-identity (->state (assoc contact :public-key pubkey)))
-       :dispatch [:contacts/build-contact {:pubkey     pubkey
-                                           :ens        (:ens contact)
-                                           :success-fn build-success-fn}]})))
+      {:db       (assoc db :contacts/new-identity (->state (assoc contact :public-key pubkey)))
+       :dispatch [:contacts/build-contact
+                  {:pubkey     pubkey
+                   :ens        (:ens contact)
+                   :success-fn build-success-fn}]})))
 
 (re-frame/reg-event-fx :contacts/set-new-identity-success set-new-identity-success)
 
