@@ -75,7 +75,8 @@
         :container-style     {:margin-horizontal 20
                               :margin-vertical   8}})]
      [quo/bottom-actions
-      {:button-one-label (i18n/label :t/confirm-account-origin)
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/confirm-account-origin)
        :button-one-props {:disabled?           true
                           :customization-color customization-color}
        :container-style  style/bottom-action-container}]]))
