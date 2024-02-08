@@ -2,55 +2,105 @@
   (:require
     [quo.components.buttons.button.view :as button]
     [quo.components.drawers.bottom-actions.style :as style]
+    [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.components.tags.context-tag.view :as context-tag]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [schema.core :as schema]
+    [utils.i18n :as i18n]))
 
-(def default-props
-  {:button-one-type     :primary
-   :button-two-type     :grey
-   :customization-color :blue})
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:actions [:maybe [:enum :one-action :two-actions]]]
+      [:description {:optional true} [:maybe [:enum :top :bottom :top-error]]]
+      [:description-text {:optional true} [:maybe :string]]
+      [:error-message {:optional true} [:maybe :string]]
+      [:role {:optional true} [:maybe [:enum :admin :member :token-master :owner]]]
+      [:button-one-label {:optional true} [:maybe :string]]
+      [:button-two-label {:optional true} [:maybe :string]]
+      [:button-one-props {:optional true} [:maybe :map]]
+      [:button-two-props {:optional true} [:maybe :map]]
+      [:theme :schema.common/theme]
+      [:scroll? {:optional true} [:maybe :boolean]]
+      [:blur? {:optional true} [:maybe :boolean]]
+      [:container-style {:optional true} [:maybe :map]]]]]
+   :any])
+
+(def ^:private role-icon
+  {:admin        :i/gavel
+   :member       :i/members
+   :token-master :i/token-master
+   :owner        :i/crown})
 
 (defn- view-internal
-  "Options:
-
-  :actions - keyword (default nil) - :1-action/:2-actions
-  :description - string (default nil) - Description to display below the title
-  :button-one-label - string (default nil) - Label for the first button
-  :button-two-label - string (default nil) - Label for the second button
-  :button-one-props - map with props for button one
-  :button-two-props - map with props for button two
-  :theme - :light/:dark
-  :scroll? - bool (default false) - Whether the iOS Home Indicator should be rendered"
-  [props]
-  (let [{:keys [actions description button-one-label button-two-label
-                button-one-props button-two-props theme scroll? customization-color container-style]}
-        (merge default-props props)]
-    [rn/view {:style container-style}
-     [rn/view {:style style/buttons-container}
-      (when (= actions :2-actions)
-        [button/button
-         (merge
-          {:size                40
-           :background          (when scroll? :blur)
-           :container-style     style/button-container-2-actions
-           :theme               theme
-           :accessibility-label :button-two}
-          button-two-props)
-         button-two-label])
-      [button/button
-       (merge
-        {:size                40
-         :container-style     style/button-container
-         :background          (when scroll? :blur)
-         :theme               theme
-         :accessibility-label :button-one
-         :customization-color customization-color}
-        button-one-props)
-       button-one-label]]
-     (when description
+  [{:keys [actions description description-text error-message role button-one-label button-two-label
+           blur? button-one-props button-two-props theme scroll? container-style]}]
+  [blur/view
+   {:blur-amount   20
+    :blur-type     :transparent
+    :overlay-color (if blur?
+                     colors/neutral-80-opa-1-blur
+                     (colors/theme-colors colors/white-70-blur
+                                          colors/neutral-95-opa-70-blur
+                                          theme))}
+   [rn/view
+    {:style (merge (style/container scroll? blur? theme) container-style)}
+    (when (= description :top-error)
+      [rn/view {:style style/error-message}
+       [icon/icon
+        :i/alert
+        {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+         :size  16}]
        [text/text
         {:size  :paragraph-2
-         :style (style/description theme scroll?)} description])]))
+         :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
+        error-message]])
 
-(def view (quo.theme/with-theme view-internal))
+    (when (= description :top)
+      [rn/view
+       {:style style/description-top}
+       [text/text
+        {:size  :paragraph-2
+         :style (style/description-top-text scroll? blur? theme)}
+        (i18n/label :t/eligible-to-join-as)]
+       [context-tag/view
+        {:type    :icon
+         :size    24
+         :icon    (role role-icon)
+         :blur?   blur?
+         :context (i18n/label (keyword "t" role))}]])
+
+    [rn/view {:style style/buttons-container}
+     (when (= actions :two-actions)
+       [button/button
+        (merge
+         {:size                40
+          :background          (when (or blur? scroll?) :blur)
+          :container-style     style/button-container
+          :theme               theme
+          :accessibility-label :button-two}
+         button-two-props)
+        button-two-label])
+     [button/button
+      (merge
+       {:size                40
+        :container-style     style/button-container
+        :background          (when (or blur? scroll?) :blur)
+        :theme               theme
+        :accessibility-label :button-one}
+       button-one-props)
+      button-one-label]]
+    (when (= description :bottom)
+      [text/text
+       {:size  :paragraph-2
+        :style (style/description-bottom scroll? blur? theme)} description-text])]])
+
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal ?schema)))
