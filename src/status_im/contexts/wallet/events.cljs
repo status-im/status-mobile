@@ -215,9 +215,9 @@
    {:db (assoc-in db [:wallet :ui :send :type] :bridge)
     :fx [[:dispatch [:open-modal :wallet-bridge]]]}))
 
-(rf/reg-event-fx :wallet/select-bridge-send
- (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :token] token)
+(rf/reg-event-fx :wallet/select-bridge-network
+ (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
+   {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
     :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-send stack-id]]]]}))
 
 (rf/reg-event-fx

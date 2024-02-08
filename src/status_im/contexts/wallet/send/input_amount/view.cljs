@@ -141,7 +141,7 @@
                                               (<= input-num-value 0)
                                               (> input-num-value current-limit-amount))
                                   (debounce/debounce-and-dispatch
-                                   [:wallet/get-suggested-routes @input-value]
+                                   [:wallet/get-suggested-routes {:amount @input-value}]
                                    100)))
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount

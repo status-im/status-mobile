@@ -1,8 +1,8 @@
 (ns status-im.feature-flags
   (:require
-    [clojure.string :as string]
-    [react-native.config :as config]
-    [reagent.core :as reagent]))
+   [clojure.string :as string]
+   [react-native.config :as config]
+   [reagent.core :as reagent]))
 
 (defn- enabled-in-env?
   [k]

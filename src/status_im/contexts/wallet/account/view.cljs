@@ -1,15 +1,15 @@
 (ns status-im.contexts.wallet.account.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im.contexts.wallet.account.style :as style]
-    [status-im.contexts.wallet.account.tabs.view :as tabs]
-    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.temp :as temp]
-    [status-im.feature-flags :as ff]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [status-im.contexts.wallet.account.style :as style]
+   [status-im.contexts.wallet.account.tabs.view :as tabs]
+   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+   [status-im.contexts.wallet.common.temp :as temp]
+   [status-im.feature-flags :as ff]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn buy-drawer
   []
