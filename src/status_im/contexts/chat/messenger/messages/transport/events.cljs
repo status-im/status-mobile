@@ -170,6 +170,12 @@
                   (models.visibility-status-updates/handle-visibility-status-updates
                    visibility-status-updates-clj)))
 
+      (seq accounts)
+      (do
+        (js-delete response-js "accounts")
+        (rf/merge cofx
+                  (process-next response-js sync-handler)))
+
       (seq settings)
       (do
         (js-delete response-js "settings")

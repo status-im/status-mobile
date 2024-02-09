@@ -31,7 +31,7 @@
        :subtitle  (utils/get-shortened-checksum-address (:address account))
        :accessory [icons/icon :main-icons/check {:color colors/gray}]}]
      [react/view {:padding-vertical 8}
-      [react/view {:style {:margin-top 8}}]]
+      [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]]
      [list.item/list-item
       {:theme               :negative
        :title               (i18n/label :t/revoke-access)
@@ -85,7 +85,7 @@
                                    (js/setTimeout
                                     #(browser/share-link url)
                                     200))}]
-          [react/view {:style {:margin-top 8}}]])
+          [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]])
        (if connected?
          [list.item/list-item
           {:icon                [chat-icon/custom-icon-view-list (:name account) (:color account)]

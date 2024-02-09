@@ -66,7 +66,7 @@
          :on-press            #(do (re-frame/dispatch [:browser.ui/clear-all-browsers-pressed])
                                    (re-frame/dispatch [:browser.ui/open-empty-tab]))}]
        :title (i18n/label :t/tabs)}]
-     [react/view {:style {:margin-top 8}}]
+     [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]
      [list/flat-list
       {:data      (conj browsers
                         {:empty-tab true

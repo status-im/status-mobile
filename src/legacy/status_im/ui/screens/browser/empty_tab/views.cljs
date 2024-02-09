@@ -143,7 +143,7 @@
          :container-style     styles/input-container-style
          :accessibility-label :dapp-url-input
          :return-key-type     :go}]
-       [react/view {:style {:margin-top 8}}]
+       [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]
        [list/flat-list
         {:header          [list-header (empty? bookmarks)]
          :data            bookmarks

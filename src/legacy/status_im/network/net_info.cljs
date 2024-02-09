@@ -10,10 +10,7 @@
 (rf/defn change-network-status
   [{:keys [db] :as cofx} is-connected?]
   (rf/merge cofx
-            {:db (assoc db :network-status (if is-connected? :online :offline))}
-            (when (and is-connected?
-                       (or (not= (count (get-in db [:wallet-legacy :accounts]))
-                                 (count (get db :profile/wallet-accounts))))))))
+            {:db (assoc db :network-status (if is-connected? :online :offline))}))
 
 (rf/defn change-network-type
   [{:keys [db] :as cofx} old-network-type network-type expensive?]

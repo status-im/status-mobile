@@ -257,7 +257,7 @@
           url-original    (browser/get-current-url current-browser)]
       [react/view {:style styles/browser}
        [toolbar-content url url-original secure? url-editing? unsafe?]
-       [react/view {:style {:margin-top 8}}]
+       [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]
        [react/view
         (when loading?
           [connectivity/loading-indicator-anim window-width])]
