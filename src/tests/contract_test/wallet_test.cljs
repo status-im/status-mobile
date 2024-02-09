@@ -6,6 +6,7 @@
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
     status-im.events
     status-im.navigation.core
@@ -33,13 +34,12 @@
 
 (defn get-default-account
   [accounts]
-  (first accounts))
+  (first (filter :wallet accounts)))
 
 (defn check-emoji-is-updated
-  [test-emoji]
-  (fn [accounts]
-    (let [default-account (first accounts)]
-      (is (= (:emoji default-account) test-emoji)))))
+  [test-emoji accounts]
+  (let [default-account (get-default-account accounts)]
+    (is (= (:emoji default-account) test-emoji))))
 
 (deftest accounts-save-accounts-contract
   (h/log-headline :contract/accounts-save-account)
@@ -56,20 +56,22 @@
          :params       [(data-store/<-account (merge account {:emoji test-emoji}))]})
        (contract-utils/call-rpc-endpoint
         {:rpc-endpoint "accounts_getAccounts"
-         :action       (check-emoji-is-updated test-emoji)})
+         :action       #(check-emoji-is-updated test-emoji %)})
        (h/logout)
        (rf-test/wait-for
          [::logout/logout-method]))))))
 
+(def number-of-networks 3)
+
 (defn assert-ethereum-chains
   [response]
-  (is (= 3 (count response)))
-  (is (some #(= 1 (get-in % [:Prod :chainId])) response))
-  (is (some #(= 10 (get-in % [:Prod :chainId])) response))
-  (is (some #(= 42161 (get-in % [:Prod :chainId])) response))
-  (is (some #(= 5 (get-in % [:Test :chainId])) response))
-  (is (some #(= 421613 (get-in % [:Test :chainId])) response))
-  (is (some #(= 420 (get-in % [:Test :chainId])) response)))
+  (is (= number-of-networks (count response)))
+  (is (some #(= constants/ethereum-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/optimism-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/arbitrum-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/goerli-chain-id (get-in % [:Test :chainId])) response))
+  (is (some #(= constants/arbitrum-testnet-chain-id (get-in % [:Test :chainId])) response))
+  (is (some #(= constants/optimism-testnet-chain-id (get-in % [:Test :chainId])) response)))
 
 (deftest accounts-get-chains-contract
   (h/log-headline :contract/wallet_get-ethereum-chains)
