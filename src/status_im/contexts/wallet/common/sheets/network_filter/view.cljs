@@ -1,14 +1,13 @@
 (ns status-im.contexts.wallet.common.sheets.network-filter.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- view-internal
+(defn view
   []
   (let [state             (reagent/atom :default)
         networks-selected (reagent/atom #{})
@@ -53,5 +52,3 @@
                                                                                        network))
                                                         :label-props "$0.00"}))
                             layer-2-networks)}]]))))
-
-(def view (quo.theme/with-theme view-internal))
