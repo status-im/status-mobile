@@ -1,4 +1,5 @@
-(ns quo.components.tags.context-tag.schema)
+(ns quo.components.tags.context-tag.schema
+  (:require [malli.core :as malli]))
 
 (def ^:private ?base
   [:map
@@ -79,6 +80,7 @@
    [:catn
     [:props
      [:multi {:dispatch :type}
+      [::malli/default [:merge ?default ?size ?base]]
       [:default [:merge ?default ?size ?base]]
       [:multiuser [:merge ?multiuser  ?base]]
       [:group [:merge ?group ?size ?base]]
