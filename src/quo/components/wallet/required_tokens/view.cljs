@@ -15,7 +15,7 @@
       [:amount {:optional true} [:maybe [:or :string :int]]]
       [:token {:optional true} [:maybe :string]]
       [:token-img-src {:optional true} [:maybe :schema.common/image-source]]
-      [:collectible-img-src {:optional true} :schema.common/image-source]
+      [:collectible-img-src {:optional true} [:maybe :schema.common/image-source]]
       [:collectible-name {:optional true} [:maybe :string]]
       [:divider? {:optional true} [:maybe :boolean]]
       [:theme :schema.common/theme]

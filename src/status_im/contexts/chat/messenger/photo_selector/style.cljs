@@ -75,3 +75,6 @@
   {:position :absolute
    :top      8
    :right    8})
+
+(def photo-limit-toast-container
+  {:top (if platform/ios? 6 16)})

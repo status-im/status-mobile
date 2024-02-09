@@ -42,18 +42,22 @@
     (render [account-permissions/view
              {:account       account
               :token-details [{:token  "SNT"
-                               :amount "100"}]}])
+                               :amount "100"
+                               :type   :token}]}])
     (h/is-truthy (h/get-by-text "100 SNT")))
 
   (h/test "render with multiple token details"
     (render [account-permissions/view
              {:account       account
               :token-details [{:token  "SNT"
-                               :amount "100"}
+                               :amount "100"
+                               :type   :token}
                               {:token  "ETH"
-                               :amount "18"}
+                               :amount "18"
+                               :type   :token}
                               {:token  "BTM"
-                               :amount "1000"}]}])
+                               :amount "1000"
+                               :type   :token}]}])
     (h/is-truthy (h/get-by-text "100 SNT"))
     (h/is-truthy (h/get-by-text "18 ETH"))
     (h/is-truthy (h/get-by-text "1000 BTM")))
