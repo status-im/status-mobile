@@ -136,13 +136,18 @@
                                     (reagent/flush))))
         on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount]
-                                (rf/dispatch [:wallet/clean-suggested-routes])
-                                (when-not (or (empty? @input-value)
-                                              (<= input-num-value 0)
-                                              (> input-num-value current-limit-amount))
-                                  (debounce/debounce-and-dispatch
-                                   [:wallet/get-suggested-routes {:amount @input-value}]
-                                   100)))
+                                (let [current-screen-id (rf/sub [:navigation/current-screen-id])]
+                                  ; this check is to prevent effect being triggered when screen is
+                                  ; loaded but not being shown to the user (deep in the navigation
+                                  ; stack) and avoid undesired behaviors
+                                  (when (= current-screen-id :wallet-send-input-amount)
+                                    (if-not (or (empty? @input-value)
+                                                (<= input-num-value 0)
+                                                (> input-num-value current-limit-amount))
+                                      (debounce/debounce-and-dispatch
+                                       [:wallet/get-suggested-routes {:amount @input-value}]
+                                       100)
+                                      (rf/dispatch [:wallet/clean-suggested-routes])))))
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   @input-value

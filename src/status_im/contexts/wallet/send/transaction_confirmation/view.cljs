@@ -137,10 +137,7 @@
 
 (defn- view-internal
   [_]
-  (let [on-close (fn []
-                   (rf/dispatch [:wallet/clean-suggested-routes])
-                   (rf/dispatch [:navigate-back-within-stack :wallet-select-asset]))]
-
+  (let [on-close #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])]
     (fn [{:keys [theme]}]
       (let [send-transaction-data (rf/sub [:wallet/wallet-send])
             token                 (:token send-transaction-data)
