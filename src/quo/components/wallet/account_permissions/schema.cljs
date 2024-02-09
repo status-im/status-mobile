@@ -12,7 +12,7 @@
         [:address [:maybe :string]]
         [:emoji [:maybe :string]]
         [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]
-      [:token-details {:optional true} [:maybe [:vector required-tokens/?schema]]]
+      [:token-details {:optional true} [:maybe [:sequential required-tokens/?schema]]]
       [:keycard? {:optional true} [:maybe :boolean]]
       [:checked? {:optional true} [:maybe :boolean]]
       [:disabled? {:optional true} [:maybe :boolean]]

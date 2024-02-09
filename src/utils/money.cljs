@@ -229,6 +229,11 @@
   [bn1 bn2]
   (.round (.dividedBy ^js bn1 bn2) 0))
 
+(defn absolute-value
+  [bn]
+  (when bn
+    (.absoluteValue ^js bn)))
+
 (defn format-amount
   "Format `amount` to thousands or millions. Return nil if `amount` is not truthy."
   [amount]

@@ -3,6 +3,7 @@
     [legacy.status-im.data-store.settings :as data-store.settings]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [status-im.contexts.profile.edit.accent-colour.events]
     [status-im.contexts.profile.edit.header.events]
     [status-im.contexts.profile.edit.name.events]
     [status-im.contexts.profile.login.events :as profile.login]

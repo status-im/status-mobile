@@ -8,8 +8,10 @@
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.send :as send-utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
+    [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -90,6 +92,34 @@
   (let [size (count s)]
     (str (subs s 0 (dec idx)) (subs s idx size))))
 
+(defn- estimated-fees
+  [{:keys [loading-suggested-routes? fees amount receiver]}]
+  [rn/view {:style style/estimated-fees-container}
+   [rn/view {:style style/estimated-fees-content-container}
+    [quo/button
+     {:icon-only?          true
+      :type                :outline
+      :size                32
+      :inner-style         {:opacity 1}
+      :accessibility-label :advanced-button
+      :disabled?           loading-suggested-routes?
+      :on-press            #(js/alert "Not implemented yet")}
+     :i/advanced]]
+   [quo/data-item
+    {:container-style style/fees-data-item
+     :label           :none
+     :status          (if loading-suggested-routes? :loading :default)
+     :size            :small
+     :title           (i18n/label :t/fees)
+     :subtitle        fees}]
+   [quo/data-item
+    {:container-style style/amount-data-item
+     :label           :none
+     :status          (if loading-suggested-routes? :loading :default)
+     :size            :small
+     :title           (i18n/label :t/user-gets {:name receiver})
+     :subtitle        amount}]])
+
 (defn- f-view-internal
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
   ;; for component tests only
@@ -135,13 +165,18 @@
                                 (rf/dispatch [:wallet/clean-selected-token])
                                 (rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount]))
         fetch-routes          (fn [input-num-value current-limit-amount]
-                                (rf/dispatch [:wallet/clean-suggested-routes])
-                                (when-not (or (empty? @input-value)
-                                              (<= input-num-value 0)
-                                              (> input-num-value current-limit-amount))
-                                  (debounce/debounce-and-dispatch
-                                   [:wallet/get-suggested-routes @input-value]
-                                   100)))
+                                (let [current-screen-id (rf/sub [:navigation/current-screen-id])]
+                                  ; this check is to prevent effect being triggered when screen is
+                                  ; loaded but not being shown to the user (deep in the navigation
+                                  ; stack) and avoid undesired behaviors
+                                  (when (= current-screen-id :wallet-send-input-amount)
+                                    (if-not (or (empty? @input-value)
+                                                (<= input-num-value 0)
+                                                (> input-num-value current-limit-amount))
+                                      (debounce/debounce-and-dispatch
+                                       [:wallet/get-suggested-routes @input-value]
+                                       100)
+                                      (rf/dispatch [:wallet/clean-suggested-routes])))))
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   @input-value
@@ -164,6 +199,7 @@
             loading-routes?           (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
             suggested-routes          (rf/sub [:wallet/wallet-send-suggested-routes])
             route                     (rf/sub [:wallet/wallet-send-route])
+            to-address                (rf/sub [:wallet/wallet-send-to-address])
             on-confirm                (or default-on-confirm handle-on-confirm)
             crypto-decimals           (or default-crypto-decimals
                                           (utils/get-crypto-decimals-count token))
@@ -179,7 +215,24 @@
                                           (empty? @input-value)
                                           (<= input-num-value 0)
                                           (> input-num-value current-limit))
-            amount-text               (str @input-value " " token-symbol)]
+            amount-text               (str @input-value " " token-symbol)
+            native-currency-symbol    (when-not confirm-disabled?
+                                        (get-in route [:from :native-currency-symbol]))
+            native-token              (when native-currency-symbol
+                                        (rf/sub [:wallet/token-by-symbol native-currency-symbol]))
+            fee-in-native-token       (when-not confirm-disabled? (send-utils/calculate-gas-fee route))
+            fee-in-crypto-formatted   (when fee-in-native-token
+                                        (utils/get-standard-crypto-format native-token
+                                                                          fee-in-native-token))
+            fee-in-fiat               (when-not confirm-disabled?
+                                        (utils/token-fiat-value fiat-currency
+                                                                fee-in-native-token
+                                                                native-token))
+            currency-symbol           (rf/sub [:profile/currency-symbol])
+            fee-formatted             (when fee-in-fiat
+                                        (utils/get-standard-fiat-format fee-in-crypto-formatted
+                                                                        currency-symbol
+                                                                        fee-in-fiat))]
         (rn/use-effect
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -221,12 +274,18 @@
            :token        token
            :input-value  @input-value
            :fetch-routes #(fetch-routes % current-limit)}]
+         (when (or loading-routes? route)
+           [estimated-fees
+            {:loading-suggested-routes? loading-routes?
+             :fees                      fee-formatted
+             :amount                    amount-text
+             :receiver                  (address/get-shortened-key to-address)}])
          [quo/bottom-actions
-          {:actions             :1-action
-           :customization-color color
-           :button-one-label    (i18n/label :t/confirm)
-           :button-one-props    {:disabled? confirm-disabled?
-                                 :on-press  on-confirm}}]
+          {:actions          :one-action
+           :button-one-label (i18n/label :t/confirm)
+           :button-one-props {:disabled?           confirm-disabled?
+                              :on-press            on-confirm
+                              :customization-color color}}]
          [quo/numbered-keyboard
           {:container-style (style/keyboard-container bottom)
            :left-action     :dot
