@@ -52,7 +52,7 @@
 
   (h/test "Default render"
     (h/setup-subs sub-mocks)
-    (h/render [input-amount/view
+    (h/render-with-theme-provider [input-amount/view
                {:crypto-decimals          2
                 :limit-crypto             250
                 :initial-crypto-currency? false}])
@@ -65,7 +65,7 @@
   (h/test "Fill token input and confirm"
     (h/setup-subs sub-mocks)
     (let [on-confirm (h/mock-fn)]
-      (h/render [input-amount/view
+      (h/render-with-theme-provider [input-amount/view
                  {:on-confirm               on-confirm
                   :crypto-decimals          10
                   :limit-crypto             1000
@@ -89,7 +89,7 @@
     (h/setup-subs sub-mocks)
 
     (let [on-confirm (h/mock-fn)]
-      (h/render [input-amount/view
+      (h/render-with-theme-provider [input-amount/view
                  {:crypto-decimals          10
                   :limit-crypto             1000
                   :on-confirm               on-confirm
@@ -111,7 +111,7 @@
 
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
-    (h/render [input-amount/view
+    (h/render-with-theme-provider [input-amount/view
                {:crypto-decimals 1
                 :limit-crypto    1}])
 
@@ -123,7 +123,7 @@
 
   (h/test "Switch from crypto to fiat and check limit"
     (h/setup-subs sub-mocks)
-    (h/render [input-amount/view
+    (h/render-with-theme-provider [input-amount/view
                {:crypto-decimals 1
                 :limit-crypto    1
                 :on-confirm      #()}])

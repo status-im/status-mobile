@@ -6,7 +6,7 @@
 (h/describe
   "Wallet overview test"
   (h/test "renders correct balance"
-    (h/render [wallet-overview/view
+    (h/render-with-theme-provider [wallet-overview/view
                {:state      :default
                 :time-frame :one-week
                 :metrics    :positive

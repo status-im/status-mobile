@@ -2,7 +2,7 @@
 
 (def ^:private ?base
   [:map
-   [:type {:optional true} [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account :collectible :address :icon :audio]]
+   [:type {:optional true} [:maybe [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account :collectible :address :icon :audio]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:theme :schema.common/theme]
    [:blur? {:optional true} [:maybe :boolean]]

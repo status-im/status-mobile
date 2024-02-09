@@ -5,19 +5,15 @@
 
 (h/describe "Transaction summary"
   (h/test "default render"
-    (h/render [transaction-summary/view {}])
-    (h/is-truthy (h/query-by-label-text :transaction-summary)))
-
-  (h/test "incorrect setting doesn't crash render"
-    (h/render [transaction-summary/view {:transaction :unknown}])
+    (h/render-with-theme-provider [transaction-summary/view {}])
     (h/is-truthy (h/query-by-label-text :transaction-summary)))
 
   (h/test "icon displayed"
-    (h/render [transaction-summary/view {:transaction :send}])
+    (h/render-with-theme-provider [transaction-summary/view {:transaction :send}])
     (h/is-truthy (h/query-by-label-text :header-icon)))
 
   (h/test "Context tag rendered"
-    (h/render [transaction-summary/view
+    (h/render-with-theme-provider [transaction-summary/view
                {:transaction :send
                 :first-tag   {:size   24
                               :type   :token

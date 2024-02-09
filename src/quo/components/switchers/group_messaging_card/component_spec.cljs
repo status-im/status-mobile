@@ -83,7 +83,7 @@
     (h/is-truthy (h/get-by-label-text :gif)))
 
   (h/test "Status: Read, Type: Audio, Avatar: true"
-    (h/render [group-messaging-card/view
+    (h/render-with-theme-provider [group-messaging-card/view
                {:avatar  true
                 :status  :read
                 :type    :audio
@@ -93,7 +93,7 @@
     (h/is-truthy (h/get-by-text "00:32")))
 
   (h/test "Status: Read, Type: Community, Avatar: true"
-    (h/render [group-messaging-card/view
+    (h/render-with-theme-provider [group-messaging-card/view
                {:avatar  true
                 :status  :read
                 :type    :community
@@ -105,7 +105,7 @@
     (h/is-truthy (h/get-by-text "Coinbase")))
 
   (h/test "Status: Read, Type: Link, Avatar: true"
-    (h/render [group-messaging-card/view
+    (h/render-with-theme-provider [group-messaging-card/view
                {:avatar  true
                 :status  :read
                 :type    :link

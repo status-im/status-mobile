@@ -37,7 +37,7 @@
       (h/is-truthy (h/get-by-text "This is a textual description")))
 
     (h/test "Context tag"
-      (h/render [page-top/view
+      (h/render-with-theme-provider [page-top/view
                  {:title       "Title"
                   :description :context-tag
                   :context-tag context-tag-data}])
@@ -46,7 +46,7 @@
       (h/is-truthy (h/get-by-label-text :context-tag)))
 
     (h/test "Summary"
-      (h/render [page-top/view
+      (h/render-with-theme-provider [page-top/view
                  {:title       "Title"
                   :description :summary
                   :summary     {:row-1 {:text-1        "Send"

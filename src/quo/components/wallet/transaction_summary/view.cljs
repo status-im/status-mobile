@@ -105,26 +105,3 @@
 (def view
   (quo.theme/with-theme
     (schema/instrument #'view-internal component-schema/?schema)))
-
-;; (def view
-;;   "Properties:
-;;         - :transaction - type of transaction`. Possible values:
-;;           - :send
-;;           - :swap
-;;           - :bridge
-             
-;;         - :first-tag - props for context tag component that will be first on the first line
-;;         - :second-tag - props for context tag component that will be second on the first line
-;;         - :third-tag - props for context tag component that will be first on the second line
-;;         - :fourth-tag - props for context tag component that will be second on the second line
-;;         - :fifth-tag - props for context tag component that will be second on the second line
-     
-;;         - :second-tag-prefix - translation keyword to be used with label before second context tag
-;;         - :third-tag-prefix - translation keyword to be used with label before third context tag
-;;         - :fourth-tag-prefix - translation keyword to be used with label before fourth context tag
-   
-;;         - :max-fees - string
-;;         - :nonce - digit
-;;         - :input data - string
-;;     "
-;;   (quo.theme/with-theme view-internal))

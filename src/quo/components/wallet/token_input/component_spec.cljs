@@ -5,14 +5,14 @@
 
 (h/describe "Wallet: Token Input"
   (h/test "Token label renders"
-    (h/render [token-input/view
+    (h/render-with-theme-provider [token-input/view
                {:token      :snt
                 :currency   :eur
                 :conversion 1}])
     (h/is-truthy (h/get-by-text "SNT")))
 
   (h/test "Amount renders"
-    (h/render [token-input/view
+    (h/render-with-theme-provider [token-input/view
                {:token      :snt
                 :currency   :eur
                 :conversion 1}])
