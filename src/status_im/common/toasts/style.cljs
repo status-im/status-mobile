@@ -1,9 +1,11 @@
-(ns status-im.common.toasts.style)
+(ns status-im.common.toasts.style
+  (:require [react-native.safe-area :as safe-area]))
 
-(def outmost-transparent-container
+(defn outmost-transparent-container
+  []
   {:elevation       2
    :pointer-events  :box-none
-   :padding-top     52
+   :padding-top     (+ (safe-area/get-top) 6)
    :flex-direction  :column
    :justify-content :center
    :align-items     :center})
