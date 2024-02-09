@@ -32,7 +32,7 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed false}
+     [:map
       [:theme :schema.common/theme]
       [:network {:optional true} [:maybe :keyword]]
       [:status {:optional true} [:maybe ?network-bridge-status]]

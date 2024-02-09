@@ -9,7 +9,7 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed false}
+     [:map
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:theme :schema.common/theme]
       [:progressed-value {:optional true} [:maybe [:or :string :int]]]

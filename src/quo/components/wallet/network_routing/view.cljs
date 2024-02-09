@@ -177,7 +177,7 @@
   [:=>
    [:catn
     [:props
-     [:map {:closed false}
+     [:map
       [:networks {:optional true} [:maybe [:sequential :any]]]
       [:container-style {:optional true} [:maybe :map]]
       [:theme :schema.common/theme]]]]
