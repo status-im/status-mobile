@@ -432,6 +432,8 @@
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 
+(def ^:const default-network-names #{:ethereum :optimism :arbitrum})
+
 (def ^:const chain-id-separator ":")
 
 (def ^:const account-default-customization-color :blue)
