@@ -158,6 +158,6 @@
 
      nil)])
 
- (def view
-   (quo.theme/with-theme
-     (schema/instrument #'view-internal component-schema/?schema)))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

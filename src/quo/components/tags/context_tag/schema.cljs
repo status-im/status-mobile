@@ -3,7 +3,10 @@
 
 (def ^:private ?base
   [:map
-   [:type {:optional true} [:maybe [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account :collectible :address :icon :audio]]]
+   [:type {:optional true}
+    [:maybe
+     [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account
+      :collectible :address :icon :audio]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:theme :schema.common/theme]
    [:blur? {:optional true} [:maybe :boolean]]
@@ -20,9 +23,12 @@
 
 (def ^:private ?multiuser
   [:map
-   [:users {:optional true} [:maybe [:sequential [:map [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
-                                                       [:full-name {:optional true} [:maybe :string]]
-                                                       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]]]])
+   [:users {:optional true}
+    [:maybe
+     [:sequential
+      [:map [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+       [:full-name {:optional true} [:maybe :string]]
+       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]]]])
 
 (def ^:private ?group
   [:map
@@ -33,7 +39,7 @@
    [:community-name {:optional true} [:maybe :string]]
    [:channel-name {:optional true} [:maybe :string]]])
 
-(def ^:private ?community 
+(def ^:private ?community
   [:map
    [:community-name {:optional true} [:maybe :string]]])
 
@@ -82,7 +88,7 @@
      [:multi {:dispatch :type}
       [::malli/default [:merge ?default ?size ?base]]
       [:default [:merge ?default ?size ?base]]
-      [:multiuser [:merge ?multiuser  ?base]]
+      [:multiuser [:merge ?multiuser ?base]]
       [:group [:merge ?group ?size ?base]]
       [:channel [:merge ?channel ?size ?base]]
       [:community [:merge ?community ?size ?base]]

@@ -54,9 +54,9 @@
 
 (defn render-with-theme-provider
   ([component]
-    (render-with-theme-provider component :light))
-   ([component theme]
-    (rtl/render (reagent/as-element [quo.theme/provider {:theme theme} component]))))
+   (render-with-theme-provider component :light))
+  ([component theme]
+   (rtl/render (reagent/as-element [quo.theme/provider {:theme theme} component]))))
 
 (def unmount
   "Unmount rendered component.

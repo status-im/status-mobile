@@ -66,9 +66,9 @@
   (h/test "Default render"
     (h/setup-subs sub-mocks)
     (h/render-with-theme-provider [input-amount/view
-               {:crypto-decimals          2
-                :limit-crypto             250
-                :initial-crypto-currency? false}])
+                                   {:crypto-decimals          2
+                                    :limit-crypto             250
+                                    :initial-crypto-currency? false}])
     (h/is-truthy (h/get-by-text "0"))
     (h/is-truthy (h/get-by-text "ETH"))
     (h/is-truthy (h/get-by-text "$0.00"))
@@ -79,10 +79,10 @@
     (h/setup-subs sub-mocks)
     (let [on-confirm (h/mock-fn)]
       (h/render-with-theme-provider [input-amount/view
-                 {:on-confirm               on-confirm
-                  :crypto-decimals          10
-                  :limit-crypto             1000
-                  :initial-crypto-currency? false}])
+                                     {:on-confirm               on-confirm
+                                      :crypto-decimals          10
+                                      :limit-crypto             1000
+                                      :initial-crypto-currency? false}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -103,10 +103,10 @@
 
     (let [on-confirm (h/mock-fn)]
       (h/render-with-theme-provider [input-amount/view
-                 {:crypto-decimals          10
-                  :limit-crypto             1000
-                  :on-confirm               on-confirm
-                  :initial-crypto-currency? false}])
+                                     {:crypto-decimals          10
+                                      :limit-crypto             1000
+                                      :on-confirm               on-confirm
+                                      :initial-crypto-currency? false}])
 
       (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
@@ -125,8 +125,8 @@
   (h/test "Try to fill more than limit"
     (h/setup-subs sub-mocks)
     (h/render-with-theme-provider [input-amount/view
-               {:crypto-decimals 1
-                :limit-crypto    1}])
+                                   {:crypto-decimals 1
+                                    :limit-crypto    1}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-2))
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
@@ -137,9 +137,9 @@
   (h/test "Switch from crypto to fiat and check limit"
     (h/setup-subs sub-mocks)
     (h/render-with-theme-provider [input-amount/view
-               {:crypto-decimals 1
-                :limit-crypto    1
-                :on-confirm      #()}])
+                                   {:crypto-decimals 1
+                                    :limit-crypto    1
+                                    :on-confirm      #()}])
 
     (h/fire-event :press (h/query-by-label-text :keyboard-key-9))
     (h/is-truthy (h/get-by-label-text :container-error))

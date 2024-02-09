@@ -10,14 +10,14 @@
 
   (h/test "renders component with description"
     (h/render-with-theme-provider [list/view
-               {:title       "test title"
-                :description "test description"}])
+                                   {:title       "test title"
+                                    :description "test description"}])
     (h/is-truthy (h/get-by-text "test description")))
 
   (h/test "renders component with title and description"
     (h/render-with-theme-provider [list/view
-               {:title       "test title"
-                :description "test description"}])
+                                   {:title       "test title"
+                                    :description "test description"}])
     (h/is-truthy (h/get-by-text "test title"))
     (h/is-truthy (h/get-by-text "test description")))
 
@@ -30,10 +30,10 @@
 
   (h/test "renders decription with a context tag component and description after the tag"
     (h/render-with-theme-provider [list/view
-               {:step-number           1
-                :description           "Lorem ipsum "
-                :tag-name              "dolor"
-                :description-after-tag "text after tag"}])
+                                   {:step-number           1
+                                    :description           "Lorem ipsum "
+                                    :tag-name              "dolor"
+                                    :description-after-tag "text after tag"}])
     (h/is-truthy (h/get-by-text "Lorem ipsum"))
     (h/is-truthy (h/get-by-label-text :user-avatar))
     (h/is-truthy (h/get-by-text "dolor"))

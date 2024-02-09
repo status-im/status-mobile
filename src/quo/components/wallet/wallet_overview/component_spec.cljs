@@ -7,8 +7,8 @@
   "Wallet overview test"
   (h/test "renders correct balance"
     (h/render-with-theme-provider [wallet-overview/view
-               {:state      :default
-                :time-frame :one-week
-                :metrics    :positive
-                :balance    "€0.01"}])
+                                   {:state      :default
+                                    :time-frame :one-week
+                                    :metrics    :positive
+                                    :balance    "€0.01"}])
     (h/is-truthy (h/get-by-text "€0.01"))))
