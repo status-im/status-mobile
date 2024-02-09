@@ -1,8 +1,10 @@
 (ns quo.components.wallet.address-text.view
   (:require [quo.components.markdown.text :as text]
+            [quo.components.wallet.address-text.schema :as component-schema]
             [quo.components.wallet.address-text.style :as style]
             [quo.foundations.colors :as colors]
             [quo.theme]
+            [schema.core :as schema]
             [utils.address :as utils]))
 
 (defn- colored-network-text
@@ -28,4 +30,6 @@
       (into [text/text] network-text-xf $)
       (conj $ address-text))))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))
