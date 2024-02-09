@@ -1,5 +1,6 @@
 (ns status-im.contexts.preview.quo.tags.collectible-tag
   (:require
+    [oops.core :refer [oget]]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -25,17 +26,21 @@
     :type :boolean}
    {:key  :collectible-name
     :type :text}
-   {:key  :collectible-number
+   {:key  :collectible-id
     :type :text}])
 
 (defn view
   []
-  (let [state (reagent/atom {:size                :size-24
-                             :collectible-name    "Collectible"
-                             :collectible-number  "#123"
-                             :collectible-img-src (resources/mock-images :collectible)
-                             :options             false
-                             :blur?               false})]
+  (let [state     (reagent/atom {:size                :size-24
+                                 :collectible-name    "Collectible"
+                                 :collectible-id      "#123"
+                                 :collectible-img-src (resources/mock-images :collectible)
+                                 :options             false
+                                 :blur?               false
+                                 :container-width     0})
+        on-layout #(swap! state assoc
+                     :container-width
+                     (oget % :nativeEvent :layout :width))]
     (fn []
       [preview/preview-container
        {:state                 state
@@ -43,4 +48,4 @@
         :show-blur-background? true
         :descriptor            descriptor}
        [rn/view {:style {:align-items :center}}
-        [quo/collectible-tag @state]]])))
+        [quo/collectible-tag (assoc @state :on-layout on-layout)]]])))

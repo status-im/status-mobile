@@ -13,14 +13,14 @@
             :padding-left     2
             :border-width     (if hold? 1 0)
             :border-radius    0
-            :border-color     (colors/theme-colors colors/success-50 colors/success-60 theme)}
+            :border-color     (colors/resolve-color :success theme)}
            (condp = size
              :size-24 {:height        (if hold? 26 24)
                        :padding-right 10
-                       :border-radius (if hold? 8 8)}
+                       :border-radius 8}
              :size-32 {:height        (if hold? 34 32)
                        :padding-right 12
-                       :border-radius (if hold? 10 10)}))))
+                       :border-radius 10}))))
 
 (defn options-icon
   [size]
@@ -35,7 +35,7 @@
 
 (defn collectible-img
   [size]
-  (case size
+  (condp = size
     :size-24 {:width         20
               :height        20
               :margin-right  6
