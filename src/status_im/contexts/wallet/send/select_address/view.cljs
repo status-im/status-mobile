@@ -24,7 +24,8 @@
 (defn- address-input
   [input-value input-focused?]
   (fn []
-    (let [scanned-address          (rf/sub [:wallet/scanned-address])
+    (let [current-screen-id        (rf/sub [:navigation/current-screen-id])
+          scanned-address          (rf/sub [:wallet/scanned-address])
           send-address             (rf/sub [:wallet/wallet-send-to-address])
           recipient                (rf/sub [:wallet/wallet-send-recipient])
           recipient-plain-address? (= send-address recipient)
@@ -32,29 +33,37 @@
           chain-id                 (rf/sub [:chain-id])
           contacts                 (rf/sub [:contacts/active])]
       [quo/address-input
-       {:on-focus               #(reset! input-focused? true)
-        :on-blur                #(reset! input-focused? false)
-        :on-scan                (fn []
-                                  (rn/dismiss-keyboard!)
-                                  (rf/dispatch [:wallet/clean-scanned-address])
-                                  (rf/dispatch [:open-modal :scan-address]))
-        :ens-regex              constants/regx-ens
-        :scanned-value          (or (when recipient-plain-address? send-address) scanned-address)
-        :address-regex          constants/regx-multichain-address
-        :on-detect-address      #(debounce/debounce-and-dispatch
-                                  [:wallet/validate-address %]
-                                  300)
-        :on-detect-ens          (fn [text cb]
+       {:on-focus              #(reset! input-focused? true)
+        :on-blur               #(reset! input-focused? false)
+        :on-scan               (fn []
+                                 (rn/dismiss-keyboard!)
+                                 (rf/dispatch [:wallet/clean-scanned-address])
+                                 (rf/dispatch [:open-modal :scan-address]))
+        :ens-regex             constants/regx-ens
+        :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
+        :address-regex         constants/regx-multichain-address
+        :on-detect-address     #(when (or (= current-screen-id :wallet-select-address)
+                                          (= current-screen-id :scan-address))
+                                  ; ^ this check is to prevent effect being triggered when screen is
+                                  ; loaded but not being shown to the user (deep in the navigation
+                                  ; stack) and avoid undesired behaviors
                                   (debounce/debounce-and-dispatch
-                                   [:wallet/find-ens text contacts chain-id cb]
+                                   [:wallet/validate-address %]
                                    300))
-        :on-detect-unclassified #(when valid-ens-or-address?
-                                   (rf/dispatch [:wallet/clean-ens-or-address-validation]))
-        :on-change-text         (fn [text]
-                                  (when (empty? text)
-                                    (rf/dispatch [:wallet/clean-local-suggestions]))
-                                  (reset! input-value text))
-        :valid-ens-or-address?  valid-ens-or-address?}])))
+        :on-detect-ens         (fn [text cb]
+                                 (when (or (= current-screen-id :wallet-select-address)
+                                           (= current-screen-id :scan-address))
+                                   ; ^ this check is to prevent effect being triggered when screen
+                                   ; is loaded but not being shown to the user (deep in the
+                                   ; navigation stack) and avoid undesired behaviors
+                                   (debounce/debounce-and-dispatch
+                                    [:wallet/find-ens text contacts chain-id cb]
+                                    300)))
+        :on-change-text        (fn [text]
+                                 (when (empty? text)
+                                   (rf/dispatch [:wallet/clean-local-suggestions]))
+                                 (reset! input-value text))
+        :valid-ens-or-address? valid-ens-or-address?}])))
 
 (defn- ens-linked-address
   [{:keys [address networks theme]}]
@@ -133,10 +142,6 @@
             token                 (rf/sub [:wallet/wallet-send-token])
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
-        (rn/use-effect (fn []
-                         (fn []
-                           (rf/dispatch [:wallet/clean-scanned-address])
-                           (rf/dispatch [:wallet/clean-local-suggestions]))))
         [floating-button-page/view
          {:footer-container-padding 0
           :header                   [account-switcher/view

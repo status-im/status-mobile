@@ -1,8 +1,10 @@
 (ns quo.components.wallet.confirmation-progress.view
-  (:require [quo.components.wallet.confirmation-progress.style :as style]
+  (:require [quo.components.wallet.confirmation-progress.schema :as component-schema]
+            [quo.components.wallet.confirmation-progress.style :as style]
             [quo.components.wallet.progress-bar.view :as progress-box]
             [quo.theme :as quo.theme]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [schema.core :as schema]))
 
 (def ^:private max-progress 100)
 (def ^:private min-progress 0)
@@ -66,4 +68,6 @@
     (:arbitrum :optimism) [progress-boxes-sidenet props]
     nil))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

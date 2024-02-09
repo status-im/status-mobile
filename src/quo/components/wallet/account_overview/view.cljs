@@ -2,10 +2,12 @@
   (:require
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.account-overview.schema :as component-schema]
     [quo.components.wallet.account-overview.style :as style]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 (defn- loading-state
@@ -129,16 +131,5 @@
            [numeric-changes percentage-change currency-change customization-color theme up?])]])]))
 
 (def view
-  "Create a account-overview UI component.
-     | key          | description |
-  | -------------|-------------|
-  | `:account-name`      | A value representing the account name (default `nil`)
-  | `:account`           | A value that represents if the account is a `:watched-address` or a `:default` account. (default `nil`)
-  | `:time-frame`        | A value that represents the type of the timeframe, Can be from a preset of time frames. `[:1-week :1-month :3-months :1-year :custom]` (default `nil`) if custom is set, We expect a start time and if there's a space between two times that are in `time-frame-string` we'll split them with an arrow to the right icon
-  | `:loading?`          | A value that indicates that component is loading data. (default `nil`)
-  | `:metrics`           | A value that indicates if the account value have increased can be `:positive` or `:negative` (default `nil`)
-  | `:time-frame-string` | A value representing time frame string. (default `nil`)
-  | `:current-value`     | A value representing the current value of the selected account. (default `nil`)
-  | `:currency-change`   | A value representing the change of the value of the selected account in the selected currency. (default `nil`)
-  | `:percentage-change` | A value representing the change of the value of the selected account in percentage relative to it's previous value. (default `nil`)"
-  (quo.theme/with-theme view-internal))
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

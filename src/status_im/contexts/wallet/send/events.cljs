@@ -52,7 +52,7 @@
    {:db (-> db
             (assoc-in [:wallet :ui :send :send-account-address] address)
             (update-in [:wallet :ui :send] dissoc :to-address))
-    :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:wallet-select-asset stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
@@ -72,10 +72,11 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
-      :fx [[:navigate-to-within-stack
-            (if token
-              [:wallet-send-input-amount stack-id]
-              [:wallet-select-asset stack-id])]]})))
+      :fx [[:dispatch
+            [:navigate-to-within-stack
+             (if token
+               [:wallet-send-input-amount stack-id]
+               [:wallet-select-asset stack-id])]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -87,7 +88,8 @@
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
-    :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
+    :fx [[:dispatch [:wallet/clean-suggested-routes]]
+         [:dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/send-select-token-drawer
@@ -110,7 +112,7 @@
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [amount]]

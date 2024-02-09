@@ -60,7 +60,7 @@
            :data                              cards
            :horizontal                        true
            :separator                         [rn/view {:style style/separator}]
-           :render-fn                         quo/account-card
+           :render-fn                         (fn [item] [quo/account-card item])
            :shows-horizontal-scroll-indicator false}]
          [quo/tabs
           {:style          style/tabs
