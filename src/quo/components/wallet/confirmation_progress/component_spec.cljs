@@ -17,8 +17,8 @@
   (h/test "component renders when state is sending and network is optimism"
     (h/render-with-theme-provider [quo/confirmation-propgress
                                    (get-test-data {:state   :sending
-                                                   :network :optimism})]))
-  (h/is-truthy (h/get-by-label-text :progress-box)))
+                                                   :network :optimism})])
+    (h/is-truthy (h/get-by-label-text :progress-box))))
 
 (h/test "component renders when state is confirmed and network is optimism"
   (h/render-with-theme-provider
