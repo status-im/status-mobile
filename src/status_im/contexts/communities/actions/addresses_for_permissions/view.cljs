@@ -53,8 +53,9 @@
             {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
             accounts                          (rf/sub [:wallet/accounts-with-customization-color])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
-            highest-role-text                 (i18n/label (communities.utils/role->translation-key
-                                                           highest-permission-role))]
+            highest-role-text                 (when highest-permission-role
+                                                (i18n/label (communities.utils/role->translation-key
+                                                             highest-permission-role)))]
         [rn/safe-area-view {:style style/container}
          [quo/drawer-top
           {:type                :context-tag
@@ -73,7 +74,7 @@
            :key-fn                  :address
            :data                    accounts}]
 
-         (when (and highest-permission-role (seq selected-addresses))
+         (if (and highest-permission-role (seq selected-addresses))
            [rn/view
             {:style style/highest-role}
             [quo/text
@@ -84,19 +85,15 @@
              {:type    :icon
               :icon    :i/members
               :size    24
-              :context highest-role-text}]])
-
-         (when (empty? selected-addresses)
-           [rn/view
-            {:style style/error-message}
-            [quo/icon
-             :i/info
-             {:color colors/danger-50
-              :size  16}]
-            [quo/text
-             {:size  :paragraph-2
-              :style {:color colors/danger-50}}
-             (i18n/label :t/no-addresses-selected)]])
+              :context highest-role-text}]]
+           [quo/info-message
+            {:type  :error
+             :size  :default
+             :icon  :i/info
+             :style {:justify-content :center}}
+            (if (empty? selected-addresses)
+              (i18n/label :t/no-addresses-selected)
+              (i18n/label :t/addresses-dont-contain-tokens-needed))])
 
          [rn/view {:style style/buttons}
           [quo/button
