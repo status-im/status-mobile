@@ -2493,5 +2493,6 @@
     "confirm-the-position": "Confirm the position of certain words in your recovery phrase",
     "do-not-cheat": "Don't try to cheat",
     "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",
-    "see-recovery-phrase-again": "See recovery phrase again"
+    "see-recovery-phrase-again": "See recovery phrase again",
+    "fees": "Fees"
 }
