@@ -12,7 +12,7 @@
      [:map {:closed false}
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:theme :schema.common/theme]
-      [:progressed-value {:optional true} [:maybe :number]]
+      [:progressed-value {:optional true} [:maybe :string]]
       [:full-width? {:optional true} [:maybe :boolean]]]]]
    :any])
 
