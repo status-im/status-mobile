@@ -1,4 +1,4 @@
-(ns tests.core-spec
+(ns status-im.core-spec
   (:require
     [status-im.common.floating-button-page.component-spec]
     [status-im.contexts.chat.messenger.messages.content.audio.component-spec]
