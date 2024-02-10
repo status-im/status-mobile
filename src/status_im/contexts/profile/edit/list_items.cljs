@@ -25,7 +25,7 @@
                :action          :arrow
                :container-style style/item-container}
               {:title           (i18n/label :t/accent-colour)
-               :on-press        not-implemented/alert
+               :on-press        #(rf/dispatch [:open-modal :edit-accent-colour])
                :label           :color
                :label-props     (colors/resolve-color customization-color theme)
                :blur?           true

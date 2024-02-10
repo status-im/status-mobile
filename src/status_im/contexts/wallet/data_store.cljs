@@ -33,6 +33,7 @@
       (update :test-preferred-chain-ids chain-ids-string->set)
       (update :type keyword)
       (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))
+      (assoc :default-account? (:wallet account))
       add-keys-to-account))
 
 (defn rpc->accounts
@@ -49,7 +50,8 @@
                         :color                    :colorId})
       (update :prodPreferredChainIds chain-ids-set->string)
       (update :testPreferredChainIds chain-ids-set->string)
-      (dissoc :watch-only?)))
+      (dissoc :watch-only?)
+      (dissoc :default-account?)))
 
 (defn- rpc->balances-per-chain
   [token]

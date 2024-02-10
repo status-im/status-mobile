@@ -12,6 +12,7 @@
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -32,12 +33,13 @@
 
 (defn- options
   [{:keys [theme show-account-selector? options-height]}]
-  (let [{:keys [name color emoji address watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        network-preference-details                     (rf/sub [:wallet/network-preference-details])
-        multichain-address                             (utils/get-multichain-address
-                                                        network-preference-details
-                                                        address)
-        share-title                                    (str name " " (i18n/label :t/address))]
+  (let [{:keys [name color emoji address watch-only?
+                default-account?]} (rf/sub [:wallet/current-viewing-account])
+        network-preference-details (rf/sub [:wallet/network-preference-details])
+        multichain-address         (utils/get-multichain-address
+                                    network-preference-details
+                                    address)
+        share-title                (i18n/label :t/share-address-title {:address name})]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -92,15 +94,18 @@
                                  #(rf/dispatch [:wallet/share-account
                                                 {:title share-title :content multichain-address}])
                                  600))}
-        {:add-divider?        (not show-account-selector?)
-         :icon                :i/delete
-         :accessibility-label :remove-account
-         :label               (i18n/label :t/remove-account)
-         :danger?             true
-         :on-press            #(rf/dispatch [:show-bottom-sheet
-                                             {:content
-                                              (fn []
-                                                [remove-account/view])}])}]]]
+        (when-not default-account?
+          {:add-divider?        (not show-account-selector?)
+           :icon                :i/delete
+           :accessibility-label :remove-account
+           :label               (i18n/label :t/remove-account)
+           :danger?             true
+           :on-press            #(ff/alert ::ff/wallet.remove-account
+                                           (fn []
+                                             (rf/dispatch [:show-bottom-sheet
+                                                           {:content
+                                                            (fn []
+                                                              [remove-account/view])}])))})]]]
      (when show-account-selector?
        [:<>
         [quo/divider-line {:container-style style/divider-label}]

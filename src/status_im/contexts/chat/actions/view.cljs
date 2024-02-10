@@ -23,7 +23,7 @@
       :label               (i18n/label :t/new-chat)
       :on-press            (fn []
                              (rf/dispatch [:group-chat/clear-contacts])
-                             (debounce/dispatch-and-chill
+                             (debounce/throttle-and-dispatch
                               [:open-modal :start-a-new-chat]
                               1000))}
      {:icon                :i/add-user
@@ -31,6 +31,6 @@
       :label               (i18n/label :t/add-a-contact)
       :sub-label           (i18n/label :t/enter-chat-key)
       :add-divider?        true
-      :on-press            #(debounce/dispatch-and-chill
+      :on-press            #(debounce/throttle-and-dispatch
                              [:open-modal :new-contact]
                              1000)}]]])

@@ -9,10 +9,10 @@
     [reagent.core :as reagent]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
-    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
@@ -32,9 +32,9 @@
                         :size                :xxs
                         :customization-color account-color}
     :action            :button
-    :action-props      {:on-press    (if (:edit-default-keypair config/wallet-feature-flags)
-                                       #(rf/dispatch [:navigate-to :wallet-select-keypair])
-                                       #(js/alert "feature disabled in config file"))
+    :action-props      {:on-press    #(ff/alert ::ff/wallet.edit-default-keypair
+                                                (fn []
+                                                  (rf/dispatch [:navigate-to :wallet-select-keypair])))
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text

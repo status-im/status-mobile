@@ -34,16 +34,13 @@
     (fn
       [{:keys [on-press on-long-press disabled? type background size icon-left icon-right icon-top
                customization-color theme accessibility-label icon-only? container-style inner-style
-               pressed? on-press-in on-press-out]
+               pressed? on-press-in on-press-out allow-multiple-presses?]
         :or   {type                :primary
                size                40
-               customization-color (cond (= type :primary)  :blue
-                                         (= type :positive) :success
-                                         (= type :danger)   :danger
-                                         :else              nil)}}
+               customization-color (if (= type :primary) :blue nil)}}
        children]
       (let [{:keys [icon-color background-color label-color border-color blur-type
-                    blur-overlay-color border-radius]}
+                    blur-overlay-color border-radius overlay-customization-color]}
             (button-properties/get-values {:customization-color customization-color
                                            :background          background
                                            :type                type
@@ -52,16 +49,17 @@
                                            :icon-only?          icon-only?})
             icon-size (when (= 24 size) 12)]
         [rn/touchable-without-feedback
-         {:disabled            disabled?
-          :accessibility-label accessibility-label
-          :on-press-in         (fn []
-                                 (reset! pressed-state? true)
-                                 (when on-press-in (on-press-in)))
-          :on-press-out        (fn []
-                                 (reset! pressed-state? nil)
-                                 (when on-press-out (on-press-out)))
-          :on-press            on-press
-          :on-long-press       on-long-press}
+         {:disabled                disabled?
+          :accessibility-label     accessibility-label
+          :on-press-in             (fn []
+                                     (reset! pressed-state? true)
+                                     (when on-press-in (on-press-in)))
+          :on-press-out            (fn []
+                                     (reset! pressed-state? nil)
+                                     (when on-press-out (on-press-out)))
+          :on-press                on-press
+          :allow-multiple-presses? allow-multiple-presses?
+          :on-long-press           on-long-press}
          [rn/view
           {:style (merge
                    (style/shape-style-container size border-radius)
@@ -78,9 +76,9 @@
                                             :icon-left        icon-left
                                             :icon-right       icon-right})
                     inner-style)}
-           (when customization-color
+           (when overlay-customization-color
              [customization-colors/overlay
-              {:customization-color customization-color
+              {:customization-color overlay-customization-color
                :theme               theme
                :pressed?            (if pressed? pressed? @pressed-state?)}])
            (when (= background :photo)

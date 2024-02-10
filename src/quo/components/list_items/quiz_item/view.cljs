@@ -9,8 +9,10 @@
     [utils.i18n :as i18n]))
 
 (defn- view-internal
-  [{:keys [state theme number word] :as props}]
-  [rn/view {:style (style/container props)}
+  [{:keys [state theme number word on-press] :as props}]
+  [rn/pressable
+   {:style    (style/container props)
+    :on-press on-press}
    (if (or (= state :empty) (= state :disabled))
      [rn/view
       {:style               (style/num-container props)

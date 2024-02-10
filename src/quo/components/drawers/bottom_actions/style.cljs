@@ -2,34 +2,58 @@
   (:require
     [quo.foundations.colors :as colors]))
 
+(defn- text-color
+  [scroll? blur? theme]
+  (cond
+    scroll? (if blur?
+              colors/white-70-blur
+              (colors/theme-colors colors/neutral-80-opa-70
+                                   colors/white-opa-70
+                                   theme))
+    blur?   colors/white-opa-40
+    :else   (colors/theme-colors colors/neutral-50
+                                 colors/neutral-40
+                                 theme)))
+
+(defn container
+  [scroll? blur? theme]
+  {:background-color (when-not (or scroll? blur?)
+                       (colors/theme-colors colors/white colors/neutral-95 theme))})
+
 (def buttons-container
   {:flex-direction     :row
    :justify-content    :space-around
    :padding-vertical   12
+   :gap                12
    :padding-horizontal 20})
 
 (def button-container
   {:flex 1})
 
-(def button-container-2-actions
-  (assoc button-container :margin-right 12))
+(def description-top
+  {:flex-direction  :row
+   :align-items     :center
+   :gap             5
+   :padding-top     12
+   :padding-bottom  4
+   :justify-content :center})
 
-(defn description
-  [theme scroll?]
-  {:color              (colors/theme-colors
-                        (if scroll?
-                          (colors/custom-color colors/neutral-80 70)
-                          colors/neutral-50)
-                        (if scroll?
-                          colors/white-opa-70
-                          colors/neutral-40)
-                        theme)
+(defn description-top-text
+  [scroll? blur? theme]
+  {:color (text-color scroll? blur? theme)})
+
+(defn description-bottom
+  [scroll? blur? theme]
+  {:color              (text-color scroll? blur? theme)
    :text-align         :center
+   :padding-bottom     12
    :padding-horizontal 40})
 
-(def scroll
-  {:margin-top        21
-   :margin-horizontal 120
-   :margin-bottom     8
-   :width             134
-   :height            5})
+(def error-message
+  {:flex-direction     :row
+   :gap                4
+   :justify-content    :center
+   :align-items        :center
+   :padding-top        15
+   :padding-horizontal 20
+   :padding-bottom     7})
