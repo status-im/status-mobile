@@ -36,6 +36,7 @@
     quo.components.community.community-view
     quo.components.community.icon
     quo.components.community.token-gating
+    quo.components.counter.collectible-counter.view
     quo.components.counter.counter.view
     quo.components.counter.step.view
     quo.components.dividers.date
@@ -229,6 +230,7 @@
 (def channel-actions quo.components.community.channel-actions/channel-actions)
 
 ;;;; Counter
+(def collectible-counter quo.components.counter.collectible-counter.view/view)
 (def counter quo.components.counter.counter.view/view)
 (def step #'quo.components.counter.step.view/view)
 

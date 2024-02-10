@@ -26,7 +26,8 @@
    :discover                      (js/require "../resources/images/ui2/discover.png")
    :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")
    :transaction-progress          (js/require "../resources/images/ui2/transaction-progress.png")
-   :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")})
+   :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")
+   :notifications                 (js/require "../resources/images/ui2/notifications.png")})
 
 (def ui-themed
   {:angry-man
@@ -84,7 +85,10 @@
     :dark  (js/require "../resources/images/ui2/no-permissions-dark.png")}
    :sweating-man
    {:light (js/require "../resources/images/ui2/sweating-man-light.png")
-    :dark  (js/require "../resources/images/ui2/sweating-man-dark.png")}})
+    :dark  (js/require "../resources/images/ui2/sweating-man-dark.png")}
+   :no-pinned-messages
+   {:light (js/require "../resources/images/ui2/no-pinned-messages-light.png")
+    :dark  (js/require "../resources/images/ui2/no-pinned-messages-dark.png")}})
 
 (def mock-images
   {:bored-ape             (js/require "../resources/images/mock2/bored-ape.png")

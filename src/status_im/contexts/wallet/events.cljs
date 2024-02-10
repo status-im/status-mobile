@@ -7,6 +7,7 @@
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
+    [utils.collection]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
@@ -51,10 +52,9 @@
          wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
-     {:db (reduce (fn [db {:keys [address] :as account}]
-                    (assoc-in db [:wallet :accounts address] account))
-                  db
-                  (data-store/rpc->accounts wallet-accounts))
+     {:db (assoc-in db
+           [:wallet :accounts]
+           (utils.collection/index-by :address (data-store/rpc->accounts wallet-accounts)))
       :fx [[:dispatch [:wallet/get-wallet-token]]
            [:dispatch [:wallet/request-collectibles {:start-at-index 0 :new-request? true}]]
            (when new-account?
@@ -83,6 +83,30 @@
             :on-error   #(log/info "failed to save account "
                                    {:error %
                                     :event :wallet/save-account})}]]]}))
+
+(rf/reg-event-fx
+ :wallet/show-account-deleted-toast
+ (fn [_ [toast-message]]
+   {:fx [[:dispatch [:toasts/upsert {:type :positive :text toast-message}]]]}))
+
+(rf/reg-event-fx
+ :wallet/remove-account-success
+ (fn [_ [toast-message _]]
+   {:fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:pop-to-root :shell-stack]]
+         [:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/show-account-deleted-toast toast-message]]]}))
+
+(rf/reg-event-fx
+ :wallet/remove-account
+ (fn [_ [{:keys [address toast-message]}]]
+   {:fx [[:json-rpc/call
+          [{:method     "accounts_deleteAccount"
+            :params     [address]
+            :on-success [:wallet/remove-account-success toast-message]
+            :on-error   #(log/info "failed to remove account "
+                                   {:error %
+                                    :event :wallet/remove-account})}]]]}))
 
 (rf/reg-event-fx
  :wallet/get-wallet-token
@@ -133,10 +157,10 @@
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
-   (let [{:keys [wallet-root-address]} (:profile/profile db)]
+   (let [{:keys [address]} (:profile/profile db)]
      {:fx [[:json-rpc/call
             [{:method     "wallet_getDerivedAddresses"
-              :params     [sha3-pwd wallet-root-address [path]]
+              :params     [sha3-pwd address [path]]
               :on-success on-success
               :on-error   #(log/info "failed to derive address " %)}]]]})))
 
@@ -178,7 +202,7 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
-(rf/reg-event-fx :wallet/select-bridge-to
+(rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
     :fx [[:navigate-to-within-stack [:wallet-bridge-to stack-id]]]}))
@@ -288,6 +312,10 @@
    (let [current-timeout (get db :wallet/search-timeout)]
      (background-timer/clear-timeout current-timeout)
      {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
+
+(rf/reg-event-fx :wallet/clean-ens-or-address-validation
+ (fn [{:keys [db]}]
+   {:db (assoc db :wallet/valid-ens-or-address? false)}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]

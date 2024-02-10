@@ -11,11 +11,18 @@
 
 (goog-define INFURA_TOKEN "")
 (goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
-(goog-define ALCHEMY_ARBITRUM_GOERLI_TOKEN "")
-(goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
-(goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
-(goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
 (goog-define OPENSEA_API_KEY "")
+(goog-define RARIBLE_MAINNET_API_KEY "")
+(goog-define RARIBLE_TESTNET_API_KEY "")
+(goog-define ALCHEMY_ETHEREUM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_ETHEREUM_GOERLI_TOKEN "")
+(goog-define ALCHEMY_ETHEREUM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_GOERLI_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_GOERLI_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
 
 (def mainnet-rpc-url (str "https://eth-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
 (def goerli-rpc-url (str "https://goerli-archival.gateway.pokt.network/v1/lb/" POKT_TOKEN))
@@ -160,9 +167,5 @@
 
 (def default-kdf-iterations 3200)
 
-(def community-accounts-selection-enabled? false)
+(def community-accounts-selection-enabled? (enabled? (get-config :ACCOUNT_SELECTION_ENABLED "0")))
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
-
-(def wallet-feature-flags
-  {:edit-default-keypair false
-   :bridge-token         false})

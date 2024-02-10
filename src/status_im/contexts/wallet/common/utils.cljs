@@ -74,11 +74,13 @@
 (defn get-standard-crypto-format
   "For full details: https://github.com/status-im/status-mobile/issues/18225"
   [{:keys [market-values-per-currency]} token-units]
-  (let [price          (get-in market-values-per-currency [:usd :price])
-        one-cent-value (if (pos? price) (/ 0.01 price) 0)
-        decimals-count (calc-max-crypto-decimals one-cent-value)]
-    (if (money/equal-to token-units 0)
-      "0"
+  (if (or (nil? token-units)
+          (nil? market-values-per-currency)
+          (money/equal-to token-units 0))
+    "0"
+    (let [price          (-> market-values-per-currency :usd :price)
+          one-cent-value (if (pos? price) (/ 0.01 price) 0)
+          decimals-count (calc-max-crypto-decimals one-cent-value)]
       (if (< token-units one-cent-value)
         (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
         (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
@@ -180,7 +182,7 @@
 
 (defn get-wallet-qr
   [{:keys [wallet-type selected-networks address]}]
-  (if (= wallet-type :wallet-multichain)
+  (if (= wallet-type :multichain)
     (as-> selected-networks $
       (map qr-codes/get-network-short-name-url $)
       (apply str $)
@@ -188,47 +190,74 @@
     address))
 
 (def id->network
-  {constants/mainnet-chain-id       :ethereum
-   constants/goerli-chain-id        :ethereum
-   constants/optimism-chain-id      :optimism
-   constants/optimism-test-chain-id :optimism
-   constants/arbitrum-chain-id      :arbitrum
-   constants/arbitrum-test-chain-id :arbitrum})
+  {constants/ethereum-chain-id         :ethereum
+   constants/goerli-chain-id           :ethereum
+   constants/ethereum-sepolia-chain-id :ethereum
+   constants/optimism-chain-id         :optimism
+   constants/optimism-testnet-chain-id :optimism
+   constants/optimism-sepolia-chain-id :optimism
+   constants/arbitrum-chain-id         :arbitrum
+   constants/arbitrum-testnet-chain-id :arbitrum
+   constants/arbitrum-sepolia-chain-id :arbitrum})
 
-(def short-name->id
-  {:eth  constants/mainnet-chain-id
-   :opt  constants/optimism-chain-id
-   :arb1 constants/arbitrum-chain-id})
+(defn- get-chain-id
+  [test-net?]
+  (if test-net?
+    {:eth  constants/goerli-chain-id
+     :opt  constants/optimism-testnet-chain-id
+     :arb1 constants/arbitrum-testnet-chain-id}
+    {:eth  constants/ethereum-chain-id
+     :opt  constants/optimism-chain-id
+     :arb1 constants/arbitrum-chain-id}))
+
+(defn short-name->id
+  [short-name test-net?]
+  (let [chain-id-map (get-chain-id test-net?)]
+    (get chain-id-map short-name)))
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
   (if (string/includes? crypto-value "<")
-    "<$0.01"
+    (str "<" currency-symbol "0.01")
     (prettify-balance currency-symbol fiat-value)))
 
+(defn prettify-percentage-change
+  "Returns unsigned precentage"
+  [percentage]
+  (-> (if (number? percentage) percentage 0)
+      money/bignumber
+      money/absolute-value
+      (money/to-fixed 2)))
 
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
-  (let [token-units                 (total-token-units-in-all-chains token)
-        fiat-value                  (total-token-fiat-value currency token)
-        market-values               (or (get-in token [:market-values-per-currency currency])
-                                        (get-in token
-                                                [:market-values-per-currency
-                                                 constants/profile-default-currency]))
-        {:keys [change-pct-24hour]} market-values
-        crypto-value                (get-standard-crypto-format token token-units)
-        fiat-value                  (get-standard-fiat-format crypto-value currency-symbol fiat-value)]
+  (let [token-units                       (total-token-units-in-all-chains token)
+        fiat-value                        (total-token-fiat-value currency token)
+        market-values                     (or (get-in token [:market-values-per-currency currency])
+                                              (get-in token
+                                                      [:market-values-per-currency
+                                                       constants/profile-default-currency]))
+        {:keys [price change-pct-24hour]} market-values
+        formatted-token-price             (prettify-balance currency-symbol price)
+        percentage-change                 (prettify-percentage-change change-pct-24hour)
+        crypto-value                      (get-standard-crypto-format token token-units)
+        fiat-value                        (get-standard-fiat-format crypto-value
+                                                                    currency-symbol
+                                                                    fiat-value)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
+     :metrics?            true
      :status              (cond
                             (pos? change-pct-24hour) :positive
                             (neg? change-pct-24hour) :negative
                             :else                    :empty)
      :customization-color color
-     :values              {:crypto-value crypto-value
-                           :fiat-value   fiat-value}}))
+     :values              {:crypto-value      crypto-value
+                           :fiat-value        fiat-value
+                           :fiat-change       formatted-token-price
+                           :percentage-change percentage-change}}))
 
 (defn get-multichain-address
   [networks address]

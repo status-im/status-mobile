@@ -31,7 +31,7 @@
                         (* 2 56) ;; two other list items
                         (* 2 16) ;; spacing between items
                         220)     ;; extra spacing (top bar)
-       :on-press     #(debounce/dispatch-and-chill
+       :on-press     #(debounce/throttle-and-dispatch
                        [:onboarding/navigate-to-create-profile]
                        1000)}]
      [rn/view {:style style/subtitle-container}

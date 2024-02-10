@@ -7,7 +7,6 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.home.actions.view :as actions]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.common.scroll-page.style :as scroll-page.style]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.config :as config]
@@ -15,38 +14,20 @@
     [status-im.contexts.communities.actions.chat.view :as chat-actions]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.overview.style :as style]
-    [status-im.contexts.communities.overview.utils :as utils]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn preview-user-list
-  [user-list]
-  (when (seq user-list)
-    [rn/view style/preview-user
-     [quo/preview-list
-      {:type   :user
-       :number (count user-list)
-       :size   :size-24}
-      user-list]
-     [quo/text
-      {:accessibility-label :communities-screen-title
-       :style               {:margin-left 8}
-       :size                :label}
-      (utils/join-existing-users-string user-list)]]))
-
-(defn add-category-height
+(defn- add-category-height
   [categories-heights category height]
-  (swap! categories-heights
-    (fn [heights]
-      (assoc heights category height))))
+  (swap! categories-heights assoc category height))
 
-(defn collapse-category
+(defn- collapse-category
   [community-id category-id collapsed?]
   (rf/dispatch [:communities/toggle-collapsed-category community-id category-id (not collapsed?)]))
 
-(defn layout-y
+(defn- layout-y
   [event]
   (oops/oget event "nativeEvent.layout.y"))
 
@@ -77,7 +58,7 @@
              {:on-press      on-press
               :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])})]]))
 
-(defn channel-list-component
+(defn- channel-list-component
   [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
    channels-list]
   [rn/view
@@ -104,7 +85,7 @@
            ^{:key (:id chat)}
            [channel-chat-item community-id community-color chat])])])])
 
-(defn get-access-type
+(defn- get-access-type
   [access]
   (condp = access
     constants/community-no-membership-access   :open
@@ -112,17 +93,9 @@
     constants/community-on-request-access      :request-access
     :unknown-access))
 
-(defn join-gated-community
-  [id]
-  (rf/dispatch [:password-authentication/show
-                {:content (fn [] [password-authentication/view])}
-                {:label    (i18n/label :t/join-open-community)
-                 :on-press #(rf/dispatch [:communities/request-to-join
-                                          {:community-id id :password %}])}]))
-
-(defn info-button
+(defn- info-button
   []
-  [rn/touchable-without-feedback
+  [rn/pressable
    {:on-press
     #(rf/dispatch
       [:show-bottom-sheet
@@ -137,119 +110,116 @@
    [rn/view
     [quo/icon :i/info {:no-color true}]]])
 
-(defn token-gates
-  []
-  (fn [{:keys [id color]}]
-    (let [{:keys [can-request-access?
-                  number-of-hold-tokens tokens
-                  highest-permission-role]} (rf/sub [:community/token-gated-overview id])
-          highest-role-text
-          (i18n/label
-           (communities.utils/role->translation-key highest-permission-role :t/member))]
-      [rn/view {:style (style/token-gated-container)}
-       [rn/view
-        {:style {:padding-horizontal 12
-                 :flex-direction     :row
-                 :align-items        :center
-                 :justify-content    :space-between
-                 :flex               1}}
-        [quo/text {:weight :medium}
-         (if can-request-access?
-           (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
-           (i18n/label :t/you-not-eligible-to-join))]
-        [info-button]]
-       (when (pos? number-of-hold-tokens)
-         [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
-          (if can-request-access?
-            (i18n/label :t/you-hold-number-of-hold-tokens-of-these
-                        {:number-of-hold-tokens number-of-hold-tokens})
-            (i18n/label :t/you-must-hold))])
-       [quo/token-requirement-list
-        {:tokens   tokens
-         :padding? true}]
-       [quo/button
-        {:on-press
-         (if config/community-accounts-selection-enabled?
-           #(rf/dispatch [:open-modal :community-account-selection {:community-id id}])
-           #(join-gated-community id))
-         :accessibility-label :join-community-button
-         :customization-color color
-         :container-style {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
-         :disabled? (not can-request-access?)
-         :icon-left (if can-request-access? :i/unlocked :i/locked)}
-        (i18n/label :t/join-open-community)]])))
+(defn- token-requirements
+  [{:keys [id color]}]
+  (let [{:keys [can-request-access?
+                number-of-hold-tokens tokens
+                highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+        highest-role-text
+        (i18n/label
+         (communities.utils/role->translation-key highest-permission-role :t/member))]
+    [rn/view {:style (style/token-gated-container)}
+     [rn/view
+      {:style {:padding-horizontal 12
+               :flex-direction     :row
+               :align-items        :center
+               :justify-content    :space-between
+               :flex               1}}
+      [quo/text {:weight :medium}
+       (if can-request-access?
+         (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
+         (i18n/label :t/you-not-eligible-to-join))]
+      [info-button]]
+     (when (pos? number-of-hold-tokens)
+       [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
+        (if can-request-access?
+          (i18n/label :t/you-hold-number-of-hold-tokens-of-these
+                      {:number-of-hold-tokens number-of-hold-tokens})
+          (i18n/label :t/you-must-hold))])
+     [quo/token-requirement-list
+      {:tokens   tokens
+       :padding? true}]
+     [quo/button
+      {:on-press            (if config/community-accounts-selection-enabled?
+                              #(rf/dispatch [:open-modal :community-account-selection
+                                             {:community-id id}])
+                              #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
+       :accessibility-label :join-community-button
+       :customization-color color
+       :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+       :disabled?           (not can-request-access?)
+       :icon-left           (if can-request-access? :i/unlocked :i/locked)}
+      (i18n/label :t/join-open-community)]]))
 
-(defn join-community
-  [{:keys [joined color permissions token-permissions membership-permissions? id] :as community}
-   pending?]
-  (let [access-type     (get-access-type (:access permissions))
+(defn- join-community
+  [{:keys [id color joined permissions role-permissions? can-join?] :as community}]
+  (let [pending?        (rf/sub [:communities/my-pending-request-to-join id])
+        access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
         invite-only?    (= access-type :invite-only)]
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
-       (if membership-permissions?
-         [token-gates community]
+       (if role-permissions?
+         [token-requirements community]
          [quo/button
-          {:on-press
-           (if config/community-accounts-selection-enabled?
-             #(rf/dispatch [:open-modal :community-account-selection {:community-id id}])
-             #(rf/dispatch [:open-modal :community-requests-to-join community]))
-
+          {:on-press            (if config/community-accounts-selection-enabled?
+                                  #(rf/dispatch [:open-modal :community-account-selection
+                                                 {:community-id id}])
+                                  #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
-           :icon-left :i/communities}
+           :icon-left           :i/communities}
           (i18n/label :t/request-to-join)]))
-
-     (when (not (or joined pending? token-permissions))
+     (when (not (or pending? role-permissions? can-join?))
        [quo/text
         {:size   :paragraph-2
          :weight :regular
          :style  style/review-notice}
         (i18n/label :t/community-admins-will-review-your-request)])]))
 
-(defn status-tag
-  [pending? joined]
-  (when (or pending? joined)
-    [rn/view {:style {:position :absolute :top 12 :right 12}}
-     [quo/status-tag
-      {:status {:type (if joined :positive :pending)}
-       :label  (if joined
-                 (i18n/label :t/joined)
-                 (i18n/label :t/pending))}]]))
+(defn- status-tag
+  [community-id joined]
+  (let [pending? (rf/sub [:communities/my-pending-request-to-join community-id])]
+    (when (or pending? joined)
+      [rn/view {:style {:position :absolute :top 12 :right 12}}
+       [quo/status-tag
+        {:status {:type (if joined :positive :pending)}
+         :label  (if joined
+                   (i18n/label :t/joined)
+                   (i18n/label :t/pending))}]])))
 
-(defn add-handlers
+(defn- add-handlers
   [community-id
    joined-or-spectated
    {:keys [id locked?]
     :or   {locked? false}
     :as   chat}]
-  (merge
-   chat
-   (when (and (not locked?) id)
-     {:on-press      (when joined-or-spectated
-                       (fn []
-                         (rf/dispatch [:dismiss-keyboard])
-                         (debounce/dispatch-and-chill
-                          [:communities/navigate-to-community-chat (str community-id id)]
-                          1000)))
-      :on-long-press #(rf/dispatch
-                       [:show-bottom-sheet
-                        {:content (fn []
-                                    [chat-actions/actions chat false])}])
-      :community-id  community-id})))
+  (cond-> chat
+    (and (not locked?) id)
+    (assoc :on-press      (when joined-or-spectated
+                            (fn []
+                              (rf/dispatch [:dismiss-keyboard])
+                              (debounce/throttle-and-dispatch
+                               [:communities/navigate-to-community-chat (str community-id id)]
+                               1000)))
+           :on-long-press #(rf/dispatch
+                            [:show-bottom-sheet
+                             {:content (fn []
+                                         [chat-actions/actions chat false])}])
+           :community-id  community-id)))
 
-(defn add-handlers-to-chats
+(defn- add-handlers-to-chats
   [community-id joined-or-spectated chats]
   (mapv (partial add-handlers community-id joined-or-spectated) chats))
 
-(defn add-handlers-to-categorized-chats
+(defn- add-handlers-to-categorized-chats
   [community-id categorized-chats joined-or-spectated]
   (let [add-on-press (partial add-handlers-to-chats community-id joined-or-spectated)]
     (map (fn [[category v]]
            [category (update v :chats add-on-press)])
          categorized-chats)))
 
-(defn community-header
+(defn- community-header
   [title logo description]
   [quo/text-combinations
    {:container-style
@@ -266,11 +236,11 @@
     :title-accessibility-label :community-title
     :description-accessibility-label :community-description}])
 
-(defn community-content
-  [community]
-  (rf/dispatch [:communities/check-all-community-channels-permissions (:id community)])
-  (fn [{:keys [name description joined spectated images tags color id token-permissions] :as community}
-       pending?
+(defn- community-content
+  [{:keys [id]}]
+  (rf/dispatch [:communities/check-all-community-channels-permissions id])
+  (fn [{:keys [name description joined spectated images tags color id membership-permissions?]
+        :as   community}
        {:keys [on-category-layout
                collapsed?
                on-first-channel-height-changed]}]
@@ -279,7 +249,7 @@
       [:<>
        [rn/view {:style style/community-content-container}
         (when-not collapsed?
-          [status-tag pending? joined])
+          [status-tag id joined])
         [community-header name (when collapsed? (get-in images [:thumbnail :uri]))
          (when-not collapsed? description)]
         (when (and (seq tags) (not collapsed?))
@@ -287,9 +257,8 @@
            {:tags            tags
             :last-item-style style/last-community-tag
             :container-style style/community-tag-container}])
-        [join-community community pending?]]
-       (when (or (and (seq token-permissions) joined)
-                 (empty? token-permissions))
+        [join-community community]]
+       (when (or joined (not membership-permissions?))
          [channel-list-component
           {:on-category-layout              on-category-layout
            :community-id                    id
@@ -297,7 +266,7 @@
            :on-first-channel-height-changed on-first-channel-height-changed}
           (add-handlers-to-categorized-chats id chats-by-category joined-or-spectated)])])))
 
-(defn sticky-category-header
+(defn- sticky-category-header
   [_]
   (fn [{:keys [enabled label]}]
     (when enabled
@@ -310,7 +279,7 @@
         {:chevron :left}
         label]])))
 
-(defn page-nav-right-section-buttons
+(defn- page-nav-right-section-buttons
   [id]
   [{:icon-name           :i/options
     :accessibility-label :community-options-for-community
@@ -318,7 +287,7 @@
                            [:show-bottom-sheet
                             {:content (fn [] [options/community-options-bottom-sheet id])}])}])
 
-(defn pick-first-category-by-height
+(defn- pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]
   (->> categories-heights
        (sort-by (comp - second))
@@ -326,7 +295,7 @@
                (and (>= scroll-height (+ height first-channel-height))
                     category)))))
 
-(defn community-scroll-page
+(defn- community-scroll-page
   [{:keys [joined]}]
   (let [scroll-height        (reagent/atom 0)
         categories-heights   (reagent/atom {})
@@ -336,7 +305,7 @@
         ;; from not collapsed to collapsed if the
         ;; user is on this page
         initial-joined?      joined]
-    (fn [{:keys [id name images] :as community} pending?]
+    (fn [{:keys [id name images] :as community}]
       (let [cover          {:uri (get-in images [:banner :uri])}
             logo           {:uri (get-in images [:thumbnail :uri])}
             collapsed?     (and initial-joined? (:joined community))
@@ -363,7 +332,6 @@
                                         @categories-heights)}]}
          [community-content
           community
-          pending?
           {:on-category-layout              (partial add-category-height categories-heights)
            :collapsed?                      collapsed?
            :on-first-channel-height-changed
@@ -373,17 +341,16 @@
              (swap! categories-heights select-keys categories)
              (reset! first-channel-height height))}]]))))
 
-(defn community-card-page-view
+(defn- community-card-page-view
   [id]
   (let [{:keys [id joined]
-         :as   community} (rf/sub [:communities/community id])
-        pending?          (rf/sub [:communities/my-pending-request-to-join id])]
+         :as   community} (rf/sub [:communities/community id])]
     (when community
       (when joined
         (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
-      [community-scroll-page community pending?])))
+      [community-scroll-page community])))
 
-(defn overview
+(defn view
   [id]
   (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])]

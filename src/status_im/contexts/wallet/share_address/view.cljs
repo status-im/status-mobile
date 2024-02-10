@@ -49,27 +49,28 @@
 (defn view
   []
   (let [padding-top       (:top (safe-area/get-insets))
-        wallet-type       (reagent/atom :wallet-legacy)
+        wallet-type       (reagent/atom :legacy)
         ;; Design team is yet to confirm the default selected networks here.
         ;; Should be the current selected for the account or all the networks always
         selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
     (fn []
-      (let [{:keys [address color emoji] :as account} (rf/sub [:wallet/current-viewing-account])
-            share-title                               (str (:name account) " " (i18n/label :t/address))
-            qr-url                                    (utils/get-wallet-qr {:wallet-type @wallet-type
-                                                                            :selected-networks
-                                                                            @selected-networks
-                                                                            :address address})
-            qr-media-server-uri                       (image-server/get-qr-image-uri-for-any-url
-                                                       {:url         qr-url
-                                                        :port        (rf/sub [:mediaserver/port])
-                                                        :qr-size     qr-size
-                                                        :error-level :highest})
-            {:keys [status]}                          (rf/sub [:get-screen-params])
-            title                                     (case status
-                                                        :share   (i18n/label :t/share-address)
-                                                        :receive (i18n/label :t/receive)
-                                                        nil)]
+      (let [{:keys [address color emoji watch-only?]
+             :as   account}     (rf/sub [:wallet/current-viewing-account])
+            share-title         (str (:name account) " " (i18n/label :t/address))
+            qr-url              (utils/get-wallet-qr {:wallet-type @wallet-type
+                                                      :selected-networks
+                                                      @selected-networks
+                                                      :address address})
+            qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+                                 {:url         qr-url
+                                  :port        (rf/sub [:mediaserver/port])
+                                  :qr-size     qr-size
+                                  :error-level :highest})
+            {:keys [status]}    (rf/sub [:get-screen-params])
+            title               (case status
+                                  :share   (i18n/label :t/share-address)
+                                  :receive (i18n/label :t/receive)
+                                  nil)]
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
@@ -87,7 +88,8 @@
             :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
            [quo/share-qr-code
-            {:type                @wallet-type
+            {:type                (if watch-only? :watched-address :wallet)
+             :address             @wallet-type
              :qr-image-uri        qr-media-server-uri
              :qr-data             qr-url
              :networks            @selected-networks
@@ -96,6 +98,6 @@
              :full-name           (:name account)
              :customization-color color
              :emoji               emoji
-             :on-legacy-press     #(reset! wallet-type :wallet-legacy)
-             :on-multichain-press #(reset! wallet-type :wallet-multichain)
+             :on-legacy-press     #(reset! wallet-type :legacy)
+             :on-multichain-press #(reset! wallet-type :multichain)
              :on-settings-press   #(open-preferences selected-networks)}]]]]))))

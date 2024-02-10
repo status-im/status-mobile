@@ -3,9 +3,11 @@
     [quo.foundations.colors :as colors]))
 
 (defn divider
-  [theme]
+  [theme blur?]
   {:border-top-width 1
-   :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-90 theme)
+   :border-top-color (if blur?
+                       colors/white-opa-5
+                       (colors/theme-colors colors/neutral-10 colors/neutral-90 theme))
    :margin-top       8
    :margin-bottom    7
    :align-items      :center
