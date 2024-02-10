@@ -34,16 +34,16 @@
   []
   [rn/view {:style style/footer}])
 
+(defn- get-item-layout
+  [_ index]
+  #js {:length 200 :offset (* 200 index) :index index})
+
 (defn- members
   [items]
   [rn/section-list
    {:key-fn                            :public-key
     :content-container-style           {:padding-bottom 20}
-    :get-item-layout                   (fn [_ index]
-                                         #js
-                                          {:length 200
-                                           :offset (* 200 index)
-                                           :index  index})
+    :get-item-layout                   get-item-layout
     :content-inset-adjustment-behavior :never
     :sections                          items
     :sticky-section-headers-enabled    false

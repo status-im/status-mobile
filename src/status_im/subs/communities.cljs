@@ -98,28 +98,28 @@
  :communities/sorted-community-members-section-list
  (fn [[_ community-id]]
    (let [profile                   (re-frame/subscribe [:profile/profile])
-         members                   (re-frame/subscribe [:communities/community-members community-id])
-         visibility-status-updates (re-frame/subscribe [:visibility-status-updates])
-         my-status-update          (re-frame/subscribe [:multiaccount/current-user-visibility-status])]
+         members                   (re-frame/subscribe [:communities/community-members
+                                                        community-id])
+         visibility-status-updates (re-frame/subscribe
+                                    [:visibility-status-updates])
+         my-status-update          (re-frame/subscribe
+                                    [:multiaccount/current-user-visibility-status])]
      [profile members visibility-status-updates my-status-update]))
  (fn [[profile members visibility-status-updates my-status-update] _]
    (let [online? (fn [public-key]
-                   (let [{visibility-status-type :status-type} (if (or
-                                                                    (string/blank? (:public-key profile))
-                                                                    (= (:public-key profile) public-key))
-                                                                 my-status-update
-                                                                 (get visibility-status-updates
-                                                                      public-key))]
-                     (general-subs/online? visibility-status-type)))
+                   (let [{visibility-status-type :status-type}
+                         (if (or (string/blank? (:public-key profile))
+                                 (= (:public-key profile) public-key))
+                           my-status-update
+                           (get visibility-status-updates public-key))]
+                     (subs.utils/online? visibility-status-type)))
          names   (keys->names (keys members) profile)]
      (->> members
           (sort-members-by-name names true)
           keys
           (group-by online?)
           (map (fn [[k v]]
-                 {:title (if k
-                           (i18n/label :t/online-community-member)
-                           (i18n/label :t/offline-community-member))
+                 {:title (if k (i18n/label :t/online) (i18n/label :t/offline))
                   :data  v}))))))
 
 (re-frame/reg-sub
