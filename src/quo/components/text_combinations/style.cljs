@@ -19,11 +19,11 @@
 
 (defn textual-emoji
   [size emoji-background-color]
-  {:style {:border-radius    50
-           :border-width     0
-           :border-color     :transparent
-           :width            size
-           :height           size
-           :justify-content  :center
-           :align-items      :center
-           :background-color emoji-background-color}})
+  {:border-radius    50
+   :border-width     0
+   :border-color     :transparent
+   :width            size
+   :height           size
+   :justify-content  :center
+   :align-items      :center
+   :background-color emoji-background-color})

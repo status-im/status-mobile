@@ -33,14 +33,10 @@
            button-icon
            button-on-press
            customization-color
-<<<<<<< HEAD
-           emoji-hash]
-    :or   {title-number-of-lines 1}}]
-=======
            emoji-hash
            emoji
-           emoji-background-color]}]
->>>>>>> 5c0581223 (Improvements)
+           emoji-background-color]
+    :or   {title-number-of-lines 1}}]
   [rn/view {:style container-style}
    [rn/view
     {:style {:flex-direction  :row
