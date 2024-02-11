@@ -62,6 +62,8 @@
 
 (def previous-screen (atom nil))
 
+(def ^:private change-statusbar-color-delay 150)
+
 (def ^:private dark-screens
   #{:shell :share-shell :activity-center :camera-screen :settings :settings-password :settings-syncing
     :edit-profile})
@@ -76,11 +78,11 @@
                      "light-content"
                      "dark-content")
                    true)
-                 150))
+                 change-statusbar-color-delay))
 
 (defn handle-status-bar-dark-screen
   []
-  (js/setTimeout #(rn/set-status-bar-style "light-content" true) 150))
+  (js/setTimeout #(rn/set-status-bar-style "light-content" true) change-statusbar-color-delay))
 
 (defn handle-status-bar-screens
   [current-screen]
@@ -93,6 +95,6 @@
          "light-content"
          "dark-content")
        true)
-     150))
+     change-statusbar-color-delay))
   (reset! previous-screen current-screen))
 
