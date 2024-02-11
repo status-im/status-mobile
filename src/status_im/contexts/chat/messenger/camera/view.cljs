@@ -3,6 +3,7 @@
     [oops.core :refer [oget]]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -99,7 +100,9 @@
 
 (defn bottom-area
   [{:keys [flash camera-type] :as args}]
-  (let [back        #(rf/dispatch [:navigate-back])
+  (let [back        (fn []
+                      (quo.theme/handle-status-bar-screens-per-theme)
+                      (rf/dispatch [:navigate-back]))
         flip-camera (fn []
                       (reset! flash false)
                       (reset! camera-type (if (= @camera-type camera-kit/camera-type-back)
@@ -120,8 +123,10 @@
         on-press               #(retake flash uri)
         use-photo              (fn []
                                  (rf/dispatch [:photo-selector/camera-roll-pick {:uri @uri}])
-                                 (rf/dispatch [:navigate-back]))]
+                                 (rf/dispatch [:navigate-back]))
+        current-screen         (rf/sub [:navigation/current-screen-id])]
     (handle-orientation current-orientation rotate)
+    (rn/use-effect #(quo.theme/handle-status-bar-screens current-screen))
     [rn/view {:style style/screen-container}
      [reanimated/touchable-opacity
       {:active-opacity 1

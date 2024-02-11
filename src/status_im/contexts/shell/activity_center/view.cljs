@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.activity-center.view
   (:require
     [oops.core :as oops]
+    [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
@@ -60,11 +61,13 @@
            :else
            nil)]))))
 
-(defn view
+(defn view-internal
   []
-  (let [active-swipeable (atom nil)]
+  (let [active-swipeable (atom nil)
+        current-screen   (rf/sub [:navigation/current-screen-id])]
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
+      (rn/use-effect #(quo.theme/handle-status-bar-screens current-screen))
       (let [notifications       (rf/sub [:activity-center/notifications])
             customization-color (rf/sub [:profile/customization-color])]
         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
@@ -80,3 +83,7 @@
            :on-scroll-to-index-failed identity
            :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
            :render-fn                 notification-component}]]))))
+
+(defn view
+  []
+  [:f> view-internal])

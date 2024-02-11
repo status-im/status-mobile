@@ -26,16 +26,19 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
-                                 (get shared-values))]
+                                 (get shared-values))
+        current-screen      (rf/sub [:navigation/current-screen-id])]
+    (rn/use-effect #(quo.theme/handle-status-bar-screens current-screen))
     [quo/bottom-nav-tab
      (-> notifications-data
          (get stack-id)
-         (assoc :test-ID             stack-id
-                :icon                icon
-                :icon-color-anim     icon-color
-                :on-press            #(animation/bottom-tab-on-press stack-id true)
-                :accessibility-label (str (name stack-id) "-tab")
-                :customization-color customization-color))]))
+         (assoc
+          :test-ID             stack-id
+          :icon                icon
+          :icon-color-anim     icon-color
+          :on-press            #(animation/bottom-tab-on-press stack-id true)
+          :accessibility-label (str (name stack-id) "-tab")
+          :customization-color customization-color))]))
 
 (defn f-bottom-tabs
   []
@@ -63,8 +66,8 @@
         [reanimated/blur-view (blur-overlay-params bottom-tabs-blur-overlay-style)])
       [rn/view {:style (style/bottom-tabs)}
        [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
+        [:f> bottom-tab :i/communities :communities-stack shared-values notifications-data]]
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-        [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
-       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
-       [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]]))
+        [:f> bottom-tab :i/messages :chats-stack shared-values notifications-data]]
+       [:f> bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
+       [:f> bottom-tab :i/browser :browser-stack shared-values notifications-data]]]]))

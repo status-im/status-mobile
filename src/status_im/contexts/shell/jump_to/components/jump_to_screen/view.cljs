@@ -86,12 +86,14 @@
      (when pass-through?
        [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
-(defn view
+(defn view-internal
   []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
-        shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
+        shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)
+        current-screen (rf/sub [:navigation/current-screen-id])]
+    (quo.theme/handle-status-bar-screens current-screen)
     [theme/provider {:theme :dark}
      [rn/view
       {:style {:top              0
@@ -106,3 +108,7 @@
        {:jump-to?        true
         :container-style {:margin-top top
                           :z-index    2}}]]]))
+
+(defn view
+  []
+  [:f> view-internal])

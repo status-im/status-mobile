@@ -59,3 +59,40 @@
   [component]
   (fn [& args]
     (into [:f> f-with-theme component] args)))
+
+(def previous-screen (atom nil))
+
+(def ^:private dark-screens
+  #{:shell :share-shell :activity-center :camera-screen :settings :settings-password :settings-syncing
+    :edit-profile})
+
+(def ^:private ignored-screens
+  #{:chats-stack :communities-stack :wallet-stack :browser-stack :shell})
+
+(defn handle-status-bar-screens-per-theme
+  []
+  (js/setTimeout #(rn/set-status-bar-style
+                   (if (dark?)
+                     "light-content"
+                     "dark-content")
+                   true)
+                 150))
+
+(defn handle-status-bar-dark-screen
+  []
+  (js/setTimeout #(rn/set-status-bar-style "light-content" true) 150))
+
+(defn handle-status-bar-screens
+  [current-screen]
+  (when-not (and (= @previous-screen :settings-syncing)
+                 (ignored-screens current-screen))
+    (js/setTimeout
+     #(rn/set-status-bar-style
+       (if (or (dark-screens current-screen)
+               (dark?))
+         "light-content"
+         "dark-content")
+       true)
+     150))
+  (reset! previous-screen current-screen))
+
