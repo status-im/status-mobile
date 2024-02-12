@@ -69,7 +69,7 @@
          (stop-interval)))
      [(:state @state)])
     [preview/preview-container {:state state :descriptor descriptor}
-     [quo/confirmation-propgress
+     [quo/confirmation-progress
       (assoc @state
              :counter
              @counter)]]))
