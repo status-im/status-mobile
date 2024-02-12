@@ -147,13 +147,13 @@
 
 (rf/defn show-bottom-sheet
   {:events [:show-bottom-sheet]}
-  [{:keys [db]} content]
+  [{:keys [db] :as cofx} content]
   (let [{:keys [sheets hide?]} (:bottom-sheet db)]
-    (rf/merge {:db (update-in db [:bottom-sheet :sheets] #(conj % content))}
+    (rf/merge cofx
+              {:db               (update-in db [:bottom-sheet :sheets] #(conj % content))
+               :dismiss-keyboard nil}
               #(when-not hide?
-                 (if (seq sheets)
-                   (hide-bottom-sheet %)
-                   {:show-bottom-sheet nil})))))
+                 (if (seq sheets) (hide-bottom-sheet %) {:show-bottom-sheet nil})))))
 
 ;; LEGACY (should be removed in status 2.0)
 (rf/defn hide-signing-sheet

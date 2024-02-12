@@ -151,7 +151,6 @@
                  :icon                :i/pin
                  :counter-value       pins-count
                  :on-press            (fn []
-                                        (rf/dispatch [:dismiss-keyboard])
                                         (rf/dispatch [:pin-message/show-pins-bottom-sheet
                                                       chat-id]))}
                 {:accessibility-label :action-button-mute
