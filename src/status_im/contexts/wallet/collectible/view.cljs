@@ -117,17 +117,18 @@
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data]
         [scroll-page/scroll-page
-         {:navigate-back? true
-          :height         148
-          :page-nav-props {:type        :title-description
-                           :title       collectible-name
-                           :description collection-name
-                           :right-side  [{:icon-name :i/options
-                                          :on-press  #(rf/dispatch
-                                                       [:show-bottom-sheet
-                                                        {:content collectible-actions-sheet
-                                                         :theme   theme}])}]
-                           :picture     preview-uri}}
+         {:navigate-back?   true
+          :height           148
+          :on-navigate-back #(rf/dispatch [:wallet/clear-last-collectible-details])
+          :page-nav-props   {:type        :title-description
+                             :title       collectible-name
+                             :description collection-name
+                             :right-side  [{:icon-name :i/options
+                                            :on-press  #(rf/dispatch
+                                                         [:show-bottom-sheet
+                                                          {:content collectible-actions-sheet
+                                                           :theme   theme}])}]
+                             :picture     preview-uri}}
          [rn/view {:style style/container}
           [rn/view {:style style/preview-container}
            [rn/touchable-opacity
