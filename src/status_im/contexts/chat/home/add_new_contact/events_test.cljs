@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer-macros [deftest are]]
     matcher-combinators.test
+    [re-frame.core :as re-frame]
     [status-im.contexts.chat.home.add-new-contact.events :as events]))
 
 (def user-ukey
@@ -90,7 +91,7 @@
                                :config {:NetworkId 1}}}})
 
 (deftest set-new-identity-test
-  (with-redefs [events/dispatcher (fn [& args] args)]
+  (with-redefs [re-frame/dispatch (fn [& args] args)]
     (are [i edb] (match? (events/set-new-identity {:db db} [{:input i}]) edb)
 
      ""        {:db db}

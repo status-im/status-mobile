@@ -30,7 +30,7 @@
   (wallet-validation/eth-address? scanned-text))
 
 (defn pairing-qr-code?
-  [scanned-text]
+  [_]
   false)
 
 (defn load-and-show-profile

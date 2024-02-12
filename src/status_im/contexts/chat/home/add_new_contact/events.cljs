@@ -88,7 +88,7 @@
 
 (declare build-contact)
 
-(defn- set-new-identity
+(defn set-new-identity
   [{:keys [db]} [{:keys [input build-success-fn failure-fn]}]]
   (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
