@@ -91,9 +91,7 @@
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
-        shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)
-        current-screen (rf/sub [:navigation/current-screen-id])]
-    (quo.theme/handle-status-bar-screens current-screen)
+        shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
     [theme/provider {:theme :dark}
      [rn/view
       {:style {:top              0

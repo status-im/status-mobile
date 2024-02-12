@@ -26,9 +26,7 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
-                                 (get shared-values))
-        current-screen      (rf/sub [:navigation/current-screen-id])]
-    (rn/use-effect #(quo.theme/handle-status-bar-screens current-screen))
+                                 (get shared-values))]
     [quo/bottom-nav-tab
      (-> notifications-data
          (get stack-id)

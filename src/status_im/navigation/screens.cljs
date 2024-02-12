@@ -403,6 +403,17 @@
      :options   options/transparent-screen-options
      :component settings-password/view}]
 
+   [{:name    :shell
+     :options {:theme :dark}}
+    {:name    :communities-stack
+     :options {:theme :device}}
+    {:name    :chats-stack
+     :options {:theme :device}}
+    {:name    :wallet-stack
+     :options {:theme :device}}
+    {:name    :browser-stack
+     :options {:theme :device}}]
+
    (when js/goog.DEBUG
      [{:name      :dev-component-preview
        :options   {:sheet? true}

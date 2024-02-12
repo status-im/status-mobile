@@ -1,13 +1,12 @@
 (ns status-im.contexts.syncing.syncing-devices-list.view
   (:require
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [status-im.contexts.syncing.device.view :as device]
-    [status-im.contexts.syncing.syncing-devices-list.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [status-im.contexts.syncing.device.view :as device]
+   [status-im.contexts.syncing.syncing-devices-list.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -19,14 +18,12 @@
         {:keys [paired-devices unpaired-devices]} (group-by
                                                    #(if (:enabled? %) :paired-devices :unpaired-devices)
                                                    other-devices)]
-    (quo.theme/handle-status-bar-dark-screen)
     [rn/view {:style style/container-main}
      [quo/page-nav
       {:type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   (fn []
-                     (reset! quo.theme/previous-screen nil)
                      (rf/dispatch [:navigate-back]))}]
      [rn/view {:style style/page-container}
       [rn/view {:style style/title-container}

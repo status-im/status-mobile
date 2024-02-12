@@ -101,7 +101,6 @@
 (defn bottom-area
   [{:keys [flash camera-type] :as args}]
   (let [back        (fn []
-                      (quo.theme/handle-status-bar-screens-per-theme)
                       (rf/dispatch [:navigate-back]))
         flip-camera (fn []
                       (reset! flash false)
@@ -123,10 +122,8 @@
         on-press               #(retake flash uri)
         use-photo              (fn []
                                  (rf/dispatch [:photo-selector/camera-roll-pick {:uri @uri}])
-                                 (rf/dispatch [:navigate-back]))
-        current-screen         (rf/sub [:navigation/current-screen-id])]
+                                 (rf/dispatch [:navigate-back]))]
     (handle-orientation current-orientation rotate)
-    (rn/use-effect #(quo.theme/handle-status-bar-screens current-screen))
     [rn/view {:style style/screen-container}
      [reanimated/touchable-opacity
       {:active-opacity 1

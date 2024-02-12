@@ -1,19 +1,36 @@
 (ns status-im.navigation.effects
   (:require
-    [react-native.navigation :as navigation]
-    [status-im.navigation.options :as options]
-    [status-im.navigation.roots :as roots]
-    [status-im.navigation.state :as state]
-    [status-im.navigation.view :as views]
-    [taoensso.timbre :as log]
-    [utils.re-frame :as rf]))
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [react-native.navigation :as navigation]
+   [status-im.navigation.options :as options]
+   [status-im.navigation.roots :as roots]
+   [status-im.navigation.state :as state]
+   [status-im.navigation.view :as views]
+   [taoensso.timbre :as log]
+   [utils.re-frame :as rf]))
+
+(def previous-screen (atom nil))
+
+(defn- set-status-bar-color
+  [theme view-id]  
+  (when-not (= @previous-screen :settings-syncing)
+    (rn/set-status-bar-style
+     (if (or (= theme :dark)
+             (quo.theme/dark?))
+       "light-content"
+       "dark-content")
+     true))
+  (reset! previous-screen view-id))
 
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
-   (rf/dispatch [:screens/on-will-focus view-id])
-   (when-let [{:keys [on-focus]} (get views/screens view-id)]
-     (when on-focus
-       (rf/dispatch on-focus)))))
+   (let [screen-theme (get-in (get views/screens view-id) [:options :theme])]
+     (set-status-bar-color screen-theme view-id)
+     (rf/dispatch [:screens/on-will-focus view-id])
+     (when-let [{:keys [on-focus]} (get views/screens view-id)]
+       (when on-focus
+         (rf/dispatch on-focus))))))
 
 (defn set-view-id
   [view-id]
@@ -117,8 +134,10 @@
 
 (defn open-modal
   [component]
-  (let [{:keys [options]} (get views/screens component)
-        sheet?            (:sheet? options)]
+  (let [{:keys [options name]} (get views/screens component)
+        sheet?                 (:sheet? options)
+        screen-theme           (:theme options)]
+    (set-status-bar-color screen-theme name)
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do

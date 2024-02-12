@@ -63,11 +63,9 @@
 
 (defn view-internal
   []
-  (let [active-swipeable (atom nil)
-        current-screen   (rf/sub [:navigation/current-screen-id])]
+  (let [active-swipeable (atom nil)]
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
-      (rn/use-effect #(quo.theme/handle-status-bar-screens current-screen))
       (let [notifications       (rf/sub [:activity-center/notifications])
             customization-color (rf/sub [:profile/customization-color])]
         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
