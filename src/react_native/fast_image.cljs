@@ -2,7 +2,7 @@
   (:require
     ["react-native-fast-image" :as FastImage]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def fast-image-class (reagent/adapt-react-class ^js FastImage))
 

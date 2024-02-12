@@ -12,7 +12,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- f-slider
   [{:keys [disabled?]}]

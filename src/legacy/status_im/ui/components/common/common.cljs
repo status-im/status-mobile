@@ -3,7 +3,7 @@
     [legacy.status-im.ui.components.common.styles :as styles]
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))
 

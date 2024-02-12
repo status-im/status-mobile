@@ -8,7 +8,7 @@
     [quo.components.calendar.calendar.years-list.view :as years-list]
     [quo.theme :as theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.number :as utils.number]))
 
 (defn- view-internal

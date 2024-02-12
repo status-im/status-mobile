@@ -3,7 +3,7 @@
     [native-module.core :as native-module]
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

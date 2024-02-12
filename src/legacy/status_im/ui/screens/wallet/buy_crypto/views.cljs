@@ -11,7 +11,7 @@
     [legacy.status-im.ui.screens.chat.photos :as photos]
     [legacy.status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

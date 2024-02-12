@@ -4,7 +4,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]
     [status-im.contexts.preview.quo.tags.status-tags :as status-tags]))
 

@@ -4,7 +4,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.profile.components.styles :as styles]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as r]
+    [utils.reagent :as r]
     [status-im.common.lightbox.constants :as constants]))
 
 (defn- collapse-sheet

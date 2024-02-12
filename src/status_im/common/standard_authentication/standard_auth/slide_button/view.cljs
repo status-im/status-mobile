@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.standard-authentication.standard-auth.authorize :as authorize]
     [status-im.constants :as constants]
     [utils.re-frame :as rf]))

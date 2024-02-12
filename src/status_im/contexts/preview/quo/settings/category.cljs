@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.settings.category
   (:require
     [quo.core :as quo]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]))
 

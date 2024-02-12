@@ -12,7 +12,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.device-permissions :as device-permissions]
     [status-im.constants :as constants]
     [status-im.contexts.syncing.enter-sync-code.view :as enter-sync-code]
@@ -22,12 +22,13 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.transforms :as transforms]))
+    [utils.transforms :as transforms]
+    [reagent.core]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
-(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
+(defonce preflight-check-passed? (reagent.core/atom (if platform/ios? false true)))
 
-(defonce camera-permission-granted? (reagent/atom false))
+(defonce camera-permission-granted? (reagent.core/atom false))
 (defonce dismiss-animations (atom nil))
 
 (defn perform-preflight-check

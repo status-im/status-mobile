@@ -5,7 +5,7 @@
     [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.home.actions.view :as actions]
     [status-im.common.scroll-page.style :as scroll-page.style]
     [status-im.common.scroll-page.view :as scroll-page]

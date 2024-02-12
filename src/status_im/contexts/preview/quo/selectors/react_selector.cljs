@@ -4,7 +4,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [reagent.core]
     [status-im.constants :as constants]
     [status-im.contexts.preview.quo.preview :as preview]))
 
@@ -33,9 +33,9 @@
 
 (defn preview-react-selector
   []
-  (let [state (reagent/atom {:emoji    :reaction/love
-                             :state    :not-pressed
-                             :use-case :default})]
+  (let [state (reagent.core/atom {:emoji    :reaction/love
+                                  :state    :not-pressed
+                                  :use-case :default})]
     (fn []
       (println @state)
       [preview/preview-container

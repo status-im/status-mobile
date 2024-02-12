@@ -7,9 +7,9 @@
     [legacy.status-im.ui.components.search-input.view :as search-input]
     [legacy.status-im.ui.screens.currency-settings.styles :as styles]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]))
+    [reagent.core]))
 
-(defonce search-active? (reagent/atom false))
+(defonce search-active? (reagent.core/atom false))
 
 (defn render-currency
   [{:keys [id code display-name]} _ _ current-currency-id]

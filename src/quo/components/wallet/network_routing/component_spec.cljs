@@ -1,7 +1,7 @@
 (ns quo.components.wallet.network-routing.component-spec
   (:require [oops.core :as oops]
             [quo.components.wallet.network-routing.view :as network-routing]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [test-helpers.component :as h]))
 
 (h/describe "Network-routing tests"

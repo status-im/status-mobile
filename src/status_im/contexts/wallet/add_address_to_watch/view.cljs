@@ -4,7 +4,7 @@
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.add-address-to-watch.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]

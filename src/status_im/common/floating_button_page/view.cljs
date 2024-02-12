@@ -5,9 +5,10 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.floating-button-page.floating-container.view :as floating-container]
-    [status-im.common.floating-button-page.style :as style]))
+    [status-im.common.floating-button-page.style :as style]
+    [reagent.core]))
 
 (defn- show-background
   [{:keys [window-height keyboard-height footer-container-height content-scroll-y
@@ -55,25 +56,25 @@
   [{:keys [header footer customization-color footer-container-padding gradient-cover?]
     :or   {footer-container-padding (safe-area/get-top)}} &
    children]
-  (reagent/with-let [window-height                (:height (rn/get-window))
-                     footer-container-height      (reagent/atom 0)
-                     header-height                (reagent/atom 0)
-                     content-container-height     (reagent/atom 0)
-                     content-scroll-y             (reagent/atom 0)
-                     keyboard-height              (reagent/atom 0)
-                     {:keys [keyboard-will-show?
-                             keyboard-did-show?
-                             remove-listeners]}   (init-keyboard-listeners
-                                                   {:on-did-show
-                                                    (fn [e]
-                                                      (reset! keyboard-height
-                                                        (oops/oget e "endCoordinates.height")))})
-                     set-header-height            (set-height-on-layout header-height)
-                     set-content-container-height (set-height-on-layout content-container-height)
-                     set-footer-container-height  (set-height-on-layout footer-container-height)
-                     set-content-y-scroll         (fn [event]
-                                                    (reset! content-scroll-y
-                                                      (oops/oget event "nativeEvent.contentOffset.y")))]
+  (reagent.core/with-let [window-height                (:height (rn/get-window))
+                          footer-container-height      (reagent/atom 0)
+                          header-height                (reagent/atom 0)
+                          content-container-height     (reagent/atom 0)
+                          content-scroll-y             (reagent/atom 0)
+                          keyboard-height              (reagent/atom 0)
+                          {:keys [keyboard-will-show?
+                                  keyboard-did-show?
+                                  remove-listeners]}   (init-keyboard-listeners
+                                                        {:on-did-show
+                                                         (fn [e]
+                                                           (reset! keyboard-height
+                                                             (oops/oget e "endCoordinates.height")))})
+                          set-header-height            (set-height-on-layout header-height)
+                          set-content-container-height (set-height-on-layout content-container-height)
+                          set-footer-container-height  (set-height-on-layout footer-container-height)
+                          set-content-y-scroll         (fn [event]
+                                                         (reset! content-scroll-y
+                                                           (oops/oget event "nativeEvent.contentOffset.y")))]
     (let [keyboard-shown?  (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
           show-background? (show-background {:window-height            window-height
                                              :footer-container-height  @footer-container-height

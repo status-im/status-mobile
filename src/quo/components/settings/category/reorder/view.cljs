@@ -8,7 +8,8 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.draggable-flatlist :as draggable-flatlist]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]
+    [reagent.core]))
 
 (defn on-drag-end-fn
   [data atom-data]
@@ -17,7 +18,7 @@
 
 (defn- reorder-category-internal
   [{:keys [label data blur? theme]}]
-  (reagent/with-let [atom-data (reagent/atom data)]
+  (reagent.core/with-let [atom-data (reagent/atom data)]
     [rn/view {:style style/container}
      [text/text
       {:weight :medium

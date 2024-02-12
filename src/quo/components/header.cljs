@@ -7,7 +7,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def header-height 56)
 

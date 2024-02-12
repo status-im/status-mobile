@@ -4,7 +4,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.share :as share]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.shell.share.style :as style]
     [status-im.contexts.shell.share.wallet.style :as wallet-style]
     [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]

@@ -3,14 +3,15 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.alert.effects :as alert.effects]
     [status-im.constants :as constants]
     [status-im.contexts.preview.quo.preview :as preview]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [reagent.core]))
 
-(defonce record-audio-permission-granted (reagent/atom false))
+(defonce record-audio-permission-granted (reagent.core/atom false))
 
 (defn view
   []

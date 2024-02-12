@@ -5,7 +5,7 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [react-native.share :as share]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.share-address.style :as style]

@@ -8,7 +8,7 @@
     [quo.theme :as theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- button-internal
   "with label

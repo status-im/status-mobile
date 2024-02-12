@@ -7,7 +7,7 @@
     [oops.core :refer [oget]]
     [react-native.core :as rn]
     [react-native.reanimated :as animated]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def header-height 56)
 

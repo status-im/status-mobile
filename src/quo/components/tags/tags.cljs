@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.masked-view :as masked-view]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.collection :as utils.collection]
     [utils.number :as number-utils]))
 

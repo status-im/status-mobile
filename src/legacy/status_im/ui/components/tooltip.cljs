@@ -6,7 +6,7 @@
     [oops.core :refer [oget]]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def ^:private initial-height 22)
 

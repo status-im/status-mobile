@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.svg :as svg]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]

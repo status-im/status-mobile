@@ -4,7 +4,7 @@
     [quo.components.icon :as quo.icons]
     [quo.theme :as theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- view-internal
   [_ _]

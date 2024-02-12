@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]
     [utils.image-server :as image-server]

@@ -4,7 +4,7 @@
     [legacy.status-im.ui.components.list.styles :as styles]
     [legacy.status-im.ui.components.react :as react]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))

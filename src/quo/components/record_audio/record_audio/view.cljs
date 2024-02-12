@@ -17,7 +17,7 @@
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn :refer [use-effect]]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]))
 

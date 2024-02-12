@@ -6,7 +6,7 @@
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.routes.style :as style]
     [utils.i18n :as i18n]

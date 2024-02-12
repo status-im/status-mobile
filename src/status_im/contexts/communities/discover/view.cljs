@@ -6,7 +6,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.discover.style :as style]

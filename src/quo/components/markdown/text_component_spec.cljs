@@ -2,7 +2,7 @@
   (:require
     ["@testing-library/react-native" :as rtl]
     [quo.components.markdown.text :as text]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn render-text
   ([options value]

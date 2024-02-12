@@ -3,7 +3,7 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.typography :as typography]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn text-style
   [{:keys [size align weight monospace color style]}]
@@ -40,9 +40,8 @@
          style))
 
 (defn text
-  []
-  (let [this      (reagent/current-component)
-        props     (reagent/props this)
+  [& this]
+  (let [props     (apply reagent/props this)
         component rn/text]
     (into [component
            (merge {:style (text-style props)}

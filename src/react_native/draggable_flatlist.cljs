@@ -2,7 +2,7 @@
   (:require
     ["react-native-draggable-flatlist" :default DraggableFlatList]
     [react-native.flat-list :as rn-flat-list]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def rn-draggable-flatlist (reagent/adapt-react-class DraggableFlatList))
 

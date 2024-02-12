@@ -1,6 +1,6 @@
 (ns status-im.contexts.preview.quo.profile.link-card
   (:require [quo.core :as quo]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.contexts.preview.quo.preview :as preview]))
 
 (defn- initial-state

@@ -20,7 +20,7 @@
     [legacy.status-im.utils.js-resources :as js-res]
     [re-frame.core :as re-frame]
     [react-native.permissions :as components.permissions]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.url :as url])

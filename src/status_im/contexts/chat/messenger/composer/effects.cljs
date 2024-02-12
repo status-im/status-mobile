@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
     [status-im.contexts.chat.messenger.composer.keyboard :as kb]
     [status-im.contexts.chat.messenger.composer.utils :as utils]

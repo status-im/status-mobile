@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.switcher.switcher-cards
   (:require
     [quo.foundations.colors :as colors]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.preview.quo.preview :as preview]

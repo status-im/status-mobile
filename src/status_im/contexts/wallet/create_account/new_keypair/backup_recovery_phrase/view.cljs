@@ -4,7 +4,7 @@
     [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.wallet.common.temp :as temp]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]

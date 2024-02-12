@@ -5,7 +5,7 @@
     [quo.components.markdown.text :as text]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- pad-0
   [value]

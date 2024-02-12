@@ -4,7 +4,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [reagent.core]
     [status-im.constants :as constants]
     [status-im.contexts.onboarding.common.overlay.style :as style]))
 
@@ -48,7 +48,7 @@
         2))))
 
 ;; we had to register it here, because of hotreload, overwise on hotreload it will be reseted
-(defonce blur-amount (reagent/atom 0))
+(defonce blur-amount (reagent.core/atom 0))
 
 (defn f-view
   []

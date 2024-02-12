@@ -10,7 +10,8 @@
             [react-native.hole-view :as hole-view]
             [react-native.permissions :as permissions]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
+            [reagent.core]
             [status-im.common.device-permissions :as device-permissions]
             [status-im.common.scan-qr-code.style :as style]
             [utils.debounce :as debounce]
@@ -18,7 +19,7 @@
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
 
-(defonce camera-permission-granted? (reagent/atom false))
+(defonce camera-permission-granted? (reagent.core/atom false))
 
 (defn- header
   [{:keys [title subtitle]}]

@@ -1,9 +1,10 @@
 (ns utils.re-frame
   (:require-macros utils.re-frame)
   (:require
+    ["react" :refer (useState useEffect)]
     [re-frame.core :as re-frame]
     [re-frame.interceptor :as interceptor]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime])
   (:refer-clojure :exclude [merge reduce]))
@@ -85,7 +86,17 @@
       (when @render?
         content))))
 
-(def sub (comp deref re-frame/subscribe))
+(defn use-subscription
+  [sub-vec]
+  (let [sub (re-frame/subscribe sub-vec)
+        [state set-state] (useState @sub)]
+    (useEffect (fn []
+                 (let [track (reagent/track! #(set-state @sub))]
+                   #(reagent/dispose! track)))
+               #js [])
+    state))
+
+(def sub use-subscription);(comp deref re-frame/subscribe))
 
 (def dispatch re-frame/dispatch)
 

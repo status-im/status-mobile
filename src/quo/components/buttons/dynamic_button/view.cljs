@@ -6,7 +6,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- get-button-color
   [{:keys [type pressed? customization-color theme]}]

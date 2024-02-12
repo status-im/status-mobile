@@ -11,7 +11,7 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [utils.re-frame :as rf]))
 

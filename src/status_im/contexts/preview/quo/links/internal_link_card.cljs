@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.links.internal-link-card
   (:require
     [quo.core :as quo]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]))
 

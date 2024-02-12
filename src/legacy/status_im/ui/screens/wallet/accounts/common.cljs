@@ -10,12 +10,13 @@
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]
+    [reagent.core]))
 
 ;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
 ;; too fast. By updating this atom in 1s we ensure that `refreshing?` property
 ;; is updated properly in this case.
-(def updates-counter (reagent/atom 0))
+(def updates-counter (reagent.core/atom 0))
 
 (defn schedule-counter-reset
   []

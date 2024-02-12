@@ -3,7 +3,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.common :as common]
     [status-im.contexts.preview.status-im.common.floating-button-page.view :as
      floating-button-page]

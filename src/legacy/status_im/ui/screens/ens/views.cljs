@@ -19,7 +19,7 @@
     [legacy.status-im.ui.screens.wallet.send.sheets :as sheets]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.config :as config]
     [utils.address :as address]
     [utils.debounce :as debounce]

@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [react-native.masked-view :as masked-view]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn static-skeleton-view
   [{:keys [index content color]}]

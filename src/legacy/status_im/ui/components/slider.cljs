@@ -2,7 +2,7 @@
   (:require
     ["@react-native-community/slider" :default Slider]
     ["react-native" :refer (Animated)]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def slider (reagent/adapt-react-class Slider))
 

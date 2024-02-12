@@ -15,7 +15,7 @@
     [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
     [legacy.status-im.wallet.core :as wallet-legacy]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

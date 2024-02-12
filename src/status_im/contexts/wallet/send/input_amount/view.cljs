@@ -5,7 +5,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.send :as send-utils]

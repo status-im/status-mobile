@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn header-wrapper-style
   [{:keys [offset]}]

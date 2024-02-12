@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.confirmation-drawer.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

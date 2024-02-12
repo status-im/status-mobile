@@ -8,7 +8,7 @@
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn :refer [use-effect]]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [taoensso.timbre :as log]
     [utils.worklets.record-audio :as worklets.record-audio]))
 

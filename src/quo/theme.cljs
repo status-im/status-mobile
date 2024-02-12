@@ -2,11 +2,11 @@
   (:require
     ["react" :as react]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [reagent.core]
     utils.transforms))
 
 (defonce ^:private theme-context (react/createContext :light))
-(defonce ^:private theme-state (reagent/atom :light))
+(defonce ^:private theme-state (reagent.core/atom :light))
 
 (defn dark?
   []

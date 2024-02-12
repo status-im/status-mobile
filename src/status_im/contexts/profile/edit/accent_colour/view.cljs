@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.constants :as constants]
             [status-im.contexts.profile.edit.accent-colour.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]

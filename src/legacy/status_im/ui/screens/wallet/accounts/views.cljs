@@ -16,7 +16,7 @@
     [re-frame.core :as re-frame]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :as views]))
 

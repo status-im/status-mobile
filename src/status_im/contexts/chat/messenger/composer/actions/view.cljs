@@ -5,7 +5,7 @@
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.alert.effects :as alert.effects]
     [status-im.common.device-permissions :as device-permissions]
     [status-im.constants :as constants]

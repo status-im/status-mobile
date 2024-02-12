@@ -1,7 +1,7 @@
 (ns legacy.status-im.ui.components.colors
   (:require
     [clojure.string :as string]
-    [reagent.core :as reagent]))
+    [reagent.core]))
 
 ;; Colors mapping from figma to code, note that theme is more extended and
 ;; one can follow the comments from the light theme to choose what to use in a component.
@@ -87,7 +87,7 @@
    :highlight      "rgba(67,96,223,0.4)"
    :blurred-bg     "rgba(0,0,0,0.3)"})
 
-(def theme (reagent/atom light-theme))
+(def theme (reagent.core/atom light-theme))
 
 (defn get-color
   [color]
@@ -201,7 +201,7 @@
 
 ;; THEME
 
-(def theme-type (reagent/atom :light))
+(def theme-type (reagent.core/atom :light))
 
 (defn dark?
   []

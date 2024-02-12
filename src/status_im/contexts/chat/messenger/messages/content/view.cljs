@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.composer.reply.view :as reply]

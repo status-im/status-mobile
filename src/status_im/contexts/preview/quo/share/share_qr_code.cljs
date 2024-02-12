@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.share.share-qr-code
   (:require
     [quo.core :as quo]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]
     [utils.image-server :as image-server]

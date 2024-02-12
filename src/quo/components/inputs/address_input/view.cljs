@@ -8,7 +8,7 @@
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n]))
 
 (defn- icon-color

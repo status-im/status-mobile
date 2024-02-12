@@ -10,7 +10,7 @@
     [oops.core :refer [ocall]]
     [react-native.core :as rn] ;; TODO(Ferossgp): Move icon component to lib
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 ;; NOTE(Ferossgp): Refactor with hooks when available
 ;; We track all currently mounted text input refs

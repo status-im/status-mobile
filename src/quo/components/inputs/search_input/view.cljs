@@ -5,7 +5,7 @@
     [quo.components.inputs.search-input.style :as style]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def ^:private tag-separator [rn/view {:style style/tag-separator}])
 

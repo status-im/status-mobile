@@ -10,7 +10,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wallet.components.views :as components]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n]
     [utils.url :as url]))
 

@@ -3,18 +3,19 @@
     [oops.core :as oops]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]
+    [reagent.core]))
 
 
 (def cached-sources (js/Set. (js/Array.)))
 
 (defn- caching-image
   [_ on-source-loaded]
-  (let [this (reagent/current-component)]
+  (let [this (reagent.core/current-component)]
     (reagent/create-class
      {:component-did-update
       (fn []
-        (let [source (-> this reagent/props :source)]
+        (let [source (-> this reagent.core/props :source)]
           (when (oops/ocall cached-sources "has" source)
             (on-source-loaded source))))
       :reagent-render

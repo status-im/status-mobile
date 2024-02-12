@@ -5,7 +5,7 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.drawers.nickname-drawer.style :as style]
     [utils.i18n :as i18n]

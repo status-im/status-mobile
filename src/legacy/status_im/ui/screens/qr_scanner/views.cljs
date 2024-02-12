@@ -9,7 +9,7 @@
     [re-frame.core :as re-frame]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.config :as config]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

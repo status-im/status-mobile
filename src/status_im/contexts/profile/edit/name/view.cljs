@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.common.validation.profile :as profile-validator]
             [status-im.constants :as constants]
             [status-im.contexts.profile.edit.name.style :as style]

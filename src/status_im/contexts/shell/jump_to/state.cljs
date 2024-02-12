@@ -1,6 +1,6 @@
 (ns status-im.contexts.shell.jump-to.state
   (:require
-    [reagent.core :as reagent]
+    [reagent.core]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]))
 
 ;; Atoms
@@ -13,7 +13,7 @@
 (def floating-screens-state (atom {}))
 
 ;; Reagent atoms used for lazily loading home screen tabs
-(def load-communities-stack? (reagent/atom false))
-(def load-chats-stack? (reagent/atom false))
-(def load-wallet-stack? (reagent/atom false))
-(def load-browser-stack? (reagent/atom false))
+(def load-communities-stack? (reagent.core/atom false))
+(def load-chats-stack? (reagent.core/atom false))
+(def load-wallet-stack? (reagent.core/atom false))
+(def load-browser-stack? (reagent.core/atom false))

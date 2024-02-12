@@ -5,7 +5,7 @@
     [quo.foundations.shadows :as shadows]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (defn demo-box

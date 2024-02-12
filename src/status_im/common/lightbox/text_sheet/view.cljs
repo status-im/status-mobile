@@ -7,7 +7,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.lightbox.constants :as constants]
     [status-im.common.lightbox.text-sheet.style :as style]
     [status-im.common.lightbox.text-sheet.utils :as utils]))

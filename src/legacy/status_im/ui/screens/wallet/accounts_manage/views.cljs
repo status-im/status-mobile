@@ -5,7 +5,7 @@
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.utils.utils :as utils]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.re-frame :as rf]))
 
 (defn render-account

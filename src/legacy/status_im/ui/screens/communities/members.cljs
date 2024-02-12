@@ -8,7 +8,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.components.unviewed-indicator :as unviewed-indicator]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]

@@ -2,7 +2,7 @@
   (:require
     [quo.components.record-audio.soundtrack.view :as soundtrack]
     [react-native.audio-toolkit :as audio]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [test-helpers.component :as h]))
 
 (h/describe "soundtrack component"

@@ -12,7 +12,7 @@
     [legacy.status-im.ui.screens.profile.seed.styles :as styles]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n]))
 
 (def steps-numbers

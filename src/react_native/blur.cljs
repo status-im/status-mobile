@@ -3,7 +3,7 @@
     ["@react-native-community/blur" :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def view (reagent/adapt-react-class (.-BlurView blur)))
 

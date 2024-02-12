@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as rf]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.common.floating-button-page.view :as floating-button-page]
             [status-im.common.resources :as resources]
             [status-im.contexts.preview.status-im.common.floating-button-page.style :as

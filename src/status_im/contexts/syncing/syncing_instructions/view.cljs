@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.syncing.syncing-instructions.style :as style]
     [utils.i18n :as i18n]))

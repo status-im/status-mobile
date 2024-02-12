@@ -10,7 +10,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.chat.messenger.camera.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

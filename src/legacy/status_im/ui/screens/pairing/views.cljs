@@ -9,11 +9,11 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.pairing.styles :as styles]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [reagent.core]
     [utils.i18n :as i18n]))
 
-(def syncing (reagent/atom false))
-(def installation-name (reagent/atom ""))
+(def syncing (reagent.core/atom false))
+(def installation-name (reagent.core/atom ""))
 
 (defn icon-style
   [style]

@@ -13,7 +13,7 @@
     [legacy.status-im.ui.screens.browser.views :as browser]
     [legacy.status-im.ui.screens.wallet.components.views :as components]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n]
     [utils.url :as url])
   (:require-macros [legacy.status-im.utils.views :as views]))

@@ -11,7 +11,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [schema.core :as schema]))
 
 (defn- loading-view

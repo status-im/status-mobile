@@ -8,7 +8,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.address :as address]
     [utils.i18n :as i18n]))
 

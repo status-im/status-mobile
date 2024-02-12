@@ -2,7 +2,7 @@
   (:require
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.react :as react]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn placeholder
   [style child]

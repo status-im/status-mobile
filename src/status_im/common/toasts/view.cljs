@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.toasts.animation :as animation]
     [status-im.common.toasts.style :as style]
     [utils.re-frame :as rf]))

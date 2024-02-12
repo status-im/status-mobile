@@ -5,7 +5,7 @@
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.qr-codes.view :as qr-codes]
     [status-im.common.resources :as resources]
     [status-im.common.standard-authentication.core :as standard-auth]

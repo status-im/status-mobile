@@ -8,7 +8,7 @@
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]

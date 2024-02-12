@@ -2,7 +2,7 @@
   (:require
     ["react-native-webview" :default rn-webview]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.config :as config]))
 
 (def webview-class

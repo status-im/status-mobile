@@ -5,7 +5,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.svg :as svg]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- get-path-props
   [size stroke-width rotation]

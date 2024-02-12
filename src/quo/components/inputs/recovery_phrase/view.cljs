@@ -4,7 +4,7 @@
     [quo.components.inputs.recovery-phrase.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def ^:private custom-props
   [:customization-color :theme :blur? :cursor-color :multiline :on-focus :on-blur

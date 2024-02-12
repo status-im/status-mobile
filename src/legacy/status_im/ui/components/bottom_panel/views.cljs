@@ -5,7 +5,8 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
     [react-native.platform :as platform]
-    [reagent.core :as reagent])
+    [utils.reagent :as reagent]
+    [reagent.core])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (def back-listener (atom nil))
@@ -56,7 +57,7 @@
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)
         update?           (atom nil)
-        current-obj       (reagent/atom nil)]
+        current-obj       (reagent.core/atom nil)]
     (reagent/create-class
      {:UNSAFE_componentWillMount  (fn [^js args]
                                     (let [[_ obj _ _] (.-argv (.-props args))]

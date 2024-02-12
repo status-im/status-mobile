@@ -1,6 +1,6 @@
 (ns status-im.contexts.preview.quo.list-items.quiz-item
   (:require [quo.core :as quo]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor

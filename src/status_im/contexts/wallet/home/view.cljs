@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]

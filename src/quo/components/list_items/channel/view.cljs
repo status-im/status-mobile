@@ -7,7 +7,7 @@
     [quo.components.markdown.text :as quo.text]
     [quo.theme :as theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- view-internal
   "Options:

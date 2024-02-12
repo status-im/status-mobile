@@ -10,7 +10,7 @@
       FlatList
       ScrollView)]
     [react-native.flat-list :as rn-flat-list]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def gesture-detector (reagent/adapt-react-class GestureDetector))
 

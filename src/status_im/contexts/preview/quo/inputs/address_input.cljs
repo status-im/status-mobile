@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.inputs.address-input
   (:require
     [quo.core :as quo]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.preview.quo.preview :as preview]))
 

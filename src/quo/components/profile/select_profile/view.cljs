@@ -4,7 +4,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.profile.select-profile.style :as style]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- on-change-handler
   [selected? on-change]

@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.text-combinations.page-top
   (:require [quo.core :as quo]
             [quo.foundations.resources :as quo.resources]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.common.resources :as resources]
             [status-im.contexts.preview.quo.preview :as preview]))
 

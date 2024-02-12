@@ -2,7 +2,7 @@
   (:require
     [quo.components.record-audio.record-audio.view :as record-audio]
     [react-native.audio-toolkit :as audio]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [test-helpers.component :as h]
     [utils.datetime :as datetime]))
 

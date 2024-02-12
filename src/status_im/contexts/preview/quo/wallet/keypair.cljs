@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (def accounts

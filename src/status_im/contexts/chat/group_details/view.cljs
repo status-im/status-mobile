@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
     [status-im.common.home.actions.view :as actions]

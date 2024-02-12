@@ -6,7 +6,7 @@
     [legacy.status-im.ui.components.typography :as typography]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]

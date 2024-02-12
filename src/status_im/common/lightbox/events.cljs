@@ -1,5 +1,5 @@
 (ns status-im.common.lightbox.events
-  (:require [reagent.core :as reagent]
+  (:require [utils.reagent :as reagent]
             status-im.common.lightbox.effects
             [utils.re-frame :as rf]))
 

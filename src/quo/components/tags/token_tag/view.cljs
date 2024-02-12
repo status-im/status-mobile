@@ -8,7 +8,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- view-internal
   "Options:

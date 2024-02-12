@@ -4,7 +4,7 @@
     [legacy.status-im.ui.components.icons.icons :as icons]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn drop-down-icon
   [{:keys [opened? dropdown-margin-left]}]

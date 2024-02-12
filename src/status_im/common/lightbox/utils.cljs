@@ -8,12 +8,13 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.lightbox.animations :as anim]
     [status-im.common.lightbox.constants :as constants]
     [status-im.common.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
-    [utils.worklets.chat.messenger.lightbox :as worklet]))
+    [utils.worklets.chat.messenger.lightbox :as worklet]
+    [reagent.core]))
 
 (defn clear-timers
   [timers]
@@ -152,11 +153,11 @@
   ;; The initial value of data is the image that was pressed (and not the whole album) in order
   ;; for the transition animation to execute properly, otherwise it would animate towards
   ;; outside the screen (even if we have `initialScrollIndex` set).
-  {:data             (reagent/atom (if (number? index) [(nth images index)] []))
-   :scroll-index     (reagent/atom index)
-   :transparent?     (reagent/atom false)
-   :set-full-height? (reagent/atom false)
-   :overlay-z-index  (reagent/atom 0)})
+  {:data             (reagent.core/atom (if (number? index) [(nth images index)] []))
+   :scroll-index     (reagent.core/atom index)
+   :transparent?     (reagent.core/atom false)
+   :set-full-height? (reagent.core/atom false)
+   :overlay-z-index  (reagent.core/atom 0)})
 
 (defn initialize-opacity
   [size selected-index]

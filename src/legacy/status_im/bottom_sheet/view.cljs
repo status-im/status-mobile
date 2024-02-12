@@ -11,7 +11,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.worklets.bottom-sheet :as worklets.bottom-sheet]))
 
 (def animation-delay 450)

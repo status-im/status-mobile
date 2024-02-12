@@ -6,12 +6,13 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.onboarding.enter-seed-phrase.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [reagent.core]))
 
 (def ^:private max-seed-phrase-length
   (apply max constants/seed-phrase-valid-length))
@@ -87,25 +88,25 @@
 
 (defn screen
   []
-  (reagent/with-let [keyboard-shown?         (reagent/atom false)
-                     keyboard-show-listener  (.addListener rn/keyboard
-                                                           "keyboardDidShow"
-                                                           #(reset! keyboard-shown? true))
-                     keyboard-hide-listener  (.addListener rn/keyboard
-                                                           "keyboardDidHide"
-                                                           #(reset! keyboard-shown? false))
-                     invalid-seed-phrase?    (reagent/atom false)
-                     set-invalid-seed-phrase #(reset! invalid-seed-phrase? true)
-                     seed-phrase             (reagent/atom "")
-                     on-change-seed-phrase   (fn [new-phrase]
-                                               (when @invalid-seed-phrase?
-                                                 (reset! invalid-seed-phrase? false))
-                                               (reset! seed-phrase new-phrase))
-                     on-submit               (fn []
-                                               (swap! seed-phrase clean-seed-phrase)
-                                               (rf/dispatch [:onboarding/seed-phrase-entered
-                                                             (security/mask-data @seed-phrase)
-                                                             set-invalid-seed-phrase]))]
+  (reagent.core/with-let [keyboard-shown?         (reagent/atom false)
+                          keyboard-show-listener  (.addListener rn/keyboard
+                                                                "keyboardDidShow"
+                                                                #(reset! keyboard-shown? true))
+                          keyboard-hide-listener  (.addListener rn/keyboard
+                                                                "keyboardDidHide"
+                                                                #(reset! keyboard-shown? false))
+                          invalid-seed-phrase?    (reagent/atom false)
+                          set-invalid-seed-phrase #(reset! invalid-seed-phrase? true)
+                          seed-phrase             (reagent/atom "")
+                          on-change-seed-phrase   (fn [new-phrase]
+                                                    (when @invalid-seed-phrase?
+                                                      (reset! invalid-seed-phrase? false))
+                                                    (reset! seed-phrase new-phrase))
+                          on-submit               (fn []
+                                                    (swap! seed-phrase clean-seed-phrase)
+                                                    (rf/dispatch [:onboarding/seed-phrase-entered
+                                                                  (security/mask-data @seed-phrase)
+                                                                  set-invalid-seed-phrase]))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]

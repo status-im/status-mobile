@@ -16,9 +16,10 @@
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [schema.core :as schema]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [reagent.core]))
 
 (defn- header
   [{:keys [on-legacy-press on-multichain-press address]}]
@@ -191,8 +192,8 @@
 
 (defn- view-internal
   [props]
-  (reagent/with-let [component-width     (reagent/atom nil)
-                     container-component [rn/view {:background-color style/overlay-color}]]
+  (reagent.core/with-let [component-width     (reagent/atom nil)
+                          container-component [rn/view {:background-color style/overlay-color}]]
     [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code

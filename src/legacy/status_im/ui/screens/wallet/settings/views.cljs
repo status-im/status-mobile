@@ -10,11 +10,12 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.wallet.components.views :as wallet.components]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
+    [reagent.core]
     [utils.i18n :as i18n])
   (:require-macros [legacy.status-im.utils.views :refer [defview letsubs]]))
 
-(defonce search-active? (reagent/atom false))
+(defonce search-active? (reagent.core/atom false))
 
 (defn toolbar
   []

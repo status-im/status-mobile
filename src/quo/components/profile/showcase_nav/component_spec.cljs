@@ -1,7 +1,7 @@
 (ns quo.components.profile.showcase-nav.component-spec
   (:require
     [quo.components.profile.showcase-nav.view :as view]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [test-helpers.component :as h]))
 
 (def nav-data

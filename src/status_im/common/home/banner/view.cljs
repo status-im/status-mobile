@@ -8,14 +8,14 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [reagent.core]
     [status-im.common.home.banner.style :as style]
     [status-im.common.home.title-column.view :as title-column]
     [status-im.common.home.top-nav.view :as top-nav]
     [utils.re-frame :as rf]))
 
 (def card-banner-overflow-threshold 3)
-(def card-banner-overflow (reagent/atom :visible))
+(def card-banner-overflow (reagent.core/atom :visible))
 
 (defn- reset-banner-animation
   [scroll-shared-value]

@@ -4,7 +4,7 @@
     [quo.components.colors.color.view :as color]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- on-change-handler
   [selected color-name on-change]

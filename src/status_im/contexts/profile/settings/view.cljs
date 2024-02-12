@@ -16,12 +16,11 @@
 
 (defn- settings-item-view
   [data]
-  [rf/delay-render
-   [quo/category
-    {:list-type       :settings
-     :container-style {:padding-bottom 0}
-     :blur?           true
-     :data            data}]])
+  [quo/category
+   {:list-type       :settings
+    :container-style {:padding-bottom 0}
+    :blur?           true
+    :data            data}])
 
 (defn scroll-handler
   [event scroll-y]
@@ -30,9 +29,8 @@
 
 (defn- footer
   [logout-press]
-  [rf/delay-render
-   [rn/view {:style style/footer-container}
-    [quo/logout-button {:on-press logout-press}]]])
+  [rn/view {:style style/footer-container}
+   [quo/logout-button {:on-press logout-press}]])
 
 (defn- get-item-layout
   [_ index]

@@ -20,7 +20,7 @@
     [legacy.status-im.utils.utils :as utils]
     [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))

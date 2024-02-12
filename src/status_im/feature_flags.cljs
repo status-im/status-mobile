@@ -2,14 +2,14 @@
   (:require
     [clojure.string :as string]
     [react-native.config :as config]
-    [reagent.core :as reagent]))
+    [reagent.core]))
 
 (defn- enabled-in-env?
   [k]
   (= "1" (config/get-config k)))
 
 (defonce ^:private feature-flags-config
-  (reagent/atom
+  (reagent.core/atom
    {::wallet.edit-default-keypair (enabled-in-env? :FLAG_EDIT_DEFAULT_KEYPAIR_ENABLED)
     ::wallet.bridge-token         (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
     ::wallet.remove-account       (enabled-in-env? :FLAG_REMOVE_ACCOUNT_ENABLED)}))

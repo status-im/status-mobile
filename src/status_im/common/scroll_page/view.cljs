@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.scroll-page.style :as style]
     [utils.re-frame :as rf]))
 

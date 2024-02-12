@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.edit-account.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
              :as create-or-edit-account]
             [status-im.contexts.wallet.common.sheets.network-preferences.view
@@ -33,7 +33,7 @@
                   {:account    edited-account-data
                    :on-success #(show-save-account-toast updated-key)}])))
 
-(def view
+(defn view []
   (let [edited-account-name  (reagent/atom nil)
         show-confirm-button? (reagent/atom false)
         on-change-color      (fn [edited-color {:keys [color] :as account}]

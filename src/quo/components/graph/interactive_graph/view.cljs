@@ -6,7 +6,8 @@
     [quo.theme :as quo.theme]
     [react-native.charts :as charts]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]
+    [reagent.core]))
 
 (def chart-height 375)
 (def max-data-points 500)
@@ -14,7 +15,7 @@
 (def initial-spacing 56)
 (def end-spacing 22)
 (def y-axis-label-width -33)
-(def inspecting? (reagent/atom false))
+(def inspecting? (reagent.core/atom false))
 
 (defn- pointer
   [customization-color]

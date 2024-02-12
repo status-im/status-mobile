@@ -24,7 +24,7 @@
     ["react-native-redash" :refer (withPause)]
     [oops.core :as oops]
     [react-native.flat-list :as rn-flat-list]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.transforms :as transforms]
     [utils.worklets.core :as worklets.core]))
 
@@ -42,17 +42,7 @@
 
 (def ^:private view* (reagent/adapt-react-class (.-View reanimated)))
 
-(defn view
-  []
-  (let [current-component (reagent/current-component)
-        reagent-props     (reagent/props current-component)
-        children          (reagent/children current-component)
-        updated-props     (update reagent-props :style transforms/styles-with-vectors)
-        ;; Some components add JS props to their children (such as TouchableWithoutFeedback), to make
-        ;; this component fully compatible we are passing those props to the inner component (`view*`).
-        external-props    (oops/gobj-get current-component "props")
-        all-props         (transforms/copy-js-obj-to-map external-props updated-props #(not= % "argv"))]
-    (into [view* all-props] children)))
+(def view view*)
 
 (def text (reagent/adapt-react-class (.-Text reanimated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))

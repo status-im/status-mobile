@@ -4,7 +4,7 @@
     ["react-native-gesture-handler/jest-utils" :as gestures-jest]
     [quo.components.buttons.slide-button.constants :as constants]
     [quo.components.buttons.slide-button.view :as slide-button]
-    [reagent.core :as r]
+    [utils.reagent :as r]
     [test-helpers.component :as h]))
 
 ;; NOTE stolen from

@@ -1,21 +1,23 @@
 (ns status-im.navigation.view
   (:require
-    [legacy.status-im.bottom-sheet.sheets :as bottom-sheets-old]
-    [legacy.status-im.ui.screens.popover.views :as popover]
-    [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
-    [legacy.status-im.ui.screens.signing.views :as signing]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    schema.view
-    [status-im.common.bottom-sheet-screen.view :as bottom-sheet-screen]
-    [status-im.common.bottom-sheet.view :as bottom-sheet]
-    [status-im.common.toasts.view :as toasts]
-    [status-im.navigation.screens :as screens]
-    [status-im.setup.hot-reload :as reloader]
-    [utils.re-frame :as rf]))
+   [legacy.status-im.bottom-sheet.sheets :as bottom-sheets-old]
+   [legacy.status-im.ui.screens.popover.views :as popover]
+   [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
+   [legacy.status-im.ui.screens.signing.views :as signing]
+   [quo.foundations.colors :as colors]
+   [quo.theme :as theme]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [utils.reagent :as reagent]
+   schema.view
+   [status-im.common.bottom-sheet-screen.view :as bottom-sheet-screen]
+   [status-im.common.bottom-sheet.view :as bottom-sheet]
+   [status-im.common.toasts.view :as toasts]
+   [status-im.navigation.screens :as screens]
+   [status-im.setup.hot-reload :as reloader]
+   [utils.re-frame :as rf]
+   [re-frame.core :as re-frame]
+   [reagent.core]))
 
 (defn get-screens
   []
@@ -77,7 +79,7 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
+     (let [{:keys [sheets hide?]} @(re-frame/subscribe [:bottom-sheet])
            sheet                  (last sheets)
            {:keys [theme]}        sheet
            insets                 (safe-area/get-insets)

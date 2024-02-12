@@ -6,7 +6,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]

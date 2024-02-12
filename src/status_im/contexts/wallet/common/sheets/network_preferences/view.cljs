@@ -5,7 +5,7 @@
             [quo.foundations.resources :as resources]
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.contexts.wallet.common.sheets.network-preferences.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))

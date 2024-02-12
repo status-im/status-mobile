@@ -7,7 +7,7 @@
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.chat.messenger.composer.actions.view :as actions]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
     [status-im.contexts.chat.messenger.composer.edit.view :as edit]

@@ -4,7 +4,7 @@
     [oops.core :as oops]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
     [status-im.contexts.chat.messenger.composer.keyboard :as kb]
     [status-im.contexts.chat.messenger.composer.selection :as selection]

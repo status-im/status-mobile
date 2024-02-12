@@ -6,7 +6,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 ;;; helpers
 (def themes

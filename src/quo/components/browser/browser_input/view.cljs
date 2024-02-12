@@ -7,7 +7,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn remove-http-https-www
   [value]

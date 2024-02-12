@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [reagent.core]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.config :as config]
@@ -237,7 +237,7 @@
       (i18n/label :t/log-in)]]))
 
 ;; we had to register it here, because of hotreload, overwise on hotreload it will be reseted
-(defonce show-profiles? (reagent/atom false))
+(defonce show-profiles? (reagent.core/atom false))
 
 (defn view
   []

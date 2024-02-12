@@ -17,15 +17,16 @@
     [quo.core :as quo]
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.config :as config]
     [utils.address :as address]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf])
+    [utils.re-frame :as rf]
+    [reagent.core])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
-(def state (reagent/atom {:tab :assets}))
-(def selected-tab (reagent/atom :tokens))
+(def state (reagent.core/atom {:tab :assets}))
+(def selected-tab (reagent.core/atom :tokens))
 
 (defn button
   [label icon color handler]

@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.shell.share.profile.view :as profile-view]
     [status-im.contexts.shell.share.style :as style]
     [status-im.contexts.shell.share.wallet.view :as wallet-view]

@@ -6,7 +6,7 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as r]
+    [utils.reagent :as r]
     [status-im.common.lightbox.animations :as anim]
     [status-im.common.lightbox.zoomable-image.constants :as c]
     [status-im.common.lightbox.zoomable-image.style :as style]

@@ -5,7 +5,7 @@
     [react-native.navigation :as navigation]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [reagent.core]
     [status-im.common.lightbox.animations :as anim]
     [status-im.common.lightbox.zoomable-image.constants :as constants]
     [utils.re-frame :as rf]))
@@ -235,7 +235,7 @@
 
 (defn init-state
   []
-  {:pan-x-enabled? (reagent/atom false)
-   :pan-y-enabled? (reagent/atom false)
-   :focal-x        (reagent/atom nil)
-   :focal-y        (reagent/atom nil)})
+  {:pan-x-enabled? (reagent.core/atom false)
+   :pan-y-enabled? (reagent.core/atom false)
+   :focal-x        (reagent.core/atom nil)
+   :focal-y        (reagent.core/atom nil)})

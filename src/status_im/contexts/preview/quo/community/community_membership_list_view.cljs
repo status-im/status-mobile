@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.community.community-membership-list-view
   (:require
     [quo.core :as quo]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.community.data :as data]
     [status-im.contexts.preview.quo.preview :as preview]))
 

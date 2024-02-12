@@ -7,12 +7,13 @@
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.content.audio.style :as style]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [reagent.core]))
 
 (def ^:const media-server-uri-prefix "https://localhost:")
 (def ^:const audio-path "/messages/audio")
@@ -21,7 +22,7 @@
 (defonce active-players (atom {}))
 (defonce audio-uris (atom {}))
 (defonce progress-timer (atom nil))
-(defonce current-player-key (reagent/atom nil))
+(defonce current-player-key (reagent.core/atom nil))
 
 (defn get-player-key
   [message-id in-pinned-view?]

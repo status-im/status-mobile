@@ -8,7 +8,7 @@
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.syntax-highlighter :as highlighter]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- render-nodes
   [nodes theme preview?]

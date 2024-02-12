@@ -4,12 +4,13 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.string :as utils.string]))
+    [utils.string :as utils.string]
+    [reagent.core]))
 
 (defn header
   []
@@ -192,21 +193,21 @@
 
 (defn create-password
   []
-  (reagent/with-let [keyboard-shown?      (reagent/atom false)
-                     {:keys [top bottom]} (safe-area/get-insets)
-                     will-show-listener   (ocall rn/keyboard
-                                                 "addListener"
-                                                 "keyboardWillShow"
-                                                 #(reset! keyboard-shown? true))
-                     will-hide-listener   (ocall rn/keyboard
-                                                 "addListener"
-                                                 "keyboardWillHide"
-                                                 #(reset! keyboard-shown? false))
-                     on-press-info        (fn []
-                                            (rn/dismiss-keyboard!)
-                                            (rf/dispatch [:show-bottom-sheet
-                                                          {:content create-password-doc
-                                                           :shell?  true}]))]
+  (reagent.core/with-let [keyboard-shown?      (reagent/atom false)
+                          {:keys [top bottom]} (safe-area/get-insets)
+                          will-show-listener   (ocall rn/keyboard
+                                                      "addListener"
+                                                      "keyboardWillShow"
+                                                      #(reset! keyboard-shown? true))
+                          will-hide-listener   (ocall rn/keyboard
+                                                      "addListener"
+                                                      "keyboardWillHide"
+                                                      #(reset! keyboard-shown? false))
+                          on-press-info        (fn []
+                                                 (rn/dismiss-keyboard!)
+                                                 (rf/dispatch [:show-bottom-sheet
+                                                               {:content create-password-doc
+                                                                :shell?  true}]))]
     [:<>
      [rn/touchable-without-feedback
       {:on-press   rn/dismiss-keyboard!

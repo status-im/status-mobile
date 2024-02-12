@@ -5,7 +5,7 @@
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.composer.reply.view :as reply]

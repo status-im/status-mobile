@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.masked-view :as masked-view]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.onboarding.identifiers.profile-card.style :as style]
     [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]))
 

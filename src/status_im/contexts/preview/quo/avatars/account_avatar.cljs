@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.avatars.account-avatar
   (:require
     [quo.core :as quo]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]
     [utils.re-frame :as rf]))
 

@@ -3,7 +3,7 @@
     [quo.components.selectors.reaction-resource :as reactions.resource]
     [quo.components.selectors.reactions-selector.style :as style]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn view
   [{:keys [start-pressed?]}]

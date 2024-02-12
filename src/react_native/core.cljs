@@ -8,7 +8,7 @@
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
     [react-native.utils :as utils]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
 

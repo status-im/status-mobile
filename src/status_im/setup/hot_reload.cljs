@@ -2,16 +2,16 @@
   (:require
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [reagent.core]
     schema.state
     [status-im.setup.schema :as schema]))
 
-(defonce cnt (reagent/atom 0))
+(defonce cnt (reagent.core/atom 0))
 (defonce reload-locked? (atom false))
 (defonce reload-interval (atom nil))
-(defonce warning? (reagent/atom false))
-(defonce visible (reagent/atom false))
-(defonce label (reagent/atom ""))
+(defonce warning? (reagent.core/atom false))
+(defonce visible (reagent.core/atom false))
+(defonce label (reagent.core/atom ""))
 
 (defn reload
   []

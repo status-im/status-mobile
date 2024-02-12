@@ -6,7 +6,7 @@
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.photo-selector.album-selector.view :as album-selector]
     [status-im.contexts.chat.messenger.photo-selector.style :as style]

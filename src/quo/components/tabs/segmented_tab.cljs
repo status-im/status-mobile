@@ -4,7 +4,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def themes-for-blur
   {:light {:background-color colors/neutral-80-opa-5}

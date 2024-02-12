@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.lightbox.constants :as constants]
     [status-im.contexts.chat.messenger.messages.content.lightbox.style :as style]
     [status-im.contexts.chat.messenger.messages.content.text.view :as message-view]

@@ -2,9 +2,10 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
-    [status-im.contexts.preview.quo.preview :as preview]))
+    [status-im.contexts.preview.quo.preview :as preview]
+    [reagent.core]))
 
 (def descriptor
   [{:type :text
@@ -56,8 +57,8 @@
    (preview/customization-color-option)])
 
 (def total-box 85)
-(def counter (reagent/atom 0))
-(def interval-id (reagent/atom nil))
+(def counter (reagent.core/atom 0))
+(def interval-id (reagent.core/atom nil))
 (def interval-ms 50)
 
 (defn- stop-interval

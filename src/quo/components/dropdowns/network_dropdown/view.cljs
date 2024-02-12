@@ -4,7 +4,7 @@
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- internal-view
   [_ _]

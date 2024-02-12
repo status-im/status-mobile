@@ -4,7 +4,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.contexts.chat.messenger.composer.mentions.style :as style]
     [status-im.contexts.chat.messenger.composer.utils :as utils]

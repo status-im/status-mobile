@@ -4,7 +4,7 @@
     [legacy.status-im.ui.components.react :as react]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.json-rpc.events :as json-rpc]
     [utils.datetime :as datetime]))
 

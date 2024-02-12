@@ -13,7 +13,7 @@
     [legacy.status-im.ui.screens.wallet.account-settings.views :as account-settings]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 

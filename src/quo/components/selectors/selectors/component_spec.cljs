@@ -1,7 +1,7 @@
 (ns quo.components.selectors.selectors.component-spec
   (:require
     [quo.components.selectors.selectors.view :as selectors]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [test-helpers.component :as h]))
 
 (defn render-toggle

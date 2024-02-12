@@ -13,7 +13,7 @@
     [legacy.status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]

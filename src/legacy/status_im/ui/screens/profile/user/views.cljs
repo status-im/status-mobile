@@ -16,7 +16,7 @@
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.qr-codes.view :as qr-codes]
     [status-im.config :as config]
     [status-im.contexts.profile.utils :as profile.utils]

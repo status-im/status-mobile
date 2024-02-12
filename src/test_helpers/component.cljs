@@ -6,7 +6,7 @@
             [oops.core :as oops]
             [quo.theme :as quo.theme]
             [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [utils.i18n :as i18n]))
 
 ;;;; React Native Testing Library

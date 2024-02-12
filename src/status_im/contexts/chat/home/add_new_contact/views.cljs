@@ -3,12 +3,13 @@
             [quo.core :as quo]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.contexts.chat.home.add-new-contact.style :as style]
             [utils.address :as address]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [reagent.core]))
 
 (defn found-contact
   [public-key]
@@ -51,15 +52,15 @@
 
 (defn- search-input
   []
-  (reagent/with-let [input-value    (reagent/atom nil)
-                     input-ref      (atom nil)
-                     clear-input    (fn []
-                                      (reset! input-value nil)
-                                      (rf/dispatch [:contacts/clear-new-identity]))
-                     paste-on-input #(clipboard/get-string
-                                      (fn [clipboard-text]
-                                        (reset! input-value clipboard-text)
-                                        (rf/dispatch [:contacts/set-new-identity clipboard-text nil])))]
+  (reagent.core/with-let [input-value    (reagent/atom nil)
+                          input-ref      (atom nil)
+                          clear-input    (fn []
+                                           (reset! input-value nil)
+                                           (rf/dispatch [:contacts/clear-new-identity]))
+                          paste-on-input #(clipboard/get-string
+                                           (fn [clipboard-text]
+                                             (reset! input-value clipboard-text)
+                                             (rf/dispatch [:contacts/set-new-identity clipboard-text nil])))]
     (let [{:keys [scanned]} (rf/sub [:contacts/new-identity])
           empty-input?      (and (string/blank? @input-value)
                                  (string/blank? scanned))]

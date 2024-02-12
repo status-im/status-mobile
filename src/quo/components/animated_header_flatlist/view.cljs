@@ -10,7 +10,7 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (def header-height 234)
 (def cover-height 192)

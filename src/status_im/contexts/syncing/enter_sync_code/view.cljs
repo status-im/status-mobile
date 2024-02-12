@@ -5,7 +5,7 @@
     [quo.foundations.colors :as colors]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.syncing.enter-sync-code.style :as style]
     [status-im.contexts.syncing.utils :as sync-utils]
     [utils.debounce :as debounce]

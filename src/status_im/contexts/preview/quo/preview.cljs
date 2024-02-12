@@ -9,7 +9,7 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.common :as common]
     [status-im.contexts.preview.quo.style :as style]

@@ -7,8 +7,9 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
-    [utils.number]))
+    [utils.reagent :as reagent]
+    [utils.number]
+    [reagent.core]))
 
 (def ^:private timeouts (atom {}))
 
@@ -174,7 +175,7 @@
 
 (defn view-internal
   [{:keys [networks container-style theme] :as params}]
-  (reagent/with-let [total-width (reagent/atom nil)]
+  (reagent.core/with-let [total-width (reagent/atom nil)]
     [rn/view
      {:accessibility-label :network-routing
       :style               (style/container container-style theme)

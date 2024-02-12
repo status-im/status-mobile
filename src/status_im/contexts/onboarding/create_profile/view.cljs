@@ -9,17 +9,18 @@
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.profile-picture-picker.view :as profile-picture-picker]
     [status-im.common.validation.profile :as profile-validator]
     [status-im.constants :as c]
     [status-im.contexts.onboarding.create-profile.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.responsiveness :as responsiveness]))
+    [utils.responsiveness :as responsiveness]
+    [reagent.core]))
 
-(def scroll-view-height (reagent/atom 0))
-(def content-container-height (reagent/atom 0))
+(def scroll-view-height (reagent.core/atom 0))
+(def content-container-height (reagent.core/atom 0))
 
 (defn show-button-background
   [keyboard-height keyboard-shown content-scroll-y]
@@ -62,35 +63,35 @@
 
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
-  (reagent/with-let [show-keyboard?                          (reagent/atom false)
-                     content-scroll-y                        (reagent/atom 0)
-                     show-listener                           (oops/ocall rn/keyboard
-                                                                         "addListener"
-                                                                         (if platform/android?
-                                                                           "keyboardDidShow"
-                                                                           "keyboardWillShow")
-                                                                         #(reset! show-keyboard? true))
-                     hide-listener                           (oops/ocall rn/keyboard
-                                                                         "addListener"
-                                                                         (if platform/android?
-                                                                           "keyboardDidHide"
-                                                                           "keyboardWillHide")
-                                                                         #(reset! show-keyboard? false))
-                     {:keys [image-path display-name color]} onboarding-profile-data
-                     full-name                               (reagent/atom display-name)
-                     validation-msg                          (reagent/atom
-                                                              (profile-validator/validation-name
-                                                               @full-name))
-                     on-change-text                          (fn [s]
-                                                               (reset! validation-msg
-                                                                 (profile-validator/validation-name
-                                                                  s))
-                                                               (reset! full-name (string/trim s)))
-                     custom-color                            (reagent/atom (or color
-                                                                               c/profile-default-color))
-                     profile-pic                             (reagent/atom image-path)
-                     on-change-profile-pic                   #(reset! profile-pic %)
-                     on-change                               #(reset! custom-color %)]
+  (reagent.core/with-let [show-keyboard?                          (reagent/atom false)
+                          content-scroll-y                        (reagent/atom 0)
+                          show-listener                           (oops/ocall rn/keyboard
+                                                                              "addListener"
+                                                                              (if platform/android?
+                                                                                "keyboardDidShow"
+                                                                                "keyboardWillShow")
+                                                                              #(reset! show-keyboard? true))
+                          hide-listener                           (oops/ocall rn/keyboard
+                                                                              "addListener"
+                                                                              (if platform/android?
+                                                                                "keyboardDidHide"
+                                                                                "keyboardWillHide")
+                                                                              #(reset! show-keyboard? false))
+                          {:keys [image-path display-name color]} onboarding-profile-data
+                          full-name                               (reagent/atom display-name)
+                          validation-msg                          (reagent/atom
+                                                                   (profile-validator/validation-name
+                                                                    @full-name))
+                          on-change-text                          (fn [s]
+                                                                    (reset! validation-msg
+                                                                      (profile-validator/validation-name
+                                                                       s))
+                                                                    (reset! full-name (string/trim s)))
+                          custom-color                            (reagent/atom (or color
+                                                                                    c/profile-default-color))
+                          profile-pic                             (reagent/atom image-path)
+                          on-change-profile-pic                   #(reset! profile-pic %)
+                          on-change                               #(reset! custom-color %)]
     (let [name-too-short?                          (profile-validator/name-too-short? @full-name)
           valid-name?                              (and (not @validation-msg) (not name-too-short?))
           info-message                             (if @validation-msg

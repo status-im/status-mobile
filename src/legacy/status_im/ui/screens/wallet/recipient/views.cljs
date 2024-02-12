@@ -1,25 +1,26 @@
 (ns legacy.status-im.ui.screens.wallet.recipient.views
   (:require
-    [clojure.string :as string]
-    [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
-    [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.core :as quo]
-    [legacy.status-im.ui.components.icons.icons :as icons]
-    [legacy.status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-    [legacy.status-im.ui.components.list.item :as list.item]
-    [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.components.search-input.view :as search-input]
-    [legacy.status-im.ui.components.toolbar :as toolbar]
-    [legacy.status-im.ui.components.topbar :as topbar]
-    [legacy.status-im.ui.screens.wallet.components.views :as components]
-    [legacy.status-im.utils.utils :as utils]
-    [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
-    [utils.address :as address]
-    [utils.debounce :as debounce]
-    [utils.ens.stateofus :as stateofus]
-    [utils.i18n :as i18n]
-    [utils.string :as utils.string])
+   [clojure.string :as string]
+   [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
+   [legacy.status-im.ui.components.colors :as colors]
+   [legacy.status-im.ui.components.core :as quo]
+   [legacy.status-im.ui.components.icons.icons :as icons]
+   [legacy.status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+   [legacy.status-im.ui.components.list.item :as list.item]
+   [legacy.status-im.ui.components.react :as react]
+   [legacy.status-im.ui.components.search-input.view :as search-input]
+   [legacy.status-im.ui.components.toolbar :as toolbar]
+   [legacy.status-im.ui.components.topbar :as topbar]
+   [legacy.status-im.ui.screens.wallet.components.views :as components]
+   [legacy.status-im.utils.utils :as utils]
+   [re-frame.core :as re-frame]
+   [reagent.core]
+   [utils.address :as address]
+   [utils.debounce :as debounce]
+   [utils.ens.stateofus :as stateofus]
+   [utils.i18n :as i18n]
+   [utils.string :as utils.string]
+   [utils.reagent :as reagent])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (defn- recipient-topbar
@@ -40,7 +41,7 @@
                                                 {:ignore-url true
                                                  :handler :wallet-legacy.send/qr-scanner-result}])}]}])
 
-(defonce search-active? (reagent/atom false))
+(defonce search-active? (reagent.core/atom false))
 
 (defn search-input-wrapper
   []

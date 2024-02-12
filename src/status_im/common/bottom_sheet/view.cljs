@@ -9,7 +9,7 @@
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.bottom-sheet.style :as style]
     [utils.re-frame :as rf]))
 

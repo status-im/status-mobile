@@ -5,7 +5,7 @@
     [quo.components.numbered-keyboard.keyboard-key.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- label->accessibility-label
   [label]

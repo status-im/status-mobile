@@ -4,7 +4,7 @@
     [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.wallet.common.sheets.remove-account.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]

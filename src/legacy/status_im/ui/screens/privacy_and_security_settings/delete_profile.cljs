@@ -7,7 +7,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
     [re-frame.core :as re-frame]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))

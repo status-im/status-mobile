@@ -11,7 +11,7 @@
     [quo.foundations.common :as common]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn fiat-format
   [currency num-value conversion]

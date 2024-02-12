@@ -8,7 +8,7 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
-            [reagent.core :as reagent]
+            [utils.reagent :as reagent]
             [status-im.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.common.utils :as utils]

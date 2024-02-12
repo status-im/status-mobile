@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor

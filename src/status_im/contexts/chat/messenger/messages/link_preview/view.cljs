@@ -4,7 +4,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events]
     [status-im.contexts.chat.messenger.messages.link-preview.style :as style]

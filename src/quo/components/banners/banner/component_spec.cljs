@@ -2,7 +2,7 @@
   (:require
     ["@testing-library/react-native" :as rtl]
     [quo.components.banners.banner.view :as banner]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn render-banner
   [opts]

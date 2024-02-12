@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.community.data :as data]
     [status-im.contexts.preview.quo.preview :as preview]))

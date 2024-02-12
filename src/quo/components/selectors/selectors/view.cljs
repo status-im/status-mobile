@@ -4,7 +4,7 @@
     [quo.components.selectors.selectors.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [utils.reagent :as reagent]))
 
 (defn- handle-press
   [on-change checked-atom checked?]

@@ -9,7 +9,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
+    [utils.reagent :as reagent]
     [status-im.common.emoji-picker.constants :as constants]
     [status-im.common.emoji-picker.data :as emoji-picker.data]
     [status-im.common.emoji-picker.style :as style]
