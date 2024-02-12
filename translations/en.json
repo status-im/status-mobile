@@ -2265,6 +2265,7 @@
     "eligible-to-join-as": "Eligible to join as",
     "you-not-eligible-to-join": "You’re not eligible to join",
     "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
+    "addresses-dont-contain-tokens-needed": "These addresses don’t contain tokens needed to join",
     "token-gated-communities": "Token gated communities",
     "read-more": "Read more",
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
@@ -2493,5 +2494,6 @@
     "confirm-the-position": "Confirm the position of certain words in your recovery phrase",
     "do-not-cheat": "Don't try to cheat",
     "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",
-    "see-recovery-phrase-again": "See recovery phrase again"
+    "see-recovery-phrase-again": "See recovery phrase again",
+    "fees": "Fees"
 }
