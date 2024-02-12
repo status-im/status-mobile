@@ -27,19 +27,13 @@
    :height           48
    :flex-grow        1})
 
-(defn radius-container
-  [opacity-animation]
-  {:opacity         opacity-animation
-   :flex-direction  :row
+(def radius-container
+  {:flex-direction  :row
    :justify-content :space-between})
 
 (defn avatar-container
-  [theme scale-animation top-margin-animation side-margin-animation]
-  [{:transform     [{:scale scale-animation}]
-    :margin-top    top-margin-animation
-    :margin-left   side-margin-animation
-    :margin-bottom side-margin-animation}
-   {:align-items   :flex-start
-    :border-width  4
-    :border-color  (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)
-    :border-radius 100}])
+  [theme]
+  {:align-items   :flex-start
+   :border-width  4
+   :border-color  (colors/theme-colors colors/border-avatar-light colors/neutral-80-opa-80 theme)
+   :border-radius 44})
