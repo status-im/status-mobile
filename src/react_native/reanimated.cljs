@@ -20,7 +20,8 @@
                      LinearTransition
                      enableLayoutAnimations
                      useAnimatedScrollHandler
-                     runOnJS)]
+                     runOnJS)
+     :as reanimated*]
     ["react-native-redash" :refer (withPause)]
     [react-native.flat-list :as rn-flat-list]
     [react-native.utils :as rn.utils]
@@ -106,6 +107,8 @@
   [anim v]
   (when (and anim (some? v))
     (set! (.-value anim) v)))
+
+(def interpolate* reanimated*/interpolate)
 
 (defn interpolate
   ([shared-value input-range output-range]

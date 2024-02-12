@@ -1,4 +1,4 @@
-(ns status-im.contexts.profile.settings.header.header-shape
+(ns ^:workletize status-im.contexts.profile.settings.header.header-shape
   (:require [quo.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
@@ -21,13 +21,17 @@
 
 (defn f-view
   [{:keys [scroll-y customization-color theme]}]
-  (let [background-color  (colors/resolve-color customization-color theme 40)
-        opacity-animation (reanimated/interpolate scroll-y
-                                                  [0 45 50]
-                                                  [1 1 0])]
+  (let [background-color (colors/resolve-color customization-color theme 40)
+        opacity          (reanimated/use-animated-style
+                          (fn []
+                            (js* "'worklet'")
+                            #js
+                             {:opacity (reanimated/interpolate* (.-value scroll-y)
+                                                                #js [0 45 50]
+                                                                #js [1 1 0])}))]
     [:<>
      [rn/view {:style (style/header-middle-shape background-color)}]
-     [reanimated/view {:style (style/radius-container opacity-animation)}
+     [reanimated/view {:style [opacity style/radius-container]}
       [left-radius background-color]
       [right-radius background-color]]]))
 
