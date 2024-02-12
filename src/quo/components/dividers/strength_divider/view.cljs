@@ -63,8 +63,9 @@
       :alert [icon/icon :i/alert
               {:color color
                :size  16}]
-      [rn/view {:padding-left  4
-                :padding-right 2}
+      [rn/view
+       {:padding-left  4
+        :padding-right 2}
        [circular-progress {:color color :percentage percentage}]])))
 
 (defn view
