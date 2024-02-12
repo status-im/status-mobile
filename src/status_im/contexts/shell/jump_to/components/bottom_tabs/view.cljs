@@ -30,13 +30,12 @@
     [quo/bottom-nav-tab
      (-> notifications-data
          (get stack-id)
-         (assoc
-          :test-ID             stack-id
-          :icon                icon
-          :icon-color-anim     icon-color
-          :on-press            #(animation/bottom-tab-on-press stack-id true)
-          :accessibility-label (str (name stack-id) "-tab")
-          :customization-color customization-color))]))
+         (assoc :test-ID             stack-id
+                :icon                icon
+                :icon-color-anim     icon-color
+                :on-press            #(animation/bottom-tab-on-press stack-id true)
+                :accessibility-label (str (name stack-id) "-tab")
+                :customization-color customization-color))]))
 
 (defn f-bottom-tabs
   []
@@ -64,8 +63,8 @@
         [reanimated/blur-view (blur-overlay-params bottom-tabs-blur-overlay-style)])
       [rn/view {:style (style/bottom-tabs)}
        [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-        [:f> bottom-tab :i/communities :communities-stack shared-values notifications-data]]
+        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-        [:f> bottom-tab :i/messages :chats-stack shared-values notifications-data]]
-       [:f> bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
-       [:f> bottom-tab :i/browser :browser-stack shared-values notifications-data]]]]))
+        [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
+       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
+       [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]]))

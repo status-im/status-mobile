@@ -3,7 +3,6 @@
     [oops.core :refer [oget]]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -100,8 +99,7 @@
 
 (defn bottom-area
   [{:keys [flash camera-type] :as args}]
-  (let [back        (fn []
-                      (rf/dispatch [:navigate-back]))
+  (let [back        #(rf/dispatch [:navigate-back])
         flip-camera (fn []
                       (reset! flash false)
                       (reset! camera-type (if (= @camera-type camera-kit/camera-type-back)

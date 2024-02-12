@@ -41,7 +41,7 @@
        #(rn/hw-back-remove-listener navigate-back-handler))
      [])
     [:<>
-     [:f> jump-to-screen/view]
+     [jump-to-screen/view]
      [:f> bottom-tabs/f-bottom-tabs]
      [:f> home-stack/f-home-stack]
      [floating-button shared-values]

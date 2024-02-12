@@ -86,7 +86,7 @@
      (when pass-through?
        [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
-(defn view-internal
+(defn view
   []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
@@ -106,7 +106,3 @@
        {:jump-to?        true
         :container-style {:margin-top top
                           :z-index    2}}]]]))
-
-(defn view
-  []
-  [:f> view-internal])

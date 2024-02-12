@@ -1,7 +1,6 @@
 (ns status-im.contexts.shell.activity-center.view
   (:require
     [oops.core :as oops]
-    [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
@@ -61,7 +60,7 @@
            :else
            nil)]))))
 
-(defn view-internal
+(defn view
   []
   (let [active-swipeable (atom nil)]
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
@@ -81,7 +80,3 @@
            :on-scroll-to-index-failed identity
            :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
            :render-fn                 notification-component}]]))))
-
-(defn view
-  []
-  [:f> view-internal])

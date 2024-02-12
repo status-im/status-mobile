@@ -59,4 +59,3 @@
   [component]
   (fn [& args]
     (into [:f> f-with-theme component] args)))
-

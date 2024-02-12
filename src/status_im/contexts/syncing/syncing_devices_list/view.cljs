@@ -1,12 +1,12 @@
 (ns status-im.contexts.syncing.syncing-devices-list.view
   (:require
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [status-im.contexts.syncing.device.view :as device]
-   [status-im.contexts.syncing.syncing-devices-list.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im.contexts.syncing.device.view :as device]
+    [status-im.contexts.syncing.syncing-devices-list.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -23,8 +23,7 @@
       {:type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   (fn []
-                     (rf/dispatch [:navigate-back]))}]
+       :on-press   #(rf/dispatch [:navigate-back])}]
      [rn/view {:style style/page-container}
       [rn/view {:style style/title-container}
        [quo/text
