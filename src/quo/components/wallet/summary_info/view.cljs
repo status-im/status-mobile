@@ -61,7 +61,7 @@
       [:type [:enum :status-account :saved-account :account :user]]
       [:account-props {:optional true} [:maybe :map]]
       [:networks? {:optional true} [:maybe :boolean]]
-      [:values {:optional true} [:maybe :any]]]]]
+      [:values {:optional true} [:maybe :map]]]]]
    :any])
 
 (defn- view-internal
