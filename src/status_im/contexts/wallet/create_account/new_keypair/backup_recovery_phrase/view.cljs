@@ -1,11 +1,13 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view
   (:require
+    [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.temp :as temp]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -34,18 +36,23 @@
      :on-change #(swap! checked? assoc (keyword (str index)) %)}]
    [quo/text {:style {:margin-left 12}} (i18n/label item)]])
 
-(defn- view-internal
+(defn- f-view
   [{:keys [theme]}]
   (let [step-labels                   [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
                                        :t/backup-step-4]
         checked?                      (reagent/atom
-                                       {:0 false
-                                        :1 false
-                                        :2 false
-                                        :3 false})
+                                        {:0 false
+                                         :1 false
+                                         :2 false
+                                         :3 false})
         revealed?                     (reagent/atom false)
-        {:keys [customization-color]} (rf/sub [:profile/profile])]
+        {:keys [customization-color]} (rf/sub [:profile/profile])
+        secret-phrase         (reagent/atom [])
+        random-phrase         (reagent/atom [])]
     (fn []
+      (rn/use-effect (fn []
+                       (native-module/get-random-mnemonic #(reset! secret-phrase (utils/string-to-vector %)))
+                       (native-module/get-random-mnemonic #(reset! random-phrase (utils/string-to-vector %)))))
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:icon-name           :i/close
@@ -56,9 +63,11 @@
          :description      :text
          :description-text (i18n/label :t/backup-recovery-phrase-description)}]
        [rn/view {:style (style/seed-phrase-container theme)}
-        [words-column temp/secret-phrase true]
-        [rn/view {:style (style/separator theme)}]
-        [words-column temp/secret-phrase false]
+        (when (pos? (count @secret-phrase))
+          [:<>
+           [words-column @secret-phrase true]
+           [rn/view {:style (style/separator theme)}]
+           [words-column @secret-phrase false]])
         (when-not @revealed?
           [rn/view {:style style/blur-container}
            [blur/view (style/blur theme)]])]
@@ -82,8 +91,8 @@
             :button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
-                               :on-press            #(rf/dispatch [:navigate-to
-                                                                   :wallet-check-your-backup])}}]
+                               :on-press            #(rf/dispatch [:wallet/secret-phrase {:secret-phrase @secret-phrase
+                                                                                         :random-phrase @random-phrase}])}}]
           [quo/text
            {:size  :paragraph-2
             :style (style/description-text theme)}
@@ -95,5 +104,9 @@
                               :customization-color customization-color
                               :on-press            #(reset! revealed? true)}
            :container-style  style/slide-button}])])))
+
+(defn view-internal
+  [params]
+  [:f> f-view params])
 
 (def view (quo.theme/with-theme view-internal))

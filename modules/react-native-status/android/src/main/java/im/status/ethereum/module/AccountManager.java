@@ -342,4 +342,10 @@ public class AccountManager extends ReactContextBaseJavaModule {
         final String keyStoreDir = this.utils.getKeyStorePath(keyUID);
         this.utils.executeRunnableStatusGoMethod(() -> Statusgo.deleteMultiaccount(keyUID, keyStoreDir), callback);
     }
+
+    @ReactMethod
+    public void getRandomMnemonic(final Callback callback) throws JSONException {
+        Log.d(TAG, "getRandomMnemonic");
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.getRandomMnemonic(), callback);
+    }
 }

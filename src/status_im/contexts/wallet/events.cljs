@@ -386,3 +386,10 @@
             {:title   title
              :subject title
              :message content})]]}))
+
+(rf/reg-event-fx :wallet/secret-phrase
+                 (fn [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
+                   {:db (-> db
+                            (assoc-in [:wallet :ui :secret-phrase] secret-phrase)
+                            (assoc-in [:wallet :ui :random-phrase] random-phrase))
+                    :fx [[:dispatch [:navigate-to :wallet-check-your-backup]]]}))

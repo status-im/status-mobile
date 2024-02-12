@@ -573,3 +573,8 @@
 (defn init-status-go-logging
   [{:keys [enable? mobile-system? log-level callback]}]
   (.initLogging ^js (log-manager) enable? mobile-system? log-level callback))
+
+(defn get-random-mnemonic
+  [callback]
+  (log/debug "[native-module] get-random-mnemonic")
+  (.getRandomMnemonic ^js (account-manager) #(callback (types/json->clj %))))

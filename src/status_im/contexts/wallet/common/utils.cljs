@@ -276,6 +276,7 @@
   [data chain-id]
   (some #(when (= chain-id (:chain-id %)) %) (vals data)))
 
+<<<<<<< HEAD
 (defn make-network-item
   "This function generates props for quo/category component item"
   [{:keys [network-name] :as _network}
@@ -295,3 +296,8 @@
     label-props
     (assoc :label       :text
            :label-props label-props)))
+=======
+(defn string-to-vector [str]
+  (->> (clojure.string/split str #"\s")
+       (vec)))
+>>>>>>> 2d6aa482f (feat: new keypair)
