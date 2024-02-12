@@ -179,6 +179,7 @@
     [status-im.contexts.preview.quo.wallet.account-overview :as
      account-overview]
     [status-im.contexts.preview.quo.wallet.account-permissions :as account-permissions]
+    [status-im.contexts.preview.quo.wallet.amount-input :as amount-input]
     [status-im.contexts.preview.quo.wallet.confirmation-progress :as
      confirmation-progress]
     [status-im.contexts.preview.quo.wallet.keypair :as keypair]
@@ -496,6 +497,8 @@
                         :component account-overview/view}
                        {:name      :account-permissions
                         :component account-permissions/view}
+                       {:name      :amount-input
+                        :component amount-input/view}
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}
