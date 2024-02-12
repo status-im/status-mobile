@@ -19,9 +19,9 @@
     :key  :epoch-number-arbitrum}
    {:type :text
     :key  :tag-number}
-   {:type :text
+   {:type :number
     :key  :optimism-progress-percentage}
-   {:type :text
+   {:type :number
     :key  :arbitrum-progress-percentage}
    {:type    :select
     :key     :network
@@ -142,8 +142,8 @@
                 :epoch-number-mainnet         "181,329"
                 :epoch-number-optimism        "181,329"
                 :epoch-number-arbitrum        "181,329"
-                :optimism-progress-percentage "10"
-                :arbitrum-progress-percentage "10"
+                :optimism-progress-percentage 10
+                :arbitrum-progress-percentage 10
                 :network                      :mainnet
                 :state-mainnet                :pending
                 :state-arbitrum               :pending

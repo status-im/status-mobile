@@ -15,19 +15,23 @@
 (defn- view-internal
   []
   (let [pressed? (reagent/atom false)]
-    (fn [{:keys [disabled? theme blur? on-press type]} label]
+    (fn [{:keys [disabled? theme blur? on-press on-long-press type]} label]
       (let [label-color      (style/get-label-color disabled? theme blur?)
             background-color (style/toggle-background-color @pressed? blur? theme)]
         [rn/pressable
-         {:accessibility-label (label->accessibility-label label)
-          :disabled            (or disabled? (not label))
-          :on-press            (fn []
-                                 (when on-press
-                                   (on-press label)))
-          :on-press-in         #(reset! pressed? true)
-          :on-press-out        #(reset! pressed? false)
-          :hit-slop            {:top 8 :bottom 8 :left 25 :right 25}
-          :style               (style/container background-color)}
+         {:accessibility-label     (label->accessibility-label label)
+          :disabled                (or disabled? (not label))
+          :on-press                (fn []
+                                     (when on-press
+                                       (on-press label)))
+          :on-long-press           (fn []
+                                     (when (fn? on-long-press)
+                                       (on-long-press label)))
+          :allow-multiple-presses? true
+          :on-press-in             #(reset! pressed? true)
+          :on-press-out            #(reset! pressed? false)
+          :hit-slop                {:top 8 :bottom 8 :left 25 :right 25}
+          :style                   (style/container background-color)}
          (case type
            :key             [icons/icon
                              label

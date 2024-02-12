@@ -74,9 +74,10 @@
      :account-props account-props}]])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees token amount to-address route theme]}]
-  (let [currency-symbol (rf/sub [:profile/currency-symbol])
-        route-loaded?   (some? route)]
+  [{:keys [estimated-time-min max-fees token-symbol amount to-address route theme]}]
+  (let [currency-symbol           (rf/sub [:profile/currency-symbol])
+        route-loaded?             (some? route)
+        loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])]
     [rn/view
      {:style style/details-title-container}
      [quo/text
@@ -86,8 +87,14 @@
        :accessibility-label :summary-from-label}
       (i18n/label :t/details)]
      [rn/view
-      {:style (style/details-container route-loaded? theme)}
-      (if route-loaded?
+      {:style (style/details-container
+               {:loading-suggested-routes? loading-suggested-routes?
+                :route-loaded?             route-loaded?
+                :theme                     theme})}
+      (cond
+        loading-suggested-routes?
+        [rn/activity-indicator {:style {:align-self :center}}]
+        route-loaded?
         [:<>
          [quo/data-item
           {:container-style style/detail-item
@@ -123,15 +130,14 @@
            :status          :default
            :size            :small
            :title           (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)})
-           :subtitle        (str amount " " (:symbol token))}]]
-        [rn/activity-indicator {:style {:align-self :center}}])]]))
+           :subtitle        (str amount " " token-symbol)}]]
+        :else
+        [quo/text {:style {:align-self :center}}
+         (i18n/label :t/no-routes-found-confirmation)])]]))
 
 (defn- view-internal
   [_]
-  (let [on-close (fn []
-                   (rf/dispatch [:wallet/clean-suggested-routes])
-                   (rf/dispatch [:navigate-back-within-stack :wallet-select-asset]))]
-
+  (let [on-close #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])]
     (fn [{:keys [theme]}]
       (let [send-transaction-data (rf/sub [:wallet/wallet-send])
             token                 (:token send-transaction-data)
@@ -140,9 +146,10 @@
             collectible-data      (:collectible-data collectible)
             collectible-id        (get-in collectible [:id :token-id])
             token-symbol          (if collectible
-                                    (first (remove string/blank?
-                                                   [(:name collectible-data)
-                                                    (str (:name collection-data) " #" collectible-id)]))
+                                    (first (remove
+                                            string/blank?
+                                            [(:name collectible-data)
+                                             (str (:name collection-data) " #" collectible-id)]))
                                     (:symbol token))
             image-url             (when collectible (:image-url collectible-data))
             amount                (:amount send-transaction-data)
@@ -157,7 +164,8 @@
                                    :emoji               (:emoji account)
                                    :type                :default
                                    :name                (:name account)
-                                   :address             (utils/get-shortened-address (:address account))}
+                                   :address             (utils/get-shortened-address (:address
+                                                                                      account))}
             user-props            {:full-name to-address
                                    :address   (utils/get-shortened-address to-address)}]
         [rn/view {:style {:flex 1}}
@@ -173,17 +181,17 @@
                                                               :on-press            #(js/alert
                                                                                      "to be implemented")
                                                               :accessibility-label :advanced-options}]}]
-           :footer                   (if route
+           :footer                   (when route
                                        [standard-auth/slide-button
                                         {:size                :size-48
                                          :track-text          (i18n/label :t/slide-to-send)
                                          :container-style     {:z-index 2}
                                          :customization-color account-color
-                                         :on-auth-success     #(rf/dispatch [:wallet/send-transaction
-                                                                             (security/safe-unmask-data
-                                                                              %)])
-                                         :auth-button-label   (i18n/label :t/confirm)}]
-                                       [rn/activity-indicator])
+                                         :on-auth-success     #(rf/dispatch
+                                                                [:wallet/send-transaction
+                                                                 (security/safe-unmask-data
+                                                                  %)])
+                                         :auth-button-label   (i18n/label :t/confirm)}])
            :gradient-cover?          true
            :customization-color      (:color account)}
           [rn/view
@@ -213,7 +221,7 @@
            [transaction-details
             {:estimated-time-min estimated-time-min
              :max-fees           max-fees
-             :token              token
+             :token-symbol       token-symbol
              :amount             amount
              :to-address         to-address
              :theme              theme

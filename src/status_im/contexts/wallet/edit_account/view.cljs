@@ -8,6 +8,7 @@
              :as network-preferences]
             [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.edit-account.style :as style]
+            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -32,7 +33,8 @@
                   {:account    edited-account-data
                    :on-success #(show-save-account-toast updated-key)}])))
 
-(def view
+(defn view
+  []
   (let [edited-account-name  (reagent/atom nil)
         show-confirm-button? (reagent/atom false)
         on-change-color      (fn [edited-color {:keys [color] :as account}]
@@ -51,7 +53,7 @@
                                               :updated-key :name
                                               :new-value   @edited-account-name}))]
     (fn []
-      (let [{:keys [name emoji address color watch-only?]
+      (let [{:keys [name emoji address color watch-only? default-account?]
              :as   account}         (rf/sub [:wallet/current-viewing-account])
             network-details         (rf/sub [:wallet/network-preference-details])
             test-networks-enabled?  (rf/sub [:profile/test-networks-enabled?])
@@ -62,13 +64,15 @@
             button-disabled?        (or (nil? @edited-account-name)
                                         (= name @edited-account-name))]
         [create-or-edit-account/view
-         {:page-nav-right-side [{:icon-name :i/delete
-                                 :on-press
-                                 (fn []
-                                   (rf/dispatch [:show-bottom-sheet
-                                                 {:content
-                                                  (fn []
-                                                    [remove-account/view])}]))}]
+         {:page-nav-right-side [(when-not default-account?
+                                  {:icon-name :i/delete
+                                   :on-press
+                                   #(ff/alert ::ff/wallet.remove-account
+                                              (fn []
+                                                (rf/dispatch [:show-bottom-sheet
+                                                              {:content
+                                                               (fn []
+                                                                 [remove-account/view])}])))})]
           :account-name        account-name
           :account-emoji       emoji
           :account-color       color

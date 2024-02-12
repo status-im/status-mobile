@@ -94,10 +94,10 @@
 
 (deftest test-get-wallet-qr
   (testing "Test get-wallet-qr function"
-    (let [wallet-multichain  {:wallet-type       :wallet-multichain
+    (let [wallet-multichain  {:wallet-type       :multichain
                               :selected-networks [:ethereum :optimism]
                               :address           "x000"}
-          wallet-singlechain {:wallet-type       :wallet-singlechain
+          wallet-singlechain {:wallet-type       :singlechain
                               :selected-networks [:ethereum :optimism]
                               :address           "x000"}]
 
@@ -106,3 +106,12 @@
 
       (is (= (utils/get-wallet-qr wallet-singlechain)
              "x000")))))
+
+(deftest test-prettify-percentage-change
+  (testing "prettify-percentage-change function"
+    (is (= (utils/prettify-percentage-change nil) "0.00"))
+    (is (= (utils/prettify-percentage-change "") "0.00"))
+    (is (= (utils/prettify-percentage-change 0.5) "0.50"))
+    (is (= (utils/prettify-percentage-change 1.113454) "1.11"))
+    (is (= (utils/prettify-percentage-change -0.35) "0.35"))
+    (is (= (utils/prettify-percentage-change -0.78234) "0.78"))))

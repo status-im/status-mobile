@@ -17,6 +17,7 @@
     quo.components.calendar.calendar.month-picker.component-spec
     quo.components.colors.color-picker.component-spec
     quo.components.community.community-stat.component-spec
+    quo.components.counter.collectible-counter.component-spec
     quo.components.counter.counter.component-spec
     quo.components.counter.step.component-spec
     quo.components.dividers.divider-label.component-spec
@@ -89,6 +90,7 @@
     quo.components.wallet.account-origin.component-spec
     quo.components.wallet.account-overview.component-spec
     quo.components.wallet.account-permissions.component-spec
+    quo.components.wallet.amount-input.component-spec
     quo.components.wallet.confirmation-progress.component-spec
     quo.components.wallet.keypair.component-spec
     quo.components.wallet.network-amount.component-spec

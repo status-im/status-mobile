@@ -1,6 +1,7 @@
 (ns status-im.subs.communities
   (:require
     [clojure.string :as string]
+    [legacy.status-im.data-store.communities :as data-store]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
@@ -307,10 +308,6 @@
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [[{:keys [token-permissions-check token-permissions checking-permissions? token-images]}] _]
    (let [can-request-access? (:satisfied token-permissions-check)
-         role-permissions #{constants/community-token-permission-become-admin
-                            constants/community-token-permission-become-member
-                            constants/community-token-permission-become-token-master
-                            constants/community-token-permission-become-token-owner}
          highest-permission-role
          (when can-request-access?
            (->> token-permissions-check
@@ -321,7 +318,7 @@
                             (and (first criteria)
                                  (some #{(:type (permission-id->permission-value token-permissions
                                                                                  permission-id))}
-                                       role-permissions))]
+                                       constants/community-role-permissions))]
                      (if highest-permission-role
                        (min highest-permission-role permission-type)
                        permission-type)
@@ -339,8 +336,8 @@
                                 (:permissions token-permissions-check))
       :tokens                  (->>
                                  token-permissions
-                                 (filter (fn [[_ {:keys [type]}]]
-                                           (= type constants/community-token-permission-become-member)))
+                                 (filter (fn [[_ permission]]
+                                           (data-store/role-permission? permission)))
                                  (map (fn [[perm-key {:keys [token_criteria]}]]
                                         (let [check-criteria (get-in token-permissions-check
                                                                      [:permissions perm-key :criteria])]
@@ -365,6 +362,11 @@
  :<- [:communities]
  (fn [communities [_ community-id]]
    (get-in communities [community-id :intro-message])))
+
+(re-frame/reg-sub :communities/permissioned-balances-by-address
+ :<- [:communities/permissioned-balances]
+ (fn [balances [_ community-id account-address]]
+   (get-in balances [community-id (keyword account-address)])))
 
 (re-frame/reg-sub
  :communities/selected-permission-addresses

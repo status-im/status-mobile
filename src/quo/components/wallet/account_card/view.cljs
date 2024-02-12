@@ -4,13 +4,15 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.account-card.properties :as properties]
+    [quo.components.wallet.account-card.schema :as component-schema]
     [quo.components.wallet.account-card.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.customization-colors :as customization-colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn- loading-view
   [{:keys [customization-color type theme metrics?]}]
@@ -183,4 +185,6 @@
     :add-account                                   [add-account-view props]
     nil))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

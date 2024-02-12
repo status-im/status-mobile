@@ -43,6 +43,7 @@
     [status-im.contexts.preview.quo.community.discover-card :as discover-card]
     [status-im.contexts.preview.quo.community.list-item :as community-list-item]
     [status-im.contexts.preview.quo.community.token-gating :as token-gating]
+    [status-im.contexts.preview.quo.counter.collectible-counter :as collectible-counter]
     [status-im.contexts.preview.quo.counter.counter :as counter]
     [status-im.contexts.preview.quo.counter.step :as step]
     [status-im.contexts.preview.quo.dividers.date :as divider-date]
@@ -157,6 +158,7 @@
     [status-im.contexts.preview.quo.tabs.account-selector :as account-selector]
     [status-im.contexts.preview.quo.tabs.segmented-tab :as segmented]
     [status-im.contexts.preview.quo.tabs.tabs :as tabs]
+    [status-im.contexts.preview.quo.tags.collectible-tag :as collectible-tag]
     [status-im.contexts.preview.quo.tags.context-tags :as context-tags]
     [status-im.contexts.preview.quo.tags.network-tags :as network-tags]
     [status-im.contexts.preview.quo.tags.number-tag :as number-tag]
@@ -177,6 +179,7 @@
     [status-im.contexts.preview.quo.wallet.account-overview :as
      account-overview]
     [status-im.contexts.preview.quo.wallet.account-permissions :as account-permissions]
+    [status-im.contexts.preview.quo.wallet.amount-input :as amount-input]
     [status-im.contexts.preview.quo.wallet.confirmation-progress :as
      confirmation-progress]
     [status-im.contexts.preview.quo.wallet.keypair :as keypair]
@@ -260,7 +263,9 @@
                        {:name      :channel-actions
                         :options   {:insets {:bottom? true}}
                         :component channel-actions/view}]
-   :counter           [{:name      :counter
+   :counter           [{:name      :collectible-counter
+                        :component collectible-counter/view}
+                       {:name      :counter
                         :component counter/view}
                        {:name      :step
                         :component step/view}]
@@ -454,7 +459,9 @@
                         :component tabs/view}
                        {:name      :account-selector
                         :component account-selector/view}]
-   :tags              [{:name      :context-tags
+   :tags              [{:name      :collectible-tag
+                        :component collectible-tag/view}
+                       {:name      :context-tags
                         :component context-tags/view}
                        {:name      :network-tags
                         :component network-tags/view}
@@ -490,6 +497,8 @@
                         :component account-overview/view}
                        {:name      :account-permissions
                         :component account-permissions/view}
+                       {:name      :amount-input
+                        :component amount-input/view}
                        {:name      :confirmation-progress
                         :component confirmation-progress/view}
                        {:name :keypair :component keypair/view}

@@ -23,10 +23,8 @@
 (defn- view-internal
   [{:keys [theme]}]
   (fn []
-    (let [{:keys [name
-                  id
-                  images]} (rf/sub [:get-screen-params])
-          {:keys [color]}  (rf/sub [:communities/community id])]
+    (let [{:keys [id]}                (rf/sub [:get-screen-params])
+          {:keys [color name images]} (rf/sub [:communities/community id])]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style style/container}
         [rn/view style/page-container

@@ -45,7 +45,6 @@
      :blur-radius   10
      :blur-type     :transparent
      :overlay-color :transparent}]
-
    [rn/view {:style (style/content-container theme)}
     [rn/view {:style style/left-side-container}
      left]
@@ -77,16 +76,19 @@
     :or   {type :neutral icon :i/placeholder}}]
   (let [context-theme (or theme (quo.theme/get-theme))
         icon-name     (case type
-                        :positive :i/correct
-                        :negative :i/incorrect
+                        :positive (if (= theme :light)
+                                    :i/correct
+                                    :i/correct-dark)
+                        :negative (if (= theme :light)
+                                    :i/incorrect
+                                    :i/incorrect-dark)
                         :neutral  icon)]
     [quo.theme/provider {:theme context-theme}
      [toast-container
       {:left            (cond user
                               [user-avatar/user-avatar user]
                               icon-name
-                              [icon/icon icon-name (style/icon type context-theme)]
-                        )
+                              [icon/icon icon-name (style/icon type context-theme)])
        :title           title
        :text            text
        :right           (if undo-duration

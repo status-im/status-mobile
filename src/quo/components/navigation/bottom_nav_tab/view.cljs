@@ -47,12 +47,13 @@
                                     :height        40
                                     :border-radius 10})]
     [rn/touchable-without-feedback
-     {:test-ID             test-ID
-      :on-long-press       on-long-press ;;NOTE - this is temporary while supporting old wallet
-      :on-press            on-press
-      :on-press-in         #(toggle-background-color background-color false pass-through?)
-      :on-press-out        #(toggle-background-color background-color true pass-through?)
-      :accessibility-label accessibility-label}
+     {:test-ID                 test-ID
+      :on-long-press           on-long-press ;;NOTE - this is temporary while supporting old wallet
+      :allow-multiple-presses? true
+      :on-press                on-press
+      :on-press-in             #(toggle-background-color background-color false pass-through?)
+      :on-press-out            #(toggle-background-color background-color true pass-through?)
+      :accessibility-label     accessibility-label}
      [reanimated/view {:style background-animated-style}
       ;; In android animations are not working for the animated components which are nested by
       ;; hole-view,

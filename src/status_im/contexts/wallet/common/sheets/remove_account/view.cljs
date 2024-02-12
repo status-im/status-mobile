@@ -11,13 +11,17 @@
     [utils.re-frame :as rf]))
 
 (defn- footer
-  [{:keys [submit-disabled?]}]
+  [{:keys [address submit-disabled? toast-message]}]
   [quo/bottom-actions
    {:actions             :2-actions
     :customization-color :danger
     :button-one-label    (i18n/label :t/remove)
-    :button-one-props    {:on-press  #(js/alert "Will be implemented")
-                          :type      :danger
+    :button-one-props    {:on-press
+                          (fn []
+                            (rf/dispatch [:wallet/remove-account
+                                          {:address       address
+                                           :toast-message toast-message}]))
+                          :type :danger
                           :disabled? submit-disabled?}
     :button-two-label    (i18n/label :t/cancel)
     :button-two-props    {:on-press #(rf/dispatch [:hide-bottom-sheet])
@@ -26,7 +30,7 @@
 (defn- recovery-phase-flow
   []
   (let [confirmed? (reagent/atom false)]
-    (fn [{:keys [name emoji path color] :as _account}]
+    (fn [{:keys [address name emoji path color] :as _account}]
       (let [formatted-path (utils/format-derivation-path path)]
         [:<>
          [quo/drawer-top
@@ -64,10 +68,13 @@
             :checked?            @confirmed?
             :on-change           #(swap! confirmed? not)}]
           [quo/text (i18n/label :t/remove-account-confirmation)]]
-         [footer {:submit-disabled? (not @confirmed?)}]]))))
+         [footer
+          {:submit-disabled? (not @confirmed?)
+           :address          address
+           :toast-message    (i18n/label :t/account-removed)}]]))))
 
 (defn- watched-address-flow
-  [{:keys [name emoji color] :as _account}]
+  [{:keys [address name emoji color] :as _account}]
   [:<>
    [quo/drawer-top
     {:title               (i18n/label :t/remove-watched-address-title)
@@ -79,13 +86,17 @@
    [rn/view {:style style/desc-container}
     [quo/text {:weight :medium}
      (i18n/label :t/remove-watched-address-desc)]]
-   [footer {:submit-disabled? false}]])
+   [footer
+    {:submit-disabled? false
+     :address          address
+     :toast-message    (i18n/label :t/watched-account-removed)}]])
 
 (defn- view-internal
   []
   (let [{:keys [type] :as account} (rf/sub [:wallet/current-viewing-account])]
     (case type
       :generated [recovery-phase-flow account]
-      :watch     [watched-address-flow account])))
+      :watch     [watched-address-flow account]
+      nil)))
 
 (def view (quo.theme/with-theme view-internal))
