@@ -4,11 +4,15 @@
 
 (def backgrounds #{:photo :blur})
 
+;; Note: We hardcode the :light theme for the background-color and apply an overlay when necessary, such
+;; as for dark themes and pressed states. This approach is taken because, for communities, we only have
+;; one color available, which is the light theme version.
+;; For more information, see the related issue: https://github.com/status-im/status-mobile/issues/16396
 (defn- custom-color-type
-  [customization-color icon-only? theme]
+  [customization-color icon-only?]
   {:icon-color                  colors/white-opa-70
    :label-color                 colors/white
-   :background-color            (colors/resolve-color customization-color theme)
+   :background-color            (colors/resolve-color customization-color :light)
    :border-radius               (when icon-only? 24)
    :overlay-customization-color customization-color})
 
@@ -87,8 +91,7 @@
                                  type)]
     (cond
       (contains? #{:primary :positive :danger} type) (custom-color-type customization-color
-                                                                        icon-only?
-                                                                        theme)
+                                                                        icon-only?)
       (and (= :photo background) (= type :grey))     (grey-photo theme pressed?)
       (and (= :blur background) (= type :grey))      (grey-blur theme pressed?)
       (and (= :blur background) (= type :outline))   (outline-blur theme pressed?)
