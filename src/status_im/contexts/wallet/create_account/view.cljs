@@ -10,7 +10,6 @@
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.sheets.account-origin.view :as account-origin]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.feature-flags :as ff]
@@ -64,6 +63,7 @@
         primary-name          (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         {window-width :width} (rn/get-window)]
     (fn [{:keys [theme]}]
+<<<<<<< HEAD
 <<<<<<< HEAD
       [rn/view {:style {:flex 1}}
        [quo/page-nav
@@ -138,6 +138,8 @@
          ;; :disabled?           (empty? @account-name)
          :container-style     (style/slide-button-container bottom)}]])))
 =======
+=======
+>>>>>>> d48b12035 (lint)
       (let [{:keys [new-keypair]} (rf/sub [:wallet/ui])]
         (rn/use-effect (fn [] #(rf/dispatch [:wallet/clear-new-keypair])))
         [rn/view {:style {:flex 1}}
@@ -213,6 +215,5 @@
 (defn view-internal
   []
   [:f> f-view])
->>>>>>> bfe254bff (lint)
 
 (def view (quo.theme/with-theme view-internal))

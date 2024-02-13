@@ -61,32 +61,32 @@
 
 (defn- view-internal
   []
-  (let [random-indices  (random-selection)
-        quiz-index      (reagent/atom 0)
-        incorrect-count (reagent/atom 0)
-        show-error?     (reagent/atom false)
+  (let [random-indices                        (random-selection)
+        quiz-index                            (reagent/atom 0)
+        incorrect-count                       (reagent/atom 0)
+        show-error?                           (reagent/atom false)
         {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/ui])]
     (fn []
-      (let [current-word-index                    (get random-indices
-                                                       (min @quiz-index (dec questions-count)))
-            current-word                          (get secret-phrase current-word-index)
-            [options-r-0 options-r-1]             (random-words-with-string random-phrase current-word)
-            on-button-press                       (fn [word]
-                                                    (if (= word current-word)
-                                                      (do
-                                                        (when (< @quiz-index 4)
-                                                          (reset! quiz-index (inc @quiz-index)))
-                                                        (reset! incorrect-count 0)
-                                                        (reset! show-error? false)
-                                                        (when (= @quiz-index 4)
-                                                          (rf/dispatch [:navigate-to
-                                                                        :wallet-keypair-name])))
-                                                      (do
-                                                        (when (> @incorrect-count 0)
-                                                          (rf/dispatch [:show-bottom-sheet
-                                                                        {:content cheat-warning}]))
-                                                        (reset! incorrect-count (inc @incorrect-count))
-                                                        (reset! show-error? true))))]
+      (let [current-word-index        (get random-indices
+                                           (min @quiz-index (dec questions-count)))
+            current-word              (get secret-phrase current-word-index)
+            [options-r-0 options-r-1] (random-words-with-string random-phrase current-word)
+            on-button-press           (fn [word]
+                                        (if (= word current-word)
+                                          (do
+                                            (when (< @quiz-index 4)
+                                              (reset! quiz-index (inc @quiz-index)))
+                                            (reset! incorrect-count 0)
+                                            (reset! show-error? false)
+                                            (when (= @quiz-index 4)
+                                              (rf/dispatch [:navigate-to
+                                                            :wallet-keypair-name])))
+                                          (do
+                                            (when (> @incorrect-count 0)
+                                              (rf/dispatch [:show-bottom-sheet
+                                                            {:content cheat-warning}]))
+                                            (reset! incorrect-count (inc @incorrect-count))
+                                            (reset! show-error? true))))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left
