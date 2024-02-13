@@ -373,14 +373,19 @@ test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connection
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
 test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
-test-unit: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
+test-unit: export SHADOW_NS_REGEXP := ^(?!tests\.integration-test)(?!tests-im\.contract-test).*-test$$
 test-unit: ##@test Run unit tests
 test-unit: _test-clojure
 
 test-integration: export SHADOW_OUTPUT_TO := target/integration_test/test.js
-test-integration: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
+test-integration: export SHADOW_NS_REGEXP := ^tests\.integration-test.*$$
 test-integration: ##@test Run integration tests
 test-integration: _test-clojure
+
+test-contract: export SHADOW_OUTPUT_TO := target/contract_test/test.js
+test-contract: export SHADOW_NS_REGEXP := ^tests\.contract-test.*$$
+test-contract: ##@test Run contract tests
+test-contract: _test-clojure
 
 android-test: jsbundle
 android-test: export TARGET := android
