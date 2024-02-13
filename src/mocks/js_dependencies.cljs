@@ -53,7 +53,7 @@
     :FlatList                 {}
     :SectionList              {}
     :Text                     {}
-    :StatusBar                {}
+    :StatusBar                {:setBarStyle identity}
     :ScrollView               {}
     :SafeAreaView             {}
     :KeyboardAvoidingView     {}
