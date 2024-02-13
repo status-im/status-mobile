@@ -2,27 +2,12 @@
   (:require
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.components.tags.collectible-tag.schema :as component-schema]
     [quo.components.tags.collectible-tag.style :as style]
     [quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
     [schema.core :as schema]))
-
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map {:closed true}
-      [:options {:optional true} [:maybe [:enum false :add :hold]]]
-      [:size {:optional true} [:enum :size-24 :size-32]]
-      [:blur? {:optional true} :boolean]
-      [:theme :schema.common/theme]
-      [:collectible-img-src [:or :int :string]]
-      [:collectible-name :string]
-      [:collectible-id :string]
-      [:container-width :number]
-      [:on-layout {:optional true} [:maybe fn?]]]]]
-   :any])
 
 (defn- view-internal
   []
@@ -67,4 +52,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal component-schema/?schema)))
