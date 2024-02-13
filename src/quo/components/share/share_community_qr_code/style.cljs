@@ -6,22 +6,19 @@
    :width         "100%"
    :overflow      :hidden})
 
-(def overlay-color colors/white-opa-5)
+(def ^:private padding 12)
 
-(def ^:private padding-horizontal 12)
+(def container-component
+  {:padding-bottom padding
+   :background-color colors/white-opa-5})
 
 (def content-container
   {:z-index            1
-   :padding-horizontal padding-horizontal})
+   :padding-horizontal padding})
 
-;;; QR code
 (defn qr-code-size
   [total-width]
-  (- total-width (* 2 padding-horizontal)))
+  (- total-width (* 2 padding)))
 
 (def share-qr-container
   {:padding-bottom 12})
-
-(def share-qr-inner-container
-  {:flex-direction :row
-   :align-items    :center})

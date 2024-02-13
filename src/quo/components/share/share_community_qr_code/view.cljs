@@ -10,24 +10,20 @@
             [schema.core :as schema]))
 
 (defn- share-qr-code
-  [{:keys [qr-image-uri component-width
-           profile-picture emoji]}]
+  [{:keys [qr-image-uri component-width emoji]}]
   [:<>
    [rn/view {:style style/content-container}
-    [rn/view {:style style/share-qr-container}
-     [rn/view {:style style/share-qr-inner-container}]]
+    [rn/view {:style style/share-qr-container}]
     [quo.theme/provider {:theme :light}
      [qr-code/view
       {:qr-image-uri    qr-image-uri
        :size            (style/qr-code-size component-width)
        :avatar          :community
-       :profile-picture profile-picture
        :emoji           emoji}]]]])
-
 (defn- view-internal
   [props]
   (reagent/with-let [component-width     (reagent/atom nil)
-                     container-component [rn/view {:background-color style/overlay-color}]]
+                     container-component [rn/view {:style style/container-component}]]
     [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code
@@ -42,4 +38,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+    (schema/instrument #'view-internal component-schema/?schema)))
