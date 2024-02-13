@@ -418,7 +418,7 @@
 (def account-permissions quo.components.wallet.account-permissions.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
 (def amount-input quo.components.wallet.amount-input.view/view)
-(def confirmation-propgress quo.components.wallet.confirmation-progress.view/view)
+(def confirmation-progress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)
