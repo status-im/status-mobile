@@ -400,6 +400,6 @@
             (assoc-in [:wallet :ui :new-keypair] new-keypair))
     :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]}))
 
-(rf/reg-event-fx :wallet/new-keypair-continue
+(rf/reg-event-fx :wallet/clear-new-keypair
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui] dissoc :new-keypair)}))
