@@ -159,6 +159,9 @@
     community-token-permission-become-token-master
     community-token-permission-become-token-owner})
 
+(def ^:const community-token-type-erc20 1)
+(def ^:const community-token-type-erc721 2)
+
 ;; Community rules for joining
 (def ^:const community-rule-ens-only "ens-only")
 
@@ -254,6 +257,7 @@
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")
 (def ^:const principles-link "https://our.status.im/our-principles/")
+(def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)

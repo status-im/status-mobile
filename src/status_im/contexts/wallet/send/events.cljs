@@ -52,7 +52,7 @@
    {:db (-> db
             (assoc-in [:wallet :ui :send :send-account-address] address)
             (update-in [:wallet :ui :send] dissoc :to-address))
-    :fx [[:navigate-to-within-stack [:wallet-select-asset stack-id]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:wallet-select-asset stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
@@ -72,10 +72,11 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
-      :fx [[:navigate-to-within-stack
-            (if token
-              [:wallet-send-input-amount stack-id]
-              [:wallet-select-asset stack-id])]]})))
+      :fx [[:dispatch
+            [:navigate-to-within-stack
+             (if token
+               [:wallet-send-input-amount stack-id]
+               [:wallet-select-asset stack-id])]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -87,7 +88,8 @@
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
-    :fx [[:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]}))
+    :fx [[:dispatch [:wallet/clean-suggested-routes]]
+         [:dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/send-select-token-drawer
@@ -103,21 +105,28 @@
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :token)
             (assoc-in [:wallet :ui :send :collectible] collectible)
+            (assoc-in [:wallet :ui :send :type] :collectible)
             (assoc-in [:wallet :ui :send :amount] 1))
-    :fx [[:dispatch [:wallet/get-suggested-routes 1]]
+    :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
          [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
- (fn [{:keys [db now]} [amount]]
+ (fn [{:keys [db now]} [{:keys [amount]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
+         transaction-type        (get-in db [:wallet :ui :send :type])
          collectible             (get-in db [:wallet :ui :send :collectible])
          to-address              (get-in db [:wallet :ui :send :to-address])
+         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
+         networks                ((if test-networks-enabled? :test :prod)
+                                  (get-in db [:wallet :networks]))
+         network-chain-ids       (map :chain-id networks)
+         bridge-to-chain-id      (get-in db [:wallet :ui :send :bridge-to-chain-id])
          token-decimal           (when token (:decimals token))
          token-id                (if token
                                    (:symbol token)
@@ -129,12 +138,15 @@
          amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address            wallet-address
          disabled-from-chain-ids []
-         disabled-to-chain-ids   []
+         disabled-to-chain-ids   (if (= transaction-type :bridge)
+                                   (filter #(not= % bridge-to-chain-id) network-chain-ids)
+                                   [])
          from-locked-amount      {}
-         transaction-type        (if token
-                                   constants/send-type-transfer
-                                   constants/send-type-erc-721-transfer)
-         request-params          [transaction-type
+         transaction-type-param  (case transaction-type
+                                   :collectible constants/send-type-erc-721-transfer
+                                   :bridge      constants/send-type-bridge
+                                   constants/send-type-transfer)
+         request-params          [transaction-type-param
                                   from-address
                                   to-address
                                   amount-in

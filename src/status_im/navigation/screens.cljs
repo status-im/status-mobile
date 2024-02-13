@@ -35,6 +35,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
@@ -48,6 +49,7 @@
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im.contexts.wallet.account.bridge-send.view :as bridge-send]
     [status-im.contexts.wallet.account.bridge-to.view :as bridge-to]
     [status-im.contexts.wallet.account.bridge.view :as bridge]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
@@ -64,9 +66,9 @@
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as scan-address]
-    [status-im.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
+    [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.share-address.view :as wallet-share-address]
@@ -178,11 +180,15 @@
      :component profiles/view}
 
     {:name      :edit-profile
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-profile/view}
 
+    {:name      :edit-accent-colour
+     :options   options/transparent-modal-screen-options
+     :component edit-accent-colour/view}
+
     {:name      :edit-name
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-name/view}
 
     {:name      :new-to-status
@@ -334,6 +340,10 @@
     {:name      :wallet-bridge-to
      :options   {:insets {:top? true}}
      :component bridge-to/view}
+
+    {:name      :wallet-bridge-send
+     :options   {:insets {:top? true}}
+     :component bridge-send/view}
 
     {:name      :wallet-edit-derivation-path
      :component wallet-edit-derivation-path/view}

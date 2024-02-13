@@ -44,7 +44,7 @@ export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 # Our custom config is located in nix/nix.conf
 export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
-export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
+export _NIX_GCROOTS = ./.nix-gcroots
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,\
 	BUILD_TYPE,BUILD_NUMBER,COMMIT_HASH,\
@@ -373,14 +373,19 @@ test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connection
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
 test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
-test-unit: export SHADOW_NS_REGEXP := ^(?!status-im\.integration-test).*-test$$
+test-unit: export SHADOW_NS_REGEXP := ^(?!tests\.integration-test)(?!tests-im\.contract-test).*-test$$
 test-unit: ##@test Run unit tests
 test-unit: _test-clojure
 
 test-integration: export SHADOW_OUTPUT_TO := target/integration_test/test.js
-test-integration: export SHADOW_NS_REGEXP := ^status-im\.integration-test.*$$
+test-integration: export SHADOW_NS_REGEXP := ^tests\.integration-test.*$$
 test-integration: ##@test Run integration tests
 test-integration: _test-clojure
+
+test-contract: export SHADOW_OUTPUT_TO := target/contract_test/test.js
+test-contract: export SHADOW_NS_REGEXP := ^tests\.contract-test.*$$
+test-contract: ##@test Run contract tests
+test-contract: _test-clojure
 
 android-test: jsbundle
 android-test: export TARGET := android

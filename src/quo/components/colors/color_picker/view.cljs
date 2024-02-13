@@ -35,7 +35,7 @@
             (when (and @ref (>= index 0))
               (some-> ^js @ref
                       (.scrollToIndex #js
-                                       {:animated     true
+                                       {:animated     false
                                         :index        index
                                         :viewPosition 0.5})))))
         50)))

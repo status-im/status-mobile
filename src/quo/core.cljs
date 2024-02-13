@@ -136,6 +136,7 @@
     quo.components.tabs.account-selector
     quo.components.tabs.segmented-tab
     quo.components.tabs.tabs.view
+    quo.components.tags.collectible-tag.view
     quo.components.tags.context-tag.view
     quo.components.tags.network-tags.view
     quo.components.tags.number-tag.view
@@ -157,6 +158,7 @@
     quo.components.wallet.account-overview.view
     quo.components.wallet.account-permissions.view
     quo.components.wallet.address-text.view
+    quo.components.wallet.amount-input.view
     quo.components.wallet.confirmation-progress.view
     quo.components.wallet.keypair.view
     quo.components.wallet.network-amount.view
@@ -389,6 +391,7 @@
 (def account-selector quo.components.tabs.account-selector/account-selector)
 
 ;;;; Tags
+(def collectible-tag quo.components.tags.collectible-tag.view/view)
 (def context-tag quo.components.tags.context-tag.view/view)
 (def network-tags quo.components.tags.network-tags.view/view)
 (def number-tag quo.components.tags.number-tag.view/view)
@@ -416,7 +419,8 @@
 (def account-overview quo.components.wallet.account-overview.view/view)
 (def account-permissions quo.components.wallet.account-permissions.view/view)
 (def address-text quo.components.wallet.address-text.view/view)
-(def confirmation-propgress quo.components.wallet.confirmation-progress.view/view)
+(def amount-input quo.components.wallet.amount-input.view/view)
+(def confirmation-progress quo.components.wallet.confirmation-progress.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)

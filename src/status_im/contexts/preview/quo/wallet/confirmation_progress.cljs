@@ -6,7 +6,7 @@
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor
-  [{:type :text
+  [{:type :number
     :key  :progress-value}
    {:type    :select
     :key     :network
@@ -69,7 +69,7 @@
          (stop-interval)))
      [(:state @state)])
     [preview/preview-container {:state state :descriptor descriptor}
-     [quo/confirmation-propgress
+     [quo/confirmation-progress
       (assoc @state
              :counter
              @counter)]]))
@@ -78,7 +78,7 @@
   []
   (let [state (reagent/atom
                {:total-box           total-box
-                :progress-value      "10"
+                :progress-value      10
                 :network             :mainnet
                 :state               :pending
                 :customization-color :blue})]

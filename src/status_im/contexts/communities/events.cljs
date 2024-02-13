@@ -9,6 +9,7 @@
     [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
+    status-im.contexts.communities.actions.addresses-for-permissions.events
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
     [status-im.navigation.events :as navigation]
