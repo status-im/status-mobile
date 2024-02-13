@@ -31,13 +31,13 @@
              :token  (:symbol balance)))))
 
 (defn- account-item
-  [{:keys [customization-color address name emoji]} _ _ [selected-addresses community-id]]
+  [{:keys [color address name emoji]} _ _ [selected-addresses community-id]]
   (let [balances (rf/sub [:communities/permissioned-balances-by-address community-id address])]
     [quo/account-permissions
      {:account         {:name                name
                         :address             address
                         :emoji               emoji
-                        :customization-color customization-color}
+                        :customization-color color}
       :token-details   (balances->components-props balances)
       :checked?        (contains? selected-addresses address)
       :on-change       #(rf/dispatch [:communities/toggle-selected-permission-address
@@ -51,7 +51,7 @@
     (fn []
       (let [{:keys [name color images]}       (rf/sub [:communities/community id])
             {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
-            accounts                          (rf/sub [:wallet/accounts-with-customization-color])
+            accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
             highest-role-text                 (when highest-permission-role
                                                 (i18n/label (communities.utils/role->translation-key
