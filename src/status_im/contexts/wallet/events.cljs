@@ -204,8 +204,21 @@
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :token] token)
-    :fx [[:navigate-to-within-stack [:wallet-bridge-to stack-id]]]}))
+   (let [to-address (get-in db [:wallet :current-viewing-account-address])]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :token] token)
+              (assoc-in [:wallet :ui :send :to-address] to-address))
+      :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-to stack-id]]]]})))
+
+(rf/reg-event-fx :wallet/start-bridge
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :send :type] :bridge)
+    :fx [[:dispatch [:open-modal :wallet-bridge]]]}))
+
+(rf/reg-event-fx :wallet/select-bridge-network
+ (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
+   {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
+    :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-send stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains

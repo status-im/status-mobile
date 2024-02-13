@@ -105,8 +105,9 @@
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :token)
             (assoc-in [:wallet :ui :send :collectible] collectible)
+            (assoc-in [:wallet :ui :send :type] :collectible)
             (assoc-in [:wallet :ui :send :amount] 1))
-    :fx [[:dispatch [:wallet/get-suggested-routes 1]]
+    :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
          [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
@@ -115,11 +116,17 @@
     :fx [[:dispatch [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
- (fn [{:keys [db now]} [amount]]
+ (fn [{:keys [db now]} [{:keys [amount]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
+         transaction-type        (get-in db [:wallet :ui :send :type])
          collectible             (get-in db [:wallet :ui :send :collectible])
          to-address              (get-in db [:wallet :ui :send :to-address])
+         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
+         networks                ((if test-networks-enabled? :test :prod)
+                                  (get-in db [:wallet :networks]))
+         network-chain-ids       (map :chain-id networks)
+         bridge-to-chain-id      (get-in db [:wallet :ui :send :bridge-to-chain-id])
          token-decimal           (when token (:decimals token))
          token-id                (if token
                                    (:symbol token)
@@ -131,12 +138,15 @@
          amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address            wallet-address
          disabled-from-chain-ids []
-         disabled-to-chain-ids   []
+         disabled-to-chain-ids   (if (= transaction-type :bridge)
+                                   (filter #(not= % bridge-to-chain-id) network-chain-ids)
+                                   [])
          from-locked-amount      {}
-         transaction-type        (if token
-                                   constants/send-type-transfer
-                                   constants/send-type-erc-721-transfer)
-         request-params          [transaction-type
+         transaction-type-param  (case transaction-type
+                                   :collectible constants/send-type-erc-721-transfer
+                                   :bridge      constants/send-type-bridge
+                                   constants/send-type-transfer)
+         request-params          [transaction-type-param
                                   from-address
                                   to-address
                                   amount-in
