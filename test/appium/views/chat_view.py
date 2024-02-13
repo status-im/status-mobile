@@ -416,6 +416,8 @@ class CommunityView(HomeView):
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
         self.join_button = Button(self.driver, accessibility_id="show-request-to-join-screen-button")
         self.join_community_button = Button(self.driver, accessibility_id="join-community-button")
+        self.slide_to_request_to_join_button = Button(
+            self.driver, xpath="(//*[@resource-id='slide-button-track']//*[@content-desc='icon'])[1]")
         self.follow_button = Button(self.driver, translation_id="follow")
         self.community_tags = BaseElement(
             self.driver, xpath="//*[@content-desc='chat-name-text']/../android.widget.HorizontalScrollView")
@@ -434,7 +436,7 @@ class CommunityView(HomeView):
         self.driver.info("Joining community")
         ChatView(self.driver).chat_element_by_text("https://status.app/c/").click_on_link_inside_message_body()
         self.join_button.wait_and_click(120)
-        self.join_community_button.scroll_and_click()
+        self.slide_to_request_to_join_button.swipe_right_on_element(width_percentage=16)
         self.password_input.send_keys(password)
         Button(self.driver,
                xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
