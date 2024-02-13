@@ -27,7 +27,7 @@
              :collectible-img-src (resources/get-mock-image :collectible))
 
       (= type constants/community-token-type-erc20)
-      (assoc :amount (str (money/with-precision (money/token->unit amount decimals) 3))
+      (assoc :amount (str (money/token->unit amount decimals))
              :token  (:symbol balance)))))
 
 (defn- account-item
