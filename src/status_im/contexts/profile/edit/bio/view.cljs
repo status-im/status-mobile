@@ -53,6 +53,7 @@
            :auto-focus      true
            :char-limit      constants/profile-bio-max-length
            :label           (i18n/label :t/profile-bio)
+           :placeholder     (i18n/label :t/something-about-you)
            :on-change-text  on-change-text}]
          (when-not (string/blank? @error-msg)
            [quo/info-message
