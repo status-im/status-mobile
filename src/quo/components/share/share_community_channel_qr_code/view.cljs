@@ -10,7 +10,7 @@
             [schema.core :as schema]))
 
 (defn- share-qr-code
-  [{:keys [qr-image-uri component-width emoji customization-color]}]
+  [{:keys [qr-image-uri component-width emoji customization-color full-name]}]
   [:<>
    [rn/view {:style style/content-container}
     [rn/view {:style style/share-qr-container}]
@@ -20,6 +20,7 @@
        :size                (style/qr-code-size component-width)
        :avatar              :channel
        :emoji               emoji
+       :full-name           full-name
        :customization-color customization-color}]]]])
 
 (defn- view-internal

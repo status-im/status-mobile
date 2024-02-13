@@ -22,7 +22,6 @@
                                   :qr-size     qr-size
                                   :error-level :highest})
             title               (i18n/label :t/share-channel)]
-        (print chat)
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
@@ -42,8 +41,10 @@
            [quo/share-community-channel-qr-code
             {:qr-image-uri        qr-media-server-uri
              :customization-color (:color chat)
-             ;;  :emoji               (:emoji chat)
-             :emoji               "emoji"}]]
+             :emoji               (:emoji chat)
+             :full-name           (:chat-name chat)
+             ;;  :emoji               "emoji"
+            }]]
           [quo/text
            {:size   :paragraph-2
             :weight :regular
