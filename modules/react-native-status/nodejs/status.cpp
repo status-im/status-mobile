@@ -844,6 +844,36 @@ void _CreateAccountAndLogin(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void _RestoreAccountAndLogin(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for SaveAccountAndLogin")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'settingsJSON'")));
+		return;
+	}
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = RestoreAccountAndLogin(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+}
+
 void _ValidateMnemonic(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1916,6 +1946,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "resetChainData", _ResetChainData);
 	NODE_SET_METHOD(exports, "saveAccountAndLogin", _SaveAccountAndLogin);
 	NODE_SET_METHOD(exports, "createAccountAndLogin", _CreateAccountAndLogin);
+	NODE_SET_METHOD(exports, "restoreAccountAndLogin", _RestoreAccountAndLogin);
 	NODE_SET_METHOD(exports, "validateMnemonic", _ValidateMnemonic);
 	NODE_SET_METHOD(exports, "multiformatSerializePublicKey", _MultiformatSerializePublicKey);
 	NODE_SET_METHOD(exports, "saveAccountAndLoginWithKeycard", _SaveAccountAndLoginWithKeycard);

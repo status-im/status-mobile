@@ -70,6 +70,8 @@
       (callback (.openAccounts native-status test-dir)))
     :createAccountAndLogin
     (fn [request] (.createAccountAndLogin native-status request))
+    :restoreAccountAndLogin
+    (fn [request] (.createAccountAndLogin native-status request))
     :logout
     (fn [] (.logout native-status))
     :multiAccountImportMnemonic
