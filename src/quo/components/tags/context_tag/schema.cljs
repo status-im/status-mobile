@@ -1,7 +1,7 @@
 (ns quo.components.tags.context-tag.schema
   (:require [malli.core :as malli]))
 
-(def ^:private ?base
+(def ^:private ?context-base
   [:map
    [:type {:optional true}
     [:maybe
@@ -18,7 +18,7 @@
 
 (def ^:private ?default
   [:map
-   [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+   [:profile-picture {:optional true} [:maybe :schema.common/image-source]]
    [:full-name {:optional true} [:maybe :string]]])
 
 (def ^:private ?multiuser
@@ -26,7 +26,7 @@
    [:users {:optional true}
     [:maybe
      [:sequential
-      [:map [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+      [:map [:profile-picture {:optional true} [:maybe :schema.common/image-source]]
        [:full-name {:optional true} [:maybe :string]]
        [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]]]])
 
@@ -50,7 +50,7 @@
 
 (def ^:private ?network
   [:map
-   [:network-logo {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+   [:network-logo {:optional true} [:maybe :schema.common/image-source]]
    [:network-name {:optional true} [:maybe :string]]])
 
 (def ^:private ?multinetwork
@@ -64,7 +64,7 @@
 
 (def ^:private ?collectible
   [:map
-   [:collectible {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+   [:collectible {:optional true} [:maybe :schema.common/image-source]]
    [:collectible-name {:optional true} [:maybe :string]]
    [:collectible-number {:optional true} [:maybe [:or :string :int]]]])
 
@@ -86,18 +86,18 @@
    [:catn
     [:props
      [:multi {:dispatch :type}
-      [::malli/default [:merge ?default ?size ?base]]
-      [:default [:merge ?default ?size ?base]]
-      [:multiuser [:merge ?multiuser ?base]]
-      [:group [:merge ?group ?size ?base]]
-      [:channel [:merge ?channel ?size ?base]]
-      [:community [:merge ?community ?size ?base]]
-      [:token [:merge ?token ?size ?base]]
-      [:network [:merge ?network ?base]]
-      [:multinetwork [:merge ?multinetwork ?base]]
-      [:account [:merge ?account ?size ?base]]
-      [:collectible [:merge ?collectible ?size ?base]]
-      [:address [:merge ?address ?size ?base]]
-      [:icon [:merge ?icon ?size ?base]]
-      [:audio [:merge ?audio ?base]]]]]
+      [::malli/default [:merge ?default ?size ?context-base]]
+      [:default [:merge ?default ?size ?context-base]]
+      [:multiuser [:merge ?multiuser ?context-base]]
+      [:group [:merge ?group ?size ?context-base]]
+      [:channel [:merge ?channel ?size ?context-base]]
+      [:community [:merge ?community ?size ?context-base]]
+      [:token [:merge ?token ?size ?context-base]]
+      [:network [:merge ?network ?context-base]]
+      [:multinetwork [:merge ?multinetwork ?context-base]]
+      [:account [:merge ?account ?size ?context-base]]
+      [:collectible [:merge ?collectible ?size ?context-base]]
+      [:address [:merge ?address ?size ?context-base]]
+      [:icon [:merge ?icon ?size ?context-base]]
+      [:audio [:merge ?audio ?context-base]]]]]
    :any])

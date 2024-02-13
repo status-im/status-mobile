@@ -1,5 +1,5 @@
 (ns quo.components.wallet.wallet-activity.schema
-  (:require [quo.components.tags.context-tag.schema :as ?context-tag]))
+  (:require [quo.components.tags.context-tag.schema :as context-tag-schema]))
 
 (def ?schema
   [:=>
@@ -12,13 +12,13 @@
       [:timestamp {:optional true} [:maybe :string]]
       [:blur? {:optional true} [:maybe :boolean]]
       [:on-press {:optional true} [:maybe fn?]]
-      [:state {:optional true} [:maybe [:enum nil :disabled]]]
+      [:state {:optional true} [:maybe [:= :disabled]]]
       [:theme :schema.common/theme]
       [:second-tag-prefix {:optional true} [:maybe :keyword]]
       [:third-tag-prefix {:optional true} [:maybe :keyword]]
       [:fourth-tag-prefix {:optional true} [:maybe :keyword]]
-      [:first-tag {:optional true} [:maybe ?context-tag/?schema]]
-      [:second-tag {:optional true} [:maybe ?context-tag/?schema]]
-      [:third-tag {:optional true} [:maybe ?context-tag/?schema]]
-      [:fourth-tag {:optional true} [:maybe ?context-tag/?schema]]]]]
+      [:first-tag {:optional true} [:maybe context-tag-schema/?schema]]
+      [:second-tag {:optional true} [:maybe context-tag-schema/?schema]]
+      [:third-tag {:optional true} [:maybe context-tag-schema/?schema]]
+      [:fourth-tag {:optional true} [:maybe context-tag-schema/?schema]]]]]
    :any])
