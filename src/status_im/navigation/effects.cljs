@@ -25,7 +25,7 @@
 
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
-   (let [screen-theme (get-in (get views/screens view-id) [:options :theme])]
+   (let [screen-theme (get-in views/screens [view-id :options :theme])]
      (set-status-bar-color screen-theme view-id)
      (rf/dispatch [:screens/on-will-focus view-id])
      (when-let [{:keys [on-focus]} (get views/screens view-id)]
