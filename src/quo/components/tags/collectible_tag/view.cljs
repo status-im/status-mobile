@@ -7,7 +7,7 @@
     [quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
-    [reagent.core :as r]
+    [reagent.core :as reagent]
     [schema.core :as schema]))
 
 (def ?schema
@@ -26,7 +26,7 @@
 
 (defn- view-internal
   []
-  (let [container-width (r/atom 0)
+  (let [container-width (reagent/atom 0)
         on-layout       #(->> (oops/oget % :nativeEvent :layout :width)
                               (reset! container-width))]
     (fn [{:keys [options blur? theme collectible-img-src collectible-name collectible-id] :as props}]
