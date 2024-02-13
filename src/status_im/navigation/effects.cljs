@@ -1,19 +1,19 @@
 (ns status-im.navigation.effects
   (:require
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.navigation :as navigation]
-   [status-im.navigation.options :as options]
-   [status-im.navigation.roots :as roots]
-   [status-im.navigation.state :as state]
-   [status-im.navigation.view :as views]
-   [taoensso.timbre :as log]
-   [utils.re-frame :as rf]))
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.navigation :as navigation]
+    [status-im.navigation.options :as options]
+    [status-im.navigation.roots :as roots]
+    [status-im.navigation.state :as state]
+    [status-im.navigation.view :as views]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (def previous-screen (atom nil))
 
 (defn- set-status-bar-color
-  [theme view-id]  
+  [theme view-id]
   (when-not (= @previous-screen :settings-syncing)
     (rn/set-status-bar-style
      (if (or (= theme :dark)

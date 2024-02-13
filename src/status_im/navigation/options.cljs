@@ -137,10 +137,6 @@
                                                                       :decelerate
                                                                       :factor 1.5}}]}}})
 
-(def camera-screen
-  {:navigationBar {:backgroundColor colors/black}
-   :theme         :dark})
-
 (defn merge-top-bar
   [root-options options]
   (let [options (:topBar options)]
