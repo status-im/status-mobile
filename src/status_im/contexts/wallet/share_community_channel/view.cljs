@@ -1,12 +1,12 @@
 (ns status-im.contexts.wallet.share-community-channel.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.contexts.wallet.share-community-channel.style :as style]
-   [utils.i18n :as i18n]
-   [utils.image-server :as image-server]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.contexts.wallet.share-community-channel.style :as style]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def qr-size 500)
 
@@ -14,13 +14,15 @@
   []
   (let [padding-top (:top (safe-area/get-insets))]
     (fn []
-      (let [{:keys [url]}               (rf/sub [:get-screen-params])
-            qr-media-server-uri         (image-server/get-qr-image-uri-for-any-url
-                                         {:url         url
-                                          :port        (rf/sub [:mediaserver/port])
-                                          :qr-size     qr-size
-                                          :error-level :highest})
-            title                       (i18n/label :t/share-channel)]
+      (let [chat                (rf/sub [:chats/current-chat-chat-view])
+            {:keys [url]}       (rf/sub [:get-screen-params])
+            qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+                                 {:url         url
+                                  :port        (rf/sub [:mediaserver/port])
+                                  :qr-size     qr-size
+                                  :error-level :highest})
+            title               (i18n/label :t/share-channel)]
+        (print chat)
         [quo/overlay {:type :shell}
          [rn/view
           {:flex        1
@@ -37,9 +39,11 @@
            {:container-style style/header-container
             :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
-           [quo/share-community-qr-code
-            {:qr-image-uri qr-media-server-uri
-             :emoji        "add emoji here"}]]
+           [quo/share-community-channel-qr-code
+            {:qr-image-uri        qr-media-server-uri
+             :customization-color (:color chat)
+             ;;  :emoji               (:emoji chat)
+             :emoji               "emoji"}]]
           [quo/text
            {:size   :paragraph-2
             :weight :regular
