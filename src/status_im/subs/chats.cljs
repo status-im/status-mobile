@@ -1,13 +1,13 @@
 (ns status-im.subs.chats
   (:require
-   [clojure.string :as string]
-   [legacy.status-im.group-chats.core :as group-chat]
-   [legacy.status-im.group-chats.db :as group-chats.db]
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.contexts.chat.events :as chat.events]
-   [status-im.contexts.chat.messenger.composer.constants :as composer.constants]
-   [status-im.contexts.profile.utils :as profile.utils]))
+    [clojure.string :as string]
+    [legacy.status-im.group-chats.core :as group-chat]
+    [legacy.status-im.group-chats.db :as group-chats.db]
+    [re-frame.core :as re-frame]
+    [status-im.constants :as constants]
+    [status-im.contexts.chat.events :as chat.events]
+    [status-im.contexts.chat.messenger.composer.constants :as composer.constants]
+    [status-im.contexts.profile.utils :as profile.utils]))
 
 (def memo-chats-stack-items (atom nil))
 
@@ -437,24 +437,24 @@
    (boolean (or (seq status-link-previews)
                 (seq previews)))))
 
- (re-frame/reg-sub
-  :chat/check-channel-muted?
-  (fn [[_ community-id channel-id]]
-    [(re-frame/subscribe [:chats/chat (str community-id channel-id)])])
-  (fn [[chat]]
-    (:muted? chat)))
+(re-frame/reg-sub
+ :chat/check-channel-muted?
+ (fn [[_ community-id channel-id]]
+   [(re-frame/subscribe [:chats/chat (str community-id channel-id)])])
+ (fn [[chat]]
+   (:muted? chat)))
 
- (re-frame/reg-sub
-  :camera-roll/total-photos-count-android
-  (fn [{:keys [camera-roll/albums]}]
-    (->> albums
-         :my-albums
-         (reduce
-          (fn [total-album-count current-album]
-            (+ total-album-count (:count current-album)))
-          0))))
+(re-frame/reg-sub
+ :camera-roll/total-photos-count-android
+ (fn [{:keys [camera-roll/albums]}]
+   (->> albums
+        :my-albums
+        (reduce
+         (fn [total-album-count current-album]
+           (+ total-album-count (:count current-album)))
+         0))))
 
- (re-frame/reg-sub
-  :camera-roll/total-photos-count-ios
-  (fn [{:keys [camera-roll/ios-images-count]}]
-    ios-images-count))
+(re-frame/reg-sub
+ :camera-roll/total-photos-count-ios
+ (fn [{:keys [camera-roll/ios-images-count]}]
+   ios-images-count))
