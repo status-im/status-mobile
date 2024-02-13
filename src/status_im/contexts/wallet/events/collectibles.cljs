@@ -122,7 +122,8 @@
          {:keys [collectibles]} response
          collectible            (first collectibles)]
      (if collectible
-       {:fx [[:dispatch [:wallet/store-last-collectible-details collectible]]]}
+       {:fx [[:dispatch [:wallet/store-last-collectible-details collectible]]
+             [:dispatch [:navigate-to :wallet-collectible]]]}
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
