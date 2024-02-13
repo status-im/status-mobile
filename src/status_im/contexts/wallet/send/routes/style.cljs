@@ -35,7 +35,7 @@
 (def add-network
   {:margin-top 8
    :align-self :flex-end
-   :left       12})
+   :right      12})
 
 (defn warning-container
   [color theme]

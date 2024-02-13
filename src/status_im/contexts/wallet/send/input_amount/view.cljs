@@ -126,6 +126,9 @@
   [{default-on-confirm       :on-confirm
     default-limit-crypto     :limit-crypto
     default-crypto-decimals  :crypto-decimals
+    on-navigate-back         :on-navigate-back
+    button-one-label         :button-one-label
+    button-one-props         :button-one-props
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
@@ -167,9 +170,7 @@
                                     (reset! input-value v)
                                     (reset-input-error num-value current-limit-amount input-error)
                                     (reagent/flush))))
-        on-navigate-back      (fn []
-                                (rf/dispatch [:wallet/clean-selected-token])
-                                (rf/dispatch [:navigate-back-within-stack :wallet-send-input-amount]))
+        on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount]
                                 (let [current-screen-id (rf/sub [:navigation/current-screen-id])]
                                   ; this check is to prevent effect being triggered when screen is
@@ -180,7 +181,7 @@
                                                 (<= input-num-value 0)
                                                 (> input-num-value current-limit-amount))
                                       (debounce/debounce-and-dispatch
-                                       [:wallet/get-suggested-routes @input-value]
+                                       [:wallet/get-suggested-routes {:amount @input-value}]
                                        100)
                                       (rf/dispatch [:wallet/clean-suggested-routes])))))
         handle-on-confirm     (fn []
@@ -196,7 +197,6 @@
                                 (reagent/flush))]
     (fn []
       (let [{fiat-currency :currency} (rf/sub [:profile/profile])
-            {:keys [color]}           (rf/sub [:wallet/current-viewing-account])
             {token-balance  :total-balance
              token-symbol   :symbol
              token-networks :networks
@@ -288,10 +288,10 @@
              :receiver                  (address/get-shortened-key to-address)}])
          [quo/bottom-actions
           {:actions          :one-action
-           :button-one-label (i18n/label :t/confirm)
-           :button-one-props {:disabled?           confirm-disabled?
-                              :on-press            on-confirm
-                              :customization-color color}}]
+           :button-one-label button-one-label
+           :button-one-props (merge button-one-props
+                                    {:disabled? confirm-disabled?
+                                     :on-press  on-confirm})}]
          [quo/numbered-keyboard
           {:container-style      (style/keyboard-container bottom)
            :left-action          :dot
