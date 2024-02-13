@@ -99,7 +99,7 @@
         :label               (i18n/label :t/share-collectible)
         :right-icon          :i/external}]]]))
 
-(defn view-internal
+(defn f-view-internal
   [{:keys [theme] :as _props}]
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
@@ -116,19 +116,22 @@
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data]
+        (rn/use-effect
+         (fn []
+           #(rf/dispatch [:wallet/clear-last-collectible-details]))
+         [])
         [scroll-page/scroll-page
-         {:navigate-back?   true
-          :height           148
-          :on-navigate-back #(rf/dispatch [:wallet/clear-last-collectible-details])
-          :page-nav-props   {:type        :title-description
-                             :title       collectible-name
-                             :description collection-name
-                             :right-side  [{:icon-name :i/options
-                                            :on-press  #(rf/dispatch
-                                                         [:show-bottom-sheet
-                                                          {:content collectible-actions-sheet
-                                                           :theme   theme}])}]
-                             :picture     preview-uri}}
+         {:navigate-back? true
+          :height         148
+          :page-nav-props {:type        :title-description
+                           :title       collectible-name
+                           :description collection-name
+                           :right-side  [{:icon-name :i/options
+                                          :on-press  #(rf/dispatch
+                                                       [:show-bottom-sheet
+                                                        {:content collectible-actions-sheet
+                                                         :theme   theme}])}]
+                           :picture     preview-uri}}
          [rn/view {:style style/container}
           [rn/view {:style style/preview-container}
            [rn/touchable-opacity
@@ -177,5 +180,9 @@
             :on-change      on-tab-change
             :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
+
+(defn- view-internal
+  [props]
+  [:f> f-view-internal props])
 
 (def view (quo.theme/with-theme view-internal))
