@@ -47,7 +47,7 @@
 (defn bridge-token-list
   [networks-list]
   [{:token               :snt
-    :label               "Status"
+    :name                "Status"
     :token-value         "0.00 SNT"
     :fiat-value          "€0.00"
     :networks            networks-list
@@ -55,7 +55,7 @@
     :symbol              "STT"
     :customization-color :blue}
    {:token               :eth
-    :label               "Ethereum"
+    :name                "Ethereum"
     :token-value         "0.00 ETH"
     :fiat-value          "€0.00"
     :networks            networks-list
@@ -63,7 +63,7 @@
     :symbol              "ETH"
     :customization-color :blue}
    {:token               :dai
-    :label               "Dai"
+    :name                "Dai"
     :token-value         "0.00 DAI"
     :fiat-value          "€0.00"
     :networks            networks-list
