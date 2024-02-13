@@ -10,23 +10,19 @@
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
-(def previous-screen (atom nil))
-
 (defn- set-status-bar-color
-  [theme view-id]
-  (when-not (= @previous-screen :settings-syncing)
-    (rn/set-status-bar-style
-     (if (or (= theme :dark)
-             (quo.theme/dark?))
-       "light-content"
-       "dark-content")
-     true))
-  (reset! previous-screen view-id))
+  [theme]
+  (rn/set-status-bar-style
+   (if (or (= theme :dark)
+           (quo.theme/dark?))
+     "light-content"
+     "dark-content")
+   true))
 
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
    (let [screen-theme (get-in views/screens [view-id :options :theme])]
-     (set-status-bar-color screen-theme view-id)
+     (set-status-bar-color screen-theme)
      (rf/dispatch [:screens/on-will-focus view-id])
      (when-let [{:keys [on-focus]} (get views/screens view-id)]
        (when on-focus
@@ -63,7 +59,6 @@
 (defn- navigate
   [component]
   (let [{:keys [options]} (get views/screens component)]
-    (dismiss-all-modals)
     (navigation/push
      (name @state/root-id)
      {:component {:id      component
@@ -73,7 +68,8 @@
                                   options
                                   (if (:topBar options)
                                     (options/merge-top-bar (options/topbar-options) options)
-                                    {:topBar {:visible false}}))}})))
+                                    {:topBar {:visible false}}))}})
+    (dismiss-all-modals)))
 
 (rf/reg-fx :navigate-to navigate)
 
@@ -135,12 +131,11 @@
 (defn open-modal
   [component]
   (let [{:keys [options name]} (get views/screens component)
-        sheet?                 (:sheet? options)
-        screen-theme           (:theme options)]
-    (set-status-bar-color screen-theme name)
+        sheet?                 (:sheet? options)]
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do
+        (set-view-id name)
         (reset! state/curr-modal true)
         (swap! state/modals conj component)
         (navigation/show-modal
