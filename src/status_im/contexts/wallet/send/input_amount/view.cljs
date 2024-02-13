@@ -197,7 +197,6 @@
                                 (reagent/flush))]
     (fn []
       (let [{fiat-currency :currency} (rf/sub [:profile/profile])
-            {:keys [color]}           (rf/sub [:wallet/current-viewing-account])
             {token-balance  :total-balance
              token-symbol   :symbol
              token-networks :networks
