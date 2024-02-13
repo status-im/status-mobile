@@ -158,7 +158,6 @@
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
    (let [{:keys [address]} (:profile/profile db)]
-     (println "derive1")
      {:fx [[:json-rpc/call
             [{:method     "wallet_getDerivedAddresses"
               :params     [sha3-pwd address [path]]
@@ -177,7 +176,6 @@
  (fn [{:keys [db]}
       [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
-   (println "derive23" type public-key address)
    (let [lowercase-address (if address (string/lower-case address) address)
          key-uid           (get-in db [:profile/profile :key-uid])
          account-config    {:key-uid    (when (= type :generated) key-uid)
@@ -202,7 +200,6 @@
    (let [on-success (fn [derived-address-details]
                       (rf/dispatch [:wallet/add-account account-details
                                     (first derived-address-details)]))]
-     (println "derive0")
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
 (rf/reg-event-fx :wallet/bridge-select-token
@@ -399,7 +396,6 @@
 
 (rf/reg-event-fx :wallet/new-keypair-continue
  (fn [{:keys [db]} [{:keys [new-keypair]}]]
-   (println "asdfasdf")
    {:db (-> db
             (assoc-in [:wallet :ui :new-keypair] new-keypair))
     :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]}))
