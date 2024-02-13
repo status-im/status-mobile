@@ -64,10 +64,10 @@
   (let [random-indices  (random-selection)
         quiz-index      (reagent/atom 0)
         incorrect-count (reagent/atom 0)
-        show-error?     (reagent/atom false)]
+        show-error?     (reagent/atom false)
+        {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/ui])]
     (fn []
-      (let [{:keys [secret-phrase random-phrase]} (rf/sub [:wallet/ui])
-            current-word-index                    (get random-indices
+      (let [current-word-index                    (get random-indices
                                                        (min @quiz-index (dec questions-count)))
             current-word                          (get secret-phrase current-word-index)
             [options-r-0 options-r-1]             (random-words-with-string random-phrase current-word)
