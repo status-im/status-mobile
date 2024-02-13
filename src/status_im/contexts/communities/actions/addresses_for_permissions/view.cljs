@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
@@ -45,7 +46,7 @@
       :container-style {:margin-bottom 8}}]))
 
 (defn view
-  []
+  [{:keys [scroll-enabled on-scroll]}]
   (let [{id :community-id} (rf/sub [:get-screen-params])]
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
@@ -67,10 +68,12 @@
            :community-logo      (get-in images [:thumbnail :uri])
            :customization-color color}]
 
-         [rn/flat-list
+         [gesture/flat-list
           {:render-fn               account-item
            :render-data             [selected-addresses id]
            :content-container-style {:padding 20}
+           :scroll-enabled          @scroll-enabled
+           :on-scroll               on-scroll
            :key-fn                  :address
            :data                    accounts}]
 
