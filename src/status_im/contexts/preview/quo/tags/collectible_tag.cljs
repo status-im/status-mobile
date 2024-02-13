@@ -15,9 +15,7 @@
                :value "Size 32"}]}
    {:key     :options
     :type    :select
-    :options [{:key   false
-               :value false}
-              {:key   :add
+    :options [{:key   :add
                :value :add}
               {:key   :hold
                :value :hold}]}
@@ -34,7 +32,6 @@
                              :collectible-name    "Collectible"
                              :collectible-id      "#123"
                              :collectible-img-src (resources/mock-images :collectible)
-                             :options             false
                              :blur?               false})]
     (fn []
       [preview/preview-container
