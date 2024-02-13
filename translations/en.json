@@ -2506,6 +2506,7 @@
     "do-not-cheat-description": "These 12 words give access to all of your funds so it is important that you write them in the correct order, take it seriously.",
     "see-recovery-phrase-again": "See recovery phrase again",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "fees": "Fees",
     "account-origin-header": "Account origin",
     "account-origin-desc": "To create a new account, you can generate a key pair in the app or import an existing account.",
@@ -2521,11 +2522,20 @@
 <<<<<<< HEAD
     "fees": "Fees"
 =======
+=======
+    "fees": "Fees",
+>>>>>>> 6466e571e (lint)
     "generating-keypair": "Generating keypair...",
     "keypair-name": "Keypair name",
     "keypair-name-description": "Name keypair for your own personal reference",
     "keypair-name-input-placeholder": "Collectibles account, Old vault...."
+<<<<<<< HEAD
 >>>>>>> dde847888 (feat: new keypair)
 >>>>>>> ed51b8caf (feat: new keypair)
+<<<<<<< HEAD
 >>>>>>> 2d6aa482f (feat: new keypair)
+=======
+=======
+>>>>>>> 6466e571e (lint)
+>>>>>>> 0fcf60d03 (lint)
 }
