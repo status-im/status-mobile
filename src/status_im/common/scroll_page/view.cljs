@@ -26,8 +26,7 @@
 
 (defn f-scroll-page-header
   [{:keys [scroll-height height page-nav-right-section-buttons sticky-header
-           top-nav title-colum navigate-back? collapsed? page-nav-props overlay-shown?
-           on-navigate-back]}]
+           top-nav title-colum navigate-back? collapsed? page-nav-props overlay-shown?]}]
   (let [input-range         [0 10]
         output-range        [-208 -45]
         y                   (reanimated/use-shared-value scroll-height)
@@ -70,9 +69,7 @@
                   :center-opacity (reanimated/get-shared-value opacity-animation)
                   :overlay-shown? overlay-shown?}
            navigate-back? (assoc :icon-name :i/close
-                                 :on-press  (fn []
-                                              (on-navigate-back)
-                                              (rf/dispatch [:navigate-back])))
+                                 :on-press  #(rf/dispatch [:navigate-back]))
            page-nav-props (merge page-nav-props))])
       (when title-colum
         title-colum)
@@ -103,21 +100,19 @@
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
     (fn [{:keys [theme cover-image logo on-scroll
                  collapsed? height top-nav title-colum background-color navigate-back? page-nav-props
-                 overlay-shown? sticky-header on-navigate-back]
-          :or   {on-navigate-back #()}}
+                 overlay-shown? sticky-header]}
          children]
       [:<>
        [:f> f-scroll-page-header
-        {:scroll-height    @scroll-height
-         :height           height
-         :sticky-header    sticky-header
-         :top-nav          top-nav
-         :title-colum      title-colum
-         :navigate-back?   navigate-back?
-         :collapsed?       collapsed?
-         :on-navigate-back on-navigate-back
-         :page-nav-props   page-nav-props
-         :overlay-shown?   overlay-shown?}]
+        {:scroll-height  @scroll-height
+         :height         height
+         :sticky-header  sticky-header
+         :top-nav        top-nav
+         :title-colum    title-colum
+         :navigate-back? navigate-back?
+         :collapsed?     collapsed?
+         :page-nav-props page-nav-props
+         :overlay-shown? overlay-shown?}]
        [rn/scroll-view
         {:content-container-style           {:flex-grow 1}
          :content-inset-adjustment-behavior :never
