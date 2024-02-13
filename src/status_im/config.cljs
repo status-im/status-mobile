@@ -167,5 +167,5 @@
 
 (def default-kdf-iterations 3200)
 
-(def community-accounts-selection-enabled? (enabled? (get-config :ACCOUNT_SELECTION_ENABLED "0")))
+(def community-accounts-selection-enabled? true)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))

@@ -50,6 +50,7 @@
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im.contexts.wallet.account.bridge-send.view :as bridge-send]
     [status-im.contexts.wallet.account.bridge-to.view :as bridge-to]
     [status-im.contexts.wallet.account.bridge.view :as bridge]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
@@ -66,9 +67,9 @@
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as scan-address]
-    [status-im.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
+    [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.share-address.view :as wallet-share-address]
@@ -336,6 +337,10 @@
     {:name      :wallet-bridge-to
      :options   {:insets {:top? true}}
      :component bridge-to/view}
+
+    {:name      :wallet-bridge-send
+     :options   {:insets {:top? true}}
+     :component bridge-send/view}
 
     {:name      :wallet-edit-derivation-path
      :component wallet-edit-derivation-path/view}
