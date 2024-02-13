@@ -5,6 +5,7 @@
             [react-native.svg :as svg]
             [status-im.contexts.profile.settings.header.style :as style]))
 
+
 (defn left-radius
   [background-color]
   [svg/svg {:width "20" :height "20" :viewBox "0 0 20 20" :fill "none"}

@@ -12,7 +12,7 @@
 (defn- get-workletized-code!
   [code-seq store-atom]
   (doall
-   (pmap (fn [[[_ filepath :as ns-key] js-code]]
+   (map (fn [[[_ filepath :as ns-key] js-code]]
            (println "Workletizing:" filepath) ;; TODO: debug remove
            (try
              (let [command       "node workletize-code.js"
@@ -25,7 +25,9 @@
                (.close writer)
 
                (let [output     (apply str (interleave (line-seq reader) (repeat "\n")))
-                     _exit-code (.waitFor process)]
+                     exit-code (.waitFor process)]
+                 (println ">>>>>>>>>>>>>>>>>>>>>>>>EXIT CODE:" exit-code)
+                 (println "RESULT for "filepath ":\n\n" output "\n\n")
                  (swap! store-atom assoc ns-key output)))
 
              (catch Exception e
@@ -58,8 +60,42 @@
 (defn transform-output
   {:shadow.build/stage :compile-finish}
   [{:keys [output] :as build-state}]
+  (tap> [:start build-state])
   (let [files-to-workletize  (get-files-to-workletize build-state)
         js-code-with-ns      (map #(get-js-code-with-ns output %) files-to-workletize)
         code-processed-store (atom {})]
     (get-workletized-code! js-code-with-ns code-processed-store)
-    (update-js-output build-state @code-processed-store)))
+    (tap> [:end (update-js-output build-state @code-processed-store)])
+    (update-js-output build-state @code-processed-store)
+    (println "\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CODE PROCESSED <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    (prn @code-processed-store)
+    (println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ______________ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n")
+    )
+  build-state
+  )
+
+(defn optimize-start
+  {:shadow.build/stage :optimize-prepare}
+  [{:keys [output] :as build-state}]
+  (let [files-to-workletize (get-files-to-workletize build-state)
+        js-code-with-ns     (map #(get-js-code-with-ns output %) (conj files-to-workletize "status_im/contexts/profile/settings/header/style.cljs"))
+        ]
+    (println "START ---------------------------------------------------------" )
+    (prn js-code-with-ns)
+    (println "================================================================---------------------------------------------------------" )
+    #_(println "output: ---------------------------------------------------------------"
+               js-code-with-ns)
+    build-state))
+
+(defn optimize-output
+  {:shadow.build/stage :optimize-finish}
+  [{:keys [output] :as build-state}]
+  (let [files-to-workletize (get-files-to-workletize build-state)
+        js-code-with-ns     (map #(get-js-code-with-ns output %) (conj files-to-workletize "status_im/contexts/profile/settings/header/style.cljs"))
+        ]
+    (println "END ---------------------------------------------------------" )
+    (prn js-code-with-ns)
+    (println "================================================================---------------------------------------------------------" )
+    #_(println "output: ---------------------------------------------------------------"
+               js-code-with-ns)
+    build-state))
