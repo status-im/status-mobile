@@ -392,7 +392,7 @@
    {:db (-> db
             (assoc-in [:wallet :ui :secret-phrase] secret-phrase)
             (assoc-in [:wallet :ui :random-phrase] random-phrase))
-    :fx [[:dispatch [:navigate-to :wallet-check-your-backup]]]}))
+    :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]}))
 
 (rf/reg-event-fx :wallet/new-keypair-continue
  (fn [{:keys [db]} [{:keys [new-keypair]}]]
