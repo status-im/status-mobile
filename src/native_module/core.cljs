@@ -576,5 +576,10 @@
 
 (defn get-random-mnemonic
   [callback]
-  (log/debug "[native-module] get-random-mnemonic")
   (.getRandomMnemonic ^js (account-manager) #(callback (types/json->clj %))))
+
+(defn create-account-from-mnemonic
+  [mnemonic callback]
+  (.createAccountFromMnemonicAndDeriveAccountsForPaths ^js (account-manager)
+                                                       (types/clj->json mnemonic)
+                                                       #(callback (types/json->clj %))))

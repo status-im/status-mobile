@@ -345,7 +345,11 @@ public class AccountManager extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getRandomMnemonic(final Callback callback) throws JSONException {
-        Log.d(TAG, "getRandomMnemonic");
         this.utils.executeRunnableStatusGoMethod(() -> Statusgo.getRandomMnemonic(), callback);
+    }
+
+    @ReactMethod
+    public void createAccountFromMnemonicAndDeriveAccountsForPaths(final String mnemonic, final Callback callback) throws JSONException {
+        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.createAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic), callback);
     }
 }

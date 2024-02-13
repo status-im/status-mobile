@@ -214,4 +214,20 @@ RCT_EXPORT_METHOD(logout) {
         NSLog(@"%@", result);
 }
 
+RCT_EXPORT_METHOD(getRandomMnemonic:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"GetRandomMnemonic() method called");
+#endif
+    NSString *result = StatusgoGetRandomMnemonic();
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(createAccountFromMnemonicAndDeriveAccountsForPaths(NSString *)mnemonic callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"createAccountFromMnemonicAndDeriveAccountsForPaths() method called");
+#endif
+    NSString *result = StatusgoCreateAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic);
+    callback(@[result]);
+}
+
 @end

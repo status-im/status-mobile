@@ -1,12 +1,9 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view
   (:require
-    [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.temp :as temp]
-    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -69,25 +66,27 @@
         incorrect-count (reagent/atom 0)
         show-error?     (reagent/atom false)]
     (fn []
-      (let [{:keys [secret-phrase random-phrase]}   (rf/sub [:wallet/ui])
-            current-word-index        (get random-indices (min @quiz-index (dec questions-count)))
-            current-word              (get secret-phrase current-word-index)
-            [options-r-0 options-r-1] (random-words-with-string random-phrase current-word)
-            on-button-press           (fn [word]
-                                        (if (= word current-word)
-                                          (do
-                                            (when (< @quiz-index 4)
-                                              (reset! quiz-index (inc @quiz-index)))
-                                            (reset! incorrect-count 0)
-                                            (reset! show-error? false)
-                                            (when (= @quiz-index 4)
-                                              (rf/dispatch [:navigate-to :wallet-keypair-name])))
-                                          (do
-                                            (when (> @incorrect-count 0)
-                                              (rf/dispatch [:show-bottom-sheet
-                                                            {:content cheat-warning}]))
-                                            (reset! incorrect-count (inc @incorrect-count))
-                                            (reset! show-error? true))))]
+      (let [{:keys [secret-phrase random-phrase]} (rf/sub [:wallet/ui])
+            current-word-index                    (get random-indices
+                                                       (min @quiz-index (dec questions-count)))
+            current-word                          (get secret-phrase current-word-index)
+            [options-r-0 options-r-1]             (random-words-with-string random-phrase current-word)
+            on-button-press                       (fn [word]
+                                                    (if (= word current-word)
+                                                      (do
+                                                        (when (< @quiz-index 4)
+                                                          (reset! quiz-index (inc @quiz-index)))
+                                                        (reset! incorrect-count 0)
+                                                        (reset! show-error? false)
+                                                        (when (= @quiz-index 4)
+                                                          (rf/dispatch [:navigate-to
+                                                                        :wallet-keypair-name])))
+                                                      (do
+                                                        (when (> @incorrect-count 0)
+                                                          (rf/dispatch [:show-bottom-sheet
+                                                                        {:content cheat-warning}]))
+                                                        (reset! incorrect-count (inc @incorrect-count))
+                                                        (reset! show-error? true))))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left

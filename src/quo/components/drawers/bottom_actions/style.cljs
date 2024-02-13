@@ -19,7 +19,7 @@
   [scroll? blur? theme]
   {:background-color (when-not (or scroll? blur?)
                        (colors/theme-colors colors/white colors/neutral-95 theme))
-   })
+  })
 
 (def buttons-container
   {:flex-direction     :row

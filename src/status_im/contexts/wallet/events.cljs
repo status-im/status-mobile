@@ -158,6 +158,7 @@
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
    (let [{:keys [address]} (:profile/profile db)]
+     (println "derive1")
      {:fx [[:json-rpc/call
             [{:method     "wallet_getDerivedAddresses"
               :params     [sha3-pwd address [path]]
@@ -176,6 +177,7 @@
  (fn [{:keys [db]}
       [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
+   (println "derive23" type public-key address)
    (let [lowercase-address (if address (string/lower-case address) address)
          key-uid           (get-in db [:profile/profile :key-uid])
          account-config    {:key-uid    (when (= type :generated) key-uid)
@@ -200,6 +202,7 @@
    (let [on-success (fn [derived-address-details]
                       (rf/dispatch [:wallet/add-account account-details
                                     (first derived-address-details)]))]
+     (println "derive0")
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
 (rf/reg-event-fx :wallet/bridge-select-token
@@ -388,8 +391,19 @@
              :message content})]]}))
 
 (rf/reg-event-fx :wallet/secret-phrase
-                 (fn [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
-                   {:db (-> db
-                            (assoc-in [:wallet :ui :secret-phrase] secret-phrase)
-                            (assoc-in [:wallet :ui :random-phrase] random-phrase))
-                    :fx [[:dispatch [:navigate-to :wallet-check-your-backup]]]}))
+ (fn [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
+   {:db (-> db
+            (assoc-in [:wallet :ui :secret-phrase] secret-phrase)
+            (assoc-in [:wallet :ui :random-phrase] random-phrase))
+    :fx [[:dispatch [:navigate-to :wallet-check-your-backup]]]}))
+
+(rf/reg-event-fx :wallet/new-keypair-continue
+ (fn [{:keys [db]} [{:keys [new-keypair]}]]
+   (println "asdfasdf")
+   {:db (-> db
+            (assoc-in [:wallet :ui :new-keypair] new-keypair))
+    :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]}))
+
+(rf/reg-event-fx :wallet/new-keypair-continue
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui] dissoc :new-keypair)}))

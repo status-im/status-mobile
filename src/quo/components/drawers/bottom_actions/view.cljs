@@ -94,60 +94,66 @@
        :style (style/description-bottom scroll? blur? theme)} description-text])])
 =======
   ;[:<>
-   [rn/view
-    {:style (merge (style/container scroll? blur? theme) container-style)}
-    (when (= description :top-error)
-      [rn/view {:style style/error-message}
-       [icon/icon
-        :i/alert
-        {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)
-         :size  16}]
-       [text/text
-        {:size  :paragraph-2
-         :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
-        error-message]])
-
-    (when (= description :top)
-      [rn/view
-       {:style style/description-top}
-       [text/text
-        {:size  :paragraph-2
-         :style (style/description-top-text scroll? blur? theme)}
-        (i18n/label :t/eligible-to-join-as)]
-       [context-tag/view
-        {:type    :icon
-         :size    24
-         :icon    (role role-icon)
-         :blur?   blur?
-         :context (i18n/label (keyword "t" role))}]])
-
-    [rn/view {:style style/buttons-container}
-     (when (= actions :two-actions)
-       [button/button
-        (merge
-         {:size                40
-          :background          (when (or blur? scroll?) :blur)
-          :container-style     style/button-container
-          :theme               theme
-          :accessibility-label :button-two}
-         button-two-props)
-        button-two-label])
-     [button/button
-      (merge
-       {:size                40
-        :container-style     style/button-container
-        :background          (when (or blur? scroll?) :blur)
-        :theme               theme
-        :accessibility-label :button-one}
-       button-one-props)
-      button-one-label]]
-    (when (= description :bottom)
+  [rn/view
+   {:style (merge (style/container scroll? blur? theme) container-style)}
+   (when (= description :top-error)
+     [rn/view {:style style/error-message}
+      [icon/icon
+       :i/alert
+       {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+        :size  16}]
       [text/text
        {:size  :paragraph-2
+<<<<<<< HEAD
         :style (style/description-bottom scroll? blur? theme)} description-text])]
    ;]
   )
 >>>>>>> dde847888 (feat: new keypair)
+=======
+        :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
+       error-message]])
+
+   (when (= description :top)
+     [rn/view
+      {:style style/description-top}
+      [text/text
+       {:size  :paragraph-2
+        :style (style/description-top-text scroll? blur? theme)}
+       (i18n/label :t/eligible-to-join-as)]
+      [context-tag/view
+       {:type    :icon
+        :size    24
+        :icon    (role role-icon)
+        :blur?   blur?
+        :context (i18n/label (keyword "t" role))}]])
+
+   [rn/view {:style style/buttons-container}
+    (when (= actions :two-actions)
+      [button/button
+       (merge
+        {:size                40
+         :background          (when (or blur? scroll?) :blur)
+         :container-style     style/button-container
+         :theme               theme
+         :accessibility-label :button-two}
+        button-two-props)
+       button-two-label])
+    [button/button
+     (merge
+      {:size                40
+       :container-style     style/button-container
+       :background          (when (or blur? scroll?) :blur)
+       :theme               theme
+       :accessibility-label :button-one}
+      button-one-props)
+     button-one-label]]
+   (when (= description :bottom)
+     [text/text
+      {:size  :paragraph-2
+       :style (style/description-bottom scroll? blur? theme)} description-text])]
+  ;]
+)
+>>>>>>> 111b95b5c (lint)
 
 (def view
   (quo.theme/with-theme

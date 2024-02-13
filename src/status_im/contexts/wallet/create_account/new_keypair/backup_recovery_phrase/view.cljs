@@ -6,7 +6,6 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.temp :as temp]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
@@ -41,18 +40,19 @@
   (let [step-labels                   [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
                                        :t/backup-step-4]
         checked?                      (reagent/atom
-                                        {:0 false
-                                         :1 false
-                                         :2 false
-                                         :3 false})
+                                       {:0 false
+                                        :1 false
+                                        :2 false
+                                        :3 false})
         revealed?                     (reagent/atom false)
         {:keys [customization-color]} (rf/sub [:profile/profile])
-        secret-phrase         (reagent/atom [])
-        random-phrase         (reagent/atom [])]
+        secret-phrase                 (reagent/atom [])
+        random-phrase                 (reagent/atom [])]
     (fn []
-      (rn/use-effect (fn []
-                       (native-module/get-random-mnemonic #(reset! secret-phrase (utils/string-to-vector %)))
-                       (native-module/get-random-mnemonic #(reset! random-phrase (utils/string-to-vector %)))))
+      (rn/use-effect
+       (fn []
+         (native-module/get-random-mnemonic #(reset! secret-phrase (utils/string-to-vector %)))
+         (native-module/get-random-mnemonic #(reset! random-phrase (utils/string-to-vector %)))))
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:icon-name           :i/close
@@ -91,8 +91,9 @@
             :button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
-                               :on-press            #(rf/dispatch [:wallet/secret-phrase {:secret-phrase @secret-phrase
-                                                                                         :random-phrase @random-phrase}])}}]
+                               :on-press            #(rf/dispatch [:wallet/secret-phrase
+                                                                   {:secret-phrase @secret-phrase
+                                                                    :random-phrase @random-phrase}])}}]
           [quo/text
            {:size  :paragraph-2
             :style (style/description-text theme)}
