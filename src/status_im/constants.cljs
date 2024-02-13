@@ -257,6 +257,7 @@
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")
 (def ^:const principles-link "https://our.status.im/our-principles/")
+(def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)
