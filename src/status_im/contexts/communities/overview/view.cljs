@@ -112,7 +112,7 @@
 
 (defn- network-not-supported
   []
-  [quo/text (i18n/label :network-not-supported)])
+  [quo/text (i18n/label :t/network-not-supported)])
 
 (defn- request-access-button
   [id color]
@@ -253,15 +253,17 @@
     :description-accessibility-label :community-description}])
 
 (defn- community-content
-  [{:keys [id]}]
+  [id]
   (rf/dispatch [:communities/check-all-community-channels-permissions id])
-  (fn [{:keys [name description joined spectated images tags color id membership-permissions?]
-        :as   community}
+  (fn [id
        {:keys [on-category-layout
                collapsed?
                on-first-channel-height-changed]}]
-    (let [joined-or-spectated (or joined spectated)
-          chats-by-category   (rf/sub [:communities/categorized-channels id])]
+    (let [{:keys [name description joined spectated images tags color id membership-permissions?]
+           :as   community}
+          (rf/sub [:communities/community id])
+          joined-or-spectated (or joined spectated)
+          chats-by-category (rf/sub [:communities/categorized-channels id])]
       [:<>
        [rn/view {:style style/community-content-container}
         (when-not collapsed?
@@ -311,20 +313,24 @@
                (and (>= scroll-height (+ height first-channel-height))
                     category)))))
 
-(defn- community-scroll-page
-  [{:keys [joined]}]
-  (let [scroll-height        (reagent/atom 0)
-        categories-heights   (reagent/atom {})
-        first-channel-height (reagent/atom 0)
         ;; We track the initial value of joined
         ;; as we open the page to avoid switching
         ;; from not collapsed to collapsed if the
         ;; user is on this page
-        initial-joined?      joined]
-    (fn [{:keys [id name images] :as community}]
+
+(defn- community-scroll-page
+  [_ initial-joined? _ _]
+  (let [scroll-height                   (reagent/atom 0)
+        categories-heights              (reagent/atom {})
+        first-channel-height            (reagent/atom 0)
+        on-category-layout              (partial add-category-height categories-heights)
+        on-first-channel-height-changed (fn [height categories]
+                                          (swap! categories-heights select-keys categories)
+                                          (reset! first-channel-height height))]
+    (fn [id joined name images]
       (let [cover          {:uri (get-in images [:banner :uri])}
             logo           {:uri (get-in images [:thumbnail :uri])}
-            collapsed?     (and initial-joined? (:joined community))
+            collapsed?     (and initial-joined? joined)
             overlay-shown? (boolean (:sheets (rf/sub [:bottom-sheet])))]
         [scroll-page/scroll-page
          {:cover-image      cover
@@ -347,24 +353,22 @@
                                         @first-channel-height
                                         @categories-heights)}]}
          [community-content
-          community
-          {:on-category-layout              (partial add-category-height categories-heights)
+          id
+          {:on-category-layout              on-category-layout
            :collapsed?                      collapsed?
            :on-first-channel-height-changed
            ;; Here we set the height of the component and we filter out the categories, as some
            ;; might have been removed.
-           (fn [height categories]
-             (swap! categories-heights select-keys categories)
-             (reset! first-channel-height height))}]]))))
+           on-first-channel-height-changed}]]))))
 
 (defn- community-card-page-view
   [id]
-  (let [{:keys [id joined]
+  (let [{:keys [id joined name images]
          :as   community} (rf/sub [:communities/community id])]
     (when community
       (when joined
         (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
-      [community-scroll-page community])))
+      [community-scroll-page id joined name images])))
 
 (defn view
   [id]

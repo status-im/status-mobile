@@ -312,24 +312,32 @@
      :img-src     (get token-images sym)}))
 
 (re-frame/reg-sub
+ :communities/checking-permissions-by-id
+ :<- [:communities/permissions-check]
+ (fn [permissions [_ id]]
+   (get permissions id)))
+
+(re-frame/reg-sub
  :community/token-gated-overview
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [token-permissions-check checking-permissions? token-images]}] _]
-   (let [highest-role            (:highestRole token-permissions-check)
-         networks-not-supported? (:networksNotSupported token-permissions-check)
-         lowest-role             (last (:roles token-permissions-check))
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+ (fn [[{:keys [token-images]}
+       {:keys [checking? check]}] _]
+   (let [highest-role            (:highestRole check)
+         networks-not-supported? (:networksNotSupported check)
+         lowest-role             (last (:roles check))
          highest-permission-role (:type highest-role)
          can-request-access?     (and (boolean highest-permission-role) (not networks-not-supported?))]
      {:can-request-access?     can-request-access?
       :highest-permission-role highest-permission-role
       :networks-not-supported? networks-not-supported?
       :no-member-permission?   (and highest-permission-role
-                                    (not (-> token-permissions-check :highestRole :criteria)))
+                                    (not (-> check :highestRole :criteria)))
       :tokens                  (map (fn [{:keys [tokenRequirement]}]
                                       (map
                                        (partial token-requirement->token
-                                                checking-permissions?
+                                                checking?
                                                 token-images)
                                        tokenRequirement))
                                     (or (:criteria highest-role)

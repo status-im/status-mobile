@@ -383,35 +383,8 @@
   (let
     [checking-permissions? true
      token-image-eth       "data:image/jpeg;base64,/9j/2w"
-     community             {:id community-id
-                            :checking-permissions? checking-permissions?
-                            :permissions {:access 3}
-                            :highest-permission-role constants/community-token-permission-become-admin
-                            :token-images {"ETH" token-image-eth}
-                            :name "Community super name"
-                            :chats {"89f98a1e-6776-4e5f-8626-8ab9f855253f"
-                                    {:description "x"
-                                     :emoji       "🎲"
-                                     :permissions {:access 1}
-                                     :color       "#88B0FF"
-                                     :name        "random"
-                                     :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
-                                     :id          "89f98a1e-6776-4e5f-8626-8ab9f855253f"
-                                     :position    4
-                                     :can-post?   false
-                                     :members     {"0x04" {"roles" [1]}}}
-                                    "a076358e-4638-470e-a3fb-584d0a542ce6"
-                                    {:description "General channel for the community"
-                                     :emoji       "🐷 "
-                                     :permissions {:access 1}
-                                     :color       "#4360DF"
-                                     :name        "general"
-                                     :categoryID  "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
-                                     :id          "a076358e-4638-470e-a3fb-584d0a542ce6"
-                                     :position    0
-                                     :can-post?   false
-                                     :members     {"0x04" {"roles" [1]}}}}
-                            :token-permissions-check
+     checks                {:checking? checking-permissions?
+                            :check
                             {:satisfied true
                              :highestRole {:type     constants/community-token-permission-become-admin
                                            :criteria [{:tokenRequirement [{:satisfied true
@@ -434,22 +407,52 @@
                              [{:address  "0xd722eaa60dc73e334b588d34ba66a3b27e537783"
                                :chainIds nil}
                               {:address  "0x738d3146831c5871fa15872b409e8f360e341784"
-                               :chainIds [5 420]}]}
-                            :members {"0x04" {"roles" [1]}}
-                            :can-request-access? false
-                            :outroMessage "bla"
-                            :verified false}]
+                               :chainIds [5 420]}]}}
+     community             {:id                      community-id
+                            :checking-permissions?   checking-permissions?
+                            :permissions             {:access 3}
+                            :highest-permission-role constants/community-token-permission-become-admin
+                            :token-images            {"ETH" token-image-eth}
+                            :name                    "Community super name"
+                            :chats                   {"89f98a1e-6776-4e5f-8626-8ab9f855253f"
+                                                      {:description "x"
+                                                       :emoji "🎲"
+                                                       :permissions {:access 1}
+                                                       :color "#88B0FF"
+                                                       :name "random"
+                                                       :categoryID "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                       :id "89f98a1e-6776-4e5f-8626-8ab9f855253f"
+                                                       :position 4
+                                                       :can-post? false
+                                                       :members {"0x04" {"roles" [1]}}}
+                                                      "a076358e-4638-470e-a3fb-584d0a542ce6"
+                                                      {:description "General channel for the community"
+                                                       :emoji "🐷 "
+                                                       :permissions {:access 1}
+                                                       :color "#4360DF"
+                                                       :name "general"
+                                                       :categoryID "0c3c64e7-d56e-439b-a3fb-a946d83cb056"
+                                                       :id "a076358e-4638-470e-a3fb-584d0a542ce6"
+                                                       :position 0
+                                                       :can-post? false
+                                                       :members {"0x04" {"roles" [1]}}}}
+                            :members                 {"0x04" {"roles" [1]}}
+                            :can-request-access?     false
+                            :outroMessage            "bla"
+                            :verified                false}]
     (swap! rf-db/app-db assoc-in [:communities community-id] community)
-    (is (match? {:can-request-access? true
-                 :tokens              [[{:symbol      "DAI"
-                                         :amount      "5"
-                                         :sufficient? true
-                                         :loading?    checking-permissions?}]
-                                       [{:symbol      "ETH"
-                                         :amount      "0.002"
-                                         :sufficient? false
-                                         :loading?    checking-permissions?
-                                         :img-src     token-image-eth}]]}
+    (swap! rf-db/app-db assoc-in [:communities/permissions-check community-id] checks)
+    (is (match? {:can-request-access?     true
+                 :networks-not-supported? nil
+                 :tokens                  [[{:symbol      "DAI"
+                                             :amount      "5"
+                                             :sufficient? true
+                                             :loading?    checking-permissions?}]
+                                           [{:symbol      "ETH"
+                                             :amount      "0.002"
+                                             :sufficient? false
+                                             :loading?    checking-permissions?
+                                             :img-src     token-image-eth}]]}
                 (rf/sub [sub-name community-id])))))
 
 (h/deftest-sub :communities/airdrop-account
