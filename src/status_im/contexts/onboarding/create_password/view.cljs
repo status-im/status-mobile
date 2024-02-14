@@ -37,11 +37,13 @@
    [rn/view {:style style/info-message}
     (when shown
       [quo/info-message
-       {:type       (if (= status :success) :success :default)
+       {:type       status
         :size       :default
         :icon       (if (= status :success) :i/positive-state :i/info)
-        :text-color (when (not= status :success) colors/white-70-blur)
-        :icon-color (when (not= status :success) colors/white-70-blur)
+        :text-color (when (= status :default)
+                      colors/white-70-blur)
+        :icon-color (when (= status :default)
+                      colors/white-70-blur)
         :style      {}}
        text])]])
 
@@ -49,8 +51,8 @@
   [{:keys [passwords-match? on-change-password on-change-repeat-password on-input-focus
            password-long-enough? empty-password? show-password-validation?
            on-blur-repeat-password]}]
-  (let [hint-1-status (if password-long-enough? :success :neutral)
-        hint-2-status (if passwords-match? :success :danger)
+  (let [hint-1-status (if password-long-enough? :success :default)
+        hint-2-status (if passwords-match? :success :error)
         hint-2-text   (if passwords-match?
                         (i18n/label :t/password-creation-match)
                         (i18n/label :t/password-creation-dont-match))
