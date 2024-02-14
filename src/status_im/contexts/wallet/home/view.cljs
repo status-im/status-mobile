@@ -4,8 +4,10 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
+    [status-im.contexts.wallet.common.sheets.network-filter.view :as network-filter]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -48,11 +50,15 @@
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
           [quo/wallet-overview
-           {:state      (if tokens-loading? :loading :default)
-            :time-frame :none
-            :metrics    :none
-            :balance    formatted-balance
-            :networks   networks}]]
+           {:state             (if tokens-loading? :loading :default)
+            :time-frame        :none
+            :metrics           :none
+            :balance           formatted-balance
+            :networks          networks
+            :dropdown-on-press #(ff/alert ::ff/wallet.network-filter
+                                          (fn []
+                                            (rf/dispatch [:show-bottom-sheet
+                                                          {:content network-filter/view}])))}]]
          [quo/wallet-graph {:time-frame :empty}]
          [rn/flat-list
           {:style                             style/accounts-list

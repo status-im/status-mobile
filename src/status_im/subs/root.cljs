@@ -148,14 +148,14 @@
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
 (reg-root-key-sub :communities/permissioned-balances :communities/permissioned-balances)
+(reg-root-key-sub :communities/permissions-check :communities/permissions-check)
+(reg-root-key-sub :communities/channel-permissions-check :communities/channel-permissions-check)
 
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)
 
 ;;wallet
 (reg-root-key-sub :wallet :wallet)
-(reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
-(reg-root-key-sub :wallet/create-account :wallet/create-account)
 (reg-root-key-sub :wallet/local-suggestions :wallet/local-suggestions)
 (reg-root-key-sub :wallet/valid-ens-or-address? :wallet/valid-ens-or-address?)
 

@@ -44,7 +44,7 @@ export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 # Our custom config is located in nix/nix.conf
 export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
-export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
+export _NIX_GCROOTS = ./.nix-gcroots
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,\
 	BUILD_TYPE,BUILD_NUMBER,COMMIT_HASH,\
@@ -267,7 +267,7 @@ run-clojure: ##@run Watch for and build Clojure changes for mobile
 
 run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
-	@scripts/start-react-native.sh
+	@scripts/run-metro.sh
 
 run-re-frisk: export TARGET := clojure
 run-re-frisk: ##@run Start re-frisk server
@@ -278,22 +278,15 @@ run-android: export TARGET := android
 # Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
 # https://github.com/status-im/status-mobile/issues/18493
 run-android: export ORG_GRADLE_PROJECT_hermesEnabled := false
-# INFO: If it's empty (no devices attached, parsing issues, script error) - for Nix it's the same as not set.
-run-android: export ANDROID_ABI_INCLUDE ?= $(shell ./scripts/adb_devices_abis.sh)
 run-android: ##@run Build Android APK and start it on the device
-	npx react-native run-android --appIdSuffix debug
+	@scripts/run-android.sh
 
 SIMULATOR=iPhone 13
 # TODO: fix IOS_STATUS_GO_TARGETS to be either amd64 or arm64 when RN is upgraded
 run-ios: export TARGET := ios
 run-ios: export IOS_STATUS_GO_TARGETS := ios/arm64;iossimulator/amd64
-run-ios: export XCBeautify=$(shell which xcbeautify) # for react-native-cli to pick this up and to auto format output
-run-ios: ##@run Build iOS app and start it in a simulator/device
-ifneq ("$(SIMULATOR)", "")
-	npx react-native run-ios --simulator="$(SIMULATOR)"
-else
-	npx react-native run-ios
-endif
+run-ios: ##@run Build iOS app and start it in on the simulator
+	@scripts/run-ios.sh "${SIMULATOR}"
 
 show-ios-devices: ##@other shows connected ios device and its name
 	xcrun xctrace list devices

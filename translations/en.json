@@ -2038,7 +2038,7 @@
     "blank-messages-text": "Your messages will be here",
     "blank-contacts-text": "Your contacts will be here",
     "groups": "Groups",
-    "you-must-hold": "You must hold:",
+    "you-must-hold": "You must hodl:",
     "you-must-now-hold": "You must now hold:",
     "you-must-always-hold": "You must always hold:",
     "shell-placeholder-title": "Your open tabs will be here",
@@ -2266,6 +2266,8 @@
     "you-not-eligible-to-join": "You’re not eligible to join",
     "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
     "addresses-dont-contain-tokens-needed": "These addresses don’t contain tokens needed to join",
+    "you-hodl": "You hodl:",
+    "network-not-supported": "Networks not supported",
     "token-gated-communities": "Token gated communities",
     "read-more": "Read more",
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
@@ -2329,6 +2331,7 @@
     "no-activity": "No activity",
     "empty-tab-description": "C'mon do something...",
     "buy": "Buy",
+    "confirm-bridge": "Confirm bridge",
     "bridge": "Bridge",
     "bridge-to": "Bridge {{name}} to",
     "on-device": "On device",
@@ -2501,5 +2504,6 @@
     "origin-header": "Origin",
     "origin-desc": "Origin is where your key pair (your private and public key) comes from. You can generate a new key pair or import an existing private key.",
     "derivation-path-header": "Derivation path",
-    "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key."
+    "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
+    "select-networks": "Select networks"
 }
