@@ -28,7 +28,10 @@
        {:label         (name network-name)
         :network-image (quo.resources/get-network (:network-name network))
         :token-value   (str crypto-formatted " " (:symbol token))
-        :fiat-value    fiat-formatted}])))
+        :fiat-value    fiat-formatted
+        :on-press      #(rf/dispatch [:wallet/select-bridge-network
+                                      {:network-chain-id chain-id
+                                       :stack-id         :wallet-bridge}])}])))
 
 (defn- view-internal
   []
@@ -50,7 +53,7 @@
        :accessibility-label :top-bar}]
      [quo/text-combinations
       {:container-style style/header-container
-       :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:label token)))})}]
+       :title           (i18n/label :t/bridge-to {:name (string/upper-case (str (:name token)))})}]
      [rn/view style/content-container
       [bridge-token-component (assoc mainnet :network-name :t/mainnet) account-token]]
 

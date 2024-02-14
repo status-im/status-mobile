@@ -1,31 +1,13 @@
 (ns status-im.contexts.wallet.common.sheets.network-preferences.view
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            [quo.foundations.resources :as resources]
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.sheets.network-preferences.style :as style]
+            [status-im.contexts.wallet.common.utils :as utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
-
-
-(defn- make-network-item
-  [{:keys [network-name] :as _network}
-   {:keys [title color on-change network-preferences state blur?] :as _options}]
-  {:title        (or title (string/capitalize (name network-name)))
-   :blur?        blur?
-   :image        :icon-avatar
-   :image-props  {:icon (resources/get-network network-name)
-                  :size :size-20}
-   :action       :selector
-   :action-props {:type                (if (= :default state)
-                                         :filled-checkbox
-                                         :checkbox)
-                  :customization-color color
-                  :checked?            (contains? network-preferences network-name)
-                  :on-change           on-change}})
 
 (defn- view-internal
   [{:keys [selected-networks watch-only?]}]
@@ -88,26 +70,26 @@
          [quo/category
           {:list-type :settings
            :blur?     blur?
-           :data      [(make-network-item mainnet
-                                          {:state               @state
-                                           :title               (i18n/label :t/mainnet)
-                                           :color               color
-                                           :blur?               blur?
-                                           :network-preferences (get-current-preferences-names)
-                                           :on-change           #(toggle-network (:network-name
-                                                                                  mainnet))})]}]
+           :data      [(utils/make-network-item mainnet
+                                                {:state     @state
+                                                 :title     (i18n/label :t/mainnet)
+                                                 :color     color
+                                                 :blur?     blur?
+                                                 :networks  (get-current-preferences-names)
+                                                 :on-change #(toggle-network (:network-name
+                                                                              mainnet))})]}]
          [quo/category
           {:list-type :settings
            :blur?     blur?
            :label     (i18n/label :t/layer-2)
            :data      (mapv (fn [network]
-                              (make-network-item network
-                                                 {:state               @state
-                                                  :color               color
-                                                  :blur?               blur?
-                                                  :network-preferences (get-current-preferences-names)
-                                                  :on-change           #(toggle-network (:network-name
-                                                                                         network))}))
+                              (utils/make-network-item network
+                                                       {:state     @state
+                                                        :color     color
+                                                        :blur?     blur?
+                                                        :networks  (get-current-preferences-names)
+                                                        :on-change #(toggle-network (:network-name
+                                                                                     network))}))
                             layer-2-networks)}]
          [quo/bottom-actions
           {:actions          :one-action
