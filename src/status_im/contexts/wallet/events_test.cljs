@@ -10,15 +10,16 @@
 (deftest scan-address-success
   (let [db {}]
     (testing "scan-address-success"
-      (let [expected-db {:wallet/scanned-address address}
+      (let [expected-db {:wallet {:ui {:scanned-address address}}}
             effects     (events/scan-address-success {:db db} address)
             result-db   (:db effects)]
         (is (match? result-db expected-db))))))
 
 (deftest clean-scanned-address
-  (let [db {:wallet/scanned-address address}]
+  (let [db {:wallet {:ui {:scanned-address address}}}]
     (testing "clean-scanned-address"
-      (let [expected-db {:wallet {:ui {:send nil}}}
+      (let [expected-db {:wallet {:ui {:send            nil
+                                       :scanned-address nil}}}
             effects     (events/clean-scanned-address {:db db})
             result-db   (:db effects)]
         (is (match? result-db expected-db))))))
