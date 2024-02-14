@@ -100,10 +100,7 @@
              :header                            [common.header-spacing/view]
              :render-fn                         item-render
              :style                             {:margin-top -1}
-             :data                              (sort-by (fn [{:keys [last-opened-at joined-at]}]
-                                                           (or last-opened-at joined-at))
-                                                         #(compare %2 %1)
-                                                         selected-items)
+             :data                              selected-items
              :scroll-event-throttle             8
              :content-container-style           {:padding-bottom
                                                  jump-to.constants/floating-shell-button-height}

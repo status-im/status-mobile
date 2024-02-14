@@ -22,15 +22,18 @@
   [{:keys [db]} [community-js]]
   (when community-js
     (let [{:keys [token-permissions
-                  token-permissions-check joined id]
+                  token-permissions-check joined id last-opened-at]
            :as   community} (data-store.communities/<-rpc community-js)
           has-channel-perm? (fn [id-perm-tuple]
                               (let [{:keys [type]} (second id-perm-tuple)]
                                 (or (= type constants/community-token-permission-can-view-channel)
                                     (=
                                      type
-                                     constants/community-token-permission-can-view-and-post-channel))))]
-      {:db (assoc-in db [:communities id] community)
+                                     constants/community-token-permission-can-view-and-post-channel))))
+          previous-last-opened-at (get-in db [:communities id :last-opened-at])]
+      {:db (assoc-in db
+            [:communities id]
+            (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
        :fx [[:dispatch [:communities/initialize-permission-addresses id]]
             (when (not joined)
               [:dispatch [:chat.ui/spectate-community id]])

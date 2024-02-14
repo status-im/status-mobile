@@ -113,7 +113,10 @@
                                              pending? (update acc :pending conj community)
                                              :else    (update acc :opened conj community))))
                                        {:joined [] :pending [] :opened []}
-                                       (vals communities))]
+                                       (sort-by (fn [{:keys [last-opened-at joined-at]}]
+                                                  (or last-opened-at joined-at))
+                                                #(compare %2 %1)
+                                                (vals communities)))]
        (reset! memo-communities-stack-items grouped-communities)
        grouped-communities)
      @memo-communities-stack-items)))
