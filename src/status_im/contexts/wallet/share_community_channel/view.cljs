@@ -51,19 +51,23 @@
           [quo/text-combinations
            {:container-style style/header-container
             :title           title}]
-          [rn/view {:style {:padding-horizontal 20}}
+          [rn/view {:style {:padding-horizontal 20 :align-items :center}}
            [quo/gradient-cover
-            {:container-style     {:position :absolute
-                                   :height   (gradient-size window-width)
-                                   :width    (gradient-size window-width)}
+            {:container-style
+             {:width         (gradient-size window-width)
+              :position      :absolute
+              :border-radius 12
+              :z-index       -1}
              :customization-color (:color chat)}]
-           [qr-codes/qr-code
-            {:size                (qr-code-size window-width)
-             :qr-image-uri        qr-media-server-uri
-             :avatar              :channel
-             :customization-color (:color chat)
-             :emoji               (:emoji chat)
-             :full-name           (:chat-name chat)}]]
+           [rn/view
+            {:style {:padding-vertical 12}}
+            [qr-codes/qr-code
+             {:size                (qr-code-size window-width)
+              :qr-image-uri        qr-media-server-uri
+              :avatar              :channel
+              :customization-color (:color chat)
+              :emoji               (:emoji chat)
+              :full-name           (:chat-name chat)}]]]
           [quo/text
            {:size   :paragraph-2
             :weight :regular
