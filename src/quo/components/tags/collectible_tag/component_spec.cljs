@@ -8,18 +8,18 @@
 (def ^:private theme :light)
 
 (defn get-test-data
-  [{:keys [options blur?]}]
+  [{:keys [options blur? size]}]
   {:collectible-name    collectible-name
    :collectible-id      collectible-id
-   :collectible-img-src 1055
-   :container-width     139.33
+   :collectible-img-src {:uri "https://example.com/image.jpg"}
    :options             options
    :blur?               (or blur? false)
+   :size                (or size :size-24)
    :theme               theme})
 
 (h/describe "Collectible_tag tests"
   (h/test "Renders Default option"
-    (let [data (get-test-data {:options false})]
+    (let [data (get-test-data {})]
       (h/render-with-theme-provider [collectible-tag/view data] theme)
       (h/is-truthy (h/get-by-text collectible-name))))
 
@@ -50,38 +50,5 @@
 
   (h/test "Renders with Size 32"
     (let [data (get-test-data {:size :size-32})]
-      (h/render-with-theme-provider [collectible-tag/view data] theme)
-      (h/is-truthy (h/get-by-text collectible-name))))
-
-  (h/test "On-layout fires correctly"
-    (let [on-layout (h/mock-fn)
-          data      (get-test-data {:on-layout on-layout})]
-      (h/render-with-theme-provider [collectible-tag/view data] theme)
-      ;; Simulate a layout change
-      (on-layout {:nativeEvent {:layout {:x 0 :y 0 :width 100 :height 100}}})
-      (h/was-called on-layout)))
-
-  (h/test "Renders with :collectible-img-src as int"
-    (let [data (get-test-data {:collectible-img-src 1055})]
-      (h/render-with-theme-provider [collectible-tag/view data] theme)
-      (h/is-truthy (h/get-by-text collectible-name))))
-
-  (h/test "Renders with :collectible-img-src as string"
-    (let [data (get-test-data {:collectible-img-src "1055"})]
-      (h/render-with-theme-provider [collectible-tag/view data] theme)
-      (h/is-truthy (h/get-by-text collectible-name))))
-
-  (h/test "Renders with :container-width as int"
-    (let [data (get-test-data {:container-width 100})]
-      (h/render-with-theme-provider [collectible-tag/view data] theme)
-      (h/is-truthy (h/get-by-text collectible-name))))
-
-  (h/test "Renders with :container-width as double"
-    (let [data (get-test-data {:container-width 100.5})]
-      (h/render-with-theme-provider [collectible-tag/view data] theme)
-      (h/is-truthy (h/get-by-text collectible-name))))
-
-  (h/test "Renders with :container-width as string"
-    (let [data (get-test-data {:container-width "100"})]
       (h/render-with-theme-provider [collectible-tag/view data] theme)
       (h/is-truthy (h/get-by-text collectible-name)))))
