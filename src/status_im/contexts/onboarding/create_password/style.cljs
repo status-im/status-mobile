@@ -9,7 +9,7 @@
 (def heading-title (assoc heading-subtitle :margin-bottom 8))
 
 (def info-message
-  {:margin-top     8})
+  {:margin-top 8})
 
 (def space-between-inputs {:height 16})
 
