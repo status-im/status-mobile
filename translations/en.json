@@ -2504,5 +2504,6 @@
     "origin-header": "Origin",
     "origin-desc": "Origin is where your key pair (your private and public key) comes from. You can generate a new key pair or import an existing private key.",
     "derivation-path-header": "Derivation path",
-    "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key."
+    "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
+    "select-networks": "Select networks"
 }
