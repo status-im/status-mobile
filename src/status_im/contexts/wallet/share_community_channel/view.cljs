@@ -25,10 +25,8 @@
                                               :error-level :highest})
             title                           (i18n/label :t/share-channel)]
         [quo/overlay {:type :shell}
-
          [rn/view
-          {:flex        1
-           :padding-top padding-top
+          {:padding-top padding-top
            :key         :share-community}
           [quo/page-nav
            {:icon-name           :i/close
@@ -41,10 +39,7 @@
           [rn/view {:style style/qr-code-wrapper}
            [quo/gradient-cover
             {:container-style
-             {:width         (style/gradient-cover-size window-width)
-              :position      :absolute
-              :border-radius 12
-              :z-index       -1}
+             (style/gradient-cover-wrapper window-width)
              :customization-color (:color chat)}]
            [rn/view
             {:style {:padding-vertical 12}}

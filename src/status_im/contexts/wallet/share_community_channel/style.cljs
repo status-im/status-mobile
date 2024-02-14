@@ -19,8 +19,19 @@
 
 (defn qr-code-size
   [total-width]
-  (- total-width (* 2 32)))
+  (- total-width 64))
 
 (defn gradient-cover-size
   [total-width]
-  (- total-width (* 2 20)))
+  (- total-width 40))
+
+(defn community-share-wrapper
+  [padding-top]
+  {:padding-top padding-top})
+
+(defn gradient-cover-wrapper
+  [width]
+  {:width         (gradient-cover-size width)
+   :position      :absolute
+   :border-radius 12
+   :z-index       -1})
