@@ -36,4 +36,4 @@
 
 (def view
   (quo.theme/with-theme
-    (schema/instrument #'view-internal component-schema/?schema)))
+   (schema/instrument #'view-internal component-schema/?schema)))

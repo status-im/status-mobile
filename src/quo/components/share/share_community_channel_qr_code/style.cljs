@@ -15,7 +15,7 @@
 (def content-container
   {:z-index            1
    :padding-horizontal padding
-   :padding-top 12})
+   :padding-top        12})
 
 (defn qr-code-size
   [total-width]

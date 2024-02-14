@@ -1,12 +1,12 @@
 (ns status-im.contexts.wallet.share-community-channel.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.contexts.wallet.share-community-channel.style :as style]
-   [utils.i18n :as i18n]
-   [utils.image-server :as image-server]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.contexts.wallet.share-community-channel.style :as style]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def qr-size 500)
 
@@ -15,11 +15,11 @@
   (let [padding-top (:top (safe-area/get-insets))]
     (fn []
       (let [chat                (rf/sub [:chats/current-chat-chat-view])
-            mediaserver-port                (rf/sub [:mediaserver/port])
+            mediaserver-port    (rf/sub [:mediaserver/port])
             {:keys [url]}       (rf/sub [:get-screen-params])
             qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                                  {:url         url
-                                  :port       mediaserver-port
+                                  :port        mediaserver-port
                                   :qr-size     qr-size
                                   :error-level :highest})
             title               (i18n/label :t/share-channel)]
