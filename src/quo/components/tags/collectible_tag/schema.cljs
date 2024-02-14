@@ -5,13 +5,11 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:options {:optional true} [:maybe [:enum false :add :hold]]]
-      [:size {:optional true} [:enum :size-24 :size-32]]
-      [:blur? {:optional true} [:maybe :boolean]]
+      [:options {:optional true} [:maybe [:enum :add :hold]]]
+      [:size {:optional true} [:maybe [:enum :size-24 :size-32]]]
+      [:blur? {:optional true} [:maybe boolean?]]
       [:theme :schema.common/theme]
-      [:collectible-img-src [:or :int :string]]
-      [:collectible-name :string]
-      [:collectible-id :string]
-      [:container-width [:or :int :double :string]]
-      [:on-layout {:optional true} [:maybe fn?]]]]]
+      [:collectible-img-src :schema.common/image-source]
+      [:collectible-name string?]
+      [:collectible-id string?]]]]
    :any])
