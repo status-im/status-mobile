@@ -180,6 +180,7 @@
         "other": "{{count}} members"
     },
     "community-rules": "Community rules",
+    "share-all-current-and-future-addresses": "Share all current and future addresses",
     "address-to-share": "Addresses to share",
     "addresses-for-permissions": "Addresses for permissions",
     "no-addresses-selected": "At least 1 address must be shared with community",
