@@ -8,6 +8,5 @@
       [:qr-image-uri :string]
       [:emoji {:optional true} [:maybe :string]]
       [:full-name :string]
-      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:theme :schema.common/theme]]]]
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]]
    :any])
