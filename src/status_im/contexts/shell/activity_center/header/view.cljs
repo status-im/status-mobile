@@ -40,9 +40,10 @@
       :size                32
       :accessibility-label :activity-center-open-more
       :on-press            #(rf/dispatch [:show-bottom-sheet
-                                          {:content drawer/options
-                                           :theme   :dark
-                                           :shell?  true}])}
+                                          {:content     drawer/options
+                                           :theme       :dark
+                                           :shell?      true
+                                           :blur-radius 20}])}
      :i/options]]
    [quo/text
     {:size   :heading-1
