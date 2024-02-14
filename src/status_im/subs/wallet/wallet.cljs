@@ -29,6 +29,11 @@
  :-> :ui)
 
 (rf/reg-sub
+ :wallet/scanned-address
+ :<- [:wallet/ui]
+ :-> :scanned-address)
+
+(rf/reg-sub
  :wallet/tokens-loading?
  :<- [:wallet/ui]
  :-> :tokens-loading?)
