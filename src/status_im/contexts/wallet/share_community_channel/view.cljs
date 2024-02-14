@@ -9,8 +9,6 @@
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
-(def qr-size 500)
-
 (defn view
   []
   (let [padding-top (:top (safe-area/get-insets))]
@@ -23,7 +21,7 @@
             qr-media-server-uri             (image-server/get-qr-image-uri-for-any-url
                                              {:url         url
                                               :port        mediaserver-port
-                                              :qr-size     qr-size
+                                              :qr-size     style/qr-size
                                               :error-level :highest})
             title                           (i18n/label :t/share-channel)]
         [quo/overlay {:type :shell}

@@ -11,6 +11,8 @@
    :margin-left  :auto
    :margin-right :auto})
 
+(def qr-size 500)
+
 (def qr-code-wrapper
   {:padding-horizontal 20
    :align-items        :center})
