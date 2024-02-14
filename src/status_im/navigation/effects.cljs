@@ -21,11 +21,11 @@
 
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
-     (rf/dispatch [:screens/on-will-focus view-id])
-     (when-let [{:keys [on-focus options]} (get views/screens view-id)]
-       (set-status-bar-color (:theme options))
-       (when on-focus
-         (rf/dispatch on-focus)))))
+   (rf/dispatch [:screens/on-will-focus view-id])
+   (when-let [{:keys [on-focus options]} (get views/screens view-id)]
+     (set-status-bar-color (:theme options))
+     (when on-focus
+       (rf/dispatch on-focus)))))
 
 (defn set-view-id
   [view-id]
@@ -58,6 +58,7 @@
 (defn- navigate
   [component]
   (let [{:keys [options]} (get views/screens component)]
+    (dismiss-all-modals)
     (navigation/push
      (name @state/root-id)
      {:component {:id      component
@@ -67,8 +68,7 @@
                                   options
                                   (if (:topBar options)
                                     (options/merge-top-bar (options/topbar-options) options)
-                                    {:topBar {:visible false}}))}})
-    (dismiss-all-modals)))
+                                    {:topBar {:visible false}}))}})))
 
 (rf/reg-fx :navigate-to navigate)
 
