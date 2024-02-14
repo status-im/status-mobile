@@ -2,6 +2,7 @@
   (:require
     [oops.core :refer [ocall]]
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -33,17 +34,16 @@
         (dissoc :hint)
         (assoc :type  :password
                :blur? true))]
-   [rn/view {:style style/label-container}
+   [rn/view {:style style/info-message}
     (when shown
-      [:<>
-       [quo/icon (if (= status :success) :i/check-circle :i/info)
-        {:container-style style/label-icon
-         :color           (style/label-icon-color status)
-         :size            16}]
-       [quo/text
-        {:style (style/label-color status)
-         :size  :paragraph-2}
-        text]])]])
+      [quo/info-message
+       {:type       (if (= status :success) :success :default)
+        :size       :default
+        :icon       (if (= status :success) :i/positive-state :i/info)
+        :text-color (when (not= status :success) colors/white-70-blur)
+        :icon-color (when (not= status :success) colors/white-70-blur)
+        :style      {}}
+       text])]])
 
 (defn password-inputs
   [{:keys [passwords-match? on-change-password on-change-repeat-password on-input-focus
