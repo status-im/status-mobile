@@ -46,7 +46,7 @@
                                    {:width         90
                                     :height        40
                                     :border-radius 10})]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:test-ID                 test-ID
       :allow-multiple-presses? true
       :on-press                on-press

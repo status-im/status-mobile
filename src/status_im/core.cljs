@@ -12,6 +12,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
+    [reagent.core]
     [reagent.impl.batching :as batching]
     [status-im.common.log :as logging]
     [taoensso.timbre :as log]
@@ -32,6 +33,8 @@
 ;;;; re-frame RN setup
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
+(def functional-compiler (reagent.core/create-compiler {:function-components true}))
+(reagent.core/set-default-compiler! functional-compiler)
 
 (def adjust-resize 16)
 

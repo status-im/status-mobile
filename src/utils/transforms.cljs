@@ -49,14 +49,3 @@
         (map? x)                 (reduce-kv convert-keys-and-values #js {} x)
         (vector? x)              (to-array (mapv styles-with-vectors x))
         :else                    (clj->js x)))
-
-(defn copy-js-obj-to-map
-  "Copy `obj` keys and values into `m` if `(pred obj-key)` is satisfied."
-  [obj m pred]
-  (persistent!
-   (reduce (fn [acc js-prop]
-             (if (pred js-prop)
-               (assoc! acc js-prop (oops/gobj-get obj js-prop))
-               acc))
-           (transient m)
-           (js-keys obj))))

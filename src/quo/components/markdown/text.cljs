@@ -4,7 +4,7 @@
     [quo.foundations.typography :as typography]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.utils :as rn.utils]))
 
 (defn text-style
   [{:keys [size align weight style theme]}]
@@ -41,8 +41,6 @@
 (def ^:private text-view (quo.theme/with-theme text-view-internal))
 
 (defn text
-  []
-  (let [this     (reagent/current-component)
-        props    (reagent/props this)
-        children (reagent/children this)]
+  [& argv]
+  (let [[props children] (rn.utils/get-props-and-children argv)]
     (into [text-view props] children)))

@@ -203,7 +203,7 @@
 
 (defn- f-bottom-view
   [insets translate-y]
-  [rn/touchable-without-feedback
+  [rn/pressable
    {:on-press #(js/alert "Yet to be implemented")}
    [reanimated/view
     {:style (style/bottom-container translate-y (:bottom insets))}
