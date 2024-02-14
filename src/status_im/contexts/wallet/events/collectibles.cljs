@@ -56,7 +56,8 @@
 
 (defn store-last-collectible-details
   [{:keys [db]} [collectible]]
-  {:db (assoc-in db [:wallet :last-collectible-details] collectible)})
+  {:db       (assoc-in db [:wallet :last-collectible-details] collectible)
+   :dispatch [:navigate-to :wallet-collectible]})
 
 (rf/reg-event-fx :wallet/store-last-collectible-details store-last-collectible-details)
 
@@ -122,8 +123,7 @@
          {:keys [collectibles]} response
          collectible            (first collectibles)]
      (if collectible
-       {:fx [[:dispatch [:wallet/store-last-collectible-details collectible]]
-             [:dispatch [:navigate-to :wallet-collectible]]]}
+       {:fx [[:dispatch [:wallet/store-last-collectible-details collectible]]]}
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
