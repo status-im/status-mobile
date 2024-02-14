@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.qr-codes.view :as qr-codes]
     [status-im.contexts.wallet.share-community-channel.style :as style]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
@@ -10,12 +11,23 @@
 
 (def qr-size 500)
 
+(def ^:private padding 32)
+
+(defn qr-code-size
+  [total-width]
+  (- total-width (* 2 padding)))
+
+(defn gradient-size
+  [total-width]
+  (- total-width (* 2 20)))
+
 (defn view
   []
   (let [padding-top (:top (safe-area/get-insets))]
     (fn []
       (let [chat                (rf/sub [:chats/current-chat-chat-view])
             mediaserver-port    (rf/sub [:mediaserver/port])
+            window-width        (rf/sub [:dimensions/window-width])
             {:keys [url]}       (rf/sub [:get-screen-params])
             qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                                  {:url         url
@@ -24,6 +36,7 @@
                                   :error-level :highest})
             title               (i18n/label :t/share-channel)]
         [quo/overlay {:type :shell}
+         (print qr-media-server-uri)
          [rn/view
           {:flex        1
            :padding-top padding-top
@@ -39,8 +52,15 @@
            {:container-style style/header-container
             :title           title}]
           [rn/view {:style {:padding-horizontal 20}}
-           [quo/share-community-channel-qr-code
-            {:qr-image-uri        qr-media-server-uri
+           [quo/gradient-cover
+            {:container-style     {:position :absolute
+                                   :height   (gradient-size window-width)
+                                   :width    (gradient-size window-width)}
+             :customization-color (:color chat)}]
+           [qr-codes/qr-code
+            {:size                (qr-code-size window-width)
+             :qr-image-uri        qr-media-server-uri
+             :avatar              :channel
              :customization-color (:color chat)
              :emoji               (:emoji chat)
              :full-name           (:chat-name chat)}]]
