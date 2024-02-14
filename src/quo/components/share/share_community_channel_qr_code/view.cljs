@@ -11,17 +11,15 @@
 
 (defn- share-qr-code
   [{:keys [qr-image-uri component-width emoji customization-color full-name]}]
-  [:<>
-   [rn/view {:style style/content-container}
-    [rn/view {:style style/share-qr-container}]
-    [quo.theme/provider {:theme :light}
-     [qr-code/view
-      {:qr-image-uri        qr-image-uri
-       :size                (style/qr-code-size component-width)
-       :avatar              :channel
-       :emoji               emoji
-       :full-name           full-name
-       :customization-color customization-color}]]]])
+  [rn/view {:style style/content-container}
+   [quo.theme/provider {:theme :light}
+    [qr-code/view
+     {:qr-image-uri        qr-image-uri
+      :size                (style/qr-code-size component-width)
+      :avatar              :channel
+      :emoji               emoji
+      :full-name           full-name
+      :customization-color customization-color}]]])
 
 (defn- view-internal
   [props]
@@ -34,11 +32,8 @@
        :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
       (conj container-component
             (when @component-width
-              [share-qr-code
-               (-> props
-                   (assoc :component-width @component-width)
-                   (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
+              [share-qr-code props]))]]))
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+    (schema/instrument #'view-internal component-schema/?schema)))
