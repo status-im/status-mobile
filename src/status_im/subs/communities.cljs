@@ -370,7 +370,7 @@
 (re-frame/reg-sub
  :communities/selected-permission-accounts
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+   [(re-frame/subscribe [:wallet/accounts-without-watched-accounts])
     (re-frame/subscribe [:communities/selected-permission-addresses community-id])])
  (fn [[accounts selected-permission-addresses]]
    (filter #(contains? selected-permission-addresses (:address %)) accounts)))
