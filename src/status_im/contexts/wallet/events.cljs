@@ -280,8 +280,6 @@
                                                [])
                :wallet/valid-ens-or-address? (boolean result))}))
 
-
-
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [_address]]
    {:db (assoc db
