@@ -35,5 +35,4 @@
               [share-qr-code props]))]]))
 
 (def view
-
   (schema/instrument #'view-internal component-schema/?schema))
