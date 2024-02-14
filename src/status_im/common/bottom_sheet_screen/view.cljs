@@ -15,12 +15,12 @@
 (def ^:const drag-threshold 200)
 
 (defn drag-gesture
-  [{:keys [translate-y opacity scroll-enabled curr-scroll close reset-open-sheet set-animating-true]}]
+  [{:keys [translate-y opacity scroll-enabled? curr-scroll close reset-open-sheet set-animating-true]}]
   (-> (gesture/gesture-pan)
       (gesture/on-start (fn [e]
                           (set-animating-true)
                           (when (< (oops/oget e "velocityY") 0)
-                            (reset! scroll-enabled true))))
+                            (reset! scroll-enabled? true))))
       (gesture/on-update (fn [e]
                            (let [translation (oops/oget e "translationY")
                                  progress    (Math/abs (/ translation drag-threshold))]
@@ -34,7 +34,7 @@
       (gesture/on-finalize (fn [e]
                              (when (and (>= (oops/oget e "velocityY") 0)
                                         (<= @curr-scroll (if platform/ios? -1 0)))
-                               (reset! scroll-enabled false))))))
+                               (reset! scroll-enabled? false))))))
 
 (defn on-scroll
   [e curr-scroll]
@@ -43,7 +43,7 @@
 
 (defn- f-view
   [_]
-  (let [scroll-enabled      (reagent/atom true)
+  (let [scroll-enabled?     (reagent/atom true)
         curr-scroll         (reagent/atom 0)
         animating?          (reagent/atom true)
         set-animating-true  #(reset! animating? true)
@@ -63,7 +63,7 @@
                                (reanimated/animate translate-y 0 300)
                                (reanimated/animate opacity 1 300)
                                (set-animating-false 300)
-                               (reset! scroll-enabled true))]
+                               (reset! scroll-enabled? true))]
         (rn/use-effect
          (fn []
            (reanimated/animate translate-y 0 300)
@@ -76,7 +76,7 @@
          [gesture/gesture-detector
           {:gesture (drag-gesture {:translate-y        translate-y
                                    :opacity            opacity
-                                   :scroll-enabled     scroll-enabled
+                                   :scroll-enabled?    scroll-enabled?
                                    :curr-scroll        curr-scroll
                                    :close              close
                                    :reset-open-sheet   reset-open-sheet
@@ -87,7 +87,7 @@
            [content
             {:insets           insets
              :close            close
-             :scroll-enabled   scroll-enabled
+             :scroll-enabled?  @scroll-enabled?
              :current-scroll   curr-scroll
              :on-scroll        #(on-scroll % curr-scroll)
              :sheet-animating? animating?}]]]]))))

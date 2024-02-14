@@ -46,7 +46,7 @@
       :container-style {:margin-bottom 8}}]))
 
 (defn view
-  [{:keys [scroll-enabled on-scroll]}]
+  [{:keys [scroll-enabled? on-scroll]}]
   (let [{id :community-id} (rf/sub [:get-screen-params])]
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
@@ -72,7 +72,7 @@
           {:render-fn               account-item
            :render-data             [selected-addresses id]
            :content-container-style {:padding 20}
-           :scroll-enabled          @scroll-enabled
+           :scroll-enabled          scroll-enabled?
            :on-scroll               on-scroll
            :key-fn                  :address
            :data                    accounts}]
