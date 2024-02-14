@@ -21,12 +21,11 @@
 
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
-   (let [screen-theme (get-in views/screens [view-id :options :theme])]
-     (set-status-bar-color screen-theme)
      (rf/dispatch [:screens/on-will-focus view-id])
-     (when-let [{:keys [on-focus]} (get views/screens view-id)]
+     (when-let [{:keys [on-focus options]} (get views/screens view-id)]
+       (set-status-bar-color (:theme options))
        (when on-focus
-         (rf/dispatch on-focus))))))
+         (rf/dispatch on-focus)))))
 
 (defn set-view-id
   [view-id]
@@ -135,7 +134,7 @@
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do
-        (set-view-id name)
+        (set-view-id name) ; TODO Will be removed in #18811
         (reset! state/curr-modal true)
         (swap! state/modals conj component)
         (navigation/show-modal
