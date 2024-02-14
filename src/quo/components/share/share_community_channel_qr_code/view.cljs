@@ -11,6 +11,7 @@
 
 (defn- share-qr-code
   [{:keys [qr-image-uri component-width emoji customization-color full-name]}]
+  (print component-width)
   [rn/view {:style style/content-container}
    [quo.theme/provider {:theme :light}
     [qr-code/view

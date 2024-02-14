@@ -3,7 +3,6 @@
 
 (def outer-container
   {:border-radius 16
-   :width         "100%"
    :overflow      :hidden})
 
 (def ^:private padding 12)

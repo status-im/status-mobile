@@ -262,10 +262,9 @@
                       (rf/dispatch [:open-modal :share-community-channel {:url url}]))
         :on-error   (fn [err]
                       (log/error "failed to retrieve community channel url with data"
-                                 {:error   err
+                                 {:error err
                                   :chat-id chat-id
-                                  :event   "communities/community-channel-url-qr-code-with-data"}))}]})))
-
+                                  :event [:communities/community-channel-url-qr-code-with-data]}))}]})))
 
 (rf/reg-event-fx :communities/set-airdrop-address
  (fn [{:keys [db]} [address community-id]]
