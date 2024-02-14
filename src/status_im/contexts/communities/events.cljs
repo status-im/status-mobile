@@ -257,7 +257,8 @@
    (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
      {:json-rpc/call
       [{:method     "wakuext_shareCommunityChannelURLWithData"
-        :params     [{:CommunityID community-id :ChannelID channel-id}]
+        :params     [{:CommunityID community-id
+                      :ChannelID   channel-id}]
         :on-success (fn [url]
                       (rf/dispatch [:open-modal :share-community-channel {:url url}]))
         :on-error   (fn [err]
