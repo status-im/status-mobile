@@ -25,12 +25,10 @@
                     [{:x            (- @container-width
                                        (case size
                                          :size-24 10
-                                         :size-32 12
-                                         nil))
+                                         :size-32 12))
                       :y            (case size
                                       :size-24 -6
-                                      :size-32 -4
-                                      nil)
+                                      :size-32 -4)
                       :width        16
                       :height       16
                       :borderRadius 8}]
