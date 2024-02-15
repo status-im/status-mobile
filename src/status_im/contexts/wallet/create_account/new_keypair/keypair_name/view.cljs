@@ -1,7 +1,5 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.keypair-name.view
   (:require
-    [clojure.string :as string]
-    [native-module.core :as native-module]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -38,13 +36,6 @@
            :button-one-props {:disabled?           (or (zero? (count @keypair-name))
                                                        (> (count @keypair-name) char-limit))
                               :customization-color customization-color
-                              :on-press            #(native-module/create-account-from-mnemonic
-                                                     {:MnemonicPhrase (string/join " " secret-phrase)}
-                                                     (fn [new-keypair]
-                                                       (rf/dispatch [:wallet/new-keypair-continue
-                                                                     {:new-keypair (assoc
-                                                                                    new-keypair
-                                                                                    :keypair-name
-                                                                                    @keypair-name)}])))
-                             }
+                              :on-press            #(rf/dispatch [:wallet/new-keypair-continue
+                                                                  {:keypair-name @keypair-name}])}
            :container-style  style/bottom-action}]]))))

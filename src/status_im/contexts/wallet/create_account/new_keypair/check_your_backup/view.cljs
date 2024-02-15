@@ -65,7 +65,10 @@
         quiz-index                            (reagent/atom 0)
         incorrect-count                       (reagent/atom 0)
         show-error?                           (reagent/atom false)
-        {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/create-account])]
+        ;{:keys [secret-phrase random-phrase]} (rf/sub [:wallet/create-account])
+        {:keys [create-account]}              (rf/sub [:wallet/ui])
+        {:keys [secret-phrase random-phrase]} create-account
+       ]
     (fn []
       (let [current-word-index            (get random-indices
                                                (min @quiz-index (dec questions-count)))

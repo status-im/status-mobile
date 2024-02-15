@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.events
   (:require
     [clojure.string :as string]
+    [native-module.core :as native-module]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -394,11 +395,20 @@
             (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
     :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]}))
 
-(rf/reg-event-fx :wallet/new-keypair-continue
+(rf/reg-event-fx :wallet/new-keypair-created
  (fn [{:keys [db]} [{:keys [new-keypair]}]]
    {:db (-> db
             (assoc-in [:wallet :ui :create-account :new-keypair] new-keypair))
     :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]}))
+
+(rf/reg-event-fx :wallet/new-keypair-continue
+ (fn [{:keys [db]} [{:keys [keypair-name]}]]
+   (let [secret-phrase (get-in db [:wallet :ui :create-account :secret-phrase])]
+     (native-module/create-account-from-mnemonic
+      {:MnemonicPhrase (string/join " " secret-phrase)}
+      (fn [new-keypair]
+        (rf/dispatch [:wallet/new-keypair-created
+                      {:new-keypair (assoc new-keypair :keypair-name keypair-name)}]))))))
 
 (rf/reg-event-fx :wallet/clear-new-keypair
  (fn [{:keys [db]}]
