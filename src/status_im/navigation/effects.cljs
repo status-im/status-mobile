@@ -1,6 +1,6 @@
 (ns status-im.navigation.effects
   (:require
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
     [status-im.navigation.options :as options]
@@ -13,8 +13,7 @@
 (defn- set-status-bar-color
   [theme]
   (rn/set-status-bar-style
-   (if (or (= theme :dark)
-           (quo.theme/dark?))
+   (if (= theme :dark)
      "light-content"
      "dark-content")
    true))
@@ -23,7 +22,8 @@
  (fn [view-id]
    (rf/dispatch [:screens/on-will-focus view-id])
    (when-let [{:keys [on-focus options]} (get views/screens view-id)]
-     (set-status-bar-color (:theme options))
+     (set-status-bar-color (or (:theme options)
+                               (quo.theme/get-theme)))
      (when on-focus
        (rf/dispatch on-focus)))))
 
@@ -134,7 +134,7 @@
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do
-        (set-view-id name) ; TODO Will be removed in #18811
+        (set-view-id name) ; TODO https://github.com/status-im/status-mobile/issues/18811
         (reset! state/curr-modal true)
         (swap! state/modals conj component)
         (navigation/show-modal
