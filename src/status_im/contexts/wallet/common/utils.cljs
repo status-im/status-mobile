@@ -275,10 +275,7 @@
 (defn get-balance-for-chain
   [data chain-id]
   (some #(when (= chain-id (:chain-id %)) %) (vals data)))
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 (defn make-network-item
   "This function generates props for quo/category component item"
   [{:keys [network-name] :as _network}
@@ -298,14 +295,8 @@
     label-props
     (assoc :label       :text
            :label-props label-props)))
-=======
-(defn string-to-vector [str]
-=======
+
 (defn string-to-vector
   [str]
->>>>>>> 86465d80f (lint)
   (->> (clojure.string/split str #"\s")
        (vec)))
->>>>>>> 2d6aa482f (feat: new keypair)
-=======
->>>>>>> 8db6aedb6 (review)

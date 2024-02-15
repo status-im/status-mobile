@@ -2511,36 +2511,10 @@
     "origin-header": "Origin",
     "origin-desc": "Origin is where your key pair (your private and public key) comes from. You can generate a new key pair or import an existing private key.",
     "derivation-path-header": "Derivation path",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
-    "select-networks": "Select networks"
-=======
-    "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key."
-=======
-<<<<<<< HEAD
-    "fees": "Fees"
-=======
-=======
-    "fees": "Fees",
->>>>>>> 6466e571e (lint)
-=======
-    "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
->>>>>>> af279973a (lint)
+    "select-networks": "Select networks",
     "generating-keypair": "Generating keypair...",
     "keypair-name": "Keypair name",
     "keypair-name-description": "Name keypair for your own personal reference",
     "keypair-name-input-placeholder": "Collectibles account, Old vault...."
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> dde847888 (feat: new keypair)
->>>>>>> ed51b8caf (feat: new keypair)
-<<<<<<< HEAD
->>>>>>> 2d6aa482f (feat: new keypair)
-=======
-=======
->>>>>>> 6466e571e (lint)
->>>>>>> 0fcf60d03 (lint)
-=======
->>>>>>> af279973a (lint)
 }
