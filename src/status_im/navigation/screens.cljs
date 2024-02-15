@@ -109,7 +109,7 @@
      :component join-menu/view}
 
     {:name      :community-account-selection
-     :options   {:sheet? true}
+     :options   {:insets {:top? true}}
      :component communities.accounts-selection/view}
 
     {:name      :addresses-for-permissions
