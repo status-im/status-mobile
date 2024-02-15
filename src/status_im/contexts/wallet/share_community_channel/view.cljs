@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.share-community-channel.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.common.qr-codes.view :as qr-codes]
-    [status-im.contexts.wallet.share-community-channel.style :as style]
-    [utils.i18n :as i18n]
-    [utils.image-server :as image-server]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.common.qr-codes.view :as qr-codes]
+   [status-im.contexts.wallet.share-community-channel.style :as style]
+   [utils.i18n :as i18n]
+   [utils.image-server :as image-server]
+   [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -26,7 +26,7 @@
             title                           (i18n/label :t/share-channel)]
         [quo/overlay {:type :shell}
          [rn/view
-          {:padding-top padding-top
+          {:style {:padding-top padding-top}
            :key         :share-community}
           [quo/page-nav
            {:icon-name           :i/close

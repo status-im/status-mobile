@@ -25,10 +25,6 @@
   [total-width]
   (- total-width 40))
 
-(defn community-share-wrapper
-  [padding-top]
-  {:padding-top padding-top})
-
 (defn gradient-cover-wrapper
   [width]
   {:width         (gradient-cover-size width)
