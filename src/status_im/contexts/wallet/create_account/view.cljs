@@ -121,6 +121,7 @@
          [standard-auth/slide-button
           {:size                :size-48
            :track-text          (i18n/label :t/slide-to-create-account)
+           :on-close            #(rf/dispatch [:profile.login/reset-password])
            :customization-color @account-color
            :on-auth-success     (fn [entered-password]
                                   (if new-keypair

@@ -17,9 +17,7 @@
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
    (let [account (get-in db [:wallet :accounts address])]
-     {:db (-> db
-              (update :wallet dissoc :navigate-to-account :new-account?)
-              (update :profile/login dissoc :password))
+     {:db (update db :wallet dissoc :navigate-to-account :new-account?)
       :fx [[:dispatch
             [:toasts/upsert
              {:id   :new-wallet-account-created
