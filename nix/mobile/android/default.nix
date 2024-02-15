@@ -2,7 +2,7 @@
 , jsbundle, status-go, androidPkgs, androidShell }:
 
 rec {
-  release = callPackage ./release.nix {
+  build = callPackage ./build.nix {
     inherit jsbundle status-go;
   };
 
@@ -15,7 +15,7 @@ rec {
     ];
 
     inputsFrom = [
-      (release {})
+      (build {})
       androidShell
     ];
 
