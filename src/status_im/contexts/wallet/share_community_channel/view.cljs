@@ -40,7 +40,7 @@
            [quo/gradient-cover
             {:container-style
              (style/gradient-cover-wrapper window-width)
-             :customization-color (:color chat)}]
+             :customization-color color}]
            [rn/view
             {:style {:padding-vertical 12}}
             [qr-codes/qr-code
