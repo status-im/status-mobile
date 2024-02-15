@@ -58,8 +58,15 @@ xcrun simctl boot "$UUID"
 # start the simulator
 open -a Simulator --args -CurrentDeviceUDID "$UUID"
 
+BUILD_DIR="${GIT_ROOT}/build"
+
 #iOS build of debug scheme
-xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme StatusIm -destination id="$UUID" | xcbeautify
+xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme StatusIm -destination id="$UUID" -derivedDataPath "${BUILD_DIR}" | xcbeautify
+
+APP_PATH="${BUILD_DIR}/Build/Products/Debug-iphonesimulator/StatusIm.app"
+
+# Install on the simulator
+xcrun simctl install "$UUID" "$APP_PATH"
 
 trap cleanupMetro EXIT ERR INT QUIT
 runMetro &
