@@ -34,8 +34,7 @@
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:navigate-to :wallet-accounts address]]
+    :fx [[:dispatch [:navigate-to :wallet-accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
@@ -201,7 +200,8 @@
  (fn [_ [account-details]]
    (let [on-success (fn [derived-address-details]
                       (rf/dispatch [:wallet/add-account account-details
-                                    (first derived-address-details)]))]
+                                    (first derived-address-details)])
+                      (rf/dispatch [:hide-bottom-sheet]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
 (rf/reg-event-fx :wallet/bridge-select-token
