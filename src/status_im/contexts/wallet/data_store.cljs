@@ -22,6 +22,15 @@
   [account]
   (assoc account :watch-only? (= (:type account) :watch)))
 
+(defn- sanitize-emoji
+  "As Desktop uses Twemoji, the emoji received can be an img tag 
+   with raw emoji in alt attribute. This function help us to extract 
+   the emoji from it as mobile doesn't support HTML rendering and Twemoji"
+  [emoji]
+  (if (string/starts-with? emoji "<img")
+    (-> (re-find #"alt=\"(.*?)\"" emoji) last)
+    emoji))
+
 (defn rpc->account
   [account]
   (-> account
@@ -33,6 +42,7 @@
       (update :test-preferred-chain-ids chain-ids-string->set)
       (update :type keyword)
       (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))
+      (update :emoji sanitize-emoji)
       (assoc :default-account? (:wallet account))
       add-keys-to-account))
 
