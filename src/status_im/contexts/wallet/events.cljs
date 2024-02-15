@@ -390,16 +390,16 @@
 (rf/reg-event-fx :wallet/secret-phrase
  (fn [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
    {:db (-> db
-            (assoc-in [:wallet :ui :secret-phrase] secret-phrase)
-            (assoc-in [:wallet :ui :random-phrase] random-phrase))
+            (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
+            (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
     :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]}))
 
 (rf/reg-event-fx :wallet/new-keypair-continue
  (fn [{:keys [db]} [{:keys [new-keypair]}]]
    {:db (-> db
-            (assoc-in [:wallet :ui :new-keypair] new-keypair))
+            (assoc-in [:wallet :ui :create-account :new-keypair] new-keypair))
     :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]}))
 
 (rf/reg-event-fx :wallet/clear-new-keypair
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui] dissoc :new-keypair)}))
+   {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)}))

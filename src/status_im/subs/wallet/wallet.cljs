@@ -39,9 +39,9 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
- :wallet/new-mnemonic
+ :wallet/create-account
  :<- [:wallet/ui]
- :-> :new-mnemonic)
+ :-> :create-account)
 
 (rf/reg-sub
  :wallet/current-viewing-account-address

@@ -65,6 +65,7 @@
     (fn [{:keys [theme]}]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:type       :no-title
@@ -141,6 +142,9 @@
 =======
 >>>>>>> d48b12035 (lint)
       (let [{:keys [new-keypair]} (rf/sub [:wallet/ui])]
+=======
+      (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
+>>>>>>> 49af521e5 (review)
         (rn/use-effect (fn [] #(rf/dispatch [:wallet/clear-new-keypair])))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
