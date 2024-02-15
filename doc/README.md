@@ -28,6 +28,8 @@
 
 [Contributing to status-go](status-go-changes.md)
 
+[Malli schemas (recorded demo)](https://drive.google.com/file/d/1orqa8Ky2mVqGJCLksgRF7F5hqjurMxt0/view)
+
 ## Testing
 
 [How to run local tests](testing.md)
