@@ -6,10 +6,10 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.string :as utils]))
 
 (defn- word-item
   [item index _ increment]
@@ -37,17 +37,17 @@
 
 (defn- f-view
   [{:keys [theme]}]
-  (let [step-labels                   [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
-                                       :t/backup-step-4]
-        checked?                      (reagent/atom
-                                       {:0 false
-                                        :1 false
-                                        :2 false
-                                        :3 false})
-        revealed?                     (reagent/atom false)
-        {:keys [customization-color]} (rf/sub [:profile/profile])
-        secret-phrase                 (reagent/atom [])
-        random-phrase                 (reagent/atom [])]
+  (let [step-labels         [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
+                             :t/backup-step-4]
+        checked?            (reagent/atom
+                             {:0 false
+                              :1 false
+                              :2 false
+                              :3 false})
+        revealed?           (reagent/atom false)
+        customization-color (rf/sub [:profile/customization-color])
+        secret-phrase       (reagent/atom [])
+        random-phrase       (reagent/atom [])]
     (fn []
       (rn/use-effect
        (fn []

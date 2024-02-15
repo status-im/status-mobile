@@ -30,7 +30,7 @@
 
 (defn- cheat-warning
   []
-  (let [{:keys [customization-color]} (rf/sub [:profile/profile])]
+  (let [customization-color (rf/sub [:profile/customization-color])]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
      [quo/text
@@ -67,26 +67,26 @@
         show-error?                           (reagent/atom false)
         {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/ui])]
     (fn []
-      (let [current-word-index        (get random-indices
-                                           (min @quiz-index (dec questions-count)))
-            current-word              (get secret-phrase current-word-index)
-            [options-r-0 options-r-1] (random-words-with-string random-phrase current-word)
-            on-button-press           (fn [word]
-                                        (if (= word current-word)
-                                          (do
-                                            (when (< @quiz-index 4)
-                                              (reset! quiz-index (inc @quiz-index)))
-                                            (reset! incorrect-count 0)
-                                            (reset! show-error? false)
-                                            (when (= @quiz-index 4)
-                                              (rf/dispatch [:navigate-to
-                                                            :wallet-keypair-name])))
-                                          (do
-                                            (when (> @incorrect-count 0)
-                                              (rf/dispatch [:show-bottom-sheet
-                                                            {:content cheat-warning}]))
-                                            (reset! incorrect-count (inc @incorrect-count))
-                                            (reset! show-error? true))))]
+      (let [current-word-index            (get random-indices
+                                               (min @quiz-index (dec questions-count)))
+            current-word                  (get secret-phrase current-word-index)
+            [options-row-0 options-row-1] (random-words-with-string random-phrase current-word)
+            on-button-press               (fn [word]
+                                            (if (= word current-word)
+                                              (do
+                                                (when (< @quiz-index 4)
+                                                  (reset! quiz-index (inc @quiz-index)))
+                                                (reset! incorrect-count 0)
+                                                (reset! show-error? false)
+                                                (when (= @quiz-index 4)
+                                                  (rf/dispatch [:navigate-to
+                                                                :wallet-keypair-name])))
+                                              (do
+                                                (when (> @incorrect-count 0)
+                                                  (rf/dispatch [:show-bottom-sheet
+                                                                {:content cheat-warning}]))
+                                                (reset! incorrect-count (inc @incorrect-count))
+                                                (reset! show-error? true))))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left
@@ -124,9 +124,9 @@
           [buttons-row
            {:on-press      on-button-press
             :margin-bottom 12
-            :options       options-r-0}]
+            :options       options-row-0}]
           [buttons-row
            {:on-press on-button-press
-            :options  options-r-1}]]]))))
+            :options  options-row-1}]]]))))
 
 (def view (quo.theme/with-theme view-internal))

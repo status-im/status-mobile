@@ -275,6 +275,7 @@
 (defn get-balance-for-chain
   [data chain-id]
   (some #(when (= chain-id (:chain-id %)) %) (vals data)))
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -306,3 +307,5 @@
   (->> (clojure.string/split str #"\s")
        (vec)))
 >>>>>>> 2d6aa482f (feat: new keypair)
+=======
+>>>>>>> 8db6aedb6 (review)
