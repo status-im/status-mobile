@@ -214,7 +214,7 @@ build-fdroid: ##@build Build release for F-Droid
 
 build-android: export BUILD_ENV ?= prod
 build-android: export BUILD_TYPE ?= nightly
-build-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
+build-android: export ORG_GRADLE_PROJECT_versionCode ?= $(TMP_BUILD_NUMBER)
 build-android: export ANDROID_ABI_SPLIT ?= false
 build-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 build-android: ##@build Build unsigned Android APK

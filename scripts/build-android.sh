@@ -21,8 +21,6 @@ function append_env_export() {
   VAR_VALUE=$(must_get_env "${VAR_NAME}")
   echo "export ${VAR_NAME}=\"${VAR_VALUE}\";" >> "${SECRETS_FILE_PATH}"
 }
-
-export COMMIT_HASH="$(git rev-parse --verify HEAD)"
 nixOpts=()
 
 # We create if now so the trap knows its location
@@ -73,4 +71,4 @@ else
 fi
 
 
-"${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.release "${nixOpts[@]}"
+"${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.build "${nixOpts[@]}"

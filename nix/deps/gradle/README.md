@@ -6,7 +6,7 @@ This directory contains the tools and the data that allows Nix to manage Gradle 
 
 Simply calling `generate.sh` should result in a `deps.json` file which is used in the derivation that provides Gradle dependencies when building the Android app.
 
-You can see in [`nix/mobile/android/release.nix`](../../mobile/android/release.nix) that it's used via the `-Dmaven.repo.local='${deps.gradle}'` Gradle flag.
+You can see in [`nix/mobile/android/release.nix`](../../mobile/android/build.nix) that it's used via the `-Dmaven.repo.local='${deps.gradle}'` Gradle flag.
 
 # Files
 

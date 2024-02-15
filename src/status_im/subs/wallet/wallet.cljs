@@ -190,7 +190,7 @@
 
 (rf/reg-sub
  :wallet/accounts-without-watched-accounts
- :<- [:wallet/accounts]
+ :<- [:wallet/accounts-with-customization-color]
  (fn [accounts]
    (remove #(:watch-only? %) accounts)))
 
