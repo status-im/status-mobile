@@ -7,15 +7,15 @@
   # Path to the file containing secret environment variables
   secretsFile ? "",
   # Build type (influences which .env file gets used for feature flags)
-  # TODO: pr or relase for default?
   buildType ? lib.getEnvWithDefault "BUILD_TYPE" "release",
   # Used for versionCode
-  buildNumber ? lib.getEnvWithDefault "BUILD_NUMBER" 9999,
+  versionCode ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_versionCode" 9999,
   # Included in APK Manifest for easier identification.
-  # TODO: or GIT_COMMIT from Jenkins?
-  commitHash ? lib.getEnvWithDefault "COMMIT_HASH" "unknown",
-  # Gradle options passed for Android builds
-  androidGradleOpts ? lib.getEnvWithDefault "ANDROID_GRADLE_OPTS" null,
+  commitHash ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_commitHash" "unknown",
+  # Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
+  # https://github.com/status-im/status-mobile/issues/18493
+  hermesEnabled ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_hermesEnabled" "true",
+  buildUrl ? lib.getEnvWithDefault "ORG_GRADLE_PROJECT_buildUrl" null,
   statusGoSrcOverride ? lib.getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null,
   # If APKs should be split based on architectures
   androidAbiSplit ? lib.getEnvWithDefault "ANDROID_ABI_SPLIT" "false",
@@ -83,7 +83,10 @@ in stdenv.mkDerivation rec {
   ANDROID_ABI_INCLUDE = androidAbiInclude;
   # Disabled for debug builds to avoid 'maximum call stack exceeded' errors.
   # https://github.com/status-im/status-mobile/issues/18493
-  ORG_GRADLE_PROJECT_hermesEnabled = true;
+  ORG_GRADLE_PROJECT_versionCode = versionCode;
+  ORG_GRADLE_PROJECT_commitHash = commitHash;
+  ORG_GRADLE_PROJECT_buildUrl = buildUrl;
+  ORG_GRADLE_PROJECT_hermesEnabled = hermesEnabled;
 
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
@@ -118,8 +121,6 @@ in stdenv.mkDerivation rec {
 
     # Symlink React Native entrypoint.
     cp -Lr ${builtJsBundle} ./result
-    pwd
-    find -L result
 
     # Copy android/ directory
     mkdir -p ./android/build
@@ -146,7 +147,6 @@ in stdenv.mkDerivation rec {
       "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ pkgs.zlib ]}";
     gradleCommand = ''
       ${pkgs.gradle}/bin/gradle \
-      ${toString androidGradleOpts} \
       --console=plain \
       --offline \
       --no-daemon \
@@ -154,8 +154,6 @@ in stdenv.mkDerivation rec {
       --no-watch-fs \
       --no-build-cache \
       -Dmaven.repo.local='${deps.gradle}' \
-      -PversionCode=${toString buildNumber} \
-      -PcommitHash=${commitHash} \
       assemble${gradleBuildType}
     '';
   in
