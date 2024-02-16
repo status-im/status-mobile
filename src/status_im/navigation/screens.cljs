@@ -331,7 +331,8 @@
      :component wallet-edit-account/view}
 
     {:name      :add-address-to-watch
-     :options   {:insets {:top? true}}
+     :options   {:insets                 {:top? true}
+                 :modalPresentationStyle :overCurrentContext}
      :component add-address-to-watch/view}
 
     {:name      :confirm-address-to-watch

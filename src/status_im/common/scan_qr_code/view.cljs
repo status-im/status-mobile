@@ -20,8 +20,14 @@
 
 (defonce camera-permission-granted? (reagent/atom false))
 
+(defn- get-navigate-back-fn
+  [navigate-back-fn]
+  (if (fn? navigate-back-fn)
+    (navigate-back-fn)
+    (rf/dispatch [:navigate-back])))
+
 (defn- header
-  [{:keys [title subtitle]}]
+  [{:keys [title subtitle on-press-back]}]
   [:<>
    [rn/view {:style style/header-container}
     [quo/button
@@ -30,7 +36,7 @@
       :background          :blur
       :size                32
       :accessibility-label :close-scan-qr-code
-      :on-press            #(rf/dispatch [:navigate-back])}
+      :on-press            on-press-back}
      :i/arrow-left]]
    [quo/text
     {:size   :heading-1
@@ -181,12 +187,12 @@
     #(.remove app-state-listener)))
 
 (defn- navigate-back-handler
-  []
-  (rf/dispatch [:navigate-back])
+  [navigate-back]
+  (navigate-back)
   true)
 
 (defn f-view-internal
-  [{:keys [title subtitle validate-fn on-success-scan error-message]}]
+  [{:keys [title subtitle validate-fn on-success-scan navigate-back-fn error-message]}]
   (let [insets             (safe-area/get-insets)
         qr-code-succeed?   (reagent/atom false)
         qr-view-finder     (reagent/atom {})
@@ -194,7 +200,11 @@
         scan-code?         (reagent/atom true)
         set-rescan-timeout (fn []
                              (reset! scan-code? false)
-                             (js/setTimeout #(reset! scan-code? true) 3000))]
+                             (js/setTimeout #(reset! scan-code? true) 3000))
+        ;; NOTE: use " navigate-back-fn " prop only
+        ;; when you want to handle the navigation event
+        navigate-back      #(get-navigate-back-fn navigate-back-fn)
+        back-handler       #(navigate-back-handler navigate-back)]
     (fn []
       (let [torch-mode            (if @torch? :on :off)
             flashlight-icon       (if @torch? :i/flashlight-on :i/flashlight-off)
@@ -204,14 +214,14 @@
                                        (not @qr-code-succeed?))]
         (rn/use-effect
          (fn []
-           (rn/hw-back-add-listener navigate-back-handler)
+           (rn/hw-back-add-listener back-handler)
            (set-listener-torch-off-on-app-inactive torch?)
            (when-not @camera-permission-granted?
              (permissions/permission-granted?
               :camera
               #(reset! camera-permission-granted? %)
               #(reset! camera-permission-granted? false)))
-           #(rn/hw-back-remove-listener navigate-back-handler)))
+           #(rn/hw-back-remove-listener back-handler)))
         [:<>
          [rn/view {:style style/background}]
          (when camera-ready-to-scan?
@@ -224,12 +234,13 @@
              :set-qr-code-succeeded (fn [value]
                                       (when on-success-scan
                                         (on-success-scan value))
-                                      (rf/dispatch [:navigate-back]))
+                                      (navigate-back))
              :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [header
-           {:title    title
-            :subtitle subtitle}]
+           {:title         title
+            :subtitle      subtitle
+            :on-press-back navigate-back}]
           (when (empty? @qr-view-finder)
             [:<>
              [rn/view {:style style/scan-qr-code-container}]

@@ -89,6 +89,11 @@
  :-> :watch-address-activity-state)
 
 (rf/reg-sub
+ :wallet/address-to-watch
+ :<- [:wallet/ui]
+ :-> :address-to-watch)
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]

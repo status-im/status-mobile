@@ -64,7 +64,8 @@
       {:type            :outline
        :on-press        (fn []
                           (rn/dismiss-keyboard!)
-                          (rf/dispatch [:open-modal :scan-address]))
+                          (rf/dispatch [:navigate-to-within-stack
+                                        [:scan-address :add-address-to-watch]]))
        :container-style style/scan
        :size            40
        :icon-only?      true}
@@ -127,9 +128,10 @@
                    :disabled?           (or (string/blank? @input-value)
                                             (some? (validate @input-value)))
                    :on-press            (fn []
-                                          (rf/dispatch [:navigate-to
-                                                        :confirm-address-to-watch
-                                                        {:address @input-value}])
+                                          (rf/dispatch [:wallet/add-address-to-watch @input-value])
+                                          (rf/dispatch [:navigate-to-within-stack
+                                                        [:confirm-address-to-watch
+                                                         :add-address-to-watch]])
                                           (clear-input))
                    :container-style     {:z-index 2}}
                   (i18n/label :t/continue)]}

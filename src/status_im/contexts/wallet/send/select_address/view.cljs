@@ -38,7 +38,8 @@
         :on-scan               (fn []
                                  (rn/dismiss-keyboard!)
                                  (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:open-modal :scan-address]))
+                                 (rf/dispatch [:navigate-to-within-stack
+                                               [:scan-address :wallet-select-address]]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :address-regex         constants/regx-multichain-address

@@ -46,6 +46,16 @@
     :fx [[:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx
+ :wallet/add-address-to-watch
+ (fn [{:keys [db]} [address]]
+   {:db (assoc-in db [:wallet :ui :address-to-watch] address)}))
+
+(rf/reg-event-fx
+ :wallet/clean-address-to-watch
+ (fn [{:keys [db]}]
+   {:db (update db [:wallet :ui] dissoc :address-to-watch)}))
+
+(rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
    (let [wallet-accounts     (filter #(not (:chat %)) accounts)
@@ -170,7 +180,8 @@
                 :wallet              assoc
                 :navigate-to-account address
                 :new-account?        true)
-    :fx [[:dispatch [:wallet/get-accounts]]]}))
+    :fx [[:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/clean-address-to-watch]]]}))
 
 (rf/reg-event-fx :wallet/add-account
  (fn [{:keys [db]}

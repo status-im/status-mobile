@@ -14,7 +14,7 @@
 
 (defn view
   []
-  (let [{:keys [address]}  (rf/sub [:get-screen-params])
+  (let [address            (rf/sub [:wallet/address-to-watch])
         number-of-accounts (count (rf/sub [:wallet/watch-only-accounts]))
         account-name       (reagent/atom "")
         placeholder        (i18n/label :t/default-watched-address-placeholder

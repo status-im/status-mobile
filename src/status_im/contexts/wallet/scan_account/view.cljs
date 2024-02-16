@@ -2,7 +2,8 @@
   (:require [status-im.common.scan-qr-code.view :as scan-qr-code]
             [status-im.constants :as constants]
             [utils.debounce :as debounce]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn- contains-address?
   [s]
@@ -15,10 +16,11 @@
 (defn view
   []
   [scan-qr-code/view
-   {:title           (i18n/label :t/scan-qr)
-    :subtitle        (i18n/label :t/scan-an-account-qr-code)
-    :error-message   (i18n/label :t/oops-this-qr-does-not-contain-an-address)
-    :validate-fn     #(contains-address? %)
-    :on-success-scan #(debounce/debounce-and-dispatch [:wallet/scan-address-success
-                                                       (extract-address %)]
-                                                      300)}])
+   {:title            (i18n/label :t/scan-qr)
+    :subtitle         (i18n/label :t/scan-an-account-qr-code)
+    :error-message    (i18n/label :t/oops-this-qr-does-not-contain-an-address)
+    :validate-fn      #(contains-address? %)
+    :on-success-scan  #(debounce/debounce-and-dispatch [:wallet/scan-address-success
+                                                        (extract-address %)]
+                                                       300)
+    :navigate-back-fn #(rf/dispatch [:navigate-back-within-stack :scan-address])}])

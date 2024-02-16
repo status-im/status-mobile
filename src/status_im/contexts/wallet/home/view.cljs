@@ -23,7 +23,7 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :add-address-to-watch])
+      :on-press            #(rf/dispatch [:open-modal :add-address-to-watch])
       :add-divider?        true}]]])
 
 (defn- new-account-card-data
