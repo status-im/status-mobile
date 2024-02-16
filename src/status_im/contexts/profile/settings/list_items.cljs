@@ -48,19 +48,19 @@
      :blur?       true
      :action      :arrow}]
    [{:title       (i18n/label :t/syncing)
-     :on-press    #(rf/dispatch [:navigate-to :settings-syncing])
+     :on-press    #(rf/dispatch [:open-modal :settings-syncing])
      :image-props :i/syncing
      :image       :icon
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/notifications)
-     :on-press    #(rf/dispatch [:navigate-to :notifications])
+     :on-press    #(rf/dispatch [:open-modal :notifications])
      :image-props :i/activity-center
      :image       :icon
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/appearance)
-     :on-press    #(rf/dispatch [:navigate-to :appearance])
+     :on-press    #(rf/dispatch [:open-modal :appearance])
      :image-props :i/light
      :image       :icon
      :blur?       true
@@ -78,28 +78,28 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/advanced)
-     :on-press    #(rf/dispatch [:navigate-to :advanced-settings])
+     :on-press    #(rf/dispatch [:open-modal :advanced-settings])
      :image-props :i/settings
      :image       :icon
      :blur?       true
      :action      :arrow}]
    ;; temporary link to legacy settings
    [{:title       "Legacy settings"
-     :on-press    #(rf/dispatch [:navigate-to :my-profile])
+     :on-press    #(rf/dispatch [:open-modal :my-profile])
      :action      :arrow
      :image       :icon
      :blur?       true
      :image-props :i/toggle}
     (when config/quo-preview-enabled?
       {:title       "Quo preview"
-       :on-press    #(rf/dispatch [:navigate-to :quo-preview])
+       :on-press    #(rf/dispatch [:open-modal :quo-preview])
        :action      :arrow
        :image       :icon
        :blur?       true
        :image-props :i/light})
     (when config/quo-preview-enabled?
       {:title       "Feature Flags"
-       :on-press    #(rf/dispatch [:navigate-to :feature-flags])
+       :on-press    #(rf/dispatch [:open-modal :feature-flags])
        :action      :arrow
        :image       :icon
        :blur?       true
