@@ -53,7 +53,7 @@
         :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
        error-message]])
 
-   (when (= description :top)
+   (when (and (= description :top) role)
      [rn/view
       {:style style/description-top}
       [text/text
