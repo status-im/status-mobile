@@ -29,7 +29,6 @@ in {
     inputsFrom = [
       fastlane.shell
       cocoapods-sh
-      nodejs-sh    # before 'pod install'
       bundler-sh   # before 'pod install'
       status-go-sh # before 'pod install'
     ];
