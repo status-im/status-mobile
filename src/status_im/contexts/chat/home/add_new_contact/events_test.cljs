@@ -104,6 +104,7 @@
                              :id              ukey
                              :type            :public-key
                              :public-key      ukey
+                             :scanned         ukey
                              :state           :invalid
                              :msg             :t/not-a-chatkey}))}
 
@@ -116,6 +117,7 @@
                              :type            :ens
                              :ens             ens-stateofus-eth
                              :public-key      nil ; not yet...
+                             :scanned         ens
                              :state           :resolve-ens}))
                 :effects.contacts/resolve-public-key-from-ens
                 {:chain-id   1
@@ -132,6 +134,7 @@
                              :id              user-ckey
                              :type            :compressed-key
                              :public-key      nil ; not yet...
+                             :scanned         user-ckey
                              :state           :decompress-key}))
                 :serialization/decompress-public-key
                 {:compressed-key user-ckey
