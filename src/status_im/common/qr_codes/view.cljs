@@ -33,9 +33,12 @@
   (let [qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                              {:url         url
                               :port        (rf/sub [:mediaserver/port])
-                              :qr-size     (or 400 (int size))
+                              :qr-size     (or (int size) 400)
                               :error-level :highest})]
-    [quo/qr-code (assoc props :qr-image-uri qr-media-server-uri)]))
+    [quo/qr-code
+     (assoc props
+            :qr-image-uri
+            qr-media-server-uri)]))
 
 (defn get-network-short-name-url
   [network]

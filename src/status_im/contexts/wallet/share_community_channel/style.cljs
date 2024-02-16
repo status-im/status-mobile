@@ -7,14 +7,13 @@
 
 (def scan-notice
   {:color        colors/neutral-40
-   :margin-top   12
+   :margin-top   16
    :margin-left  :auto
    :margin-right :auto})
 
-(def qr-size 500)
-
 (def qr-code-wrapper
-  {:padding-horizontal 20
+  {:margin-top         8
+   :padding-horizontal 20
    :align-items        :center})
 
 (def gradient-cover-padding 20)

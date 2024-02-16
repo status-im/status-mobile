@@ -161,3 +161,20 @@
       (is (not (:can-delete-message-for-everyone? (rf/sub [sub-name]))))
       (is (not (:group-admin? (rf/sub [sub-name]))))
       (is (not (:message-pin-enabled (rf/sub [sub-name])))))))
+
+
+(h/deftest-sub :chats/community-channel-ui-details-by-id
+  [sub-name]
+  (testing "returns specific ui details of a given community channel chat id"
+    (let [chats {chat-id (assoc community-chat
+                                :color     :army
+                                :chat-name "test")}]
+      (swap! rf-db/app-db assoc
+        :profile/profile multiaccount
+        :current-chat-id chat-id
+        :chats           chats)
+      (let [result (rf/sub [sub-name])]
+        (is (= 3 (count (keys result))))
+        (is (= :army (:color result)))
+        (is (= "test" (:chat-name result)))
+        (is (= "🍑" (:emoji result)))))))
