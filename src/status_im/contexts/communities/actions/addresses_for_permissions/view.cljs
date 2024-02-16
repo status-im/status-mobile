@@ -1,8 +1,7 @@
 (ns status-im.contexts.communities.actions.addresses-for-permissions.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [status-im.common.not-implemented :as not-implemented]
+            [react-native.gesture :as gesture] 
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
@@ -74,8 +73,7 @@
            :context-tag-type    :community
            :community-name      name
            :button-icon         :i/info
-           :button-type         :grey
-           :on-button-press     not-implemented/alert
+           :on-button-press     #(rf/dispatch [:show-bottom-sheet {:content detail-token-gating/view}])
            :community-logo      (get-in images [:thumbnail :uri])
            :customization-color color}]
 

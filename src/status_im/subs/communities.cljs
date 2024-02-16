@@ -408,6 +408,13 @@
    (first (filter #(= (:address %) airdrop-address) accounts))))
 
 (re-frame/reg-sub
-  :communities/checking-all-channels-permissions?
-  (fn [db [_ community-id]]
-    (get-in db [:communities community-id])))
+ :communities/checking-all-channels-permissions?
+ (fn [db [_ community-id]]
+   (get-in db [:communities community-id])))
+
+(re-frame/reg-sub
+ :community/token-permissions
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/community community-id]))
+ (fn [community _]
+   (:token-permissions community)))

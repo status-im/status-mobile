@@ -1,17 +1,10 @@
-(ns status-im.contexts.communities.actions.detail-token-gating.style
-  (:require
-    ;; [quo.core :as quo]
-    ;; [utils.i18n :as i18n]
-   ))
+(ns status-im.contexts.communities.actions.detail-token-gating.style)
 
-(def container 
-  {:flex 1
-   :background-color :white
-   :padding 20})
+(def container
+  {:flex             1
+   :background-color :white})
 
 (def highest-role
-  {:flex-direction  :row
-   :gap             4
-   :justify-content :center
-   :align-items     :center
-   :margin-bottom   8})
+  {:flex-direction     :row
+   :padding-horizontal 22
+   :margin-bottom      8})
