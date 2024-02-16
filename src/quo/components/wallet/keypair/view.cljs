@@ -1,0 +1,109 @@
+(ns quo.components.wallet.keypair.view
+  (:require
+    [clojure.string :as string]
+    [quo.components.avatars.icon-avatar :as icon-avatar]
+    [quo.components.avatars.user-avatar.view :as user-avatar]
+    [quo.components.icon :as icon]
+    [quo.components.list-items.account-list-card.view :as account-list-card]
+    [quo.components.markdown.text :as text]
+    [quo.components.selectors.selectors.view :as selectors]
+    [quo.components.wallet.keypair.style :as style]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [utils.i18n :as i18n]))
+
+(defn keypair-string
+  [full-name]
+  (let [first-name (first (string/split full-name #" "))]
+    (i18n/label :t/keypair-title {:name first-name})))
+
+(defn avatar
+  [{{:keys [full-name]} :details
+    avatar-type         :type
+    customization-color :customization-color
+    profile-picture     :profile-picture}]
+  (if (= avatar-type :default-keypair)
+    [user-avatar/user-avatar
+     {:full-name           full-name
+      :ring?               true
+      :size                :small
+      :status-indicator?   false
+      :customization-color customization-color
+      :profile-picture     profile-picture}]
+    [icon-avatar/icon-avatar
+     {:size    :size-32
+      :icon    :i/placeholder
+      :border? true}]))
+
+(defn title-view
+  [{:keys [details action selected? type blur? customization-color on-options-press theme]}]
+  (let [{:keys [full-name]} details]
+    [rn/view
+     {:style               style/title-container
+      :accessibility-label :title}
+     [text/text {:weight :semi-bold}
+      (if (= type :default-keypair) (keypair-string full-name) full-name)]
+     (if (= action :selector)
+       [selectors/view
+        {:type                :radio
+         :checked?            selected?
+         :blur?               blur?
+         :customization-color customization-color}]
+       [rn/pressable {:on-press on-options-press}
+        [icon/icon :i/options
+         {:color               (if blur?
+                                 colors/white-opa-70
+                                 (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
+          :accessibility-label :options-button}]])]))
+
+(defn details-view
+  [{:keys [details stored blur? theme]}]
+  (let [{:keys [address]} details]
+    [rn/view
+     {:style               {:flex-direction :row
+                            :align-items    :center}
+      :accessibility-label :details}
+     [text/text
+      {:size  :paragraph-2
+       :style (style/subtitle blur? theme)}
+      address]
+     [text/text
+      {:size  :paragraph-2
+       :style (merge (style/subtitle blur? theme) {:bottom (if platform/ios? 2 -2)})}
+      " ∙ "]
+     [text/text
+      {:size  :paragraph-2
+       :style (style/subtitle blur? theme)}
+      (if (= stored :on-device) (i18n/label :t/on-device) (i18n/label :t/on-keycard))]
+     (when (= stored :on-keycard)
+       [rn/view {:style {:margin-left 4}}
+        [icon/icon :i/keycard-card
+         {:size  16
+          :color (if blur?
+                   colors/white-opa-40
+                   (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]))
+
+(defn- view-internal
+  []
+  (let [selected? (reagent/atom true)]
+    (fn [{:keys [accounts action container-style] :as props}]
+      [rn/pressable
+       {:style    (merge (style/container (merge props {:selected? @selected?})) container-style)
+        :on-press #(when (= action :selector) (reset! selected? (not @selected?)))}
+       [rn/view {:style style/header-container}
+        [avatar props]
+        [rn/view
+         {:style {:margin-left 8
+                  :flex        1}}
+         [title-view (assoc props :selected? @selected?)]
+         [details-view props]]]
+       [rn/flat-list
+        {:data      accounts
+         :render-fn account-list-card/view
+         :separator [rn/view {:style {:height 8}}]
+         :style     {:padding-horizontal 8}}]])))
+
+(def view (quo.theme/with-theme view-internal))
