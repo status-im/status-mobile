@@ -91,7 +91,7 @@
             :button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
-                               :on-press            #(rf/dispatch [:wallet/secret-phrase
+                               :on-press            #(rf/dispatch [:wallet/store-secret-phrase
                                                                    {:secret-phrase @secret-phrase
                                                                     :random-phrase @random-phrase}])}}]
           [quo/text
