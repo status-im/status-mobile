@@ -1,13 +1,12 @@
 (ns status-im.contexts.chat.home.add-new-contact.events
   (:require
     [clojure.string :as string]
+    [re-frame.core :as re-frame]
     [status-im.common.validators :as validators]
     [status-im.contexts.chat.contacts.events :as data-store.contacts]
     status-im.contexts.chat.home.add-new-contact.effects
-    [status-im.navigation.events :as navigation]
     [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
-    [utils.re-frame :as rf]
     [utils.string :as utils.string]))
 
 (defn init-contact
@@ -87,72 +86,64 @@
 
 (def validate-contact (comp ->state ->type ->id))
 
-(defn dispatcher [event input] (fn [arg] (rf/dispatch [event input arg])))
+(declare build-contact)
 
-(rf/defn set-new-identity
-  {:events [:contacts/set-new-identity]}
-  [{:keys [db]} input scanned]
+(defn set-new-identity
+  [{:keys [db]} [{:keys [input build-success-fn failure-fn]}]]
   (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
          :as   contact} (-> {:user-public-key user-public-key
                              :input           input
-                             :scanned         scanned}
+                             :scanned         input}
                             init-contact
                             validate-contact)]
     (case state
-
       :empty            {:db (dissoc db :contacts/new-identity)}
       (:valid :invalid) {:db (assoc db :contacts/new-identity contact)}
       :decompress-key   {:db (assoc db :contacts/new-identity contact)
                          :serialization/decompress-public-key
                          {:compressed-key id
                           :on-success
-                          (dispatcher :contacts/set-new-identity-success input)
+                          #(re-frame/dispatch [:contacts/set-new-identity-success
+                                               {:input            input
+                                                :pubkey           %
+                                                :build-success-fn build-success-fn}])
                           :on-error
-                          (dispatcher :contacts/set-new-identity-error input)}}
+                          #(re-frame/dispatch [:contacts/set-new-identity-error
+                                               {:input      input
+                                                :pubkey     %
+                                                :failure-fn failure-fn}])}}
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
                          :effects.contacts/resolve-public-key-from-ens
                          {:chain-id (chain/chain-id db)
                           :ens ens
                           :on-success
-                          (dispatcher :contacts/set-new-identity-success input)
+                          #(re-frame/dispatch [:contacts/set-new-identity-success
+                                               {:input            input
+                                                :pubkey           %
+                                                :build-success-fn build-success-fn}])
                           :on-error
-                          (dispatcher :contacts/set-new-identity-error input)}})))
+                          #(re-frame/dispatch [:contacts/set-new-identity-error
+                                               {:input      input
+                                                :pubkey     %
+                                                :failure-fn failure-fn}])}})))
 
+(re-frame/reg-event-fx :contacts/set-new-identity set-new-identity)
 
-
-(rf/defn build-contact
-  {:events [:contacts/build-contact]}
-  [_ pubkey ens open-profile-modal?]
-  {:json-rpc/call [{:method      "wakuext_buildContact"
-                    :params      [{:publicKey pubkey
-                                   :ENSName   ens}]
-                    :js-response true
-                    :on-success  #(rf/dispatch [:contacts/contact-built
-                                                pubkey
-                                                open-profile-modal?
-                                                (data-store.contacts/<-rpc-js %)])}]})
-
-(rf/defn contact-built
-  {:events [:contacts/contact-built]}
-  [{:keys [db]} pubkey open-profile-modal? contact]
-  (merge {:db (assoc-in db [:contacts/contacts pubkey] contact)}
-         (when open-profile-modal?
-           {:dispatch [:open-modal :profile]})))
-
-(rf/defn set-new-identity-success
-  {:events [:contacts/set-new-identity-success]}
-  [{:keys [db]} input pubkey]
+(defn- set-new-identity-success
+  [{:keys [db]} [{:keys [input pubkey build-success-fn]}]]
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
-      (rf/merge {:db (assoc db
-                            :contacts/new-identity
-                            (->state (assoc contact :public-key pubkey)))}
-                (build-contact pubkey (:ens contact) false)))))
+      {:db       (assoc db :contacts/new-identity (->state (assoc contact :public-key pubkey)))
+       :dispatch [:contacts/build-contact
+                  {:pubkey     pubkey
+                   :ens        (:ens contact)
+                   :success-fn build-success-fn}]})))
 
-(rf/defn set-new-identity-error
-  {:events [:contacts/set-new-identity-error]}
-  [{:keys [db]} input err]
+(re-frame/reg-event-fx :contacts/set-new-identity-success set-new-identity-success)
+
+(defn- set-new-identity-error
+  [{:keys [db]} [{:keys [input err failure-fn]}]]
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
       (let [state (cond
@@ -163,21 +154,41 @@
                              (string/includes? (:message err) "no such host")))
                     {:state :invalid :msg :t/lost-connection}
                     :else {:state :invalid})]
-        {:db (assoc db :contacts/new-identity (merge contact state))}))))
+        (merge {:db (assoc db :contacts/new-identity (merge contact state))}
+               (when failure-fn
+                 (failure-fn)))))))
 
-(rf/defn clear-new-identity
-  {:events [:contacts/clear-new-identity :contacts/new-chat-focus]}
+(re-frame/reg-event-fx :contacts/set-new-identity-error set-new-identity-error)
+
+(defn- build-contact
+  [_ [{:keys [pubkey ens success-fn]}]]
+  {:json-rpc/call [{:method      "wakuext_buildContact"
+                    :params      [{:publicKey pubkey
+                                   :ENSName   ens}]
+                    :js-response true
+                    :on-success  #(re-frame/dispatch [:contacts/build-contact-success
+                                                      {:pubkey     pubkey
+                                                       :contact    (data-store.contacts/<-rpc-js %)
+                                                       :success-fn success-fn}])}]})
+
+(re-frame/reg-event-fx :contacts/build-contact build-contact)
+
+(defn- build-contact-success
+  [{:keys [db]} [{:keys [pubkey contact success-fn]}]]
+  (merge {:db (assoc-in db [:contacts/contacts pubkey] contact)}
+         (when success-fn
+           (success-fn contact))))
+
+(re-frame/reg-event-fx :contacts/build-contact-success build-contact-success)
+
+(defn- clear-new-identity
   [{:keys [db]}]
   {:db (dissoc db :contacts/new-identity)})
 
-(rf/defn qr-code-scanned
-  {:events [:contacts/qr-code-scanned]}
-  [{:keys [db] :as cofx} scanned]
-  (rf/merge cofx
-            (set-new-identity scanned scanned)
-            (navigation/navigate-back)))
+(re-frame/reg-event-fx :contacts/clear-new-identity clear-new-identity)
 
-(rf/defn set-new-identity-reconnected
+(defn set-new-identity-reconnected
   [{:keys [db]}]
   (let [input (get-in db [:contacts/new-identity :input])]
-    (rf/dispatch [:contacts/set-new-identity input])))
+    (re-frame/dispatch [:contacts/set-new-identity {:input input}])))
+
