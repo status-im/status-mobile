@@ -13,8 +13,10 @@ export BUILD_TYPE=debug
 
 # Install the APK on running emulator or android device.
 installAndLaunchApp() {
-  adb install ./result/app-debug.apk > "${ADB_INSTALL_LOG_FILE}" 2>&1
+  adb install -r ./result/app-debug.apk > "${ADB_INSTALL_LOG_FILE}" 2>&1
   "${GIT_ROOT}/scripts/wait-for-metro-port.sh" 2>&1
+  # connected android devices need this port to be exposed for metro
+  adb reverse "tcp:${RCT_METRO_PORT}" "tcp:${RCT_METRO_PORT}"
   adb shell monkey -p im.status.ethereum.debug 1 > "${ADB_SHELL_MONKEY_LOG_FILE}" 2>&1
 }
 
