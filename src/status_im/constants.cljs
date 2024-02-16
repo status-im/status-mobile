@@ -107,6 +107,7 @@
 
 (def ^:const profile-default-color :blue)
 (def ^:const profile-name-max-length 24)
+(def ^:const profile-bio-max-length 240)
 (def ^:const profile-default-currency :usd)
 
 (def ^:const profile-pictures-show-to-contacts-only 1)
