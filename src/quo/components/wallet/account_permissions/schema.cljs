@@ -18,5 +18,6 @@
       [:disabled? {:optional true} [:maybe :boolean]]
       [:on-change {:optional true} [:maybe fn?]]
       [:container-style {:optional true} [:maybe :map]]
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:theme :schema.common/theme]]]]
    :any])
