@@ -10,7 +10,8 @@
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [reagent.core :as reagent]))
 
 (defn get-error-message
   [error]
@@ -21,15 +22,8 @@
     (i18n/label :t/oops-wrong-password)
     error))
 
-(defn- on-change-password
-  [entered-password]
-  (debounce/debounce-and-dispatch [:profile/on-password-input-changed
-                                   {:password (security/mask-data entered-password)
-                                    :error    ""}]
-                                  100))
-
 (defn- view-internal
-  [{:keys [default-password theme shell? on-press-biometrics blur?]}]
+  [{:keys [password on-change-password theme shell? on-press-biometrics blur?]}]
   (let [{:keys [error processing]} (rf/sub [:profile/login])
         error-message              (get-error-message error)
         error?                     (boolean (seq error-message))]
@@ -45,7 +39,7 @@
         :error?          error?
         :label           (i18n/label :t/profile-password)
         :on-change-text  on-change-password
-        :default-value   (security/safe-unmask-data default-password)}]
+        :value           password}]
       (when on-press-biometrics
         [quo/button
          {:container-style style/auth-button
