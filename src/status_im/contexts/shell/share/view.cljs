@@ -29,7 +29,9 @@
       :background          :blur
       :size                32
       :accessibility-label :shell-scan-button
-      :on-press            #(rf/dispatch [:navigate-back])}
+      :on-press            (fn []
+                             (rf/dispatch [:navigate-back])
+                             (rf/dispatch [:open-modal :shell-qr-reader]))}
      :i/scan]]
    [quo/text
     {:size   :heading-1

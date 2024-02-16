@@ -180,6 +180,7 @@
         "other": "{{count}} members"
     },
     "community-rules": "Community rules",
+    "share-all-current-and-future-addresses": "Share all current and future addresses",
     "address-to-share": "Addresses to share",
     "addresses-for-permissions": "Addresses for permissions",
     "no-addresses-selected": "At least 1 address must be shared with community",
@@ -1256,6 +1257,7 @@
     "scan-qr": "Scan QR",
     "scan-qr-code": "Scan QR code",
     "scan-with-status-app": "Scan with the Status app on another device",
+    "invalid-qr": "Oops! This QR doesn’t work with Status",
     "search": "Search",
     "search-discover-communities": "Search communities or categories",
     "secret-keys-confirmation-text": "You will need them to continue to use your Keycard in case you ever lose your phone.",
