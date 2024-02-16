@@ -97,7 +97,7 @@
   [chat-id]
   {:icon                :i/qr-code
    :accessibility-label :chat-show-qr-code
-   :on-press            #(rf/dispatch [:communities/community-channel-url-qr-code-with-data chat-id])
+   :on-press            #(rf/dispatch [:communities/share-community-channel-url-qr-code chat-id])
    :label               (i18n/label :t/show-qr)})
 
 (defn- action-share

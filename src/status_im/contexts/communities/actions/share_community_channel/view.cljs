@@ -6,52 +6,43 @@
     [status-im.common.qr-codes.view :as qr-codes]
     [status-im.contexts.communities.actions.share-community-channel.style :as style]
     [utils.i18n :as i18n]
-    [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
 (defn view
   []
-  (let [padding-top (:top (safe-area/get-insets))]
-    (fn []
-      (let [chat                            (rf/sub [:chats/current-chat-chat-view])
-            {:keys [color emoji chat-name]} chat
-            mediaserver-port                (rf/sub [:mediaserver/port])
-            window-width                    (rf/sub [:dimensions/window-width])
-            {:keys [url]}                   (rf/sub [:get-screen-params])
-            qr-media-server-uri             (image-server/get-qr-image-uri-for-any-url
-                                             {:url         url
-                                              :port        mediaserver-port
-                                              :qr-size     style/qr-size
-                                              :error-level :highest})
-            title                           (i18n/label :t/share-channel)]
-        [quo/overlay {:type :shell}
+  (fn []
+    (let [{:keys [url chat-id]}           (rf/sub [:get-screen-params])
+          {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])
+          window-width                    (rf/sub [:dimensions/window-width])]
+      (prn color emoji chat-name chat-id)
+      [quo/overlay {:type :shell}
+       [rn/view
+        {:style {:padding-top (safe-area/get-top)}
+         :key   :share-community}
+        [quo/page-nav
+         {:icon-name           :i/close
+          :on-press            #(rf/dispatch [:navigate-back])
+          :background          :blur
+          :accessibility-label :top-bar}]
+        [quo/text-combinations
+         {:container-style style/header-container
+          :title           (i18n/label :t/share-channel)}]
+        [rn/view {:style style/qr-code-wrapper}
+         [quo/gradient-cover
+          {:container-style
+           (style/gradient-cover-wrapper window-width)
+           :customization-color color}]
          [rn/view
-          {:style {:padding-top padding-top}
-           :key   :share-community}
-          [quo/page-nav
-           {:icon-name           :i/close
-            :on-press            #(rf/dispatch [:navigate-back])
-            :background          :blur
-            :accessibility-label :top-bar}]
-          [quo/text-combinations
-           {:container-style style/header-container
-            :title           title}]
-          [rn/view {:style style/qr-code-wrapper}
-           [quo/gradient-cover
-            {:container-style
-             (style/gradient-cover-wrapper window-width)
-             :customization-color color}]
-           [rn/view
-            {:style {:padding-vertical 12}}
-            [qr-codes/qr-code
-             {:size                (style/qr-code-size window-width)
-              :qr-image-uri        qr-media-server-uri
-              :avatar              :channel
-              :customization-color color
-              :emoji               emoji
-              :full-name           chat-name}]]]
-          [quo/text
-           {:size   :paragraph-2
-            :weight :regular
-            :style  style/scan-notice}
-           (i18n/label :t/scan-with-status-app)]]]))))
+          {:style {:padding-vertical 12}}
+          [qr-codes/qr-code
+           {:size                (style/qr-code-size window-width)
+            :url                 url
+            :avatar              :channel
+            :customization-color color
+            :emoji               emoji
+            :full-name           chat-name}]]]
+        [quo/text
+         {:size   :paragraph-2
+          :weight :regular
+          :style  style/scan-notice}
+         (i18n/label :t/scan-with-status-app)]]])))
