@@ -69,6 +69,7 @@
            :context-tag-type    :community
            :community-name      name
            :button-icon         :i/info
+           :button-type         :grey
            :on-button-press     not-implemented/alert
            :community-logo      (get-in images [:thumbnail :uri])
            :customization-color color}]
