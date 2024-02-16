@@ -16,6 +16,7 @@
      addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
+    [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.onboarding.create-password.view :as create-password]
@@ -74,7 +75,6 @@
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.share-address.view :as wallet-share-address]
-    [status-im.contexts.wallet.share-community-channel.view :as share-community-channel]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
 

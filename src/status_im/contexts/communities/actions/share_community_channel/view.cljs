@@ -4,7 +4,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.qr-codes.view :as qr-codes]
-    [status-im.contexts.wallet.share-community-channel.style :as style]
+    [status-im.contexts.communities.actions.share-community-channel.style :as style]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))

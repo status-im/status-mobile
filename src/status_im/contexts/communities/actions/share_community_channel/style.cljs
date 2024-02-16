@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.share-community-channel.style
+(ns status-im.contexts.communities.actions.share-community-channel.style
   (:require [quo.foundations.colors :as colors]))
 
 (def header-container
