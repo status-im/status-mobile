@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.share-community-channel.view
+(ns status-im.contexts.communities.actions.share-community-channel.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
