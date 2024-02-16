@@ -101,6 +101,12 @@
         (sort-by :position))))
 
 (rf/reg-sub
+ :wallet/watch-only-accounts
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (filter :watch-only? accounts)))
+
+(rf/reg-sub
  :wallet/addresses
  :<- [:wallet]
  :-> #(->> %
