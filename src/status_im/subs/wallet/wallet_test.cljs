@@ -484,3 +484,16 @@
              (assoc :customization-color :magenta)
              (assoc :network-preferences-names #{}))]
         (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/watch-only-accounts
+  [sub-name]
+  (testing "returns only active (not watch-only?) accounts"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :networks] network-data)))
+    (is
+     (= [(-> accounts
+             (get "0x3")
+             (assoc :network-preferences-names #{}))]
+        (rf/sub [sub-name])))))
