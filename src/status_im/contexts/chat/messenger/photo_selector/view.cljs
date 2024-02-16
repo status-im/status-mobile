@@ -90,7 +90,7 @@
          (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
 
 (defn photo-selector
-  [{:keys [scroll-enabled on-scroll current-scroll close] :as sheet}]
+  [{:keys [scroll-enabled? on-scroll current-scroll close] :as sheet}]
   (rf/dispatch [:photo-selector/get-photos-for-selected-album])
   (rf/dispatch [:photo-selector/camera-roll-get-albums])
   (let [album?              (reagent/atom false)
@@ -134,7 +134,7 @@
                                        :padding-bottom (+ (safe-area/get-bottom) 100)
                                        :padding-top    64}
              :on-scroll               on-scroll
-             :scroll-enabled          @scroll-enabled
+             :scroll-enabled          scroll-enabled?
              :on-end-reached          (fn []
                                         (when (and (not loading?) has-next-page?)
                                           (rf/dispatch [:photo-selector/camera-roll-loading-more true])

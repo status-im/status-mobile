@@ -368,9 +368,25 @@
    selected-permission-addresses))
 
 (re-frame/reg-sub
+ :communities/share-all-addresses?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [share-all-addresses?]}] _]
+   share-all-addresses?))
+
+(re-frame/reg-sub
+ :communities/unsaved-address-changes?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [share-all-addresses? previous-share-all-addresses?
+               selected-permission-addresses previous-permission-addresses]}] _]
+   (or (not= share-all-addresses? previous-share-all-addresses?)
+       (not= selected-permission-addresses previous-permission-addresses))))
+
+(re-frame/reg-sub
  :communities/selected-permission-accounts
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+   [(re-frame/subscribe [:wallet/accounts-without-watched-accounts])
     (re-frame/subscribe [:communities/selected-permission-addresses community-id])])
  (fn [[accounts selected-permission-addresses]]
    (filter #(contains? selected-permission-addresses (:address %)) accounts)))

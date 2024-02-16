@@ -15,8 +15,7 @@ This step will take a while the first time as it will download all dependencies.
 There are three steps necessary to start development, in this case for Android:
 
 1. `make run-clojure` - Compiles Clojure into JavaScript, watches for changes on cljs files, and hot-reloads code in the app.
-2. `make run-metro` - Starts metro bundler and watches JavaScript code.
-3. `make run-android` or `make run-ios` - Builds the Android/iOS app and starts it on the device.
+2. `make run-android` or `make run-ios` - Builds the Android/iOS app, starts it on the device and starts metro bundler.
 
 The first two will continue watching for changes and keep re-building the app. They need to be ready first.
 The last one will exit once the app is up and ready.
