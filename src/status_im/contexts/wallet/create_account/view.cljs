@@ -102,7 +102,6 @@
          :max-length          constants/wallet-account-name-max-length
          :blur?               true
          :disabled?           false
-         :auto-focus          true
          :default-value       @account-name
          :container-style     style/title-input-container}]
        [quo/divider-line]
