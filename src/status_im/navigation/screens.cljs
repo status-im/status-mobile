@@ -36,6 +36,7 @@
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
+    [status-im.contexts.profile.edit.bio.view :as edit-bio]
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
@@ -43,6 +44,7 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
+    [status-im.contexts.shell.qr-reader.view :as shell-qr-reader]
     [status-im.contexts.shell.share.view :as share]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
@@ -90,6 +92,10 @@
 
     {:name      :shell-stack
      :component shell/shell-stack}
+
+    {:name      :shell-qr-reader
+     :options   (assoc options/dark-screen :modalPresentationStyle :overCurrentContext)
+     :component shell-qr-reader/view}
 
     {:name      :chat
      :options   {:insets     {:top? true}
@@ -185,6 +191,10 @@
     {:name      :edit-name
      :options   options/transparent-modal-screen-options
      :component edit-name/view}
+
+    {:name      :edit-bio
+     :options   options/transparent-modal-screen-options
+     :component edit-bio/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark

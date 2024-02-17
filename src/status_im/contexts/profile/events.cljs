@@ -4,6 +4,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.contexts.profile.edit.accent-colour.events]
+    [status-im.contexts.profile.edit.bio.events]
     [status-im.contexts.profile.edit.header.events]
     [status-im.contexts.profile.edit.name.events]
     [status-im.contexts.profile.login.events :as profile.login]

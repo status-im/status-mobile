@@ -42,9 +42,11 @@
 
 (defn- view-internal
   [{:keys
-    [checked? disabled? on-change token-details keycard? theme container-style]
+    [checked? disabled? on-change token-details keycard? theme container-style customization-color]
     {:keys
-     [name address emoji customization-color]} :account}]
+     [name address emoji]
+     :as account} :account
+    :or {customization-color :blue}}]
   [rn/view
    {:style               (merge (style/container theme) container-style)
     :accessibility-label :wallet-account-permissions}
@@ -52,7 +54,7 @@
     [account-avatar/view
      {:size                32
       :emoji               emoji
-      :customization-color customization-color}]
+      :customization-color (:customization-color account)}]
     [rn/view {:style style/account-details}
      [rn/view {:style style/name-and-keycard}
       [text/text
@@ -67,10 +69,11 @@
       {:address address
        :format  :short}]]
     [selectors/view
-     {:type      :checkbox
-      :checked?  checked?
-      :disabled? disabled?
-      :on-change on-change}]]
+     {:type                :checkbox
+      :checked?            checked?
+      :customization-color customization-color
+      :disabled?           disabled?
+      :on-change           on-change}]]
 
    [token-details-section token-details]])
 

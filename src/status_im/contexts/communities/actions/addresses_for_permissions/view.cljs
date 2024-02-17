@@ -32,18 +32,21 @@
              :token  (:symbol balance)))))
 
 (defn- account-item
-  [{:keys [color address name emoji]} _ _ [selected-addresses community-id]]
+  [{:keys [color address name emoji]} _ _
+   {:keys [selected-addresses community-id share-all-addresses? community-color]}]
   (let [balances (rf/sub [:communities/permissioned-balances-by-address community-id address])]
     [quo/account-permissions
-     {:account         {:name                name
-                        :address             address
-                        :emoji               emoji
-                        :customization-color color}
-      :token-details   (balances->components-props balances)
-      :checked?        (contains? selected-addresses address)
-      :on-change       #(rf/dispatch [:communities/toggle-selected-permission-address
-                                      address community-id])
-      :container-style {:margin-bottom 8}}]))
+     {:account             {:name                name
+                            :address             address
+                            :emoji               emoji
+                            :customization-color color}
+      :token-details       (balances->components-props balances)
+      :checked?            (contains? selected-addresses address)
+      :disabled?           share-all-addresses?
+      :on-change           #(rf/dispatch [:communities/toggle-selected-permission-address
+                                          address community-id])
+      :container-style     {:margin-bottom 8}
+      :customization-color community-color}]))
 
 (defn view
   [{:keys [scroll-enabled? on-scroll]}]
@@ -54,6 +57,8 @@
             {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
             accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
+            share-all-addresses?              (rf/sub [:communities/share-all-addresses? id])
+            unsaved-address-changes?          (rf/sub [:communities/unsaved-address-changes? id])
             highest-role-text                 (when highest-permission-role
                                                 (i18n/label (communities.utils/role->translation-key
                                                              highest-permission-role)))]
@@ -64,14 +69,29 @@
            :context-tag-type    :community
            :community-name      name
            :button-icon         :i/info
+           :button-type         :grey
            :on-button-press     not-implemented/alert
            :community-logo      (get-in images [:thumbnail :uri])
            :customization-color color}]
 
+         [quo/category
+          {:list-type       :settings
+           :data            [{:title        (i18n/label :t/share-all-current-and-future-addresses)
+                              :action       :selector
+                              :action-props {:on-change #(rf/dispatch
+                                                          [:communities/toggle-share-all-addresses
+                                                           id])
+                                             :customization-color color
+                                             :checked? share-all-addresses?}}]
+           :container-style {:padding-bottom 16}}]
+
          [gesture/flat-list
           {:render-fn               account-item
-           :render-data             [selected-addresses id]
-           :content-container-style {:padding 20}
+           :render-data             {:selected-addresses   selected-addresses
+                                     :community-id         id
+                                     :share-all-addresses? share-all-addresses?
+                                     :community-color      color}
+           :content-container-style {:padding-horizontal 20}
            :scroll-enabled          scroll-enabled?
            :on-scroll               on-scroll
            :key-fn                  :address
@@ -109,7 +129,9 @@
           [quo/button
            {:container-style     {:flex 1}
             :customization-color color
-            :disabled?           (empty? selected-addresses)
+            :disabled?           (or (empty? selected-addresses)
+                                     (not highest-permission-role)
+                                     (not unsaved-address-changes?))
             :on-press            (fn []
                                    (rf/dispatch [:communities/update-previous-permission-addresses id])
                                    (rf/dispatch [:navigate-back]))}
