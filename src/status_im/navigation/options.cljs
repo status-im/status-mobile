@@ -100,7 +100,7 @@
   {:layout                 {:componentBackgroundColor :transparent
                             :orientation              ["portrait"]
                             :backgroundColor          :transparent}
-   :modalPresentationStyle :overCurrentContext
+   :modalPresentationStyle :overFullScreen
    ;; disabled on iOS in debug mode:
    ;; https://github.com/status-im/status-mobile/pull/16053#issuecomment-1568349702
    :animations             (if (or platform/android? (not js/goog.DEBUG))

@@ -1,6 +1,7 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
+    [react-native.platform :as platform]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
@@ -115,7 +116,7 @@
      :component join-menu/view}
 
     {:name      :community-account-selection
-     :options   {:insets {:top? true}}
+     :options   (when platform/android? {:insets {:top? true}})
      :component communities.accounts-selection/view}
 
     {:name      :addresses-for-permissions
