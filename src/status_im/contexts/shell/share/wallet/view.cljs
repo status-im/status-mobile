@@ -39,7 +39,7 @@
                  (fn []
                    [network-preferences/view
                     {:blur?             true
-                     :selected-networks (set selected-networks)
+                     :selected-networks (set @selected-networks)
                      :on-save           (fn [chain-ids]
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (reset! selected-networks (map #(get utils/id->network %)
@@ -74,7 +74,7 @@
             :emoji               (:emoji account)
             :on-multichain-press #(reset! wallet-type :multichain)
             :on-legacy-press     #(reset! wallet-type :legacy)
-            :on-settings-press   #(open-preferences @selected-networks)}]]]))))
+            :on-settings-press   #(open-preferences selected-networks)}]]]))))
 
 (def wallet-qr-code-item (memoize wallet-qr-code-item-internal))
 
