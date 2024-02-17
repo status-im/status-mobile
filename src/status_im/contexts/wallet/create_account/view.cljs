@@ -133,7 +133,9 @@
                                                :emoji        @emoji
                                                :color        @account-color
                                                :path         @derivation-path
-                                               :account-name @account-name}]))
+                                               :account-name (if (string/blank? @account-name)
+                                                               placeholder
+                                                               @account-name)}]))
          :auth-button-label   (i18n/label :t/confirm)
          ;; TODO (@rende11) Add this property when sliding button issue will fixed
          ;; https://github.com/status-im/status-mobile/pull/18683#issuecomment-1941564785
