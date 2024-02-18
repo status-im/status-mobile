@@ -132,6 +132,37 @@
              :response-to   message-id})
           images)))
 
+(defn- build-status-link-previews
+  [status-link-previews]
+  (map (fn [{{:keys [community-id color description display-name
+                     members-count active-members-count icon banner]}
+             :community
+             url :url}]
+         {:url url
+          :community
+          {:community-id         community-id
+           :color                color
+           :description          description
+           :display-name         display-name
+           :members-count        members-count
+           :active-members-count active-members-count
+           :icon                 {:data-uri (:data-uri icon)
+                                  :width    (:width icon)
+                                  :height   (:height icon)}
+           :banner               {:data-uri (:data-uri banner)
+                                  :width    (:width banner)
+                                  :height   (:height banner)}}})
+       status-link-previews))
+
+(defn- build-link-previews
+  [link-previews]
+  (->> link-previews
+       (map #(select-keys %
+                          [:url :title :description :thumbnail
+                           :status-link-preview?]))
+       (filter (fn [preview]
+                 (not (:status-link-preview? preview))))))
+
 (defn build-text-message
   [{:keys [db]} input-text current-chat-id]
   (when-not (string/blank? input-text)
@@ -147,31 +178,9 @@
        :text                 input-text
        :response-to          message-id
        :ens-name             preferred-name
-       :link-previews        (->> (get-in db [:chat/link-previews :unfurled])
-                                  (map #(select-keys %
-                                                     [:url :title :description :thumbnail
-                                                      :status-link-preview?]))
-                                  (filter (fn [preview]
-                                            (not (:status-link-preview? preview)))))
-       :status-link-previews (map (fn [{{:keys [community-id color description display-name
-                                                members-count active-members-count icon banner]}
-                                        :community
-                                        url :url}]
-                                    {:url url
-                                     :community
-                                     {:community-id         community-id
-                                      :color                color
-                                      :description          description
-                                      :display-name         display-name
-                                      :members-count        members-count
-                                      :active-members-count active-members-count
-                                      :icon                 {:data-uri (:data-uri icon)
-                                                             :width    (:width icon)
-                                                             :height   (:height icon)}
-                                      :banner               {:data-uri (:data-uri banner)
-                                                             :width    (:width banner)
-                                                             :height   (:height banner)}}})
-                                  (get-in db [:chat/status-link-previews :unfurled]))})))
+       :link-previews        (build-link-previews (get-in db [:chat/link-previews :unfurled]))
+       :status-link-previews (build-status-link-previews
+                              (get-in db [:chat/status-link-previews :unfurled]))})))
 
 (rf/defn send-messages
   [{:keys [db] :as cofx} input-text current-chat-id]
@@ -204,6 +213,16 @@
           (when message-id
             {:response-to message-id}))])))))
 
+(defn- process-link-previews
+  [link-previews]
+  (->> link-previews
+       (map #(select-keys %
+                          [:url :title :description :thumbnail
+                           :status-link-preview?]))
+       (map data-store.messages/->link-preview-rpc)
+       (filter (fn [preview]
+                 (not (:status-link-preview? preview))))))
+
 (rf/defn send-edited-message
   [{:keys [db]
     :as   cofx} text {:keys [message-id quoted-message chat-id]}]
@@ -218,13 +237,8 @@
                                                :response-to quoted-message})
                                            constants/content-type-emoji
                                            constants/content-type-text)
-                     :linkPreviews       (->> (get-in db [:chat/link-previews :unfurled])
-                                              (map #(select-keys %
-                                                                 [:url :title :description :thumbnail
-                                                                  :status-link-preview?]))
-                                              (map data-store.messages/->link-preview-rpc)
-                                              (filter (fn [preview]
-                                                        (not (:status-link-preview? preview)))))
+                     :linkPreviews       (process-link-previews (get-in db
+                                                                        [:chat/link-previews :unfurled]))
                      :statusLinkPreviews (map data-store.messages/->status-link-previews-rpc
                                               (get-in db
                                                       [:chat/status-link-previews

@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
+    [status-im.constants]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
     [status-im.contexts.chat.messenger.composer.link-preview.events]
     [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
@@ -35,7 +36,8 @@
        :on-clear             #(rf/dispatch [:link-preview/clear])
        :data                 (map (fn [{:keys [title display-name thumbnail hostname loading? url icon]}]
                                     {:title     (or display-name title)
-                                     :body      (or (when-not display-name hostname) "status.app")
+                                     :body      (or (when-not display-name hostname)
+                                                    status-im.constants/status-hostname)
                                      :logo      (:data-uri icon)
                                      :loading?  loading?
                                      :thumbnail (:data-uri thumbnail)

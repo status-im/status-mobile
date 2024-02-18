@@ -80,6 +80,27 @@
           []
           curr-previews))
 
+(defn- merge-preview-types
+  [new-previews new-status-link-previews]
+  (-> (map
+       (fn [{{:keys [display-name members-count banner icon
+                     description]} :community
+             url                   :url}]
+         ;; Other types of previews need to be done here too
+         ;; Like User link preview and Channel link preview
+         {:url                  url
+          :display-name         display-name
+          :members-count        members-count
+          :banner               banner
+          :icon                 icon
+          :description          description
+          ;; Need to set status-link-preview?
+          ;; to true to not send status-link-previews
+          ;; with normal link-previews
+          :status-link-preview? true})
+       new-status-link-previews)
+      (concat new-previews)))
+
 (rf/defn unfurl-parsed-urls-success
   {:events [:link-preview/unfurl-parsed-urls-success]}
   [{:keys [db]} request-id {new-previews :linkPreviews status-link-previews :statusLinkPreviews}]
@@ -87,24 +108,7 @@
     (let [new-previews             (map data-store.messages/<-link-preview-rpc new-previews)
           new-status-link-previews (map data-store.messages/<-status-link-previews-rpc
                                         status-link-previews)
-          merged-preview-types     (-> (map
-                                        (fn [{{:keys [display-name members-count banner icon
-                                                      description]} :community
-                                              url                   :url}]
-                                          ;; Handle community type, Other implementations will have
-                                          ;; to overwrite here
-                                          {:url                  url
-                                           :display-name         display-name
-                                           :members-count        members-count
-                                           :banner               banner
-                                           :icon                 icon
-                                           :description          description
-                                           ;; Need to set status-link-preview?
-                                           ;; to true to not send status-link-previews
-                                           ;; with normal link-previews
-                                           :status-link-preview? true})
-                                        new-status-link-previews)
-                                       (concat new-previews))
+          merged-preview-types     (merge-preview-types new-previews new-status-link-previews)
           curr-previews            (get-in db [:chat/link-previews :unfurled])
           indexed-new-previews     (utils.collection/index-by :url merged-preview-types)]
       (log/debug "URLs unfurled"

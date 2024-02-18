@@ -33,7 +33,15 @@
       (is (match? {:json-rpc/call [{:method "wakuext_getTextURLs"
                                     :params [url-github]}]}
                   (remove-rpc-callbacks
-                   (events/unfurl-urls cofx url-github)))))))
+                   (events/unfurl-urls cofx url-github))))))
+  (testing "fetches status community URLs"
+    (let [cofx {:db {:chat/link-previews {:unfurled   {}
+                                          :cache      {}
+                                          :request-id "123"}}}]
+      (is (match? {:json-rpc/call [{:method "wakuext_getTextURLs"
+                                    :params [url-community]}]}
+                  (remove-rpc-callbacks
+                   (events/unfurl-urls cofx url-community)))))))
 
 (deftest unfurl-parsed-urls-test
   (with-redefs [events/new-request-id (constantly request-id)]
@@ -201,16 +209,6 @@
                                             :request-id request-id
                                             :cleared    #{url-github}
                                             :cache      cache}}})))))
-
-(deftest unfurl-urls
-  (testing "fetches status community URLs"
-    (let [cofx {:db {:chat/link-previews {:unfurled   {}
-                                          :cache      {}
-                                          :request-id "123"}}}]
-      (is (match? {:json-rpc/call [{:method "wakuext_getTextURLs"
-                                    :params [url-community]}]}
-                  (remove-rpc-callbacks
-                   (events/unfurl-urls cofx url-community)))))))
 
 (deftest reset-all-test
   (is (match? {:db {:non-related-key :some-value}}
