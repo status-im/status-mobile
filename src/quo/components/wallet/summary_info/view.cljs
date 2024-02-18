@@ -30,8 +30,8 @@
 (defn networks
   [values theme]
   (let [{:keys [ethereum optimism arbitrum]} values
-        show-optimism?                       (pos? optimism)
-        show-arbitrum?                       (pos? arbitrum)]
+        show-optimism?                       (and optimism (pos? (:amount optimism)))
+        show-arbitrum?                       (and arbitrum (pos? (:amount arbitrum)))]
     [rn/view
      {:style               style/networks-container
       :accessibility-label :networks}

@@ -129,6 +129,7 @@
     on-navigate-back         :on-navigate-back
     button-one-label         :button-one-label
     button-one-props         :button-one-props
+    current-screen-id        :current-screen-id
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
@@ -172,11 +173,11 @@
                                     (reagent/flush))))
         on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount]
-                                (let [current-screen-id (rf/sub [:navigation/current-screen-id])]
+                                (let [nav-current-screen-id (rf/sub [:navigation/current-screen-id])]
                                   ; this check is to prevent effect being triggered when screen is
                                   ; loaded but not being shown to the user (deep in the navigation
                                   ; stack) and avoid undesired behaviors
-                                  (when (= current-screen-id :wallet-send-input-amount)
+                                  (when (= nav-current-screen-id current-screen-id)
                                     (if-not (or (empty? @input-value)
                                                 (<= input-num-value 0)
                                                 (> input-num-value current-limit-amount))
@@ -187,7 +188,7 @@
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   @input-value
-                                               :stack-id :wallet-send-input-amount}]))
+                                               :stack-id current-screen-id}]))
         selection-change      (fn [selection]
                                 ;; `reagent/flush` is needed to properly propagate the
                                 ;; input cursor state. Since this is a controlled
@@ -218,6 +219,7 @@
                                                          :currency current-currency})
             input-num-value           (parse-double @input-value)
             confirm-disabled?         (or (nil? route)
+                                          (empty? route)
                                           (empty? @input-value)
                                           (<= input-num-value 0)
                                           (> input-num-value current-limit))
@@ -226,7 +228,8 @@
                                         (get-in route [:from :native-currency-symbol]))
             native-token              (when native-currency-symbol
                                         (rf/sub [:wallet/token-by-symbol native-currency-symbol]))
-            fee-in-native-token       (when-not confirm-disabled? (send-utils/calculate-gas-fee route))
+            fee-in-native-token       (when-not confirm-disabled?
+                                        (send-utils/calculate-full-route-gas-fee route))
             fee-in-crypto-formatted   (when fee-in-native-token
                                         (utils/get-standard-crypto-format native-token
                                                                           fee-in-native-token))
@@ -280,7 +283,7 @@
            :token        token
            :input-value  @input-value
            :fetch-routes #(fetch-routes % current-limit)}]
-         (when (or loading-routes? route)
+         (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
              :fees                      fee-formatted
