@@ -30,7 +30,7 @@
 (defn- get-biometric-item
   [theme]
   (let [auth-method    (rf/sub [:auth-method])
-        biometric-type (rf/sub [:biometric/supported-type])
+        biometric-type (rf/sub [:biometrics/supported-type])
         label          (biometric/get-label-by-type biometric-type)
         icon           (biometric/get-icon-by-type biometric-type)
         supported?     (boolean biometric-type)

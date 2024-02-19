@@ -10,7 +10,7 @@
   (testing "successfully setting supported biometrics type"
     (let [cofx           {:db {}}
           supported-type constants/biometrics-type-face-id
-          expected       {:db (assoc (:db cofx) :biometric/supported-type supported-type)}]
+          expected       {:db (assoc-in (:db cofx) [:biometrics :supported-type] supported-type)}]
       (is (match? expected (sut/set-supported-type cofx [supported-type])))))
 
   (testing "throws error when setting unsupported biometrics type"
@@ -50,7 +50,7 @@
       (is (not (nil? (get-in result [:fx 0 1 :on-fail]))))))
 
   (testing "skips biometric check if another one pending"
-    (let [cofx   {:db {:biometric/auth-pending? true}}
+    (let [cofx   {:db {:biometrics {:auth-pending? true}}}
           result (sut/authenticate cofx [{}])]
       (is (nil? result)))))
 

@@ -87,7 +87,7 @@
 (rf/defn password-set
   {:events [:onboarding/password-set]}
   [{:keys [db]} password]
-  (let [supported-type (:biometric/supported-type db)]
+  (let [supported-type (:biometrics/supported-type db)]
     {:db       (-> db
                    (assoc-in [:onboarding/profile :password] password)
                    (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
@@ -98,7 +98,7 @@
 (rf/defn navigate-to-enable-biometrics
   {:events [:onboarding/navigate-to-enable-biometrics]}
   [{:keys [db]}]
-  (let [supported-type (:biometric/supported-type db)]
+  (let [supported-type (get-in db [:biometrics :supported-type])]
     {:dispatch (if supported-type
                  [:open-modal :enable-biometrics]
                  [:open-modal :enable-notifications])}))

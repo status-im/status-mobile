@@ -23,7 +23,7 @@
 
 (defn set-supported-type
   [{:keys [db]} [supported-type]]
-  {:db (assoc db :biometric/supported-type supported-type)})
+  {:db (assoc-in db [:biometrics :supported-type] supported-type)})
 
 (schema/=> set-supported-type events-schema/?set-supported-type)
 (rf/reg-event-fx :biometric/set-supported-type set-supported-type)
@@ -65,12 +65,12 @@
 
 (defn authenticate
   [{:keys [db]} [opts]]
-  (let [pending? (get db :biometric/auth-pending?)]
+  (let [pending? (get-in db [:biometrics :auth-pending?])]
     ;;NOTE: prompting biometric check while another one is pending triggers error
     (when-not pending?
-      {:db (assoc db :biometric/auth-pending? true)
+      {:db (assoc-in db [:biometrics :auth-pending?] true)
        :fx [[:biometric/authenticate
-             (assoc opts :on-done #(rf/dispatch [:set :biometric/auth-pending? false]))]]})))
+             (assoc opts :on-done #(rf/dispatch [:set-in [:biometrics :auth-pending?] false]))]]})))
 
 (schema/=> authenticate events-schema/?authenticate)
 (rf/reg-event-fx :biometric/authenticate authenticate)

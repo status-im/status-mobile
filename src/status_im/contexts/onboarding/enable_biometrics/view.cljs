@@ -24,7 +24,7 @@
 
 (defn enable-biometrics-buttons
   [insets]
-  (let [supported-biometric-type (rf/sub [:biometric/supported-type])
+  (let [supported-biometric-type (rf/sub [:biometrics/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
         profile-color            (or (:color (rf/sub [:onboarding/profile]))
                                      (rf/sub [:profile/customization-color]))
