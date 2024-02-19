@@ -28,7 +28,8 @@
                  blur?
                  on-close
                  container-style]
-          :or   {container-style {:flex 1}}}]
+          :or   {container-style {:flex 1}
+                 on-close        #()}}]
       [rn/view {:style container-style}
        [quo/slide-button
         {:size                size
