@@ -197,3 +197,6 @@ lefthook.yml
 
 ## metro server logs
 metro-server-logs.log
+
+## debug build time logs
+logs/
