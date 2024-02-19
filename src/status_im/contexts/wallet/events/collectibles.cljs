@@ -1,11 +1,9 @@
 (ns status-im.contexts.wallet.events.collectibles
-  (:require [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]
-            [clojure.string :as string]
+  (:require [camel-snake-kebab.extras :as cske]
             [taoensso.timbre :as log]
             [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
-            [utils.transforms :as types]))
+            [utils.transforms :as transforms]))
 
 (def collectible-data-types
   {:unique-id        0
@@ -20,33 +18,23 @@
    :fetch-if-cache-old  3})
 
 (def max-cache-age-seconds 3600)
-(def collectibles-request-batch-size 1000)
+(def collectibles-request-batch-size 25)
 
-(defn displayable-collectible?
-  [collectible]
-  (let [{{:keys [image-url animation-url]} :collectible-data
-         {collection-image-url :image-url} :collection-data} collectible]
-    (or (not (string/blank? animation-url))
-        (not (string/blank? image-url))
-        (not (string/blank? collection-image-url)))))
+(defn- move-collectibles-to-accounts
+  [accounts new-collectibles-per-account]
+  (reduce-kv (fn [acc account new-collectibles]
+               (update-in acc [account :collectibles] #(reduce conj (or % []) new-collectibles)))
+             accounts
+             new-collectibles-per-account))
 
-(defn- add-collectibles-to-accounts
-  [accounts collectibles]
-  (reduce (fn [acc {:keys [ownership] :as collectible}]
-            (->> ownership
-                 (map :address) ; In ERC1155 tokens a collectible can be owned by multiple addresses.
-                 (reduce (fn add-collectible-to-address [acc address]
-                           (update-in acc [address :collectibles] conj collectible))
-                         acc)))
-          accounts
-          collectibles))
+(defn flush-collectibles
+  [{:keys [db]}]
+  (let [collectibles-per-account (get-in db [:wallet :ui :collectibles :fetched])]
+    {:db (-> db
+             (update-in [:wallet :ui :collectibles] dissoc :pending-requests :fetched)
+             (update-in [:wallet :accounts] move-collectibles-to-accounts collectibles-per-account))}))
 
-(defn store-collectibles
-  [{:keys [db]} [collectibles]]
-  (let [displayable-collectibles (filter displayable-collectible? collectibles)]
-    {:db (update-in db [:wallet :accounts] add-collectibles-to-accounts displayable-collectibles)}))
-
-(rf/reg-event-fx :wallet/store-collectibles store-collectibles)
+(rf/reg-event-fx :wallet/flush-collectibles-fetched flush-collectibles)
 
 (defn clear-stored-collectibles
   [{:keys [db]}]
@@ -62,42 +50,78 @@
 (rf/reg-event-fx :wallet/store-last-collectible-details store-last-collectible-details)
 
 (rf/reg-event-fx
- :wallet/request-collectibles
- (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
-   (let [request-id          0
-         collectibles-filter nil
-         data-type           (collectible-data-types :header)
-         fetch-criteria      {:fetch-type            (fetch-type :fetch-if-not-cached)
-                              :max-cache-age-seconds max-cache-age-seconds}
-         chain-ids           (chain/chain-ids db)
-         request-params      [request-id
-                              chain-ids
-                              (keys (get-in db [:wallet :accounts]))
-                              collectibles-filter
-                              start-at-index
-                              collectibles-request-batch-size
-                              data-type
-                              fetch-criteria]]
+ :wallet/request-new-collectibles-for-account
+ (fn [{:keys [db]} [{:keys [request-id account amount]}]]
+   (let [current-collectible-idx (get-in db [:wallet :accounts account :current-collectible-idx] 0)
+         collectibles-filter     nil
+         data-type               (collectible-data-types :header)
+         fetch-criteria          {:fetch-type            (fetch-type :fetch-if-not-cached)
+                                  :max-cache-age-seconds max-cache-age-seconds}
+         chain-ids               (chain/chain-ids db)
+         request-params          [request-id
+                                  chain-ids
+                                  [account]
+                                  collectibles-filter
+                                  current-collectible-idx
+                                  amount
+                                  data-type
+                                  fetch-criteria]]
      {:fx [[:json-rpc/call
             [{:method   "wallet_getOwnedCollectiblesAsync"
               :params   request-params
               :on-error (fn [error]
-                          (log/error "failed to request collectibles"
-                                     {:event  :wallet/request-collectibles
+                          (log/error "failed to request collectibles for account"
+                                     {:event  :wallet/request-new-collectibles-for-account
                                       :error  error
-                                      :params request-params}))}]]
-           (when new-request?
-             [:dispatch [:wallet/clear-stored-collectibles]])]})))
+                                      :params request-params}))}]]]})))
+
+(rf/reg-event-fx
+ :wallet/request-collectibles-for-all-accounts
+ (fn [{:keys [db]} [{:keys [new-request?]}]]
+   (let [accounts                   (->> (get-in db [:wallet :accounts])
+                                         (filter (fn [[_ {:keys [has-more-collectibles?]}]]
+                                                   (or (nil? has-more-collectibles?)
+                                                       (true? has-more-collectibles?))))
+                                         (keys))
+         num-accounts               (count accounts)
+         collectibles-per-account   (quot collectibles-request-batch-size num-accounts)
+         request-collectible-effect (fn [idx account]
+                                      [:dispatch
+                                       [:wallet/request-new-collectibles-for-account
+                                        {:request-id idx
+                                         :account    account
+                                         :amount     collectibles-per-account}]])]
+     {:db (cond-> db
+            :always (assoc-in [:wallet :ui :collectibles :pending-requests] num-accounts)
+            new-request? (update-in [:wallet :accounts] update-vals #(dissoc % :collectibles)))
+      :fx (map-indexed request-collectible-effect accounts)})))
+
+(rf/reg-event-fx
+ :wallet/request-collectibles-for-current-viewing-account
+ (fn [{:keys [db]} _]
+   (let [current-viewing-account (-> db :wallet :current-viewing-account-address)]
+     {:db (assoc-in db [:wallet :ui :collectibles :pending-requests] 1)
+      :fx [[:dispatch [:wallet/request-new-collectibles-for-account
+                       {:request-id 0
+                        :account    current-viewing-account
+                        :amount     collectibles-request-batch-size}]]]})))
 
 (rf/reg-event-fx
  :wallet/owned-collectibles-filtering-done
- (fn [_ [{:keys [message]}]]
-   (let [{:keys [has-more offset
-                 collectibles]} (cske/transform-keys csk/->kebab-case-keyword (types/json->clj message))
-         start-at-index         (+ offset (count collectibles))]
-     {:fx [[:dispatch [:wallet/store-collectibles collectibles]]
-           (when has-more
-             [:dispatch [:wallet/request-collectibles {:start-at-index start-at-index}]])]})))
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [{:keys [offset ownershipStatus collectibles
+                 hasMore]} (transforms/json->clj message)
+         collectibles     (cske/transform-keys transforms/->kebab-case-keyword collectibles)
+         owner-address    (->> ownershipStatus first key name)
+         pending-requests (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
+         collectible-idx  (+ offset (count collectibles))]
+     {:db (-> db
+              (assoc-in [:wallet :ui :collectibles :pending-requests] pending-requests)
+              (assoc-in [:wallet :ui :collectibles :fetched owner-address] collectibles)
+              (assoc-in [:wallet :accounts owner-address :current-collectible-idx] collectible-idx)
+              (assoc-in [:wallet :accounts owner-address :has-more-collectibles?] hasMore))
+      :fx [(when (zero? pending-requests)
+             [:dispatch [:wallet/flush-collectibles-fetched]])]})))
 
 (rf/reg-event-fx
  :wallet/get-collectible-details
