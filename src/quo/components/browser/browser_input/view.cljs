@@ -6,8 +6,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [reagent.core :as reagent]))
+    [react-native.platform :as platform]))
 
 (defn remove-http-https-www
   [value]
@@ -68,78 +67,86 @@
   [:cursor-color :placeholder-text-color :editable :on-change-text :on-focus
    :on-blur :on-clear :value :disabled? :blur? :customization-color :theme])
 
-(defn- view-internal
-  [{:keys [default-value]
-    :or   {default-value ""}}]
-  (let [state       (reagent/atom :default)
-        value       (reagent/atom default-value)
-        set-active  #(reset! state :active)
-        set-default #(reset! state :default)
-        set-value   #(reset! value %)
-        ref         (atom nil)
-        clear-input (fn []
-                      (.clear ^js @ref)
-                      (reset! value ""))
-        focus-input (fn []
-                      (set-active)
-                      (.focus ^js @ref))]
-    (fn [{:keys [disabled? blur? on-change-text customization-color
-                 on-clear on-focus on-blur theme get-ref locked?
-                 favicon favicon-color favicon-size]
-          :as   props}]
-      (let [clean-props (apply dissoc props props-to-remove)]
-        [rn/view {:style style/root-container}
-         (when (and (seq @value) (= @state :default))
-           [rn/touchable-opacity
-            {:style    style/default-container
-             :on-press focus-input}
-            (when favicon
-              [icon/icon favicon
-               {:accessibility-label :browser-input-favicon
-                :color               favicon-color
-                :container-style     style/favicon-icon-container
-                :size                favicon-size}])
-            [rn/text
-             {:accessibility-label :browser-input-label
-              :style               (style/text)} (remove-http-https-www @value)]
-            (when locked?
-              [lock-icon
-               {:blur? blur?
-                :theme theme}])])
-         [rn/view {:style (style/active-container (or (empty? @value) (= @state :active)))}
-          [rn/text-input
-           (merge
-            clean-props
-            {:accessibility-label    :browser-input
-             :auto-capitalize        :none
-             :auto-correct           false
-             :cursor-color           (cursor-color customization-color theme)
-             :editable               (not disabled?)
-             :keyboard-appearance    (colors/theme-colors :light :dark theme)
-             :keyboard-type          :web-search
-             :on-blur                (fn []
-                                       (set-default)
-                                       (when on-blur (on-blur)))
-             :on-change-text         (fn [new-text]
-                                       (set-value new-text)
-                                       (when on-change-text (on-change-text new-text)))
-             :on-focus               (fn []
-                                       (set-active)
-                                       (when on-focus (on-focus)))
-             :placeholder-text-color (placeholder-color @state blur? theme)
-             :ref                    (fn [r]
-                                       (reset! ref r)
-                                       (when get-ref (get-ref r)))
-             :selection-color        (when platform/ios?
-                                       (cursor-color customization-color theme))
-             :select-text-on-focus   true
-             :style                  (style/input disabled?)})]
-          (when (seq @value)
-            [clear-button
-             {:blur?    blur?
-              :on-press (fn []
-                          (clear-input)
-                          (when on-clear (on-clear)))
-              :theme    theme}])]]))))
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [disabled? blur? on-change-text customization-color
+           on-clear on-focus on-blur get-ref locked?
+           favicon favicon-color favicon-size default-value]
+    :or   {default-value ""}
+    :as   props}]
+  (let [ref               (rn/use-ref-atom nil)
+        on-ref            (rn/use-callback
+                           (fn [r]
+                             (reset! ref r)
+                             (when get-ref (get-ref r)))
+                           [get-ref])
+        theme             (quo.theme/use-theme)
+        [state set-state] (rn/use-state :default)
+        [value set-value] (rn/use-state default-value)
+        on-clear          (rn/use-callback
+                           (fn []
+                             (.clear ^js @ref)
+                             (set-value "")
+                             (when on-clear (on-clear)))
+                           [on-clear])
+        focus-input       (rn/use-callback
+                           (fn []
+                             (set-state :active)
+                             (.focus ^js @ref)))
+        on-blur           (rn/use-callback
+                           (fn []
+                             (set-state :default)
+                             (when on-blur (on-blur)))
+                           [on-blur])
+        on-change-text    (rn/use-callback
+                           (fn [new-text]
+                             (set-value new-text)
+                             (when on-change-text (on-change-text new-text)))
+                           [on-change-text])
+        on-focus          (rn/use-callback
+                           (fn []
+                             (set-state :active)
+                             (when on-focus (on-focus)))
+                           [on-focus])
+        clean-props       (apply dissoc props props-to-remove)]
+    [rn/view {:style style/root-container}
+     (when (and (seq value) (= state :default))
+       [rn/touchable-opacity
+        {:style    style/default-container
+         :on-press focus-input}
+        (when favicon
+          [icon/icon favicon
+           {:accessibility-label :browser-input-favicon
+            :color               favicon-color
+            :container-style     style/favicon-icon-container
+            :size                favicon-size}])
+        [rn/text
+         {:accessibility-label :browser-input-label
+          :style               (style/text)}
+         (remove-http-https-www value)]
+        (when locked?
+          [lock-icon {:blur? blur? :theme theme}])])
+     [rn/view {:style (style/active-container (or (empty? value) (= state :active)))}
+      [rn/text-input
+       (merge
+        clean-props
+        {:accessibility-label    :browser-input
+         :auto-capitalize        :none
+         :auto-correct           false
+         :cursor-color           (cursor-color customization-color theme)
+         :editable               (not disabled?)
+         :keyboard-appearance    (colors/theme-colors :light :dark theme)
+         :keyboard-type          :web-search
+         :on-blur                on-blur
+         :on-change-text         on-change-text
+         :on-focus               on-focus
+         :placeholder-text-color (placeholder-color state blur? theme)
+         :ref                    on-ref
+         :selection-color        (when platform/ios?
+                                   (cursor-color customization-color theme))
+         :select-text-on-focus   true
+         :style                  (style/input disabled?)})]
+      (when (seq value)
+        [clear-button
+         {:blur?    blur?
+          :on-press on-clear
+          :theme    theme}])]]))
