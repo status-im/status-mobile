@@ -2,6 +2,7 @@
   (:require
     [oops.core :as oops]
     [quo.components.wallet.network-routing.animation :as animation]
+    [quo.components.wallet.network-routing.schema :as network-routing-schema]
     [quo.components.wallet.network-routing.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -173,22 +174,6 @@
             [rn/view {:style (style/max-limit-bar-background network-name)}]
             [dashed-line network-name]])]))))
 
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map
-      [:networks {:optional true}
-       [:maybe
-        [:sequential
-         [:map
-          [:amount :int]
-          [:max-amount :int]
-          [:network-name [:or :string :keyword]]]]]]
-      [:container-style {:optional true} [:maybe :map]]
-      [:theme :schema.common/theme]]]]
-   :any])
-
 (defn view-internal
   [{:keys [networks container-style theme] :as params}]
   (reagent/with-let [total-width (reagent/atom nil)]
@@ -205,4 +190,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal network-routing-schema/?schema)))

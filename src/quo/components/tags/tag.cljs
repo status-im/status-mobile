@@ -27,6 +27,19 @@
                       :blurred-border-color colors/white-opa-10
                       :text-color           {:style {:color colors/white}}}}})
 
+(defn- emoji-comp
+  [size resource]
+  (let [dimension (case size
+                    32 20
+                    24 12
+                    nil)]
+    (if (string? resource)
+      [rn/text {:style {:margin-right 4 :font-size dimension}}
+       resource]
+      [rn/image
+       {:source resource
+        :style  {:margin-right 4 :width dimension :height dimension}}])))
+
 (defn tag-resources
   [size type resource icon-color label text-color labelled?]
   [rn/view
@@ -47,13 +60,7 @@
                           24 12)
        :color           icon-color}])
    (when (= type :emoji)
-     [text/text
-      {:style {:margin-right 4}
-       :size  (case size
-                32 :paragraph-1
-                24 :paragraph-2
-                nil)}
-      resource])
+     [emoji-comp size resource])
    (when labelled?
      [text/text
       (merge {:size            (case size
@@ -73,7 +80,7 @@
     :size         32/24
     :on-press     fn
     :blurred?     true/false
-    :resource     icon/image
+    :resource     icon/image/text(emojis)
     :labelled?    true/false
     :disabled?    true/false}
 
@@ -107,4 +114,3 @@
       [tag-resources size type resource icon-color label text-color labelled?]]]))
 
 (def tag (quo.theme/with-theme tag-internal))
-

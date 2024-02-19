@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer-macros [deftest are]]
     matcher-combinators.test
+    [re-frame.core :as re-frame]
     [status-im.contexts.chat.home.add-new-contact.events :as events]))
 
 (def user-ukey
@@ -90,8 +91,8 @@
                                :config {:NetworkId 1}}}})
 
 (deftest set-new-identity-test
-  (with-redefs [events/dispatcher (fn [& args] args)]
-    (are [i edb] (match? (events/set-new-identity {:db db} i nil) edb)
+  (with-redefs [re-frame/dispatch (fn [& args] args)]
+    (are [i edb] (match? (events/set-new-identity {:db db} [{:input i}]) edb)
 
      ""        {:db db}
 
@@ -103,6 +104,7 @@
                              :id              ukey
                              :type            :public-key
                              :public-key      ukey
+                             :scanned         ukey
                              :state           :invalid
                              :msg             :t/not-a-chatkey}))}
 
@@ -115,6 +117,7 @@
                              :type            :ens
                              :ens             ens-stateofus-eth
                              :public-key      nil ; not yet...
+                             :scanned         ens
                              :state           :resolve-ens}))
                 :effects.contacts/resolve-public-key-from-ens
                 {:chain-id   1
@@ -131,6 +134,7 @@
                              :id              user-ckey
                              :type            :compressed-key
                              :public-key      nil ; not yet...
+                             :scanned         user-ckey
                              :state           :decompress-key}))
                 :serialization/decompress-public-key
                 {:compressed-key user-ckey

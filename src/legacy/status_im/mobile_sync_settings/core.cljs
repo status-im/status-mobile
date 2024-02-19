@@ -36,7 +36,7 @@
        [(mailserver/process-next-messages-request)
         (bottom-sheet/hide-bottom-sheet-old)
         (wallet/restart-wallet-service nil)
-        (add-new-contact/set-new-identity-reconnected)]
+        #(add-new-contact/set-new-identity-reconnected %)]
 
        logged-in?
        [(mailserver/process-next-messages-request)

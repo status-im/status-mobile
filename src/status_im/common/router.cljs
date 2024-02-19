@@ -26,7 +26,17 @@
 
 (def web2-domain "status.app")
 
+(def user-path "u#")
+(def user-with-data-path "u/")
+(def community-path "c#")
+(def community-with-data-path "c/")
+(def channel-path "cc/")
+
 (def web-urls (map #(str % web2-domain "/") web-prefixes))
+
+(defn path-urls
+  [path]
+  (map #(str % path) web-urls))
 
 (def handled-schemes (set (into uri-schemes web-urls)))
 
@@ -41,15 +51,15 @@
 
 (def routes
   [""
-   {handled-schemes {["c/" :community-data]  :community
-                     ["cc/" :community-data] :community-chat
-                     ["p/" :chat-id]         :private-chat
-                     ["cr/" :community-id]   :community-requests
-                     "g/"                    group-chat-extractor
-                     ["wallet/" :account]    :wallet-account
-                     ["u/" :user-data]       :user
-                     "c"                     :community
-                     "u"                     :user}
+   {handled-schemes {[community-with-data-path :community-data] :community
+                     [channel-path :community-data]             :community-chat
+                     ["p/" :chat-id]                            :private-chat
+                     ["cr/" :community-id]                      :community-requests
+                     "g/"                                       group-chat-extractor
+                     ["wallet/" :account]                       :wallet-account
+                     [user-with-data-path :user-data]           :user
+                     "c"                                        :community
+                     "u"                                        :user}
     ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
