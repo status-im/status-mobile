@@ -252,8 +252,3 @@
  :profile/on-password-input-changed
  (fn [{:keys [db]} [{:keys [password error]}]]
    {:db (update db :profile/login assoc :password password :error error)}))
-
-(rf/reg-event-fx
- :profile.login/reset-password
- (fn [{:keys [db]}]
-   {:db (update db :profile/login dissoc :password)}))
