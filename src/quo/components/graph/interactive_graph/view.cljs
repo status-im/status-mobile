@@ -14,7 +14,6 @@
 (def initial-spacing 56)
 (def end-spacing 22)
 (def y-axis-label-width -33)
-(def inspecting? (reagent/atom false))
 
 (defn- pointer
   [customization-color]
@@ -32,14 +31,9 @@
    :pointer-color                 customization-color
    :pointer-strip-enable-gradient true})
 
-(defn- get-pointer-props
-  [pointer-props]
-  (let [pointer-index (.-pointerIndex ^js pointer-props)]
-    (reset! inspecting? (not= pointer-index -1))))
-
 (defn- get-line-color
-  [state theme]
-  (if @inspecting?
+  [state theme inspecting?]
+  (if inspecting?
     (colors/theme-colors colors/neutral-80-opa-40
                          colors/white-opa-20
                          theme)
@@ -51,11 +45,13 @@
                            colors/danger-60
                            theme))))
 
-(defn- view-internal
-  [{:keys [data state customization-color theme reference-value reference-prefix decimal-separator]
+(defn view
+  [{:keys [data state customization-color reference-value reference-prefix decimal-separator]
     :or   {reference-prefix  "$"
            decimal-separator :dot}}]
-  (let [data                             (if (> (count data) max-data-points)
+  (let [theme                            (quo.theme/use-theme-value)
+        [inspecting? set-inspecting]     (rn/use-state false)
+        data                             (if (> (count data) max-data-points)
                                            (utils/downsample-data data max-data-points)
                                            data)
         highest-value                    (utils/find-highest-value data)
@@ -64,7 +60,11 @@
         max-value                        (- (utils/calculate-rounded-max highest-value) min-value)
         step-value                       (/ max-value 4)
         width                            (:width (rn/get-window))
-        line-color                       (get-line-color state theme)
+        line-color                       (get-line-color state theme inspecting?)
+        get-pointer-props                (rn/use-callback
+                                          (fn [pointer-props]
+                                            (let [pointer-index (.-pointerIndex ^js pointer-props)]
+                                              (set-inspecting (not= pointer-index -1)))))
         rules-color                      (colors/theme-colors colors/neutral-80-opa-10
                                                               colors/white-opa-5
                                                               theme)
@@ -119,7 +119,7 @@
        :show-strip-on-focus              true
        :reference-line-1-config          {:color rules-color}
        :reference-line-1-position        0
-       :show-reference-line-2            (and (not @inspecting?)
+       :show-reference-line-2            (and (not inspecting?)
                                               (<= reference-value highest-value)
                                               (>= reference-value lowest-value))
        :reference-line-2-config          {:color            y-axis-label-text-color
@@ -138,5 +138,3 @@
        :x-axis-label-text-style          (style/x-axis-label-text (/ width (count x-axis-label-texts))
                                                                   y-axis-label-text-color)
        :x-axis-label-texts               x-axis-label-texts}]]))
-
-(def view (quo.theme/with-theme view-internal))

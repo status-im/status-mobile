@@ -3,8 +3,7 @@
     [clojure.string :as string]
     [quo.components.inputs.recovery-phrase.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
 (def ^:private custom-props
   [:customization-color :theme :blur? :cursor-color :multiline :on-focus :on-blur
@@ -38,42 +37,42 @@
                   :idx    0})
          :result)))
 
-(defn recovery-phrase-input-internal
-  [_ _]
-  (let [state       (reagent/atom :default)
-        set-focused #(reset! state :focused)
-        set-default #(reset! state :default)]
-    (fn [{:keys [customization-color theme blur? on-focus on-blur mark-errors?
-                 error-pred-current-word error-pred-written-words word-limit
-                 container-style]
-          :or   {customization-color      :blue
-                 word-limit               ##Inf
-                 error-pred-current-word  (constantly false)
-                 error-pred-written-words (constantly false)}
-          :as   props}
-         text]
-      (let [extra-props (apply dissoc props custom-props)]
-        [rn/view {:style (style/container container-style)}
-         [rn/text-input
-          (merge {:accessibility-label    :recovery-phrase-input
-                  :style                  (style/input)
-                  :placeholder-text-color (style/placeholder-color @state theme blur?)
-                  :cursor-color           (style/cursor-color customization-color theme)
-                  :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
-                  :multiline              true
-                  :on-focus               (fn []
-                                            (set-focused)
-                                            (when on-focus (on-focus)))
-                  :on-blur                (fn []
-                                            (set-default)
-                                            (when on-blur (on-blur)))}
-                 extra-props)
-          (if mark-errors?
-            (mark-error-words {:pred-last-word      error-pred-current-word
-                               :pred-previous-words error-pred-written-words
-                               :text                text
-                               :word-limit          word-limit
-                               :theme               theme})
-            text)]]))))
-
-(def recovery-phrase-input (quo.theme/with-theme recovery-phrase-input-internal))
+(defn recovery-phrase-input
+  [{:keys [customization-color blur? on-focus on-blur mark-errors?
+           error-pred-current-word error-pred-written-words word-limit
+           container-style]
+    :or   {customization-color      :blue
+           word-limit               ##Inf
+           error-pred-current-word  (constantly false)
+           error-pred-written-words (constantly false)}
+    :as   props}
+   text]
+  (let [theme             (quo.theme/use-theme-value)
+        [state set-state] (rn/use-state :default)
+        on-focus          (rn/use-callback
+                           (fn []
+                             (set-state :focused)
+                             (when on-focus (on-focus))))
+        on-blur           (rn/use-callback
+                           (fn []
+                             (set-state :default)
+                             (when on-blur (on-blur))))
+        extra-props       (apply dissoc props custom-props)]
+    [rn/view {:style (style/container container-style)}
+     [rn/text-input
+      (merge {:accessibility-label    :recovery-phrase-input
+              :style                  (style/input)
+              :placeholder-text-color (style/placeholder-color state theme blur?)
+              :cursor-color           (style/cursor-color customization-color theme)
+              :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
+              :multiline              true
+              :on-focus               on-focus
+              :on-blur                on-blur}
+             extra-props)
+      (if mark-errors?
+        (mark-error-words {:pred-last-word      error-pred-current-word
+                           :pred-previous-words error-pred-written-words
+                           :text                text
+                           :word-limit          word-limit
+                           :theme               theme})
+        text)]]))
