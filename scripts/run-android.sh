@@ -16,11 +16,10 @@ adb install ./result/app-debug.apk
 source "${GIT_ROOT}/scripts/lib/metro.sh"
 
 trap cleanupMetro EXIT ERR INT QUIT
-runMetro &
+runMetro
 waitForMetro
 
 # Start the installed app.
 adb shell monkey -p im.status.ethereum.debug 1
 
-# bring metro job to foreground
-fg 'runMetro'
+tmux attach-session -t $METRO_TMUX_SESSION

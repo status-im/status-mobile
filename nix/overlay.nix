@@ -9,6 +9,8 @@ self: super:
 
 let
   inherit (super) stdenv stdenvNoCC callPackage;
+  customTmuxConf = ./.tmux.conf;
+
 in {
   # Fix for MacOS
   mkShell = super.mkShell.override { stdenv = stdenvNoCC; };
@@ -38,6 +40,16 @@ in {
       };
     });
   };
+
+  # Custom tmux package with your configuration
+  tmux = super.tmux.overrideAttrs (oldAttrs: rec {
+    postInstall = ''
+      # Ensure the directory exists
+      mkdir -p $out/etc
+      # Install the custom tmux.conf
+      cp ${customTmuxConf} $out/etc/.tmux.conf
+    '';
+  });
 
   # Checks fail on darwin.
   git-lfs = super.git-lfs.overrideAttrs (old: {
