@@ -398,7 +398,7 @@
                                  :community-id community-id})}})
 
 (rf/reg-event-fx :communities/navigate-to-community-overview
- (fn [cofx [deserialized-key]]
+ (fn [{:keys [db] :as cofx} [deserialized-key]]
    (if (string/starts-with? deserialized-key constants/serialization-key)
      (navigate-to-serialized-community cofx deserialized-key)
      (rf/merge
@@ -407,7 +407,9 @@
              [:communities/fetch-community
               {:community-id           deserialized-key
                :update-last-opened-at? true}]]
-            [:dispatch [:navigate-to :community-overview deserialized-key]]]}
+            [:dispatch [:navigate-to :community-overview deserialized-key]]
+            (when (get-in db [:communities deserialized-key :joined])
+              [:dispatch [:activity-center.notifications/dismiss-community-overview deserialized-key]])]}
       (navigation/pop-to-root :shell-stack)))))
 
 (rf/reg-event-fx :communities/navigate-to-community-chat

@@ -21,6 +21,13 @@
    :align-items    :center
    :margin-top     20})
 
+(def fetching-placeholder
+  {:align-items     :center
+   :justify-content :center
+   :flex            1})
+
+(def fetching-text {:color :red})
+
 (def blur-channel-header
   {:position :absolute
    :top      100
