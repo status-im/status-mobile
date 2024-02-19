@@ -53,9 +53,10 @@
         bottom                (safe-area/get-bottom)
         account-color         (reagent/atom (rand-nth colors/account-colors))
         emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
-        number-of-accounts    (count (rf/sub [:wallet/accounts]))
-        account-name          (reagent/atom (i18n/label :t/default-account-placeholder
-                                                        {:number (inc number-of-accounts)}))
+        number-of-accounts    (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        account-name          (reagent/atom "")
+        placeholder           (i18n/label :t/default-account-placeholder
+                                          {:number (inc number-of-accounts)})
         derivation-path       (reagent/atom (utils/get-derivation-path number-of-accounts))
         {:keys [public-key]}  (rf/sub [:profile/profile])
         on-change-text        #(reset! account-name %)
@@ -92,7 +93,7 @@
             :container-style style/reaction-button-container} :i/reaction]]
          [quo/title-input
           {:customization-color @account-color
-           :placeholder         "Type something here"
+           :placeholder         placeholder
            :on-change-text      on-change-text
            :max-length          constants/wallet-account-name-max-length
            :blur?               true
@@ -132,6 +133,9 @@
                                                    :path         @derivation-path
                                                    :account-name @account-name}])))
            :auth-button-label   (i18n/label :t/confirm)
+           ;; TODO (@rende11) Add this property when sliding button issue will fixed
+           ;; https://github.com/status-im/status-mobile/pull/18683#issuecomment-1941564785
+           ;; :disabled?           (empty? @account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
 
 (defn view-internal

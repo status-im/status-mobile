@@ -74,11 +74,11 @@
             on-button-press               (fn [word]
                                             (if (= word current-word)
                                               (do
-                                                (when (< @quiz-index 4)
+                                                (when (< @quiz-index questions-count)
                                                   (reset! quiz-index (inc @quiz-index)))
                                                 (reset! incorrect-count 0)
                                                 (reset! show-error? false)
-                                                (when (= @quiz-index 4)
+                                                (when (= @quiz-index questions-count)
                                                   (rf/dispatch [:navigate-to
                                                                 :wallet-keypair-name])))
                                               (do

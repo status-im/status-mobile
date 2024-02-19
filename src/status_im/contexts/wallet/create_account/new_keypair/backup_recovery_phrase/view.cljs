@@ -18,7 +18,7 @@
    [quo/text {:style {:margin-left 4}} item]])
 
 (defn- words-column
-  [words first-half?]
+  [{:keys [words first-half?]}]
   [rn/flat-list
    {:style          {:padding-vertical 8}
     :data           (if first-half? (subvec words 0 6) (subvec words 6))
@@ -65,9 +65,13 @@
        [rn/view {:style (style/seed-phrase-container theme)}
         (when (pos? (count @secret-phrase))
           [:<>
-           [words-column @secret-phrase true]
+           [words-column
+            {:words       @secret-phrase
+             :first-half? true}]
            [rn/view {:style (style/separator theme)}]
-           [words-column @secret-phrase false]])
+           [words-column
+            {:words       @secret-phrase
+             :first-half? false}]])
         (when-not @revealed?
           [rn/view {:style style/blur-container}
            [blur/view (style/blur theme)]])]
