@@ -94,6 +94,15 @@
 
 (def memo-communities-stack-items (atom nil))
 
+(defn- group-communities-by-status
+  [requests {:keys [id] :as community}]
+  (let [joined?  (:joined community)
+        pending? (boolean (get requests id))]
+    (cond
+      joined?  :joined
+      pending? :pending
+      :else    :opened)))
+
 (re-frame/reg-sub
  :communities/grouped-by-status
  :<- [:view-id]
@@ -104,19 +113,12 @@
  ;; in app-db. Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
  (fn [[view-id communities requests]]
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
-     (let [grouped-communities (reduce (fn [acc community]
-                                         (let [joined?      (:joined community)
-                                               community-id (:id community)
-                                               pending?     (boolean (get requests community-id))]
-                                           (cond
-                                             joined?  (update acc :joined conj community)
-                                             pending? (update acc :pending conj community)
-                                             :else    (update acc :opened conj community))))
-                                       {:joined [] :pending [] :opened []}
-                                       (sort-by (fn [{:keys [last-opened-at joined-at]}]
-                                                  (or last-opened-at joined-at))
-                                                #(compare %2 %1)
-                                                (vals communities)))]
+     (let [grouped-communities (->> communities
+                                    vals
+                                    (sort-by (fn [{:keys [last-opened-at joined-at]}]
+                                               (or last-opened-at joined-at))
+                                             #(compare %2 %1))
+                                    (group-by #(group-communities-by-status requests %)))]
        (reset! memo-communities-stack-items grouped-communities)
        grouped-communities)
      @memo-communities-stack-items)))
