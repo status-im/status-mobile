@@ -98,7 +98,7 @@
            on-select set-scroll-ref close sheet-animating?]}]
   [gesture/flat-list
    {:ref                             set-scroll-ref
-    :scroll-enabled                  scroll-enabled?
+    :scroll-enabled                  @scroll-enabled?
     :data                            (or filtered-data emoji-picker.data/flatten-data)
     :initial-num-to-render           14
     :max-to-render-per-batch         10

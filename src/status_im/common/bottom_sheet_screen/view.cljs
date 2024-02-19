@@ -87,7 +87,7 @@
            [content
             {:insets           insets
              :close            close
-             :scroll-enabled?  @scroll-enabled?
+             :scroll-enabled?  scroll-enabled?
              :current-scroll   curr-scroll
              :on-scroll        #(on-scroll % curr-scroll)
              :sheet-animating? animating?}]]]]))))
