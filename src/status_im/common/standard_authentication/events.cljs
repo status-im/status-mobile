@@ -13,8 +13,8 @@
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:biometric/check-if-available
            {:key-uid    key-uid
-            :on-success [:standard-auth/authorize-with-biometric args]
-            :on-fail    [:standard-auth/authorize-with-password args]}]]}))
+            :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
+            :on-fail    #(rf/dispatch [:standard-auth/authorize-with-password args])}]]}))
 
 (schema/=> authorize events-schema/?authorize)
 (rf/reg-event-fx :standard-auth/authorize authorize)
@@ -29,9 +29,10 @@
           [:dispatch
            [:biometric/authenticate
             {:prompt-message (i18n/label :t/biometric-auth-confirm-message)
-             :on-cancel      [:standard-auth/authorize-with-password args-with-biometric-btn]
-             :on-success     [:standard-auth/on-biometric-success on-auth-success]
-             :on-fail        [:standard-auth/on-biometric-fail on-auth-fail]}]]]}))
+             :on-cancel      #(rf/dispatch [:standard-auth/authorize-with-password
+                                            args-with-biometric-btn])
+             :on-success     #(rf/dispatch [:standard-auth/on-biometric-success on-auth-success])
+             :on-fail        #(rf/dispatch [:standard-auth/on-biometric-fail on-auth-fail %])}]]]}))
 
 (schema/=> authorize-with-biometric events-schema/?authorize-with-biometric)
 (rf/reg-event-fx :standard-auth/authorize-with-biometric authorize-with-biometric)

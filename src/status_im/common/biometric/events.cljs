@@ -44,20 +44,24 @@
 
 (rf/reg-fx
  :biometric/authenticate
- (fn [{:keys [on-success on-fail on-cancel prompt-message on-done]}]
+ (fn [{:keys [prompt-message on-success on-fail on-cancel on-done]
+       :or   {on-done    identity
+              on-success identity
+              on-cancel  identity
+              on-fail    identity}}]
    (-> (biometrics/authenticate
         {:prompt-message          (or prompt-message (i18n/label :t/biometric-auth-reason-login))
          :fallback-prompt-message (i18n/label
                                    :t/biometric-auth-login-ios-fallback-label)
          :cancel-button-text      (i18n/label :t/cancel)})
        (.then (fn [not-canceled?]
-                (utils/handle-cb on-done)
+                (on-done)
                 (if not-canceled?
-                  (utils/handle-cb on-success)
-                  (utils/handle-cb on-cancel))))
+                  (on-success)
+                  (on-cancel))))
        (.catch (fn [err]
-                 (utils/handle-cb on-done)
-                 (utils/handle-cb on-fail err))))))
+                 (on-done)
+                 (on-fail err))))))
 
 (defn authenticate
   [{:keys [db]} [opts]]
@@ -66,7 +70,7 @@
     (when-not pending?
       {:db (assoc db :biometric/auth-pending? true)
        :fx [[:biometric/authenticate
-             (assoc opts :on-done [:set :biometric/auth-pending? false])]]})))
+             (assoc opts :on-done #(rf/dispatch [:set :biometric/auth-pending? false]))]]})))
 
 (schema/=> authenticate events-schema/?authenticate)
 (rf/reg-event-fx :biometric/authenticate authenticate)
@@ -93,13 +97,14 @@
 (rf/reg-event-fx :biometric/disable disable-biometrics)
 
 (defn check-if-biometrics-available
-  [{:keys [key-uid on-success on-fail]}]
+  [{:keys [key-uid on-success on-fail]
+    :or   {on-success identity
+           on-fail    identity}}]
   (keychain/can-save-user-password?
    (fn [can-save?]
      (if-not can-save?
-       (utils/handle-cb on-fail
-                        (ex-info "cannot-save-user-password"
-                                 {:fx :biometric/check-if-available}))
+       (on-fail (ex-info "cannot-save-user-password"
+                         {:effect :biometric/check-if-available}))
        (-> (biometrics/get-available)
            (.then (fn [available?]
                     (when-not available?
@@ -107,13 +112,12 @@
            (.then #(keychain/get-auth-method! key-uid))
            (.then (fn [auth-method]
                     (when auth-method
-                      (utils/handle-cb on-success auth-method))))
+                      (on-success auth-method))))
            (.catch (fn [err]
                      (let [message (.-message err)]
-                       (utils/handle-cb on-fail
-                                        (ex-info message
-                                                 {:err err
-                                                  :fx  :biometric/check-if-available}))
+                       (on-fail (ex-info message
+                                         {:err    err
+                                          :effect :biometric/check-if-available}))
                        (when-not (= message "biometric-not-available")
                          (log/error "Failed to check if biometrics is available"
                                     {:error   err

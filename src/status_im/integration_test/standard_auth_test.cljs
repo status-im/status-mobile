@@ -30,10 +30,10 @@
      (do
        (rf/reg-fx :biometric/check-if-available
         (fn [{:keys [on-success]}]
-          (rf/dispatch on-success)))
+          (on-success)))
        (rf/reg-event-fx :biometric/authenticate
         (fn [_ [{:keys [on-success]}]]
-          (rf/dispatch on-success)))
+          (on-success)))
        (rf/reg-fx :keychain/get-user-password
         (fn [[_ on-success]]
           (on-success))))
@@ -50,10 +50,10 @@
      (do
        (rf/reg-fx :biometric/check-if-available
         (fn [{:keys [on-success]}]
-          (rf/dispatch on-success)))
+          (on-success)))
        (rf/reg-event-fx :biometric/authenticate
         (fn [_ [{:keys [on-cancel]}]]
-          (rf/dispatch on-cancel)))
+          (on-cancel)))
        (rf/reg-event-fx :show-bottom-sheet
         (fn [_])))
      (rf/dispatch [:standard-auth/authorize default-args])
@@ -74,10 +74,10 @@
                                          (reset! error err)))]
        (rf/reg-fx :biometric/check-if-available
         (fn [{:keys [on-success]}]
-          (rf/dispatch on-success)))
+          (on-success)))
        (rf/reg-event-fx :biometric/authenticate
         (fn [_ [{:keys [on-fail]}]]
-          (rf/dispatch (conj on-fail (ex-info "error" {} expected-error-cause)))))
+          (on-fail (ex-info "error" {} expected-error-cause))))
        (rf/reg-fx :biometric/show-message
         (fn [_]))
        (rf/dispatch [:standard-auth/authorize args])
@@ -92,7 +92,7 @@
      (do
        (rf/reg-fx :biometric/check-if-available
         (fn [{:keys [on-fail]}]
-          (rf/dispatch on-fail)))
+          (on-fail)))
        (rf/reg-event-fx :show-bottom-sheet
         (fn [_])))
      (rf/dispatch [:standard-auth/authorize default-args])
