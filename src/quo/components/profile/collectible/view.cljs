@@ -1,9 +1,9 @@
 (ns quo.components.profile.collectible.view
   (:require
-    [quo.components.markdown.text :as text]
-    [quo.components.profile.collectible.style :as style]
-    [react-native.core :as rn]
-    [react-native.svg :as svg]))
+   [clojure.string :as string]
+   [quo.components.markdown.text :as text]
+   [quo.components.profile.collectible.style :as style]
+   [react-native.core :as rn]))
 
 (defn remaining-tiles
   [amount]
@@ -19,11 +19,26 @@
   (let [svg?        (and (map? resource) (:svg? resource))
         image-style (style/tile-style-by-size size)]
     [rn/view {:style style}
-     (if svg?
+     (cond
+       svg?
        [rn/view
-        {:style {:border-radius (:border-radius image-style)
-                 :overflow      :hidden}}
-        [svg/svg-uri (assoc image-style :uri (:uri resource))]]
+        {:style (assoc image-style :border-radius (:border-radius image-style)
+                                   :overflow :hidden
+                                   :justify-content :center
+                                   :align-items :center
+                                   :background-color :lightblue)}
+        [text/text "SVG Content"]]
+
+       (or (string/blank? resource) (string/blank? (:uri resource)))
+       [rn/view
+        {:style (assoc image-style :border-radius (:border-radius image-style)
+                                   :overflow :hidden
+                                   :justify-content :center
+                                   :align-items :center
+                                   :background-color :lightgray)}
+        [text/text "Missing image"]]
+
+       :else
        ;; NOTE: using react-native-fast-image here causes a crash on devices when used inside a
        ;; large flatlist. The library seems to have issues with memory consumption when used with
        ;; large images/GIFs.
