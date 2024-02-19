@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
-    [quo.components.wallet.network-bridge.schema :refer [?schema]]
+    [quo.components.wallet.network-bridge.schema :as network-bridge-schema]
     [quo.components.wallet.network-bridge.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
@@ -66,4 +66,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal network-bridge-schema/?schema)))

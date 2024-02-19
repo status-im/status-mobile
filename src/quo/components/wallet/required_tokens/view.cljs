@@ -1,7 +1,7 @@
 (ns quo.components.wallet.required-tokens.view
   (:require [quo.components.markdown.text :as text]
             [quo.components.utilities.token.view :as token]
-            [quo.components.wallet.required-tokens.schema :refer [?schema]]
+            [quo.components.wallet.required-tokens.schema :as required-tokens-schema]
             [quo.components.wallet.required-tokens.style :as style]
             quo.theme
             [react-native.core :as rn]
@@ -38,4 +38,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal required-tokens-schema/?schema)))

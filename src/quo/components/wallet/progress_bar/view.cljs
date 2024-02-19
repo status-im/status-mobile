@@ -1,6 +1,6 @@
 (ns quo.components.wallet.progress-bar.view
   (:require
-    [quo.components.wallet.progress-bar.schema :refer [?schema]]
+    [quo.components.wallet.progress-bar.schema :as progress-bar-schema]
     [quo.components.wallet.progress-bar.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -16,4 +16,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal progress-bar-schema/?schema)))

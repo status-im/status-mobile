@@ -2,7 +2,7 @@
   (:require
     [oops.core :as oops]
     [quo.components.wallet.network-routing.animation :as animation]
-    [quo.components.wallet.network-routing.schema :refer [?schema]]
+    [quo.components.wallet.network-routing.schema :as network-routing-schema]
     [quo.components.wallet.network-routing.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -190,4 +190,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal network-routing-schema/?schema)))
