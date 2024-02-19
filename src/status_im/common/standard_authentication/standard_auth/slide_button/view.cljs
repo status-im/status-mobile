@@ -11,7 +11,7 @@
 (defn- view-internal
   [_]
   (let [reset-slider?   (reagent/atom false)
-        reset-slider        (fn []
+        reset-slider    (fn []
                           (js/setTimeout
                            #(reset! reset-slider? true)
                            200))
@@ -35,9 +35,9 @@
         {:size                size
          :customization-color customization-color
          :on-reset            (when @reset-slider? #(reset! reset-slider? false))
-         :on-complete         #(authorize/authorize {:on-close              (fn [] 
-                                                                                (on-close)
-                                                                                (reset-slider))
+         :on-complete         #(authorize/authorize {:on-close              (fn []
+                                                                              (on-close)
+                                                                              (reset-slider))
                                                      :auth-button-icon-left auth-button-icon-left
                                                      :theme                 theme
                                                      :blur?                 blur?

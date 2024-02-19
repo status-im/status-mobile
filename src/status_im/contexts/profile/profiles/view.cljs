@@ -194,74 +194,78 @@
   []
   (let [password-value (reagent/atom nil)]
     (fn [{:keys [set-show-profiles]}]
-    (let [{:keys [processing password]}              (rf/sub [:profile/login])
-          {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
-          sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
-          profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
-          auth-method                                (rf/sub [:auth-method])
-          login-multiaccount                         #(rf/dispatch [:profile.login/login])
-          on-change-password                         (fn [value]
-                                                       (reset! password-value value)
-                                                       (when (not= value (security/safe-unmask-data password))
-                                                         (rf/dispatch [:set-in [:profile/login :password]
-                                                                       (security/mask-data value)])
-                                                         (rf/dispatch [:set-in [:profile/login :error] ""])))]
-      [rn/keyboard-avoiding-view
-       {:style                  style/login-container
-        :keyboardVerticalOffset (- (safe-area/get-bottom))}
-       [rn/view
-        {:style style/multi-profile-button-container}
-        (when config/quo-preview-enabled?
+      (let [{:keys [processing password]}              (rf/sub [:profile/login])
+            {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
+            sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
+            profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
+            auth-method                                (rf/sub [:auth-method])
+            login-multiaccount                         #(rf/dispatch [:profile.login/login])
+            on-change-password                         (fn [value]
+                                                         (reset! password-value value)
+                                                         (when (not= value
+                                                                     (security/safe-unmask-data
+                                                                      password))
+                                                           (rf/dispatch [:set-in
+                                                                         [:profile/login :password]
+                                                                         (security/mask-data value)])
+                                                           (rf/dispatch [:set-in [:profile/login :error]
+                                                                         ""])))]
+        [rn/keyboard-avoiding-view
+         {:style                  style/login-container
+          :keyboardVerticalOffset (- (safe-area/get-bottom))}
+         [rn/view
+          {:style style/multi-profile-button-container}
+          (when config/quo-preview-enabled?
+            [quo/button
+             {:size                32
+              :type                :grey
+              :background          :blur
+              :icon-only?          true
+              :on-press            #(rf/dispatch [:navigate-to :quo-preview])
+              :disabled?           processing
+              :accessibility-label :quo-preview
+              :container-style     {:margin-right 12}}
+             :i/reveal-whitelist])
           [quo/button
            {:size                32
             :type                :grey
             :background          :blur
             :icon-only?          true
-            :on-press            #(rf/dispatch [:navigate-to :quo-preview])
+            :on-press            set-show-profiles
             :disabled?           processing
-            :accessibility-label :quo-preview
-            :container-style     {:margin-right 12}}
-           :i/reveal-whitelist])
-        [quo/button
-         {:size                32
-          :type                :grey
-          :background          :blur
-          :icon-only?          true
-          :on-press            set-show-profiles
-          :disabled?           processing
-          :accessibility-label :show-profiles}
-         :i/multi-profile]]
-       [rn/scroll-view
-        {:keyboard-should-persist-taps :always
-         :style                        {:flex 1}}
-        [quo/profile-card
-         {:name                name
-          :customization-color (or customization-color :primary)
-          :profile-picture     profile-picture
-          :card-style          style/login-profile-card}]
-        [standard-authentication/password-input
-         {:shell?              true
-          :blur?               true
-          :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
-                                 (fn []
-                                   (rf/dispatch [:biometric/authenticate
-                                                 {:on-success #(rf/dispatch
-                                                                [:profile.login/biometric-success])
-                                                  :on-fail    #(rf/dispatch
-                                                                [:profile.login/biometric-auth-fail
-                                                                 %])}])))
-          :password            @password-value
-          :on-change-password  on-change-password}]]
-       [quo/button
-        {:size                40
-         :type                :primary
-         :customization-color (or customization-color :primary)
-         :accessibility-label :login-button
-         :icon-left           :i/unlocked
-         :disabled?           (or (not sign-in-enabled?) processing)
-         :on-press            login-multiaccount
-         :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
-        (i18n/label :t/log-in)]]))))
+            :accessibility-label :show-profiles}
+           :i/multi-profile]]
+         [rn/scroll-view
+          {:keyboard-should-persist-taps :always
+           :style                        {:flex 1}}
+          [quo/profile-card
+           {:name                name
+            :customization-color (or customization-color :primary)
+            :profile-picture     profile-picture
+            :card-style          style/login-profile-card}]
+          [standard-authentication/password-input
+           {:shell?              true
+            :blur?               true
+            :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
+                                   (fn []
+                                     (rf/dispatch [:biometric/authenticate
+                                                   {:on-success #(rf/dispatch
+                                                                  [:profile.login/biometric-success])
+                                                    :on-fail    #(rf/dispatch
+                                                                  [:profile.login/biometric-auth-fail
+                                                                   %])}])))
+            :password            @password-value
+            :on-change-password  on-change-password}]]
+         [quo/button
+          {:size                40
+           :type                :primary
+           :customization-color (or customization-color :primary)
+           :accessibility-label :login-button
+           :icon-left           :i/unlocked
+           :disabled?           (or (not sign-in-enabled?) processing)
+           :on-press            login-multiaccount
+           :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
+          (i18n/label :t/log-in)]]))))
 
 ;; we had to register it here, because of hotreload, overwise on hotreload it will be reseted
 (defonce show-profiles? (reagent/atom false))
