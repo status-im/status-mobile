@@ -1,9 +1,9 @@
 (ns quo.components.profile.collectible.view
   (:require
-   [clojure.string :as string]
-   [quo.components.markdown.text :as text]
-   [quo.components.profile.collectible.style :as style]
-   [react-native.core :as rn]))
+    [clojure.string :as string]
+    [quo.components.markdown.text :as text]
+    [quo.components.profile.collectible.style :as style]
+    [react-native.core :as rn]))
 
 (defn remaining-tiles
   [amount]
@@ -22,20 +22,22 @@
      (cond
        svg?
        [rn/view
-        {:style (assoc image-style :border-radius (:border-radius image-style)
-                                   :overflow :hidden
-                                   :justify-content :center
-                                   :align-items :center
-                                   :background-color :lightblue)}
+        {:style (assoc image-style
+                       :border-radius    (:border-radius image-style)
+                       :overflow         :hidden
+                       :justify-content  :center
+                       :align-items      :center
+                       :background-color :lightblue)}
         [text/text "SVG Content"]]
 
        (or (string/blank? resource) (string/blank? (:uri resource)))
        [rn/view
-        {:style (assoc image-style :border-radius (:border-radius image-style)
-                                   :overflow :hidden
-                                   :justify-content :center
-                                   :align-items :center
-                                   :background-color :lightgray)}
+        {:style (assoc image-style
+                       :border-radius    (:border-radius image-style)
+                       :overflow         :hidden
+                       :justify-content  :center
+                       :align-items      :center
+                       :background-color :lightgray)}
         [text/text "Missing image"]]
 
        :else

@@ -9,13 +9,15 @@
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [collectible-list (rf/sub [:wallet/all-collectibles-list])]
+  (let [collectible-list     (rf/sub [:wallet/all-collectibles-list])
+        request-collectibles #(rf/dispatch
+                               [:wallet/request-collectibles-for-all-accounts {}])]
     [rn/view {:style style/container}
      (case selected-tab
        :assets       [assets/view]
        :collectibles [collectibles/view
                       {:collectibles         collectible-list
-                       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-all-accounts {}])
+                       :on-end-reached       request-collectibles
                        :on-collectible-press (fn [{:keys [id]}]
                                                (rf/dispatch [:wallet/get-collectible-details id]))}]
        [activity/view])]))

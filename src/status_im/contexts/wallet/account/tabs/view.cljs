@@ -17,8 +17,9 @@
      (case selected-tab
        :assets       [assets/view]
        :collectibles [collectibles/view
-                      {:collectibles         collectible-list
-                       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
+                      {:collectibles collectible-list
+                       :on-end-reached #(rf/dispatch
+                                         [:wallet/request-collectibles-for-current-viewing-account])
                        :on-collectible-press (fn [{:keys [id]}]
                                                (rf/dispatch [:wallet/get-collectible-details id]))}]
        :activity     [activity/view]
