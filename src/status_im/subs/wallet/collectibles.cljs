@@ -45,13 +45,21 @@
    (-> current-account :collectibles add-collectibles-preview-url)))
 
 (re-frame/reg-sub
- :wallet/all-collectibles
+ :wallet/all-collectibles-list
  :<- [:wallet]
- (fn [wallet]
-   (->> wallet
-        :accounts
-        (mapcat (comp :collectibles val))
-        (add-collectibles-preview-url))))
+ (fn [{:keys [accounts]}]
+   (let [max-collectibles (->> accounts
+                               (map (comp count :collectibles val))
+                               (apply max))
+         all-collectibles (map (fn [[_address {:keys [collectibles]}]]
+                                 (let [amount-to-add      (- max-collectibles (count collectibles))
+                                       empty-collectibles (repeat amount-to-add nil)]
+                                   (reduce conj collectibles empty-collectibles)))
+                               accounts)]
+     (->> all-collectibles
+          (apply interleave)
+          (remove nil?)
+          (add-collectibles-preview-url)))))
 
 (re-frame/reg-sub
  :wallet/current-viewing-account-collectibles-filtered
