@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.common.sheets.account-options.view
+(ns status-im.contexts.wallet.sheets.account-options.view
   (:require [oops.core :as oops]
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
@@ -9,9 +9,9 @@
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im.contexts.wallet.common.sheets.account-options.style :as style]
-            [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.sheets.account-options.style :as style]
+            [status-im.contexts.wallet.sheets.remove-account.view :as remove-account]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))

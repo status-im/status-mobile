@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.common.sheets.account-origin.style
+(ns status-im.contexts.wallet.sheets.account-origin.style
   (:require [react-native.platform :as platform]))
 
 (def header-container

@@ -93,6 +93,7 @@
                                     (when-not ens
                                       (rf/dispatch [:wallet/select-send-address
                                                     {:address   address
+                                                     :token?    false
                                                      :recipient local-suggestion
                                                      :stack-id  :wallet-select-address}]))))
                  :active-state? false}]
@@ -156,7 +157,7 @@
                                         :disabled?           (not valid-ens-or-address?)
                                         :on-press            #(rf/dispatch [:wallet/select-send-address
                                                                             {:address @input-value
-                                                                             :token token
+                                                                             :token? (some? token)
                                                                              :stack-id
                                                                              :wallet-select-address}])
                                         :customization-color color}
