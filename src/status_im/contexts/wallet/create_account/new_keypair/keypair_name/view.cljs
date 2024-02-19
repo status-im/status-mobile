@@ -13,8 +13,7 @@
   []
   (let [keypair-name (reagent/atom "")]
     (fn []
-      (let [{:keys [secret-phrase]} (rf/sub [:wallet/ui])
-            customization-color     (rf/sub [:profile/customization-color])]
+      (let [customization-color     (rf/sub [:profile/customization-color])]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left

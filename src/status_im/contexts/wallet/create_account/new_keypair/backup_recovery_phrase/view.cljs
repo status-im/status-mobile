@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view
   (:require
+    [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
@@ -49,9 +50,9 @@
         random-phrase       (reagent/atom [])]
     (fn []
       (rn/use-effect
-       (fn []
-         (native-module/get-random-mnemonic #(reset! secret-phrase (clojure.string/split % #"\s")))
-         (native-module/get-random-mnemonic #(reset! random-phrase (clojure.string/split % #"\s")))))
+        (fn []
+         (native-module/get-random-mnemonic #(reset! secret-phrase (string/split % #"\s")))
+         (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:icon-name           :i/close
