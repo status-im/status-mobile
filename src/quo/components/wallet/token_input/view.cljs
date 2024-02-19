@@ -7,11 +7,13 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.network-tags.view :as network-tag]
     [quo.components.utilities.token.view :as token]
+    [quo.components.wallet.token-input.schema :as component-schema]
     [quo.components.wallet.token-input.style :as style]
     [quo.foundations.common :as common]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn fiat-format
   [currency num-value conversion]
@@ -149,4 +151,6 @@
                  :crypto? @crypto?
                  :amount  (or value @value-atom))]]))))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

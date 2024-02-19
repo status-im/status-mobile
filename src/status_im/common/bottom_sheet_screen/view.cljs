@@ -4,7 +4,6 @@
     [quo.theme :as theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -58,7 +57,8 @@
                                (set-animating-true)
                                (reanimated/animate translate-y height 300)
                                (reanimated/animate opacity 0 300)
-                               (rf/dispatch [:navigate-back]))
+                               (rf/dispatch [:navigate-back])
+                               true)
             reset-open-sheet (fn []
                                (reanimated/animate translate-y 0 300)
                                (reanimated/animate opacity 1 300)
@@ -66,10 +66,11 @@
                                (reset! scroll-enabled? true))]
         (rn/use-effect
          (fn []
+           (rn/hw-back-add-listener close)
            (reanimated/animate translate-y 0 300)
            (reanimated/animate opacity 1 300)
-           (set-animating-false 300)))
-        (hooks/use-back-handler close)
+           (set-animating-false 300)
+           #(rn/hw-back-remove-listener close)))
         [rn/view {:style (style/container insets)}
          (when-not skip-background?
            [reanimated/view {:style (style/background opacity)}])
@@ -87,7 +88,7 @@
            [content
             {:insets           insets
              :close            close
-             :scroll-enabled?  @scroll-enabled?
+             :scroll-enabled?  scroll-enabled?
              :current-scroll   curr-scroll
              :on-scroll        #(on-scroll % curr-scroll)
              :sheet-animating? animating?}]]]]))))

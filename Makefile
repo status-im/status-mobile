@@ -36,6 +36,8 @@ endif
 export TMPDIR = /tmp/tmp-status-mobile-$(BUILD_TAG)
 # This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001
+# Default metro port used by scripts/run-android.sh.
+export RCT_METRO_PORT ?= 8081
 # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
 export NODE_OPTIONS += --openssl-legacy-provider
 # The path can be anything, but home is usually safest.

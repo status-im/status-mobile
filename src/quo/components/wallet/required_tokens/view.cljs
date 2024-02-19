@@ -1,26 +1,11 @@
 (ns quo.components.wallet.required-tokens.view
   (:require [quo.components.markdown.text :as text]
             [quo.components.utilities.token.view :as token]
+            [quo.components.wallet.required-tokens.schema :as required-tokens-schema]
             [quo.components.wallet.required-tokens.style :as style]
             quo.theme
             [react-native.core :as rn]
             [schema.core :as schema]))
-
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map {:closed true}
-      [:type [:enum :token :collectible]]
-      [:amount {:optional true} [:maybe [:or :string :int]]]
-      [:token {:optional true} [:maybe :string]]
-      [:token-img-src {:optional true} [:maybe :schema.common/image-source]]
-      [:collectible-img-src {:optional true} [:maybe :schema.common/image-source]]
-      [:collectible-name {:optional true} [:maybe :string]]
-      [:divider? {:optional true} [:maybe :boolean]]
-      [:theme :schema.common/theme]
-      [:container-style {:optional true} [:maybe :map]]]]]
-   :any])
 
 (defn- view-internal
   [{:keys [type amount token token-img-src collectible-img-src collectible-name divider? theme
@@ -53,4 +38,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal required-tokens-schema/?schema)))

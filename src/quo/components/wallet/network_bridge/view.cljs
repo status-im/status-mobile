@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.network-bridge.schema :as network-bridge-schema]
     [quo.components.wallet.network-bridge.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
@@ -24,22 +25,6 @@
   (cond (not network)         ""
         (= network :ethereum) "Mainnet"
         :else                 (string/capitalize (name network))))
-
-(def ^:private ?network-bridge-status
-  [:enum :add :loading :locked :disabled :default])
-
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map
-      [:theme :schema.common/theme]
-      [:network {:optional true} [:maybe :keyword]]
-      [:status {:optional true} [:maybe ?network-bridge-status]]
-      [:amount {:optional true} [:maybe :string]]
-      [:container-style {:optional true} [:maybe :map]]
-      [:on-press {:optional true} [:maybe fn?]]]]]
-   :any])
 
 (defn view-internal
   [{:keys [theme network status amount container-style on-press] :as args}]
@@ -81,4 +66,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal network-bridge-schema/?schema)))

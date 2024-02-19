@@ -3,34 +3,20 @@ set -euo pipefail
 set -m # needed to access jobs
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+XCRUN_INSTALL_LOG_FILE="${GIT_ROOT}/logs/xcrun_install.log"
+XCRUN_LAUNCH_LOG_FILE="${GIT_ROOT}/logs/xcrun_launch.log"
 
-# We run Metro in background while calling adb.
-cleanupMetro() {
-    pkill -f run-metro.sh
-    rm -f metro-server-logs.log
+# Install on the simulator
+installAndLaunchApp() {
+  xcrun simctl install "$UUID" "$APP_PATH" > "${XCRUN_INSTALL_LOG_FILE}" 2>&1
+  "${GIT_ROOT}/scripts/wait-for-metro-port.sh"  2>&1
+  xcrun simctl launch "$UUID" im.status.ethereum.debug > "${XCRUN_LAUNCH_LOG_FILE}" 2>&1
+
 }
 
-# Using function gives a neater jobspec name.
-runMetro() {
-   nohup "${GIT_ROOT}/scripts/run-metro.sh" 2>&1 \
-        | tee metro-server-logs.log
-}
-
-waitForMetro() {
-    set +e # Allow grep command to fail in the loop.
-    TIMEOUT=5
-    echo "Waiting for Metro server..." >&2
-    while ! grep -q "Welcome to Metro" metro-server-logs.log; do
-      echo -n "." >&2
-      sleep 1
-      if ((TIMEOUT == 0)); then
-        echo -e "\nMetro server timed out, exiting" >&2
-        set -e # Restore errexit for rest of script.
-        return 1
-      fi
-      ((TIMEOUT--))
-    done
-    set -e # Restore errexit for rest of script.
+showXcrunLogs() {
+  cat "${XCRUN_INSTALL_LOG_FILE}" >&2;
+  cat "${XCRUN_LAUNCH_LOG_FILE}" >&2;
 }
 
 # Check if the first argument is provided
@@ -65,15 +51,6 @@ xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme St
 
 APP_PATH="${BUILD_DIR}/Build/Products/Debug-iphonesimulator/StatusIm.app"
 
-# Install on the simulator
-xcrun simctl install "$UUID" "$APP_PATH"
-
-trap cleanupMetro EXIT ERR INT QUIT
-runMetro &
-waitForMetro
-
-# launch the app when metro is ready
-xcrun simctl launch "$UUID" im.status.ethereum.debug
-
-# bring metro job to foreground
-fg 'runMetro'
+trap showXcrunLogs EXIT ERR INT QUIT
+installAndLaunchApp &
+exec "${GIT_ROOT}/scripts/run-metro.sh" 2>&1
