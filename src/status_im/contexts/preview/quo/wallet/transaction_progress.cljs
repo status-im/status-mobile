@@ -135,8 +135,6 @@
   []
   (let [state (reagent/atom
                {:title                        "Title"
-                :counter                      40
-                :total-box                    total-box
                 :tag-name                     "Doodle"
                 :tag-number                   "120"
                 :epoch-number-mainnet         "181,329"
