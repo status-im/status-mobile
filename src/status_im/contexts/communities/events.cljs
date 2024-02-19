@@ -293,7 +293,7 @@
 (defn community-fetched
   [{:keys [db]} [community-id community]]
   (when community
-    {:db (update db :communities/fetching-community dissoc community-id)
+    {:db (update db :communities/fetching-communities dissoc community-id)
      :fx [[:dispatch [:communities/handle-community community]]
           [:dispatch [:communities/update-last-opened-at community-id]]
           [:dispatch
@@ -304,14 +304,14 @@
 
 (defn community-failed-to-fetch
   [{:keys [db]} [community-id]]
-  {:db (update db :communities/fetching-community dissoc community-id)})
+  {:db (update db :communities/fetching-communities dissoc community-id)})
 
 (rf/reg-event-fx :chat.ui/community-failed-to-fetch community-failed-to-fetch)
 
 (defn fetch-community
   [{:keys [db]} [{:keys [community-id update-last-opened-at?]}]]
-  (when (and community-id (not (get-in db [:communities/fetching-community community-id])))
-    {:db            (assoc-in db [:communities/fetching-community community-id] true)
+  (when (and community-id (not (get-in db [:communities/fetching-communities community-id])))
+    {:db            (assoc-in db [:communities/fetching-communities community-id] true)
      :json-rpc/call [{:method     "wakuext_fetchCommunity"
                       :params     [{:CommunityKey    community-id
                                     :TryDatabase     true
