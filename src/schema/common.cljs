@@ -13,7 +13,8 @@
 
 (def ^:private ?image-source
   [:or
-   [:or :int :string]
+   :int
+   :string
    [:map
     [:uri [:maybe [:string]]]]])
 
