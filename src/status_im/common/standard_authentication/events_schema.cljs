@@ -16,7 +16,7 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:tuple ?authorize-map]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?authorize-with-biometric
   [:=>
@@ -24,7 +24,7 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:tuple ?authorize-map]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?on-biometric-success
   [:=>
@@ -32,7 +32,7 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:tuple fn?]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?on-biometrics-fail
   [:=>
@@ -42,7 +42,7 @@
      [:tuple
       [:maybe fn?]
       [:maybe :schema.common/error]]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?authorize-with-password
   [:=>
@@ -50,4 +50,4 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:tuple ?authorize-map]]]
-   :schema.re-frame/event-fx])
+   :any])

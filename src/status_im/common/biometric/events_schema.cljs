@@ -13,7 +13,7 @@
        constants/biometrics-type-android
        constants/biometrics-type-face-id
        constants/biometrics-type-touch-id]]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?show-message
   [:=>
@@ -21,7 +21,7 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:tuple keyword?]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?authenticate
   [:=>
@@ -34,7 +34,7 @@
        [:on-fail {:optional true} fn?]
        [:on-cancel {:optional true} fn?]
        [:prompt-message {:optional true} :string]]]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?enable-biometrics
   [:=>
@@ -44,13 +44,13 @@
      [:tuple
       [:fn {:error/message "Should be an instance of security/MaskedData"}
        (fn [pw] (instance? security/MaskedData pw))]]]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?disable-biometrics
   [:=>
    [:catn
     [:cofx :schema.re-frame/cofx]]
-   :schema.re-frame/event-fx])
+   :any])
 
 (def ?check-if-biometrics-available
   [:=>
