@@ -40,7 +40,8 @@
 (defn on-biometric-success
   [{:keys [db]} [on-auth-success]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:fx [[:keychain/get-user-password [key-uid on-auth-success]]]}))
+    {:fx [[:keychain/get-user-password [key-uid on-auth-success]]
+          [:dispatch [:standard-auth/reset-login-password]]]}))
 
 (schema/=> on-biometric-success events-schema/?on-biometric-success)
 (rf/reg-event-fx :standard-auth/on-biometric-success on-biometric-success)
@@ -54,7 +55,8 @@
                  ex-data
                  (assoc :code  (ex-cause error)
                         :event :standard-auth/on-biometric-fail)))
-  {:fx [[:dispatch [:biometric/show-message (ex-cause error)]]]})
+  {:fx [[:dispatch [:standard-auth/reset-login-password]]
+        [:dispatch [:biometric/show-message (ex-cause error)]]]})
 
 (schema/=> on-biometric-fail events-schema/?on-biometrics-fail)
 (rf/reg-event-fx :standard-auth/on-biometric-fail on-biometric-fail)
@@ -63,6 +65,7 @@
   [{:keys [on-press-biometric on-auth-success auth-button-icon-left auth-button-label]}]
   (fn []
     (let [handle-password-success (fn [password]
+                                    (rf/dispatch [:standard-auth/reset-login-password])
                                     (-> password security/hash-masked-password on-auth-success))]
       [enter-password/view
        {:on-enter-password   handle-password-success
@@ -75,7 +78,9 @@
   {:fx [[:dispatch [:standard-auth/reset-login-password]]
         [:dispatch
          [:show-bottom-sheet
-          {:on-close on-close
+          {:on-close (fn []
+                       (rf/dispatch [:standard-auth/reset-login-password])
+                       (on-close))
            :theme    theme
            :shell?   blur?
            :content  #(bottom-sheet-password-view args)}]]]})

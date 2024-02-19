@@ -18,10 +18,8 @@
       {:blur?             true
        :theme             theme
        :auth-button-label (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
-       :on-close          (fn [] (rf/dispatch [:standard-auth/reset-login-password]))
        :on-auth-success   (fn [password]
                             (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:standard-auth/reset-login-password])
                             (rf/dispatch
                              [:biometric/authenticate
                               {:on-success #(rf/dispatch [:biometric/enable password])
