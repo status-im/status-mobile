@@ -8,8 +8,7 @@
     [reagent.core :as reagent]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.string :as utils]))
+    [utils.re-frame :as rf]))
 
 (defn- word-item
   [item index _ increment]
