@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
+    [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
     [utils.i18n :as i18n]))
@@ -417,4 +418,27 @@
  (fn [[_ community-id]]
    (re-frame/subscribe [:communities/community community-id]))
  (fn [community _]
-   (:token-permissions community)))
+   (let [token-permissions (:token-permissions community)
+         token-images      (:token-images community)
+         grouped-by-type   (group-by (comp :type second) token-permissions)
+         mock-images       (if (and (contains? token-permissions 5) (contains? token-permissions 6))
+                             (resources/mock-images :collectible)
+                             nil)]
+     (into {}
+           (map (fn [[type tokens]]
+                  [type
+                   (map (fn [token]
+                          (map (fn [criteria]
+                                 (-> criteria
+                                     (assoc :amount
+                                            (wallet.utils/remove-trailing-zeroes (:amount criteria))) 
+                                     (select-keys [:symbol :amount])
+                                     (assoc :sufficient? true
+                                            :loading?    false
+                                            :img-src     (if (= type 2)
+                                                           (or mock-images
+                                                               (get token-images (:symbol criteria)))
+                                                           (get token-images (:symbol criteria))))))
+                               (:token_criteria (second token))))
+                        tokens)])
+                grouped-by-type)))))
