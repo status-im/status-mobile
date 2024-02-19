@@ -105,7 +105,7 @@
          :render-section-header-fn       contact-list/contacts-section-header
          :content-container-style        {:padding-bottom 70}
          :render-fn                      contact-item-render
-         :scroll-enabled                 scroll-enabled?
+         :scroll-enabled                 @scroll-enabled?
          :on-scroll                      on-scroll}])
      (when contacts-selected?
        [quo/button

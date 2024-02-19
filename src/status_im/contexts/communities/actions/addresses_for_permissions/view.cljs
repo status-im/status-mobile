@@ -92,7 +92,7 @@
                                      :share-all-addresses? share-all-addresses?
                                      :community-color      color}
            :content-container-style {:padding-horizontal 20}
-           :scroll-enabled          scroll-enabled?
+           :scroll-enabled          @scroll-enabled?
            :on-scroll               on-scroll
            :key-fn                  :address
            :data                    accounts}]
