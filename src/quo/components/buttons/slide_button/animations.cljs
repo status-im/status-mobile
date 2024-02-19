@@ -1,9 +1,5 @@
 (ns quo.components.buttons.slide-button.animations
-  (:require
-    [oops.core :as oops]
-    [quo.components.buttons.slide-button.utils :as utils]
-    [react-native.gesture :as gesture]
-    [react-native.reanimated :as reanimated]))
+  (:require [react-native.reanimated :as reanimated]))
 
 (def ^:private extrapolation
   {:extrapolateLeft  "clamp"
@@ -66,36 +62,6 @@
                                                 :damping   30
                                                 :stiffness 400}))
 
-(defn- complete-animation
-  [sliding-complete?]
-  (reset! sliding-complete? true))
-
 (defn reset-track-position
   [x-pos]
   (animate-spring x-pos 0))
-
-;; Gestures
-(defn drag-gesture
-  [x-pos
-   gestures-disabled?
-   disabled?
-   track-width
-   sliding-complete?]
-  (let [gestures-enabled? (not (or disabled? @gestures-disabled?))]
-    (-> (gesture/gesture-pan)
-        (gesture/with-test-ID :slide-button-gestures)
-        (gesture/enabled gestures-enabled?)
-        (gesture/min-distance 0)
-        (gesture/on-update (fn [event]
-                             (let [x-translation (oops/oget event "translationX")
-                                   clamped-x     (utils/clamp-value x-translation 0 track-width)
-                                   reached-end?  (>= clamped-x track-width)]
-                               (reanimated/set-shared-value x-pos clamped-x)
-                               (when (and reached-end? (not @sliding-complete?))
-                                 (reset! gestures-disabled? true)
-                                 (complete-animation sliding-complete?)))))
-        (gesture/on-end (fn [event]
-                          (let [x-translation (oops/oget event "translationX")
-                                reached-end?  (>= x-translation track-width)]
-                            (when (not reached-end?)
-                              (reset-track-position x-pos))))))))
