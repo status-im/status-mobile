@@ -54,7 +54,7 @@
         account-color         (reagent/atom (rand-nth colors/account-colors))
         emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
         number-of-accounts    (count (rf/sub [:wallet/accounts]))
-        account-name          (reagent/atom (i18n/label :t/default-account-name
+        account-name          (reagent/atom (i18n/label :t/default-account-placeholder
                                                         {:number (inc number-of-accounts)}))
         derivation-path       (reagent/atom (utils/get-derivation-path number-of-accounts))
         {:keys [public-key]}  (rf/sub [:profile/profile])

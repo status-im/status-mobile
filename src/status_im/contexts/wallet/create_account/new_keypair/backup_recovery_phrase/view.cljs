@@ -50,7 +50,7 @@
         random-phrase       (reagent/atom [])]
     (fn []
       (rn/use-effect
-        (fn []
+       (fn []
          (native-module/get-random-mnemonic #(reset! secret-phrase (string/split % #"\s")))
          (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
       [rn/view {:style {:flex 1}}
