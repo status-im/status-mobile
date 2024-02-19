@@ -36,7 +36,7 @@
        [quo/page-nav
         {:key        :header
          :background :blur
-         :icon-name  :i/arrow-left
+         :icon-name  :i/close
          :on-press   #(rf/dispatch [:navigate-back])}]
        [rn/keyboard-avoiding-view
         {:key   :content

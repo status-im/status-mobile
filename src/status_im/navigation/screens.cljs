@@ -191,7 +191,7 @@
      :component edit-accent-colour/view}
 
     {:name      :edit-name
-     :options   options/transparent-modal-screen-options
+     :options   options/transparent-screen-options
      :component edit-name/view}
 
     {:name      :edit-bio
