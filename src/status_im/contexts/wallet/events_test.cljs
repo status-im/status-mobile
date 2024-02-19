@@ -26,7 +26,7 @@
 
 (deftest store-secret-phrase
   (let [db          {}
-        props       {:secret-phrase "test-secret" :random-phrase "random-test"}
+        props       [{:secret-phrase "test-secret" :random-phrase "random-test"}]
         expected-db {:wallet {:ui {:create-account {:secret-phrase "test-secret"
                                                     :random-phrase "random-test"}}}}
         effects     (events/store-secret-phrase {:db db} props)
@@ -35,7 +35,7 @@
 
 (deftest new-keypair-created
   (let [db          {}
-        props       {:new-keypair "test-keypair"}
+        props       [{:new-keypair "test-keypair"}]
         expected-db {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
         effects     (events/new-keypair-created {:db db} props)
         result-db   (:db effects)]
@@ -43,7 +43,7 @@
 
 (deftest new-keypair-continue
   (let [db               {:wallet {:ui {:create-account {:secret-phrase "test-secret"}}}}
-        props            {:keypair-name "test-keypair"}
+        props            [{:keypair-name "test-keypair"}]
         expected-effects [[:effects.wallet/create-account-from-mnemonic
                            {:secret-phrase "test-secret" :keypair-name "test-keypair"}]]
         effects          (events/new-keypair-continue {:db db} props)]
