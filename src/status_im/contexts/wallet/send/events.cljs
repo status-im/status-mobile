@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.send.events
   (:require
-    [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [native-module.core :as native-module]
@@ -11,7 +10,8 @@
     [utils.address :as address]
     [utils.money :as money]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
@@ -24,7 +24,7 @@
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes timestamp]]
    (when (= (get-in db [:wallet :ui :send :suggested-routes-call-timestamp]) timestamp)
-     (let [suggested-routes-data (cske/transform-keys csk/->kebab-case suggested-routes)
+     (let [suggested-routes-data (cske/transform-keys transforms/->kebab-case-keyword suggested-routes)
            chosen-route          (:best suggested-routes-data)]
        {:db (-> db
                 (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes-data)
@@ -90,7 +90,7 @@
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :token :type)}))
+   {:db (assoc-in db [:wallet :ui :send :token] nil)}))
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]}]

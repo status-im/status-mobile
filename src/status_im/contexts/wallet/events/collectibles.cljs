@@ -127,7 +127,7 @@
  :wallet/get-collectible-details
  (fn [_ [collectible-id]]
    (let [request-id               0
-         collectible-id-converted (cske/transform-keys csk/->PascalCaseKeyword collectible-id)
+         collectible-id-converted (cske/transform-keys transforms/->PascalCaseKeyword collectible-id)
          data-type                (collectible-data-types :details)
          request-params           [request-id [collectible-id-converted] data-type]]
      {:fx [[:json-rpc/call
@@ -142,8 +142,8 @@
 (rf/reg-event-fx
  :wallet/get-collectible-details-done
  (fn [_ [{:keys [message]}]]
-   (let [response               (cske/transform-keys csk/->kebab-case-keyword
-                                                     (types/json->clj message))
+   (let [response               (cske/transform-keys transforms/->kebab-case-keyword
+                                                     (transforms/json->clj message))
          {:keys [collectibles]} response
          collectible            (first collectibles)]
      (if collectible
