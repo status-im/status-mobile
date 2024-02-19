@@ -41,7 +41,7 @@
     [:args
      [:tuple
       [:maybe fn?]
-      [:maybe :schema.common/error]]]]
+      [:maybe :schema.common/exception]]]]
    :any])
 
 (def ?authorize-with-password
