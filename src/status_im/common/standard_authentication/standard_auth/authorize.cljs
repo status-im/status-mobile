@@ -54,7 +54,8 @@
                                                    (when on-auth-fail (on-auth-fail error))
                                                    (password-login {:on-press-biometrics
                                                                     #(on-press-biometrics
-                                                                      on-press-biometrics)}))}]))]
+                                                                      on-press-biometrics)}))
+                                 :on-cancel      #(on-close)}]))]
     (if biometric-auth?
       (-> (biometrics/get-supported-type)
           (.then (fn [biometric-type]
