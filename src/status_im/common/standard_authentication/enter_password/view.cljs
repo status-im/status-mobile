@@ -2,12 +2,12 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im.common.standard-authentication.enter-password.style :as style]
     [status-im.common.standard-authentication.password-input.view :as password-input]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [reagent.core :as reagent]
     [utils.security.core :as security]))
 
 (defn view

@@ -9,9 +9,7 @@
     [status-im.common.standard-authentication.password-input.style :as style]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [reagent.core :as reagent]))
+    [utils.re-frame :as rf]))
 
 (defn get-error-message
   [error]
