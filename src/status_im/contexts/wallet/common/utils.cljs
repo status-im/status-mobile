@@ -295,8 +295,3 @@
     label-props
     (assoc :label       :text
            :label-props label-props)))
-
-(defn string-to-vector
-  [str]
-  (->> (clojure.string/split str #"\s")
-       (vec)))

@@ -51,8 +51,8 @@
     (fn []
       (rn/use-effect
        (fn []
-         (native-module/get-random-mnemonic #(reset! secret-phrase (utils/string-to-vector %)))
-         (native-module/get-random-mnemonic #(reset! random-phrase (utils/string-to-vector %)))))
+         (native-module/get-random-mnemonic #(reset! secret-phrase (clojure.string/split % #"\s")))
+         (native-module/get-random-mnemonic #(reset! random-phrase (clojure.string/split % #"\s")))))
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:icon-name           :i/close

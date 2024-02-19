@@ -59,8 +59,3 @@
          (take n)
          (map (comp string/upper-case str first))
          string/join)))
-
-(defn string-to-vector
-  [str]
-  (->> (clojure.string/split str #"\s")
-       (vec)))

@@ -396,8 +396,7 @@
 
 (rf/reg-event-fx :wallet/new-keypair-created
  (fn [{:keys [db]} [{:keys [new-keypair]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :create-account :new-keypair] new-keypair))
+   {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
     :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]}))
 
 (rf/reg-event-fx :wallet/new-keypair-continue
