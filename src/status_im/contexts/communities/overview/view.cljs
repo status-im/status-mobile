@@ -71,7 +71,7 @@
       {:key       category-id
        ;; on-layout fires only when the component re-renders, so
        ;; in case the category hasn't changed, it will not be fired
-       :on-layout #(on-category-layout name (int (layout-y %)))}
+       :on-layout #(on-category-layout name category-id (int (layout-y %)))}
       (when-not (= constants/empty-category-id category-id)
         [quo/divider-label
          {:on-press        #(collapse-category community-id category-id collapsed?)
@@ -238,18 +238,18 @@
 (defn- community-header
   [title logo description]
   [quo/text-combinations
-   {:container-style
-    {:margin-top
-     (if logo
-       12
-       (+ scroll-page.style/picture-radius
-          scroll-page.style/picture-border-width
-          12))
-     :margin-bottom 12}
-    :avatar logo
-    :title title
-    :description description
-    :title-accessibility-label :community-title
+   {:container-style                 {:margin-top
+                                      (if logo
+                                        12
+                                        (+ scroll-page.style/picture-radius
+                                           scroll-page.style/picture-border-width
+                                           12))
+                                      :margin-bottom 12}
+    :avatar                          logo
+    :title                           title
+    :title-number-of-lines           2
+    :description                     description
+    :title-accessibility-label       :community-title
     :description-accessibility-label :community-description}])
 
 (defn- community-content
@@ -328,10 +328,14 @@
                                           (swap! categories-heights select-keys categories)
                                           (reset! first-channel-height height))]
     (fn [id joined name images]
-      (let [cover          {:uri (get-in images [:banner :uri])}
-            logo           {:uri (get-in images [:thumbnail :uri])}
-            collapsed?     (and initial-joined? joined)
-            overlay-shown? (boolean (:sheets (rf/sub [:bottom-sheet])))]
+      (let [cover                 {:uri (get-in images [:banner :uri])}
+            logo                  {:uri (get-in images [:thumbnail :uri])}
+            collapsed?            (and initial-joined? joined)
+            first-category-height (->> @categories-heights
+                                       vals
+                                       (apply min)
+                                       (+ @first-channel-height))
+            overlay-shown?        (boolean (:sheets (rf/sub [:bottom-sheet])))]
         [scroll-page/scroll-page
          {:cover-image      cover
           :collapsed?       collapsed?
@@ -347,7 +351,8 @@
                              :community-name name
                              :community-logo logo}
           :sticky-header    [sticky-category-header
-                             {:enabled (> @scroll-height @first-channel-height)
+                             {:enabled (> @scroll-height
+                                          first-category-height)
                               :label   (pick-first-category-by-height
                                         @scroll-height
                                         @first-channel-height
