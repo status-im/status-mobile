@@ -8,7 +8,6 @@
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (defn- icon-color
@@ -55,124 +54,135 @@
     (and (not= status :default) (not blur?))
     (colors/theme-colors colors/neutral-30 colors/neutral-60 theme)))
 
-(defn- f-address-input-internal
-  []
-  (let [status   (reagent/atom :default)
-        value    (reagent/atom "")
-        focused? (atom false)]
-    (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan
-                 on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
-                 valid-ens-or-address? container-style]}]
-      (let [on-change              (fn [text]
-                                     (when (not= @value text)
-                                       (let [address? (when address-regex
-                                                        (boolean (re-matches address-regex text)))
-                                             ens?     (when ens-regex
-                                                        (boolean (re-matches ens-regex text)))]
-                                         (if (> (count text) 0)
-                                           (reset! status :typing)
-                                           (reset! status :active))
-                                         (reset! value text)
-                                         (when on-change-text
-                                           (on-change-text text))
-                                         (when (and on-detect-ens ens?)
-                                           (reset! status :loading)
-                                           (on-detect-ens text #(reset! status :typing)))
-                                         (when (and address? on-detect-address)
-                                           (reset! status :loading)
-                                           (on-detect-address text))
-                                         (when (and (not address?)
-                                                    (not ens?)
-                                                    on-detect-unclassified)
-                                           (on-detect-unclassified text)))))
-            on-paste               (fn []
-                                     (clipboard/get-string
-                                      (fn [clipboard]
-                                        (when-not (empty? clipboard)
-                                          (on-change clipboard)
-                                          (reset! value clipboard)))))
-            on-clear               (fn []
-                                     (reset! value "")
-                                     (reset! status (if @focused? :active :default))
-                                     (when on-change-text
-                                       (on-change-text ""))
-                                     (when on-clear
-                                       (on-clear)))
-            on-scan                #(when on-scan
-                                      (on-scan))
-            on-focus               (fn []
-                                     (when (= (count @value) 0)
-                                       (reset! status :active))
-                                     (reset! focused? true)
-                                     (when on-focus (on-focus)))
-            on-blur                (fn []
-                                     (when (= @status :active)
-                                       (reset! status :default))
-                                     (reset! focused? false)
-                                     (when on-blur (on-blur)))
-            placeholder-text-color (get-placeholder-text-color @status theme blur?)]
-        (rn/use-effect (fn []
-                         (when-not (empty? scanned-value)
-                           (on-change scanned-value)))
-                       [scanned-value])
-        [rn/view {:style (style/container container-style)}
-         [rn/text-input
-          {:accessibility-label    :address-text-input
-           :style                  (style/input-text theme)
-           :placeholder            (i18n/label :t/name-ens-or-address)
-           :placeholder-text-color placeholder-text-color
-           :default-value          @value
-           :auto-complete          (when platform/ios? :off)
-           :auto-capitalize        :none
-           :auto-correct           false
-           :spell-check            false
-           :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
-           :on-focus               on-focus
-           :on-blur                on-blur
-           :on-change-text         on-change}]
-         (when (or (= @status :default)
-                   (= @status :active))
-           [rn/view
-            {:style               style/buttons-container
-             :accessibility-label :paste-scan-buttons-container}
-            [button/button
-             {:accessibility-label :paste-button
-              :type                :outline
-              :size                24
-              :container-style     {:margin-right 8}
-              :inner-style         (style/accessory-button blur? theme)
-              :on-press            on-paste}
-             (i18n/label :t/paste)]
-            [button/button
-             {:accessibility-label :scan-button
-              :icon-only?          true
-              :type                :outline
-              :size                24
-              :inner-style         (style/accessory-button blur? theme)
-              :on-press            on-scan}
-             :main-icons/scan]])
-         (when (= @status :typing)
-           [rn/view
-            {:style               style/buttons-container
-             :accessibility-label :clear-button-container}
-            [clear-button
-             {:on-press on-clear
-              :blur?    blur?
-              :theme    theme}]])
-         (when (and (= @status :loading) (not valid-ens-or-address?))
-           [rn/view
-            {:style               style/buttons-container
-             :accessibility-label :loading-button-container}
-            [loading-icon blur? theme]])
-         (when (and (= @status :loading) valid-ens-or-address?)
-           [rn/view
-            {:style               style/buttons-container
-             :accessibility-label :positive-button-container}
-            [positive-state-icon theme]])]))))
-
-(defn address-input-internal
-  [props]
-  [:f> f-address-input-internal props])
-
-(def address-input
-  (quo.theme/with-theme address-input-internal))
+(defn address-input
+  [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan
+           on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
+           valid-ens-or-address? container-style]}]
+  (let [theme                    (quo.theme/use-theme-value)
+        [status set-status]      (rn/use-state :default)
+        value                    (rn/use-ref-atom nil)
+        [_ trigger-render-value] (rn/use-state @value)
+        [focused? set-focused]   (rn/use-state false)
+        on-change                (rn/use-callback
+                                  (fn [text]
+                                    (let [address? (when address-regex
+                                                     (boolean (re-matches address-regex text)))
+                                          ens?     (when ens-regex
+                                                     (boolean (re-matches ens-regex text)))]
+                                      (reset! value text)
+                                      (if (> (count text) 0)
+                                        (set-status :typing)
+                                        (set-status :active))
+                                      (when on-change-text
+                                        (on-change-text text))
+                                      (when (and on-detect-ens ens?)
+                                        (set-status :loading)
+                                        (on-detect-ens text #(set-status :typing)))
+                                      (when (and address? on-detect-address)
+                                        (set-status :loading)
+                                        (on-detect-address text))
+                                      (when (and (not address?)
+                                                 (not ens?)
+                                                 on-detect-unclassified)
+                                        (on-detect-unclassified text)))))
+        set-value                (rn/use-callback
+                                  (fn [new-value]
+                                    (reset! value new-value)
+                                    (on-change new-value)
+                                    (trigger-render-value new-value)))
+        on-paste                 (rn/use-callback
+                                  (fn []
+                                    (clipboard/get-string
+                                     (fn [clipboard]
+                                       (when-not (empty? clipboard)
+                                         (set-value clipboard))))))
+        on-clear                 (rn/use-callback
+                                  (fn []
+                                    (set-value "")
+                                    (set-status (if focused? :active :default))
+                                    (when on-change-text
+                                      (on-change-text ""))
+                                    (when on-clear
+                                      (on-clear)))
+                                  [focused?])
+        on-clear                 (rn/use-callback
+                                  (fn []
+                                    (set-value "")
+                                    (set-status (if focused? :active :default))
+                                    (when on-change-text
+                                      (on-change-text ""))
+                                    (when on-clear
+                                      (on-clear)))
+                                  [focused?])
+        on-scan                  (when on-scan (rn/use-callback #(on-scan set-value)))
+        on-focus                 (rn/use-callback
+                                  (fn []
+                                    (when (= (count @value) 0)
+                                      (set-status :active))
+                                    (set-focused true)
+                                    (when on-focus (on-focus))))
+        on-blur                  (rn/use-callback
+                                  (fn []
+                                    (when (= status :active)
+                                      (set-status :default))
+                                    (set-focused false)
+                                    (when on-blur (on-blur)))
+                                  [status])
+        placeholder-text-color   (rn/use-memo #(get-placeholder-text-color status theme blur?)
+                                              [status theme blur?])]
+    (rn/use-mount #(on-change (or default-value "")))
+    [rn/view {:style (style/container container-style)}
+     [rn/text-input
+      {:accessibility-label    :address-text-input
+       :style                  (style/input-text theme)
+       :placeholder            (i18n/label :t/name-ens-or-address)
+       :placeholder-text-color placeholder-text-color
+       :value                  @value
+       :auto-complete          (when platform/ios? :off)
+       :auto-capitalize        :none
+       :auto-correct           false
+       :spell-check            false
+       :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
+       :on-focus               on-focus
+       :on-blur                on-blur
+       :on-change-text         on-change}]
+     (when (or (= status :default)
+               (= status :active))
+       [rn/view
+        {:style               style/buttons-container
+         :accessibility-label :paste-scan-buttons-container}
+        [button/button
+         {:accessibility-label :paste-button
+          :type                :outline
+          :size                24
+          :container-style     {:margin-right 8}
+          :inner-style         (style/accessory-button blur? theme)
+          :on-press            on-paste}
+         (i18n/label :t/paste)]
+        (when on-scan
+          [button/button
+           {:accessibility-label :scan-button
+            :icon-only?          true
+            :type                :outline
+            :size                24
+            :inner-style         (style/accessory-button blur? theme)
+            :on-press            on-scan}
+           :main-icons/scan])])
+     (when (= status :typing)
+       [rn/view
+        {:style               style/buttons-container
+         :accessibility-label :clear-button-container}
+        [clear-button
+         {:on-press on-clear
+          :blur?    blur?
+          :theme    theme}]])
+     (when (and (= status :loading) (not valid-ens-or-address?))
+       [rn/view
+        {:style               style/buttons-container
+         :accessibility-label :loading-button-container}
+        [loading-icon blur? theme]])
+     (when (and (= status :loading) valid-ens-or-address?)
+       [rn/view
+        {:style               style/buttons-container
+         :accessibility-label :positive-button-container}
+        [positive-state-icon theme]])]))
