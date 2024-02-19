@@ -19,8 +19,7 @@
        :collectibles [collectibles/view
                       {:collectibles         collectible-list
                        :on-collectible-press (fn [{:keys [id]}]
-                                               (rf/dispatch [:wallet/get-collectible-details id])
-                                               (rf/dispatch [:navigate-to :wallet-collectible]))}]
+                                               (rf/dispatch [:wallet/get-collectible-details id]))}]
        :activity     [activity/view]
        :permissions  [empty-tab/view
                       {:title        (i18n/label :t/no-permissions)
