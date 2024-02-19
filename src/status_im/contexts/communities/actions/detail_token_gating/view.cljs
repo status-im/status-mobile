@@ -1,7 +1,7 @@
 (ns status-im.contexts.communities.actions.detail-token-gating.view
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn] 
+    [react-native.core :as rn]
     [status-im.contexts.communities.actions.detail-token-gating.style :as style]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.i18n :as i18n]
@@ -36,11 +36,12 @@
             (i18n/label :t/you-hodl)
             (i18n/label :t/you-must-hold))]
          [rn/view {:style {:align-items :flex-start}}
-         (when token-master [quo/collectible-tag
-           {:size                :size-24
-            :collectible-name    token-master-name
-            :options             :hold
-            :collectible-img-src token-master-img}])]]])
+          (when token-master
+            [quo/collectible-tag
+             {:size                :size-24
+              :collectible-name    token-master-name
+              :options             :hold
+              :collectible-img-src token-master-img}])]]])
      [rn/view
       {:style style/highest-role}
       [rn/view {:style {:flex-direction :column :margin-top 12}}

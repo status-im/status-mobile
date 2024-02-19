@@ -431,7 +431,7 @@
                           (map (fn [criteria]
                                  (-> criteria
                                      (assoc :amount
-                                            (wallet.utils/remove-trailing-zeroes (:amount criteria))) 
+                                            (wallet.utils/remove-trailing-zeroes (:amount criteria)))
                                      (select-keys [:symbol :amount])
                                      (assoc :sufficient? true
                                             :loading?    false
