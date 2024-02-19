@@ -19,7 +19,7 @@
       [:title {:optional true} [:maybe :string]]
       [:tag-name {:optional true} [:maybe :string]]
       [:tag-number {:optional true} [:maybe [:or :string :int]]]
-      [:tag-photo {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+      [:tag-photo {:optional true} [:maybe :schema.common/image-source]]
       [:on-press {:optional true} [:maybe fn?]]
       [:networks {:optional true} [:maybe [:sequential ?network]]]]]]
    :any])
