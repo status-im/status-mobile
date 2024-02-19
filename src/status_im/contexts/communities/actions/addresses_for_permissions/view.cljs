@@ -1,7 +1,7 @@
 (ns status-im.contexts.communities.actions.addresses-for-permissions.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [react-native.gesture :as gesture] 
+            [react-native.gesture :as gesture]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
