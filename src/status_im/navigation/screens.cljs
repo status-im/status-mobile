@@ -199,7 +199,7 @@
      :component edit-bio/view}
 
     {:name      :edit-names
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component edit-names/view}
 
     {:name      :edit-ens
