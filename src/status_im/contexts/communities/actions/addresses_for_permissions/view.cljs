@@ -69,6 +69,7 @@
            :context-tag-type    :community
            :community-name      name
            :button-icon         :i/info
+           :button-type         :grey
            :on-button-press     not-implemented/alert
            :community-logo      (get-in images [:thumbnail :uri])
            :customization-color color}]
@@ -91,7 +92,7 @@
                                      :share-all-addresses? share-all-addresses?
                                      :community-color      color}
            :content-container-style {:padding-horizontal 20}
-           :scroll-enabled          scroll-enabled?
+           :scroll-enabled          @scroll-enabled?
            :on-scroll               on-scroll
            :key-fn                  :address
            :data                    accounts}]

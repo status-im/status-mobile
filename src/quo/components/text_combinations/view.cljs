@@ -21,6 +21,7 @@
 (defn view-internal
   [{:keys [container-style
            title
+           title-number-of-lines
            avatar
            title-accessibility-label
            description
@@ -28,7 +29,8 @@
            button-icon
            button-on-press
            customization-color
-           emoji-hash]}]
+           emoji-hash]
+    :or   {title-number-of-lines 1}}]
   [rn/view {:style container-style}
    [rn/view
     {:style {:flex-direction  :row
@@ -41,7 +43,7 @@
       {:accessibility-label title-accessibility-label
        :weight              :semi-bold
        :ellipsize-mode      :tail
-       :number-of-lines     1
+       :number-of-lines     title-number-of-lines
        :size                :heading-1}
       title]]
     (when button-icon
