@@ -30,8 +30,8 @@
 
 (defn show-message
   [_ [code]]
-  (let [content (if (#{::biometrics/not-enrolled
-                       ::biometrics/not-available}
+  (let [content (if (#{:biometrics/not-enrolled-error
+                       :biometrics/not-available-error}
                      code)
                   (i18n/label :t/grant-face-id-permissions)
                   (i18n/label :t/biometric-auth-error {:code code}))]

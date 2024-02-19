@@ -1,7 +1,6 @@
 (ns status-im.common.biometric.events-test
   (:require [cljs.test :refer [deftest testing is]]
             matcher-combinators.test
-            [react-native.biometrics :as biometrics]
             [status-im.common.biometric.events :as sut]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
@@ -27,7 +26,7 @@
                            :content (i18n/label :t/grant-face-id-permissions)}]]}]
       (is (match? expected
                   (sut/show-message cofx
-                                    [::biometrics/not-available])))))
+                                    [:biometrics/not-available-error])))))
 
   (testing "shows a generic error message"
     (let [cofx        {:db {}}
