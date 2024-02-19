@@ -10,6 +10,6 @@
                   :fx [[:json-rpc/call
                         [{:method     "wakuext_setBio"
                           :params     [new-bio]
-                          :on-success [:profile/edit-profile-bio-success]}]]]}]
+                          :on-success [:profile/edit-profile-bio-success false]}]]]}]
     (is (match? expected
                 (sut/edit-profile-bio cofx [new-bio])))))
