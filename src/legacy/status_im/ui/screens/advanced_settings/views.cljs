@@ -20,7 +20,8 @@
            current-fleet
            webview-debug
            test-networks-enabled?
-           is-goerli-enabled?]}]
+           is-goerli-enabled?
+           peer-syncing-enabled?]}]
   (keep
    identity
    [{:size :small
@@ -119,6 +120,14 @@
      #(re-frame/dispatch [:profile.settings/toggle-goerli-test-network])
      :accessory :switch
      :active is-goerli-enabled?}
+    {:size :small
+     :title "Peer syncing"
+     :accessibility-label :peer-syncing
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch [:profile.settings/toggle-peer-syncing])
+     :accessory :switch
+     :active peer-syncing-enabled?}
     {:size                :small
      :title               (i18n/label :t/set-currency)
      :accessibility-label :wallet-change-currency
@@ -145,7 +154,8 @@
                   network-name                     [:network-name]
                   transactions-management-enabled? [:wallet-legacy/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
-                  current-fleet                    [:fleets/current-fleet]]
+                  current-fleet                    [:fleets/current-fleet]
+                  peer-syncing-enabled?            [:profile/peer-syncing-enabled?]]
     [list/flat-list
      {:data      (flat-list-data
                   {:network-name                     network-name
@@ -156,6 +166,7 @@
                    :dev-mode?                        false
                    :webview-debug                    webview-debug
                    :test-networks-enabled?           test-networks-enabled?
-                   :is-goerli-enabled?               is-goerli-enabled?})
+                   :is-goerli-enabled?               is-goerli-enabled?
+                   :peer-syncing-enabled?            peer-syncing-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))
