@@ -172,13 +172,29 @@
   [props]
   [:f> f-profiles-section props])
 
+(defn password-input
+  []
+  (let [password    (rf/sub [:profile/login-password])
+        auth-method (rf/sub [:auth-method])]
+    [standard-authentication/password-input
+     {:shell?              true
+      :blur?               true
+      :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
+                             (fn []
+                               (rf/dispatch [:biometric/authenticate
+                                             {:on-success #(rf/dispatch
+                                                            [:profile.login/biometric-success])
+                                              :on-fail    #(rf/dispatch
+                                                            [:profile.login/biometric-auth-fail
+                                                             %])}])))
+      :default-password    password}]))
+
 (defn login-section
   [{:keys [set-show-profiles]}]
-  (let [{:keys [processing password]}              (rf/sub [:profile/login])
+  (let [processing                                 (rf/sub [:profile/login-processing])
         {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
         profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
-        auth-method                                (rf/sub [:auth-method])
         login-multiaccount                         #(rf/dispatch [:profile.login/login])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
@@ -213,18 +229,7 @@
         :customization-color (or customization-color :primary)
         :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
-      [standard-authentication/password-input
-       {:shell?              true
-        :blur?               true
-        :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
-                               (fn []
-                                 (rf/dispatch [:biometric/authenticate
-                                               {:on-success #(rf/dispatch
-                                                              [:profile.login/biometric-success])
-                                                :on-fail    #(rf/dispatch
-                                                              [:profile.login/biometric-auth-fail
-                                                               %])}])))
-        :default-password    password}]]
+      [password-input]]
      [quo/button
       {:size                40
        :type                :primary

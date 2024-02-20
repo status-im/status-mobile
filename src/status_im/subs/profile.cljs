@@ -338,6 +338,18 @@
  (fn [[{:keys [key-uid]} profiles]]
    (get profiles key-uid)))
 
+(re-frame/reg-sub
+ :profile/login-processing
+ :<- [:profile/login]
+ (fn [{:keys [processing]}]
+   processing))
+
+(re-frame/reg-sub
+ :profile/login-password
+ :<- [:profile/login]
+ (fn [{:keys [password]}]
+   password))
+
 ;; LINK PREVIEW
 ;; ========================================================================================================
 
