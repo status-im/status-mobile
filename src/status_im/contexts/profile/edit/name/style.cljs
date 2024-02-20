@@ -2,7 +2,7 @@
 
 (defn page-wrapper
   [insets]
-  {:padding-top        (:top insets)
+  {:padding-top        8
    :padding-bottom     (:bottom insets)
    :padding-horizontal 1
    :flex               1})
