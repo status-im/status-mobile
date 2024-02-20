@@ -175,6 +175,3 @@
   (testing "It returns true if link previews exists in a message"
     (swap! rf-db/app-db assoc :messages message-with-link-previews)
     (is (rf/sub [sub-name :0xChat :0x01]))))
-
-
-
