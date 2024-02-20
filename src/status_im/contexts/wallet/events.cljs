@@ -411,7 +411,7 @@
            {:secret-phrase secret-phrase
             :keypair-name  keypair-name}]]}))
 
-(rf/reg-event-fx :wallet/clear-new-keypair new-keypair-continue)
+(rf/reg-event-fx :wallet/new-keypair-continue new-keypair-continue)
 
 (defn clear-new-keypair
   [{:keys [db]}]
