@@ -223,16 +223,19 @@
 
 (defn toggle-share-all-addresses
   [{:keys [db]} [community-id]]
-  (let [share-all-addresses? (get-in db [:communities community-id :share-all-addresses?])
-        accounts             (utils/sorted-non-watch-only-accounts db)
-        addresses            (set (map :address accounts))]
+  (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
+        next-share-all-addresses? (not share-all-addresses?)
+        accounts                  (utils/sorted-non-watch-only-accounts db)
+        addresses                 (set (map :address accounts))]
     {:db (update-in db
                     [:communities community-id]
-                    (fn [community]
-                      (-> community
-                          (assoc :share-all-addresses? (not share-all-addresses?))
-                          (cond-> (not share-all-addresses?)
-                                  (assoc :selected-permission-addresses addresses)))))}))
+                    assoc
+                    :share-all-addresses?          next-share-all-addresses?
+                    :selected-permission-addresses addresses)
+     :fx [(when (and community-id next-share-all-addresses?)
+            [:dispatch
+             [:communities/check-permissions-to-join-community community-id
+              addresses :based-on-client-selection]])]}))
 
 (rf/reg-event-fx :communities/toggle-share-all-addresses
  toggle-share-all-addresses)
