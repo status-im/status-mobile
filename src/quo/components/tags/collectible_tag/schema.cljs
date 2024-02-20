@@ -9,7 +9,7 @@
       [:size {:optional true} [:maybe [:enum :size-24 :size-32]]]
       [:blur? {:optional true} [:maybe :boolean]]
       [:theme :schema.common/theme]
-      [:collectible-img-src :schema.common/image-source]
+      [:collectible-img-src [:maybe :schema.common/image-source :string]]
       [:collectible-name :string]
-      [:collectible-id :string]]]]
+      [:collectible-id {:optional true} [:maybe :string]]]]]
    :any])
