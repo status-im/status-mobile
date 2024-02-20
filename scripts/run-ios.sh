@@ -5,6 +5,7 @@ set -m # needed to access jobs
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 XCRUN_INSTALL_LOG_FILE="${GIT_ROOT}/logs/xcrun_install.log"
 XCRUN_LAUNCH_LOG_FILE="${GIT_ROOT}/logs/xcrun_launch.log"
+XCRUN_SIMULATOR_JSON_FILE="${GIT_ROOT}/logs/ios_simulators_list.log"
 
 # Install on the simulator
 installAndLaunchApp() {
@@ -26,7 +27,7 @@ if [ -z "${1-}" ]; then
 fi
 
 # fetch available iOS Simulators
-xcrun simctl list devices -j > ios_simulators_list.json
+xcrun simctl list devices -j > "${XCRUN_SIMULATOR_JSON_FILE}"
 
 SIMULATOR=${1}
 
@@ -36,7 +37,7 @@ read -r UDID SIMULATOR_STATE IS_AVAILABLE < <(jq --raw-output --arg simulator "$
   map(select(.isAvailable)) + map(select(.isAvailable | not)) |
   first |
   "\(.udid) \(.state) \(.isAvailable)"
-' ios_simulators_list.json)
+' "${XCRUN_SIMULATOR_JSON_FILE}")
 
 if [ "${IS_AVAILABLE}" == false ] || [ "${UDID}" == null ]; then
     echo "Error: Simulator ${SIMULATOR} is not available, Please find and install them."

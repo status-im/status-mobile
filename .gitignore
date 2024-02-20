@@ -195,11 +195,5 @@ test/appium/tests/users.py
 ## git hooks
 lefthook.yml
 
-## metro server logs
-metro-server-logs.log
-
-## debug build time logs
-logs/
-
-## available iOS simulators
-ios_simulators_list.json
+## build time logs
+/logs/*.log
