@@ -58,7 +58,7 @@
                                                 (get-screens)
                                                 screens)
                                               (keyword screen-key))
-           {:keys [insets sheet? theme]} options
+           {:keys [insets sheet? theme skip-background?]} options
            user-theme                    (theme/get-theme)
            background-color              (or (get-in options [:layout :backgroundColor])
                                              (when sheet? :transparent))]
@@ -67,7 +67,8 @@
         [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
-           [bottom-sheet-screen/view {:content component}]
+           [bottom-sheet-screen/view {:content component 
+                                      :skip-background? skip-background?}]
            [component])]
         (when js/goog.DEBUG
           [:<>
