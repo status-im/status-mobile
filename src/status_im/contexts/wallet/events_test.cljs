@@ -56,24 +56,8 @@
     (is (match? (:db effects) expected-db))))
 
 (deftest store-collectibles
-  (testing "(displayable-collectible?) helper function"
-    (let [expected-results [[true
-                             {:collectible-data {:image-url "https://..." :animation-url "https://..."}}]
-                            [true {:collectible-data {:image-url "" :animation-url "https://..."}}]
-                            [true {:collectible-data {:image-url nil :animation-url "https://..."}}]
-                            [true {:collectible-data {:image-url "https://..." :animation-url ""}}]
-                            [true {:collectible-data {:image-url "https://..." :animation-url nil}}]
-                            [false {:collectible-data {:image-url "" :animation-url nil}}]
-                            [false {:collectible-data {:image-url nil :animation-url nil}}]
-                            [false {:collectible-data {:image-url nil :animation-url ""}}]
-                            [false {:collectible-data {:image-url "" :animation-url ""}}]]]
-      (doseq [[result collection] expected-results]
-        (is (match? result (collectibles/displayable-collectible? collection))))))
-
-  (testing "save-collectibles-request-details"
-    (let [db            {:wallet {:accounts {"0x1" {}
-                                             "0x3" {}}}}
-          collectible-1 {:collectible-data {:image-url "https://..." :animation-url "https://..."}
+  (testing "flush-collectibles"
+    (let [collectible-1 {:collectible-data {:image-url "https://..." :animation-url "https://..."}
                          :ownership        [{:address "0x1"
                                              :balance "1"}]}
           collectible-2 {:collectible-data {:image-url "" :animation-url "https://..."}
@@ -82,12 +66,17 @@
           collectible-3 {:collectible-data {:image-url "" :animation-url nil}
                          :ownership        [{:address "0x2"
                                              :balance "1"}]}
-          collectibles  [collectible-1 collectible-2 collectible-3]
-          expected-db   {:wallet {:accounts {"0x1" {:collectibles (list collectible-2 collectible-1)}
+          db            {:wallet {:ui       {:collectibles {:pending-requests 0
+                                                            :fetched          {"0x1" [collectible-1 collectible-2]
+                                                                               "0x2" [collectible-3]}}}
+                                  :accounts {"0x1" {}
+                                             "0x3" {}}}}
+          expected-db   {:wallet {:ui       {:collectibles {}}
+                                  :accounts {"0x1" {:collectibles (list collectible-1 collectible-2)}
                                              "0x2" {:collectibles (list collectible-3)}
                                              "0x3" {}}}}
-          effects       (collectibles/store-collectibles {:db db} [collectibles])
-          result-db     (:db effects)]
+          result-db     (:db (collectibles/flush-collectibles {:db db}))]
+
       (is (match? result-db expected-db)))))
 
 (deftest clear-stored-collectibles
