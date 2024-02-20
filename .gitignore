@@ -200,3 +200,6 @@ metro-server-logs.log
 
 ## debug build time logs
 logs/
+
+## available iOS simulators
+ios_simulators_list.json
