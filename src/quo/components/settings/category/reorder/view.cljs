@@ -16,9 +16,9 @@
   (reagent/flush))
 
 (defn- reorder-category-internal
-  [{:keys [label data blur? theme]}]
+  [{:keys [label data blur? theme container-style]}]
   (reagent/with-let [atom-data (reagent/atom data)]
-    [rn/view {:style style/container}
+    [rn/view {:style (merge (style/container label) container-style)}
      [text/text
       {:weight :medium
        :size   :paragraph-2
