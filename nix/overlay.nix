@@ -26,18 +26,6 @@ in {
     react-native = callPackage ./deps/react-native { };
   };
 
-  # Fix for missing libarclite_macosx.a in Xcode 14.3.
-  # https://github.com/ios-control/ios-deploy/issues/580
-  ios-deploy = super.darwin.ios-deploy.overrideAttrs (old: rec {
-    version = "1.12.2";
-    src = super.fetchFromGitHub {
-      owner = "ios-control";
-      repo = "ios-deploy";
-      rev = version;
-      sha256 = "sha256-TVGC+f+1ow3b93CK3PhIL70le5SZxxb2ug5OkIg8XCA";
-    };
-  });
-
   # Clojure's linter receives frequent upgrades, and we want to take advantage
   # of the latest available rules.
   clj-kondo = super.clj-kondo.override rec {
