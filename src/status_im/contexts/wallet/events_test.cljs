@@ -67,7 +67,8 @@
                          :ownership        [{:address "0x2"
                                              :balance "1"}]}
           db            {:wallet {:ui       {:collectibles {:pending-requests 0
-                                                            :fetched          {"0x1" [collectible-1 collectible-2]
+                                                            :fetched          {"0x1" [collectible-1
+                                                                                      collectible-2]
                                                                                "0x2" [collectible-3]}}}
                                   :accounts {"0x1" {}
                                              "0x3" {}}}}
