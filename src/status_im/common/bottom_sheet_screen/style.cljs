@@ -23,10 +23,11 @@
     :right            0}))
 
 (defn main-view
-  [translate-y theme]
+  [translate-y theme skip-background?]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y translate-y}]}
-   {:background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
+   {:background-color        (when-not skip-background? 
+                               (colors/theme-colors colors/white colors/neutral-95 theme))
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1

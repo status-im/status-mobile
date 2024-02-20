@@ -82,7 +82,7 @@
                                    :close              close
                                    :reset-open-sheet   reset-open-sheet
                                    :set-animating-true set-animating-true})}
-          [reanimated/view {:style (style/main-view translate-y theme)}
+          [reanimated/view {:style (style/main-view translate-y theme skip-background?)}
            [rn/view {:style style/handle-container}
             [rn/view {:style (style/handle theme)}]]
            [content
