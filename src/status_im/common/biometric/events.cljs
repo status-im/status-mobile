@@ -1,7 +1,5 @@
 (ns status-im.common.biometric.events
   (:require
-    [schema.core :as schema]
-    [status-im.common.biometric.events-schema :as events-schema]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -10,7 +8,6 @@
   [{:keys [db]} [supported-type]]
   {:db (assoc-in db [:biometrics :supported-type] supported-type)})
 
-(schema/=> set-supported-type events-schema/?set-supported-type)
 (rf/reg-event-fx :biometric/set-supported-type set-supported-type)
 
 (defn show-message
@@ -24,7 +21,6 @@
            {:title   (i18n/label :t/biometric-auth-login-error-title)
             :content content}]]}))
 
-(schema/=> show-message events-schema/?show-message)
 (rf/reg-event-fx :biometric/show-message show-message)
 
 (defn authenticate
@@ -36,7 +32,6 @@
        :fx [[:effects.biometric/authenticate
              (assoc opts :on-done #(rf/dispatch [:set-in [:biometrics :auth-pending?] false]))]]})))
 
-(schema/=> authenticate events-schema/?authenticate)
 (rf/reg-event-fx :biometric/authenticate authenticate)
 
 (defn enable-biometrics
@@ -48,7 +43,6 @@
             {:key-uid         key-uid
              :masked-password password}]]]}))
 
-(schema/=> enable-biometrics events-schema/?enable-biometrics)
 (rf/reg-event-fx :biometric/enable enable-biometrics)
 
 (defn disable-biometrics
@@ -57,6 +51,5 @@
     {:db (assoc db :auth-method constants/auth-method-none)
      :fx [[:keychain/clear-user-password key-uid]]}))
 
-(schema/=> disable-biometrics events-schema/?disable-biometrics)
 (rf/reg-event-fx :biometric/disable disable-biometrics)
 
