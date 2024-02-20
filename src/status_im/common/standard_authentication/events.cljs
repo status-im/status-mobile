@@ -11,3 +11,10 @@
  :standard-auth/reset-login-password
  (fn [{:keys [db]}]
    {:db (update db :profile/login dissoc :password :error)}))
+
+(rf/reg-event-fx 
+:standard-auth/update-password
+ (fn [{:keys [db]} [value]]
+   {:db (-> db
+            (assoc-in [:profile/login :password] (security/mask-data value))
+            (assoc-in [:profile/login :error] ""))}))

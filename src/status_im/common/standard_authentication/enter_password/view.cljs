@@ -7,8 +7,7 @@
     [status-im.common.standard-authentication.password-input.view :as password-input]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -19,11 +18,9 @@
             {:keys [error processing password]} (rf/sub [:profile/login])
             sign-in-enabled?                    (rf/sub [:sign-in-enabled?])
             on-change-password                  (fn [value]
-                                                  (reset! password-value value)
-                                                  (when (not= value (security/safe-unmask-data password))
-                                                    (rf/dispatch [:set-in [:profile/login :password]
-                                                                  (security/mask-data value)])
-                                                    (rf/dispatch [:set-in [:profile/login :error] ""])))]
+                                                  (when (not= value @password-state)
+                                                    (reset! password-state value)
+                                                    (rf/dispatch [:standard-auth/update-password value])))]
         [:<>
          [rn/view {:style style/enter-password-container}
           [rn/view
