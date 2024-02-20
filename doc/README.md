@@ -28,7 +28,7 @@
 
 [Contributing to status-go](status-go-changes.md)
 
-[Malli schemas (recorded demo)](https://drive.google.com/file/d/1orqa8Ky2mVqGJCLksgRF7F5hqjurMxt0/view)
+[Malli schemas (recorded demo)](https://www.youtube.com/watch?v=SlRio70aYVI) ([slides](files/forging-code-with-schemas-sep-2023-slides.pdf))
 
 ## Testing
 
