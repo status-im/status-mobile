@@ -222,7 +222,7 @@ RCT_EXPORT_METHOD(getRandomMnemonic:(RCTResponseSenderBlock)callback) {
     callback(@[result]);
 }
 
-RCT_EXPORT_METHOD(createAccountFromMnemonicAndDeriveAccountsForPaths(NSString *)mnemonic callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(createAccountFromMnemonicAndDeriveAccountsForPaths:(NSString *)mnemonic callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"createAccountFromMnemonicAndDeriveAccountsForPaths() method called");
 #endif
