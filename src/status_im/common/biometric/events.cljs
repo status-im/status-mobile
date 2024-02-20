@@ -1,5 +1,6 @@
 (ns status-im.common.biometric.events
   (:require
+    status-im.common.biometric.effects
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

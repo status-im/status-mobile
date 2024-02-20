@@ -1,7 +1,6 @@
 (ns status-im.common.biometric.effects
   (:require
     [react-native.biometrics :as biometrics]
-    status-im.common.biometric.effects
     [status-im.common.biometric.utils :as utils]
     [status-im.common.keychain.events :as keychain]
     [taoensso.timbre :as log]

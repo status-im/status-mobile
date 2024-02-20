@@ -87,7 +87,7 @@
 (rf/defn password-set
   {:events [:onboarding/password-set]}
   [{:keys [db]} password]
-  (let [supported-type (:biometrics/supported-type db)]
+  (let [supported-type (get-in db [:biometrics :supported-type])]
     {:db       (-> db
                    (assoc-in [:onboarding/profile :password] password)
                    (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
