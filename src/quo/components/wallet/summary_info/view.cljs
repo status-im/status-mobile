@@ -4,6 +4,7 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.summary-info.schema :as summary-info-schema]
     [quo.components.wallet.summary-info.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
@@ -52,18 +53,6 @@
          :amount  (str (:amount arbitrum) " " (or (:token-symbol arbitrum) "ARB"))
          :theme   theme}])]))
 
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map
-      [:theme :schema.common/theme]
-      [:type [:enum :status-account :saved-account :account :user]]
-      [:account-props {:optional true} [:maybe :map]]
-      [:networks? {:optional true} [:maybe :boolean]]
-      [:values {:optional true} [:maybe :map]]]]]
-   :any])
-
 (defn- view-internal
   [{:keys [theme type account-props networks? values]}]
   [rn/view
@@ -106,4 +95,4 @@
 
 (def view
   (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+   (schema/instrument #'view-internal summary-info-schema/?schema)))

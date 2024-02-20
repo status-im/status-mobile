@@ -72,7 +72,7 @@
    :PeerExchange   true
    :Port           0
    :UDPPort        0
-   :LightClient    true})
+   :LightClient    false})
 
 (def login-node-config
   {:WalletConfig (cond-> {:Enabled true}

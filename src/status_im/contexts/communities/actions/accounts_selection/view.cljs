@@ -28,7 +28,7 @@
         highest-role-text                 (i18n/label (communities.utils/role->translation-key
                                                        highest-permission-role
                                                        :t/member))]
-    [rn/view {:style style/container}
+    [rn/safe-area-view {:style style/container}
      [quo/page-nav
       {:text-align          :left
        :icon-name           :i/close

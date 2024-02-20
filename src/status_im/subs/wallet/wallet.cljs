@@ -29,6 +29,11 @@
  :-> :ui)
 
 (rf/reg-sub
+ :wallet/scanned-address
+ :<- [:wallet/ui]
+ :-> :scanned-address)
+
+(rf/reg-sub
  :wallet/tokens-loading?
  :<- [:wallet/ui]
  :-> :tokens-loading?)
@@ -94,6 +99,12 @@
         vals
         (map #(assoc-network-preferences-names network-details % test-networks-enabled?))
         (sort-by :position))))
+
+(rf/reg-sub
+ :wallet/watch-only-accounts
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (filter :watch-only? accounts)))
 
 (rf/reg-sub
  :wallet/addresses
@@ -185,7 +196,7 @@
 
 (rf/reg-sub
  :wallet/accounts-without-watched-accounts
- :<- [:wallet/accounts]
+ :<- [:wallet/accounts-with-customization-color]
  (fn [accounts]
    (remove #(:watch-only? %) accounts)))
 

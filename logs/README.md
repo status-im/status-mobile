@@ -1,0 +1,18 @@
+# Description
+
+This directory is the destination of logs created during build time of debug builds.
+
+# Logs
+
+* `xcrun_device_install.log` - Output from `status-mobile/scripts/run-ios-device.sh`.
+    - Created by redirecting output of `xcrun simctl install "$UDID" "$APP_PATH"`.
+* `xcrun_device_process_launch.log` - Output from `status-mobile/scripts/run-ios-device.sh`.
+    - Created by specifying `--json-output` flag for `xcrun devicectl device process launch --no-activate --verbose --device "${DEVICE_UUID}" "${INSTALLATION_URL}"`.
+* `xcrun_device_process_resume.log` - Output from `status-mobile/scripts/run-ios-device.sh`.
+    - Created by redirecting output of `xcrun devicectl device process resume --device "${DEVICE_UUID}" --pid "${STATUS_PID}"`.
+* `adb_install.log` - Output from `scripts/run-android.sh`.
+    - Created by redirecting output of `adb install -r ./result/app-debug.apk`.
+* `adb_shell_monkey.log` - Output from `status-mobile/scripts/run-android.sh`.
+    - Created by redirecting output of `adb shell monkey -p im.status.ethereum.debug 1 >`.
+* `ios_simulators_list.log` - Output from `status-mobile/scripts/run-ios.sh`.
+    - Created by redirecting output of `xcrun simctl list devices -j`.

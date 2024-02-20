@@ -70,13 +70,14 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         item-selected?      (some #(= (:uri item) (:uri %)) @selected)]
     [rn/touchable-opacity
-     {:on-press            (fn []
-                             (if item-selected?
-                               (swap! selected remove-selected item)
-                               (if (>= (count @selected) constants/max-album-photos)
-                                 (show-photo-limit-toast)
-                                 (swap! selected conj item))))
-      :accessibility-label (str "image-" index)}
+     {:on-press                (fn []
+                                 (if item-selected?
+                                   (swap! selected remove-selected item)
+                                   (if (>= (count @selected) constants/max-album-photos)
+                                     (show-photo-limit-toast)
+                                     (swap! selected conj item))))
+      :allow-multiple-presses? true
+      :accessibility-label     (str "image-" index)}
      [rn/image
       {:source {:uri (:uri item)}
        :style  (style/image window-width index)}]
@@ -90,9 +91,7 @@
          (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
 
 (defn photo-selector
-  [{:keys [scroll-enabled on-scroll current-scroll close] :as sheet}]
-  (rf/dispatch [:photo-selector/get-photos-for-selected-album])
-  (rf/dispatch [:photo-selector/camera-roll-get-albums])
+  [{:keys [scroll-enabled? on-scroll current-scroll close] :as sheet}]
   (let [album?              (reagent/atom false)
         customization-color (rf/sub [:profile/customization-color])
         sending-image       (into [] (vals (rf/sub [:chats/sending-image])))
@@ -134,7 +133,7 @@
                                        :padding-bottom (+ (safe-area/get-bottom) 100)
                                        :padding-top    64}
              :on-scroll               on-scroll
-             :scroll-enabled          @scroll-enabled
+             :scroll-enabled          @scroll-enabled?
              :on-end-reached          (fn []
                                         (when (and (not loading?) has-next-page?)
                                           (rf/dispatch [:photo-selector/camera-roll-loading-more true])

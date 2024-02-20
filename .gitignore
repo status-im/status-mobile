@@ -194,3 +194,6 @@ test/appium/tests/users.py
 
 ## git hooks
 lefthook.yml
+
+## build time logs
+/logs/*.log

@@ -65,7 +65,7 @@
        item])))
 
 (defn- view-internal
-  [{:keys [scroll-enabled on-scroll close theme]}]
+  [{:keys [scroll-enabled? on-scroll close theme]}]
   (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
@@ -105,7 +105,7 @@
          :render-section-header-fn       contact-list/contacts-section-header
          :content-container-style        {:padding-bottom 70}
          :render-fn                      contact-item-render
-         :scroll-enabled                 @scroll-enabled
+         :scroll-enabled                 @scroll-enabled?
          :on-scroll                      on-scroll}])
      (when contacts-selected?
        [quo/button
