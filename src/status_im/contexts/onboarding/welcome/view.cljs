@@ -45,8 +45,10 @@
        :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-notifications])}]
      [page-title]
      [rn/image
-      {:style  (style/page-illustration (:width window))
-       :source (resources/get-image :welcome-illustration)}]
+      {:style         (style/page-illustration (:width window))
+       :resize-mode   :stretch
+       :resize-method :scale
+       :source        (resources/get-image :welcome-illustration)}]
      [rn/view {:style (style/buttons insets)}
       (when rn/small-screen?
         [linear-gradient/linear-gradient
