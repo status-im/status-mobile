@@ -38,11 +38,12 @@
     (h/is-truthy (h/get-by-text "Rare Artifact")))
 
   (h/test "User view render"
-    (h/render [summary-tag/view
-               {:type                :user
-                :label               "Bob Smith"
-                :image-source        "path/to/profile-pic.png"
-                :customization-color "#0000ff"}])
+    (h/render-with-theme-provider
+     [summary-tag/view
+      {:type                :user
+       :label               "Bob Smith"
+       :image-source        "path/to/profile-pic.png"
+       :customization-color "#0000ff"}])
     (h/is-truthy (h/get-by-text "Bob Smith")))
 
   (h/test "Token view render"

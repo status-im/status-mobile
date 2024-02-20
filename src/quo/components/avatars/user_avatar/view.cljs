@@ -1,11 +1,13 @@
 (ns quo.components.avatars.user-avatar.view
   (:require
+    [quo.components.avatars.user-avatar.schema :as component-schema]
     [quo.components.avatars.user-avatar.style :as style]
     [quo.components.common.no-flicker-image :as no-flicker-image]
     [quo.components.markdown.text :as text]
     [quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
+    [schema.core :as schema]
     utils.string))
 
 (defn initials-avatar
@@ -58,7 +60,7 @@
            customization-color :blue}
     :as   props}]
   (let [full-name          (or full-name "Your Name")
-        ;; image generated with profile-picture-fn is round cropped
+        ;; image generated with `profile-picture-fn` is round cropped
         ;; no need to add border-radius for them
         outer-styles       (style/outer size (not (:fn profile-picture)))
         ;; Once image is loaded, fast image re-renders view with the help of reagent atom,
@@ -108,4 +110,6 @@
 
                :else {:uri profile-picture})}])]))
 
-(def user-avatar (quo.theme/with-theme user-avatar-internal))
+(def user-avatar
+  (quo.theme/with-theme
+   (schema/instrument #'user-avatar-internal component-schema/?schema)))
