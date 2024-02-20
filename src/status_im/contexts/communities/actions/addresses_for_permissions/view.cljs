@@ -5,6 +5,7 @@
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
+            [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]
             [utils.i18n :as i18n]
             [utils.money :as money]
             [utils.re-frame :as rf]))
