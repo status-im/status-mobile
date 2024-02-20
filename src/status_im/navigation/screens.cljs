@@ -191,7 +191,9 @@
      :component edit-accent-colour/view}
 
     {:name      :edit-name
-     :options   options/transparent-screen-options
+     :options   (merge options/transparent-screen-options
+                       {:sheet? true
+                        :skip-background? true})
      :component edit-name/view}
 
     {:name      :edit-bio
@@ -203,7 +205,9 @@
      :component edit-names/view}
 
     {:name      :edit-ens
-     :options   options/transparent-screen-options
+     :options   (merge options/transparent-screen-options
+                       {:sheet? true
+                        :skip-background? true})
      :component edit-ens/view}
 
     {:name      :new-to-status
