@@ -25,10 +25,15 @@
 
 (defn image
   [{:keys [source] :as props}]
-  [image-native
-   (if (string? source)
-     (assoc props :source {:uri source})
-     props)])
+  (let [props (cond-> props
+                platform/ios?
+                (dissoc :resize-method)
+                (and (:style props) platform/ios?)
+                (update :style dissoc :resize-method))]
+    [image-native
+     (if (string? source)
+       (assoc props :source {:uri source})
+       props)]))
 
 (defn image-get-size
   [uri]
