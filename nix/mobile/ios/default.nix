@@ -20,8 +20,8 @@ in {
     buildInputs = with pkgs; [
       xcodeWrapper watchman procps
       flock # used in nix/scripts/node_modules.sh
-      ios-deploy # used in 'make run-ios-device'
       xcbeautify # used in 'make run-ios'
+      libimobiledevice # used in `make run-ios-device`
     ];
 
     # WARNING: Executes shellHook in reverse order.

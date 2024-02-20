@@ -36,6 +36,8 @@ endif
 export TMPDIR = /tmp/tmp-status-mobile-$(BUILD_TAG)
 # This has to be specified for both the Node.JS server process and the Qt process.
 export REACT_SERVER_PORT ?= 5001
+# Default metro port used by scripts/run-android.sh.
+export RCT_METRO_PORT ?= 8081
 # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
 export NODE_OPTIONS += --openssl-legacy-provider
 # The path can be anything, but home is usually safest.
@@ -294,11 +296,8 @@ show-ios-devices: ##@other shows connected ios device and its name
 # TODO: fix IOS_STATUS_GO_TARGETS to be either amd64 or arm64 when RN is upgraded
 run-ios-device: export TARGET := ios
 run-ios-device: export IOS_STATUS_GO_TARGETS := ios/arm64;iossimulator/amd64
-run-ios-device: ##@run iOS app and start it on a connected device by its name
-ifndef DEVICE_NAME
-	$(error Usage: make run-ios-device DEVICE_NAME=your-device-name)
-endif
-	react-native run-ios --device "$(DEVICE_NAME)"
+run-ios-device: ##@run iOS app and start it on the first connected iPhone
+	@scripts/run-ios-device.sh
 
 #--------------
 # Tests
