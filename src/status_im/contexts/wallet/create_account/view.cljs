@@ -19,7 +19,7 @@
     [utils.security.core :as security]
     [utils.string]))
 
-(defn get-keypair-data
+(defn- get-keypair-data
   [primary-name derivation-path account-color {:keys [keypair-name]}]
   [{:title             (or keypair-name (i18n/label :t/keypair-title {:name primary-name}))
     :image             (if keypair-name :icon :avatar)
@@ -138,7 +138,7 @@
            ;; :disabled?           (empty? @account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
 
-(defn view-internal
+(defn- view-internal
   []
   [:f> f-view])
 
