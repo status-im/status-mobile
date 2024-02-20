@@ -31,9 +31,9 @@
          :fallback-prompt-message (i18n/label
                                    :t/biometric-auth-login-ios-fallback-label)
          :cancel-button-text      (i18n/label :t/cancel)})
-       (.then (fn [not-canceled?]
+       (.then (fn [success?]
                 (on-done)
-                (if not-canceled?
+                (if success?
                   (on-success)
                   (on-cancel))))
        (.catch (fn [err]
