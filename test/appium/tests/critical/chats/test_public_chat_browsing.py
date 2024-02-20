@@ -502,6 +502,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702840)
     def test_community_emoji_send_copy_paste_reply(self):
+        self.channel_1.navigate_back_to_chat_view()
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
         emoji_message = emoji.emojize(emoji_name)

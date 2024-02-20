@@ -87,7 +87,11 @@ class BaseElement(object):
         return self.driver.find_elements(self.by, self.locator)
 
     def click(self):
-        self.find_element().click()
+        element = self.find_element()
+        try:
+            element.click()
+        except AttributeError:
+            raise Exception("Element: %s\n Element type: %s" % (element, type(element)))
         self.driver.info('Tap on found: %s' % self.name)
         return self.navigate()
 
@@ -102,7 +106,11 @@ class BaseElement(object):
             desired_element.name, desired_element.by, desired_element.locator))
         while not desired_element.is_element_displayed(1) and counter <= attempts:
             try:
-                self.find_element().click()
+                el = self.find_element()
+                try:
+                    el.click()
+                except AttributeError:
+                    raise Exception("Element: %s\n Element type: %s" % (el, type(el)))
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
