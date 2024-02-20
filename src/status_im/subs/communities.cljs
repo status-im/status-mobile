@@ -96,12 +96,10 @@
 
 (defn- group-communities-by-status
   [requests {:keys [id] :as community}]
-  (let [joined?  (:joined community)
-        pending? (boolean (get requests id))]
-    (cond
-      joined?  :joined
-      pending? :pending
-      :else    :opened)))
+  (cond
+    (:joined community)         :joined
+    (boolean (get requests id)) :pending
+    :else                       :opened))
 
 (re-frame/reg-sub
  :communities/grouped-by-status
