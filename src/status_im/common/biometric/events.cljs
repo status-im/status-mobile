@@ -23,6 +23,12 @@
 
 (rf/reg-event-fx :biometric/show-message show-message)
 
+(defn on-authentication-done
+  [{:keys [db]}]
+  {:db (assoc-in db [:biometrics :auth-pending?] false)})
+
+(rf/reg-event-fx :biometric/on-authentication-done on-authentication-done)
+
 (defn authenticate
   [{:keys [db]} [opts]]
   (let [pending? (get-in db [:biometrics :auth-pending?])]
@@ -30,7 +36,7 @@
     (when-not pending?
       {:db (assoc-in db [:biometrics :auth-pending?] true)
        :fx [[:effects.biometric/authenticate
-             (assoc opts :on-done #(rf/dispatch [:set-in [:biometrics :auth-pending?] false]))]]})))
+             (assoc opts :on-done #(rf/dispatch [:biometric/on-authentication-done]))]]})))
 
 (rf/reg-event-fx :biometric/authenticate authenticate)
 

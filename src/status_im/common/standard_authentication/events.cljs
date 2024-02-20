@@ -80,7 +80,8 @@
          [:show-bottom-sheet
           {:on-close (fn []
                        (rf/dispatch [:standard-auth/reset-login-password])
-                       (on-close))
+                       (when on-close
+                         (on-close)))
            :theme    theme
            :shell?   blur?
            :content  #(bottom-sheet-password-view args)}]]]})

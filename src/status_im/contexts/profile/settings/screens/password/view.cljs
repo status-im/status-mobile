@@ -45,7 +45,7 @@
      :action-props {:disabled? (not supported?)
                     :on-change press-handler
                     :checked?  biometric-on?}
-     :on-press     press-handler}))
+     :on-press     (when supported? press-handler)}))
 
 (defn- get-change-password-item
   []
