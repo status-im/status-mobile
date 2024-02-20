@@ -51,12 +51,3 @@
    [:catn
     [:cofx :schema.re-frame/cofx]]
    :any])
-
-(def ?check-if-biometrics-available
-  [:=>
-   [:cat
-    [:map {:closed true}
-     [:key-uid string?]
-     [:on-success {:optional true} [:maybe fn?]]
-     [:on-fail {:optional true} [:maybe fn?]]]]
-   :any])

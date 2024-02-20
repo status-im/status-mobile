@@ -11,7 +11,7 @@
 (defn authorize
   [{:keys [db]} [args]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:fx [[:biometric/check-if-available
+    {:fx [[:effects.biometric/check-if-available
            {:key-uid    key-uid
             :on-success #(rf/dispatch [:standard-auth/authorize-with-biometric args])
             :on-fail    #(rf/dispatch [:standard-auth/authorize-with-password args])}]]}))

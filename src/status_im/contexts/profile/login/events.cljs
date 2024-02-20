@@ -177,10 +177,11 @@
 (rf/defn login-with-biometric-if-available
   {:events [:profile.login/login-with-biometric-if-available]}
   [_ key-uid]
-  {:biometric/check-if-available {:key-uid    key-uid
-                                  :on-success (fn [auth-method]
-                                                (rf/dispatch [:profile.login/check-biometric-success
-                                                              key-uid auth-method]))}})
+  {:effects.biometric/check-if-available {:key-uid    key-uid
+                                          :on-success (fn [auth-method]
+                                                        (rf/dispatch
+                                                         [:profile.login/check-biometric-success
+                                                          key-uid auth-method]))}})
 
 (rf/defn check-biometric-success
   {:events [:profile.login/check-biometric-success]}
