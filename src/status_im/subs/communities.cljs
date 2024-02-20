@@ -416,29 +416,39 @@
 (re-frame/reg-sub
  :community/token-permissions
  (fn [[_ community-id]]
-   (re-frame/subscribe [:communities/community community-id]))
- (fn [community _]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+ (fn [[community permissions-check] _]
    (let [token-permissions (:token-permissions community)
          token-images      (:token-images community)
          grouped-by-type   (group-by (comp :type second) token-permissions)
          mock-images       (if (and (contains? token-permissions 5) (contains? token-permissions 6))
                              (resources/mock-images :collectible)
-                             nil)]
+                             nil)
+         permissions       (:check permissions-check)
+         sufficient        (mapcat (fn [[_ permission]]
+                                     (mapcat (fn [token-req]
+                                               [(get token-req :satisfied)])
+                                      (:tokenRequirement permission)))
+                            (:permissions permissions))]
      (into {}
            (map (fn [[type tokens]]
                   [type
                    (map (fn [token]
-                          (map (fn [criteria]
-                                 (-> criteria
-                                     (assoc :amount
-                                            (wallet.utils/remove-trailing-zeroes (:amount criteria)))
-                                     (select-keys [:symbol :amount])
-                                     (assoc :sufficient? true
-                                            :loading?    false
-                                            :img-src     (if (= type 2)
-                                                           (or mock-images
-                                                               (get token-images (:symbol criteria)))
-                                                           (get token-images (:symbol criteria))))))
-                               (:token_criteria (second token))))
+                          (map-indexed (fn [i criteria]
+                                         (let [sym (:symbol criteria)]
+                                           (-> criteria
+                                               (assoc :amount
+                                                      (wallet.utils/remove-trailing-zeroes (:amount
+                                                                                            criteria)))
+                                               (select-keys [:symbol :amount])
+                                               (assoc :sufficient? (nth sufficient i true))
+                                               (assoc :loading? (:checking? permissions-check))
+                                               (assoc :img-src
+                                                      (if (= type 2)
+                                                        (or mock-images
+                                                            (get token-images sym))
+                                                        (get token-images sym))))))
+                                       (:token_criteria (second token))))
                         tokens)])
                 grouped-by-type)))))
