@@ -4,7 +4,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.temp :as temp]
     [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -31,7 +30,7 @@
 
 (defn- cheat-warning
   []
-  (let [{:keys [customization-color]} (rf/sub [:profile/profile])]
+  (let [customization-color (rf/sub [:profile/customization-color])]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
      [quo/text
@@ -62,26 +61,32 @@
 
 (defn- view-internal
   []
-  (let [random-indices  (random-selection)
-        quiz-index      (reagent/atom 0)
-        incorrect-count (reagent/atom 0)
-        show-error?     (reagent/atom false)]
+  (let [random-indices                        (random-selection)
+        quiz-index                            (reagent/atom 0)
+        incorrect-count                       (reagent/atom 0)
+        show-error?                           (reagent/atom false)
+        {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/create-account])]
     (fn []
-      (let [current-word-index        (get random-indices (min @quiz-index (dec questions-count)))
-            current-word              (get temp/secret-phrase current-word-index)
-            [options-r-0 options-r-1] (random-words-with-string temp/random-words current-word)
-            on-button-press           (fn [word]
-                                        (if (= word current-word)
-                                          (do
-                                            (reset! quiz-index (inc @quiz-index))
-                                            (reset! incorrect-count 0)
-                                            (reset! show-error? false))
-                                          (do
-                                            (when (> @incorrect-count 0)
-                                              (rf/dispatch [:show-bottom-sheet
-                                                            {:content cheat-warning}]))
-                                            (reset! incorrect-count (inc @incorrect-count))
-                                            (reset! show-error? true))))]
+      (let [current-word-index            (get random-indices
+                                               (min @quiz-index (dec questions-count)))
+            current-word                  (get secret-phrase current-word-index)
+            [options-row-0 options-row-1] (random-words-with-string random-phrase current-word)
+            on-button-press               (fn [word]
+                                            (if (= word current-word)
+                                              (do
+                                                (when (< @quiz-index questions-count)
+                                                  (reset! quiz-index (inc @quiz-index)))
+                                                (reset! incorrect-count 0)
+                                                (reset! show-error? false)
+                                                (when (= @quiz-index questions-count)
+                                                  (rf/dispatch [:navigate-to
+                                                                :wallet-keypair-name])))
+                                              (do
+                                                (when (> @incorrect-count 0)
+                                                  (rf/dispatch [:show-bottom-sheet
+                                                                {:content cheat-warning}]))
+                                                (reset! incorrect-count (inc @incorrect-count))
+                                                (reset! show-error? true))))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:icon-name           :i/arrow-left
@@ -109,7 +114,7 @@
 
                                                     :else
                                                     :disabled)
-                                        :word     (get temp/secret-phrase num)
+                                        :word     (get secret-phrase num)
                                         :number   (inc num)
                                         :on-press #(when (= @quiz-index index)
                                                      (reset! show-error? false))}])
@@ -119,9 +124,9 @@
           [buttons-row
            {:on-press      on-button-press
             :margin-bottom 12
-            :options       options-r-0}]
+            :options       options-row-0}]
           [buttons-row
            {:on-press on-button-press
-            :options  options-r-1}]]]))))
+            :options  options-row-1}]]]))))
 
 (def view (quo.theme/with-theme view-internal))

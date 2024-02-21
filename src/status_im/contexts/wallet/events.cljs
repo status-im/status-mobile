@@ -386,3 +386,35 @@
             {:title   title
              :subject title
              :message content})]]}))
+
+(defn store-secret-phrase
+  [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
+  {:db (-> db
+           (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
+           (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
+   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]})
+
+(rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
+
+
+(defn new-keypair-created
+  [{:keys [db]} [{:keys [new-keypair]}]]
+  {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
+   :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]})
+
+(rf/reg-event-fx :wallet/new-keypair-created new-keypair-created)
+
+(defn new-keypair-continue
+  [{:keys [db]} [{:keys [keypair-name]}]]
+  (let [secret-phrase (get-in db [:wallet :ui :create-account :secret-phrase])]
+    {:fx [[:effects.wallet/create-account-from-mnemonic
+           {:secret-phrase secret-phrase
+            :keypair-name  keypair-name}]]}))
+
+(rf/reg-event-fx :wallet/new-keypair-continue new-keypair-continue)
+
+(defn clear-new-keypair
+  [{:keys [db]}]
+  {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)})
+
+(rf/reg-event-fx :wallet/clear-new-keypair clear-new-keypair)

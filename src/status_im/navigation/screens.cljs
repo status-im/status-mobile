@@ -64,6 +64,7 @@
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
      wallet-check-your-backup]
+    [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
@@ -376,6 +377,10 @@
     {:name      :wallet-check-your-backup
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-check-your-backup/view}
+
+    {:name      :wallet-keypair-name
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-keypair-name/view}
 
     {:name      :wallet-share-address
      :options   options/transparent-screen-options

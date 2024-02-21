@@ -1,11 +1,12 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view
   (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.temp :as temp]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -17,7 +18,7 @@
    [quo/text {:style {:margin-left 4}} item]])
 
 (defn- words-column
-  [words first-half?]
+  [{:keys [words first-half?]}]
   [rn/flat-list
    {:style          {:padding-vertical 8}
     :data           (if first-half? (subvec words 0 6) (subvec words 6))
@@ -34,18 +35,24 @@
      :on-change #(swap! checked? assoc (keyword (str index)) %)}]
    [quo/text {:style {:margin-left 12}} (i18n/label item)]])
 
-(defn- view-internal
+(defn- f-view
   [{:keys [theme]}]
-  (let [step-labels                   [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
-                                       :t/backup-step-4]
-        checked?                      (reagent/atom
-                                       {:0 false
-                                        :1 false
-                                        :2 false
-                                        :3 false})
-        revealed?                     (reagent/atom false)
-        {:keys [customization-color]} (rf/sub [:profile/profile])]
+  (let [step-labels         [:t/backup-step-1 :t/backup-step-2 :t/backup-step-3
+                             :t/backup-step-4]
+        checked?            (reagent/atom
+                             {:0 false
+                              :1 false
+                              :2 false
+                              :3 false})
+        revealed?           (reagent/atom false)
+        customization-color (rf/sub [:profile/customization-color])
+        secret-phrase       (reagent/atom [])
+        random-phrase       (reagent/atom [])]
     (fn []
+      (rn/use-effect
+       (fn []
+         (native-module/get-random-mnemonic #(reset! secret-phrase (string/split % #"\s")))
+         (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:icon-name           :i/close
@@ -56,9 +63,15 @@
          :description      :text
          :description-text (i18n/label :t/backup-recovery-phrase-description)}]
        [rn/view {:style (style/seed-phrase-container theme)}
-        [words-column temp/secret-phrase true]
-        [rn/view {:style (style/separator theme)}]
-        [words-column temp/secret-phrase false]
+        (when (pos? (count @secret-phrase))
+          [:<>
+           [words-column
+            {:words       @secret-phrase
+             :first-half? true}]
+           [rn/view {:style (style/separator theme)}]
+           [words-column
+            {:words       @secret-phrase
+             :first-half? false}]])
         (when-not @revealed?
           [rn/view {:style style/blur-container}
            [blur/view (style/blur theme)]])]
@@ -82,8 +95,9 @@
             :button-one-label (i18n/label :t/i-have-written)
             :button-one-props {:disabled?           (some false? (vals @checked?))
                                :customization-color customization-color
-                               :on-press            #(rf/dispatch [:navigate-to
-                                                                   :wallet-check-your-backup])}}]
+                               :on-press            #(rf/dispatch [:wallet/store-secret-phrase
+                                                                   {:secret-phrase @secret-phrase
+                                                                    :random-phrase @random-phrase}])}}]
           [quo/text
            {:size  :paragraph-2
             :style (style/description-text theme)}
@@ -95,5 +109,9 @@
                               :customization-color customization-color
                               :on-press            #(reset! revealed? true)}
            :container-style  style/slide-button}])])))
+
+(defn view-internal
+  [params]
+  [:f> f-view params])
 
 (def view (quo.theme/with-theme view-internal))
