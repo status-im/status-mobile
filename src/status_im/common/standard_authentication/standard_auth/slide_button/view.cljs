@@ -62,7 +62,7 @@
                                                      :auth-button-label     auth-button-label})
          :track-icon          (if biometric-auth? :i/face-id :password)
          :track-text          track-text
-         :disabled? disabled?}]])))
+         :disabled?           disabled?}]])))
 
 (def view (quo.theme/with-theme view-internal))
 >>>>>>> d9ad786bd (fix slide button)

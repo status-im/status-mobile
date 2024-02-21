@@ -142,7 +142,7 @@
                                                       @derivation-path})}])
                                     (rf/dispatch [:wallet/derive-address-and-add-account
                                                   {:sha3-pwd     (security/safe-unmask-data
-                                                                   entered-password)
+                                                                  entered-password)
                                                    :emoji        @emoji
                                                    :color        @account-color
                                                    :path         @derivation-path
