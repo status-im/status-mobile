@@ -20,40 +20,41 @@
             on-change-password                  (fn [value]
                                                   (when (not= value @password-state)
                                                     (reset! password-state value)
-                                                    (rf/dispatch [:standard-auth/update-password value])))]
+                                                    (rf/dispatch [:standard-auth/update-password
+                                                                  value])))]
         [rn/view {:style style/enter-password-container}
-          [quo/text
-           {:accessibility-label :sync-code-generated
-            :weight              :bold
-            :size                :heading-1
-            :style               {:margin-bottom 4}}
-           (i18n/label :t/enter-password)]
-          [rn/view
-           {:style style/context-tag}
-           [quo/context-tag
-            {:type                :default
-             :blur?               true
-             :profile-picture     (profile.utils/photo profile)
-             :full-name           (profile.utils/displayed-name profile)
-             :customization-color customization-color
-             :size                24}]]
-          [password-input/view
-           {:on-press-biometrics on-press-biometrics
-            :processing          processing
-            :error               error
-            :password            @password-state
-            :on-change-password  on-change-password
-            :sign-in-enabled?    sign-in-enabled?}]
-          [quo/button
-           {:size                40
-            :container-style     style/enter-password-button
-            :type                :primary
-            :customization-color (or customization-color :primary)
-            :accessibility-label :login-button
-            :icon-left           button-icon-left
-            :disabled?           (or (not sign-in-enabled?) processing)
-            :on-press            (fn []
-                                   (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
-                                   (rf/dispatch [:profile.login/verify-database-password password
-                                                 #(on-enter-password password)]))}
-           button-label]]))))
+         [quo/text
+          {:accessibility-label :sync-code-generated
+           :weight              :bold
+           :size                :heading-1
+           :style               {:margin-bottom 4}}
+          (i18n/label :t/enter-password)]
+         [rn/view
+          {:style style/context-tag}
+          [quo/context-tag
+           {:type                :default
+            :blur?               true
+            :profile-picture     (profile.utils/photo profile)
+            :full-name           (profile.utils/displayed-name profile)
+            :customization-color customization-color
+            :size                24}]]
+         [password-input/view
+          {:on-press-biometrics on-press-biometrics
+           :processing          processing
+           :error               error
+           :password            @password-state
+           :on-change-password  on-change-password
+           :sign-in-enabled?    sign-in-enabled?}]
+         [quo/button
+          {:size                40
+           :container-style     style/enter-password-button
+           :type                :primary
+           :customization-color (or customization-color :primary)
+           :accessibility-label :login-button
+           :icon-left           button-icon-left
+           :disabled?           (or (not sign-in-enabled?) processing)
+           :on-press            (fn []
+                                  (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
+                                  (rf/dispatch [:profile.login/verify-database-password password
+                                                #(on-enter-password password)]))}
+          button-label]]))))

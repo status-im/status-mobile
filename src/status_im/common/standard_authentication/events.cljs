@@ -13,8 +13,8 @@
  (fn [{:keys [db]}]
    {:db (update db :profile/login dissoc :password :error)}))
 
-(rf/reg-event-fx 
-:standard-auth/update-password
+(rf/reg-event-fx
+ :standard-auth/update-password
  (fn [{:keys [db]} [value]]
    {:db (-> db
             (assoc-in [:profile/login :password] (security/mask-data value))

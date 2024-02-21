@@ -7,7 +7,6 @@
     [react-native.core :as rn]
     [status-im.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
     [status-im.common.standard-authentication.password-input.style :as style]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

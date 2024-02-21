@@ -35,7 +35,8 @@
          :customization-color customization-color
          :on-reset            (when @reset-slider? #(reset! reset-slider? false))
          :on-complete         #(authorize/authorize {:on-close              (fn []
-                                                                              (when (fn? on-close) (on-close))
+                                                                              (when (fn? on-close)
+                                                                                (on-close))
                                                                               (reset-slider))
                                                      :auth-button-icon-left auth-button-icon-left
                                                      :theme                 theme
