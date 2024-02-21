@@ -1260,6 +1260,7 @@
     "scan-or-enter-sync-code": "Scan or enter sync code",
     "scan-qr": "Scan QR",
     "scan-qr-code": "Scan QR code",
+    "scan-with-status-app": "Scan with the Status app on another device",
     "invalid-qr": "Oops! This QR doesn’t work with Status",
     "search": "Search",
     "search-discover-communities": "Search communities or categories",

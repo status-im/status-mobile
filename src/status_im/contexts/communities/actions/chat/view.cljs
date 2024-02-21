@@ -94,10 +94,10 @@
    :label               (i18n/label :t/invite-people-from-contacts)})
 
 (defn- action-qr-code
-  []
+  [chat-id]
   {:icon                :i/qr-code
    :accessibility-label :chat-show-qr-code
-   :on-press            not-implemented/alert
+   :on-press            #(rf/dispatch [:communities/share-community-channel-url-qr-code chat-id])
    :label               (i18n/label :t/show-qr)})
 
 (defn- action-share
@@ -115,7 +115,7 @@
       [quo/action-drawer
        [[(action-invite-people)
          (action-token-requirements)
-         (action-qr-code)
+         (action-qr-code chat-id)
          (action-share chat-id)]]]
 
       (and (not inside-chat?) (not locked?))
@@ -126,7 +126,7 @@
          (action-notification-settings)
          (action-pinned-messages)
          (action-invite-people)
-         (action-qr-code)
+         (action-qr-code chat-id)
          (action-share chat-id)]]]
 
       (and inside-chat? (not locked?))
@@ -139,7 +139,7 @@
          (when config/fetch-messages-enabled?
            (chat-actions/fetch-messages chat-id))
          (action-invite-people)
-         (action-qr-code)
+         (action-qr-code chat-id)
          (action-share chat-id)]]]
 
       :else nil)))
