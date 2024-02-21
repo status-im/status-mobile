@@ -35,23 +35,22 @@
 
 (defn view
   []
-  (let [edited-account-name  (reagent/atom nil)
-        show-confirm-button? (reagent/atom false)
-        on-change-color      (fn [edited-color {:keys [color] :as account}]
-                               (when (not= edited-color color)
-                                 (save-account {:account     account
-                                                :updated-key :color
-                                                :new-value   edited-color})))
-        on-change-emoji      (fn [edited-emoji {:keys [emoji] :as account}]
-                               (when (not= edited-emoji emoji)
-                                 (save-account {:account     account
-                                                :updated-key :emoji
-                                                :new-value   edited-emoji})))
-        on-confirm-name      (fn [account]
-                               (rn/dismiss-keyboard!)
-                               (save-account {:account     account
-                                              :updated-key :name
-                                              :new-value   @edited-account-name}))]
+  (let [edited-account-name (reagent/atom nil)
+        on-change-color     (fn [edited-color {:keys [color] :as account}]
+                              (when (not= edited-color color)
+                                (save-account {:account     account
+                                               :updated-key :color
+                                               :new-value   edited-color})))
+        on-change-emoji     (fn [edited-emoji {:keys [emoji] :as account}]
+                              (when (not= edited-emoji emoji)
+                                (save-account {:account     account
+                                               :updated-key :emoji
+                                               :new-value   edited-emoji})))
+        on-confirm-name     (fn [account]
+                              (rn/dismiss-keyboard!)
+                              (save-account {:account     account
+                                             :updated-key :name
+                                             :new-value   @edited-account-name}))]
     (fn []
       (let [{:keys [name emoji address color watch-only? default-account?]
              :as   account}         (rf/sub [:wallet/current-viewing-account])
@@ -80,9 +79,7 @@
           :on-change-color     #(on-change-color % account)
           :on-change-emoji     #(on-change-emoji % account)
           :section-label       :t/account-info
-          :on-focus            #(reset! show-confirm-button? true)
-          :on-blur             #(reset! show-confirm-button? false)
-          :bottom-action?      @show-confirm-button?
+          :bottom-action?      true
           :bottom-action-label :t/update-account-name
           :bottom-action-props {:customization-color color
                                 :disabled?           button-disabled?

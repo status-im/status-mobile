@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
   (:require [quo.core :as quo]
+            quo.theme
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.constants :as constants]
@@ -7,13 +8,13 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn view
+(defn view-internal
   [{:keys [margin-top? page-nav-right-side placeholder account-name account-color account-emoji
            on-change-name
            on-change-color
            on-change-emoji on-focus on-blur section-label bottom-action?
            bottom-action-label bottom-action-props
-           custom-bottom-action watch-only?]} & children]
+           custom-bottom-action watch-only? theme]} & children]
   (let [{:keys [top bottom]}  (safe-area/get-insets)
         margin-top            (if (false? margin-top?) 0 top)
         {window-width :width} (rn/get-window)]
@@ -30,7 +31,9 @@
       {:customization-color account-color
        :container-style     (style/gradient-cover-container margin-top)}]
      (into
-      [:<>
+      [rn/scroll-view
+       {:keyboard-should-persist-taps :always
+        :style                        {:flex 1}}
        [rn/view {:style style/account-avatar-container}
         [quo/account-avatar
          {:customization-color account-color
@@ -73,7 +76,9 @@
            :container-style style/section-container}])]
       children)
      (when bottom-action?
-       [rn/view {:style (style/bottom-action bottom)}
+       [rn/view
+        {:style (style/bottom-action {:theme  theme
+                                      :bottom bottom})}
         (if custom-bottom-action
           custom-bottom-action
           [quo/button
@@ -82,3 +87,5 @@
              :type :primary}
             bottom-action-props)
            (i18n/label bottom-action-label)])])]))
+
+(def view (quo.theme/with-theme view-internal))
