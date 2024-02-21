@@ -1,6 +1,7 @@
 (ns status-im.common.standard-authentication.events
   (:require
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/reg-event-fx :standard-auth/on-biometric-success
  (fn [{:keys [db]} [callback]]

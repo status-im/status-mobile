@@ -28,15 +28,14 @@
                  blur?
                  on-close
                  container-style]
-          :or   {container-style {:flex 1}
-                 on-close        #()}}]
+          :or   {container-style {:flex 1}}}]
       [rn/view {:style container-style}
        [quo/slide-button
         {:size                size
          :customization-color customization-color
          :on-reset            (when @reset-slider? #(reset! reset-slider? false))
          :on-complete         #(authorize/authorize {:on-close              (fn []
-                                                                              (on-close)
+                                                                              (when (fn? on-close) (on-close))
                                                                               (reset-slider))
                                                      :auth-button-icon-left auth-button-icon-left
                                                      :theme                 theme
