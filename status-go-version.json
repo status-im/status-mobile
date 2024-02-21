@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.175.3",
-    "commit-sha1": "23ee898754f71341dc53e71657ef0633165f7bd3",
-    "src-sha256": "0zabdfpplzwi0dmb650cdvhrn3z7zqz70f261b3cyaxc68hc117w"
+    "version": "feat/sepolia-default",
+    "commit-sha1": "fa0e662cc9edd51e1f3f5235bbb83ebdc8c96725",
+    "src-sha256": "02p9fgar10aq6s4ff28vdppv5rvfvimfafgn9x47y82wn8iaw6s5"
 }
