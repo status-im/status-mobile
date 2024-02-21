@@ -1,19 +1,33 @@
 (ns quo.components.links.url-preview.view
   (:require
+    [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.links.url-preview.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.svg :as Svg]))
+
+(defn- svg-logo
+  [logo]
+  [Svg/svg-uri
+   (merge
+    style/logo
+    {:accessibility-label :logo
+     :uri                 logo})])
 
 (defn- logo-comp
   [{:keys [logo]}]
-  [rn/image
-   {:accessibility-label :logo
-    :source              (if (string? logo)
-                           {:uri logo}
-                           logo)
-    :style               style/logo}])
+  (if (and (string? logo)
+           (string/ends-with? logo ".svg"))
+    [svg-logo logo]
+    [rn/image
+     {:accessibility-label :logo
+      :source              (if (string? logo)
+                             {:uri logo}
+                             logo)
+      :style               style/logo
+      :resize-mode         :center}]))
 
 (defn- content
   [{:keys [title body]}]
@@ -50,6 +64,10 @@
     [rn/view
      {:accessibility-label :url-preview-loading
       :style               (merge (style/loading-container) container-style)}
+     [icon/icon :i/loading
+      {:size            12
+       :color           (colors/theme-colors colors/neutral-50 colors/neutral-40)
+       :container-style {:margin-right 8}}]
      [rn/text
       {:size            :paragraph-2
        :weight          :medium
