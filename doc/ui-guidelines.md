@@ -198,7 +198,7 @@ GOOD:
 (defn view
   []
   (let []
-    [quo/button {:style {:padding-top 20}}]))
+    [quo/button {:container-style {:padding-top 20}}]))
 ```
 
 ### Component updates
