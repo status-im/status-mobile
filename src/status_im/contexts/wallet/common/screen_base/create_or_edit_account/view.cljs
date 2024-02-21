@@ -12,7 +12,7 @@
   [{:keys [margin-top? page-nav-right-side placeholder account-name account-color account-emoji
            on-change-name
            on-change-color
-           on-change-emoji on-focus on-blur section-label bottom-action?
+           on-change-emoji on-focus on-blur section-label
            bottom-action-label bottom-action-props
            custom-bottom-action watch-only? theme]} & children]
   (let [{:keys [top bottom]}  (safe-area/get-insets)
@@ -75,17 +75,16 @@
           {:section         (i18n/label section-label)
            :container-style style/section-container}])]
       children)
-     (when bottom-action?
-       [rn/view
-        {:style (style/bottom-action {:theme  theme
-                                      :bottom bottom})}
-        (if custom-bottom-action
-          custom-bottom-action
-          [quo/button
-           (merge
-            {:size 40
-             :type :primary}
-            bottom-action-props)
-           (i18n/label bottom-action-label)])])]))
+     [rn/view
+      {:style (style/bottom-action {:theme  theme
+                                    :bottom bottom})}
+      (if custom-bottom-action
+        custom-bottom-action
+        [quo/button
+         (merge
+          {:size 40
+           :type :primary}
+          bottom-action-props)
+         (i18n/label bottom-action-label)])]]))
 
 (def view (quo.theme/with-theme view-internal))

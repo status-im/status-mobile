@@ -79,7 +79,6 @@
           :on-change-color     #(on-change-color % account)
           :on-change-emoji     #(on-change-emoji % account)
           :section-label       :t/account-info
-          :bottom-action?      true
           :bottom-action-label :t/confirm
           :bottom-action-props {:customization-color color
                                 :disabled?           button-disabled?
