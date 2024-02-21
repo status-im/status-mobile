@@ -12,7 +12,7 @@
   [{:keys [margin-top? page-nav-right-side placeholder account-name account-color account-emoji
            on-change-name
            on-change-color
-           on-change-emoji on-focus on-blur section-label
+           on-change-emoji section-label
            bottom-action-label bottom-action-props
            custom-bottom-action watch-only? theme]} & children]
   (let [{:keys [top bottom]}  (safe-area/get-insets)
@@ -55,9 +55,7 @@
          :default-value   account-name
          :auto-focus      true
          :on-change-text  on-change-name
-         :container-style style/title-input-container
-         :on-focus        on-focus
-         :on-blur         on-blur}]
+         :container-style style/title-input-container}]
        [quo/divider-line {:container-style style/divider-1}]
        [quo/section-label
         {:section         (i18n/label :t/colour)
