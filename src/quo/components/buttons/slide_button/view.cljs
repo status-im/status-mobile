@@ -39,12 +39,13 @@
                               (animations/reset-track-position x-pos))))))))
 =======
 (defn- f-slider
-  []
+  [{:keys [disabled?]}]
   (let [track-width        (reagent/atom nil)
         sliding-complete?  (reagent/atom false)
         on-track-layout    (fn [evt]
                              (let [width (oops/oget evt "nativeEvent.layout.width")]
-                               (reset! track-width width)))]
+                               (reset! track-width width)))
+        gestures-disabled? (reagent/atom disabled?)]
     (fn [{:keys [on-reset
                  on-complete
                  track-text
@@ -56,8 +57,7 @@
                  theme
                  type
                  blur?]}]
-      (let [gestures-disabled? (reagent/atom disabled?)
-            x-pos             (reanimated/use-shared-value 0)
+      (let [x-pos             (reanimated/use-shared-value 0)
             dimensions        (partial utils/get-dimensions
                                        (or @track-width constants/default-width)
                                        size)
@@ -66,6 +66,7 @@
                                        (dimensions :usable-track)
                                        (dimensions :thumb))
             custom-color      (if (= type :danger) :danger customization-color)]
+        (rn/use-effect #(reset! gestures-disabled? disabled?) [disabled?])
         (rn/use-effect (fn []
                          (when @sliding-complete?
                            (on-complete)))
