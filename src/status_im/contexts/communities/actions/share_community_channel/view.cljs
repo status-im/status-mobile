@@ -14,7 +14,6 @@
     (let [{:keys [url chat-id]}           (rf/sub [:get-screen-params])
           {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])
           window-width                    (rf/sub [:dimensions/window-width])]
-      (prn color emoji chat-name chat-id)
       [quo/overlay {:type :shell}
        [rn/view
         {:style {:padding-top (safe-area/get-top)}

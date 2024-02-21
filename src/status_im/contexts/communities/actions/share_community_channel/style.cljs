@@ -6,12 +6,10 @@
    :padding-vertical   12})
 
 (def scan-notice
-  {:color        colors/neutral-40
+  {:color        colors/white-70-blur
    :margin-top   16
    :margin-left  :auto
    :margin-right :auto})
-
-(def qr-size 500)
 
 (def qr-code-wrapper
   {:padding-horizontal 20
