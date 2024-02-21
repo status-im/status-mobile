@@ -32,7 +32,9 @@
              :on-cancel      #(rf/dispatch [:standard-auth/authorize-with-password
                                             args-with-biometric-btn])
              :on-success     #(rf/dispatch [:standard-auth/on-biometric-success on-auth-success])
-             :on-fail        #(rf/dispatch [:standard-auth/on-biometric-fail on-auth-fail %])}]]]}))
+             :on-fail        (fn [err]
+                               (when on-auth-fail (on-auth-fail err))
+                               (rf/dispatch [:standard-auth/on-biometric-fail err]))}]]]}))
 
 (schema/=> authorize-with-biometric events-schema/?authorize-with-biometric)
 (rf/reg-event-fx :standard-auth/authorize-with-biometric authorize-with-biometric)
@@ -47,9 +49,7 @@
 (rf/reg-event-fx :standard-auth/on-biometric-success on-biometric-success)
 
 (defn on-biometric-fail
-  [_ [on-auth-fail error]]
-  (when on-auth-fail
-    (on-auth-fail error))
+  [_ [error]]
   (log/error (ex-message error)
              (-> error
                  ex-data
