@@ -16,6 +16,7 @@
      addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
+    [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.onboarding.create-password.view :as create-password]
@@ -114,6 +115,10 @@
     {:name      :community-requests-to-join
      :options   {:sheet? true}
      :component join-menu/view}
+
+    {:name      :share-community-channel
+     :options   options/transparent-screen-options
+     :component share-community-channel/view}
 
     {:name      :community-account-selection
      :options   {:sheet? true}

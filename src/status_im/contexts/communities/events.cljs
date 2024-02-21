@@ -252,14 +252,23 @@
                      (get-in db [:communities community-id :previous-share-all-addresses?]))
       :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
 
-(rf/reg-event-fx :communities/share-community-channel-url-with-data
- (fn [_ [chat-id]]
-   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)
-         title                             (i18n/label :t/channel-on-status)]
+(rf/reg-event-fx :communities/get-community-channel-share-data
+ (fn [_ [chat-id on-success]]
+   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
      {:json-rpc/call
       [{:method     "wakuext_shareCommunityChannelURLWithData"
         :params     [{:CommunityID community-id :ChannelID channel-id}]
-        :on-success (fn [url]
+        :on-success on-success
+        :on-error   (fn [err]
+                      (log/error "failed to retrieve community channel url with data"
+                                 {:error   err
+                                  :chat-id chat-id
+                                  :event   :communities/get-community-channel-share-data}))}]})))
+
+(rf/reg-event-fx :communities/share-community-channel-url-with-data
+ (fn [_ [chat-id]]
+   (let [title      (i18n/label :t/channel-on-status)
+         on-success (fn [url]
                       (share/open
                        (if platform/ios?
                          {:activityItemSources [{:placeholderItem {:type    "text"
@@ -271,12 +280,15 @@
                           :subject   title
                           :message   url
                           :url       url
-                          :isNewTask true})))
-        :on-error   (fn [err]
-                      (log/error "failed to retrieve community channel url with data"
-                                 {:error   err
-                                  :chat-id chat-id
-                                  :event   "share-community-channel-url-with-data"}))}]})))
+                          :isNewTask true})))]
+     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
+
+(rf/reg-event-fx :communities/share-community-channel-url-qr-code
+ (fn [_ [chat-id]]
+   (let [on-success #(rf/dispatch [:open-modal :share-community-channel
+                                   {:chat-id chat-id
+                                    :url     %}])]
+     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
 
 (rf/reg-event-fx :communities/set-airdrop-address
  (fn [{:keys [db]} [address community-id]]
