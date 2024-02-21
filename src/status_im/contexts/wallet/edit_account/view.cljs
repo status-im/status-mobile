@@ -80,7 +80,7 @@
           :on-change-emoji     #(on-change-emoji % account)
           :section-label       :t/account-info
           :bottom-action?      true
-          :bottom-action-label :t/update-account-name
+          :bottom-action-label :t/confirm
           :bottom-action-props {:customization-color color
                                 :disabled?           button-disabled?
                                 :on-press            #(on-confirm-name account)}}
