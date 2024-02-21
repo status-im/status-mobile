@@ -1,4 +1,4 @@
-(ns status-im.integration-test.standard-auth-test
+(ns tests.integration-test.standard-auth-test
   (:require
     [cljs.test :refer [deftest testing is]]
     [day8.re-frame.test :as rf-test]
@@ -17,7 +17,7 @@
 
 (defn auth-success-fixtures
   []
-  (rf/reg-fx :biometric/check-if-available
+  (rf/reg-fx :effects.biometric/check-if-available
    (fn [{:keys [on-success]}] (on-success)))
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-success]}]] (on-success)))
@@ -37,7 +37,7 @@
 
 (defn auth-cancel-fixtures
   []
-  (rf/reg-fx :biometric/check-if-available
+  (rf/reg-fx :effects.biometric/check-if-available
    (fn [{:keys [on-success]}] (on-success)))
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-cancel]}]] (on-cancel)))
@@ -54,11 +54,11 @@
 
 (defn auth-fail-fixtures
   [expected-error-cause]
-  (rf/reg-fx :biometric/check-if-available
+  (rf/reg-fx :effects.biometric/check-if-available
    (fn [{:keys [on-success]}] (on-success)))
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-fail]}]] (on-fail (ex-info "error" {} expected-error-cause))))
-  (rf/reg-fx :biometric/show-message identity))
+  (rf/reg-event-fx :biometric/show-message identity))
 
 (deftest standard-auth-biometric-authorize-fail
   (testing "showing biometric error message when authorization failed"
@@ -80,7 +80,7 @@
 
 (defn auth-password-fallback-fixtures
   []
-  (rf/reg-fx :biometric/check-if-available
+  (rf/reg-fx :effects.biometric/check-if-available
    (fn [{:keys [on-fail]}] (on-fail)))
   (rf/reg-event-fx :show-bottom-sheet identity))
 
