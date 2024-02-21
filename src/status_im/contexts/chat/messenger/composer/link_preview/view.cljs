@@ -38,7 +38,7 @@
                                     {:title     (or display-name title)
                                      :body      (or (when-not display-name hostname)
                                                     status-im.constants/status-hostname)
-                                     :logo      (:data-uri icon)
+                                     :logo      icon
                                      :loading?  loading?
                                      :thumbnail (:data-uri thumbnail)
                                      :url       url})
