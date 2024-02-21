@@ -202,7 +202,7 @@
                                        (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan? (and show-camera?
                                        (not @qr-code-succeed?))]
-        (rn/use-effect
+        (rn/use-mount
          (fn []
            (rn/hw-back-add-listener navigate-back-handler)
            (set-listener-torch-off-on-app-inactive torch?)

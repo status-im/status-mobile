@@ -15,7 +15,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.audio-toolkit :as audio]
-    [react-native.core :as rn :refer [use-effect]]
+    [react-native.core :as rn]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
     [taoensso.timbre :as log]
@@ -528,20 +528,20 @@
                (reset! reached-max-duration? false))
              (reset! touch-timestamp nil))]
        (fn []
-         (use-effect (fn []
-                       (when on-check-audio-permissions
-                         (on-check-audio-permissions))
-                       (when on-init
-                         (on-init reset-recorder))
-                       (when audio-file
-                         (let [filename (last (string/split audio-file "/"))]
-                           (reload-player filename)))
-                       (reset! app-state-listener
-                         (.addEventListener rn/app-state
-                                            "change"
-                                            #(when (= % "background")
-                                               (reset! playing-audio? false))))
-                       #(.remove @app-state-listener)))
+         (rn/use-mount (fn []
+                         (when on-check-audio-permissions
+                           (on-check-audio-permissions))
+                         (when on-init
+                           (on-init reset-recorder))
+                         (when audio-file
+                           (let [filename (last (string/split audio-file "/"))]
+                             (reload-player filename)))
+                         (reset! app-state-listener
+                           (.addEventListener rn/app-state
+                                              "change"
+                                              #(when (= % "background")
+                                                 (reset! playing-audio? false))))
+                         #(.remove @app-state-listener)))
          [rn/view
           {:style          style/bar-container
            :pointer-events :box-none}

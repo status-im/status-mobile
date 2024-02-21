@@ -136,26 +136,26 @@
 
 (defn use-effect
   ([handler]
-   (use-effect handler []))
+   (use-effect handler nil))
   ([handler deps]
    (react/useEffect
     #(let [ret (handler)]
        (if (fn? ret) ret js/undefined))
-    (bean/->js deps))))
+    (if deps (bean/->js deps) js/undefined))))
+
+(defn use-mount
+  [handler]
+  (use-effect handler []))
+
+(defn use-unmount
+  [handler]
+  (use-mount (fn [] handler)))
 
 (defn use-callback
   ([handler]
    (use-callback handler []))
   ([handler deps]
    (react/useCallback handler (bean/->js deps))))
-
-(defn use-mount
-  [handler]
-  (use-effect handler))
-
-(defn use-unmount
-  [handler]
-  (use-mount (fn [] handler)))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))

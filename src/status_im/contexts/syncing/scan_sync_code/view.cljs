@@ -321,8 +321,7 @@
                                       :subtitle-opacity subtitle-opacity
                                       :title-opacity    title-opacity})]
 
-        (rn/use-effect
-         #(set-listener-torch-off-on-app-inactive torch?))
+        (rn/use-mount #(set-listener-torch-off-on-app-inactive torch?))
 
         (when animated?
           (rn/use-effect
@@ -335,7 +334,7 @@
           (animation/animate-title title-opacity)
           (animation/animate-bottom bottom-view-translate-y))
 
-        (rn/use-effect
+        (rn/use-mount
          (fn initialize-component []
            (when animated?
              (animation/animate-content content-opacity)

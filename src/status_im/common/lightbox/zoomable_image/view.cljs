@@ -259,8 +259,8 @@
                                                                                dimensions
                                                                                animations
                                                                                state))]
-        (rn/use-effect (fn []
-                         (js/setTimeout (fn [] (reset! set-full-height? true)) 500)))
+        (rn/use-mount (fn []
+                        (js/setTimeout (fn [] (reset! set-full-height? true)) 500)))
         (when platform/ios?
           (utils/handle-orientation-change curr-orientation focused? dimensions animations state)
           (utils/handle-exit-lightbox-signal exit-lightbox-signal

@@ -86,8 +86,7 @@ For global state management, we utilize Re-frame subscriptions. They can be like
 
 ## Regular atoms
 
-In some cases regular atoms were used in the components
-
+In certain instances, components utilized regular atoms; however, they should now be encapsulated within `rn/useRef`.
 
 BEFORE:
 ```clojure
@@ -107,21 +106,17 @@ NOW:
 ```clojure
 (defn view
   []
-  (let [[focused? set-focused] (rn/use-state false)
+  (let [focused?               (rn/use-ref (atom false))
         on-clear               (rn/use-callback
                                 (fn []
-                                  (set-status (if focused? :active :default)))
-                                [focused?])
+                                  (set-status (if @focused? :active :default))))
         on-focus               (rn/use-callback
                                 (fn []
-                                  (set-focused true)))
+                                  (reset! focused? true)))
         on-blur                (rn/use-callback
                                 (fn []
-                                  (set-focused false)))]))
+                                  (reset! focused? false)))]))
 ```
-
-> [!IMPORTANT]
-> Instead of a regular atom, we also use a state hook. It's important to understand that its value is now encapsulated within the function, and we must pass it as a dependency to `use-callback` so that the function re-executes with the new value.
 
 ## Effects
 
