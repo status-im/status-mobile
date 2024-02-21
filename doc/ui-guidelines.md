@@ -171,7 +171,7 @@ BAD:
     [rn/view]))
 ```
 
-Instead `:all-collectibles-changed` shdoul be used in the handler which changes `collectible-list` state
+Instead `:all-collectibles-changed` should be used in the handler which changes `collectible-list` state
 
 ## Performance tips
 
@@ -234,13 +234,13 @@ Here, we have lost control over the `screen-params` map. It can contain any data
 GOOD:
 ```clojure
 (defn component
-  [label (rf/sub [:screen-params-label])]
-  (let []
+  []
+  (let [label (rf/sub [:screen-params-label])]
     [rn/text label]))
 
 (defn component2
-  [label2 (rf/sub [:screen-params-label2])]
-  (let []
+  []
+  (let [label2 (rf/sub [:screen-params-label2])]
     [rn/text label2]))
 
 (defn screen
