@@ -135,25 +135,27 @@
 (def use-context react/useContext)
 
 (defn use-effect
-  ([effect-fn]
-   (use-effect effect-fn []))
-  ([effect-fn deps]
+  ([handler]
+   (use-effect handler []))
+  ([handler deps]
    (react/useEffect
-    #(let [ret (effect-fn)]
+    #(let [ret (handler)]
        (if (fn? ret) ret js/undefined))
     (bean/->js deps))))
 
-(def use-callback react/useCallback)
+(defn use-callback
+  ([handler]
+   (use-callback handler []))
+  ([handler deps]
+   (react/useCallback handler (bean/->js deps))))
 
-(defn use-effect-once
-  [effect-fn]
-  (use-effect effect-fn))
+(defn use-mount
+  [handler]
+  (use-effect handler))
 
 (defn use-unmount
-  [f]
-  (let [fn-ref (use-ref f)]
-    (oops/oset! fn-ref "current" f)
-    (use-effect-once (fn [] (fn [] (oops/ocall! fn-ref "current"))))))
+  [handler]
+  (use-mount (fn [] handler)))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))
