@@ -152,9 +152,10 @@
                                     (reagent/flush))))
         handle-delete         (fn [loading-routes? current-limit-amount]
                                 (when-not loading-routes?
-                                  (let [{:keys [start end]} @input-selection]
-                                    (reset-input-error @input-value current-limit-amount input-error)
+                                  (let [{:keys [start end]} @input-selection
+                                        new-value           (delete-from-string @input-value start)]
                                     (when (= start end)
+                                      (reset-input-error new-value current-limit-amount input-error)
                                       (swap! input-value delete-from-string start)
                                       (move-input-cursor input-selection (dec start)))
                                     (reagent/flush))))
