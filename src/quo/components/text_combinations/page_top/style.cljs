@@ -12,7 +12,8 @@
    :height          32})
 
 (def header-title
-  {:flex-direction :row
+  {:flex           1
+   :flex-direction :row
    :column-gap     8})
 
 (def header-counter

@@ -87,10 +87,10 @@
           {:icon-name           :i/arrow-left
            :on-press            #(rf/dispatch [:navigate-back])
            :accessibility-label :top-bar}]
-         [quo/text-combinations
-          {:container-style style/header-container
-           :title           (i18n/label :t/check-your-backup)
-           :description     (i18n/label :t/confirm-the-position)}]
+         [quo/page-top
+          {:title            (i18n/label :t/check-your-backup)
+           :description      :text
+           :description-text (i18n/label :t/confirm-the-position)}]
          [rn/flat-list
           {:data                    random-indices
            :render-fn               (fn [num index]
