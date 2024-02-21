@@ -416,8 +416,12 @@
 (re-frame/reg-sub
  :community/token-permissions
  (fn [[_ community-id]]
+   (tap> (clj->js (re-frame/subscribe [:communities/checking-permissions-by-id community-id])))
+   (tap> [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+
  (fn [[community permissions-check] _]
    (let [token-permissions (:token-permissions community)
          token-images      (:token-images community)
@@ -442,9 +446,9 @@
                                                       (wallet.utils/remove-trailing-zeroes (:amount
                                                                                             criteria)))
                                                (select-keys [:symbol :amount])
-                                               (assoc :sufficient? (nth sufficient i true))
-                                               (assoc :loading? (:checking? permissions-check))
-                                               (assoc :img-src
+                                               (assoc :sufficient? (nth sufficient i true)
+                                                      :loading? (:checking? permissions-check)
+                                                      :img-src
                                                       (if (= type 2)
                                                         (or mock-images
                                                             (get token-images sym))
