@@ -110,7 +110,7 @@ The convention is `:size-<number>`, e.g size `20` is `:size-20`
 
 Too often callers pass nil values because values can be wrapped in a `when` for example.
 In this case, the default value is not applied, because :or macro will use default only when the value is absent.
-Instead, use `(or value some-default-value)` in a `let` expression or as a parameter value.
+Instead, use `(or (:value props) some-default-value)` in a `let` expression or as a parameter value.
 
 ```clojure
 ;; bad (unreliable)
