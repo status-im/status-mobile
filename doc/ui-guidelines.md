@@ -184,7 +184,7 @@ BAD:
 (defn view
   []
   (let []
-    [rn/view {:padding-top 20}
+    [rn/view {:style {:padding-top 20}}
      [quo/button]]))
 ```
 
