@@ -37,7 +37,7 @@ project dependencies, coding guidelines and testing procedures.
 Check out our [coding guidelines](doc/new-guidelines.md).
 
 - **Community Management**
-Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes a lot of work but the people you'll meet and the long-lasting relationships you form will be well worth it, check out our [Mission and Community Principles](https://status.im/about)
+Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes a lot of work but the people you'll meet and the long-lasting relationships you form will be well worth it, check out our [Mission and Community Principles](https://status.app/manifesto)
 
 - **Specification / Documentation**
 John Dewey once said, "Education is not preparation for life; education is life *itself* ". Developers and Designers need guidance and it all starts from documentation and specifications. Our software is only as good as its documentation, check out our [docs](doc/) and see how you can improve what we have.
@@ -53,10 +53,10 @@ Status is a visual interface to make permanent changes on the Blockchain, it han
 
 - **Evangelism**
 Help us spread the word! Tell a friend *right now*, in fact, tell **everyone** - yell from a mountain if you have to, every person counts! If you've got a great story to tell or have some interesting way you've spread the word about Status let us know about it in our [chat](https://join.status.im/chat/public/status)
-
+  
 ## Give me Binaries!
 
-You can get our Beta builds for both Android and iOS on our [website](https://status.im), through our [nightly builds](https://status.im/nightly/), or by [building it yourself](https://status.im/technical/build_status/).
+You can get our Beta builds for both Android and iOS on our [website](https://status.app), through our [nightly builds](https://status.im/nightly/), or by [building it yourself](doc/starting-guide.md).
 
 ## Core Contributors
 

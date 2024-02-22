@@ -16,6 +16,7 @@
      addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
+    [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.onboarding.create-password.view :as create-password]
@@ -63,6 +64,7 @@
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
      wallet-check-your-backup]
+    [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
@@ -113,6 +115,10 @@
     {:name      :community-requests-to-join
      :options   {:sheet? true}
      :component join-menu/view}
+
+    {:name      :share-community-channel
+     :options   options/transparent-screen-options
+     :component share-community-channel/view}
 
     {:name      :community-account-selection
      :options   {:sheet? true}
@@ -371,6 +377,10 @@
     {:name      :wallet-check-your-backup
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-check-your-backup/view}
+
+    {:name      :wallet-keypair-name
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-keypair-name/view}
 
     {:name      :wallet-share-address
      :options   options/transparent-screen-options

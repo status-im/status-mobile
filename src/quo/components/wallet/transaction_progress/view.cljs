@@ -4,10 +4,12 @@
             [quo.components.markdown.text :as text]
             [quo.components.tags.context-tag.view :as context-tag]
             [quo.components.wallet.confirmation-progress.view :as confirmation-progress]
+            [quo.components.wallet.transaction-progress.schema :as component-schema]
             [quo.components.wallet.transaction-progress.style :as style]
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
+            [schema.core :as schema]
             [utils.i18n :as i18n]))
 
 (def ^:private max-mainnet-verifications 4)
@@ -184,4 +186,6 @@
         ^{:key (:network network)}
         [view-network (assoc-props (:network network))]))]])
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

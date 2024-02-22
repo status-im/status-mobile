@@ -195,5 +195,5 @@ test/appium/tests/users.py
 ## git hooks
 lefthook.yml
 
-## metro server logs
-metro-server-logs.log
+## build time logs
+/logs/*.log

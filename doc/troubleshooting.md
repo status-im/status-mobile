@@ -88,6 +88,7 @@ info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this 
 Update yarn.lock file. In order to do this, perform the following steps on a clean `status-mobile` repo:
 ```
 cd status-mobile
+make shell
 yarn install
 ```
 and don't forget to commit updated `yarn.lock` together with `package.json`.
@@ -127,23 +128,3 @@ Status-mobile uses `shadow-cljs` for hot reloading changes and uses its own [rel
 
 ### Solution
 Open react native's [In-App Developer Menu](https://reactnative.dev/docs/debugging#accessing-the-in-app-developer-menu) and press "Disable Fast Refresh" or "Disable Hot Reloading"
-
-## App Crashes after few reloads
-
-### Cause
-For x86 CPU architecture Android Devices, Hermes is creating the issue and the app crashes after a few reloads.
-([Original Issue](https://github.com/status-im/status-mobile/issues/14031))
-
-<details>
-  <summary>How to Find CPU architecture</summary>
-
-  CPU architecture of android device can be found using
-  - `adb shell uname -m` or
-  - `adb shell getprop ro.product.cpu.abilist`
-
-</details>
-
-### Solution
-Disable Hermes while building the app
-
-`make run-android DISABLE_HERMES=true`

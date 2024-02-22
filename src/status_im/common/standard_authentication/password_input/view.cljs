@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [status-im.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
     [status-im.common.standard-authentication.password-input.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -22,9 +23,10 @@
 
 (defn- on-change-password
   [entered-password]
-  (rf/dispatch [:set-in [:profile/login :password]
-                (security/mask-data entered-password)])
-  (rf/dispatch [:set-in [:profile/login :error] ""]))
+  (debounce/debounce-and-dispatch [:profile/on-password-input-changed
+                                   {:password (security/mask-data entered-password)
+                                    :error    ""}]
+                                  100))
 
 (defn- view-internal
   [{:keys [default-password theme shell? on-press-biometrics blur?]}]

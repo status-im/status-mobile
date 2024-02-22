@@ -247,3 +247,8 @@
                  #(-> %
                       (dissoc :processing)
                       (assoc :error "Invalid password")))}))
+
+(re-frame/reg-event-fx
+ :profile/on-password-input-changed
+ (fn [{:keys [db]} [{:keys [password error]}]]
+   {:db (update db :profile/login assoc :password password :error error)}))

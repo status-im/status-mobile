@@ -9,7 +9,7 @@
 (def ^:private ?default-keypair
   [:map
    [:user-name {:optional true} [:maybe :string]]
-   [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
+   [:profile-picture {:optional true} [:maybe :schema.common/image-source]]
    [:derivation-path {:optional true} [:maybe :string]]
    [:on-press {:optional true} [:maybe fn?]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]])

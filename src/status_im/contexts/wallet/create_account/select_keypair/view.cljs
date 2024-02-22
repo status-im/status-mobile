@@ -42,8 +42,7 @@
   []
   (let [{:keys [public-key compressed-key
                 customization-color]} (rf/sub [:profile/profile])
-        display-name                  (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                      public-key]))
+        [display-name _]              (rf/sub [:contacts/contact-two-names-by-identity public-key])
         profile-with-image            (rf/sub [:profile/profile-with-image])
         profile-picture               (profile.utils/photo profile-with-image)]
     [rn/view {:style {:flex 1}}
@@ -51,29 +50,30 @@
       {:icon-name           :i/close
        :on-press            #(rf/dispatch [:navigate-back])
        :accessibility-label :top-bar}]
-     [quo/text-combinations
-      {:container-style     style/header-container
-       :title               (i18n/label :t/keypairs)
-       :description         (i18n/label :t/keypairs-description)
-       :button-icon         :i/add
-       :button-on-press     #(rf/dispatch [:show-bottom-sheet
-                                           {:content keypair-options}])
-       :customization-color customization-color}]
+     [quo/page-top
+      {:container-style   style/header-container
+       :title             (i18n/label :t/keypairs)
+       :title-right       :action
+       :title-right-props {:icon                :i/add
+                           :customization-color customization-color
+                           :on-press            #(rf/dispatch
+                                                  [:show-bottom-sheet {:content keypair-options}])}
+       :description       :text
+       :description-text  (i18n/label :t/keypairs-description)}]
      [quo/keypair
-      (merge
-       {:customization-color customization-color
-        :profile-picture     profile-picture
-        :status-indicator    false
-        :type                :default-keypair
-        :stored              :on-device
-        :on-options-press    #(js/alert "Options pressed")
-        :action              :selector
-        :blur?               false
-        :details             {:full-name display-name
-                              :address   (utils/get-shortened-compressed-key compressed-key)}
-        :accounts            accounts
-        :container-style     {:margin-horizontal 20
-                              :margin-vertical   8}})]
+      {:customization-color customization-color
+       :profile-picture     profile-picture
+       :status-indicator    false
+       :type                :default-keypair
+       :stored              :on-device
+       :on-options-press    #(js/alert "Options pressed")
+       :action              :selector
+       :blur?               false
+       :details             {:full-name display-name
+                             :address   (utils/get-shortened-compressed-key compressed-key)}
+       :accounts            accounts
+       :container-style     {:margin-horizontal 20
+                             :margin-vertical   8}}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/confirm-account-origin)

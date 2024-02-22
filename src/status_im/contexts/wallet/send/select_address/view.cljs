@@ -160,9 +160,8 @@
                                                                              :wallet-select-address}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
-         [quo/text-combinations
+         [quo/page-top
           {:title                     (i18n/label :t/send-to)
-           :container-style           style/title-container
            :title-accessibility-label :title-label}]
          [address-input input-value input-focused?]
          [quo/divider-line]

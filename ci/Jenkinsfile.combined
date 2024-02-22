@@ -35,8 +35,6 @@ pipeline {
     stage('Prep') {
       steps { script {
         println("Current JOB: ${env.JOB_NAME}")
-        /* just for a shorter access */
-        btype = utils.getBuildType()
       } }
     }
     stage('Build') {
@@ -84,10 +82,8 @@ pipeline {
       when { expression { params.PUBLISH } }
       steps { script {
         switch (btype) {
-          case 'nightly':
-            /* Create JSON file with newest build URLs */
+          case 'nightly': /* Create JSON file with newest build URLs */
             s3.updateBucketJSON(urls, 'latest.json');
-            build(job: 'website/status.im', wait: false);
             break;
           case 'release':
             github.publishReleaseFiles(repo: 'status-mobile');

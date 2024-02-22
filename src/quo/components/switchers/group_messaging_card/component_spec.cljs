@@ -83,35 +83,35 @@
     (h/is-truthy (h/get-by-label-text :gif)))
 
   (h/test "Status: Read, Type: Audio, Avatar: true"
-    (h/render [group-messaging-card/view
-               {:avatar  true
-                :status  :read
-                :type    :audio
-                :title   "Title"
-                :content {:duration "00:32"}}])
+    (h/render-with-theme-provider [group-messaging-card/view
+                                   {:avatar  true
+                                    :status  :read
+                                    :type    :audio
+                                    :title   "Title"
+                                    :content {:duration "00:32"}}])
     (h/is-truthy (h/get-by-text (utils/subtitle :audio nil)))
     (h/is-truthy (h/get-by-text "00:32")))
 
   (h/test "Status: Read, Type: Community, Avatar: true"
-    (h/render [group-messaging-card/view
-               {:avatar  true
-                :status  :read
-                :type    :community
-                :title   "Title"
-                :content {:community-avatar coinbase-community
-                          :community-name   "Coinbase"}}])
+    (h/render-with-theme-provider [group-messaging-card/view
+                                   {:avatar  true
+                                    :status  :read
+                                    :type    :community
+                                    :title   "Title"
+                                    :content {:community-avatar coinbase-community
+                                              :community-name   "Coinbase"}}])
     (h/is-truthy (h/get-by-text (utils/subtitle :community nil)))
     (h/is-truthy (h/get-by-label-text :group-avatar))
     (h/is-truthy (h/get-by-text "Coinbase")))
 
   (h/test "Status: Read, Type: Link, Avatar: true"
-    (h/render [group-messaging-card/view
-               {:avatar  true
-                :status  :read
-                :type    :link
-                :title   "Title"
-                :content {:icon :placeholder
-                          :text "Rolling St..."}}])
+    (h/render-with-theme-provider [group-messaging-card/view
+                                   {:avatar  true
+                                    :status  :read
+                                    :type    :link
+                                    :title   "Title"
+                                    :content {:icon :placeholder
+                                              :text "Rolling St..."}}])
     (h/is-truthy (h/get-by-text (utils/subtitle :link nil)))
     (h/is-truthy (h/get-by-label-text :group-avatar))
     (h/is-truthy (h/get-by-text "Rolling St..."))))

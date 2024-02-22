@@ -74,8 +74,8 @@
                                                           :position 1}}}
                           :communities {community-id {:share-all-addresses?          true
                                                       :previous-share-all-addresses? true
-                                                      :previous-permission-addresses #{"0x1"}
-                                                      :selected-permission-addresses #{"0x1"}
+                                                      :previous-permission-addresses #{"0x1" "0x2"}
+                                                      :selected-permission-addresses #{"0x1" "0x2"}
                                                       :airdrop-address               "0x1"}}}}
         expected-db (update-in initial-db
                                [:db :communities community-id]

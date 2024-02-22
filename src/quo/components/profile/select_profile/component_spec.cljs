@@ -5,12 +5,12 @@
 
 (h/describe "select-profile component"
   (h/test "render component"
-    (h/render [select-profile/view])
+    (h/render-with-theme-provider [select-profile/view])
     (-> (h/expect (h/get-by-label-text :select-profile))
         (.toBeTruthy)))
   (h/test "call on-change handler when clicked"
     (let [on-change (h/mock-fn)]
-      (h/render [select-profile/view {:on-change on-change}])
+      (h/render-with-theme-provider [select-profile/view {:on-change on-change}])
       (h/fire-event :on-press (h/get-by-label-text :select-profile))
       (-> (h/expect on-change)
           (.toHaveBeenCalledTimes 1)))))

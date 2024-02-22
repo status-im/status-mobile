@@ -3,34 +3,21 @@ set -euo pipefail
 set -m # needed to access jobs
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+XCRUN_INSTALL_LOG_FILE="${GIT_ROOT}/logs/xcrun_install.log"
+XCRUN_LAUNCH_LOG_FILE="${GIT_ROOT}/logs/xcrun_launch.log"
+XCRUN_SIMULATOR_JSON_FILE="${GIT_ROOT}/logs/ios_simulators_list.log"
 
-# We run Metro in background while calling adb.
-cleanupMetro() {
-    pkill -f run-metro.sh
-    rm -f metro-server-logs.log
+# Install on the simulator
+installAndLaunchApp() {
+  xcrun simctl install "$UDID" "$APP_PATH" > "${XCRUN_INSTALL_LOG_FILE}" 2>&1
+  "${GIT_ROOT}/scripts/wait-for-metro-port.sh"  2>&1
+  xcrun simctl launch "$UDID" im.status.ethereum.debug > "${XCRUN_LAUNCH_LOG_FILE}" 2>&1
+
 }
 
-# Using function gives a neater jobspec name.
-runMetro() {
-   nohup "${GIT_ROOT}/scripts/run-metro.sh" 2>&1 \
-        | tee metro-server-logs.log
-}
-
-waitForMetro() {
-    set +e # Allow grep command to fail in the loop.
-    TIMEOUT=5
-    echo "Waiting for Metro server..." >&2
-    while ! grep -q "Welcome to Metro" metro-server-logs.log; do
-      echo -n "." >&2
-      sleep 1
-      if ((TIMEOUT == 0)); then
-        echo -e "\nMetro server timed out, exiting" >&2
-        set -e # Restore errexit for rest of script.
-        return 1
-      fi
-      ((TIMEOUT--))
-    done
-    set -e # Restore errexit for rest of script.
+showXcrunLogs() {
+  cat "${XCRUN_INSTALL_LOG_FILE}" >&2;
+  cat "${XCRUN_LAUNCH_LOG_FILE}" >&2;
 }
 
 # Check if the first argument is provided
@@ -39,41 +26,44 @@ if [ -z "${1-}" ]; then
     exit 1
 fi
 
+# fetch available iOS Simulators
+xcrun simctl list devices -j > "${XCRUN_SIMULATOR_JSON_FILE}"
+
 SIMULATOR=${1}
 
-# get our desired UUID
-UUID=$(xcrun simctl list devices | grep -E "$SIMULATOR \(" | head -n 1 | awk -F '[()]' '{print $2}')
+# get the first available UDID for Simulators that match the name
+read -r UDID SIMULATOR_STATE IS_AVAILABLE < <(jq --raw-output --arg simulator "${SIMULATOR}" '
+  [ .devices[] | .[] | select(.name == $simulator) ] |
+  map(select(.isAvailable)) + map(select(.isAvailable | not)) |
+  first |
+  "\(.udid) \(.state) \(.isAvailable)"
+' "${XCRUN_SIMULATOR_JSON_FILE}")
 
-# get simulator status
-SIMULATOR_STATE=$(xcrun simctl list devices | grep -E "$SIMULATOR \(" | head -n 1 | awk '{print $NF}')
+if [ "${IS_AVAILABLE}" == false ] || [ "${UDID}" == null ]; then
+    echo "Error: Simulator ${SIMULATOR} is not available, Please find and install them."
+    echo "For help please refer"
+    echo "https://developer.apple.com/documentation/safari-developer-tools/adding-additional-simulators#Add-and-remove-Simulators " >&2
+    exit 1
+fi
 
 # sometimes a simulator is already running, shut it down to avoid errors
-if [ "$SIMULATOR_STATE" != "(Shutdown)" ]; then
-    xcrun simctl shutdown "$UUID"
+if [ "${SIMULATOR_STATE}" != "Shutdown" ]; then
+    xcrun simctl shutdown "${UDID}"
 fi
 
 # boot up iOS for simulator
-xcrun simctl boot "$UUID"
+xcrun simctl boot "${UDID}"
 
 # start the simulator
-open -a Simulator --args -CurrentDeviceUDID "$UUID"
+open -a Simulator --args -CurrentDeviceUDID "${UDID}"
 
 BUILD_DIR="${GIT_ROOT}/build"
 
 #iOS build of debug scheme
-xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme StatusIm -destination id="$UUID" -derivedDataPath "${BUILD_DIR}" | xcbeautify
+xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme StatusIm -destination id="${UDID}" -derivedDataPath "${BUILD_DIR}" -verbose | xcbeautify
 
 APP_PATH="${BUILD_DIR}/Build/Products/Debug-iphonesimulator/StatusIm.app"
 
-# Install on the simulator
-xcrun simctl install "$UUID" "$APP_PATH"
-
-trap cleanupMetro EXIT ERR INT QUIT
-runMetro &
-waitForMetro
-
-# launch the app when metro is ready
-xcrun simctl launch "$UUID" im.status.ethereum.debug
-
-# bring metro job to foreground
-fg 'runMetro'
+trap showXcrunLogs EXIT ERR INT QUIT
+installAndLaunchApp &
+exec "${GIT_ROOT}/scripts/run-metro.sh" 2>&1

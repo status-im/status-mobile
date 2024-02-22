@@ -182,8 +182,7 @@
 
 (defn open-photo-selector
   [{:keys [input-ref]}
-   {:keys [height]}
-   insets]
+   {:keys [height]}]
   (permissions/request-permissions
    {:permissions [(if platform/is-below-android-13? :read-external-storage :read-media-images)
                   :write-external-storage]
@@ -192,18 +191,18 @@
                      (.blur ^js @input-ref))
                    (rf/dispatch [:chat.ui/set-input-content-height
                                  (reanimated/get-shared-value height)])
-                   (rf/dispatch [:open-modal :photo-selector {:insets insets}]))
+                   (rf/dispatch [:photo-selector/navigate-to-photo-selector]))
     :on-denied   (fn []
                    (alert.effects/show-popup (i18n/label :t/error)
                                              (i18n/label
                                               :t/external-storage-denied)))}))
 
 (defn image-button
-  [props animations insets edit]
+  [props animations edit]
   [quo/composer-button
    {:on-press            (if edit
                            #(js/alert "This feature is temporarily unavailable in edit mode.")
-                           #(open-photo-selector props animations insets))
+                           #(open-photo-selector props animations))
     :accessibility-label :open-images-button
     :container-style     {:margin-right 12}
     :icon                :i/image}])
@@ -228,7 +227,7 @@
     :icon     :i/format}])
 
 (defn view
-  [props state animations window-height insets {:keys [edit images]}]
+  [props state animations window-height {:keys [edit images]}]
   (let [send-btn-opacity  (reanimated/use-shared-value 0)
         audio-btn-opacity (reanimated/interpolate send-btn-opacity [0 1] [1 0])]
     [rn/view {:style style/actions-container}
@@ -236,7 +235,7 @@
       {:style {:flex-direction :row
                :display        (if @(:recording? state) :none :flex)}}
       [camera-button edit]
-      [image-button props animations insets edit]
+      [image-button props animations edit]
       [reaction-button]
       [format-button]]
      [:f> send-button props state animations window-height images edit send-btn-opacity]

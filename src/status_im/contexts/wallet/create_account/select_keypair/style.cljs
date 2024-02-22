@@ -1,9 +1,7 @@
 (ns status-im.contexts.wallet.create-account.select-keypair.style)
 
 (def header-container
-  {:margin-horizontal 20
-   :margin-top        12
-   :margin-bottom     20})
+  {:margin-bottom 8})
 
 (def bottom-action-container
   {:position :absolute

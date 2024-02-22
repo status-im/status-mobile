@@ -142,7 +142,7 @@
          [gradients/view props state animations show-bottom-gradient?]
          [link-preview/view]
          [images/images-list]]
-        [:f> actions/view props state animations window-height insets subscriptions]]]]]))
+        [:f> actions/view props state animations window-height subscriptions]]]]]))
 
 (defn f-composer
   [props]

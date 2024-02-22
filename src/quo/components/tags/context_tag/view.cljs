@@ -6,11 +6,13 @@
     [quo.components.icon :as icons]
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
+    [quo.components.tags.context-tag.schema :as component-schema]
     [quo.components.tags.context-tag.style :as style]
     [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- tag-skeleton
   [{:keys [theme size text] :or {size 24}} logo-component]
@@ -157,67 +159,5 @@
      nil)])
 
 (def view
-  "Properties:
-  type, state, blur? & customization-color
-
-  Depending on the `type` selected, different properties are accepted:
-  - `:default` or `nil`:
-    - size
-    - profile-picture
-    - full-name
-
-  - `:multiuser`:
-    - users (vector of {:profile-picture pic, :full-name \"a name\"})
-
-  - `:group`
-    - size
-    - group-name
-
-  - `:community`
-      - size
-      - community-logo (valid rn/image :source value)
-      - community-name
-
-  - `:channel`
-    - size
-    - community-logo (valid rn/image :source value)
-    - community-name
-    - channel-name
-
-  - `:token`
-    - size
-    - amount
-    - token
-
-  - `:network`
-    - size
-    - network-logo (valid rn/image :source value)
-    - network-name
-
-  - `:multinetworks`
-    - networks (vector of {:network-logo pic, :network-name \"a name\"})
-
-  - `:account`
-    - size
-    - account-name
-    - emoji (string containing an emoji)
-
-  - `:collectible`
-    - size
-    - collectible (valid rn/image :source value)
-    - collectible-name
-    - collectible-number
-
-  - `:address`
-    - size
-    - address (string)
-
-  - `:icon`
-    - size
-    - icon
-    - context (string)
-
-  - `:audio`
-    - duration (string)
-  "
-  (quo.theme/with-theme view-internal))
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

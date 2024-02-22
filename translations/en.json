@@ -1260,6 +1260,7 @@
     "scan-or-enter-sync-code": "Scan or enter sync code",
     "scan-qr": "Scan QR",
     "scan-qr-code": "Scan QR code",
+    "scan-with-status-app": "Scan with the Status app on another device",
     "invalid-qr": "Oops! This QR doesn’t work with Status",
     "search": "Search",
     "search-discover-communities": "Search communities or categories",
@@ -2512,5 +2513,9 @@
     "origin-desc": "Origin is where your key pair (your private and public key) comes from. You can generate a new key pair or import an existing private key.",
     "derivation-path-header": "Derivation path",
     "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
-    "select-networks": "Select networks"
+    "select-networks": "Select networks",
+    "generating-keypair": "Generating keypair...",
+    "keypair-name": "Keypair name",
+    "keypair-name-description": "Name keypair for your own personal reference",
+    "keypair-name-input-placeholder": "Collectibles account, Old vault...."
 }

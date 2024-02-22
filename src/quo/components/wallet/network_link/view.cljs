@@ -1,9 +1,11 @@
 (ns quo.components.wallet.network-link.view
   (:require
+    [quo.components.wallet.network-link.schema :as component-schema]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.svg :as svg]))
+    [react-native.svg :as svg]
+    [schema.core :as schema]))
 
 (defn link-linear
   [{:keys [source theme]}]
@@ -84,4 +86,6 @@
      :1x     [link-1x props]
      :2x     [link-2x props])])
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

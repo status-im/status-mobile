@@ -1,16 +1,23 @@
 (ns status-im.contexts.communities.actions.addresses-for-permissions.view
   (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
-            [status-im.contexts.communities.utils :as communities.utils]
             [utils.i18n :as i18n]
             [utils.money :as money]
             [utils.re-frame :as rf]))
+
+(defn- role-keyword
+  [role]
+  (condp = role
+    constants/community-token-permission-become-token-owner  :token-owner
+    constants/community-token-permission-become-token-master :token-master
+    constants/community-token-permission-become-admin        :admin
+    constants/community-token-permission-become-member       :member
+    nil))
 
 (defn- balances->components-props
   [balances]
@@ -54,14 +61,12 @@
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
       (let [{:keys [name color images]}       (rf/sub [:communities/community id])
-            {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+            {:keys [checking?
+                    highest-permission-role]} (rf/sub [:community/token-gated-overview id])
             accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
             share-all-addresses?              (rf/sub [:communities/share-all-addresses? id])
-            unsaved-address-changes?          (rf/sub [:communities/unsaved-address-changes? id])
-            highest-role-text                 (when highest-permission-role
-                                                (i18n/label (communities.utils/role->translation-key
-                                                             highest-permission-role)))]
+            unsaved-address-changes?          (rf/sub [:communities/unsaved-address-changes? id])]
         [rn/safe-area-view {:style style/container}
          [quo/drawer-top
           {:type                :context-tag
@@ -92,47 +97,38 @@
                                      :share-all-addresses? share-all-addresses?
                                      :community-color      color}
            :content-container-style {:padding-horizontal 20}
-           :scroll-enabled          scroll-enabled?
+           :scroll-enabled          @scroll-enabled?
            :on-scroll               on-scroll
            :key-fn                  :address
            :data                    accounts}]
 
-         (if (and highest-permission-role (seq selected-addresses))
-           [rn/view
-            {:style style/highest-role}
-            [quo/text
-             {:size  :paragraph-2
-              :style {:color colors/neutral-50}}
-             (i18n/label :t/eligible-to-join-as)]
-            [quo/context-tag
-             {:type    :icon
-              :icon    :i/members
-              :size    24
-              :context highest-role-text}]]
-           [quo/info-message
-            {:type  :error
-             :size  :default
-             :icon  :i/info
-             :style {:justify-content :center}}
-            (if (empty? selected-addresses)
-              (i18n/label :t/no-addresses-selected)
-              (i18n/label :t/addresses-dont-contain-tokens-needed))])
+         [quo/bottom-actions
+          {:actions          :two-actions
+           :button-one-label (i18n/label :t/confirm-changes)
+           :button-one-props {:customization-color color
+                              :disabled?           (or checking?
+                                                       (empty? selected-addresses)
+                                                       (not highest-permission-role)
+                                                       (not unsaved-address-changes?))
+                              :on-press            (fn []
+                                                     (rf/dispatch
+                                                      [:communities/update-previous-permission-addresses
+                                                       id])
+                                                     (rf/dispatch [:navigate-back]))}
+           :button-two-label (i18n/label :t/cancel)
+           :button-two-props {:type     :grey
+                              :on-press (fn []
+                                          (rf/dispatch
+                                           [:communities/reset-selected-permission-addresses id])
+                                          (rf/dispatch [:navigate-back]))}
+           :description      (if (or (empty? selected-addresses)
+                                     (not highest-permission-role))
+                               :top-error
+                               :top)
+           :role             (when-not checking? (role-keyword highest-permission-role))
+           :error-message    (cond
+                               (empty? selected-addresses)   (i18n/label :t/no-addresses-selected)
+                               (not highest-permission-role) (i18n/label
+                                                              :t/addresses-dont-contain-tokens-needed)
+                               :else                         nil)}]]))))
 
-         [rn/view {:style style/buttons}
-          [quo/button
-           {:type            :grey
-            :container-style {:flex 1}
-            :on-press        (fn []
-                               (rf/dispatch [:communities/reset-selected-permission-addresses id])
-                               (rf/dispatch [:navigate-back]))}
-           (i18n/label :t/cancel)]
-          [quo/button
-           {:container-style     {:flex 1}
-            :customization-color color
-            :disabled?           (or (empty? selected-addresses)
-                                     (not highest-permission-role)
-                                     (not unsaved-address-changes?))
-            :on-press            (fn []
-                                   (rf/dispatch [:communities/update-previous-permission-addresses id])
-                                   (rf/dispatch [:navigate-back]))}
-           (i18n/label :t/confirm-changes)]]]))))

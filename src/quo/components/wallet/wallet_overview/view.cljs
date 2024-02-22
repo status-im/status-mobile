@@ -3,9 +3,11 @@
     [quo.components.dropdowns.network-dropdown.view :as network-dropdown]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.wallet-overview.schema :as component-schema]
     [quo.components.wallet.wallet-overview.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 (def ^:private time-frames
@@ -117,4 +119,5 @@
    [view-info-bottom props]])
 
 (def view
-  (quo.theme/with-theme view-internal))
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

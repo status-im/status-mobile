@@ -87,7 +87,7 @@
        :content-container-style        {:padding-top    64
                                         :padding-bottom 40}
        :key-fn                         key-fn
-       :scroll-enabled                 scroll-enabled?
+       :scroll-enabled                 @scroll-enabled?
        :on-scroll                      on-scroll
        :style                          {:height window-height}}]]))
 

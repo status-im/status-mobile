@@ -30,7 +30,6 @@
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     (rf/merge cofx
               {:set-root                               :progress
-               :chat.ui/clear-inputs                   nil
                :effects.shell/reset-state              nil
                :hide-popover                           nil
                ::logout                                nil
