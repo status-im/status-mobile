@@ -167,10 +167,9 @@
                                                                          muted?)))}]}]))
 
 (defn f-list-footer
-  [{:keys [chat distance-from-list-top theme community-color]}]
+  [{:keys [chat distance-from-list-top theme customization-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
-                group-chat color]} chat
-        chat-color           (or color community-color)
+                group-chat]} chat
         display-name         (cond
                                (= chat-type constants/one-to-one-chat-type)
                                (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -186,8 +185,8 @@
                                 messages.constants/top-bar-height
                                 messages.constants/header-container-top-margin)
         background-color     (colors/theme-colors
-                              (colors/resolve-color chat-color theme 20)
-                              (colors/resolve-color chat-color theme 40)
+                              (colors/resolve-color customization-color theme 20)
+                              (colors/resolve-color customization-color theme 40)
                               theme)
         border-radius        (reanimated/interpolate
                               distance-from-list-top
@@ -225,7 +224,7 @@
       (when bio
         [quo/text {:style style/bio}
          bio])
-      [actions chat-id chat-color]]]))
+      [actions chat-id customization-color]]]))
 
 (defn list-footer
   [props]
@@ -290,7 +289,11 @@
            chat-screen-layout-calculations-complete? chat-list-scroll-y]}]
   (let [theme                    (quo.theme/use-theme-value)
         chat                     (rf/sub [:chats/current-chat-chat-view])
-        community-color          (rf/sub [:communities/community-color (:community-id chat)])
+        community-channel?       (= constants/community-chat-type (:chat-type chat))
+        customization-color      (if community-channel?
+                                   (or (:color chat)
+                                       (rf/sub [:communities/community-color (:community-id chat)]))
+                                   :turquoise)
         {:keys [keyboard-shown]} (hooks/use-keyboard)
         {window-height :height}  (rn/get-window)
         context                  (rf/sub [:chats/current-chat-message-list-view-context])
@@ -312,7 +315,7 @@
                                              :chat                   chat
                                              :window-height          window-height
                                              :distance-from-list-top distance-from-list-top
-                                             :community-color        community-color}]
+                                             :customization-color    customization-color}]
         :data                              messages
         :render-data                       {:theme           theme
                                             :context         context
