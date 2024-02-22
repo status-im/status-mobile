@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             quo.theme
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [status-im.common.floating-button-page.view :as floating-button-page]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.style :as style]
@@ -13,13 +12,10 @@
   [{:keys [page-nav-right-side placeholder account-name account-color account-emoji
            on-change-name
            on-change-color
-           margin-top?
            on-change-emoji section-label
            bottom-action-label bottom-action-props
            custom-bottom-action watch-only?]} & children]
-  (let [{window-width :width} (rn/get-window)
-        {:keys [top]}         (safe-area/get-insets)
-        margin-top            (if (not margin-top?) 0 top)]
+  (let [{window-width :width} (rn/get-window)]
     [floating-button-page/view
      {:header                   [quo/page-nav
                                  {:type       :no-title
