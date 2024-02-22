@@ -5,7 +5,7 @@
 (defmacro with-app-initialized
   [& body]
   `(do
-     (tests.test/init!)
+     (tests.test-utils/init!)
      (if (test-helpers.integration/app-initialized)
        (do ~@body)
        (do

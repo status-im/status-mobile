@@ -6,7 +6,6 @@
 
 (def account-name "account-abc")
 
-
 (def recovery-account
   {:name        "wallet-abc"
    :seed-phrase "destroy end torch puzzle develop note wise island disease chaos kind bus"

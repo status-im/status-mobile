@@ -16,7 +16,7 @@
   [accounts]
   (first (filter :wallet accounts)))
 
-(def send-amount "0.00001")
+(def send-amount "0.0001")
 
 (deftest wallet-send-test
   (h/log-headline :wallet-send-test)
@@ -38,13 +38,14 @@
                           :receipient address
                           :stack-id   :wallet-select-address}])
            (let [filtered-tokens (rf/sub [:wallet/tokens-filtered "eth"])]
+
              (rf/dispatch [:wallet/send-select-token
                            {:token    (first filtered-tokens)
                             :stack-id :wallet-select-asset}])
              (rf-test/wait-for
                [:wallet/clean-suggested-routes]
                (rf/dispatch
-                [:wallet/get-suggested-routes send-amount]))
+                [:wallet/get-suggested-routes {:amount send-amount}]))
              (rf-test/wait-for
                [:wallet/suggested-routes-success]
                (let [route (rf/sub [:wallet/wallet-send-route])]

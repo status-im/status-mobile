@@ -84,7 +84,6 @@
   []
   (is (= @(rf/subscribe [:communities/create]) constants/community)))
 
-
 (defn logout
   []
   (rf/dispatch [:logout]))
