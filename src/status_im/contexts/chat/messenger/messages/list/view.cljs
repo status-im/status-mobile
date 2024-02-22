@@ -186,8 +186,8 @@
                                 messages.constants/top-bar-height
                                 messages.constants/header-container-top-margin)
         background-color     (colors/theme-colors
-                              (colors/custom-color chat-color 50 20)
-                              (colors/custom-color chat-color 50 40)
+                              (colors/resolve-color chat-color theme 20)
+                              (colors/resolve-color chat-color theme 40)
                               theme)
         border-radius        (reanimated/interpolate
                               distance-from-list-top
