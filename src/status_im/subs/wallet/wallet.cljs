@@ -29,9 +29,19 @@
  :-> :ui)
 
 (rf/reg-sub
+ :wallet/scanned-address
+ :<- [:wallet/ui]
+ :-> :scanned-address)
+
+(rf/reg-sub
  :wallet/tokens-loading?
  :<- [:wallet/ui]
  :-> :tokens-loading?)
+
+(rf/reg-sub
+ :wallet/create-account
+ :<- [:wallet/ui]
+ :-> :create-account)
 
 (rf/reg-sub
  :wallet/current-viewing-account-address
@@ -94,6 +104,12 @@
         vals
         (map #(assoc-network-preferences-names network-details % test-networks-enabled?))
         (sort-by :position))))
+
+(rf/reg-sub
+ :wallet/watch-only-accounts
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (filter :watch-only? accounts)))
 
 (rf/reg-sub
  :wallet/addresses
@@ -161,6 +177,22 @@
      filtered-tokens)))
 
 (rf/reg-sub
+ :wallet/token-by-symbol
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/network-details]
+ (fn [[account networks] [_ token-symbol]]
+   (let [tokens (map (fn [token]
+                       (assoc token
+                              :networks           (utils/network-list token networks)
+                              :total-balance      (utils/total-token-units-in-all-chains token)
+                              :total-balance-fiat (utils/calculate-balance-for-token token)))
+                     (:tokens account))
+         token  (first (filter #(= (string/lower-case (:symbol %))
+                                   (string/lower-case token-symbol))
+                               tokens))]
+     token)))
+
+(rf/reg-sub
  :wallet/accounts-without-current-viewing-account
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
@@ -169,7 +201,7 @@
 
 (rf/reg-sub
  :wallet/accounts-without-watched-accounts
- :<- [:wallet/accounts]
+ :<- [:wallet/accounts-with-customization-color]
  (fn [accounts]
    (remove #(:watch-only? %) accounts)))
 

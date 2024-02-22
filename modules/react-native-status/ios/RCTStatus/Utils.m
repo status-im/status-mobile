@@ -120,9 +120,12 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(checkAddressChecksum:(NSString *)address)
     return StatusgoCheckAddressChecksum(address);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAddress:(NSString *)address) {
+  return StatusgoIsAddress(address);
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(toChecksumAddress:(NSString *)address) {
     return StatusgoToChecksumAddress(address);
 }
-
 
 @end

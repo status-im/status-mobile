@@ -1,4 +1,4 @@
-(ns status-im.integration-test.profile-test
+(ns tests.integration-test.profile-test
   (:require
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]
@@ -56,3 +56,20 @@
            (is (nil? (:image profile))))
          (h/logout)
          (rf-test/wait-for [::logout/logout-method])))))))
+
+(deftest edit-profile-bio-test
+  (h/log-headline :edit-profile-bio-test)
+  (let [new-bio "New bio text"]
+    (rf-test/run-test-async
+     (h/with-app-initialized
+      (h/with-account
+       (rf/dispatch [:profile/edit-bio new-bio])
+       (rf-test/wait-for
+         [:navigate-back]
+         (rf-test/wait-for
+           [:toasts/upsert]
+           (let [profile (rf/sub [:profile/profile])
+                 bio     (:bio profile)]
+             (is (= new-bio bio)))
+           (h/logout)
+           (rf-test/wait-for [::logout/logout-method]))))))))

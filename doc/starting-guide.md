@@ -4,22 +4,41 @@ This document provides information on how to start developing Status App.
 
 # Getting Started
 
-To start developing start a shell for the platform you are interested in.
+To start developing clone the status-mobile repo in the directory of your choice. 
 ```
-make shell TARGET=android
+git clone https://github.com/status-im/status-mobile.git
 ```
-This step will take a while the first time as it will download all dependencies.
 
-# Development
+Then open a terminal and cd into this directory. 
 
-There are three steps necessary to start development, in this case for Android:
+```
+cd status-mobile
+```
 
-1. `make run-clojure` - Compiles Clojure into JavaScript, watches for changes on cljs files, and hot-reloads code in the app.
-2. `make run-metro` - Starts metro bundler and watches JavaScript code.
-3. `make run-android` or `make run-ios` - Builds the Android/iOS app and starts it on the device.
+Then build the clojure terminal 
 
-The first two will continue watching for changes and keep re-building the app. They need to be ready first.
-The last one will exit once the app is up and ready.
+```
+make run-clojure
+```
+
+note: ⚠️ This might take a while if this is your first time.
+
+This command installs `nix` and pulls in all the dependencies.
+Do answer with "Y" to all the prompts and press "Enter" when `nix` setup asks you to Acknowledge.
+This command builds the `jsbundle` and then compiles `Clojure` into `JavaScript`, watches for changes on `cljs` files, and hot-reloads code in the app.
+
+wait till you see the following message :
+
+```
+[:mobile] Build completed. (1801 files, 52 compiled, 0 warnings, 9.52s)
+```
+
+Once the clojure terminal is running you need to run the appropriate command next for your platform in a separate terminal :
+
+`make run-android` or `make run-ios`
+
+These commands will build the app, start a metro bundler and deploy the app on your simulator OR connected device (android only). For building and deploying to connected iPhones use `make run-ios-device` instead of `make run-ios`
+Also check [developing on a physical iOS Device](#Additional-requirements-for-developing-on-physical-ios-device).
 
 ## Simulators and Devices
 ### Android
@@ -46,12 +65,8 @@ Running `make run-ios` will target `iPhone 13` by default.
 
 If you need to run on any other simulator, you can specify the simulator type by adding the `SIMULATOR` flag:
 ```sh
-make run-ios SIMULATOR="iPhone 13"
+make run-ios SIMULATOR="iPhone 15"
 ```
-
-#### Running on a physical device
-
-Some manual steps are necessary for [developing on a physical iOS Device](#physical-ios-device).
 
 # Build release
 
@@ -102,16 +117,15 @@ Steps:
 3. [Setup Git to sign commits](https://help.github.com/en/github/authenticating-to-github/signing-commits)
 4. [Setup GitHub to validate commits](https://help.github.com/en/github/authenticating-to-github/adding-a-new-gpg-key-to-your-github-account)
 
-## Physical iOS Device
+## Additional requirements for developing on Physical iOS Device
 
 To use a physical iPhone your device UDID must be added to provisioning profiles and your Apple account invited as Developer to Status team.
 
 1. [Get your UDID of your iPhone.](https://www.extentia.com/post/finding-the-udid-of-an-ios-device)
 2. Request from someone with access like @cammellos or @jakubgs to
-  - Add the UDID to development devices on Apple Developer Portal.
-  - Invite your Apple account to be Developer in Status team.
-3. Run a build in XCode using the project from `status-mobile/ios` directory.
-  - You might see error: `Select a development team in the Signing & Capabilities editor`
-  - Select `Status Research & Development GmbH` as the development team and rebuild again.
-
-Once build finishes Status should start on your iPhone with its logs in terminal running `make run-metro`.
+- Add the UDID to development devices on Apple Developer Portal.
+- Invite your Apple account to be Developer in Status team.
+3. Open XCode using the project from `status-mobile/ios` directory.
+- You might see error: `Select a development team in the Signing & Capabilities editor`
+- Select `Status Research & Development GmbH` as the development team.
+4. In a new terminal execute `make clean` and then `make xcode-clean` 

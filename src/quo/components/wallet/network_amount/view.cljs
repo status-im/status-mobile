@@ -3,9 +3,11 @@
     [clojure.string :as string]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
+    [quo.components.wallet.network-amount.schema :as network-amount-schema]
     [quo.components.wallet.network-amount.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [amount token theme]}]
@@ -19,4 +21,4 @@
    [rn/view
     {:style (style/divider theme)}]])
 
-(def view (quo.theme/with-theme view-internal))
+(def view (quo.theme/with-theme (schema/instrument #'view-internal network-amount-schema/?schema)))

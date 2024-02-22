@@ -15,12 +15,10 @@
 
 (defn navigate-back-handler
   []
-  (if (and (not @navigation.state/curr-modal)
-           (seq (utils/open-floating-screens)))
-    (do
-      (rf/dispatch [:navigate-back])
-      true)
-    false))
+  (when (and (not @navigation.state/curr-modal)
+             (seq (utils/open-floating-screens)))
+    (rf/dispatch [:navigate-back])
+    true))
 
 (defn floating-button
   [shared-values]

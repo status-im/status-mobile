@@ -222,6 +222,16 @@
                  :emoji])))
 
 (re-frame/reg-sub
+ :chats/community-channel-ui-details-by-id
+ :<- [:chats/chats]
+ (fn [chats [_ chat-id]]
+   (select-keys
+    (get chats chat-id)
+    [:chat-name
+     :color
+     :emoji])))
+
+(re-frame/reg-sub
  :chats/current-chat-message-list-view-context
  :<- [:chats/current-chat-chat-view]
  :<- [:communities/current-community]

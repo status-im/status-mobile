@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.8.5'
+library 'status-jenkins-lib@v1.8.7'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'macos && arm64 && nix-2.14 && xcode-15.1' }
+  agent { label 'macos && arm64 && nix-2.19 && xcode-15.1' }
 
   parameters {
     string(

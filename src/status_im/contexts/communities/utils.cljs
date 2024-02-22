@@ -11,3 +11,10 @@
      constants/community-token-permission-become-admin        :t/admin
      constants/community-token-permission-become-member       :t/member
      fallback-to)))
+
+(defn sorted-non-watch-only-accounts
+  [db]
+  (->> (get-in db [:wallet :accounts])
+       (vals)
+       (remove :watch-only?)
+       (sort-by :position)))

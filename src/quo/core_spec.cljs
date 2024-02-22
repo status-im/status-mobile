@@ -79,6 +79,7 @@
     quo.components.share.share-qr-code.component-spec
     quo.components.switchers.base-card.component-spec
     quo.components.switchers.group-messaging-card.component-spec
+    quo.components.tags.collectible-tag.component-spec
     quo.components.tags.network-tags.component-spec
     quo.components.tags.status-tags-component-spec
     quo.components.tags.summary-tag.component-spec
@@ -90,6 +91,7 @@
     quo.components.wallet.account-origin.component-spec
     quo.components.wallet.account-overview.component-spec
     quo.components.wallet.account-permissions.component-spec
+    quo.components.wallet.amount-input.component-spec
     quo.components.wallet.confirmation-progress.component-spec
     quo.components.wallet.keypair.component-spec
     quo.components.wallet.network-amount.component-spec

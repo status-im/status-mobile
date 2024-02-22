@@ -15,7 +15,7 @@
 (defn- view-internal
   []
   (let [pressed? (reagent/atom false)]
-    (fn [{:keys [disabled? theme blur? on-press type]} label]
+    (fn [{:keys [disabled? theme blur? on-press on-long-press type]} label]
       (let [label-color      (style/get-label-color disabled? theme blur?)
             background-color (style/toggle-background-color @pressed? blur? theme)]
         [rn/pressable
@@ -24,6 +24,9 @@
           :on-press                (fn []
                                      (when on-press
                                        (on-press label)))
+          :on-long-press           (fn []
+                                     (when (fn? on-long-press)
+                                       (on-long-press label)))
           :allow-multiple-presses? true
           :on-press-in             #(reset! pressed? true)
           :on-press-out            #(reset! pressed? false)

@@ -107,6 +107,7 @@
 
 (def ^:const profile-default-color :blue)
 (def ^:const profile-name-max-length 24)
+(def ^:const profile-bio-max-length 240)
 (def ^:const profile-default-currency :usd)
 
 (def ^:const profile-pictures-show-to-contacts-only 1)
@@ -257,6 +258,7 @@
 (def ^:const terms-of-service-link "https://status.im/terms-of-use")
 (def ^:const docs-link "https://status.im/docs/")
 (def ^:const principles-link "https://our.status.im/our-principles/")
+(def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)
@@ -430,6 +432,8 @@
 (def ^:const mainnet-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
+
+(def ^:const default-network-names #{mainnet-network-name optimism-network-name arbitrum-network-name})
 
 (def ^:const chain-id-separator ":")
 

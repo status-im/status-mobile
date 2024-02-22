@@ -16,6 +16,7 @@
      addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
+    [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.onboarding.create-password.view :as create-password]
@@ -36,6 +37,7 @@
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
+    [status-im.contexts.profile.edit.bio.view :as edit-bio]
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
@@ -43,12 +45,14 @@
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
     [status-im.contexts.shell.jump-to.view :as shell]
+    [status-im.contexts.shell.qr-reader.view :as shell-qr-reader]
     [status-im.contexts.shell.share.view :as share]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im.contexts.wallet.account.bridge-send.view :as bridge-send]
     [status-im.contexts.wallet.account.bridge-to.view :as bridge-to]
     [status-im.contexts.wallet.account.bridge.view :as bridge]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
@@ -60,14 +64,15 @@
      wallet-backup-recovery-phrase]
     [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
      wallet-check-your-backup]
+    [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as scan-address]
-    [status-im.contexts.wallet.send.input-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
+    [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
     [status-im.contexts.wallet.share-address.view :as wallet-share-address]
@@ -90,6 +95,10 @@
     {:name      :shell-stack
      :component shell/shell-stack}
 
+    {:name      :shell-qr-reader
+     :options   (assoc options/dark-screen :modalPresentationStyle :overCurrentContext)
+     :component shell-qr-reader/view}
+
     {:name      :chat
      :options   {:insets     {:top? true}
                  :popGesture false}
@@ -106,6 +115,10 @@
     {:name      :community-requests-to-join
      :options   {:sheet? true}
      :component join-menu/view}
+
+    {:name      :share-community-channel
+     :options   options/transparent-screen-options
+     :component share-community-channel/view}
 
     {:name      :community-account-selection
      :options   {:sheet? true}
@@ -184,6 +197,10 @@
     {:name      :edit-name
      :options   options/transparent-modal-screen-options
      :component edit-name/view}
+
+    {:name      :edit-bio
+     :options   options/transparent-modal-screen-options
+     :component edit-bio/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
@@ -335,6 +352,10 @@
      :options   {:insets {:top? true}}
      :component bridge-to/view}
 
+    {:name      :wallet-bridge-send
+     :options   {:insets {:top? true}}
+     :component bridge-send/view}
+
     {:name      :wallet-edit-derivation-path
      :component wallet-edit-derivation-path/view}
 
@@ -356,6 +377,10 @@
     {:name      :wallet-check-your-backup
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-check-your-backup/view}
+
+    {:name      :wallet-keypair-name
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-keypair-name/view}
 
     {:name      :wallet-share-address
      :options   options/transparent-screen-options

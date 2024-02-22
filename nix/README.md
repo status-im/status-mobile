@@ -28,7 +28,7 @@ export STATUS_GO_IPFS_GATEWAY_URL="https://ipfs.status.im/"
 ```
 You can see the defaults in code:
 - [`nix/status-go/default.nix`](./status-go/default.nix)
-- [`nix/mobile/android/release.nix`](./mobile/android/release.nix)
+- [`nix/mobile/android/release.nix`](./mobile/android/build.nix)
 
 ## Shell
 

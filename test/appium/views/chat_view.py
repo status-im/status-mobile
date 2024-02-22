@@ -416,6 +416,8 @@ class CommunityView(HomeView):
         self.membership_request_pending_text = Text(self.driver, translation_id="membership-request-pending")
         self.join_button = Button(self.driver, accessibility_id="show-request-to-join-screen-button")
         self.join_community_button = Button(self.driver, accessibility_id="join-community-button")
+        self.slide_to_request_to_join_button = Button(
+            self.driver, xpath="(//*[@resource-id='slide-button-track']//*[@content-desc='icon'])[1]")
         self.follow_button = Button(self.driver, translation_id="follow")
         self.community_tags = BaseElement(
             self.driver, xpath="//*[@content-desc='chat-name-text']/../android.widget.HorizontalScrollView")
@@ -434,7 +436,7 @@ class CommunityView(HomeView):
         self.driver.info("Joining community")
         ChatView(self.driver).chat_element_by_text("https://status.app/c/").click_on_link_inside_message_body()
         self.join_button.wait_and_click(120)
-        self.join_community_button.scroll_and_click()
+        self.slide_to_request_to_join_button.swipe_right_on_element(width_percentage=16)
         self.password_input.send_keys(password)
         Button(self.driver,
                xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
@@ -1240,8 +1242,13 @@ class ChatView(BaseView):
         self.show_images_button.click()
         self.allow_button.click_if_shown()
         self.allow_all_button.click_if_shown()
-        [self.get_image_by_index(i).click() for i in indexes]
-        self.images_confirm_selection_button.click()
+        confirm_button = self.images_confirm_selection_button
+        for i in indexes:
+            # ToDo: should be changed to just 1 click when https://github.com/status-im/status-mobile/issues/18872 when is fixed
+            self.get_image_by_index(i).click()
+            if not confirm_button.is_element_displayed(sec=3):
+                self.get_image_by_index(i).click()
+        confirm_button.click()
         self.chat_message_input.send_keys(description)
         self.send_message_button.click()
 

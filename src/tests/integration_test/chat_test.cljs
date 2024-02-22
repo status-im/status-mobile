@@ -1,4 +1,4 @@
-(ns status-im.integration-test.chat-test
+(ns tests.integration-test.chat-test
   (:require
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]
@@ -78,7 +78,7 @@
      (h/with-app-initialized
       (h/with-account
        ;; search for contact using compressed key
-       (rf/dispatch [:contacts/set-new-identity compressed-key])
+       (rf/dispatch [:contacts/set-new-identity {:input compressed-key}])
        (rf-test/wait-for
          [:contacts/set-new-identity-success]
          (let [new-identity @(rf/subscribe [:contacts/new-identity])]
@@ -89,7 +89,7 @@
          (rf-test/wait-for
            [:contacts/build-contact]
            (rf-test/wait-for
-             [:contacts/contact-built]
+             [:contacts/build-contact-success]
              (let [contact @(rf/subscribe [:contacts/current-contact])]
                (is (= primary-name (:primary-name contact))))
              (h/logout)

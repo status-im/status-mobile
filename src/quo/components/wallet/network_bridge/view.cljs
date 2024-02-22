@@ -3,11 +3,13 @@
     [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.network-bridge.schema :as network-bridge-schema]
     [quo.components.wallet.network-bridge.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn network-bridge-add
   [{:keys [network state theme container-style on-press]}]
@@ -62,4 +64,6 @@
         :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
        (network->text network)]]]))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal network-bridge-schema/?schema)))

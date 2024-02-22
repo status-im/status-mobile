@@ -137,7 +137,8 @@
       :description description}]))
 
 (defn- right-icon
-  [{:keys [theme type on-button-press on-button-long-press button-disabled? button-icon]}]
+  [{:keys [theme type on-button-press on-button-long-press button-disabled? button-icon button-type]
+    :or   {button-type :primary}}]
   (cond
     (= :info type)
     [icons/icon
@@ -153,7 +154,7 @@
       :on-press            on-button-press
       :on-long-press       on-button-long-press
       :disabled?           button-disabled?
-      :type                :primary
+      :type                button-type
       :size                24
       :icon-only?          true}
      button-icon]))
@@ -182,7 +183,7 @@
 
 (defn- view-internal
   [{:keys [title title-icon type theme description blur? community-name community-logo button-icon
-           account-name emoji context-tag-type
+           account-name emoji context-tag-type button-type
            on-button-press
            on-button-long-press
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
@@ -221,6 +222,7 @@
    [right-icon
     {:theme                theme
      :type                 type
+     :button-type          button-type
      :on-button-press      on-button-press
      :on-button-long-press on-button-long-press
      :button-disabled?     button-disabled?

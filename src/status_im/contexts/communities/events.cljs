@@ -12,6 +12,7 @@
     status-im.contexts.communities.actions.addresses-for-permissions.events
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
+    [status-im.contexts.communities.utils :as utils]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -163,15 +164,16 @@
 (defn initialize-permission-addresses
   [{:keys [db]} [community-id]]
   (when community-id
-    (let [accounts        (get-in db [:wallet :accounts])
-          sorted-accounts (sort-by :position (vals accounts))
-          addresses       (set (map :address sorted-accounts))]
+    (let [accounts  (utils/sorted-non-watch-only-accounts db)
+          addresses (set (map :address accounts))]
       {:db (update-in db
                       [:communities community-id]
                       assoc
+                      :previous-share-all-addresses? true
+                      :share-all-addresses?          true
                       :previous-permission-addresses addresses
                       :selected-permission-addresses addresses
-                      :airdrop-address               (:address (first sorted-accounts)))})))
+                      :airdrop-address               (:address (first accounts)))})))
 
 (rf/reg-event-fx :communities/initialize-permission-addresses
  initialize-permission-addresses)
@@ -179,17 +181,18 @@
 (defn update-previous-permission-addresses
   [{:keys [db]} [community-id]]
   (when community-id
-    (let [accounts                      (get-in db [:wallet :accounts])
-          sorted-accounts               (sort-by :position (vals accounts))
+    (let [accounts                      (utils/sorted-non-watch-only-accounts db)
           selected-permission-addresses (get-in db
                                                 [:communities community-id
                                                  :selected-permission-addresses])
           selected-accounts             (filter #(contains? selected-permission-addresses (:address %))
-                                                sorted-accounts)
-          current-airdrop-address       (get-in db [:communities community-id :airdrop-address])]
+                                                accounts)
+          current-airdrop-address       (get-in db [:communities community-id :airdrop-address])
+          share-all-addresses?          (get-in db [:communities community-id :share-all-addresses?])]
       {:db (update-in db
                       [:communities community-id]
                       assoc
+                      :previous-share-all-addresses? share-all-addresses?
                       :previous-permission-addresses selected-permission-addresses
                       :airdrop-address               (if (contains? selected-permission-addresses
                                                                     current-airdrop-address)
@@ -218,22 +221,54 @@
 (rf/reg-event-fx :communities/toggle-selected-permission-address
  toggle-selected-permission-address)
 
+(defn toggle-share-all-addresses
+  [{:keys [db]} [community-id]]
+  (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
+        next-share-all-addresses? (not share-all-addresses?)
+        accounts                  (utils/sorted-non-watch-only-accounts db)
+        addresses                 (set (map :address accounts))]
+    {:db (update-in db
+                    [:communities community-id]
+                    assoc
+                    :share-all-addresses?          next-share-all-addresses?
+                    :selected-permission-addresses addresses)
+     :fx [(when (and community-id next-share-all-addresses?)
+            [:dispatch
+             [:communities/check-permissions-to-join-community community-id
+              addresses :based-on-client-selection]])]}))
+
+(rf/reg-event-fx :communities/toggle-share-all-addresses
+ toggle-share-all-addresses)
+
 (rf/reg-event-fx :communities/reset-selected-permission-addresses
  (fn [{:keys [db]} [community-id]]
    (when community-id
-     {:db (assoc-in db
-           [:communities community-id :selected-permission-addresses]
-           (get-in db [:communities community-id :previous-permission-addresses]))
+     {:db (update-in db
+                     [:communities community-id]
+                     assoc
+                     :selected-permission-addresses
+                     (get-in db [:communities community-id :previous-permission-addresses])
+                     :share-all-addresses?
+                     (get-in db [:communities community-id :previous-share-all-addresses?]))
       :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
 
-(rf/reg-event-fx :communities/share-community-channel-url-with-data
- (fn [_ [chat-id]]
-   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)
-         title                             (i18n/label :t/channel-on-status)]
+(rf/reg-event-fx :communities/get-community-channel-share-data
+ (fn [_ [chat-id on-success]]
+   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
      {:json-rpc/call
       [{:method     "wakuext_shareCommunityChannelURLWithData"
         :params     [{:CommunityID community-id :ChannelID channel-id}]
-        :on-success (fn [url]
+        :on-success on-success
+        :on-error   (fn [err]
+                      (log/error "failed to retrieve community channel url with data"
+                                 {:error   err
+                                  :chat-id chat-id
+                                  :event   :communities/get-community-channel-share-data}))}]})))
+
+(rf/reg-event-fx :communities/share-community-channel-url-with-data
+ (fn [_ [chat-id]]
+   (let [title      (i18n/label :t/channel-on-status)
+         on-success (fn [url]
                       (share/open
                        (if platform/ios?
                          {:activityItemSources [{:placeholderItem {:type    "text"
@@ -245,12 +280,15 @@
                           :subject   title
                           :message   url
                           :url       url
-                          :isNewTask true})))
-        :on-error   (fn [err]
-                      (log/error "failed to retrieve community channel url with data"
-                                 {:error   err
-                                  :chat-id chat-id
-                                  :event   "share-community-channel-url-with-data"}))}]})))
+                          :isNewTask true})))]
+     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
+
+(rf/reg-event-fx :communities/share-community-channel-url-qr-code
+ (fn [_ [chat-id]]
+   (let [on-success #(rf/dispatch [:open-modal :share-community-channel
+                                   {:chat-id chat-id
+                                    :url     %}])]
+     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
 
 (rf/reg-event-fx :communities/set-airdrop-address
  (fn [{:keys [db]} [address community-id]]

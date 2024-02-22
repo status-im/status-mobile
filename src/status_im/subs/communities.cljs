@@ -1,10 +1,10 @@
 (ns status-im.subs.communities
   (:require
     [clojure.string :as string]
-    [legacy.status-im.data-store.communities :as data-store]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as wallet.utils]
     [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
@@ -298,58 +298,51 @@
  (fn [collapsed-categories [_ community-id]]
    (get collapsed-categories community-id)))
 
-(defn- permission-id->permission-value
-  [token-permissions permission-id]
-  (get (into {} token-permissions) permission-id))
+
+(defn token-requirement->token
+  [checking-permissions?
+   token-images
+   {:keys [satisfied criteria]}]
+  (let [sym    (:symbol criteria)
+        amount (:amount criteria)]
+    {:symbol      sym
+     :sufficient? satisfied
+     :loading?    checking-permissions?
+     :amount      (wallet.utils/remove-trailing-zeroes amount)
+     :img-src     (get token-images sym)}))
+
+(re-frame/reg-sub
+ :communities/checking-permissions-by-id
+ :<- [:communities/permissions-check]
+ (fn [permissions [_ id]]
+   (get permissions id)))
 
 (re-frame/reg-sub
  :community/token-gated-overview
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [token-permissions-check token-permissions checking-permissions? token-images]}] _]
-   (let [can-request-access? (:satisfied token-permissions-check)
-         highest-permission-role
-         (when can-request-access?
-           (->> token-permissions-check
-                :permissions
-                (reduce-kv
-                 (fn [highest-permission-role permission-id {:keys [criteria]}]
-                   (if-let [permission-type
-                            (and (first criteria)
-                                 (some #{(:type (permission-id->permission-value token-permissions
-                                                                                 permission-id))}
-                                       constants/community-role-permissions))]
-                     (if highest-permission-role
-                       (min highest-permission-role permission-type)
-                       permission-type)
-                     highest-permission-role))
-                 nil)))
-         highest-permission-role (if (and can-request-access? (nil? highest-permission-role))
-                                   constants/community-token-permission-become-member
-                                   highest-permission-role)]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+ (fn [[{:keys [token-images]}
+       {:keys [checking? check]}] _]
+   (let [highest-role            (:highestRole check)
+         networks-not-supported? (:networksNotSupported check)
+         lowest-role             (last (:roles check))
+         highest-permission-role (:type highest-role)
+         can-request-access?     (and (boolean highest-permission-role) (not networks-not-supported?))]
      {:can-request-access?     can-request-access?
+      :checking?               checking?
       :highest-permission-role highest-permission-role
-      :number-of-hold-tokens   (reduce
-                                (fn [acc [_ {:keys [criteria]}]]
-                                  (reduce #(+ %1 (if %2 1 0)) acc criteria))
-                                0
-                                (:permissions token-permissions-check))
-      :tokens                  (->>
-                                 token-permissions
-                                 (filter (fn [[_ permission]]
-                                           (data-store/role-permission? permission)))
-                                 (map (fn [[perm-key {:keys [token_criteria]}]]
-                                        (let [check-criteria (get-in token-permissions-check
-                                                                     [:permissions perm-key :criteria])]
-                                          (map
-                                           (fn [{sym :symbol amount :amount} sufficient?]
-                                             {:symbol      sym
-                                              :sufficient? (when (seq check-criteria) sufficient?)
-                                              :loading?    checking-permissions?
-                                              :amount      amount
-                                              :img-src     (get token-images sym)})
-                                           token_criteria
-                                           (or check-criteria token_criteria))))))})))
+      :networks-not-supported? networks-not-supported?
+      :no-member-permission?   (and highest-permission-role
+                                    (not (-> check :highestRole :criteria)))
+      :tokens                  (map (fn [{:keys [tokenRequirement]}]
+                                      (map
+                                       (partial token-requirement->token
+                                                checking?
+                                                token-images)
+                                       tokenRequirement))
+                                    (or (:criteria highest-role)
+                                        (:criteria lowest-role)))})))
 
 (re-frame/reg-sub
  :community/images
@@ -376,9 +369,25 @@
    selected-permission-addresses))
 
 (re-frame/reg-sub
+ :communities/share-all-addresses?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [share-all-addresses?]}] _]
+   share-all-addresses?))
+
+(re-frame/reg-sub
+ :communities/unsaved-address-changes?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [share-all-addresses? previous-share-all-addresses?
+               selected-permission-addresses previous-permission-addresses]}] _]
+   (or (not= share-all-addresses? previous-share-all-addresses?)
+       (not= selected-permission-addresses previous-permission-addresses))))
+
+(re-frame/reg-sub
  :communities/selected-permission-accounts
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
+   [(re-frame/subscribe [:wallet/accounts-without-watched-accounts])
     (re-frame/subscribe [:communities/selected-permission-addresses community-id])])
  (fn [[accounts selected-permission-addresses]]
    (filter #(contains? selected-permission-addresses (:address %)) accounts)))

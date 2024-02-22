@@ -61,7 +61,7 @@ We will use the `make jsbundle` target as an example of a derivation you can bui
 3. [`build.sh`](/nix/scripts/build.sh) calls `nix-build --attr targets.mobile.jsbundle` with extra arguments
 4. `nix-build` builds the derivation from [`nix/mobile/jsbundle/default.nix`](/nix/mobile/jsbundle/default.nix)
 
-The same can be done for other targets like `targets.mobile.android.release`.
+The same can be done for other targets like `targets.mobile.android.build`.
 Except in that case extra arguments are required which is why the [`scripts/release-android.sh`](/scripts/release-android.sh) is used in the `make release-android` target.
 
 If you run `make release-android` you'll see the `nix-build` command used:
@@ -71,21 +71,23 @@ nix-build \
   --fallback \
   --no-out-link \
   --show-trace \
-  --attr targets.mobile.android.release \
+  --attr targets.mobile.android.build \
   --argstr secrets-file '/tmp/tmp-status-mobile-559a3a441/tmp.xAnrPuNtAP' \
   --option extra-sandbox-paths '/home/joe/.gradle/status-im.keystore /tmp/tmp-status-mobile-559a3a441/tmp.xAnrPuNtAP' \
   default.nix
 ```
 Some of those are required which is why just calling:
 ```
-nix-build --attr targets.mobile.android.release
+nix-build --attr targets.mobile.android.build
 ```
 Would fail.
 
 # Garbage Collection
 
-The `make nix-gc` target calls `nix-store --gc` and normally would remove almost everything, but to prevent that we place symlinks to protected derivations in `/nix/var/nix/gcroots` subfolder. Specifically:
+The `make nix-gc` target calls `nix-store --gc` and normally would remove almost everything, but to prevent that we place symlinks to protected derivations in `.nix-gcroots` folder. Specifically:
 ```sh
-_NIX_GCROOTS="${_NIX_GCROOTS:-/nix/var/nix/gcroots/per-user/${USER}/status-mobile}"
+_NIX_GCROOTS="${_NIX_GCROOTS:-${GIT_ROOT}/.nix-gcroots}
 ```
+These symlinks in turn will be symlinked from  `/nix/var/nix/gcroots/auto` through use of `nix-store --add-gcroots`.
+
 Whenever `nix/scripts/build.sh` or `nix/scripts/shell.sh` are called they update symlinks named after given targets in that folder. This in combination with `keep-outputs = true` set in `nix/nix.conf` prevents garbage collection from removing too much.

@@ -1,9 +1,6 @@
 (ns status-im.contexts.wallet.add-address-to-watch.style)
 
-(def header-container
-  {:margin-horizontal 20
-   :margin-top        12
-   :margin-bottom     20})
+(def header-container {:padding-bottom 8})
 
 (def scan
   {:margin-top 26})

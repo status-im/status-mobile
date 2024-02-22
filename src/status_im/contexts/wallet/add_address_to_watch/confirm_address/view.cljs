@@ -15,9 +15,10 @@
 (defn view
   []
   (let [{:keys [address]}  (rf/sub [:get-screen-params])
-        number-of-accounts (count (rf/sub [:profile/wallet-accounts]))
-        account-name       (reagent/atom (i18n/label :t/default-account-name
-                                                     {:number (inc number-of-accounts)}))
+        number-of-accounts (count (rf/sub [:wallet/watch-only-accounts]))
+        account-name       (reagent/atom "")
+        placeholder        (i18n/label :t/default-watched-address-placeholder
+                                       {:number (inc number-of-accounts)})
         account-color      (reagent/atom (rand-nth colors/account-colors))
         account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
         on-change-name     #(reset! account-name %)
@@ -31,6 +32,7 @@
                                 #(js/alert
                                   "Get info (to be
                                     implemented)")}]
+         :placeholder         placeholder
          :account-name        @account-name
          :account-emoji       @account-emoji
          :account-color       @account-color
@@ -42,6 +44,7 @@
          :bottom-action-label :t/add-watched-address
          :bottom-action-props {:customization-color @account-color
                                :disabled?           (string/blank? @account-name)
+                               :accessibility-label :confirm-button-label
                                :on-press            #(rf/dispatch [:wallet/add-account
                                                                    {:sha3-pwd     nil
                                                                     :type         :watch

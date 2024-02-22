@@ -34,6 +34,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             "https://status.app/u/CweACg0KC1Rlc3RVc2VyRTJFAw==#zQ3shcFXYnGXxJZnsMThziUNMwyA5uGLp58bLGmfb3qaWD1F6": "TestUserE2E"}
 
         for url, text in profile_urls.items():
+            self.channel.just_fyi("Opening profile '%s' by the url %s" % (text, url))
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
@@ -48,16 +49,13 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         closed_community_urls = {
             "https://status.app/c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":
                 "Status mobile QA community max",
-            "https://status.app/c/GyoAAORtA48geFrtWr2mu-G5DnFaI0sgqUIIaBFX_DJ_mRbXmzoMnCJnqwI=#zQ3shQhL414wEjDJMEpgTjd14aHCiBDnk6Bq5YTWoi4b7wvnu":
-                "test_comm_enc",
-            "https://status.app/c/GyAAAOQbK4dMy1OMI8s2nGvJR3QRqBQqbExff0-cgmN0T-4C#zQ3shqQ4voo845RAkip2JkYTjL4dpiGnRhaNHjVDxPdEZ1xvP":
-                "e2e_open",
             "https://status.app/c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
                 "Open community for e2e",
             "https://status.app/c/G0UAAGS9MeHbo_RoNMnOhOKTCo-fDDbgBCCyNNSN7qrzTqIgLem56TyzYYLf36askV7yGcros8muAdgB#zQ3shVWCcsH94vjf7WrFqBXx5MMAui2EPYMBme8ntACNWWVN3":
                 "Closed communtiy for e2e"
         }
         for url, text in closed_community_urls.items():
+            self.channel.just_fyi("Opening community '%s' by the url %s" % (text, url))
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
@@ -81,6 +79,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             "status-app://u/CweACg0KC1Rlc3RVc2VyRTJFAw==#zQ3shcFXYnGXxJZnsMThziUNMwyA5uGLp58bLGmfb3qaWD1F6": "TestUserE2E"
         }
         for link, text in profile_links.items():
+            self.channel.just_fyi("Opening profile link %s" % link)
             self.browser_view.open_url(link)
             shown_name_text = self.profile_view.default_username_text.text
             if text:
@@ -94,16 +93,13 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         community_links = {
             "status.app://c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":
                 "Status mobile QA community max",
-            "status.app://c/GyoAAORtA48geFrtWr2mu-G5DnFaI0sgqUIIaBFX_DJ_mRbXmzoMnCJnqwI=#zQ3shQhL414wEjDJMEpgTjd14aHCiBDnk6Bq5YTWoi4b7wvnu":
-                "test_comm_enc",
-            "status.app://c/GyAAAOQbK4dMy1OMI8s2nGvJR3QRqBQqbExff0-cgmN0T-4C#zQ3shqQ4voo845RAkip2JkYTjL4dpiGnRhaNHjVDxPdEZ1xvP":
-                "e2e_open",
             "status.app://c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
                 "Open community for e2e",
             "status.app://c/G0UAAGS9MeHbo_RoNMnOhOKTCo-fDDbgBCCyNNSN7qrzTqIgLem56TyzYYLf36askV7yGcros8muAdgB#zQ3shVWCcsH94vjf7WrFqBXx5MMAui2EPYMBme8ntACNWWVN3":
                 "Closed communtiy for e2e"
         }
         for link, text in community_links.items():
+            self.channel.just_fyi("Opening community '%s' by the link %s" % (text, link))
             self.browser_view.open_url(link)
             if not self.community_view.join_button.is_element_displayed(
                     10) or self.community_view.community_title.text != text:

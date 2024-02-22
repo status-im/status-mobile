@@ -148,12 +148,12 @@
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
   [{:keys [db]} address]
-  {:db (assoc db :wallet/scanned-address address)})
+  {:db (assoc-in db [:wallet :ui :scanned-address] address)})
 
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
+  {:db (update-in db [:wallet :ui] dissoc :scanned-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
@@ -204,8 +204,21 @@
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :token] token)
-    :fx [[:navigate-to-within-stack [:wallet-bridge-to stack-id]]]}))
+   (let [to-address (get-in db [:wallet :current-viewing-account-address])]
+     {:db (-> db
+              (assoc-in [:wallet :ui :send :token] token)
+              (assoc-in [:wallet :ui :send :to-address] to-address))
+      :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-to stack-id]]]]})))
+
+(rf/reg-event-fx :wallet/start-bridge
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :send :type] :bridge)
+    :fx [[:dispatch [:open-modal :wallet-bridge]]]}))
+
+(rf/reg-event-fx :wallet/select-bridge-network
+ (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
+   {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
+    :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-send stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
@@ -266,8 +279,6 @@
                                                  :networks [:ethereum :optimism]}]
                                                [])
                :wallet/valid-ens-or-address? (boolean result))}))
-
-
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [_address]]
@@ -375,3 +386,35 @@
             {:title   title
              :subject title
              :message content})]]}))
+
+(defn store-secret-phrase
+  [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
+  {:db (-> db
+           (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
+           (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
+   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]})
+
+(rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
+
+
+(defn new-keypair-created
+  [{:keys [db]} [{:keys [new-keypair]}]]
+  {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
+   :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]})
+
+(rf/reg-event-fx :wallet/new-keypair-created new-keypair-created)
+
+(defn new-keypair-continue
+  [{:keys [db]} [{:keys [keypair-name]}]]
+  (let [secret-phrase (get-in db [:wallet :ui :create-account :secret-phrase])]
+    {:fx [[:effects.wallet/create-account-from-mnemonic
+           {:secret-phrase secret-phrase
+            :keypair-name  keypair-name}]]}))
+
+(rf/reg-event-fx :wallet/new-keypair-continue new-keypair-continue)
+
+(defn clear-new-keypair
+  [{:keys [db]}]
+  {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)})
+
+(rf/reg-event-fx :wallet/clear-new-keypair clear-new-keypair)

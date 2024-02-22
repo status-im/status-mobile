@@ -12,7 +12,7 @@
 (defn- initials
   [{:keys [full-name size customization-color theme]}]
   (let [amount-initials (if (#{:size-32 :size-64} size) 2 1)
-        channel-name    (string/replace full-name "#" "")]
+        channel-name    (utils.string/safe-replace full-name "#" "")]
     [text/text
      (cond-> {:accessibility-label :initials
               :style               {:color (colors/resolve-color customization-color theme)}

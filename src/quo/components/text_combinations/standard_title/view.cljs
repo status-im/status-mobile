@@ -53,9 +53,12 @@
       :icon-color          (style/right-tag-icon-color blur? theme)}]))
 
 (defn- view-internal
-  [{:keys [title right] :as props}]
+  [{:keys [title right accessibility-label] :as props}]
   [rn/view {:style style/container}
-   [text/text {:size :heading-1 :weight :semi-bold}
+   [text/text
+    {:size                :heading-1
+     :weight              :semi-bold
+     :accessibility-label accessibility-label}
     title]
    (when right
      [rn/view {:style style/right-container}

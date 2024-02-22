@@ -133,10 +133,11 @@
                                           (clear-input))
                    :container-style     {:z-index 2}}
                   (i18n/label :t/continue)]}
-        [quo/text-combinations
-         {:container-style style/header-container
-          :title           (i18n/label :t/add-address)
-          :description     (i18n/label :t/enter-eth)}]
+        [quo/page-top
+         {:container-style  style/header-container
+          :title            (i18n/label :t/add-address)
+          :description      :text
+          :description-text (i18n/label :t/enter-eth)}]
         [:f> address-input
          {:input-value    input-value
           :validate       validate

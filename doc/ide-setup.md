@@ -122,10 +122,9 @@ See below:
 
 Do the following:
 
-Ensure you have 3 terminals running the following
+Ensure you have 2 terminals running the following
 
 - `make run-clojure`
-- `make run-metro`
 - `make run-ios` / `make run-android`
 
 [See the STARTING GUIDE for details](STARTING_GUIDE.md#development)

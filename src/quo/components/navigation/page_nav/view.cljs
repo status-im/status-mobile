@@ -311,7 +311,7 @@
     - title
     - description
     - picture: a valid rn/image `:source` value
-  `:wallet-network`
+  `:wallet-networks`
     - networks: a vector of network image source
     - networks-on-press: a callback
   `:community`

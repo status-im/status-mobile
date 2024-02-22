@@ -10,18 +10,51 @@
 (deftest scan-address-success
   (let [db {}]
     (testing "scan-address-success"
-      (let [expected-db {:wallet/scanned-address address}
+      (let [expected-db {:wallet {:ui {:scanned-address address}}}
             effects     (events/scan-address-success {:db db} address)
             result-db   (:db effects)]
         (is (match? result-db expected-db))))))
 
 (deftest clean-scanned-address
-  (let [db {:wallet/scanned-address address}]
+  (let [db {:wallet {:ui {:scanned-address address}}}]
     (testing "clean-scanned-address"
-      (let [expected-db {:wallet {:ui {:send nil}}}
+      (let [expected-db {:wallet {:ui {:send            nil
+                                       :scanned-address nil}}}
             effects     (events/clean-scanned-address {:db db})
             result-db   (:db effects)]
         (is (match? result-db expected-db))))))
+
+(deftest store-secret-phrase
+  (let [db          {}
+        props       [{:secret-phrase "test-secret" :random-phrase "random-test"}]
+        expected-db {:wallet {:ui {:create-account {:secret-phrase "test-secret"
+                                                    :random-phrase "random-test"}}}}
+        effects     (events/store-secret-phrase {:db db} props)
+        result-db   (:db effects)]
+    (is (match? result-db expected-db))))
+
+(deftest new-keypair-created
+  (let [db          {}
+        props       [{:new-keypair "test-keypair"}]
+        expected-db {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
+        effects     (events/new-keypair-created {:db db} props)
+        result-db   (:db effects)]
+    (is (match? result-db expected-db))))
+
+(deftest new-keypair-continue
+  (let [db               {:wallet {:ui {:create-account {:secret-phrase "test-secret"}}}}
+        props            [{:keypair-name "test-keypair"}]
+        expected-effects [[:effects.wallet/create-account-from-mnemonic
+                           {:secret-phrase "test-secret" :keypair-name "test-keypair"}]]
+        effects          (events/new-keypair-continue {:db db} props)]
+    (is (match? effects {:fx expected-effects}))))
+
+(deftest clear-new-keypair
+  (let [db          {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
+        expected-db {:wallet {:ui {:create-account {}}}}
+        effects     (events/clear-new-keypair {:db db})]
+    (is (match? (:db effects) expected-db))))
+
 
 (deftest store-collectibles
   (testing "(displayable-collectible?) helper function"

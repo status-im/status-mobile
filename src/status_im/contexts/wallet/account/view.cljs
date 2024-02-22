@@ -38,7 +38,9 @@
       (let [{:keys [name color formatted-balance
                     watch-only?]} (rf/sub [:wallet/current-viewing-account])]
         [rn/view {:style {:flex 1}}
-         [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
+         [account-switcher/view
+          {:type     :wallet-networks
+           :on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
           {:current-value       formatted-balance
            :account-name        name
@@ -54,7 +56,7 @@
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
              :bridge-action  #(ff/alert ::ff/wallet.bridge-token
-                                        (fn [] (rf/dispatch [:open-modal :wallet-bridge])))}])
+                                        (fn [] (rf/dispatch [:wallet/start-bridge])))}])
          [quo/tabs
           {:style            style/tabs
            :size             32

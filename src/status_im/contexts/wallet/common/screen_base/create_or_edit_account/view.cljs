@@ -8,7 +8,8 @@
             [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [margin-top? page-nav-right-side account-name account-color account-emoji on-change-name
+  [{:keys [margin-top? page-nav-right-side placeholder account-name account-color account-emoji
+           on-change-name
            on-change-color
            on-change-emoji on-focus on-blur section-label bottom-action?
            bottom-action-label bottom-action-props
@@ -45,10 +46,11 @@
           :container-style style/reaction-button-container}
          :i/reaction]]
        [quo/title-input
-        {:placeholder     (i18n/label :t/account-name-input-placeholder)
+        {:placeholder     placeholder
          :max-length      constants/wallet-account-name-max-length
          :blur?           true
          :default-value   account-name
+         :auto-focus      true
          :on-change-text  on-change-name
          :container-style style/title-input-container
          :on-focus        on-focus

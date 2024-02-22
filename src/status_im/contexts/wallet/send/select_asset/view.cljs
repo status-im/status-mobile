@@ -36,7 +36,6 @@
       :on-collectible-press #(rf/dispatch [:wallet/send-select-collectible
                                            {:collectible %
                                             :stack-id    :wallet-select-asset}])}]))
-
 (defn- tab-view
   [search-text selected-tab on-change-text]
   (let [unfiltered-collectibles (rf/sub [:wallet/current-viewing-account-collectibles])
@@ -70,9 +69,8 @@
         {:icon-name     :i/arrow-left
          :on-press      on-close
          :switcher-type :select-account}]
-       [quo/text-combinations
+       [quo/page-top
         {:title                     (i18n/label :t/select-asset)
-         :container-style           style/title-container
          :title-accessibility-label :title-label}]
        [quo/segmented-control
         {:size            32

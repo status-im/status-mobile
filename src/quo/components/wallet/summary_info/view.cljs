@@ -4,11 +4,13 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.summary-info.schema :as summary-info-schema]
     [quo.components.wallet.summary-info.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- network-amount
   [{:keys [network amount divider? theme]}]
@@ -91,4 +93,6 @@
        {:style (style/line-divider theme)}]
       [networks values theme]])])
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal summary-info-schema/?schema)))

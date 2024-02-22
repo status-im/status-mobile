@@ -20,6 +20,7 @@
                                                      [:visibility-status-updates/visibility-status-update
                                                       public-key])
         customization-color                         (rf/sub [:profile/customization-color])
+        bio                                         (:bio profile)
         full-name                                   (profile.utils/displayed-name profile)
         profile-picture                             (profile.utils/photo profile)
         emoji-string                                (string/join emoji-hash)
@@ -53,6 +54,7 @@
       {:title-accessibility-label :username
        :container-style           style/title-container
        :emoji-hash                emoji-string
+       :description               bio
        :title                     full-name}]]))
 
 (def view (quo.theme/with-theme f-view))

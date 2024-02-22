@@ -1,8 +1,10 @@
 (ns quo.components.wallet.progress-bar.view
   (:require
+    [quo.components.wallet.progress-bar.schema :as progress-bar-schema]
     [quo.components.wallet.progress-bar.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [full-width?] :as props}]
@@ -12,4 +14,6 @@
    (when full-width?
      [rn/view {:style (style/progressed-bar props)}])])
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal progress-bar-schema/?schema)))

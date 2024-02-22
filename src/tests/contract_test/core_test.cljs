@@ -1,4 +1,4 @@
-(ns status-im.integration-test.core-test
+(ns tests.contract-test.core-test
   (:require
     [cljs.test :refer [deftest]]
     [day8.re-frame.test :as rf-test]

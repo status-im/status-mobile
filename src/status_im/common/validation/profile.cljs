@@ -1,11 +1,11 @@
 (ns status-im.common.validation.profile
   (:require [clojure.string :as string]
+            [status-im.constants :as constants]
             [utils.i18n :as i18n]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
 (def min-length 5)
-(def max-length 24)
 
 (def emoji-regex
   #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])")
@@ -22,7 +22,9 @@
 
 (defn name-too-short? [s] (< (count (string/trim (str s))) min-length))
 
-(defn name-too-long? [s] (> (count (string/trim (str s))) max-length))
+(defn name-too-long? [s] (> (count (string/trim (str s))) constants/profile-name-max-length))
+
+(defn bio-too-long? [s] (> (count (string/trim (str s))) constants/profile-bio-max-length))
 
 (defn validation-name
   [s]
@@ -39,3 +41,12 @@
                                              {:check (i18n/label :t/special-characters)})
     (name-too-short? s)          (i18n/label :t/minimum-characters {:min-chars min-length})
     (name-too-long? s)           (i18n/label :t/profile-name-is-too-long)))
+
+(defn validation-bio
+  [s]
+  (cond
+    (or (= s nil) (= s ""))     nil
+    (has-emojis? s)             (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
+    (has-special-characters? s) (i18n/label :t/are-not-allowed
+                                            {:check (i18n/label :t/special-characters)})
+    (bio-too-long? s)           (i18n/label :t/bio-is-too-long)))

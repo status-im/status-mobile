@@ -43,7 +43,7 @@
             :upstreamConfig           config/default-network-rpc-url
             :networkId                config/default-network-id
             :currentNetwork           config/default-network
-            :wakuV2LightClient        true
+            :wakuV2LightClient        false
             :previewPrivacy           config/blank-preview?})))
 
 (defn strip-file-prefix

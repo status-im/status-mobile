@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.utils
   (:require [clojure.string :as string]
+            [quo.foundations.resources :as resources]
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [utils.money :as money]
@@ -218,7 +219,7 @@
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
   (if (string/includes? crypto-value "<")
-    "<$0.01"
+    (str "<" currency-symbol "0.01")
     (prettify-balance currency-symbol fiat-value)))
 
 (defn prettify-percentage-change
@@ -274,3 +275,23 @@
 (defn get-balance-for-chain
   [data chain-id]
   (some #(when (= chain-id (:chain-id %)) %) (vals data)))
+
+(defn make-network-item
+  "This function generates props for quo/category component item"
+  [{:keys [network-name] :as _network}
+   {:keys [title color on-change networks state label-props] :as _options}]
+  (cond-> {:title        (or title (string/capitalize (name network-name)))
+           :image        :icon-avatar
+           :image-props  {:icon (resources/get-network network-name)
+                          :size :size-20}
+           :action       :selector
+           :action-props {:type                (if (= :default state)
+                                                 :filled-checkbox
+                                                 :checkbox)
+                          :customization-color color
+                          :checked?            (contains? networks network-name)
+                          :on-change           on-change}}
+
+    label-props
+    (assoc :label       :text
+           :label-props label-props)))

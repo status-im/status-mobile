@@ -32,7 +32,7 @@
   "
   [{:keys [icon new-notifications? notification-indicator counter-label
            on-press pass-through? icon-color-anim accessibility-label test-ID
-           customization-color on-long-press]
+           customization-color]
     :or   {customization-color :blue}}]
   (let [icon-animated-style       (reanimated/apply-animations-to-style
                                    {:tint-color icon-color-anim}
@@ -48,7 +48,6 @@
                                     :border-radius 10})]
     [rn/touchable-without-feedback
      {:test-ID                 test-ID
-      :on-long-press           on-long-press ;;NOTE - this is temporary while supporting old wallet
       :allow-multiple-presses? true
       :on-press                on-press
       :on-press-in             #(toggle-background-color background-color false pass-through?)

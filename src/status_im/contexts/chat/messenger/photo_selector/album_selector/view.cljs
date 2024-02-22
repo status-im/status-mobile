@@ -61,7 +61,7 @@
   (str (:title item) index))
 
 (defn- f-album-selector
-  [{:keys [scroll-enabled on-scroll]} album? selected-album top]
+  [{:keys [scroll-enabled? on-scroll]} album? selected-album top]
   (let [albums                     (rf/sub [:camera-roll/albums])
         total-photos-count-android (rf/sub [:camera-roll/total-photos-count-android])
         total-photos-count-ios     (rf/sub [:camera-roll/total-photos-count-ios])
@@ -87,7 +87,7 @@
        :content-container-style        {:padding-top    64
                                         :padding-bottom 40}
        :key-fn                         key-fn
-       :scroll-enabled                 @scroll-enabled
+       :scroll-enabled                 @scroll-enabled?
        :on-scroll                      on-scroll
        :style                          {:height window-height}}]]))
 

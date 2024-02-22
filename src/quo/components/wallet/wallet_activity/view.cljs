@@ -3,11 +3,13 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.view :as context-tag]
+    [quo.components.wallet.wallet-activity.schema :as component-schema]
     [quo.components.wallet.wallet-activity.style :as style]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
     [reagent.core :as reagent]
+    [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 (def transaction-translation
@@ -132,35 +134,5 @@
           (when fourth-tag [prop-tag fourth-tag blur?])]]]])))
 
 (def view
-  "Properties:
-        - :transaction - type of transaction`. Possible values:
-          - :receive
-          - :send
-          - :swap
-          - :bridge
-          - :buy
-          - :destroy
-          - :mint
-     
-        - :status - transaction status. Possible values:
-          - :pending
-          - :confirmed
-          - :finalised
-          - :failed
-     
-        - :counter - amount of transactions shown by instance of the component
-     
-        - :timestamp - when transaction occured (string)
-        - :blur?
-        
-        - :first-tag - props for context tag component that will be first on the first line
-        - :second-tag - props for context tag component that will be second on the first line
-        - :third-tag - props for context tag component that will be first on the second line
-        - :fourth-tag - props for context tag component that will be second on the second line
-     
-        - :second-tag-prefix - translation keyword to be used with label before second context tag
-        - :third-tag-prefix - translation keyword to be used with label before third context tag
-        - :fourth-tag-prefix - translation keyword to be used with label before fourth context tag
-     
-    "
-  (quo.theme/with-theme view-internal))
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

@@ -10,16 +10,16 @@
    {:db (-> db
             (assoc-in [:community-channels-permissions community-id]
                       (data-store/rpc->channel-permissions (:channels response)))
-            (assoc-in [:communities community-id :checking-all-channels-permissions?] false))}))
+            (assoc-in [:communities/channel-permissions-check community-id] false))}))
 
 (rf/reg-event-fx :communities/check-all-community-channels-permissions-failed
  (fn [{:keys [db]} [community-id]]
-   {:db (assoc-in db [:communities community-id :checking-all-channels-permissions?] false)}))
+   {:db (assoc-in db [:communities/channel-permissions-check community-id] false)}))
 
 (rf/reg-event-fx :communities/check-all-community-channels-permissions
  (fn [{:keys [db]} [community-id]]
    (when (get-in db [:communities community-id])
-     {:db (assoc-in db [:communities community-id :checking-all-channels-permissions?] true)
+     {:db (assoc-in db [:communities/channel-permissions-check community-id] true)
       :fx [[:json-rpc/call
             [{:method     "wakuext_checkAllCommunityChannelsPermissions"
               :params     [{:CommunityID community-id}]
@@ -38,21 +38,19 @@
    (let [token-permissions-check (cond-> result
                                    based-on-client-selection? (assoc :based-on-client-selection? true))]
      {:db (-> db
-              (assoc-in [:communities community-id :checking-permissions?] false)
-              (assoc-in [:communities community-id :token-permissions-check]
-                        token-permissions-check))})))
+              (assoc-in [:communities/permissions-check community-id]
+                        {:checking? false
+                         :check     token-permissions-check}))})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-failed
  (fn [{:keys [db]} [community-id]]
-   {:db (assoc-in db [:communities community-id :checking-permissions?] false)}))
+   {:db (assoc-in db [:communities/permissions-check community-id :checking?] false)}))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community
  (fn [{:keys [db]} [community-id addresses based-on-client-selection?]]
    (when-let [community (get-in db [:communities community-id])]
      (when-not (:checking-permissions? community)
-       {:db            (-> db
-                           (assoc-in [:communities community-id :checking-permissions?] true)
-                           (assoc-in [:communities community-id :can-request-access?] false))
+       {:db            (assoc-in db [:communities/permissions-check community-id :checking?] true)
         :json-rpc/call [{:method     "wakuext_checkPermissionsToJoinCommunity"
                          :params     [(cond-> {:communityId community-id}
                                         addresses

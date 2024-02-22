@@ -15,15 +15,15 @@
    :community-icon (resources/get-mock-image :status-logo)
    :customization-color :blue
    :tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]
-   :tags [{:id        1
-           :tag-label (i18n/label :t/music)
-           :emoji     (resources/get-image :music)}
-          {:id        2
-           :tag-label (i18n/label :t/lifestyle)
-           :emoji     (resources/get-image :lifestyle)}
-          {:id        3
-           :tag-label (i18n/label :t/podcasts)
-           :emoji     (resources/get-image :podcasts)}]})
+   :tags [{:id    1
+           :name  (i18n/label :t/music)
+           :emoji (resources/get-image :music)}
+          {:id    2
+           :name  (i18n/label :t/lifestyle)
+           :emoji "🧩"}
+          {:id    3
+           :name  (i18n/label :t/podcasts)
+           :emoji "🎶"}]})
 
 (def descriptor
   [{:key     :status

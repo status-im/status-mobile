@@ -1,6 +1,6 @@
 (ns status-im.contexts.communities.actions.addresses-for-permissions.events-test
   (:require
-    [cljs.test :refer [is deftest]]
+    [cljs.test :refer [deftest is]]
     [status-im.contexts.communities.actions.addresses-for-permissions.events :as sut]))
 
 (def community-id "0x1")

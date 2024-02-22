@@ -16,6 +16,8 @@
         expected-db {:db (update-in (:db initial-db)
                                     [:communities community-id]
                                     assoc
+                                    :share-all-addresses?          true
+                                    :previous-share-all-addresses? true
                                     :previous-permission-addresses #{"0x1" "0x2"}
                                     :selected-permission-addresses #{"0x1" "0x2"}
                                     :airdrop-address               "0x1")}]
@@ -39,12 +41,16 @@
                             :communities {community-id {:previous-permission-addresses #{"0x1" "0x2"}
                                                         :selected-permission-addresses #{"0x1" "0x2"
                                                                                          "0x3"}
+                                                        :share-all-addresses?          true
+                                                        :previous-share-all-addresses? false
                                                         :airdrop-address               "0x1"}}}}
           expected-db {:db {:wallet      wallet
                             :communities {community-id {:previous-permission-addresses #{"0x1" "0x2"
                                                                                          "0x3"}
                                                         :selected-permission-addresses #{"0x1" "0x2"
                                                                                          "0x3"}
+                                                        :share-all-addresses?          true
+                                                        :previous-share-all-addresses? true
                                                         :airdrop-address               "0x1"}}}}]
       (is
        (match? expected-db
@@ -60,6 +66,40 @@
       (is
        (match? expected-db
                (events/update-previous-permission-addresses initial-db [community-id]))))))
+
+(deftest toggle-share-all-addresses-test
+  (let [initial-db  {:db {:wallet      {:accounts {"0x1" {:address  "0x1"
+                                                          :position 0}
+                                                   "0x2" {:address  "0x2"
+                                                          :position 1}}}
+                          :communities {community-id {:share-all-addresses?          true
+                                                      :previous-share-all-addresses? true
+                                                      :previous-permission-addresses #{"0x1" "0x2"}
+                                                      :selected-permission-addresses #{"0x1" "0x2"}
+                                                      :airdrop-address               "0x1"}}}}
+        expected-db (update-in initial-db
+                               [:db :communities community-id]
+                               assoc
+                               :previous-share-all-addresses? true
+                               :share-all-addresses?
+                               false)]
+    (is (match? expected-db (events/toggle-share-all-addresses initial-db [community-id]))))
+  (let [initial-db  {:db {:wallet      {:accounts {"0x1" {:address  "0x1"
+                                                          :position 0}
+                                                   "0x2" {:address  "0x2"
+                                                          :position 1}}}
+                          :communities {community-id {:share-all-addresses?          false
+                                                      :previous-share-all-addresses? false
+                                                      :previous-permission-addresses #{"0x1"}
+                                                      :selected-permission-addresses #{"0x1"}
+                                                      :airdrop-address               "0x1"}}}}
+        expected-db (update-in initial-db
+                               [:db :communities community-id]
+                               assoc
+                               :selected-permission-addresses #{"0x1" "0x2"}
+                               :previous-share-all-addresses? false
+                               :share-all-addresses?          true)]
+    (is (match? expected-db (events/toggle-share-all-addresses initial-db [community-id])))))
 
 (deftest fetch-community
   (testing "with community id"

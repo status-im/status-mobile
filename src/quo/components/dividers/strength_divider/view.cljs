@@ -30,7 +30,7 @@
 
 (defn circular-progress
   [{:keys [color percentage]}]
-  (let [strength-indicator-radius        6.5
+  (let [strength-indicator-radius        7.5
         strength-indicator-circumference (* 2 Math/PI strength-indicator-radius)]
     [svg/svg
      {:view-box  "0 0 16 16"
@@ -63,7 +63,10 @@
       :alert [icon/icon :i/alert
               {:color color
                :size  16}]
-      [circular-progress {:color color :percentage percentage}])))
+      [rn/view
+       {:padding-left  4
+        :padding-right 2}
+       [circular-progress {:color color :percentage percentage}]])))
 
 (defn view
   "Options

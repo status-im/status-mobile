@@ -11,8 +11,8 @@
    :padding-bottom     8})
 
 (defn settings-items
-  [{:keys [blur? theme]}]
-  {:margin-top       12
+  [{:keys [label blur? theme]}]
+  {:margin-top       (if label 12 4)
    :border-radius    16
    :background-color (if blur?
                        colors/white-opa-5

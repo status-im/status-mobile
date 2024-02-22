@@ -33,7 +33,8 @@
                   {:account    edited-account-data
                    :on-success #(show-save-account-toast updated-key)}])))
 
-(def view
+(defn view
+  []
   (let [edited-account-name  (reagent/atom nil)
         show-confirm-button? (reagent/atom false)
         on-change-color      (fn [edited-color {:keys [color] :as account}]

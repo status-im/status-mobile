@@ -7,10 +7,10 @@
     [native-module.core :as native-module]
     [re-frame.core :as rf]
     status-im.events
-    [status-im.integration-test.constants :as constants]
     status-im.navigation.core
     status-im.subs.root
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [tests.integration-test.constants :as constants]))
 
 (defn initialize-app!
   []

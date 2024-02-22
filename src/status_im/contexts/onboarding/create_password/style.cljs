@@ -8,30 +8,8 @@
 (def heading-subtitle {:color colors/white})
 (def heading-title (assoc heading-subtitle :margin-bottom 8))
 
-(def label-container
-  {:margin-top     8
-   :flex-direction :row
-   :align-items    :center
-   :height         16})
-
-(def label-icon
-  {:width        16
-   :height       18
-   :margin-right 4})
-
-(defn label-icon-color
-  [status]
-  (get {:neutral colors/neutral-40
-        :success colors/success-60
-        :danger  colors/danger-60}
-       status))
-
-(defn label-color
-  [status]
-  (let [colors {:neutral colors/white-opa-70
-                :success colors/success-60
-                :danger  colors/danger-60}]
-    {:color (get colors status)}))
+(def info-message
+  {:margin-top 8})
 
 (def space-between-inputs {:height 16})
 

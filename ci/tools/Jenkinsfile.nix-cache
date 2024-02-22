@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.8.5'
+library 'status-jenkins-lib@v1.8.7'
 
 pipeline {
   agent { label params.AGENT_LABEL }
@@ -82,7 +82,7 @@ pipeline {
         env.NIXPKGS_SYSTEM_OVERRIDE = nixSysOverride(os, arch, 'android')
         /* Build/fetch deps required to build android release. */
         nix.build(
-          attr: 'targets.mobile.android.release.buildInputs',
+          attr: 'targets.mobile.android.build.buildInputs',
           sandbox: false,
           pure: false,
           link: false

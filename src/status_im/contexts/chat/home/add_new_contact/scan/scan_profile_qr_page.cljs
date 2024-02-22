@@ -13,7 +13,8 @@
        (rn/dismiss-keyboard!))
      [scan-qr-code/view
       {:title           (i18n/label :t/scan-qr)
-       :on-success-scan #(debounce/debounce-and-dispatch [:contacts/set-new-identity % %] 300)}]]))
+       :on-success-scan #(debounce/debounce-and-dispatch [:contacts/set-new-identity {:input %}]
+                                                         300)}]]))
 
 (defn view
   []

@@ -45,7 +45,7 @@ if [[ -z "${TARGET}" ]]; then
 fi
 
 # Hack fix for missing Android SDK for aarch64 on Darwin. See systemOverride in `nix/pkgs.nix`.
-if [[ "${TARGET}" =~ ^(targets.status-go.mobile.android|targets.mobile.android.release)$ ]]; then
+if [[ "${TARGET}" =~ ^(targets.status-go.mobile.android|targets.mobile.android.build)$ ]]; then
   os=$(uname -s | tr '[:upper:]' '[:lower:]')
   export NIXPKGS_SYSTEM_OVERRIDE="x86_64-${os}"
 fi

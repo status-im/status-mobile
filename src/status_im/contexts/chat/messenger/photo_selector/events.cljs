@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.photo-selector.events
   (:require
+    [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     status-im.contexts.chat.messenger.photo-selector.effects
     [utils.i18n :as i18n]
@@ -74,3 +75,9 @@
     (when (and (< (count images) constants/max-album-photos)
                (not (some #(= (:uri image) (:uri %)) images)))
       {:effects.camera-roll/image-selected [image current-chat-id]})))
+
+(re-frame/reg-event-fx :photo-selector/navigate-to-photo-selector
+ (fn []
+   {:fx [[:dispatch [:open-modal :photo-selector]]
+         [:dispatch [:photo-selector/get-photos-for-selected-album]]
+         [:dispatch [:photo-selector/camera-roll-get-albums]]]}))

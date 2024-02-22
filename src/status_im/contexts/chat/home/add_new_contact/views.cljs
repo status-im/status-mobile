@@ -59,7 +59,8 @@
                      paste-on-input #(clipboard/get-string
                                       (fn [clipboard-text]
                                         (reset! input-value clipboard-text)
-                                        (rf/dispatch [:contacts/set-new-identity clipboard-text nil])))]
+                                        (rf/dispatch [:contacts/set-new-identity
+                                                      {:input clipboard-text}])))]
     (let [{:keys [scanned]} (rf/sub [:contacts/new-identity])
           empty-input?      (and (string/blank? @input-value)
                                  (string/blank? scanned))]
@@ -86,7 +87,7 @@
          :value               (or scanned @input-value)
          :on-change-text      (fn [new-text]
                                 (reset! input-value new-text)
-                                (as-> [:contacts/set-new-identity new-text nil] $
+                                (as-> [:contacts/set-new-identity {:input new-text}] $
                                   (if (string/blank? scanned)
                                     (debounce/debounce-and-dispatch $ 600)
                                     (rf/dispatch-sync $))))}]
