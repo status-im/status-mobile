@@ -65,6 +65,19 @@ BAD
       :on-press-out        #(set-pressed nil)}]))
 ```
 
+GOOD:
+```clojure
+(defn view
+  []
+  (let [[pressed? set-pressed] (rn/use-state false)
+        on-press-in            (rn/use-callback #(set-pressed true))
+        on-press-out           (rn/use-callback #(set-pressed nil))]
+    [rn/pressable
+     {:style               (style/main pressed?)
+      :on-press-in         on-press-in
+      :on-press-out        on-press-out}]))
+```
+
 ## Global state and subscriptions
 
 For global state management, we utilize Re-frame subscriptions. They can be likened to React state. To obtain the state, `(rf/sub [])` is employed, and to modify it, `(rf/dispatch [])` is utilized. However, they update components in a similar manner to React states.
