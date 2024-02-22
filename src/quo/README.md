@@ -120,7 +120,8 @@ Instead, use `(or value some-default-value)` in a `let` expression or as a param
            return-key-type]
     :or   {auto-focus?     false
            init-value      0
-           return-key-type :done}}])
+           return-key-type :done}}]
+  ...)
 
 ;; good
 (defn- view-internal
