@@ -3,9 +3,9 @@
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]
     [legacy.status-im.multiaccounts.logout.core :as logout]
-    [legacy.status-im.utils.test :as utils.test]
     [status-im.contexts.profile.utils :as profile.utils]
     [test-helpers.integration :as h]
+    [tests.test-utils :as test-utils]
     [utils.re-frame :as rf]))
 
 (deftest edit-profile-name-test
@@ -28,7 +28,7 @@
 (deftest edit-profile-picture-test
   (h/log-headline :edit-profile-picture-test)
   (let [mock-image    "resources/images/mock2/monkey.png"
-        absolute-path (.resolve utils.test/path mock-image)]
+        absolute-path (.resolve test-utils/path mock-image)]
     (rf-test/run-test-async
      (h/with-app-initialized
       (h/with-account

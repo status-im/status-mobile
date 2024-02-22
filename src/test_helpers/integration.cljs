@@ -6,11 +6,24 @@
     legacy.status-im.subs.root
     [native-module.core :as native-module]
     [re-frame.core :as rf]
+    status-im.contexts.onboarding.events
     status-im.events
     status-im.navigation.core
     status-im.subs.root
     [taoensso.timbre :as log]
-    [tests.integration-test.constants :as constants]))
+    [tests.integration-test.constants :as constants]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
+
+(defn validate-mnemonic
+  [mnemonic on-success on-error]
+  (native-module/validate-mnemonic
+   (security/safe-unmask-data mnemonic)
+   (fn [result]
+     (let [{:keys [error keyUID]} (transforms/json->clj result)]
+       (if (seq error)
+         (when on-error (on-error error))
+         (on-success mnemonic keyUID))))))
 
 (defn initialize-app!
   []
@@ -20,6 +33,35 @@
   []
   (rf/dispatch [:profile.create/create-and-login
                 {:display-name constants/account-name :password constants/password :color "blue"}]))
+
+(defn recover-and-login
+  [seed-phrase]
+  (rf/dispatch [:profile.recover/recover-and-login
+                {:display-name (:name constants/recovery-account)
+                 :seed-phrase  seed-phrase
+                 :password     constants/password
+                 :color        "blue"}]))
+
+(defn recover-multiaccount!
+  []
+  (let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))]
+    (validate-mnemonic
+     masked-seed-phrase
+     (fn [mnemonic key-uid]
+       (rf/dispatch [:onboarding/seed-phrase-validated
+                     (security/mask-data mnemonic) key-uid])
+       (rf/dispatch [:pop-to-root :profiles])
+       (rf/dispatch [:profile/profile-selected key-uid])
+       (recover-and-login mnemonic))
+     #())))
+
+(defn enable-testnet!
+  []
+  (rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
+                true {}])
+  ; can be removed soon
+  (rf/dispatch [:profile.settings/profile-update :is-sepolia-enabled? true {}])
+  (rf/dispatch [:wallet/initialize]))
 
 (defn app-initialized
   []
@@ -42,16 +84,6 @@
   []
   (is (= @(rf/subscribe [:communities/create]) constants/community)))
 
-(defn create-new-account!
-  []
-  (rf/dispatch-sync [:wallet-legacy.accounts/start-adding-new-account {:type :generate}])
-  (rf/dispatch-sync [:set-in [:add-account :account :name] constants/account-name])
-  (rf/dispatch [:wallet-legacy.accounts/add-new-account (native-module/sha3 constants/password)]))
-
-(defn assert-new-account-created
-  []
-  (is (true? (some #(= (:name %) constants/account-name)
-                   @(rf/subscribe [:profile/wallet-accounts])))))
 
 (defn logout
   []

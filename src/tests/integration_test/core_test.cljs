@@ -5,12 +5,12 @@
     legacy.status-im.events
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
-    [legacy.status-im.utils.test :as utils.test]
     [re-frame.core :as rf]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
-    [test-helpers.integration :as h]))
+    [test-helpers.integration :as h]
+    [tests.test-utils :as utils.test]))
 
 (deftest initialize-app-test
   (h/log-headline :initialize-app-test)

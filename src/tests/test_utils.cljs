@@ -1,4 +1,4 @@
-(ns legacy.status-im.utils.test
+(ns tests.test-utils
   (:require
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]))
@@ -70,6 +70,12 @@
       (callback (.openAccounts native-status test-dir)))
     :createAccountAndLogin
     (fn [request] (.createAccountAndLogin native-status request))
+    :restoreAccountAndLogin
+    (fn [request]
+      (prn native-status)
+      (.restoreAccountAndLogin native-status request))
+    :loginAccount
+    (fn [request] (.loginAccount native-status request))
     :logout
     (fn [] (.logout native-status))
     :multiAccountImportMnemonic
@@ -128,3 +134,4 @@
     (fn [] (.fleets native-status))
     :startLocalNotifications
     identity}))
+

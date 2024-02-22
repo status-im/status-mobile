@@ -80,5 +80,5 @@
 
 (defn reset-credentials
   [server]
-  (-> (.resetInternetCredentials ^js react-native-keychain (string/lower-case server))
+  (-> (.resetInternetCredentials ^js react-native-keychain (when server (string/lower-case server)))
       (.then #(when-not % (log/error (str "Error while clearing saved password."))))))
