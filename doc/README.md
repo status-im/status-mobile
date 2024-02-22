@@ -10,6 +10,8 @@
 
 [Coding guidelines](new-guidelines.md)
 
+[UI components coding guidelines](ui-guidelines.md)
+
 [Release Checklist](release-checklist.md)
 
 [Release Guide](release-guide.md)
