@@ -24,6 +24,8 @@
                                                                   :t/member)
         selected-addresses (rf/sub [:communities/selected-permission-addresses id])]
 
+    (tap> ["token master" token-master])
+
     [rn/view {:style style/container}
      (when (and highest-permission-role (seq selected-addresses))
        [rn/view
