@@ -113,8 +113,8 @@
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
      (let [grouped-communities (->> communities
                                     vals
-                                    (sort-by (fn [{:keys [last-opened-at joined-at]}]
-                                               (or last-opened-at joined-at))
+                                    (sort-by (fn [{:keys [requested-to-join-at last-opened-at joined-at]}]
+                                               (or requested-to-join-at last-opened-at joined-at))
                                              #(compare %2 %1))
                                     (group-by #(group-communities-by-status requests %)))]
        (reset! memo-communities-stack-items grouped-communities)
