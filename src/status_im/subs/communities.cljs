@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
+    [re-frame.db :as rf-db]
     [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
@@ -416,9 +417,6 @@
 (re-frame/reg-sub
  :community/token-permissions
  (fn [[_ community-id]]
-   (tap> (clj->js (re-frame/subscribe [:communities/checking-permissions-by-id community-id])))
-   (tap> [(re-frame/subscribe [:communities/community community-id])
-    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
 
@@ -426,15 +424,20 @@
    (let [token-permissions (:token-permissions community)
          token-images      (:token-images community)
          grouped-by-type   (group-by (comp :type second) token-permissions)
-         mock-images       (if (and (contains? token-permissions 5) (contains? token-permissions 6))
-                             (resources/mock-images :collectible)
-                             nil)
+         mock-images       (when (and (contains? token-permissions 5)
+                                      (contains? token-permissions 6))
+                             (resources/mock-images :collectible))
          permissions       (:check permissions-check)
          sufficient        (mapcat (fn [[_ permission]]
                                      (mapcat (fn [token-req]
                                                [(get token-req :satisfied)])
                                       (:tokenRequirement permission)))
                             (:permissions permissions))]
+
+     (tap> ["sufficient" sufficient])
+     (tap> ["token images" token-images])
+     (js/console.log ["sufficient" (clj->js sufficient)])
+     (tap> ["database" @rf-db/app-db])
      (into {}
            (map (fn [[type tokens]]
                   [type
@@ -445,9 +448,7 @@
                                                (assoc :amount
                                                       (wallet.utils/remove-trailing-zeroes (:amount
                                                                                             criteria)))
-                                               (select-keys [:symbol :amount])
                                                (assoc :sufficient? (nth sufficient i true)
-                                                      :loading? (:checking? permissions-check)
                                                       :img-src
                                                       (if (= type 2)
                                                         (or mock-images

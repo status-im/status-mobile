@@ -1,13 +1,13 @@
 (ns status-im.subs.communities-test
   (:require
-   [cljs.test :refer [is testing]]
-   matcher-combinators.test
-   [re-frame.db :as rf-db] 
-   [status-im.constants :as constants]
-   status-im.subs.communities
-   [test-helpers.unit :as h]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [cljs.test :refer [is testing]]
+    matcher-combinators.test
+    [re-frame.db :as rf-db]
+    [status-im.constants :as constants]
+    status-im.subs.communities
+    [test-helpers.unit :as h]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def community-id "0x1")
 
@@ -657,34 +657,86 @@
 ;;             :img-src     "path/to/jpeg"}]]})
 ;;       (rf/sub [sub-name community-id]))))
 
+;; (h/deftest-sub :community/token-permissions
+;;   [sub-name]
+;;   (testing "returns token permissions grouped by type with correct attributes"
+;;     (js/console.log "We here guys")
+;;       (swap! rf-db/app-db assoc
+;;              :communities
+;;              {"0x1" {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
+;;                                             {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+;;                                              :type 2
+;;                                              :token_criteria
+;;                                              [{:contract_addresses
+;;                                                {:5
+;;                                                "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+;;                                                 :11155111
+;;                                                 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
+;;                                                :type 1
+;;                                                :symbol "STT"
+;;                                                :amount "1.0000000000000000"
+;;                                                :decimals 18}]}]]}})
+
+;;     (swap! rf-db/app-db assoc
+;;            :communities/checking-permissions-by-id
+;;            {:checking? false
+;;             :check     {:satisfied   true
+;;                         :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a" {:tokenRequirement
+;;                                                                               [{:satisfied
+;;                                                                               true}]}}}})
+;;     (is (match?
+;;          {2 [[{:symbol      "STT"
+;;                :amount      "1"
+;;                :sufficient? true
+;;                :loading?    ""
+;;                :img-src     ""}]]}
+;;          (rf/sub [sub-name community-id])))))
+
 (h/deftest-sub :community/token-permissions
   [sub-name]
-  (testing "returns token permissions grouped by type with correct attributes" 
-    (js/console.log "We here guys") 
-      (swap! rf-db/app-db assoc-in
-             :communities 
+  (testing "returns token permissions grouped by type with correct attributes"
+    (swap! rf-db/app-db assoc
+      :communities
       {"0x1" {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
                                    {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
                                     :type 2
                                     :token_criteria
                                     [{:contract_addresses
-                                      {:5        "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
-                                       :11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
+                                      {:5       "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+                                       11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
                                       :type 1
                                       :symbol "STT"
                                       :amount "1.0000000000000000"
-                                      :decimals 18}]}]]}})
+                                      :decimals 18}]}]
+                                  [:6872cfb4-9122-4d39-b58c-5dff441f94d4
+                                   {:id "6872cfb4-9122-4d39-b58c-5dff441f94d4"
+                                    :type 6
+                                    :token_criteria
+                                    [{:contract_addresses
+                                      {:420 "0x98C28243BeFD84f5B83BA49fE843e6Cbd9a55AD4"}
+                                      :type 2
+                                      :symbol "OWNPER"
+                                      :name "Owner-Permission Drawer"
+                                      :amount "1"}]
+                                    :is_private true}]]
+              :token-images      {"OWNPER" "path/to/jpeg"}}})
 
-    (swap! rf-db/app-db assoc-in
-           :communities/checking-permissions-by-id
-           {:checking? false
-            :check     {:satisfied   true
-                        :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a" {:tokenRequirement
-                                                                              [{:satisfied true}]}}}})
-    (is (match?
-         {2 [[{:symbol      "STT"
-               :amount      "1"
-               :sufficient? true
-               :loading?    false
-               :img-src     "data:image/jpeg;base64,/9j/2w"}]]}
-         (rf/sub [sub-name community-id])))))
+    (swap! rf-db/app-db assoc
+      :communities/checking-permissions-by-id
+      {:checking? false
+       :check     {:satisfied   true
+                   :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a" {:tokenRequirement
+                                                                         [{:satisfied true}]}}}})
+    (is (match? {2 [[{:symbol      "STT"
+                      :amount      "1"
+                      :sufficient? true
+                      :img-src     nil}]]
+                 6 [[{:symbol      "OWNPER"
+                      :amount      "1"
+                      :sufficient? true
+                      :img-src     "path/to/jpeg"}]]}
+                (rf/sub [sub-name community-id])))))
+
+(comment
+  (require 'cljs.test)
+  (cljs.test/test-var #'status-im.subs.communities-test/community-token-permissions-test))
