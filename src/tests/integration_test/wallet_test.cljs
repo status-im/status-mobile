@@ -3,6 +3,7 @@
     [cljs.test :refer [deftest is]]
     [day8.re-frame.test :as rf-test]
     legacy.status-im.events
+    [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
     status-im.events
     status-im.navigation.core
@@ -62,4 +63,4 @@
                      (is (= :confirmed (-> transaction-details vals first :status)))
                      (h/logout)
                      (rf-test/wait-for
-                       [:legacy.status-im.multiaccounts.logout.core/logout-method])))))))))))))
+                       [::logout/logout-method])))))))))))))
