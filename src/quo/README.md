@@ -124,12 +124,11 @@ Instead, use `(or value some-default-value)` in a `let` expression or as a param
 
 ;; good
 (defn- view-internal
-  [{:keys [{default-auto-focus?     :auto-focus?
-            default-init-value      :init-value
-            default-return-key-type :return-key-type}]}])
-    (let [auto-focus? (or default-auto-focus? false)
-          init-value (or default-init-value 0)
-          return-key-type (or default-return-key-type :done)])
+   [{:keys [theme size something] :as props}]
+   (let [auto-focus? (or (:auto-focus? props) false)
+         init-value (or (:init-value props) 0)
+         return-key-type (or (:return-key-type props) :done)]
+     ...))
 ```
 
 ## Component tests
