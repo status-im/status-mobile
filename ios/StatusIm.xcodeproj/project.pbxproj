@@ -3,11 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* StatusImTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* StatusImTests.m */; };
+		069C9B792B8636A000BC9530 /* Biometrics Test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 069C9B782B8636A000BC9530 /* Biometrics Test.riv */; };
+		069C9B7A2B8636A000BC9530 /* Biometrics Test.riv in Resources */ = {isa = PBXBuildFile; fileRef = 069C9B782B8636A000BC9530 /* Biometrics Test.riv */; };
+		069C9B7F2B8761DD00BC9530 /* Biometrics-Compressed.riv in Resources */ = {isa = PBXBuildFile; fileRef = 069C9B7E2B8761DD00BC9530 /* Biometrics-Compressed.riv */; };
+		069C9B802B8761DD00BC9530 /* Biometrics-Compressed.riv in Resources */ = {isa = PBXBuildFile; fileRef = 069C9B7E2B8761DD00BC9530 /* Biometrics-Compressed.riv */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
@@ -108,6 +112,8 @@
 		00E356EE1AD99517003FC87E /* StatusImTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StatusImTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* StatusImTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusImTests.m; sourceTree = "<group>"; };
+		069C9B782B8636A000BC9530 /* Biometrics Test.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Biometrics Test.riv"; sourceTree = "<group>"; };
+		069C9B7E2B8761DD00BC9530 /* Biometrics-Compressed.riv */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Biometrics-Compressed.riv"; sourceTree = "<group>"; };
 		1130DCD9CBDCA3CA461F55B4 /* Pods-Status-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* StatusIm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StatusIm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = StatusIm/AppDelegate.h; sourceTree = "<group>"; };
@@ -212,6 +218,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		069C9B772B86367100BC9530 /* RiveFiles */ = {
+			isa = PBXGroup;
+			children = (
+				069C9B7E2B8761DD00BC9530 /* Biometrics-Compressed.riv */,
+				069C9B782B8636A000BC9530 /* Biometrics Test.riv */,
+			);
+			path = RiveFiles;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* StatusIm */ = {
 			isa = PBXGroup;
 			children = (
@@ -234,6 +249,7 @@
 		1E7837547A9A40E18AD63CF3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				069C9B772B86367100BC9530 /* RiveFiles */,
 				74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */,
 				CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */,
 				B321D25F4493470980039457 /* Inter-BoldItalic.otf */,
@@ -346,6 +362,7 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				D737FA0B0E9D346092C626FB /* [CP] Copy Pods Resources */,
+				F5E1204C221FAAFC26976A68 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -369,6 +386,7 @@
 				20B6B6891D92C42700CC5C6A /* Embed Frameworks */,
 				E3914A731DF919ED00EBB515 /* Run Script */,
 				28606042DA81A750949525E4 /* [CP] Copy Pods Resources */,
+				0FB4B83C3D5C88264D02B2B2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -391,6 +409,7 @@
 				3AAD2AD624A3A60E0075D594 /* Embed Frameworks */,
 				3AAD2AD724A3A60E0075D594 /* Run Script */,
 				BB1D92AA7446228787D6925C /* [CP] Copy Pods Resources */,
+				4F560680A93B4B701FEDFB7C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -490,6 +509,7 @@
 				C14C5F9329C0ADB5005C58A7 /* launch-icon.png in Resources */,
 				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
 				715D8132290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
+				069C9B792B8636A000BC9530 /* Biometrics Test.riv in Resources */,
 				C14C5F9129C0AD9C005C58A7 /* launch-icon@2x.png in Resources */,
 				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
 				D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */,
@@ -500,6 +520,7 @@
 				57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */,
 				70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */,
 				3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */,
+				069C9B7F2B8761DD00BC9530 /* Biometrics-Compressed.riv in Resources */,
 				8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */,
 				C14C5F8D29C0A149005C58A7 /* launch-icon@3x.png in Resources */,
 			);
@@ -512,6 +533,7 @@
 				3AAD2ACA24A3A60E0075D594 /* launch-image-universal.storyboard in Resources */,
 				715D8133290BE850006F5C88 /* UbuntuMono-Regular.ttf in Resources */,
 				3AAD2ACB24A3A60E0075D594 /* Images.xcassets in Resources */,
+				069C9B7A2B8636A000BC9530 /* Biometrics Test.riv in Resources */,
 				3AAD2ACC24A3A60E0075D594 /* Inter-Bold.otf in Resources */,
 				3AAD2ACD24A3A60E0075D594 /* Inter-BoldItalic.otf in Resources */,
 				C1715FFA29C0BCE10088FA8B /* launch-icon@2x.png in Resources */,
@@ -522,6 +544,7 @@
 				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
 				C1715FFC29C0BCE80088FA8B /* launch-icon.png in Resources */,
 				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
+				069C9B802B8761DD00BC9530 /* Biometrics-Compressed.riv in Resources */,
 				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,
 				C1715FFB29C0BCE50088FA8B /* launch-icon@3x.png in Resources */,
 			);
@@ -543,6 +566,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/usr/bin/env sh";
 			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\"${NODE_ARGS:- --max-old-space-size=16384 }\"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
+		};
+		0FB4B83C3D5C88264D02B2B2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RiveRuntime/RiveRuntime.framework/RiveRuntime",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RiveRuntime.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm/Pods-Status-StatusIm-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		28606042DA81A750949525E4 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -593,6 +634,24 @@
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
+		};
+		4F560680A93B4B701FEDFB7C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RiveRuntime/RiveRuntime.framework/RiveRuntime",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RiveRuntime.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		523CD6BCB20FD78FBF3564AD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -717,6 +776,24 @@
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = "/usr/bin/env sh";
 			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
+		};
+		F5E1204C221FAAFC26976A68 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/RiveRuntime/RiveRuntime.framework/RiveRuntime",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RiveRuntime.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
