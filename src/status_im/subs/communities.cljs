@@ -457,3 +457,26 @@
                                        (:token_criteria (second token))))
                         tokens)])
                 grouped-by-type)))))
+
+(re-frame/reg-sub :community/token-permissions-2
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+ (fn [[{:keys [token-permissions]} permissions-check] _]
+   (tap> {:permissions-check permissions-check})
+   (->> token-permissions
+        (map second)
+        (map (fn [token-permission]
+               (let [satisfied-criteria (into []
+                                              (get-in permissions-check
+                                                      [:check :permissions (:id token-permission)
+                                                       :tokenRequirement]))]
+                 (map-indexed (fn [idx criterion]
+                                {:symbol          (:symbol criterion)
+                                 :permission-type (:type token-permission)
+                                 :amount          (wallet.utils/remove-trailing-zeroes (:amount
+                                                                                        criterion))
+                                 :sufficient?     (get-in satisfied-criteria [idx :satisfied] false)
+                                 :img-src         "path/to/jpeg"})
+                              (:token_criteria token-permission)))))
+        (group-by (comp :permission-type first)))))
