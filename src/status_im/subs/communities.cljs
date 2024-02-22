@@ -37,6 +37,12 @@
    (get-in communities [id :chats])))
 
 (re-frame/reg-sub
+ :communities/community-color
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get-in communities [id :color])))
+
+(re-frame/reg-sub
  :communities/community-members
  :<- [:communities]
  (fn [communities [_ id]]
