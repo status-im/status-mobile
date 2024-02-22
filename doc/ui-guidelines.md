@@ -107,28 +107,19 @@ BEFORE:
   []
   (let [focused? (atom false)]
     (fn []
-      (let [on-clear               (fn []
-                                     (reset! status (if @focused? :active :default)))
-            on-focus               (fn []
-                                     (reset! focused? true))
-            on-blur                (fn []
-                                     (reset! focused? false))]))))
+      (let [on-clear #(reset! status (if @focused? :active :default))
+            on-focus #(reset! focused? true)
+            on-blur  #(reset! focused? false)]))))
 ```
 
 NOW:
 ```clojure
 (defn view
   []
-  (let [focused?               (rn/use-ref-atom false)
-        on-clear               (rn/use-callback
-                                (fn []
-                                  (set-status (if @focused? :active :default))))
-        on-focus               (rn/use-callback
-                                (fn []
-                                  (reset! focused? true)))
-        on-blur                (rn/use-callback
-                                (fn []
-                                  (reset! focused? false)))]))
+  (let [focused? (rn/use-ref-atom false)
+        on-clear (rn/use-callback #(set-status (if @focused? :active :default)))
+        on-focus (rn/use-callback #(reset! focused? true))
+        on-blur  (rn/use-callback #(reset! focused? false))]))
 ```
 
 ## Effects
