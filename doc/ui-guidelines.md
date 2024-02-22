@@ -86,7 +86,7 @@ For global state management, we utilize Re-frame subscriptions. They can be like
 
 ## Regular atoms
 
-In certain instances, components utilized regular atoms; however, they should now be encapsulated within `rn/useRef`.
+In certain instances, components utilized regular atoms; however, they should now be used with `rn/use-ref-atom`
 
 BEFORE:
 ```clojure
@@ -106,7 +106,7 @@ NOW:
 ```clojure
 (defn view
   []
-  (let [focused?               (rn/use-ref (atom false))
+  (let [focused?               (rn/use-ref-atom false)
         on-clear               (rn/use-callback
                                 (fn []
                                   (set-status (if @focused? :active :default))))
@@ -119,20 +119,6 @@ NOW:
 ```
 
 ## Effects
-
-In most cases, the effect should be used for implementing visual reactions (such as animations) to state changes or for lifecycle methods.
-
-ANIMATION:
-```clojure
-(defn f-zoom-button
-  [{:keys [selected? current-zoom]}]
-  (let [size (reanimated/use-shared-value (if selected? 37 25))]
-    (rn/use-effect #(reanimated/animate size (if selected? 37 25)) [current-zoom])
-    [rn/touchable-opacity
-     {:style (style/zoom-button-container size)}]))
-```
-
-This effect will be run only when current-zoom has changed.
 
 LIFECYCLE:
 
@@ -155,6 +141,16 @@ LIFECYCLE:
 
 > [!IMPORTANT]
 > Effects shouldn't be used as a reaction to state changes for altering logic.
+
+BAD:
+```clojure
+(defn f-zoom-button
+  [{:keys [selected? current-zoom]}]
+  (let [size (reanimated/use-shared-value (if selected? 37 25))]
+    (rn/use-effect #(reanimated/animate size (if selected? 37 25)) [current-zoom])
+    [rn/touchable-opacity
+     {:style (style/zoom-button-container size)}]))
+```
 
 BAD:
 

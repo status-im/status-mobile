@@ -135,6 +135,8 @@
 (def use-context react/useContext)
 
 (defn use-effect
+  {:deprecated
+   "use-mount or use-unmount should be used, more here https://github.com/status-im/status-mobile/blob/develop/doc/ui-guidelines.md#effects"}
   ([handler]
    (use-effect handler nil))
   ([handler deps]
@@ -156,6 +158,11 @@
    (use-callback handler []))
   ([handler deps]
    (react/useCallback handler (bean/->js deps))))
+
+(defn use-ref-atom
+  [value]
+  (let [ref (use-ref (atom value))]
+    (.current ^js ref)))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))
