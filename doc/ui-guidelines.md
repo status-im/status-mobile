@@ -144,7 +144,7 @@ LIFECYCLE:
 ```
 
 > [!IMPORTANT]
-> Effects shouldn't be used as a reaction to state changes for altering logic.
+> Effects should NOT be utilized as a response to state changes for modifying logic. If you're unsure how to achieve this without using effects, please consult the team in the general chat. There may be instances where using effects is appropriate, so we can explore a solution together and enhance our guidelines.
 
 BAD:
 ```clojure
@@ -167,6 +167,8 @@ BAD:
 ```
 
 Instead `:all-collectibles-changed` should be used in the handler which changes `collectible-list` state
+
+
 
 ## Performance tips
 
