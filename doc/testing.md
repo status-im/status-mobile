@@ -2,13 +2,11 @@
 
 ## Unit & integration tests
 
-To run tests:
+To run all tests:
 
 ```
 make test
 ```
-
-
 
 Also test watcher can be launched. It will re-run the entire test suite when any file is modified
 
@@ -51,18 +49,46 @@ Here I'm showing a terminal-only experience using Tmux (left pane Emacs, right p
 
 [2022-12-19 13-17.webm](https://user-images.githubusercontent.com/46027/208471199-1909c446-c82d-42a0-9350-0c15ca562713.webm)
 
-## Component tests
+## Component tests only
 
 To run tests:
 
 ```
-   make component-test
+make component-test
 ```
 
 Also test watcher can be launched. It will re-run the entire test suite when any file is modified
 
 ```
-   make component-test-watch
+make component-test-watch
 ```
 
 Check [component tests doc](./component-tests-overview.md) for more.
+
+## Unit tests only
+
+To run unit tests:
+
+```
+make test-unit
+```
+
+Also test watcher can be launched. It will re-run the entire test suite when any file is modified
+
+```
+make test-unit WATCH=true
+```
+
+## Integration tests only
+
+To run integration tests:
+
+```
+make test-integration
+```
+
+Also test watcher can be launched. It will re-run the entire test suite when any file is modified
+
+```
+make test-integration WATCH=true
+```
