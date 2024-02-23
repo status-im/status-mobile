@@ -167,7 +167,7 @@
      :component settings/view}
 
     {:name      :settings-syncing
-     :options   (merge options/dark-screen {:insets {:top? true}})
+     :options   options/transparent-modal-screen-options
      :component settings-syncing/view}
 
     {:name      :settings-setup-syncing
@@ -425,7 +425,7 @@
     ;; Settings
 
     {:name      :settings-password
-     :options   options/transparent-screen-options
+     :options   options/transparent-modal-screen-options
      :component settings-password/view}]
 
    (when js/goog.DEBUG

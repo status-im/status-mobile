@@ -39,8 +39,6 @@ pipeline {
     LANGUAGE = "en_US.UTF-8"
     TARGET   = 'ios'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
-    /* See nix/README.md */
-    NIX_IGNORE_SYMLINK_STORE = 1
     FASTLANE_DISABLE_COLORS = 1
     BUNDLE_PATH = "${HOME}/.bundle"
   }

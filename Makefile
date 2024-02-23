@@ -56,12 +56,6 @@ export _NIX_KEEP ?= TMPDIR,BUILD_ENV,\
 # Useful for Android release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
 
-# MacOS root is read-only, read nix/README.md for details
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-export NIX_IGNORE_SYMLINK_STORE=1
-endif
-
 #----------------
 # Nix targets
 #----------------
