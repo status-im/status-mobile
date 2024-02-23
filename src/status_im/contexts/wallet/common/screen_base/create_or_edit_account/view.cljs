@@ -36,7 +36,7 @@
                                      (i18n/label bottom-action-label)]))
       :gradient-cover?          true
       :footer-container-padding 0
-      :header-container-padding (safe-area/get-top)
+      :header-container-style   {:padding-top (safe-area/get-top)}
       :customization-color      account-color}
      (into
       [:<>

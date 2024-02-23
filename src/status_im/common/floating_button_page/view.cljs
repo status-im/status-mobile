@@ -52,7 +52,7 @@
      :remove-listeners    remove-listeners}))
 
 (defn view
-  [{:keys [header footer customization-color footer-container-padding header-container-padding
+  [{:keys [header footer customization-color footer-container-padding header-container-style
            gradient-cover?]
     :or   {footer-container-padding (safe-area/get-top)}} &
    children]
@@ -88,7 +88,7 @@
        [rn/view {:style style/page-container}
         [rn/view
          {:on-layout set-header-height
-          :style     {:padding-top header-container-padding}}
+          :style     header-container-style}
          header]
         [rn/scroll-view
          {:on-scroll               set-content-y-scroll
