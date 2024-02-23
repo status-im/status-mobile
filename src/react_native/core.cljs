@@ -139,17 +139,18 @@
   (let [ref (use-ref (atom value))]
     (.-current ^js ref)))
 
-(defn get-js-deps [deps]
-  (let [prev-deps (use-ref-atom {:prev-val false
-                                 :deps     []})]
-    (if deps
+(defn get-js-deps
+  [deps]
+  (if deps
+    (let [prev-deps (use-ref-atom {:value false
+                                   :deps  []})]
       (if (not= deps (:deps @prev-deps))
-        (let [new-val (not (:prev-val @prev-deps))]
-          (reset! prev-deps {:prev-val new-val
-                             :deps     deps})
-          #js [new-val])
-        #js [(:prev-val @prev-deps)])
-      js/undefined)))
+        (let [new-value (not (:value @prev-deps))]
+          (reset! prev-deps {:value new-value
+                             :deps  deps})
+          #js [new-value])
+        #js [(:value @prev-deps)]))
+    js/undefined))
 
 (defn use-effect
   {:deprecated
