@@ -10,3 +10,6 @@
    :border-width    0
    :justify-content :space-between
    :width           "100%"})
+
+(def footer-button
+  {:width "48%"})
