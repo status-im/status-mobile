@@ -2,10 +2,10 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
+    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
-    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im.contexts.chat.messenger.composer.actions.view :as actions]
@@ -32,12 +32,12 @@
   [{:keys [insets
            chat-list-scroll-y
            chat-screen-layout-calculations-complete?
-           window-height
-           blur-height
-           opacity
-           background-y
-           theme]} props state]
+           theme]}
+   shared-values]
   (let [subscriptions            (utils/init-subs)
+        props                    (utils/init-non-reactive-state)
+        state                    (utils/init-reactive-state)
+        window-height            (:height (rn/get-window))
         content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
                                                    constants/input-height))
@@ -57,8 +57,7 @@
                                   lines
                                   content-height
                                   max-height
-                                  opacity
-                                  background-y)
+                                  shared-values)
         dimensions               {:content-height content-height
                                   :max-height     max-height
                                   :window-height  window-height
@@ -76,7 +75,7 @@
                         dimensions
                         subscriptions)
     (effects/use-edit props state subscriptions chat-screen-layout-calculations-complete?)
-    (effects/use-reply props animations subscriptions chat-screen-layout-calculations-complete?)
+    (effects/use-reply props subscriptions chat-screen-layout-calculations-complete?)
     (effects/update-input-mention props state subscriptions)
     (effects/link-previews props state animations subscriptions)
     (effects/use-images props state animations subscriptions)
@@ -87,14 +86,13 @@
       (:reply subscriptions)
       (:edit subscriptions)]
      [rn/view
-      {:style style/composer-sheet-and-jump-to-container}
-      [sub-view/shell-button state chat-list-scroll-y window-height]
+      {:style style/absolute-bottom-style}
+      [sub-view/shell-button shared-values chat-list-scroll-y window-height]
       [gesture/gesture-detector
        {:gesture
         (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
        [reanimated/view
-        {:style     (style/sheet-container insets state animations theme)
-         :on-layout #(handler/layout % state blur-height)}
+        {:style (style/sheet-container insets animations theme)}
         [sub-view/bar]
         [:<>
          [reply/view state (:input-ref props)]
@@ -146,29 +144,14 @@
 
 (defn f-composer
   [props]
-  (let [window-height (:height (rn/get-window))
-        theme         (quo.theme/use-theme-value)
-        opacity       (reanimated/use-shared-value 0)
-        background-y  (reanimated/use-shared-value (- window-height)) ; Y position of background
-                                                                      ; overlay
-        blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
-                                                      (:bottom (:insets props))))
-        extra-params  (assoc props
-                             :window-height window-height
-                             :blur-height   blur-height
-                             :opacity       opacity
-                             :background-y  background-y
-                             :theme         theme)
-        props         (utils/init-non-reactive-state)
-        state         (utils/init-reactive-state)]
-    [rn/view (when platform/ios? {:style {:z-index 1}})
-     [reanimated/view {:style (style/background opacity background-y window-height)}] ; background
-                                                                                      ; overlay
-     [sub-view/blur-view
-      {:layout-height blur-height
-       :focused?      (:focused? state)
-       :theme         theme}]
-     [:f> sheet-component extra-params props state]]))
+  (let [theme                   (quo.theme/use-theme-value)
+        composer-default-height (+ constants/composer-default-height (:bottom (:insets props)))
+        shared-values           (utils/shared-values)]
+    [:<>
+     ;; [reanimated/view {:style (style/background-overlay shared-values)}]
+     [:f> sheet-component props shared-values theme]
+     [reanimated/view {:style (style/blur-container composer-default-height shared-values)}
+      [blur/view (style/blur-view theme)]]]))
 
 (defn composer
   [props]

@@ -18,18 +18,12 @@
   "Minimize composer, animate-out background overlay, clear input and flush state"
   [{:keys [sending-images? sending-links?]}
    {:keys [text-value focused? maximized?]}
-   {:keys [height saved-height last-height opacity background-y container-opacity]}
+   {:keys [height saved-height last-height]}
    window-height
    edit]
   (reanimated/animate height comp-constants/input-height)
   (reanimated/set-shared-value saved-height comp-constants/input-height)
   (reanimated/set-shared-value last-height comp-constants/input-height)
-  (reanimated/animate opacity 0)
-  (when-not @focused?
-    (js/setTimeout #(reanimated/animate container-opacity comp-constants/empty-opacity) 300))
-  (js/setTimeout #(reanimated/set-shared-value background-y
-                                               (- window-height))
-                 300)
   (rf/dispatch [:chat.ui/send-current-message])
   (rf/dispatch [:chat.ui/set-input-maximized false])
   (rf/dispatch [:chat.ui/set-input-content-height comp-constants/input-height])
@@ -84,8 +78,7 @@
 
 (defn audio-button
   [{:keys [record-reset-fn input-ref]}
-   {:keys [record-permission? recording? gesture-enabled? focused?]}
-   {:keys [container-opacity]}]
+   {:keys [record-permission? recording? gesture-enabled? focused?]}]
   (let [audio (rf/sub [:chats/sending-audio])]
     [rn/view
      {:style          (style/record-audio-container)
@@ -97,8 +90,7 @@
        :on-start-recording                 (fn []
                                              (rf/dispatch [:chat.ui/set-recording true])
                                              (reset! recording? true)
-                                             (reset! gesture-enabled? false)
-                                             (reanimated/animate container-opacity 1))
+                                             (reset! gesture-enabled? false))
        :audio-file                         audio
        :on-lock                            (fn []
                                              (rf/dispatch [:chat.ui/set-recording false]))
@@ -111,8 +103,6 @@
                                              (reset! gesture-enabled? true)
                                              (rf/dispatch [:chat/send-audio file-path duration])
                                              (if-not @focused?
-                                               (reanimated/animate container-opacity
-                                                                   comp-constants/empty-opacity)
                                                (js/setTimeout #(when @input-ref (.focus ^js @input-ref))
                                                               300))
                                              (rf/dispatch [:chat.ui/set-input-audio nil]))
@@ -122,8 +112,6 @@
                                                (reset! recording? false)
                                                (reset! gesture-enabled? true)
                                                (if-not @focused?
-                                                 (reanimated/animate container-opacity
-                                                                     comp-constants/empty-opacity)
                                                  (js/setTimeout #(when @input-ref
                                                                    (.focus ^js @input-ref))
                                                                 300))

@@ -53,15 +53,6 @@
                               (reset! kb-default-height (utils.number/parse-int height 0))
                               (reset! kb-height (utils.number/parse-int height 0))))))
 
-(defn background-effect
-  [{:keys [maximized?]}
-   {:keys [opacity background-y]}
-   {:keys [max-height]}
-   {:keys [input-content-height]}]
-  (when (or @maximized? (>= input-content-height (* max-height constants/background-threshold)))
-    (reanimated/set-shared-value background-y 0)
-    (reanimated/animate opacity 1)))
-
 (defn link-preview-effect
   [{:keys [text-value]}]
   (let [text @text-value]
@@ -70,19 +61,17 @@
 
 (defn audio-effect
   [{:keys [recording? gesture-enabled?]}
-   {:keys [container-opacity]}
    audio]
   (when (and audio (not @recording?))
     (reset! recording? true)
-    (reset! gesture-enabled? false)
-    (reanimated/animate container-opacity 1)))
+    (reset! gesture-enabled? false)))
 
 (defn empty-effect
-  [{:keys [focused?]}
-   {:keys [container-opacity]}
+  [{:keys [empty-input?]}
    {:keys [input-text images link-previews? reply audio]}]
-  (when (and (not @focused?) (utils/empty-input? input-text images link-previews? reply audio))
-    (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
+  (reanimated/set-shared-value
+   empty-input?
+   (utils/empty-input? input-text images link-previews? reply audio)))
 
 (defn component-will-unmount
   [{:keys [keyboard-show-listener keyboard-hide-listener keyboard-frame-listener]}]
@@ -98,10 +87,9 @@
      (maximized-effect state animations dimensions chat-input)
      (layout-effect state)
      (kb-default-height-effect state)
-     (background-effect state animations dimensions chat-input)
      (link-preview-effect state)
-     (audio-effect state animations audio)
-     (empty-effect state animations subscriptions)
+     (audio-effect state audio)
+     (empty-effect animations subscriptions)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height])
@@ -160,13 +148,10 @@
 
 (defn use-reply
   [{:keys [input-ref]}
-   {:keys [container-opacity]}
    {:keys [reply]}
    chat-screen-layout-calculations-complete?]
   (rn/use-effect
    (fn []
-     (when reply
-       (reanimated/animate container-opacity 1))
      (when (and reply @input-ref (reanimated/get-shared-value chat-screen-layout-calculations-complete?))
        (js/setTimeout #(.focus ^js @input-ref) 600)))
    [(:message-id reply)]))
@@ -203,12 +188,10 @@
 (defn use-images
   [{:keys [sending-images? input-ref]}
    {:keys [text-value maximized?]}
-   {:keys [container-opacity height saved-height]}
+   {:keys [height saved-height]}
    {:keys [images]}]
   (rn/use-effect
    (fn []
-     (when images
-       (reanimated/animate container-opacity 1))
      (when (and (not @sending-images?) (seq images) @input-ref)
        (.focus ^js @input-ref))
      (if-not @maximized?

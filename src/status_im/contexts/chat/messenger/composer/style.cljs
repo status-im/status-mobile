@@ -9,25 +9,25 @@
 
 (def border-top-radius 20)
 
-(defn shadow
-  [focused? theme]
-  (if platform/ios?
-    {:shadow-radius  20
-     :shadow-opacity (colors/theme-colors 0.1 0.7 theme)
-     :shadow-color   colors/neutral-100
-     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8 theme)}}
-    {:elevation (if @focused? 10 0)}))
-
-(def composer-sheet-and-jump-to-container
+(def absolute-bottom-style
   {:position :absolute
    :bottom   0
    :left     0
    :right    0})
 
+(defn shadow
+  [theme]
+  (when platform/ios?
+    {:shadow-radius  20
+     :shadow-opacity (colors/theme-colors 0.1 0.7 theme)
+     :shadow-color   colors/neutral-100
+     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8 theme)}}))
+
 (defn sheet-container
-  [insets {:keys [focused?]} {:keys [container-opacity]} theme]
+  [insets {:keys [container-opacity composer-elevation]} theme]
   (reanimated/apply-animations-to-style
-   {:opacity container-opacity}
+   {:opacity   container-opacity
+    :elevation composer-elevation}
    (merge
     {:border-top-left-radius  border-top-radius
      :border-top-right-radius border-top-radius
@@ -35,7 +35,7 @@
      :background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
      :z-index                 3
      :padding-bottom          (:bottom insets)}
-    (shadow focused? theme))))
+    (shadow theme))))
 
 (def bar-container
   {:height          constants/bar-container-height
@@ -82,30 +82,30 @@
          :max-height          max-height
          :padding-bottom      (when @maximized? 0)))
 
-(defn background
-  [opacity background-y window-height]
+(defn background-overlay
+  [{:keys [background-overlay-opacity]}]
   (reanimated/apply-animations-to-style
-   {:opacity   opacity
-    :transform [{:translate-y background-y}]}
+   {:opacity background-overlay-opacity}
    {:position         :absolute
+    :pointer-events   :none
+    :top              0
     :left             0
+    :z-index          1
     :right            0
     :bottom           0
-    :height           window-height
     :background-color colors/neutral-95-opa-70}))
 
 (defn blur-container
-  [height focused?]
-  (reanimated/apply-animations-to-style
-   {:height height}
+  [composer-default-height {:keys [blur-container-elevation]}]
+  [{:elevation blur-container-elevation}
    {:position                :absolute
-    :elevation               (if-not @focused? 10 0)
-    :left                    0
     :right                   0
     :bottom                  0
+    :left                    0
+    :height                  composer-default-height
     :border-top-right-radius border-top-radius
     :border-top-left-radius  border-top-radius
-    :overflow                :hidden}))
+    :overflow                :hidden}])
 
 (defn blur-view
   [theme]

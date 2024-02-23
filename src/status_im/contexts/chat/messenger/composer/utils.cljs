@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.messenger.composer.utils
   (:require
     [clojure.string :as string]
-    [oops.core :as oops]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -9,7 +8,8 @@
     [status-im.contexts.chat.messenger.composer.constants :as constants]
     [status-im.contexts.chat.messenger.composer.selection :as selection]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.worklets.chat.messenger.composer :as worklets]))
 
 (defn bounded-val
   [v min-v max-v]
@@ -43,12 +43,6 @@
   [max-height new-height maximized?]
   (or @maximized?
       (> new-height (* constants/background-threshold max-height))))
-
-(defn update-blur-height?
-  [event {:keys [lock-layout? focused?]} layout-height]
-  (or (not @lock-layout?)
-      (not @focused?)
-      (> (reanimated/get-shared-value layout-height) (oops/oget event "nativeEvent.layout.height"))))
 
 (defn calc-lines
   [height]
@@ -193,8 +187,7 @@
    :record-permission?    (reagent/atom true)
    :recording?            (reagent/atom false)
    :first-level?          (reagent/atom true)
-   :menu-items            (reagent/atom selection/first-level-menu-items)
-   :composer-focused?     (reanimated/use-shared-value false)})
+   :menu-items            (reagent/atom selection/first-level-menu-items)})
 
 (defn init-subs
   []
@@ -208,31 +201,37 @@
      :input-text           (:input-text chat-input)
      :input-content-height (:input-content-height chat-input)}))
 
+(defn shared-values
+  []
+  (let [input-container-height (reanimated/use-shared-value 0)
+        composer-focused?      (reanimated/use-shared-value false)
+        empty-input?           (reanimated/use-shared-value true)
+        container-opacity      (worklets/container-opacity composer-focused?
+                                                           empty-input?
+                                                           constants/empty-opacity)]
+    {:composer-focused?          composer-focused?
+     :container-opacity          container-opacity
+     :empty-input?               empty-input?
+     :height                     input-container-height
+     :blur-container-elevation   (worklets/blur-container-elevation container-opacity)
+     :composer-elevation         (worklets/composer-elevation container-opacity)
+     :background-overlay-opacity (worklets/background-overlay-opacity input-container-height)}))
+
 (defn init-animations
   [{:keys [input-text images link-previews? reply audio]}
-   lines content-height max-height opacity background-y]
-  (let [initial-height        (if (> lines 1)
-                                constants/multiline-minimized-height
-                                constants/input-height)
-        bottom-content-height 0]
-    {:gradient-opacity  (reanimated/use-shared-value 0)
-     :container-opacity (reanimated/use-shared-value
-                         (if (empty-input?
-                              input-text
-                              images
-                              link-previews?
-                              reply
-                              audio)
-                           0.7
-                           1))
-     :height            (reanimated/use-shared-value
-                         initial-height)
-     :saved-height      (reanimated/use-shared-value
-                         initial-height)
-     :last-height       (reanimated/use-shared-value
-                         (utils.number/value-in-range
-                          (+ @content-height bottom-content-height)
-                          constants/input-height
-                          max-height))
-     :opacity           opacity
-     :background-y      background-y}))
+   lines content-height max-height shared-values]
+  (let [initial-height         (if (> lines 1)
+                                 constants/multiline-minimized-height
+                                 constants/input-height)
+        input-container-height (:height shared-values)]
+    ;; (when (= (reanimated/get-shared-value input-container-height) 0)
+    ;;   (reanimated/set-shared-value input-container-height initial-height))
+    (assoc shared-values
+           :gradient-opacity (reanimated/use-shared-value 0)
+           :saved-height     (reanimated/use-shared-value
+                              initial-height)
+           :last-height      (reanimated/use-shared-value
+                              (utils.number/value-in-range
+                               @content-height
+                               constants/input-height
+                               max-height)))))
