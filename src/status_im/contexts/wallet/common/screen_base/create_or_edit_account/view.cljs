@@ -13,6 +13,7 @@
            on-change-name
            on-change-color
            on-change-emoji section-label
+           hide-bottom-action?
            bottom-action-label bottom-action-props
            custom-bottom-action watch-only?]} & children]
   (let [{window-width :width} (rn/get-window)]
@@ -23,14 +24,15 @@
                                   :right-side page-nav-right-side
                                   :icon-name  :i/close
                                   :on-press   #(rf/dispatch [:navigate-back])}]
-      :footer                   (if custom-bottom-action
-                                  custom-bottom-action
-                                  [quo/button
-                                   (merge
-                                    {:size 40
-                                     :type :primary}
-                                    bottom-action-props)
-                                   (i18n/label bottom-action-label)])
+      :footer                   (when-not hide-bottom-action?
+                                  (if custom-bottom-action
+                                    custom-bottom-action
+                                    [quo/button
+                                     (merge
+                                      {:size 40
+                                       :type :primary}
+                                      bottom-action-props)
+                                     (i18n/label bottom-action-label)]))
       :gradient-cover?          true
       :footer-container-padding 0
       :customization-color      account-color}
