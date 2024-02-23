@@ -2,8 +2,8 @@
   (:require
     [clojure.string :as string]
     [quo.components.icon :as icon]
-    [quo.components.list-items.token-value.style :as style]
     [quo.components.list-items.token-value.schema :as component-schema]
+    [quo.components.list-items.token-value.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]

@@ -11,7 +11,7 @@
   [:=>
    [:cat
     [:map
-     [:token :keyword]
+     [:token [:or keyword? string?]]
      [:token-name :string]
      [:status [:enum :empty :positive :negative]]
      [:values ?values]

@@ -15,6 +15,6 @@
         :parent-height 560
         :animated?     false}]
       [rn/flat-list
-       {:render-fn               quo/token-value
+       {:render-fn               (fn [item & _rest] [quo/token-value item])
         :data                    tokens
         :content-container-style style/list-container}])))

@@ -102,7 +102,7 @@
          [details-view props]]]
        [rn/flat-list
         {:data      accounts
-         :render-fn (fn [item _rest&] [account-list-card/view item])
+         :render-fn (fn [item & _rest] [account-list-card/view item])
          :separator [rn/view {:style {:height 8}}]
          :style     {:padding-horizontal 8}}]])))
 
