@@ -53,8 +53,9 @@
   (into [touchable-highlight-class (utils/custom-pressable-props props)] children))
 
 (defn touchable-without-feedback
-  [props & children]
-  (into [touchable-without-feedback-class (utils/custom-pressable-props props)] children))
+  {:deprecated "pressable should be used instead"}
+  [props child]
+  [touchable-without-feedback-class (utils/custom-pressable-props props) child])
 
 (def flat-list flat-list/flat-list)
 

@@ -94,7 +94,9 @@
                                   true))
         [rn/view {:style {:flex 1}}
          ;; backdrop
-         [rn/touchable-without-feedback {:on-press #(rf/dispatch [:hide-bottom-sheet])}
+         [rn/pressable
+          {:on-press #(rf/dispatch [:hide-bottom-sheet])
+           :style    {:flex 1}}
           [reanimated/view
            {:style (reanimated/apply-animations-to-style
                     {:opacity bg-opacity}

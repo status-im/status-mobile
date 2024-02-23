@@ -42,7 +42,7 @@
                                                                 [0 total-amount]
                                                                 [0 total-width])
             width->amount               #(/ (* % total-amount) total-width)]
-        [rn/touchable-without-feedback
+        [rn/pressable
          {:on-press (fn []
                       (when (and (not @detecting-gesture?) allow-press?)
                         (on-press)
