@@ -1,5 +1,6 @@
 (ns schema.state
-  (:require [reagent.core :as reagent]))
+  (:require [reagent.core :as reagent]
+            [taoensso.timbre :as log]))
 
 (def errors
   "Set of schema identifiers, usually namespaced keywords. When the set is empty,

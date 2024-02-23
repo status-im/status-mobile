@@ -14,7 +14,6 @@
                     :address             "0x0ah...71a"}
     :networks      [{:name :ethereum :short-name "eth"}
                     {:name :optimism :short-name "opt"}]
-    :state         :default
     :action        :none}])
 
 (def default-details

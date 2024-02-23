@@ -3,12 +3,14 @@
     [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.list-items.token-value.style :as style]
+    [quo.components.list-items.token-value.schema :as component-schema]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn- internal-view
   []
@@ -65,4 +67,6 @@
                 [icon/icon (if (= status :positive) :i/positive :i/negative)
                  (style/arrow-icon status theme)]])])]]))))
 
-(def view (quo.theme/with-theme internal-view))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'internal-view component-schema/?schema)))
