@@ -692,50 +692,229 @@
 ;;                :img-src     ""}]]}
 ;;          (rf/sub [sub-name community-id])))))
 
+;; (h/deftest-sub :community/token-permissions
+;;   [sub-name]
+;;   (testing "returns token permissions grouped by type with correct attributes"
+;;     (swap! rf-db/app-db assoc
+;;       :communities
+;;       {"0x1" {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
+;;                                    {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+;;                                     :type 2
+;;                                     :token_criteria
+;;                                     [{:contract_addresses
+;;                                       {:5       "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+;;                                        11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
+;;                                       :type 1
+;;                                       :symbol "STT"
+;;                                       :amount "1.0000000000000000"
+;;                                       :decimals 18}]}]
+;;                                   [:6872cfb4-9122-4d39-b58c-5dff441f94d4
+;;                                    {:id "6872cfb4-9122-4d39-b58c-5dff441f94d4"
+;;                                     :type 6
+;;                                     :token_criteria
+;;                                     [{:contract_addresses
+;;                                       {:420 "0x98C28243BeFD84f5B83BA49fE843e6Cbd9a55AD4"}
+;;                                       :type 2
+;;                                       :symbol "OWNPER"
+;;                                       :name "Owner-Permission Drawer"
+;;                                       :amount "1"}]
+;;                                     :is_private true}]]
+;;               :token-images      {"OWNPER" "path/to/jpeg"}}})
+
+;;     (swap! rf-db/app-db assoc
+;;       :communities/checking-permissions-by-id
+;;       {:checking? false
+;;        :check     {:satisfied   true
+;;                    :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a" {:tokenRequirement
+;;                                                                          [{:satisfied true}]}}}})
+;;     (is (match? {2 [[{:symbol      "STT"
+;;                       :amount      "1"
+;;                       :sufficient? true
+;;                       :img-src     nil}]]
+;;                  6 [[{:symbol      "OWNPER"
+;;                       :amount      "1"
+;;                       :sufficient? true
+;;                       :img-src     "path/to/jpeg"}]]}
+;;                 (rf/sub [sub-name community-id])))))
+
 (h/deftest-sub :community/token-permissions
   [sub-name]
   (testing "returns token permissions grouped by type with correct attributes"
     (swap! rf-db/app-db assoc
       :communities
-      {"0x1" {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
-                                   {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
-                                    :type 2
-                                    :token_criteria
-                                    [{:contract_addresses
-                                      {:5       "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
-                                       11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
-                                      :type 1
-                                      :symbol "STT"
-                                      :amount "1.0000000000000000"
-                                      :decimals 18}]}]
-                                  [:6872cfb4-9122-4d39-b58c-5dff441f94d4
-                                   {:id "6872cfb4-9122-4d39-b58c-5dff441f94d4"
-                                    :type 6
-                                    :token_criteria
-                                    [{:contract_addresses
-                                      {:420 "0x98C28243BeFD84f5B83BA49fE843e6Cbd9a55AD4"}
-                                      :type 2
-                                      :symbol "OWNPER"
-                                      :name "Owner-Permission Drawer"
-                                      :amount "1"}]
-                                    :is_private true}]]
-              :token-images      {"OWNPER" "path/to/jpeg"}}})
+      {community-id
+       {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
+                             {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                              :type 2
+                              :token_criteria
+                              [{:contract_addresses
+                                {:5       "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+                                 11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
+                                :type 1
+                                :symbol "STT"
+                                :amount "1.0000000000000000"
+                                :decimals 18}]}]
+                            [:6872cfb4-9122-4d39-b58c-5dff441f94d4
+                             {:id "6872cfb4-9122-4d39-b58c-5dff441f94d4"
+                              :type 6
+                              :token_criteria
+                              [{:contract_addresses
+                                {:420 "0x98C28243BeFD84f5B83BA49fE843e6Cbd9a55AD4"}
+                                :type 2
+                                :symbol "OWNPER"
+                                :name "Owner-Permission Drawer"
+                                :amount "1"}]
+                              :is_private true}]]
+        :token-images      {"OWNPER" "path/to/jpeg"}}})
 
     (swap! rf-db/app-db assoc
-      :communities/checking-permissions-by-id
-      {:checking? false
-       :check     {:satisfied   true
-                   :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a" {:tokenRequirement
-                                                                         [{:satisfied true}]}}}})
-    (is (match? {2 [[{:symbol      "STT"
-                      :amount      "1"
-                      :sufficient? true
-                      :img-src     nil}]]
-                 6 [[{:symbol      "OWNPER"
-                      :amount      "1"
-                      :sufficient? true
-                      :img-src     "path/to/jpeg"}]]}
-                (rf/sub [sub-name community-id])))))
+      :communities/permissions-check
+      {community-id {:checking? false
+                     :check     {:satisfied   true
+                                 :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                                               {:tokenRequirement
+                                                [{:satisfied true}]}}}}})
+
+    (is (match? {2 [[{:symbol          "STT"
+                      :amount          "1"
+                      :permission-type 2
+                      :sufficient?     true
+                      :img-src         nil}]]
+                 6 [[{:symbol          "OWNPER"
+                      :permission-type 6
+                      :amount          "1"
+                      :sufficient?     false
+                      :img-src         "path/to/jpeg"}]]}
+                (rf/sub [sub-name community-id]))))
+
+  (testing "returns empty because theres no token permissions setted"
+    (swap! rf-db/app-db assoc
+      :communities
+      {community-id
+       {:token-permissions nil
+        :token-images      nil}})
+
+    (swap! rf-db/app-db assoc
+      :communities/permissions-check
+      {community-id {:checking? false
+                     :check     {:satisfied   true
+                                 :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                                               {:tokenRequirement
+                                                [{:satisfied true}]}}}}})
+
+    (is (match? {}
+                (rf/sub [sub-name community-id]))))
+
+
+  (testing "returns tokens and images when no collectibles exist, with 'satisfied' set to true"
+    (swap! rf-db/app-db assoc
+      :communities
+      {community-id
+       {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
+                             {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                              :type 2
+                              :token_criteria
+                              [{:contract_addresses
+                                {:5       "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+                                 11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
+                                :type 1
+                                :symbol "STT"
+                                :amount "1.0000000000000000"
+                                :decimals 18}]}]
+                            [:730c3fd3-3fcf-4d48-934a-b175b571c5fe
+                             {:id "730c3fd3-3fcf-4d48-934a-b175b571c5fe"
+                              :type 2
+                              :token_criteria
+                              [{:contract_addresses
+                                {:5        "0x0000000000000000000000000000000000000000"
+                                 :420      "0x0000000000000000000000000000000000000000"
+                                 :421613   "0x0000000000000000000000000000000000000000"
+                                 :421614   "0x0000000000000000000000000000000000000000"
+                                 :11155111 "0x0000000000000000000000000000000000000000"}
+                                :type 1
+                                :symbol "ETH"
+                                :amount "1.0000000000000000"
+                                :decimals 18}]}]]
+        :token-images      {"STT" "path/to/jpeg" "ETH" "path/to/jpeg"}}})
+
+    (swap! rf-db/app-db assoc
+      :communities/permissions-check
+      {community-id {:checking? false
+                     :check     {:satisfied   true
+                                 :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                                               {:tokenRequirement
+                                                [{:satisfied true}]}
+                                               "730c3fd3-3fcf-4d48-934a-b175b571c5fe"
+                                               {:tokenRequirement
+                                                [{:satisfied true}]}}}}})
+
+    (is (match?
+         {2 [[{:symbol          "STT"
+               :amount          "1"
+               :permission-type 2
+               :sufficient?     true
+               :img-src         "path/to/jpeg"}]
+             [{:symbol          "ETH"
+               :amount          "1"
+               :sufficient?     true
+               :permission-type 2
+               :img-src         "path/to/jpeg"}]]}
+         (rf/sub [sub-name community-id]))))
+
+  (testing "returns tokens and images when no collectibles exist, with 'satisfied' set to false"
+    (swap! rf-db/app-db assoc
+      :communities
+      {community-id
+       {:token-permissions [[:1cfb5618-5e6a-4695-a91c-19e7e4f0af3a
+                             {:id "1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                              :type 2
+                              :token_criteria
+                              [{:contract_addresses
+                                {:5       "0x3d6afaa395c31fcd391fe3d562e75fe9e8ec7e6a"
+                                 11155111 "0xe452027cdef746c7cd3db31cb700428b16cd8e51"}
+                                :type 1
+                                :symbol "STT"
+                                :amount "1.0000000000000000"
+                                :decimals 18}]}]
+                            [:730c3fd3-3fcf-4d48-934a-b175b571c5fe
+                             {:id "730c3fd3-3fcf-4d48-934a-b175b571c5fe"
+                              :type 2
+                              :token_criteria
+                              [{:contract_addresses
+                                {:5        "0x0000000000000000000000000000000000000000"
+                                 :420      "0x0000000000000000000000000000000000000000"
+                                 :421613   "0x0000000000000000000000000000000000000000"
+                                 :421614   "0x0000000000000000000000000000000000000000"
+                                 :11155111 "0x0000000000000000000000000000000000000000"}
+                                :type 1
+                                :symbol "ETH"
+                                :amount "1.0000000000000000"
+                                :decimals 18}]}]]
+        :token-images      {"STT" "path/to/jpeg" "ETH" "path/to/jpeg"}}})
+
+    (swap! rf-db/app-db assoc
+      :communities/permissions-check
+      {community-id {:checking? false
+                     :check     {:satisfied   true
+                                 :permissions {"1cfb5618-5e6a-4695-a91c-19e7e4f0af3a"
+                                               {:tokenRequirement
+                                                [{:satisfied false}]}
+                                               "730c3fd3-3fcf-4d48-934a-b175b571c5fe"
+                                               {:tokenRequirement
+                                                [{:satisfied false}]}}}}})
+
+    (is (match?
+         {2 [[{:symbol          "STT"
+               :amount          "1"
+               :permission-type 2
+               :sufficient?     false
+               :img-src         "path/to/jpeg"}]
+             [{:symbol          "ETH"
+               :amount          "1"
+               :sufficient?     false
+               :permission-type 2
+               :img-src         "path/to/jpeg"}]]}
+         (rf/sub [sub-name community-id])))))
 
 (comment
   (require 'cljs.test)

@@ -2,8 +2,7 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [re-frame.core :as re-frame]
-    [re-frame.db :as rf-db]
+    [re-frame.core :as re-frame] ;; [re-frame.db :as rf-db]
     [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
@@ -414,46 +413,79 @@
  (fn [db [_ community-id]]
    (get-in db [:communities community-id])))
 
-(re-frame/reg-sub
- :community/token-permissions
+;; (re-frame/reg-sub
+;;  :community/token-permissions
+;;  (fn [[_ community-id]]
+;;    [(re-frame/subscribe [:communities/community community-id])
+;;     (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+
+;;  (fn [[community permissions-check] _]
+;;    (let [token-permissions (:token-permissions community)
+;;          token-images      (:token-images community)
+;;          grouped-by-type   (group-by (comp :type second) token-permissions)
+;;          mock-images       (when (and (contains? token-permissions 5)
+;;                                       (contains? token-permissions 6))
+;;                              (resources/mock-images :collectible))
+;;          permissions       (:check permissions-check)
+;;          sufficient        (mapcat (fn [[_ permission]]
+;;                                      (mapcat (fn [token-req]
+;;                                                [(get token-req :satisfied)])
+;;                                       (:tokenRequirement permission)))
+;;                             (:permissions permissions))]
+
+;;      (tap> ["sufficient" sufficient])
+;;      (tap> ["token images" token-images])
+;;      (js/console.log ["sufficient" (clj->js sufficient)])
+;;      (tap> ["database" @rf-db/app-db])
+;;      (into {}
+;;            (map (fn [[type tokens]]
+;;                   [type
+;;                    (map (fn [token]
+;;                           (map-indexed (fn [i criteria]
+;;                                          (let [sym (:symbol criteria)]
+;;                                            (-> criteria
+;;                                                (assoc :amount
+;;                                                       (wallet.utils/remove-trailing-zeroes (:amount
+;;                                                                                             criteria))
+;;                                                       :sufficient? (nth sufficient i true)
+;;                                                       :img-src
+;;                                                       (if (= type 2)
+;;                                                         (or mock-images
+;;                                                             (get token-images sym))
+;;                                                         (get token-images sym))))))
+;;                                        (:token_criteria (second token))))
+;;                         tokens)])
+;;                 grouped-by-type)))))
+
+(re-frame/reg-sub :community/token-permissions
  (fn [[_ community-id]]
+   (println "community" community-id)
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
-
- (fn [[community permissions-check] _]
-   (let [token-permissions (:token-permissions community)
-         token-images      (:token-images community)
-         grouped-by-type   (group-by (comp :type second) token-permissions)
-         mock-images       (when (and (contains? token-permissions 5)
-                                      (contains? token-permissions 6))
-                             (resources/mock-images :collectible))
-         permissions       (:check permissions-check)
-         sufficient        (mapcat (fn [[_ permission]]
-                                     (mapcat (fn [token-req]
-                                               [(get token-req :satisfied)])
-                                      (:tokenRequirement permission)))
-                            (:permissions permissions))]
-
-     (tap> ["sufficient" sufficient])
-     (tap> ["token images" token-images])
-     (js/console.log ["sufficient" (clj->js sufficient)])
-     (tap> ["database" @rf-db/app-db])
-     (into {}
-           (map (fn [[type tokens]]
-                  [type
-                   (map (fn [token]
-                          (map-indexed (fn [i criteria]
-                                         (let [sym (:symbol criteria)]
-                                           (-> criteria
-                                               (assoc :amount
-                                                      (wallet.utils/remove-trailing-zeroes (:amount
-                                                                                            criteria)))
-                                               (assoc :sufficient? (nth sufficient i true)
-                                                      :img-src
-                                                      (if (= type 2)
-                                                        (or mock-images
-                                                            (get token-images sym))
-                                                        (get token-images sym))))))
-                                       (:token_criteria (second token))))
-                        tokens)])
-                grouped-by-type)))))
+ (fn [[{:keys [token-permissions token-images]} permissions-check] _]
+   (let [mock-images (when (and (contains? token-permissions 5)
+                                (contains? token-permissions 6))
+                       (resources/mock-images :collectible))]
+     (tap> {:permissions-check permissions-check})
+     (->> token-permissions
+          (map second)
+          (map
+           (fn [token-permission]
+             (let [satisfied-criteria (into []
+                                            (get-in permissions-check
+                                                    [:check :permissions (:id token-permission)
+                                                     :tokenRequirement]))]
+               (map-indexed (fn [idx criterion]
+                              (let [sym  (:symbol criterion)
+                                    type (:type token-permission)]
+                                {:symbol          sym
+                                 :permission-type type
+                                 :amount          (wallet.utils/remove-trailing-zeroes (:amount
+                                                                                        criterion))
+                                 :sufficient?     (get-in satisfied-criteria [idx :satisfied] false)
+                                 :img-src         (if (= type 2)
+                                                    (or (get mock-images sym)
+                                                        (get token-images sym))
+                                                    (get token-images sym))}))
+                            (:token_criteria token-permission)))))
+          (group-by (comp :permission-type first))))))
