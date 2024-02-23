@@ -107,10 +107,10 @@
    (:test-networks-enabled? profile)))
 
 (re-frame/reg-sub
- :profile/is-sepolia-enabled?
+ :profile/is-goerli-enabled?
  :<- [:profile/profile]
  (fn [profile]
-   (:is-sepolia-enabled? profile)))
+   (:is-goerli-enabled? profile)))
 
 (re-frame/reg-sub
  :multiaccount/contact
