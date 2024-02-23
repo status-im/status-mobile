@@ -191,7 +191,7 @@
  (fn [_]
    {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
-(defn- transaction-bridge
+(defn- build-transaction-path
   [{:keys [from-address from-chain-id to-address token-id token-address route data eth-transfer?]}]
   (let [{:keys [bridge-name amount-out gas-amount
                 gas-fees]}                 route
@@ -221,17 +221,17 @@
                                                                                        (money/->wei
                                                                                         :gwei
                                                                                         gas-price))))]
-    [(cond-> {:BridgeName bridge-name
-              :ChainID    from-chain-id}
+    (cond-> {:BridgeName bridge-name
+             :ChainID    from-chain-id}
 
-       (= bridge-name constants/bridge-name-erc-721-transfer)
-       (assoc :ERC721TransferTx
-              (assoc transfer-tx
-                     :Recipient to-address
-                     :TokenID   token-id))
+      (= bridge-name constants/bridge-name-erc-721-transfer)
+      (assoc :ERC721TransferTx
+             (assoc transfer-tx
+                    :Recipient to-address
+                    :TokenID   token-id))
 
-       (= bridge-name constants/bridge-name-transfer)
-       (assoc :TransferTx transfer-tx))]))
+      (= bridge-name constants/bridge-name-transfer)
+      (assoc :TransferTx transfer-tx))))
 
 (defn- multi-transaction-command
   [{:keys [from-address to-address from-asset to-asset amount-out transfer-type]
@@ -245,41 +245,49 @@
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
-   (let [route           (first (get-in db [:wallet :ui :send :route]))
-         from-address    (get-in db [:wallet :current-viewing-account-address])
-         token           (get-in db [:wallet :ui :send :token])
-         collectible     (get-in db [:wallet :ui :send :collectible])
-         from-chain-id   (get-in route [:from :chain-id])
-         token-id        (if token
-                           (:symbol token)
-                           (get-in collectible [:id :token-id]))
+   (let [routes (get-in db [:wallet :ui :send :route])
+         first-route (first routes)
+         from-address (get-in db [:wallet :current-viewing-account-address])
+         token (get-in db [:wallet :ui :send :token])
+         collectible (get-in db [:wallet :ui :send :collectible])
+         first-route-from-chain-id (get-in first-route [:from :chain-id])
+         token-id (if token
+                    (:symbol token)
+                    (get-in collectible [:id :token-id]))
          erc20-transfer? (and token (not= token-id "ETH"))
-         eth-transfer?   (and token (not erc20-transfer?))
-         token-address   (cond collectible
-                               (get-in collectible
-                                       [:id :contract-id :address])
-                               erc20-transfer?
-                               (get-in token [:balances-per-chain from-chain-id :address]))
-         to-address      (get-in db [:wallet :ui :send :to-address])
-         data            (when erc20-transfer?
-                           (native-module/encode-transfer (address/normalized-hex to-address)
+         eth-transfer? (and token (not erc20-transfer?))
+         token-address (cond collectible
+                             (get-in collectible
+                                     [:id :contract-id :address])
+                             erc20-transfer?
+                             (get-in token [:balances-per-chain first-route-from-chain-id :address]))
+         to-address (get-in db [:wallet :ui :send :to-address])
+         transaction-paths (mapv (fn [route]
+                                   (let [data          (when erc20-transfer?
+                                                         (native-module/encode-transfer
+                                                          (address/normalized-hex to-address)
                                                           (:amount-out route)))
-         request-params  [(multi-transaction-command
-                           {:from-address from-address
-                            :to-address   to-address
-                            :from-asset   token-id
-                            :to-asset     token-id
-                            :amount-out   (if eth-transfer? (:amount-out route) "0x0")})
-                          (transaction-bridge {:to-address    to-address
-                                               :from-address  from-address
-                                               :route         route
-                                               :from-chain-id from-chain-id
-                                               :token-address token-address
-                                               :token-id      (when collectible
-                                                                (money/to-hex (js/parseInt token-id)))
-                                               :data          data
-                                               :eth-transfer? eth-transfer?})
-                          sha3-pwd]]
+                                         from-chain-id (get-in first-route [:from :chain-id])]
+                                     (build-transaction-path {:to-address    to-address
+                                                              :from-address  from-address
+                                                              :route         route
+                                                              :from-chain-id from-chain-id
+                                                              :token-address token-address
+                                                              :token-id      (when collectible
+                                                                               (money/to-hex (js/parseInt
+                                                                                              token-id)))
+                                                              :data          data
+                                                              :eth-transfer? eth-transfer?})))
+                                 routes)
+         request-params
+         [(multi-transaction-command
+           {:from-address from-address
+            :to-address   to-address
+            :from-asset   token-id
+            :to-asset     token-id
+            :amount-out   (if eth-transfer? (:amount-out first-route) "0x0")})
+          transaction-paths
+          sha3-pwd]]
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
