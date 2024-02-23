@@ -144,10 +144,10 @@
                                  :deps     []})]
     (if deps
       (if (not= deps (:deps @prev-deps))
-        (let [prev-val (not (:prev-val @prev-deps))]
-          (reset! prev-deps {:prev-val prev-val
+        (let [new-val (not (:prev-val @prev-deps))]
+          (reset! prev-deps {:prev-val new-val
                              :deps     deps})
-          #js [prev-val])
+          #js [new-val])
         #js [(:prev-val @prev-deps)])
       js/undefined)))
 
