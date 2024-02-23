@@ -1,6 +1,7 @@
 (ns status-im.contexts.communities.actions.accounts-selection.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [react-native.safe-area :as safe-area]))
 
 (def screen-horizontal-padding 20)
 
@@ -16,4 +17,5 @@
   []
   {:padding-top        12
    :padding-horizontal screen-horizontal-padding
-   :background-color   (colors/theme-colors colors/white colors/neutral-95)})
+   :background-color   (colors/theme-colors colors/white colors/neutral-95)
+   :padding-bottom     (+ (safe-area/get-bottom) 12)})
