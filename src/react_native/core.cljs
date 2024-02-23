@@ -134,6 +134,23 @@
 
 (def use-context react/useContext)
 
+(defn use-ref-atom
+  [value]
+  (let [ref (use-ref (atom value))]
+    (.-current ^js ref)))
+
+(defn get-js-deps [deps]
+  (let [prev-deps (use-ref-atom {:prev-val false
+                                 :deps     []})]
+    (if deps
+      (if (not= deps (:deps @prev-deps))
+        (let [prev-val (not (:prev-val @prev-deps))]
+          (reset! prev-deps {:prev-val prev-val
+                             :deps     deps})
+          #js [prev-val])
+        #js [(:prev-val @prev-deps)])
+      js/undefined)))
+
 (defn use-effect
   {:deprecated
    "use-mount or use-unmount should be used, more here https://github.com/status-im/status-mobile/blob/develop/doc/ui-guidelines.md#effects"}
@@ -141,9 +158,8 @@
    (use-effect handler nil))
   ([handler deps]
    (react/useEffect
-    #(let [ret (handler)]
-       (if (fn? ret) ret js/undefined))
-    (if deps (bean/->js deps) js/undefined))))
+    #(let [ret (handler)] (if (fn? ret) ret js/undefined))
+    (get-js-deps deps))))
 
 (defn use-mount
   [handler]
@@ -157,12 +173,7 @@
   ([handler]
    (use-callback handler []))
   ([handler deps]
-   (react/useCallback handler (bean/->js deps))))
-
-(defn use-ref-atom
-  [value]
-  (let [ref (use-ref (atom value))]
-    (.current ^js ref)))
+   (react/useCallback handler (get-js-deps deps))))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))
