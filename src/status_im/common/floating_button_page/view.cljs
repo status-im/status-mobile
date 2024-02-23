@@ -54,8 +54,7 @@
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-padding
            gradient-cover?]
-    :or   {footer-container-padding (safe-area/get-top)
-           header-container-padding 0}} &
+    :or   {footer-container-padding (safe-area/get-top)}} &
    children]
   (reagent/with-let [window-height                (:height (rn/get-window))
                      footer-container-height      (reagent/atom 0)
