@@ -33,11 +33,10 @@
 (defn f-shell-stack
   []
   (let [shared-values (shared-values/calculate-and-set-shared-values)]
-    (rn/use-effect
+    (rn/use-mount
      (fn []
        (rn/hw-back-add-listener navigate-back-handler)
-       #(rn/hw-back-remove-listener navigate-back-handler))
-     [])
+       #(rn/hw-back-remove-listener navigate-back-handler)))
     [:<>
      [jump-to-screen/view]
      [:f> bottom-tabs/f-bottom-tabs]

@@ -222,7 +222,7 @@
 
 (defn did-mount
   [{:keys [selectable-input-ref input-ref selection-manager]}]
-  (rn/use-effect
+  (rn/use-mount
    (fn []
      (when platform/android?
        (let [selectable-text-input-handle (rn/find-node-handle @selectable-input-ref)
