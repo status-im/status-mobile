@@ -2,7 +2,6 @@
   (:require
     ["react" :as react]
     ["react-native" :as react-native]
-    [cljs-bean.core :as bean]
     [oops.core :as oops]
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
@@ -142,14 +141,17 @@
 (defn get-js-deps
   [deps]
   (if deps
-    (let [prev-deps (use-ref-atom {:value false
-                                   :deps  []})]
-      (if (not= deps (:deps @prev-deps))
-        (let [new-value (not (:value @prev-deps))]
-          (reset! prev-deps {:value new-value
-                             :deps  deps})
-          #js [new-value])
-        #js [(:value @prev-deps)]))
+    (let [prev-state (use-ref-atom {:value false :deps nil})
+          prev-deps  (:deps @prev-state)
+          prev-value (:value @prev-state)]
+      (if (and (not (nil? prev-deps)) (not= (count deps) (count prev-deps)))
+        (throw (js/Error. "Hooks can't have a different number of dependencies across re-renders"))
+        (if (not= deps prev-deps)
+          (let [new-value (not prev-value)]
+            (reset! prev-state {:value new-value
+                                :deps  deps})
+            #js [new-value])
+          #js [prev-value])))
     js/undefined))
 
 (defn use-effect
