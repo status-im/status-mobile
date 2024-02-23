@@ -17,8 +17,5 @@
       [:theme :schema.common/theme]
       [:profile-picture
        {:optional true}
-       [:maybe
-        [:or
-         :schema.common/image-source
-         [:map [:fn fn?]]]]]]]]
+       [:maybe :schema.quo/profile-picture-source]]]]]
    :any])
