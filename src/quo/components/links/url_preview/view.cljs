@@ -6,8 +6,7 @@
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [react-native.svg :as Svg]
-    [status-im.common.resources :as resources]))
+    [react-native.svg :as Svg]))
 
 (defn- svg-logo
   [logo]
@@ -18,7 +17,7 @@
      :uri                 logo})])
 
 (defn- logo-comp
-  [{:keys [logo url]}]
+  [{:keys [logo]}]
   (if (and (string? logo)
            (string/ends-with? logo ".svg"))
     [svg-logo logo]
@@ -26,9 +25,7 @@
      {:accessibility-label :logo
       :source              (if (string? logo)
                              {:uri logo}
-                             (if (string/starts-with? url "https://status.app")
-                               (resources/get-mock-image :status-logo)
-                               logo))
+                             logo)
       :style               style/logo
       :resize-mode         :cover}]))
 
@@ -80,9 +77,8 @@
     [rn/view
      {:accessibility-label :url-preview
       :style               (merge (style/container) container-style)}
-     (when (or logo (string/starts-with? url "https://status.app"))
+     (when logo
        [logo-comp
-        {:logo logo
-         :url  url}])
+        {:logo logo}])
      [content {:title title :body body}]
      [clear-button {:on-press on-clear}]]))
