@@ -7,8 +7,18 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-;; [ ] open issue for the slide android
-;; [ ] open a follow up to build this component
+(defn filter-tokens
+  [token-permissions permission-types]
+  (mapcat (fn [permission-type]
+            (get token-permissions permission-type))
+   permission-types))
+
+(defn get-role
+  [token-permissions]
+  (let [sufficient-permissions (filter #(some (fn [token-req] (:sufficient? token-req))
+                                              (get token-permissions %))
+                                       [1 2 3])]
+    (first sufficient-permissions)))
 
 (defn view
   []
@@ -16,24 +26,22 @@
         {:keys [highest-permission-role can-request-access?]}
         (rf/sub [:community/token-gated-overview id])
         token-permissions (rf/sub [:community/token-permissions id])
-        tokens (get token-permissions 2)
-        collectible (get token-permissions 5)
+        tokens (filter-tokens token-permissions [1 2 3])
+        collectible (filter-tokens token-permissions [5 6])
         collectible-name (:symbol (first (first collectible)))
         collectible-img (:img-src (first (first collectible)))
-        collectible-satisfied (get first (first collectible) :sufficient?)
+        has-collectible (get first (first collectible) :sufficient?)
+        role (get-role token-permissions)
         highest-role-text (i18n/label
-                           (communities.utils/role->translation-key highest-permission-role :t/member))
+                           (communities.utils/role->translation-key highest-permission-role
+                                                                    :t/token-master))
         member-role-text (i18n/label
-                          (communities.utils/role->translation-key (contains? token-permissions 2)
+                          (communities.utils/role->translation-key (contains? token-permissions role)
                                                                    :t/member))
         selected-addresses (rf/sub [:communities/selected-permission-addresses id])]
 
-    (tap> ["highest-permission-role" (rf/sub [:community/token-gated-overview id])])
-    (tap> ["token-permissions" (rf/sub [:community/token-permissions id])])
-    (tap> ["tokens" collectible])
-    (tap> ["master sufficient" (get (first (first collectible)) :sufficient?)])
     [rn/view {:style style/container}
-     (when (and collectible-satisfied (seq selected-addresses))
+     (when (and has-collectible (seq selected-addresses))
        [rn/view
         {:style style/role-container}
         [rn/view {:style {:flex-direction :column}}
@@ -47,7 +55,7 @@
           [quo/collectible-tag
            {:size                :size-24
             :collectible-name    collectible-name
-            :options             (if collectible-satisfied :hold false)
+            :options             (if has-collectible :hold false)
             :collectible-img-src collectible-img}]]]])
      [rn/view
       {:style style/role-container}
