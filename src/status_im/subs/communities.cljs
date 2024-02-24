@@ -115,7 +115,7 @@
                                     vals
                                     (sort-by (fn [{:keys [requested-to-join-at last-opened-at
                                                           joined-at]}]
-                                               (or requested-to-join-at last-opened-at joined-at))
+                                               (or last-opened-at (max requested-to-join-at joined-at)))
                                              #(compare %2 %1))
                                     (group-by #(group-communities-by-status requests %)))]
        (reset! memo-communities-stack-items grouped-communities)
