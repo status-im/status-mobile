@@ -7,6 +7,9 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+;; [ ] open issue for the slide android
+;; [ ] open a follow up to build this component
+
 (defn view
   []
   (let [{id :community-id} (rf/sub [:get-screen-params])
@@ -14,22 +17,25 @@
         (rf/sub [:community/token-gated-overview id])
         token-permissions (rf/sub [:community/token-permissions id])
         tokens (get token-permissions 2)
-        token-master (get token-permissions 6)
-        token-master-name (:symbol (first (first token-master)))
-        token-master-img (:img-src (first (first token-master)))
-        highest-role-text
-        (i18n/label
-         (communities.utils/role->translation-key highest-permission-role :t/member))
-        member-role-text (communities.utils/role->translation-key (contains? token-permissions 2)
-                                                                  :t/member)
+        collectible (get token-permissions 5)
+        collectible-name (:symbol (first (first collectible)))
+        collectible-img (:img-src (first (first collectible)))
+        collectible-satisfied (get first (first collectible) :sufficient?)
+        highest-role-text (i18n/label
+                           (communities.utils/role->translation-key highest-permission-role :t/member))
+        member-role-text (i18n/label
+                          (communities.utils/role->translation-key (contains? token-permissions 2)
+                                                                   :t/member))
         selected-addresses (rf/sub [:communities/selected-permission-addresses id])]
 
-    (tap> ["token master" token-master])
-
+    (tap> ["highest-permission-role" (rf/sub [:community/token-gated-overview id])])
+    (tap> ["token-permissions" (rf/sub [:community/token-permissions id])])
+    (tap> ["tokens" collectible])
+    (tap> ["master sufficient" (get (first (first collectible)) :sufficient?)])
     [rn/view {:style style/container}
-     (when (and highest-permission-role (seq selected-addresses))
+     (when (and collectible-satisfied (seq selected-addresses))
        [rn/view
-        {:style style/highest-role}
+        {:style style/role-container}
         [rn/view {:style {:flex-direction :column}}
          [quo/text {:weight :medium}
           (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})]
@@ -38,15 +44,14 @@
             (i18n/label :t/you-hodl)
             (i18n/label :t/you-must-hold))]
          [rn/view {:style {:align-items :flex-start}}
-          (when token-master
-            [quo/collectible-tag
-             {:size                :size-24
-              :collectible-name    token-master-name
-              :options             :hold
-              :collectible-img-src token-master-img}])]]])
+          [quo/collectible-tag
+           {:size                :size-24
+            :collectible-name    collectible-name
+            :options             (if collectible-satisfied :hold false)
+            :collectible-img-src collectible-img}]]]])
      [rn/view
-      {:style style/highest-role}
-      [rn/view {:style {:flex-direction :column :margin-top 12}}
+      {:style style/role-container}
+      [rn/view {:style style/permission-text}
        [quo/text {:weight :medium}
         (i18n/label :t/you-eligible-to-join-as {:role member-role-text})]
        [quo/text {:style {:padding-bottom 18} :size :paragraph-2}

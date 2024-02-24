@@ -57,7 +57,9 @@
 
 (defn view
   [{:keys [scroll-enabled? on-scroll]}]
-  (let [{id :community-id} (rf/sub [:get-screen-params])]
+  (let [{id :community-id} (rf/sub [:get-screen-params])
+        token-permissions  (rf/sub [:community/token-permissions id])]
+
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
       (let [{:keys [name color images]}       (rf/sub [:communities/community id])
@@ -69,14 +71,16 @@
             unsaved-address-changes?          (rf/sub [:communities/unsaved-address-changes? id])]
         [rn/safe-area-view {:style style/container}
          [quo/drawer-top
-          {:type                :context-tag
-           :title               (i18n/label :t/addresses-for-permissions)
-           :context-tag-type    :community
-           :community-name      name
-           :button-icon         :i/info
-           :on-button-press     #(rf/dispatch [:show-bottom-sheet {:content detail-token-gating/view}])
-           :community-logo      (get-in images [:thumbnail :uri])
-           :customization-color color}]
+          (cond-> {:type                :context-tag
+                   :title               (i18n/label :t/addresses-for-permissions)
+                   :context-tag-type    :community
+                   :community-name      name
+                   :community-logo      (get-in images [:thumbnail :uri])
+                   :customization-color color}
+            (seq token-permissions)
+            (assoc
+             :button-icon     :i/info
+             :on-button-press #(rf/dispatch [:show-bottom-sheet {:content detail-token-gating/view}])))]
 
          [quo/category
           {:list-type       :settings
@@ -130,4 +134,3 @@
                                (not highest-permission-role) (i18n/label
                                                               :t/addresses-dont-contain-tokens-needed)
                                :else                         nil)}]]))))
-

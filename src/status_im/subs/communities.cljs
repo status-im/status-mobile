@@ -459,22 +459,21 @@
 
 (re-frame/reg-sub :community/token-permissions
  (fn [[_ community-id]]
-   (println "community" community-id)
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
  (fn [[{:keys [token-permissions token-images]} permissions-check] _]
    (let [mock-images (when (and (contains? token-permissions 5)
                                 (contains? token-permissions 6))
-                       (resources/mock-images :collectible))]
-     (tap> {:permissions-check permissions-check})
+                       (resources/mock-images :collectible))
+         permissions (get-in permissions-check [:check :permissions])]
+
      (->> token-permissions
           (map second)
           (map
            (fn [token-permission]
-             (let [satisfied-criteria (into []
-                                            (get-in permissions-check
-                                                    [:check :permissions (:id token-permission)
-                                                     :tokenRequirement]))]
+             (let [token-id           (keyword (:id token-permission))
+                   token-requirements (get permissions token-id)
+                   satisfied-criteria (get token-requirements :tokenRequirement)]
                (map-indexed (fn [idx criterion]
                               (let [sym  (:symbol criterion)
                                     type (:type token-permission)]
