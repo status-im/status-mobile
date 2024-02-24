@@ -573,3 +573,13 @@
 (defn init-status-go-logging
   [{:keys [enable? mobile-system? log-level callback]}]
   (.initLogging ^js (log-manager) enable? mobile-system? log-level callback))
+
+(defn get-random-mnemonic
+  [callback]
+  (.getRandomMnemonic ^js (account-manager) #(callback (types/json->clj %))))
+
+(defn create-account-from-mnemonic
+  [mnemonic callback]
+  (.createAccountFromMnemonicAndDeriveAccountsForPaths ^js (account-manager)
+                                                       (types/clj->json mnemonic)
+                                                       #(callback (types/json->clj %))))

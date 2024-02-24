@@ -330,6 +330,7 @@
          highest-permission-role (:type highest-role)
          can-request-access?     (and (boolean highest-permission-role) (not networks-not-supported?))]
      {:can-request-access?     can-request-access?
+      :checking?               checking?
       :highest-permission-role highest-permission-role
       :networks-not-supported? networks-not-supported?
       :no-member-permission?   (and highest-permission-role

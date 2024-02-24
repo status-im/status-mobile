@@ -61,7 +61,8 @@
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
       (let [{:keys [name color images]}       (rf/sub [:communities/community id])
-            {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+            {:keys [checking?
+                    highest-permission-role]} (rf/sub [:community/token-gated-overview id])
             accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
             share-all-addresses?              (rf/sub [:communities/share-all-addresses? id])
@@ -105,7 +106,8 @@
           {:actions          :two-actions
            :button-one-label (i18n/label :t/confirm-changes)
            :button-one-props {:customization-color color
-                              :disabled?           (or (empty? selected-addresses)
+                              :disabled?           (or checking?
+                                                       (empty? selected-addresses)
                                                        (not highest-permission-role)
                                                        (not unsaved-address-changes?))
                               :on-press            (fn []
@@ -123,9 +125,10 @@
                                      (not highest-permission-role))
                                :top-error
                                :top)
-           :role             (role-keyword highest-permission-role)
+           :role             (when-not checking? (role-keyword highest-permission-role))
            :error-message    (cond
                                (empty? selected-addresses)   (i18n/label :t/no-addresses-selected)
                                (not highest-permission-role) (i18n/label
                                                               :t/addresses-dont-contain-tokens-needed)
                                :else                         nil)}]]))))
+

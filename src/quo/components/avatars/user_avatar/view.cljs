@@ -1,11 +1,13 @@
 (ns quo.components.avatars.user-avatar.view
   (:require
+    [quo.components.avatars.user-avatar.schema :as component-schema]
     [quo.components.avatars.user-avatar.style :as style]
     [quo.components.common.no-flicker-image :as no-flicker-image]
     [quo.components.markdown.text :as text]
     [quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
+    [schema.core :as schema]
     utils.string))
 
 (defn initials-avatar
@@ -23,32 +25,11 @@
 
 (defn user-avatar-internal
   "Render user avatar with `profile-picture`
-  `profile-picture` should be one of {:uri profile-picture-uri} or {:fn profile-picture-fn}
 
-  `profile-picture-fn` should return an image URI, there's helper fn to generate
-  it in `utils.image-server`
-
-  params for `profile-picture-fn`
-  {:length           initials' length
-   :full-name        used to generate initials
-   :font-size        initials font size
-   :indicator-size   status indicator outer radius, set to nil or 0 when no indicator
-   :indicator-border `indicator-size`-`indicator-border` is the inner radius
-   :indicator-color  color for status indicator
-   :theme            :light or :dark
-   :background-color intials avatar background color
-   :color            intials avatar text color
-   :size             intials avatar radius
-   :ring?            render ident ring around avatar? NOTE: this option may not work if override-ring? is not nil}
-
-  supported color formats:
-  #RRGGBB
-  #RRGGBBAA
-  rgb(255,255,255)
-  rgba(255,255,255,0.1) note alpha is 0-1
-
-  the reason we use the `profile-picture-fn` here is to separate
-  logic (pubkey, key-uid... in subs) and style (color, size... in this component)"
+   WARNING:
+   When calling the `profile-picture-fn` and passing the `:ring?` key, be aware that the `profile-picture-fn`
+   may have an `:override-ring?` value. If it does then the `:ring?` value will not be used.
+   For reference, refer to the `utils.image-server` namespace for these `profile-picture-fn` are generated."
   [{:keys [full-name size profile-picture customization-color static?
            status-indicator? online? ring? theme]
     :or   {size                :big
@@ -58,7 +39,7 @@
            customization-color :blue}
     :as   props}]
   (let [full-name          (or full-name "Your Name")
-        ;; image generated with profile-picture-fn is round cropped
+        ;; image generated with `profile-picture-fn` is round cropped
         ;; no need to add border-radius for them
         outer-styles       (style/outer size (not (:fn profile-picture)))
         ;; Once image is loaded, fast image re-renders view with the help of reagent atom,
@@ -108,4 +89,6 @@
 
                :else {:uri profile-picture})}])]))
 
-(def user-avatar (quo.theme/with-theme user-avatar-internal))
+(def user-avatar
+  (quo.theme/with-theme
+   (schema/instrument #'user-avatar-internal component-schema/?schema)))

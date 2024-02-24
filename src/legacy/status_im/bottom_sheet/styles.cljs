@@ -16,12 +16,14 @@
    :align-self       :center})
 
 (def backdrop
-  {:position         :absolute
-   :left             0
-   :right            0
-   :bottom           0
-   :top              0
-   :background-color colors/neutral-100})
+  {:position :absolute
+   :left     0
+   :right    0
+   :bottom   0
+   :top      0})
+
+(def backdrop-color
+  {:background-color colors/neutral-100})
 
 (def container
   {:position :absolute

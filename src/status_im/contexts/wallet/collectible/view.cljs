@@ -99,7 +99,7 @@
         :label               (i18n/label :t/share-collectible)
         :right-icon          :i/external}]]]))
 
-(defn view-internal
+(defn f-view-internal
   [{:keys [theme] :as _props}]
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
@@ -116,6 +116,7 @@
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data]
+        (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
           :height         148
@@ -176,5 +177,9 @@
             :on-change      on-tab-change
             :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
+
+(defn- view-internal
+  [props]
+  [:f> f-view-internal props])
 
 (def view (quo.theme/with-theme view-internal))

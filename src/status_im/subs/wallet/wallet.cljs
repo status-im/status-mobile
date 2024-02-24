@@ -39,6 +39,11 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
+ :wallet/create-account
+ :<- [:wallet/ui]
+ :-> :create-account)
+
+(rf/reg-sub
  :wallet/current-viewing-account-address
  :<- [:wallet]
  :-> :current-viewing-account-address)

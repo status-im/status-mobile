@@ -69,9 +69,8 @@
         {:icon-name     :i/arrow-left
          :on-press      on-close
          :switcher-type :select-account}]
-       [quo/text-combinations
+       [quo/page-top
         {:title                     (i18n/label :t/select-asset)
-         :container-style           style/title-container
          :title-accessibility-label :title-label}]
        [quo/segmented-control
         {:size            32

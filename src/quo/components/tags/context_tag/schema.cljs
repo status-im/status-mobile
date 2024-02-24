@@ -18,7 +18,7 @@
 
 (def ^:private ?default
   [:map
-   [:profile-picture {:optional true} [:maybe :schema.common/image-source]]
+   [:profile-picture {:optional true} [:maybe :schema.quo/profile-picture-source]]
    [:full-name {:optional true} [:maybe :string]]])
 
 (def ^:private ?multiuser
@@ -26,7 +26,8 @@
    [:users {:optional true}
     [:maybe
      [:sequential
-      [:map [:profile-picture {:optional true} [:maybe :schema.common/image-source]]
+      [:map
+       [:profile-picture {:optional true} [:maybe :schema.quo/profile-picture-source]]
        [:full-name {:optional true} [:maybe :string]]
        [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]]]])
 

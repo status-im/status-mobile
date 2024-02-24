@@ -10,8 +10,6 @@ pipeline {
     LC_ALL    = 'en_US.UTF-8'
     TARGET    = 'ios'
     FASTLANE_DISABLE_COLORS = 1
-    /* See nix/README.md */
-    NIX_IGNORE_SYMLINK_STORE = 1
     /* avoid writing to r/o /nix */
     GEM_HOME  = '~/.rubygems'
   }

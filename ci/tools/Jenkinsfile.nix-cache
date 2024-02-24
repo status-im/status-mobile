@@ -18,8 +18,6 @@ pipeline {
   }
 
   environment {
-    /* See nix/README.md */
-    NIX_IGNORE_SYMLINK_STORE = 1
     /* we source .bash_profile to be able to use nix-store */
     NIX_SSHOPTS = "-oStrictHostKeyChecking=no"
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"

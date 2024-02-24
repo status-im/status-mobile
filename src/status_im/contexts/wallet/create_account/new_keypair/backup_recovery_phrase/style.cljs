@@ -4,10 +4,6 @@
     [quo.theme :as quo.theme]
     [react-native.platform :as platform]))
 
-(def header-container
-  {:margin-horizontal 20
-   :margin-vertical   12})
-
 (defn seed-phrase-container
   [theme]
   {:margin-horizontal  20

@@ -30,3 +30,10 @@
       on-press
       (assoc :on-press (throttled-on-press props throttle-id)
              :ref      (wrapped-ref props throttle-id)))))
+
+(defn get-props-and-children
+  [argv]
+  (let [first-child (first argv)
+        props       (when (map? first-child) first-child)
+        children    (if props (rest argv) argv)]
+    [props children]))

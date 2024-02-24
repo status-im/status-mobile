@@ -137,12 +137,12 @@
   [{:keys [set-hide-profiles]}]
   (let [profiles    (vals (rf/sub [:profile/profiles-overview]))
         translate-x (reanimated/use-shared-value @translate-x-atom)]
-    (rn/use-effect (fn []
-                     (reset! push-animation-fn-atom #(push-animation translate-x))
-                     (reset! pop-animation-fn-atom #(pop-animation translate-x))
-                     (fn []
-                       (reset! push-animation-fn-atom nil)
-                       (reset! pop-animation-fn-atom nil))))
+    (rn/use-mount (fn []
+                    (reset! push-animation-fn-atom #(push-animation translate-x))
+                    (reset! pop-animation-fn-atom #(pop-animation translate-x))
+                    (fn []
+                      (reset! push-animation-fn-atom nil)
+                      (reset! pop-animation-fn-atom nil))))
     [reanimated/view
      {:style (style/profiles-container translate-x)}
      [rn/view

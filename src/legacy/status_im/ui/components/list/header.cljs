@@ -3,18 +3,18 @@
     [legacy.status-im.ui.components.spacing :as spacing]
     [legacy.status-im.ui.components.text :as text]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.utils :as rn.utils]))
 
 (defn header
-  []
-  (let [this (reagent/current-component)
+  [& argv]
+  (let [[props children] (rn.utils/get-props-and-children argv)
         {:keys [color]
          :or   {color :secondary}}
-        (reagent/props this)]
+        props]
     [rn/view
      {:style (merge (:base spacing/padding-horizontal)
                     (:x-tiny spacing/padding-vertical))}
      (into [text/text
             {:color color
              :style {:margin-top 10}}]
-           (reagent/children this))]))
+           children)]))

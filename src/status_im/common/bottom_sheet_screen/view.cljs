@@ -64,7 +64,7 @@
                                (reanimated/animate opacity 1 300)
                                (set-animating-false 300)
                                (reset! scroll-enabled? true))]
-        (rn/use-effect
+        (rn/use-mount
          (fn []
            (rn/hw-back-add-listener close)
            (reanimated/animate translate-y 0 300)

@@ -1,13 +1,12 @@
 (ns legacy.status-im.ui.components.keyboard-avoid-presentation
   (:require
     [legacy.status-im.ui.components.react :as react]
+    [react-native.utils :as rn.utils]
     [reagent.core :as reagent]))
 
 (defn keyboard-avoiding-view
-  []
-  (let [this     (reagent/current-component)
-        props    (reagent/props this)
-        children (reagent/children this)]
+  [& argv]
+  (let [[props children] (rn.utils/get-props-and-children argv)]
     (reagent/as-element
      (into [react/keyboard-avoiding-view
             (update props

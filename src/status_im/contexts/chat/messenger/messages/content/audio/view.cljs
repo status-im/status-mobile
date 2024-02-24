@@ -159,7 +159,7 @@
         paused?          (= (audio/get-state player) audio/PAUSED)
         app-state        (rf/sub [:app-state])
         mediaserver-port (rf/sub [:mediaserver/port])]
-    (rn/use-effect (fn [] #(destroy-player player-key)))
+    (rn/use-mount (fn [] #(destroy-player player-key)))
     (rn/use-effect
      (fn []
        (when (or
