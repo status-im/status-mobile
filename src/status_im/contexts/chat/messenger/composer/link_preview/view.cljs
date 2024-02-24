@@ -34,11 +34,11 @@
        :horizontal-spacing   style/padding-horizontal
        :loading-message      (i18n/label :t/link-preview-loading-message)
        :on-clear             #(rf/dispatch [:link-preview/clear])
-       :data                 (map (fn [{:keys [title display-name thumbnail hostname loading? url icon]}]
+       :data                 (map (fn [{:keys [title display-name thumbnail hostname loading? url favicon]}]
                                     {:title     (or display-name title)
                                      :body      (or (when-not display-name hostname)
                                                     status-im.constants/status-hostname)
-                                     :logo      icon
+                                     :logo      favicon
                                      :loading?  loading?
                                      :thumbnail (:data-uri thumbnail)
                                      :url       url})
