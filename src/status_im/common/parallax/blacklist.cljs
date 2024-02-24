@@ -6,9 +6,9 @@
 
 (defn- get-model-code
   [model]
-  (let [match (re-find #"iPhone(\d+)" model)]
-    (if match
-      (js/parseInt (second match))
+  (let [[_ code] (re-find #"iPhone(\d+)" model)]
+    (if code
+      (js/parseInt code)
       0)))
 
 (def ^:private minimum-device-code 11)
