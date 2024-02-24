@@ -59,7 +59,7 @@
      :color (colors/theme-colors colors/neutral-50 colors/neutral-60)}]])
 
 (defn view
-  [{:keys [title body logo on-clear loading? loading-message container-style url]}]
+  [{:keys [title body logo on-clear loading? loading-message container-style]}]
   (if loading?
     [rn/view
      {:accessibility-label :url-preview-loading
