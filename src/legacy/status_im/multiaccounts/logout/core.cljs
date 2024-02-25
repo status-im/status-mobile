@@ -1,6 +1,5 @@
 (ns legacy.status-im.multiaccounts.logout.core
   (:require
-    [legacy.status-im.wallet.core :as wallet]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.common.keychain.events :as keychain]
@@ -39,7 +38,6 @@
                :profile/get-profiles-overview          #(rf/dispatch
                                                          [:profile/get-profiles-overview-success %])}
               (keychain/save-auth-method key-uid auth-method)
-              (wallet/clear-timeouts)
               (initialize-app-db))))
 
 (rf/defn logout

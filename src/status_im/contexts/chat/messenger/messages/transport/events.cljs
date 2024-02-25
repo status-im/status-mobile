@@ -13,7 +13,6 @@
     [legacy.status-im.pairing.core :as models.pairing]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.visibility-status-updates.core :as models.visibility-status-updates]
-    [legacy.status-im.wallet.core :as wallet]
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as models.contact]
     [status-im.contexts.chat.events :as chat.events]
@@ -175,8 +174,7 @@
       (do
         (js-delete response-js "accounts")
         (rf/merge cofx
-                  (process-next response-js sync-handler)
-                  (wallet/update-wallet-accounts (types/js->clj accounts))))
+                  (process-next response-js sync-handler)))
 
       (seq settings)
       (do
