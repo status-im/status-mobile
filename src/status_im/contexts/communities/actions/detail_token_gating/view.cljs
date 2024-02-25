@@ -13,12 +13,13 @@
             (get token-permissions permission-type))
    permission-types))
 
-(defn get-role
+(defn get-token-role
   [token-permissions]
-  (let [sufficient-permissions (filter #(some (fn [token-req] (:sufficient? token-req))
-                                              (get token-permissions %))
-                                       [1 2 3])]
-    (first sufficient-permissions)))
+  (->> token-permissions
+       (remove (fn [[level _]] (#{5 6} level))) ; Exclude levels 5 and 6, focusing on token roles
+       (filter (fn [[_ requests]] (some :sufficient? (first requests))))
+       (map first)
+       (reduce max)))
 
 (defn view
   []
@@ -31,13 +32,12 @@
         collectible-name (:symbol (first (first collectible)))
         collectible-img (:img-src (first (first collectible)))
         has-collectible (get first (first collectible) :sufficient?)
-        role (get-role token-permissions)
+        role (get-token-role token-permissions)
         highest-role-text (i18n/label
                            (communities.utils/role->translation-key highest-permission-role
                                                                     :t/token-master))
         member-role-text (i18n/label
-                          (communities.utils/role->translation-key (contains? token-permissions role)
-                                                                   :t/member))
+                          (communities.utils/role->translation-key role :t/member))
         selected-addresses (rf/sub [:communities/selected-permission-addresses id])]
 
     [rn/view {:style style/container}
