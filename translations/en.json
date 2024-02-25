@@ -2534,5 +2534,9 @@
     "provider-is-down": "The provider for the following chain(s) is down: {{chains}}",
     "unknown": "Unknown",
     "unsupported-file": "Unsupported file",
-    "cant-fetch-info": "Can't fetch info"
+    "cant-fetch-info": "Can't fetch info",
+    "invite-to-community": "Invite to community",
+    "invite-n-users": "Invite {{count}} users",
+    "one-user-was-invited": "1 user was invited",
+    "n-users-were-invited": "{{count}} users were invited"
 }

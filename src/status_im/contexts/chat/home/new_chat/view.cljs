@@ -101,6 +101,7 @@
         {:keys [primary-name public-key]} (when one-contact-selected?
                                             (rf/sub [:contacts/contact-by-identity
                                                      (first selected-contacts)]))]
+    (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
     [rn/view {:flex 1}
      [rn/view {:padding-horizontal 20}
       [quo/button
