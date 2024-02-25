@@ -1,5 +1,6 @@
 (ns status-im.navigation.screens
   (:require
+    [legacy.status-im.ui.screens.communities.invite :as communities.invite]
     [legacy.status-im.ui.screens.screens :as old-screens]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
@@ -455,6 +456,12 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component scan-profile-qr-page/view}
+
+    {:name      :legacy-invite-people-community
+     :options   (-> options/transparent-screen-options
+                    (assoc :sheet? true)
+                    (dissoc :theme))
+     :component communities.invite/legacy-invite}
 
     ;; Settings
 

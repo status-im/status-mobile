@@ -9,7 +9,6 @@
     [legacy.status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [legacy.status-im.ui.screens.browser.bookmarks.views :as bookmarks]
     [legacy.status-im.ui.screens.bug-report :as bug-report]
-    [legacy.status-im.ui.screens.communities.invite :as communities.invite]
     [legacy.status-im.ui.screens.communities.members :as members]
     [legacy.status-im.ui.screens.contacts-list.views :as contacts-list]
     [legacy.status-im.ui.screens.currency-settings.views :as currency-settings]
@@ -297,6 +296,19 @@
     :options   {:insets {:bottom? true
                          :top?    true}}
     :component communities.invite/legacy-invite}
+   ;[Wallet] Recipient
+   {:name      :recipient
+    ;;TODO accessories
+    :options   {:insets {:bottom? true
+                         :top?    true}}
+    :component recipient/recipient}
+
+   ;[Wallet] New favourite
+   {:name      :new-favourite
+    :options   {:topBar {:title {:text (i18n/label :t/new-favourite)}}
+                :insets {:bottom? true
+                         :top?    true}}
+    :component recipient/new-favourite}
 
    ;QR Scanner
    {:name      :qr-scanner

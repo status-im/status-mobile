@@ -49,32 +49,28 @@
 
 (rf/defn share-community
   {:events [::share-community-confirmation-pressed]}
-  [cofx user-pk contacts]
-  (let [community-id (fetch-community-id-input cofx)
-        pks          (if (seq user-pk)
-                       (conj contacts user-pk)
-                       contacts)]
-    (when (seq pks)
-      {:json-rpc/call [{:method      "wakuext_shareCommunity"
-                        :params      [{:communityId community-id
-                                       :users       pks}]
-                        :js-response true
-                        :on-success  #(re-frame/dispatch [::people-invited %])
-                        :on-error    #(do
-                                        (log/error "failed to invite-user community" %)
-                                        (re-frame/dispatch [::failed-to-share-community %]))}]})))
+  [cofx users community-id]
+  (when (seq users)
+    {:json-rpc/call [{:method      "wakuext_shareCommunity"
+                      :params      [{:communityId community-id
+                                     :users       (vec users)}]
+                      :js-response true
+                      :on-success  #(re-frame/dispatch [::people-invited %])
+                      :on-error    #(do
+                                      (log/error "failed to invite-user community" %)
+                                      (re-frame/dispatch [::failed-to-share-community %]))}]}))
 
 (re-frame/reg-event-fx :communities/invite-people-pressed
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :legacy-invite-people-community {:invite? true}]]]}))
+         [:dispatch [:open-modal :legacy-invite-people-community {:id id}]]]}))
 
 (re-frame/reg-event-fx :communities/share-community-pressed
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :legacy-invite-people-community {}]]]}))
+         [:dispatch [:open-modal :legacy-invite-people-community {:id id}]]]}))
 
 (rf/defn people-invited
   {:events [::people-invited]}

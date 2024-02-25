@@ -2575,5 +2575,9 @@
     "display": "Display",
     "testnet-mode-enabled": "Testnet mode enabled",
     "online-community-member": "Online",
-    "offline-community-member": "Offline"
+    "offline-community-member": "Offline",
+    "invite-to-community": "Invite to community",
+    "invite-n-users": "Invite {{count}} users",
+    "one-user-was-invited": "1 user was invited",
+    "n-users-were-invited": "{{count}} users were invited"
 }
