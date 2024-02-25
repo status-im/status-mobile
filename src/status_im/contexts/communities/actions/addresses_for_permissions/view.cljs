@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [status-im.common.not-implemented :as not-implemented]
-            [status-im.common.resources :as resources]
             [status-im.constants :as constants]
             [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
             [utils.i18n :as i18n]
@@ -20,8 +19,8 @@
     nil))
 
 (defn- balances->components-props
-  [balances]
-  (for [{:keys [amount decimals type name] :as balance} balances]
+  [balances token-images-map]
+  (for [{:keys [amount decimals type name] sym :symbol :as balance} balances]
     (cond-> balance
       true
       (assoc :type
@@ -32,22 +31,24 @@
 
       (= type constants/community-token-type-erc721)
       (assoc :collectible-name    name
-             :collectible-img-src (resources/get-mock-image :collectible))
+             :collectible-img-src (token-images-map sym))
 
       (= type constants/community-token-type-erc20)
-      (assoc :amount (str (money/token->unit amount decimals))
-             :token  (:symbol balance)))))
+      (assoc :amount        (str (money/token->unit amount decimals))
+             :token         (:symbol balance)
+             :token-img-src (token-images-map sym)))))
 
 (defn- account-item
   [{:keys [color address name emoji]} _ _
    {:keys [selected-addresses community-id share-all-addresses? community-color]}]
-  (let [balances (rf/sub [:communities/permissioned-balances-by-address community-id address])]
+  (let [balances         (rf/sub [:communities/permissioned-balances-by-address community-id address])
+        token-images-map (rf/sub [:communities/token-requirements-images community-id])]
     [quo/account-permissions
      {:account             {:name                name
                             :address             address
                             :emoji               emoji
                             :customization-color color}
-      :token-details       (balances->components-props balances)
+      :token-details       (balances->components-props balances token-images-map)
       :checked?            (contains? selected-addresses address)
       :disabled?           share-all-addresses?
       :on-change           #(rf/dispatch [:communities/toggle-selected-permission-address
