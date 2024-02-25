@@ -28,10 +28,10 @@
 
     [:f>
      (fn []
-       (rn/use-effect (fn []
-                        (rn/hw-back-add-listener dismiss-bottom-sheet-callback)
-                        (fn []
-                          (rn/hw-back-remove-listener dismiss-bottom-sheet-callback))))
+       (rn/use-mount (fn []
+                       (rn/hw-back-add-listener dismiss-bottom-sheet-callback)
+                       (fn []
+                         (rn/hw-back-remove-listener dismiss-bottom-sheet-callback))))
        [theme/provider {:theme (or page-theme (theme/get-theme))}
         [bottom-sheet/bottom-sheet opts
          (when content

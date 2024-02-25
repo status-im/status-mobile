@@ -116,10 +116,7 @@
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data]
-        (rn/use-effect
-         (fn []
-           #(rf/dispatch [:wallet/clear-last-collectible-details]))
-         [])
+        (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
           :height         148

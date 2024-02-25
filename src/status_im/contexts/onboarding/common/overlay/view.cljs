@@ -55,7 +55,7 @@
   (let [opacity         (reanimated/use-shared-value (if (zero? @blur-amount) 0 1))
         blur-show-fn    #(blur-show opacity blur-amount)
         blur-dismiss-fn #(blur-dismiss opacity blur-amount)]
-    (rn/use-effect
+    (rn/use-mount
      (fn []
        (reset! blur-show-fn-atom blur-show-fn)
        (reset! blur-dismiss-fn-atom blur-dismiss-fn)

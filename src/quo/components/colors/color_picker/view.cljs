@@ -27,7 +27,7 @@
   (let [selected              (reagent/atom default-selected)
         {window-width :width} (rn/get-window)
         ref                   (atom nil)]
-    (rn/use-effect
+    (rn/use-mount
      (fn []
        (js/setTimeout
         (fn []

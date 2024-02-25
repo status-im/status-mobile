@@ -27,7 +27,7 @@
 
 (defn effect
   [{:keys [flat-list-ref scroll-index-lock? timers]} {:keys [opacity layout border]} index]
-  (rn/use-effect
+  (rn/use-mount
    (fn []
      (reagent/next-tick (fn []
                           (when @flat-list-ref

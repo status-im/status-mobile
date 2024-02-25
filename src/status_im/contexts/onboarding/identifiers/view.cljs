@@ -34,10 +34,7 @@
         photo-path           (rf/sub [:chats/photo-path public-key])
         emoji-string         (string/join emoji-hash)]
     (carousel.animation/use-initialize-animation progress paused? true is-dragging? drag-amount)
-    (rn/use-effect
-     (fn []
-       (carousel.animation/cleanup-animation progress paused?))
-     [])
+    (rn/use-mount #(carousel.animation/cleanup-animation progress paused?))
     [:<>
      [rn/view {:style style/page-container}
       [carousel/view
