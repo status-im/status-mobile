@@ -1,10 +1,13 @@
 (ns test-helpers.integration
+  (:require-macros [test-helpers.integration])
   (:require
     [cljs.test :refer [is] :as test]
     legacy.status-im.events
+    [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
     [legacy.status-im.utils.test :as legacy-test]
     [native-module.core :as native-module]
+    [promesa.core :as p]
     [re-frame.core :as rf]
     status-im.events
     status-im.navigation.core
@@ -90,16 +93,16 @@
 (defn rf-test-async
   [f]
   (test/async
-   done
-   (let [restore-fn (rf/make-restore-fn)]
-     (-> (f done)
-         (.catch (fn [error]
-                   (is (true? false) (str "async test failed" error))))
-         (.finally (fn []
-                     (restore-fn)
-                     (done)))))))
+    done
+    (let [restore-fn (rf/make-restore-fn)]
+      (-> (f done)
+          (.catch (fn [error]
+                    (is (true? false) (str "async test failed" error))))
+          (.finally (fn []
+                      (restore-fn)
+                      (done)))))))
 
-(defn with-app-initialized
+(defn setup-app
   []
   (legacy-test/init!)
   (if (app-initialized)
@@ -108,7 +111,7 @@
       (rf/dispatch [:app-started])
       (wait-for [:profile/get-profiles-overview-success]))))
 
-(defn with-account
+(defn setup-account
   []
   (if (messenger-started)
     (js/Promise.resolve)
@@ -116,3 +119,18 @@
       (create-multiaccount!)
       (-> (wait-for [:messenger-started])
           (.then #(assert-messenger-started))))))
+
+;;;; Fixtures
+
+(defn fixture-logged
+  []
+  {:before (fn []
+             (test/async done
+               (p/do (setup-app)
+                     (setup-account)
+                     (done))))
+   :after  (fn []
+             (test/async done
+               (p/do (logout)
+                     (wait-for [::logout/logout-method])
+                     (done))))})
