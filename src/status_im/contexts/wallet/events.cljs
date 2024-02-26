@@ -224,8 +224,7 @@
 
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
-  (let []
-    {:db (assoc-in db [:wallet :keypairs] keypairs)}))
+    {:db (assoc-in db [:wallet :keypairs] keypairs)})
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 
