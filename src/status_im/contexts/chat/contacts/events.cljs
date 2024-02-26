@@ -75,20 +75,21 @@
   [{:keys [db]} contacts]
   {:db (assoc db :contacts/contacts (into {} (map #(vector (:public-key %) %) contacts)))})
 
-(rf/defn send-contact-request
-  {:events [:contact.ui/send-contact-request]}
-  [{:keys [db]} id message]
-  (when (not= id (get-in db [:profile/profile :public-key]))
-    {:json-rpc/call
-     [{:method      "wakuext_sendContactRequest"
-       :js-response true
-       :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
-       :on-error    (fn [error]
-                      (log/error "Failed to send contact request"
-                                 {:error error
-                                  :event :contact.ui/send-contact-request
-                                  :id    id}))
-       :on-success  #(rf/dispatch [:transport/message-sent %])}]}))
+(rf/reg-event-fx
+ :contact.ui/send-contact-request
+ (fn [{:keys [db]} [id message]]
+   (when (not= id (get-in db [:profile/profile :public-key]))
+     {:json-rpc/call
+      [{:method      "wakuext_sendContactRequest"
+        :js-response true
+        :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
+        :on-error    (fn [error]
+                       (log/error "Failed to send contact request"
+                                  {:error error
+                                   :event :contact.ui/send-contact-request
+                                   :id    id}))
+        :on-success  #(rf/dispatch [:transport/message-sent %])}]})))
+
 
 (rf/defn remove-contact
   "Remove a contact from current account's contact list"
