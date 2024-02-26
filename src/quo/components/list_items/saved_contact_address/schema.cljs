@@ -1,22 +1,22 @@
 (ns quo.components.list-items.saved-contact-address.schema)
 
-(def ^private ?contact
+(def ^:private ?contact
   [:map
    [:full-name :string]
    [:profile-picture {:optional true} [:maybe [:or :schema.common/image-source :string]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]])
 
-(def ^private ?account
+(def ^:private ?account
   [:map
    [:name :string]
    [:address :string]
    [:emoji {:optional true} :string]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]])
 
-(def ^private ?accounts
+(def ^:private ?accounts
   [:+ ?account])
 
-(def ^private ?schema
+(def ^:private ?schema
   [:=>
    [:cat
     [:map

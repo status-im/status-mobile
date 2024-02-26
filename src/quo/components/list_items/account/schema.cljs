@@ -1,6 +1,6 @@
 (ns quo.components.list-items.account.schema)
 
-(def ^private ?balance
+(def ^:private ?balance
   [:map
    [:balance-props
     [:map
@@ -8,18 +8,18 @@
      [:percentage-change :string]
      [:fiat-change :string]]]])
 
-(def ^private ?tag
+(def ^:private ?tag
   [:map
    [:token-props
     [:map
      [:symbol :string]
      [:value :string]]]])
 
-(def ^private ?action
+(def ^:private ?action
   [:map
    [:on-options-press {:optional true} [:maybe fn?]]])
 
-(def ^private ?base
+(def ^:private ?base
   [:map
    [:type {:optional true}
     [:enum :default :tag :action :balance-neutral :balance-negative :balance-positive]]

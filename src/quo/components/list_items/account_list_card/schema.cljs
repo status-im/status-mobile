@@ -1,6 +1,6 @@
 (ns quo.components.list-items.account-list-card.schema)
 
-(def ^private ?base
+(def ^:private ?base
   [:map
    [:action {:optional true} [:enum :icon :none]]
    [:blur? {:optional true} [:maybe :boolean]]
@@ -16,7 +16,7 @@
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]
    [:networks {:optional true} [:* [:map [:name :keyword] [:short-name :string]]]]])
 
-(def ^private ?on-option-press
+(def ^:private ?on-option-press
   [:map
    [:on-options-press [:maybe fn?]]])
 

@@ -1,13 +1,13 @@
 (ns quo.components.list-items.token-value.schema)
 
-(def ^private ?values
+(def ^:private ?values
   [:map
    [:crypto-value :string]
    [:fiat-value :string]
    [:percentage-change {:optional true} :string]
    [:fiat-change {:optional true} :string]])
 
-(def ^private ?schema
+(def ^:private ?schema
   [:=>
    [:cat
     [:map
