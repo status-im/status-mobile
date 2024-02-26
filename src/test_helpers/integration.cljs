@@ -59,8 +59,6 @@
   []
   (rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
                 true {}])
-  ; can be removed soon
-  (rf/dispatch [:profile.settings/profile-update :is-sepolia-enabled? true {}])
   (rf/dispatch [:wallet/initialize]))
 
 (defn app-initialized
