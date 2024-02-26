@@ -82,15 +82,25 @@
      [{:method      "wakuext_sendContactRequest"
        :js-response true
        :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
-       :on-error    (fn [error]
-                      (log/error "Failed to send contact request"
-                                 {:error error
-                                  :event :contact.ui/send-contact-request
-                                  :id    id}))
-       :on-success  #(rf/dispatch [:transport/message-sent %])}]}))
+       :on-error    [:contact.ui/send-contact-request-failure id]
+       :on-success  [:contact.ui/send-contact-request-success]}]}))
 
 (rf/reg-event-fx :contact.ui/send-contact-request send-contact-request)
 
+(defn send-contact-request-success
+  [_ [response]]
+  (rf/dispatch [:transport/message-sent response]))
+
+(rf/reg-event-fx :contact.ui/send-contact-request-success send-contact-request-success)
+
+(defn send-contact-request-failure
+  [_ [id error]]
+  (log/error "Failed to send contact request"
+             {:error error
+              :event :contact.ui/send-contact-request
+              :id    id}))
+
+(rf/reg-event-fx :contact.ui/send-contact-request-failure send-contact-request-failure)
 
 (rf/defn remove-contact
   "Remove a contact from current account's contact list"
