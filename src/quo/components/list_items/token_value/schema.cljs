@@ -7,7 +7,7 @@
    [:percentage-change {:optional true} :string]
    [:fiat-change {:optional true} :string]])
 
-(def ^:private ?schema
+(def ?schema
   [:=>
    [:cat
     [:map

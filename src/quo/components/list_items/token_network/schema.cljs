@@ -1,6 +1,6 @@
 (ns quo.components.list-items.token-network.schema)
 
-(def ^:private ?schema
+(def ?schema
   [:=>
    [:cat
     [:map

@@ -14,7 +14,7 @@
      [:emoji :string]
      [:size {:optional true} [:enum 80 :size-64 48 32 28 24 20 16]]
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]
-   [:networks {:optional true} [:* [:map [:name :keyword] [:short-name :string]]]]])
+   [:networks {:optional true} [:* [:map [:network-name :keyword] [:short-name :string]]]]])
 
 (def ^:private ?on-option-press
   [:map

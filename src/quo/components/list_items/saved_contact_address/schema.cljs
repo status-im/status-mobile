@@ -16,7 +16,7 @@
 (def ^:private ?accounts
   [:+ ?account])
 
-(def ^:private ?schema
+(def ?schema
   [:=>
    [:cat
     [:map

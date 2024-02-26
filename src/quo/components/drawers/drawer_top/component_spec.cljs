@@ -65,7 +65,7 @@
                                    {:title                "Title"
                                     :type                 :account
                                     :account-avatar-emoji "🍿"
-                                    :networks             [{:name :ethereum :short-name "eth"}]
+                                    :networks             [{:network-name :ethereum :short-name "eth"}]
                                     :description          "0x62b...0a5"
                                     :customization-color  :purple}]
                                   theme)
