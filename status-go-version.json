@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "debug/revert-fleet",
-    "commit-sha1": "5f1489e280262bc26268deaeea9daaef9aa58992",
-    "src-sha256": "1c6yicr6161m6y41khx7v66m13gik7vlcszs82mh112473ywhasr"
+    "version": "v0.175.4",
+    "commit-sha1": "5304406079a5e3e1cfea285fef892ac56f2c3aad",
+    "src-sha256": "08xprnmpw0nz2zjm1wp8ypjhdyfvgmh7pqrlk69prgr23xa31ady"
 }
