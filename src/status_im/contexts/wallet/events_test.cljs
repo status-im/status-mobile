@@ -68,8 +68,8 @@
 
 (deftest get-keypairs
   (let [db          {}
-        keypairs    [{:public-key "public_key1" :private-key "private_key1"}
-                     {:public-key "public_key2" :private-key "private_key2"}]
+        keypairs    [{:public-key "public_key1"}
+                     {:public-key "public_key2"}]
         expected-db {:wallet {:ui       {:create-account {:new-keypair "test-keypair"}}
                               :keypairs keypairs}}
         effects     (events/get-keypairs {:db db})
@@ -78,16 +78,13 @@
 
 (deftest get-keypairs-success
   (let [db          {}
-        keypairs    [{:public-key "public_key1" :private-key "private_key1"}
-                     {:public-key "public_key2" :private-key "private_key2"}]
+        keypairs    [{:public-key "public_key1"}
+                     {:public-key "public_key2"}]
         expected-db {:wallet {:ui       {:create-account {:new-keypair "test-keypair"}}
                               :keypairs keypairs}}
         effects     (events/get-keypairs-success {:db db} keypairs)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
-
-
-
 
 (deftest store-collectibles
   (testing "(displayable-collectible?) helper function"
