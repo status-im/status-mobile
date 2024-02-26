@@ -56,7 +56,7 @@
         account-name                 (reagent/atom "")
         placeholder                  (i18n/label :t/default-account-placeholder
                                                  {:number (inc number-of-accounts)})
-        derivation-path              (reagent/atom (utils/get-derivation-path (inc number-of-accounts)))
+        derivation-path              (reagent/atom (utils/get-derivation-path number-of-accounts))
         {:keys [public-key address]} (rf/sub [:profile/profile])
         on-change-text               #(reset! account-name %)
         primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
@@ -64,7 +64,6 @@
         {window-width :width}        (rn/get-window)]
     (fn [{:keys [theme]}]
       (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
-        (println "qqq" address)
         (rn/use-effect (fn [] #(rf/dispatch [:wallet/clear-new-keypair])))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
@@ -135,14 +134,14 @@
                                                  (merge new-keypair
                                                         {:name         (:keypair-name new-keypair)
                                                          :key-uid      (:keyUid new-keypair)
-                                                         :type         :generated
+                                                         :type         :seed
                                                          :derived-from address})
                                                  {:accounts [{:keypair-name (:keypair-name new-keypair)
                                                               :key-uid      (:keyUid new-keypair)
                                                               :seed-phrase  (:mnemonic new-keypair)
                                                               :public-key   (:publicKey new-keypair)
                                                               :name         @account-name
-                                                              :type         :generated
+                                                              :type         :seed
                                                               :emoji        @emoji
                                                               :colorID      @account-color
                                                               :path         @derivation-path

@@ -60,7 +60,7 @@
           :accessibility-label :options-button}]])]))
 
 (defn details-view
-  [{:keys [details stored blur? theme]}]
+  [{:keys [details stored type blur? theme]}]
   (let [{:keys [address]} details]
     [rn/view
      {:style               {:flex-direction :row
@@ -70,10 +70,11 @@
       {:size  :paragraph-2
        :style (style/subtitle blur? theme)}
       address]
-     [text/text
-      {:size  :paragraph-2
-       :style (merge (style/subtitle blur? theme) {:bottom (if platform/ios? 2 -2)})}
-      " ∙ "]
+     (when (= type :default-keypair)
+       [text/text
+        {:size  :paragraph-2
+         :style (merge (style/subtitle blur? theme) {:bottom (if platform/ios? 2 -2)})}
+        " ∙ "])
      [text/text
       {:size  :paragraph-2
        :style (style/subtitle blur? theme)}
@@ -87,8 +88,8 @@
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]))
 
 (defn- view-internal
-  []
-  (let [selected? (reagent/atom true)]
+  [{:keys [default-selected?]}]
+  (let [selected? (reagent/atom default-selected?)]
     (fn [{:keys [accounts action container-style] :as props}]
       [rn/pressable
        {:style    (merge (style/container (merge props {:selected? @selected?})) container-style)

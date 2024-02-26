@@ -38,13 +38,49 @@
     :state         :default
     :action        :none}])
 
-(defn view
+(defn parse-accounts
+  [given-accounts]
+  (map (fn [{:keys [colorId emoji name address]}]
+         {:account-props {:customization-color (if (not-empty colorId) (keyword colorId) :blue)
+                          :size                32
+                          :emoji               emoji
+                          :type                :default
+                          :name                name
+                          :address             address}
+          :networks      [{:network-name :ethereum :short-name "eth"}
+                          {:network-name :optimism :short-name "opt"}]
+          :state         :default
+          :action        :none})
+       given-accounts))
+
+(defn keypair
+  [item index _ {:keys [profile-picture compressed-key]}]
+  (let [main-account    (first (:accounts item))
+        color           (keyword (:colorId main-account))
+        parsed-accounts (parse-accounts (:accounts item))]
+    [quo/keypair
+     {:customization-color (if (not-empty (:colorId main-account)) color :blue)
+      :profile-picture     (when (zero? index) profile-picture)
+      :status-indicator    false
+      :type                (if (zero? index) :default-keypair :other)
+      :stored              :on-device
+      :on-options-press    #(js/alert "Options pressed")
+      :action              :selector
+      :blur?               false
+      :details             {:full-name (:name item)
+                            :address   (when (zero? index)
+                                         (utils/get-shortened-compressed-key compressed-key))}
+      :accounts            parsed-accounts
+      :default-selected?   (zero? index)
+      :container-style     {:margin-horizontal 20
+                            :margin-vertical   8}}]))
+(defn- view-internal
   []
-  (let [{:keys [public-key compressed-key
-                customization-color]} (rf/sub [:profile/profile])
-        [display-name _]              (rf/sub [:contacts/contact-two-names-by-identity public-key])
-        profile-with-image            (rf/sub [:profile/profile-with-image])
-        profile-picture               (profile.utils/photo profile-with-image)]
+  (let [{:keys [compressed-key customization-color]} (rf/sub [:profile/profile])
+        profile-with-image                           (rf/sub [:profile/profile-with-image])
+        keypairs                                     (rf/sub [:wallet/keypairs])
+        profile-picture                              (profile.utils/photo profile-with-image)]
+    (rn/use-effect #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
@@ -60,23 +96,18 @@
                                                   [:show-bottom-sheet {:content keypair-options}])}
        :description       :text
        :description-text  (i18n/label :t/keypairs-description)}]
-     [quo/keypair
-      {:customization-color customization-color
-       :profile-picture     profile-picture
-       :status-indicator    false
-       :type                :default-keypair
-       :stored              :on-device
-       :on-options-press    #(js/alert "Options pressed")
-       :action              :selector
-       :blur?               false
-       :details             {:full-name display-name
-                             :address   (utils/get-shortened-compressed-key compressed-key)}
-       :accounts            accounts
-       :container-style     {:margin-horizontal 20
-                             :margin-vertical   8}}]
+     [rn/flat-list
+      {:data        keypairs
+       :render-fn   keypair
+       :render-data {:profile-picture profile-picture
+                     :compressed-key  compressed-key}}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/confirm-account-origin)
        :button-one-props {:disabled?           true
                           :customization-color customization-color}
        :container-style  style/bottom-action-container}]]))
+
+(defn view
+  []
+  [:f> view-internal])
