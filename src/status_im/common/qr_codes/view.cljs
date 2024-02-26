@@ -33,7 +33,7 @@
   (let [qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                              {:url         url
                               :port        (rf/sub [:mediaserver/port])
-                              :qr-size     (or (int size) 400)
+                              :qr-size     (or (and size (int size)) 400)
                               :error-level :highest})]
     [quo/qr-code
      (assoc props

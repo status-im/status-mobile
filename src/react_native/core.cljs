@@ -2,7 +2,6 @@
   (:require
     ["react" :as react]
     ["react-native" :as react-native]
-    [cljs-bean.core :as bean]
     [oops.core :as oops]
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
@@ -53,8 +52,9 @@
   (into [touchable-highlight-class (utils/custom-pressable-props props)] children))
 
 (defn touchable-without-feedback
-  [props & children]
-  (into [touchable-without-feedback-class (utils/custom-pressable-props props)] children))
+  {:deprecated "pressable should be used instead"}
+  [props child]
+  [touchable-without-feedback-class (utils/custom-pressable-props props) child])
 
 (def flat-list flat-list/flat-list)
 
@@ -134,26 +134,50 @@
 
 (def use-context react/useContext)
 
+(defn use-ref-atom
+  [value]
+  (let [ref (use-ref (atom value))]
+    (.-current ^js ref)))
+
+(defn get-js-deps
+  [deps]
+  (if deps
+    (let [prev-state (use-ref-atom {:value false :deps nil})
+          prev-deps  (:deps @prev-state)
+          prev-value (:value @prev-state)]
+      (if (and (not (nil? prev-deps)) (not= (count deps) (count prev-deps)))
+        (throw (js/Error. "Hooks can't have a different number of dependencies across re-renders"))
+        (if (not= deps prev-deps)
+          (let [new-value (not prev-value)]
+            (reset! prev-state {:value new-value
+                                :deps  deps})
+            #js [new-value])
+          #js [prev-value])))
+    js/undefined))
+
 (defn use-effect
-  ([effect-fn]
-   (use-effect effect-fn []))
-  ([effect-fn deps]
+  {:deprecated
+   "use-mount or use-unmount should be used, more here https://github.com/status-im/status-mobile/blob/develop/doc/ui-guidelines.md#effects"}
+  ([handler]
+   (use-effect handler nil))
+  ([handler deps]
    (react/useEffect
-    #(let [ret (effect-fn)]
-       (if (fn? ret) ret js/undefined))
-    (bean/->js deps))))
+    #(let [ret (handler)] (if (fn? ret) ret js/undefined))
+    (get-js-deps deps))))
 
-(def use-callback react/useCallback)
-
-(defn use-effect-once
-  [effect-fn]
-  (use-effect effect-fn))
+(defn use-mount
+  [handler]
+  (use-effect handler []))
 
 (defn use-unmount
-  [f]
-  (let [fn-ref (use-ref f)]
-    (oops/oset! fn-ref "current" f)
-    (use-effect-once (fn [] (fn [] (oops/ocall! fn-ref "current"))))))
+  [handler]
+  (use-mount (fn [] handler)))
+
+(defn use-callback
+  ([handler]
+   (use-callback handler []))
+  ([handler deps]
+   (react/useCallback handler (get-js-deps deps))))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))

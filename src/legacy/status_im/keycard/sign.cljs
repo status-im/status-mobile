@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [legacy.status-im.keycard.common :as common]
     [legacy.status-im.utils.deprecated-types :as types]
-    [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
     [taoensso.timbre :as log]
     [utils.address :as address]
@@ -24,8 +23,7 @@
         typed?              (get-in db [:keycard :typed?])
         pin                 (common/vector->string (get-in db [:keycard :pin :sign]))
         from                (or (get-in db [:signing/tx :from :address])
-                                (get-in db [:signing/tx :message :from])
-                                (wallet.utils/default-address db))
+                                (get-in db [:signing/tx :message :from]))
         path                (reduce
                              (fn [_ {:keys [address path]}]
                                (when (address/address= from address)

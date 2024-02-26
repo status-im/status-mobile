@@ -207,11 +207,13 @@
                            [@show-bottom-sheet? @expanded? @gesture-running?])
 
          [:<>
-          [rn/touchable-without-feedback {:on-press (when backdrop-dismiss? close-bottom-sheet)}
+          [rn/pressable
+           {:on-press (when backdrop-dismiss? close-bottom-sheet)
+            :style    styles/backdrop}
            [reanimated/view
             {:style (reanimated/apply-animations-to-style
                      {:opacity bg-opacity}
-                     styles/backdrop)}]]
+                     styles/backdrop-color)}]]
           (cond->> [reanimated/view
                     {:style (reanimated/apply-animations-to-style
                              {:transform [{:translateY translate-y}]}

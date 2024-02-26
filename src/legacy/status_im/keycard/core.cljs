@@ -12,7 +12,6 @@
     [legacy.status-im.keycard.recovery :as recovery]
     [legacy.status-im.keycard.sign :as sign]
     legacy.status-im.keycard.unpair
-    [legacy.status-im.keycard.wallet :as wallet]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [re-frame.db]
     [status-im.navigation.events :as navigation]
@@ -400,10 +399,6 @@
       (and (= enter-step :current)
            (= pin-code-length numbers-entered))
       (common/verify-pin {:pin-step :current})
-
-      (and (= enter-step :export-key)
-           (= pin-code-length numbers-entered))
-      (wallet/verify-pin-with-delay)
 
       (and (= enter-step :sign)
            (= pin-code-length numbers-entered))

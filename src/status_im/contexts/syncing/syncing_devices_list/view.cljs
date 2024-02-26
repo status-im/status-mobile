@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [status-im.contexts.syncing.device.view :as device]
     [status-im.contexts.syncing.syncing-devices-list.style :as style]
     [utils.i18n :as i18n]
@@ -11,6 +12,7 @@
 (defn view
   []
   (let [devices                                   (rf/sub [:pairing/installations])
+        insets                                    (safe-area/get-insets)
         devices-with-button                       (map #(assoc % :show-button? true) devices)
         user-device                               (first devices-with-button)
         other-devices                             (rest devices-with-button)
@@ -18,7 +20,7 @@
         {:keys [paired-devices unpaired-devices]} (group-by
                                                    #(if (:enabled? %) :paired-devices :unpaired-devices)
                                                    other-devices)]
-    [rn/view {:style style/container-main}
+    [rn/view {:style (style/container-main (:top insets))}
      [quo/page-nav
       {:type       :no-title
        :background :blur

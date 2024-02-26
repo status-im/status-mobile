@@ -11,7 +11,6 @@
     [legacy.status-im.ui.screens.browser.accounts :as accounts]
     [legacy.status-im.ui.screens.browser.empty-tab.styles :as styles]
     [legacy.status-im.ui.screens.browser.views :as browser]
-    [legacy.status-im.ui.screens.wallet.components.views :as components]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
@@ -144,7 +143,7 @@
          :container-style     styles/input-container-style
          :accessibility-label :dapp-url-input
          :return-key-type     :go}]
-       [components/separator-dark]
+       [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]
        [list/flat-list
         {:header          [list-header (empty? bookmarks)]
          :data            bookmarks

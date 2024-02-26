@@ -1,7 +1,6 @@
 (ns status-im.db
   (:require
     [legacy.status-im.fleet.core :as fleet]
-    [legacy.status-im.wallet.db :as wallet.db]
     [react-native.core :as rn]
     [status-im.contexts.shell.activity-center.events :as activity-center]))
 
@@ -19,8 +18,6 @@
    :sync-state                         :done
    :link-previews-whitelist            []
    :app-state                          "active"
-   :wallet-legacy                      wallet.db/default-wallet
-   :wallet-legacy/all-tokens           {}
    :peers-count                        0
    :node-info                          {}
    :peers-summary                      []

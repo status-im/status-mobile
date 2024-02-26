@@ -41,7 +41,7 @@ class AllowButton(Button):
 class UnreadMessagesCountText(Text):
     def __init__(self, driver, parent_locator: str):
         super().__init__(driver,
-                         xpath="%s/*[@resource-id='counter-component']/android.widget.TextView" % parent_locator)
+                         xpath="%s//*[@resource-id='counter-component']/android.widget.TextView" % parent_locator)
 
 
 class TabButton(Button):

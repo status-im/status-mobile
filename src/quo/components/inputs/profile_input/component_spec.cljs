@@ -6,8 +6,9 @@
 (h/describe "Profile Input"
   (h/test "on press event fires"
     (let [event (h/mock-fn)]
-      (h/render [profile-input/profile-input
-                 {:placeholder "Your Name"
-                  :on-press    event}])
+      (h/render-with-theme-provider
+       [profile-input/profile-input
+        {:placeholder "Your Name"
+         :on-press    event}])
       (h/fire-event :press (h/get-by-label-text :select-profile-picture-button))
       (h/was-called-times event 1))))

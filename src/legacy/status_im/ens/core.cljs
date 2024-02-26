@@ -7,7 +7,6 @@
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.random :as random]
-    [legacy.status-im.wallet.utils :as wallet.utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.navigation.events :as navigation]
@@ -126,7 +125,7 @@
   {:events [::set-pub-key]}
   [{:keys [db]}]
   (let [{:keys [username address custom-domain?]} (:ens/registration db)
-        address                                   (or address (wallet.utils/default-address db))
+        address                                   address
         {:keys [public-key]}                      (:profile/profile db)
         chain-id                                  (chain/chain-id db)
         username                                  (fullname custom-domain? username)]

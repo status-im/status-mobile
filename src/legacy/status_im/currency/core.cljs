@@ -1,7 +1,6 @@
 (ns legacy.status-im.currency.core
   (:require
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
-    [legacy.status-im.wallet.prices :as prices]
     [utils.re-frame :as rf]))
 
 (defn get-currency
@@ -16,5 +15,4 @@
              :currency
              currency
              ;; on changing currency, we should fetch tokens prices again
-             {:on-success #(rf/dispatch [:wallet/get-wallet-token])})
-            (prices/update-prices)))
+             {:on-success #(rf/dispatch [:wallet/get-wallet-token])})))

@@ -239,7 +239,7 @@
                                         (utils/get-standard-fiat-format fee-in-crypto-formatted
                                                                         currency-symbol
                                                                         fee-in-fiat))]
-        (rn/use-effect
+        (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]

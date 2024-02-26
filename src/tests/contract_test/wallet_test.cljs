@@ -66,12 +66,12 @@
 (defn assert-ethereum-chains
   [response]
   (is (= number-of-networks (count response)))
-  (is (some #(= constants/ethereum-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/optimism-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/arbitrum-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/goerli-chain-id (get-in % [:Test :chainId])) response))
-  (is (some #(= constants/arbitrum-testnet-chain-id (get-in % [:Test :chainId])) response))
-  (is (some #(= constants/optimism-testnet-chain-id (get-in % [:Test :chainId])) response)))
+  (is (some #(= constants/ethereum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/optimism-mainnet-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/arbitrum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
+  (is (some #(= constants/ethereum-sepolia-chain-id (get-in % [:Test :chainId])) response))
+  (is (some #(= constants/arbitrum-sepolia-chain-id (get-in % [:Test :chainId])) response))
+  (is (some #(= constants/optimism-sepolia-chain-id (get-in % [:Test :chainId])) response)))
 
 (deftest accounts-get-chains-contract
   (h/log-headline :contract/wallet_get-ethereum-chains)

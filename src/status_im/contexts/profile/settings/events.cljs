@@ -70,14 +70,16 @@
                                        {:on-success on-success}])
              :on-cancel nil}]]})))
 
-(rf/reg-event-fx :profile.settings/toggle-sepolia-test-network
+(rf/reg-event-fx :profile.settings/toggle-goerli-test-network
  (fn [{:keys [db]}]
-   (let [value      (get-in db [:profile/profile :is-sepolia-enabled?])
-         on-success #(rf/dispatch [:wallet/initialize])]
-     {:fx [[:dispatch
-            [:profile.settings/profile-update :is-sepolia-enabled?
-             (not value)
-             {:on-success on-success}]]]})))
+   (let [value      (get-in db [:profile/profile :is-goerli-enabled?])
+         on-success #(rf/dispatch [:logout])]
+     {:fx [[:ui/show-confirmation
+            {:content   (i18n/label :t/goerli-testnet-toggle-confirmation)
+             :on-accept #(rf/dispatch [:profile.settings/profile-update :is-goerli-enabled?
+                                       (not value)
+                                       {:on-success on-success}])
+             :on-cancel nil}]]})))
 
 (rf/defn change-preview-privacy-flag
   {:events [:profile.settings/change-preview-privacy]}
