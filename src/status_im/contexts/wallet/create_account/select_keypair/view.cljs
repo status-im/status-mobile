@@ -1,7 +1,9 @@
 (ns status-im.contexts.wallet.create-account.select-keypair.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.create-account.select-keypair.style :as style]
     [utils.address :as utils]
@@ -26,38 +28,29 @@
       :accessibility-label :import-private-key
       :label               (i18n/label :t/import-private-key)}]]])
 
-(def accounts
-  [{:account-props {:customization-color :turquoise
-                    :size                32
-                    :emoji               "\uD83C\uDFB2"
-                    :type                :default
-                    :name                "Trip to Vegas"
-                    :address             "0x0ah...71a"}
-    :networks      [{:network-name :ethereum :short-name "eth"}
-                    {:network-name :optimism :short-name "opt"}]
-    :state         :default
-    :action        :none}])
-
 (defn parse-accounts
   [given-accounts]
-  (map (fn [{:keys [colorId emoji name address]}]
-         {:account-props {:customization-color (if (not-empty colorId) (keyword colorId) :blue)
-                          :size                32
-                          :emoji               emoji
-                          :type                :default
-                          :name                name
-                          :address             address}
-          :networks      [{:network-name :ethereum :short-name "eth"}
-                          {:network-name :optimism :short-name "opt"}]
-          :state         :default
-          :action        :none})
-       given-accounts))
+  (->> given-accounts
+       (filter (fn [{:keys [path]}]
+                 (not (string/starts-with? path constants/path-eip1581))))
+       (map (fn [{:keys [colorId emoji name address]}]
+              {:account-props {:customization-color (if (not-empty colorId) (keyword colorId) :blue)
+                               :size                32
+                               :emoji               emoji
+                               :type                :default
+                               :name                name
+                               :address             address}
+               :networks      [{:network-name :ethereum :short-name "eth"}
+                               {:network-name :optimism :short-name "opt"}
+                               {:network-name :arbitrum :short-name "arb1"}]
+               :state         :default
+               :action        :none}))))
 
 (defn keypair
   [item index _ {:keys [profile-picture compressed-key]}]
-  (let [main-account    (first (:accounts item))
-        color           (keyword (:colorId main-account))
-        parsed-accounts (parse-accounts (:accounts item))]
+  (let [main-account (first (:accounts item))
+        color        (keyword (:colorId main-account))
+        accounts     (parse-accounts (:accounts item))]
     [quo/keypair
      {:customization-color (if (not-empty (:colorId main-account)) color :blue)
       :profile-picture     (when (zero? index) profile-picture)
@@ -70,7 +63,7 @@
       :details             {:full-name (:name item)
                             :address   (when (zero? index)
                                          (utils/get-shortened-compressed-key compressed-key))}
-      :accounts            parsed-accounts
+      :accounts            accounts
       :default-selected?   (zero? index)
       :container-style     {:margin-horizontal 20
                             :margin-vertical   8}}]))
@@ -97,10 +90,11 @@
        :description       :text
        :description-text  (i18n/label :t/keypairs-description)}]
      [rn/flat-list
-      {:data        keypairs
-       :render-fn   keypair
-       :render-data {:profile-picture profile-picture
-                     :compressed-key  compressed-key}}]
+      {:data                    keypairs
+       :render-fn               keypair
+       :render-data             {:profile-picture profile-picture
+                                 :compressed-key  compressed-key}
+       :content-container-style {:padding-bottom 60}}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/confirm-account-origin)

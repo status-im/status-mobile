@@ -202,29 +202,32 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
-(rf/reg-event-fx
- :wallet/finalize-new-keypair
- (fn [_ [{:keys [sha3-pwd new-keypair]}]]
-   {:fx [[:json-rpc/call
-          [{:method     "accounts_addKeypair"
-            :params     [sha3-pwd new-keypair]
-            :on-success [:wallet/add-account-success (string/lower-case (:address new-keypair))]
-            :on-error   #(log/info "failed to create keypair " %)}]]]}))
+(defn finalize-new-keypair
+  [_ [{:keys [sha3-pwd new-keypair]}]]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_addKeypair"
+           :params     [sha3-pwd new-keypair]
+           :on-success [:wallet/add-account-success (string/lower-case (:address new-keypair))]
+           :on-error   #(log/info "failed to create keypair " %)}]]]})
 
-(rf/reg-event-fx
- :wallet/get-keypairs
- (fn [{:keys [db]}]
-   {:fx [[:json-rpc/call
-          [{:method     "accounts_getKeypairs"
-            :params     []
-            :on-success [:wallet/get-keypairs-success]
-            :on-error   #(log/info "failed to get keypairs " %)}]]]}))
+(rf/reg-event-fx :wallet/finalize-new-keypair finalize-new-keypair)
 
-(rf/reg-event-fx
- :wallet/get-keypairs-success
- (fn [{:keys [db]} [keypairs]]
-   (let []
-     {:db (assoc-in db [:wallet :keypairs] keypairs)})))
+(defn get-keypairs
+  [_]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_getKeypairs"
+           :params     []
+           :on-success [:wallet/get-keypairs-success]
+           :on-error   #(log/info "failed to get keypairs " %)}]]]})
+
+(rf/reg-event-fx :wallet/get-keypairs get-keypairs)
+
+(defn get-keypairs-success
+  [{:keys [db]} [keypairs]]
+  (let []
+    {:db (assoc-in db [:wallet :keypairs] keypairs)}))
+
+(rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
