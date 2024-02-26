@@ -195,7 +195,9 @@
             [{:method     "accounts_addAccount"
               :params     [(when (= type :generated) sha3-pwd) account-config]
               :on-success [:wallet/add-account-success lowercase-address]
-              :on-error   #(log/info "failed to create account " %)}]]]})))
+              :on-error   #(log/info "failed to create account " %
+                                     "params:"
+                                     [(when (= type :generated) sha3-pwd) account-config])}]]]})))
 
 (rf/reg-event-fx
  :wallet/derive-address-and-add-account
@@ -361,7 +363,7 @@
    {:db (assoc db :wallet/valid-ens-or-address? false)}))
 
 (rf/reg-event-fx :wallet/get-address-details-success
- (fn [{:keys [db]} [{:keys [hasActivity]}]]
+ (fn [{:keys [db]} [{:keys [hasActivity] :as x}]]
    {:db (assoc-in db
          [:wallet :ui :watch-address-activity-state]
          (if hasActivity :has-activity :no-activity))}))
@@ -370,16 +372,39 @@
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui] dissoc :watch-address-activity-state)}))
 
-(rf/reg-event-fx :wallet/get-address-details
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :ui :watch-address-activity-state] :scanning)
-    :fx [[:json-rpc/call
-          [{:method     "wallet_getAddressDetails"
-            :params     [(chain/chain-id db) address]
-            :on-success [:wallet/get-address-details-success]
-            :on-error   #(log/info "failed to get address details"
-                                   {:error %
-                                    :event :wallet/get-address-details})}]]]}))
+(rf/reg-event-fx
+ :wallet/address-of-ens
+ (fn [{:keys [db]} [{:keys [ens on-success on-error]}]]
+   (prn "looking for address...")
+   {:fx [[:json-rpc/call
+          [{:method     "ens_addressOf"
+            :params     [(chain/chain-id db) ens]
+            :on-success (if (fn? on-success)
+                          on-success
+                          #(conj on-success %))
+            :on-error   (if (fn? on-error)
+                          on-error
+                          #(conj on-error %))}]]]}))
+
+(rf/reg-event-fx
+ :wallet/get-address-details
+ (fn [{:keys [db]} [address-or-ens]]
+   (let [on-error #(log/info "failed to get address details"
+                             {:error %
+                              :event :wallet/get-address-details})]
+     (if (string/includes? "address" ".")
+       {:fx [[:dispatch [:wallet/address-of-ens {:ens        address-or-ens
+                                                 :on-success [:wallet/get-address-details]
+                                                 :on-error   on-error}]]]}
+       {:db (assoc-in db [:wallet :ui :watch-address-activity-state] :scanning)
+        :fx [[:json-rpc/call
+              [{:method     "wallet_getAddressDetails"
+                :params     [(chain/chain-id db) address-or-ens]
+                :on-success [:wallet/get-address-details-success]
+                :on-error   on-error}]]]}
+       ))
+
+   ))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
