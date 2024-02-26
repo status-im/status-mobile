@@ -2,37 +2,21 @@
   (:require
     [legacy.status-im.data-store.settings :as data-store.settings]
     [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
     [status-im.contexts.profile.edit.accent-colour.events]
     [status-im.contexts.profile.edit.bio.events]
     [status-im.contexts.profile.edit.header.events]
     [status-im.contexts.profile.edit.name.events]
-    [status-im.contexts.profile.login.events :as profile.login]
+    status-im.contexts.profile.login.events
     [status-im.contexts.profile.rpc :as profile.rpc]
-    [status-im.navigation.events :as navigation]
     [utils.re-frame :as rf]))
 
-(re-frame/reg-fx
- :profile/get-profiles-overview
- (fn [callback]
-   (native-module/open-accounts callback)))
+(defn- select-profile
+  [profile key-uid]
+  (-> profile
+      (assoc :key-uid key-uid)
+      (dissoc :error :password)))
 
-(rf/defn profile-selected
-  {:events [:profile/profile-selected]}
-  [{:keys [db]} key-uid]
-  {:db (update db
-               :profile/login
-               #(-> %
-                    (assoc :key-uid key-uid)
-                    (dissoc :error :password)))})
-
-(rf/defn init-profiles-overview
-  [{:keys [db] :as cofx} profiles key-uid]
-  (rf/merge cofx
-            {:db (assoc db :profile/profiles-overview profiles)}
-            (profile-selected key-uid)))
-
-(defn reduce-profiles
+(defn- reduce-profiles
   [profiles]
   (reduce
    (fn [acc {:keys [key-uid] :as profile}]
@@ -40,28 +24,42 @@
    {}
    profiles))
 
-(rf/defn get-profiles-overview-success
-  {:events [:profile/get-profiles-overview-success]}
-  [cofx profiles-overview]
-  (if (seq profiles-overview)
-    (let [profiles          (reduce-profiles profiles-overview)
-          {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))]
-      (rf/merge cofx
-                (navigation/init-root :profiles)
-                (when key-uid (init-profiles-overview profiles key-uid))
-                ;;we check if biometric is available, and try to login with it,
-                ;;if succeed "node.login" signal will be triggered
-                (when key-uid (profile.login/login-with-biometric-if-available key-uid))))
-    (navigation/init-root cofx :intro)))
+(rf/reg-fx
+ :profile/get-profiles-overview
+ (fn [callback]
+   (native-module/open-accounts callback)))
 
-(rf/defn update-setting-from-backup
-  {:events [:profile/update-setting-from-backup]}
-  [{:keys [db]} {:keys [backedUpSettings]}]
-  (let [setting              (update backedUpSettings :name keyword)
-        {:keys [name value]} (data-store.settings/rpc->setting-value setting)]
-    {:db (assoc-in db [:profile/profile name] value)}))
+(rf/reg-event-fx
+ :profile/profile-selected
+ (fn [{:keys [db]} [key-uid]]
+   {:db (update db :profile/login #(select-profile % key-uid))}))
 
-(rf/defn update-profile-from-backup
-  {:events [:profile/update-profile-from-backup]}
-  [_ {{:keys [ensUsernameDetails]} :backedUpProfile}]
-  {:dispatch [:ens/update-usernames ensUsernameDetails]})
+(rf/reg-event-fx
+ :profile/get-profiles-overview-success
+ (fn [{:keys [db]} [profiles-overview]]
+   (if (seq profiles-overview)
+     (let [profiles          (reduce-profiles profiles-overview)
+           {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))]
+       {:db (if key-uid
+              (-> db
+                  (assoc :profile/profiles-overview profiles)
+                  (update :profile/login #(select-profile % key-uid)))
+              db)
+        :fx [[:set-root :profiles]
+             (when key-uid
+               [:biometric/check-if-available
+                [key-uid
+                 #(rf/dispatch [:profile.login/check-biometric-success % key-uid])]])]})
+     {:fx [[:set-root :intro]]})))
+
+(rf/reg-event-fx
+ :profile/update-setting-from-backup
+ (fn [{:keys [db]} [{:keys [backedUpSettings]}]]
+   (let [setting              (update backedUpSettings :name keyword)
+         {:keys [name value]} (data-store.settings/rpc->setting-value setting)]
+     {:db (assoc-in db [:profile/profile name] value)})))
+
+(rf/reg-event-fx
+ :profile/update-profile-from-backup
+ (fn [_ [{{:keys [ensUsernameDetails]} :backedUpProfile}]]
+   {:fx [[:dispatch [:ens/update-usernames ensUsernameDetails]]]}))

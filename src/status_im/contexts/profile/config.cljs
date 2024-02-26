@@ -2,8 +2,8 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [status-im.config :as config]
-    [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
 
 (defn login
@@ -51,14 +51,14 @@
   (when path
     (string/replace-first path "file://" "")))
 
-(rf/defn get-node-config-callback
-  {:events [:profile.config/get-node-config-callback]}
-  [{:keys [db]} node-config-json]
-  (let [node-config (transforms/json->clj node-config-json)]
-    {:db (assoc-in db
-          [:profile/profile :wakuv2-config]
-          (get node-config :WakuV2Config))}))
+(re-frame/reg-event-fx :profile.config/get-node-config-callback
+ (fn [{:keys [db]} [node-config-json]]
+   (let [node-config (transforms/json->clj node-config-json)]
+     {:db (assoc-in db
+           [:profile/profile :wakuv2-config]
+           (get node-config :WakuV2Config))})))
 
-(rf/defn get-node-config
-  [_]
-  (native-module/get-node-config #(rf/dispatch [:profile.config/get-node-config-callback %])))
+(re-frame/reg-fx :profile.config/get-node-config
+ (fn []
+   (native-module/get-node-config
+    #(re-frame/dispatch [:profile.config/get-node-config-callback %]))))

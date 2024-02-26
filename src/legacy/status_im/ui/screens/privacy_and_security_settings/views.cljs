@@ -111,7 +111,7 @@
          :subtitle           (i18n/label :t/webview-camera-permission-requests-subtitle)
          :subtitle-max-lines 2
          :on-press           #(re-frame/dispatch
-                               [:profile.settings/update-value
+                               [:profile.settings/profile-update
                                 :webview-allow-permission-requests?
                                 ((complement boolean) webview-allow-permission-requests?)])}])
      [separator]
@@ -169,8 +169,7 @@
    {:active    (= value id)
     :accessory :radio
     :title     (get titles id)
-    :on-press  #(re-frame/dispatch [:profile.settings/update-value :profile-pictures-visibility
-                                    id])}])
+    :on-press  #(re-frame/dispatch [:profile.settings/profile-update :profile-pictures-visibility id])}])
 
 (views/defview profile-pic
   []

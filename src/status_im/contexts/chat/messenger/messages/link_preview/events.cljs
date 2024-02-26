@@ -1,79 +1,65 @@
 (ns status-im.contexts.chat.messenger.messages.link-preview.events
-  (:require
-    [camel-snake-kebab.core :as csk]
-    [status-im.contexts.profile.settings.events :as profile.settings.events]
-    [taoensso.timbre :as log]
-    [utils.collection]
-    [utils.re-frame :as rf]))
+  (:require [camel-snake-kebab.core :as csk]
+            [status-im.common.json-rpc.events :as json-rpc]
+            [taoensso.timbre :as log]
+            [utils.collection]
+            [utils.re-frame :as rf]))
 
 (defn community-link
   [id]
   (str "https://status.app/c#" id))
 
-(rf/defn cache-link-preview-data
-  {:events [:chat.ui/cache-link-preview-data]}
-  [{{:profile/keys [profile]} :db :as cofx} site data]
-  (let [link-previews-cache (get profile :link-previews-cache {})]
-    (profile.settings.events/optimistic-profile-update
-     cofx
-     :link-previews-cache
-     (assoc link-previews-cache site (utils.collection/map-keys csk/->kebab-case-keyword data)))))
+(rf/reg-event-fx :chat.ui/cache-link-preview-data
+ (fn [{:keys [db]} [site data]]
+   (let [{:profile/keys [profile]} db
+         link-previews-cache       (-> profile
+                                       (get :link-previews-cache {})
+                                       (assoc site
+                                              (utils.collection/map-keys csk/->kebab-case-keyword
+                                                                         data)))]
+     {:db (assoc-in db [:profile/profile :link-previews-cache] link-previews-cache)})))
 
-(rf/defn load-link-preview-data
-  {:events [:chat.ui/load-link-preview-data]}
-  [{{:profile/keys [profile] :as db} :db} link]
-  (let [{:keys [error] :as cache-data} (get-in profile [:link-previews-cache link])]
-    (if (or (not cache-data) error)
-      {:json-rpc/call [{:method     "wakuext_getLinkPreviewData"
-                        :params     [link]
-                        :on-success #(rf/dispatch [:chat.ui/cache-link-preview-data link %])
-                        :on-error   #(rf/dispatch [:chat.ui/cache-link-preview-data link
-                                                   {:error (str "Can't get preview data for " link)}])}]}
-      {:db db})))
+(rf/reg-event-fx :chat.ui/load-link-preview-data
+ (fn [{{:profile/keys [profile]} :db} [link]]
+   (let [{:keys [error] :as cache-data} (get-in profile [:link-previews-cache link])]
+     (when (or (not cache-data) error)
+       {:fx [[:json-rpc/call
+              [{:method     "wakuext_getLinkPreviewData"
+                :params     [link]
+                :on-success [:chat.ui/cache-link-preview-data link]
+                :on-error   [:chat.ui/cache-link-preview-data link
+                             {:error (str "Can't get preview data for " link)}]}]]]}))))
 
-(rf/defn should-suggest-link-preview
-  {:events [:chat.ui/should-suggest-link-preview]}
-  [{:keys [db] :as cofx} enabled?]
-  (profile.settings.events/profile-update
-   cofx
-   :link-preview-request-enabled
-   (boolean enabled?)
-   {}))
+(rf/reg-event-fx :chat.ui/should-suggest-link-preview
+ (fn [_ [enabled?]]
+   {:fx [[:dispatch
+          [:profile.settings/profile-update :link-preview-request-enabled (boolean enabled?)]]]}))
 
-(rf/defn save-link-preview-whitelist
-  {:events [:chat.ui/link-preview-whitelist-received]}
-  [{:keys [db]} whitelist]
-  {:db (assoc db :link-previews-whitelist whitelist)})
+(rf/reg-event-fx :chat.ui/link-preview-whitelist-received
+ (fn [{:keys [db]} [whitelist]]
+   {:db (assoc db :link-previews-whitelist whitelist)}))
 
-(rf/defn request-link-preview-whitelist
-  [_]
-  {:json-rpc/call [{:method     "wakuext_getLinkPreviewWhitelist"
-                    :params     []
-                    :on-success #(rf/dispatch [:chat.ui/link-preview-whitelist-received %])
-                    :on-error   #(log/error "Failed to get link preview whitelist")}]})
+(rf/reg-fx :chat.ui/request-link-preview-whitelist
+ (fn []
+   (json-rpc/call {:method     "wakuext_getLinkPreviewWhitelist"
+                   :params     []
+                   :on-success [:chat.ui/link-preview-whitelist-received]
+                   :on-error   #(log/error "Failed to get link preview whitelist")})))
 
 (defn cache-community-preview-data
   [{:keys [id] :as community}]
   (rf/dispatch [:chat.ui/cache-link-preview-data (community-link id) community]))
 
-(rf/defn enable
-  {:events [:chat.ui/enable-link-previews]}
-  [{{:profile/keys [profile]} :db :as cofx} site enabled?]
-  (profile.settings.events/profile-update
-   cofx
-   :link-previews-enabled-sites
-   (if enabled?
-     (conj (get profile :link-previews-enabled-sites #{}) site)
-     (disj (get profile :link-previews-enabled-sites #{}) site))
-   {}))
+(rf/reg-event-fx :chat.ui/enable-link-previews
+ (fn [{{:profile/keys [profile]} :db} [site enabled?]]
+   (let [enabled-sites (if enabled?
+                         (conj (get profile :link-previews-enabled-sites #{}) site)
+                         (disj (get profile :link-previews-enabled-sites #{}) site))]
+     {:fx [[:dispatch [:profile.settings/profile-update :link-previews-enabled-sites enabled-sites]]]})))
 
-(rf/defn enable-all
-  {:events [:chat.ui/enable-all-link-previews]}
-  [cofx link-previews-whitelist enabled?]
-  (profile.settings.events/profile-update
-   cofx
-   :link-previews-enabled-sites
-   (if enabled?
-     (into #{} (map :title link-previews-whitelist))
-     #{})
-   {}))
+(rf/reg-event-fx :chat.ui/enable-all-link-previews
+ (fn [_ [link-previews-whitelist enabled?]]
+   (let [enabled-sites (if enabled?
+                         (into #{} (map :title link-previews-whitelist))
+                         #{})]
+     {:fx [[:dispatch [:profile.settings/profile-update :link-previews-enabled-sites enabled-sites]]]})))

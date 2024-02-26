@@ -1,7 +1,6 @@
 (ns legacy.status-im.network.net-info
   (:require
     ["@react-native-community/netinfo" :default net-info]
-    [legacy.status-im.mobile-sync-settings.core :as mobile-network]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [taoensso.timbre :as log]
@@ -13,11 +12,11 @@
             {:db (assoc db :network-status (if is-connected? :online :offline))}))
 
 (rf/defn change-network-type
-  [{:keys [db] :as cofx} old-network-type network-type expensive?]
+  [{:keys [db] :as cofx} network-type expensive?]
   (rf/merge cofx
             {:db                       (assoc db :network/type network-type)
-             :network/notify-status-go [network-type expensive?]}
-            (mobile-network/on-network-status-change)))
+             :network/notify-status-go [network-type expensive?]
+             :dispatch                 [:mobile-network/on-network-status-change]}))
 
 (rf/defn handle-network-info-change
   {:events [::network-info-changed]}
@@ -37,7 +36,7 @@
               (when-not status-changed?
                 (change-network-status isConnected))
               (when-not type-changed?
-                (change-network-type old-network-type type (:is-connection-expensive details))))))
+                (change-network-type type (:is-connection-expensive details))))))
 
 (defn add-net-info-listener
   []

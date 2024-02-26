@@ -8,11 +8,16 @@
     legacy.status-im.chat.models.loading
     legacy.status-im.contact.block
     legacy.status-im.currency.core
+    legacy.status-im.data-store.chats
+    legacy.status-im.data-store.switcher-cards
+    legacy.status-im.data-store.visibility-status-updates
     legacy.status-im.fleet.core
+    legacy.status-im.group-chats.core
     [legacy.status-im.keycard.core :as keycard]
     legacy.status-im.log-level.core
     legacy.status-im.mailserver.constants
     [legacy.status-im.mailserver.core :as mailserver]
+    legacy.status-im.mobile-sync-settings.core
     legacy.status-im.multiaccounts.login.core
     legacy.status-im.multiaccounts.logout.core
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]

@@ -21,7 +21,7 @@
    {:active    (= value id)
     :accessory :radio
     :title     (get titles id)
-    :on-press  #(re-frame/dispatch [:profile.settings/update-value :default-sync-period id])}])
+    :on-press  #(re-frame/dispatch [:profile.settings/profile-update :default-sync-period id])}])
 
 (views/defview default-sync-period-settings
   []

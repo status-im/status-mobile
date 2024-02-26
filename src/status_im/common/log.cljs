@@ -4,9 +4,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.config :as config]
     [taoensso.timbre :as log]
-    [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
 
 (def logs-queue (atom #queue []))
@@ -52,9 +50,3 @@
  :logs/set-level
  (fn [level]
    (setup level)))
-
-(rf/defn set-log-level
-  [{:keys [db]} log-level]
-  (let [log-level (or log-level config/log-level)]
-    {:db             (assoc-in db [:profile/profile :log-level] log-level)
-     :logs/set-level log-level}))

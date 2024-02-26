@@ -5,7 +5,7 @@
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.utils.mobile-sync :as utils]
-    [status-im.contexts.chat.home.add-new-contact.events :as add-new-contact]
+    [re-frame.core :as re-frame]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
@@ -18,27 +18,24 @@
                 (or (nil? remember-choice?)
                     remember-choice?))}))
 
-(rf/defn on-network-status-change
-  [{:keys [db] :as cofx}]
-  (let [initialized?                       (get db :network-status/initialized?)
-        logged-in?                         (multiaccounts.model/logged-in? db)
-        {:keys [remember-syncing-choice?]} (:profile/profile db)]
-    (apply
-     rf/merge
-     cofx
-     {:db (assoc db :network-status/initialized? true)}
-     (cond
-       ;; NOTE(rasom): When we log into account on-network-status-change is
-       ;; dispatched, but that doesn't mean there was a status change, thus
-       ;; no reason to restart wallet.
-       (and logged-in? initialized?)
-       [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet-old)
-        #(add-new-contact/set-new-identity-reconnected %)]
-
-       logged-in?
-       [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet-old)]))))
+(re-frame/reg-event-fx :mobile-network/on-network-status-change
+ (fn [{:keys [db]}]
+   (let [previously-initialized?  (get db :network-status/initialized?)
+         logged-in?               (multiaccounts.model/logged-in? db)
+         fetch-historic-messages? (mailserver/needs-to-fetch-historic-messages? db)]
+     (if logged-in?
+       {:db (cond-> (-> db
+                        (assoc :network-status/initialized? true)
+                        (assoc :bottom-sheet/show? false))
+              fetch-historic-messages?
+              (assoc :mailserver/current-request true))
+        :fx [(when fetch-historic-messages?
+               [:mailserver/request-all-historic-messages])
+             [:dismiss-bottom-sheet-overlay-old]
+             (when previously-initialized?
+               (let [new-identity-input (get-in db [:contacts/new-identity :input])]
+                 [:dispatch [:contacts/set-new-identity {:input new-identity-input}]]))]}
+       {:db (assoc db :network-status/initialized? true)}))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))

@@ -51,6 +51,6 @@
   [{:keys [db] :as cofx} enabled?]
   (rf/merge cofx
             (if enabled?
-              {:effects/push-notifications-enable nil}
-              {:effects/push-notifications-disable nil})
+              {:push-notifications-enable nil}
+              {:push-notifications-disable nil})
             (multiaccounts.update/multiaccount-update :notifications-enabled? enabled? {})))
