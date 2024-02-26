@@ -30,13 +30,13 @@
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}))
+    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:navigate-to :wallet-accounts address]]
+         [:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
@@ -240,17 +240,17 @@
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
               (assoc-in [:wallet :ui :send :to-address] to-address))
-      :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-to stack-id]]]]})))
+      :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]]]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :type] :bridge)
-    :fx [[:dispatch [:open-modal :wallet-bridge]]]}))
+    :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-send stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-send stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains

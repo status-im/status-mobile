@@ -28,4 +28,4 @@
          :on-token-press (fn [token]
                            (rf/dispatch [:wallet/bridge-select-token
                                          {:token    token
-                                          :stack-id :wallet-bridge}]))}]])))
+                                          :stack-id :screen/wallet.bridge}]))}]])))

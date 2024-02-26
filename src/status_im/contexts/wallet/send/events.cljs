@@ -67,8 +67,8 @@
       :fx [[:dispatch
             [:navigate-to-within-stack
              (if token?
-               [:wallet-send-input-amount stack-id]
-               [:wallet-select-asset stack-id])]]]})))
+               [:screen/wallet.send-input-amount stack-id]
+               [:screen/wallet.select-asset stack-id])]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -81,7 +81,7 @@
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
-         [:dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]]}))
+         [:dispatch [:navigate-to-within-stack [:screen/wallet.send-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/send-select-token-drawer
@@ -110,12 +110,12 @@
             (assoc-in [:wallet :ui :send :type] :collectible)
             (assoc-in [:wallet :ui :send :amount] 1))
     :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
-         [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+         [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
@@ -185,11 +185,11 @@
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
             [:navigate-to-within-stack
-             [:wallet-transaction-progress :wallet-transaction-confirmation]]]]})))
+             [:screen/wallet.transaction-progress :screen/wallet.transaction-confirmation]]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
-   {:fx [[:dispatch [:dismiss-modal :wallet-transaction-progress]]]}))
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
 (defn- transaction-bridge
   [{:keys [from-address from-chain-id to-address token-id token-address route data eth-transfer?]}]

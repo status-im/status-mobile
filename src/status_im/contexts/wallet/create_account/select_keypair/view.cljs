@@ -16,7 +16,7 @@
    [[{:icon                :i/add
       :accessibility-label :generate-new-keypair
       :label               (i18n/label :t/generate-new-keypair)
-      :on-press            #(rf/dispatch [:navigate-to :wallet-backup-recovery-phrase])}
+      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.backup-recovery-phrase])}
      {:icon                :i/seed
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)
