@@ -77,12 +77,12 @@
 
 (rf/defn send-contact-request
   {:events [:contact.ui/send-contact-request]}
-  [{:keys [db]} id]
+  [{:keys [db]} id message]
   (when (not= id (get-in db [:profile/profile :public-key]))
     {:json-rpc/call
      [{:method      "wakuext_sendContactRequest"
        :js-response true
-       :params      [{:id id :message (i18n/label :t/add-me-to-your-contacts)}]
+       :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
        :on-error    (fn [error]
                       (log/error "Failed to send contact request"
                                  {:error error
