@@ -150,6 +150,9 @@
 (reg-root-key-sub :communities/permissioned-balances :communities/permissioned-balances)
 (reg-root-key-sub :communities/permissions-check :communities/permissions-check)
 (reg-root-key-sub :communities/channel-permissions-check :communities/channel-permissions-check)
+(reg-root-key-sub :communities/share-all-addresses-neww :communities/share-all-addresses)
+(reg-root-key-sub :communities/addresses-to-reveal-neww :communities/addresses-to-reveal)
+(reg-root-key-sub :communities/airdrop-address-neww :communities/airdrop-address)
 
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)

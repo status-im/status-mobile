@@ -31,7 +31,7 @@
                                      type
                                      constants/community-token-permission-can-view-and-post-channel))))]
       {:db (assoc-in db [:communities id] community)
-       :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+       :fx [[:dispatch [:communities/initialize-permission-addresses-neww id]]
             (when (not joined)
               [:dispatch [:chat.ui/spectate-community id]])
             (when (nil? token-permissions-check)
@@ -161,96 +161,62 @@
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
-(defn initialize-permission-addresses
+;; (defn initialize-permission-addresses
+;;   [{:keys [db]} [community-id]]
+;;   (when community-id
+;;     (let [accounts  (utils/sorted-non-watch-only-accounts db)
+;;           addresses (set (map :address accounts))]
+;;       {:db (update-in db
+;;                       [:communities community-id]
+;;                       assoc
+;;                       :previous-share-all-addresses? true
+;;                       :share-all-addresses?          true
+;;                       :previous-permission-addresses addresses
+;;                       :selected-permission-addresses addresses
+;;                       :airdrop-address               (:address (first accounts)))})))
+
+;; (rf/reg-event-fx :communities/initialize-permission-addresses
+;;  initialize-permission-addresses)
+
+(defn initialize-permission-addresses-neww
   [{:keys [db]} [community-id]]
   (when community-id
     (let [accounts  (utils/sorted-non-watch-only-accounts db)
           addresses (set (map :address accounts))]
-      {:db (update-in db
-                      [:communities community-id]
-                      assoc
-                      :previous-share-all-addresses? true
-                      :share-all-addresses?          true
-                      :previous-permission-addresses addresses
-                      :selected-permission-addresses addresses
-                      :airdrop-address               (:address (first accounts)))})))
+      {:db (-> db
+               (assoc-in [:communities/share-all-addresses community-id] true)
+               (assoc-in [:communities/addresses-to-reveal community-id] addresses)
+               (assoc-in [:communities/airdrop-address community-id] (:address (first accounts))))})))
 
-(rf/reg-event-fx :communities/initialize-permission-addresses
- initialize-permission-addresses)
+(rf/reg-event-fx :communities/initialize-permission-addresses-neww
+ initialize-permission-addresses-neww)
 
-(defn update-previous-permission-addresses
-  [{:keys [db]} [community-id]]
+(defn save-permission-address-changes-neww
+  [{:keys [db]} [{:keys [community-id share-all-addresses? addresses-to-reveal]}]]
   (when community-id
-    (let [accounts                      (utils/sorted-non-watch-only-accounts db)
-          selected-permission-addresses (get-in db
-                                                [:communities community-id
-                                                 :selected-permission-addresses])
-          selected-accounts             (filter #(contains? selected-permission-addresses (:address %))
-                                                accounts)
-          current-airdrop-address       (get-in db [:communities community-id :airdrop-address])
-          share-all-addresses?          (get-in db [:communities community-id :share-all-addresses?])]
-      {:db (update-in db
-                      [:communities community-id]
-                      assoc
-                      :previous-share-all-addresses? share-all-addresses?
-                      :previous-permission-addresses selected-permission-addresses
-                      :airdrop-address               (if (contains? selected-permission-addresses
-                                                                    current-airdrop-address)
-                                                       current-airdrop-address
-                                                       (:address (first selected-accounts))))})))
+    (let [current-airdrop-address (get-in db [:communities/airdrop-address community-id])
+          accounts                (utils/sorted-non-watch-only-accounts db)
+          accounts-to-reveal      (filter #(contains? addresses-to-reveal (:address %))
+                                          accounts)]
+      {:db (-> db
+               (assoc-in [:communities/share-all-addresses community-id] share-all-addresses?)
+               (assoc-in [:communities/addresses-to-reveal community-id] addresses-to-reveal)
+               (assoc-in [:communities/airdrop-address community-id]
+                         (if (contains? addresses-to-reveal
+                                        current-airdrop-address)
+                           current-airdrop-address
+                           (:address (first accounts-to-reveal)))))})))
 
-(rf/reg-event-fx :communities/update-previous-permission-addresses
- update-previous-permission-addresses)
+(rf/reg-event-fx :communities/save-permission-address-changes-neww
+ save-permission-address-changes-neww)
 
-(defn toggle-selected-permission-address
-  [{:keys [db]} [address community-id]]
-  (let [selected-permission-addresses
-        (get-in db [:communities community-id :selected-permission-addresses])
-        updated-selected-permission-addresses
-        (if (contains? selected-permission-addresses address)
-          (disj selected-permission-addresses address)
-          (conj selected-permission-addresses address))]
-    {:db (assoc-in db
-          [:communities community-id :selected-permission-addresses]
-          updated-selected-permission-addresses)
-     :fx [(when community-id
-            [:dispatch
-             [:communities/check-permissions-to-join-community community-id
-              updated-selected-permission-addresses :based-on-client-selection]])]}))
+(defn update-airdrop-address-neww
+  [{:keys [db]} [{:keys [community-id address]}]]
+  (when community-id
+    {:db (assoc-in db [:communities/airdrop-address community-id] address)}))
 
-(rf/reg-event-fx :communities/toggle-selected-permission-address
- toggle-selected-permission-address)
-
-(defn toggle-share-all-addresses
-  [{:keys [db]} [community-id]]
-  (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
-        next-share-all-addresses? (not share-all-addresses?)
-        accounts                  (utils/sorted-non-watch-only-accounts db)
-        addresses                 (set (map :address accounts))]
-    {:db (update-in db
-                    [:communities community-id]
-                    assoc
-                    :share-all-addresses?          next-share-all-addresses?
-                    :selected-permission-addresses addresses)
-     :fx [(when (and community-id next-share-all-addresses?)
-            [:dispatch
-             [:communities/check-permissions-to-join-community community-id
-              addresses :based-on-client-selection]])]}))
-
-(rf/reg-event-fx :communities/toggle-share-all-addresses
- toggle-share-all-addresses)
-
-(rf/reg-event-fx :communities/reset-selected-permission-addresses
- (fn [{:keys [db]} [community-id]]
-   (when community-id
-     {:db (update-in db
-                     [:communities community-id]
-                     assoc
-                     :selected-permission-addresses
-                     (get-in db [:communities community-id :previous-permission-addresses])
-                     :share-all-addresses?
-                     (get-in db [:communities community-id :previous-share-all-addresses?]))
-      :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
+(rf/reg-event-fx :communities/update-airdrop-address-neww
+ update-airdrop-address-neww)
 
 (rf/reg-event-fx :communities/get-community-channel-share-data
  (fn [_ [chat-id on-success]]

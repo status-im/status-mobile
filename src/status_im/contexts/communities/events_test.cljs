@@ -8,99 +8,6 @@
 
 (def community-id "community-id")
 
-(deftest initialize-permission-addresses-test
-  (let [initial-db  {:db {:wallet {:accounts {"0x1" {:address  "0x1"
-                                                     :position 0}
-                                              "0x2" {:address  "0x2"
-                                                     :position 1}}}}}
-        expected-db {:db (update-in (:db initial-db)
-                                    [:communities community-id]
-                                    assoc
-                                    :share-all-addresses?          true
-                                    :previous-share-all-addresses? true
-                                    :previous-permission-addresses #{"0x1" "0x2"}
-                                    :selected-permission-addresses #{"0x1" "0x2"}
-                                    :airdrop-address               "0x1")}]
-    (is (match? expected-db (events/initialize-permission-addresses initial-db [community-id])))))
-
-(deftest toggle-selected-permission-address-test
-  (let [initial-db {:db {:communities {community-id {:selected-permission-addresses #{"0x1" "0x2"}}}}}]
-    (is (match? {:db {:communities {community-id {:selected-permission-addresses #{"0x1"}}}}}
-                (events/toggle-selected-permission-address initial-db ["0x2" community-id])))
-    (is (match? {:db {:communities {community-id {:selected-permission-addresses #{"0x1" "0x2" "0x3"}}}}}
-                (events/toggle-selected-permission-address initial-db ["0x3" community-id])))))
-
-(deftest update-previous-permission-addresses-test
-  (let [wallet {:accounts {"0x1" {:address  "0x1"
-                                  :position 0}
-                           "0x2" {:address  "0x2"
-                                  :position 1}
-                           "0x3" {:address  "0x3"
-                                  :position 2}}}]
-    (let [initial-db  {:db {:wallet      wallet
-                            :communities {community-id {:previous-permission-addresses #{"0x1" "0x2"}
-                                                        :selected-permission-addresses #{"0x1" "0x2"
-                                                                                         "0x3"}
-                                                        :share-all-addresses?          true
-                                                        :previous-share-all-addresses? false
-                                                        :airdrop-address               "0x1"}}}}
-          expected-db {:db {:wallet      wallet
-                            :communities {community-id {:previous-permission-addresses #{"0x1" "0x2"
-                                                                                         "0x3"}
-                                                        :selected-permission-addresses #{"0x1" "0x2"
-                                                                                         "0x3"}
-                                                        :share-all-addresses?          true
-                                                        :previous-share-all-addresses? true
-                                                        :airdrop-address               "0x1"}}}}]
-      (is
-       (match? expected-db
-               (events/update-previous-permission-addresses initial-db [community-id]))))
-    (let [initial-db  {:db {:wallet      wallet
-                            :communities {community-id {:previous-permission-addresses #{"0x1" "0x2"}
-                                                        :selected-permission-addresses #{"0x2" "0x3"}
-                                                        :airdrop-address               "0x1"}}}}
-          expected-db {:db {:wallet      wallet
-                            :communities {community-id {:previous-permission-addresses #{"0x2" "0x3"}
-                                                        :selected-permission-addresses #{"0x2" "0x3"}
-                                                        :airdrop-address               "0x2"}}}}]
-      (is
-       (match? expected-db
-               (events/update-previous-permission-addresses initial-db [community-id]))))))
-
-(deftest toggle-share-all-addresses-test
-  (let [initial-db  {:db {:wallet      {:accounts {"0x1" {:address  "0x1"
-                                                          :position 0}
-                                                   "0x2" {:address  "0x2"
-                                                          :position 1}}}
-                          :communities {community-id {:share-all-addresses?          true
-                                                      :previous-share-all-addresses? true
-                                                      :previous-permission-addresses #{"0x1" "0x2"}
-                                                      :selected-permission-addresses #{"0x1" "0x2"}
-                                                      :airdrop-address               "0x1"}}}}
-        expected-db (update-in initial-db
-                               [:db :communities community-id]
-                               assoc
-                               :previous-share-all-addresses? true
-                               :share-all-addresses?
-                               false)]
-    (is (match? expected-db (events/toggle-share-all-addresses initial-db [community-id]))))
-  (let [initial-db  {:db {:wallet      {:accounts {"0x1" {:address  "0x1"
-                                                          :position 0}
-                                                   "0x2" {:address  "0x2"
-                                                          :position 1}}}
-                          :communities {community-id {:share-all-addresses?          false
-                                                      :previous-share-all-addresses? false
-                                                      :previous-permission-addresses #{"0x1"}
-                                                      :selected-permission-addresses #{"0x1"}
-                                                      :airdrop-address               "0x1"}}}}
-        expected-db (update-in initial-db
-                               [:db :communities community-id]
-                               assoc
-                               :selected-permission-addresses #{"0x1" "0x2"}
-                               :previous-share-all-addresses? false
-                               :share-all-addresses?          true)]
-    (is (match? expected-db (events/toggle-share-all-addresses initial-db [community-id])))))
-
 (deftest fetch-community
   (testing "with community id"
     (testing "update fetching indicator in db"
@@ -265,7 +172,7 @@
         (is (match? community-id
                     (-> effects :db :communities (get community-id) :id)))
         (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
+             [[:dispatch [:communities/initialize-permission-addresses-neww community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]]
              (filter some? (:fx effects))))))
@@ -273,7 +180,7 @@
       (let [community (assoc community :joined true)
             effects   (events/handle-community {} [community])]
         (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
+             [[:dispatch [:communities/initialize-permission-addresses-neww community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]
               [:dispatch [:communities/get-revealed-accounts community-id]]]
              (filter some? (:fx effects))))))
@@ -281,7 +188,7 @@
       (let [community (assoc community :token-permissions-check :fake-token-permissions-check)
             effects   (events/handle-community {} [community])]
         (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
+             [[:dispatch [:communities/initialize-permission-addresses-neww community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]]
              (filter some? (:fx effects))))))
     (testing "given a community with view channel permission"
@@ -290,7 +197,7 @@
                              [["perm-id" {:type constants/community-token-permission-can-view-channel}]])
             effects   (events/handle-community {} [community])]
         (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
+             [[:dispatch [:communities/initialize-permission-addresses-neww community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]
               [:dispatch
@@ -304,7 +211,7 @@
                                {:type constants/community-token-permission-can-view-and-post-channel}]])
             effects   (events/handle-community {} [community])]
         (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
+             [[:dispatch [:communities/initialize-permission-addresses-neww community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]
               [:dispatch

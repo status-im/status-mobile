@@ -369,6 +369,40 @@
    selected-permission-addresses))
 
 (re-frame/reg-sub
+ :communities/share-all-addresses-by-community-neww
+ :<- [:communities/share-all-addresses-neww]
+ (fn [share-all-addresses [_ community-id]]
+   (get share-all-addresses community-id)))
+
+(re-frame/reg-sub
+ :communities/addresses-to-reveal-by-community-neww
+ :<- [:communities/addresses-to-reveal-neww]
+ (fn [addresses [_ community-id]]
+   (get addresses community-id)))
+
+(re-frame/reg-sub
+ :communities/accounts-to-reveal-by-community-neww
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:wallet/accounts-without-watched-accounts])
+    (re-frame/subscribe [:communities/addresses-to-reveal-by-community-neww community-id])])
+ (fn [[accounts addresses-to-reveal]]
+   (filter #(contains? addresses-to-reveal (:address %)) accounts)))
+
+(re-frame/reg-sub
+ :communities/airdrop-address-by-community-neww
+ :<- [:communities/airdrop-address-neww]
+ (fn [address [_ community-id]]
+   (get address community-id)))
+
+(re-frame/reg-sub
+ :communities/airdrop-account-by-community-neww
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:wallet/accounts-without-watched-accounts])
+    (re-frame/subscribe [:communities/airdrop-address-by-community-neww community-id])])
+ (fn [[accounts airdrop-address]]
+   (first (filter #(= (:address %) airdrop-address) accounts))))
+
+(re-frame/reg-sub
  :communities/share-all-addresses?
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])

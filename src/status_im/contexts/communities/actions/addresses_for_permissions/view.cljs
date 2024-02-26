@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
+            [reagent.core :as r]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
@@ -40,7 +41,7 @@
 
 (defn- account-item
   [{:keys [color address name emoji]} _ _
-   {:keys [selected-addresses community-id share-all-addresses? community-color]}]
+   {:keys [selected-addresses community-id share-all-addresses? community-color on-change]}]
   (let [balances (rf/sub [:communities/permissioned-balances-by-address community-id address])]
     [quo/account-permissions
      {:account             {:name                name
@@ -50,23 +51,22 @@
       :token-details       (balances->components-props balances)
       :checked?            (contains? selected-addresses address)
       :disabled?           share-all-addresses?
-      :on-change           #(rf/dispatch [:communities/toggle-selected-permission-address
-                                          address community-id])
+      :on-change           #(on-change address)
       :container-style     {:margin-bottom 8}
       :customization-color community-color}]))
 
 (defn view
   [{:keys [scroll-enabled? on-scroll]}]
-  (let [{id :community-id} (rf/sub [:get-screen-params])]
+  (let [screen-params        (rf/sub [:get-screen-params])
+        id                   (:community-id screen-params)
+        share-all-addresses? (r/atom (:share-all-addresses? screen-params))
+        selected-addresses   (r/atom (:addresses-to-reveal screen-params))]
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
       (let [{:keys [name color images]}       (rf/sub [:communities/community id])
             {:keys [checking?
                     highest-permission-role]} (rf/sub [:community/token-gated-overview id])
-            accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
-            selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
-            share-all-addresses?              (rf/sub [:communities/share-all-addresses? id])
-            unsaved-address-changes?          (rf/sub [:communities/unsaved-address-changes? id])]
+            accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])]
         [rn/safe-area-view {:style style/container}
          [quo/drawer-top
           {:type                :context-tag
@@ -83,18 +83,27 @@
           {:list-type       :settings
            :data            [{:title        (i18n/label :t/share-all-current-and-future-addresses)
                               :action       :selector
-                              :action-props {:on-change #(rf/dispatch
-                                                          [:communities/toggle-share-all-addresses
-                                                           id])
+                              :action-props {:on-change           #(swap! share-all-addresses?
+                                                                     (fn [share-all?]
+                                                                       (when (not share-all?)
+                                                                         (reset! selected-addresses
+                                                                           (set (map :address
+                                                                                     accounts))))
+                                                                       (not share-all?)))
                                              :customization-color color
-                                             :checked? share-all-addresses?}}]
+                                             :checked?            @share-all-addresses?}}]
            :container-style {:padding-bottom 16}}]
 
          [gesture/flat-list
           {:render-fn               account-item
-           :render-data             {:selected-addresses   selected-addresses
+           :render-data             {:selected-addresses   @selected-addresses
                                      :community-id         id
-                                     :share-all-addresses? share-all-addresses?
+                                     :share-all-addresses? @share-all-addresses?
+                                     :on-change            #(swap! selected-addresses
+                                                              (fn [addresses]
+                                                                (if (contains? addresses %)
+                                                                  (disj addresses %)
+                                                                  (conj addresses %))))
                                      :community-color      color}
            :content-container-style {:padding-horizontal 20}
            :scroll-enabled          @scroll-enabled?
@@ -107,28 +116,29 @@
            :button-one-label (i18n/label :t/confirm-changes)
            :button-one-props {:customization-color color
                               :disabled?           (or checking?
-                                                       (empty? selected-addresses)
+                                                       (empty? @selected-addresses)
                                                        (not highest-permission-role)
-                                                       (not unsaved-address-changes?))
+                                                       (and (= @share-all-addresses?
+                                                               (:share-all-addresses? screen-params))
+                                                            (= @selected-addresses
+                                                               (:addresses-to-reveal screen-params))))
                               :on-press            (fn []
                                                      (rf/dispatch
-                                                      [:communities/update-previous-permission-addresses
-                                                       id])
+                                                      [:communities/save-permission-address-changes-neww
+                                                       {:community-id         id
+                                                        :addresses-to-reveal  @selected-addresses
+                                                        :share-all-addresses? @share-all-addresses?}])
                                                      (rf/dispatch [:navigate-back]))}
            :button-two-label (i18n/label :t/cancel)
            :button-two-props {:type     :grey
-                              :on-press (fn []
-                                          (rf/dispatch
-                                           [:communities/reset-selected-permission-addresses id])
-                                          (rf/dispatch [:navigate-back]))}
-           :description      (if (or (empty? selected-addresses)
+                              :on-press #(rf/dispatch [:navigate-back])}
+           :description      (if (or (empty? @selected-addresses)
                                      (not highest-permission-role))
                                :top-error
                                :top)
            :role             (when-not checking? (role-keyword highest-permission-role))
            :error-message    (cond
-                               (empty? selected-addresses)   (i18n/label :t/no-addresses-selected)
+                               (empty? @selected-addresses)  (i18n/label :t/no-addresses-selected)
                                (not highest-permission-role) (i18n/label
                                                               :t/addresses-dont-contain-tokens-needed)
                                :else                         nil)}]]))))
-

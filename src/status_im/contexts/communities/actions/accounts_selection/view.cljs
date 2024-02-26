@@ -22,8 +22,12 @@
   []
   (let [{id :community-id}                (rf/sub [:get-screen-params])
         {:keys [name color images]}       (rf/sub [:communities/community id])
-        airdrop-account                   (rf/sub [:communities/airdrop-account id])
-        selected-accounts                 (rf/sub [:communities/selected-permission-accounts id])
+        airdrop-account                   (rf/sub [:communities/airdrop-account-by-community-neww id])
+        accounts-to-reveal                (rf/sub [:communities/accounts-to-reveal-by-community-neww id])
+        addresses-to-reveal               (rf/sub [:communities/addresses-to-reveal-by-community-neww
+                                                   id])
+        share-all-addresses?              (rf/sub [:communities/share-all-addresses-by-community-neww
+                                                   id])
         {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
         highest-role-text                 (i18n/label (communities.utils/role->translation-key
                                                        highest-permission-role
@@ -53,12 +57,14 @@
         {:list-type :settings
          :data      [{:title             (i18n/label :t/join-as-a {:role highest-role-text})
                       :on-press          #(rf/dispatch [:open-modal :addresses-for-permissions
-                                                        {:community-id id}])
+                                                        {:community-id         id
+                                                         :share-all-addresses? share-all-addresses?
+                                                         :addresses-to-reveal  addresses-to-reveal}])
                       :description       :text
                       :action            :arrow
                       :label             :preview
                       :label-props       {:type :accounts
-                                          :data selected-accounts}
+                                          :data accounts-to-reveal}
                       :description-props {:text (i18n/label :t/all-addresses)}}
                      {:title             (i18n/label :t/for-airdrops)
                       :on-press          #(rf/dispatch [:open-modal :airdrop-addresses

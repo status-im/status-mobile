@@ -13,7 +13,8 @@
    {:account-props item
     :state         (when (= airdrop-address (:address item)) :selected)
     :on-press      (fn []
-                     (rf/dispatch [:communities/set-airdrop-address (:address item) community-id])
+                     (rf/dispatch [:communities/update-airdrop-address-neww
+                                   {:community-id community-id :address (:address item)}])
                      (rf/dispatch [:navigate-back]))
     :emoji         (:emoji item)}])
 
@@ -21,8 +22,8 @@
   []
   (let [{id :community-id}          (rf/sub [:get-screen-params])
         {:keys [name images color]} (rf/sub [:communities/community id])
-        selected-accounts           (rf/sub [:communities/selected-permission-accounts id])
-        airdrop-address             (rf/sub [:communities/airdrop-address id])]
+        accounts-to-reveal          (rf/sub [:communities/accounts-to-reveal-by-community-neww id])
+        airdrop-address             (rf/sub [:communities/airdrop-address-by-community-neww id])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag
@@ -34,7 +35,7 @@
        :community-logo      (get-in images [:thumbnail :uri])
        :customization-color color}]
      [rn/flat-list
-      {:data                    selected-accounts
+      {:data                    accounts-to-reveal
        :render-fn               render-item
        :render-data             [airdrop-address id]
        :content-container-style style/account-list-container
