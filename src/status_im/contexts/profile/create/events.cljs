@@ -18,4 +18,5 @@
             :password           login-sha3-password
             :imagePath          (profile.config/strip-file-prefix image-path)
             :customizationColor color
+            :wakuV2Nameserver   "8.8.8.8"
             :emoji              (emoji-picker.utils/random-emoji))}))
