@@ -1,20 +1,24 @@
 (ns quo.components.links.url-preview.view
   (:require
+    [clojure.string :as string]
     [quo.components.icon :as icon]
     [quo.components.links.url-preview.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.svg :as svg]))
 
 (defn- logo-comp
   [{:keys [logo]}]
-  [rn/image
-   {:accessibility-label :logo
-    :source              (if (string? logo)
-                           {:uri logo}
-                           logo)
-    :style               style/logo
-    :resize-mode         :cover}])
+  (if (string/starts-with? logo "<svg")
+    [svg/svg-xml (merge style/logo {:xml logo})]
+    [rn/image
+     {:accessibility-label :logo
+      :source              (if (string? logo)
+                             {:uri logo}
+                             logo)
+      :style               style/logo
+      :resize-mode         :cover}]))
 
 (defn- content
   [{:keys [title body]}]
