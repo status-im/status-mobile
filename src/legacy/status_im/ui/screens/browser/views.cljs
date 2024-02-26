@@ -16,7 +16,6 @@
     [legacy.status-im.ui.screens.browser.permissions.views :as permissions.views]
     [legacy.status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
     [legacy.status-im.ui.screens.browser.styles :as styles]
-    [legacy.status-im.ui.screens.wallet.components.views :as components]
     [legacy.status-im.utils.js-resources :as js-res]
     [re-frame.core :as re-frame]
     [react-native.permissions :as components.permissions]
@@ -258,7 +257,7 @@
           url-original    (browser/get-current-url current-browser)]
       [react/view {:style styles/browser}
        [toolbar-content url url-original secure? url-editing? unsafe?]
-       [components/separator-dark]
+       [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]
        [react/view
         (when loading?
           [connectivity/loading-indicator-anim window-width])]

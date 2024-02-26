@@ -8,7 +8,6 @@
     [legacy.status-im.ui.components.plus-button :as components.plus-button]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.topbar :as topbar]
-    [legacy.status-im.ui.screens.wallet.components.views :as components]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
@@ -67,7 +66,7 @@
          :on-press            #(do (re-frame/dispatch [:browser.ui/clear-all-browsers-pressed])
                                    (re-frame/dispatch [:browser.ui/open-empty-tab]))}]
        :title (i18n/label :t/tabs)}]
-     [components/separator-dark]
+     [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]
      [list/flat-list
       {:data      (conj browsers
                         {:empty-tab true

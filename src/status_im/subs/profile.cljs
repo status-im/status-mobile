@@ -5,7 +5,6 @@
     [legacy.status-im.fleet.core :as fleet]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
     [legacy.status-im.utils.currency :as currency]
-    [legacy.status-im.wallet.utils :as wallet.utils]
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
@@ -126,9 +125,9 @@
 
 (re-frame/reg-sub
  :multiaccount/default-account
- :<- [:profile/wallet-accounts]
+ :<- [:wallet/accounts]
  (fn [accounts]
-   (wallet.utils/get-default-account accounts)))
+   (first accounts)))
 
 (re-frame/reg-sub
  :multiaccount/visible-accounts
