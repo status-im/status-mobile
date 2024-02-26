@@ -207,7 +207,6 @@
  :wallet/finalize-new-keypair
  (fn [_ [{:keys [sha3-pwd new-keypair] :as account-details}]]
    (let [account-config {}]
-     (println "wtff")
      {:fx [[:json-rpc/call
             [{:method     "accounts_addKeypair"
               :params     [sha3-pwd new-keypair]
