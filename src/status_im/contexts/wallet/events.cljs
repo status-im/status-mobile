@@ -198,9 +198,21 @@
  :wallet/derive-address-and-add-account
  (fn [_ [account-details]]
    (let [on-success (fn [derived-address-details]
+                      (println "dervied d" derived-address-details)
                       (rf/dispatch [:wallet/add-account account-details
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
+
+(rf/reg-event-fx
+  :wallet/finalize-new-keypair
+  (fn [_ [{:keys [sha3-pwd new-keypair] :as account-details}]]
+    (let [account-config    {}]
+     (println "wtff")
+     {:fx [[:json-rpc/call
+            [{:method     "accounts_addKeypair"
+              :params     [sha3-pwd new-keypair]
+              :on-success #(println "success new keypair: " %)
+              :on-error   #(log/info "failed to create keypair " %)}]]]})))
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
