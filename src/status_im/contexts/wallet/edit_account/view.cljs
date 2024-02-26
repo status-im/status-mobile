@@ -34,7 +34,7 @@
                   {:account    edited-account-data
                    :on-success #(show-save-account-toast updated-key)}])))
 
-(defn- f-view
+(defn view
   []
   (let [edited-account-name (reagent/atom nil)
         on-change-color     (fn [edited-color {:keys [color] :as account}]
@@ -113,5 +113,3 @@
                                                                   :new-value   chain-ids}))
                                                  :watch-only? watch-only?}])}]))
            :container-style style/data-item}]]))))
-
-(defn view [] [:f> f-view])
