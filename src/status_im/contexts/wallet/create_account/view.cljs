@@ -13,7 +13,6 @@
     [status-im.contexts.wallet.common.sheets.account-origin.view :as account-origin]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
@@ -49,19 +48,20 @@
 
 (defn- f-view
   []
-  (let [top                (safe-area/get-top)
-        bottom             (safe-area/get-bottom)
-        account-color      (reagent/atom (rand-nth colors/account-colors))
-        emoji              (reagent/atom (emoji-picker.utils/random-emoji))
-        number-of-accounts (count (rf/sub [:wallet/accounts-without-watched-accounts]))
-        account-name       (reagent/atom "")
-        placeholder        (i18n/label :t/default-account-placeholder
-                                       {:number (inc number-of-accounts)})
-        derivation-path    (reagent/atom (utils/get-derivation-path (inc number-of-accounts)))
+  (let [top                          (safe-area/get-top)
+        bottom                       (safe-area/get-bottom)
+        account-color                (reagent/atom (rand-nth colors/account-colors))
+        emoji                        (reagent/atom (emoji-picker.utils/random-emoji))
+        number-of-accounts           (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        account-name                 (reagent/atom "")
+        placeholder                  (i18n/label :t/default-account-placeholder
+                                                 {:number (inc number-of-accounts)})
+        derivation-path              (reagent/atom (utils/get-derivation-path (inc number-of-accounts)))
         {:keys [public-key address]} (rf/sub [:profile/profile])
-        on-change-text     #(reset! account-name %)
-        primary-name       (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
-        {window-width :width} (rn/get-window)]
+        on-change-text               #(reset! account-name %)
+        primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                     public-key]))
+        {window-width :width}        (rn/get-window)]
     (fn [{:keys [theme]}]
       (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
         (println "qqq" address)
@@ -122,39 +122,43 @@
            :label     (i18n/label :t/origin)
            :data      (get-keypair-data primary-name @derivation-path @account-color new-keypair)}]
          [standard-auth/slide-button
-          {:size                :size-48
-           :track-text          (i18n/label :t/slide-to-create-account)
+          {:size :size-48
+           :track-text (i18n/label :t/slide-to-create-account)
            :customization-color @account-color
-           :on-auth-success     (fn [entered-password]
-                                  (if new-keypair
-                                    (rf/dispatch [:wallet/finalize-new-keypair {:sha3-pwd    (security/safe-unmask-data
-                                                                                               entered-password)
-                                                                                :new-keypair (merge (merge new-keypair {:name         (:keypair-name new-keypair)
-                                                                                                                        :key-uid      (:keyUid new-keypair)
-                                                                                                                        :type         :generated
-                                                                                                                        :derived-from address})
-                                                                                                    {:accounts [{:keypair-name (:keypair-name new-keypair)
-                                                                                                                 :key-uid      (:keyUid new-keypair)
-                                                                                                                 :seed-phrase  (:mnemonic new-keypair)
-                                                                                                                 :public-key   (:publicKey new-keypair)
-                                                                                                                 :name         @account-name
-                                                                                                                 :type         :generated
-                                                                                                                 :emoji        @emoji
-                                                                                                                 :colorID     @account-color
-                                                                                                                 :path         @derivation-path
-                                                                                                                 :address      (:address new-keypair)}]})}])
-                                    (rf/dispatch [:wallet/derive-address-and-add-account
-                                                  {:sha3-pwd     (security/safe-unmask-data
-                                                                   entered-password)
-                                                   :emoji        @emoji
-                                                   :color        @account-color
-                                                   :path         @derivation-path
-                                                   :account-name @account-name}])))
-           :auth-button-label   (i18n/label :t/confirm)
+           :on-auth-success (fn [entered-password]
+                              (if new-keypair
+                                (rf/dispatch
+                                 [:wallet/finalize-new-keypair
+                                  {:sha3-pwd    (security/safe-unmask-data
+                                                 entered-password)
+                                   :new-keypair (merge
+                                                 (merge new-keypair
+                                                        {:name         (:keypair-name new-keypair)
+                                                         :key-uid      (:keyUid new-keypair)
+                                                         :type         :generated
+                                                         :derived-from address})
+                                                 {:accounts [{:keypair-name (:keypair-name new-keypair)
+                                                              :key-uid      (:keyUid new-keypair)
+                                                              :seed-phrase  (:mnemonic new-keypair)
+                                                              :public-key   (:publicKey new-keypair)
+                                                              :name         @account-name
+                                                              :type         :generated
+                                                              :emoji        @emoji
+                                                              :colorID      @account-color
+                                                              :path         @derivation-path
+                                                              :address      (:address new-keypair)}]})}])
+                                (rf/dispatch [:wallet/derive-address-and-add-account
+                                              {:sha3-pwd     (security/safe-unmask-data
+                                                              entered-password)
+                                               :emoji        @emoji
+                                               :color        @account-color
+                                               :path         @derivation-path
+                                               :account-name @account-name}])))
+           :auth-button-label (i18n/label :t/confirm)
            ;; TODO (@rende11) Add this property when sliding button issue will fixed
            ;; https://github.com/status-im/status-mobile/pull/18683#issuecomment-1941564785
            ;; :disabled?           (empty? @account-name)
-           :container-style     (style/slide-button-container bottom)}]]))))
+           :container-style (style/slide-button-container bottom)}]]))))
 
 (defn- view-internal
   []

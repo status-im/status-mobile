@@ -204,9 +204,9 @@
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
 (rf/reg-event-fx
-  :wallet/finalize-new-keypair
-  (fn [_ [{:keys [sha3-pwd new-keypair] :as account-details}]]
-    (let [account-config    {}]
+ :wallet/finalize-new-keypair
+ (fn [_ [{:keys [sha3-pwd new-keypair] :as account-details}]]
+   (let [account-config {}]
      (println "wtff")
      {:fx [[:json-rpc/call
             [{:method     "accounts_addKeypair"
