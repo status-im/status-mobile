@@ -4,6 +4,7 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
@@ -85,5 +86,8 @@
                   {:pubkey     identity
                    :ens        ens-name
                    :success-fn (fn [_]
-                                 {:dispatch [:open-modal :profile]})}]}
+                                 {:dispatch [:open-modal
+                                             (if (ff/enabled? ::ff/profile.new-contact-ui)
+                                               :contact-profile
+                                               :profile)]})}]}
       {:dispatch [:navigate-to :my-profile]})))

@@ -36,6 +36,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
     [status-im.contexts.profile.edit.name.view :as edit-name]
@@ -201,6 +202,10 @@
     {:name      :edit-bio
      :options   options/transparent-modal-screen-options
      :component edit-bio/view}
+
+    {:name      :contact-profile
+     :options   {:modalPresentationStyle :overCurrentContext}
+     :component contact-profile/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark

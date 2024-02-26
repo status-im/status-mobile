@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
-            [status-im.contexts.profile.settings.header.avatar :as header.avatar]
+            [status-im.common.scalable-avatar.view :as avatar]
             [status-im.contexts.profile.settings.header.header-shape :as header.shape]
             [status-im.contexts.profile.settings.header.style :as style]
             [status-im.contexts.profile.settings.header.utils :as header.utils]
@@ -31,7 +31,7 @@
        :customization-color customization-color
        :theme               theme}]
      [rn/view {:style style/avatar-row-wrapper}
-      [header.avatar/view
+      [avatar/view
        {:scroll-y            scroll-y
         :display-name        full-name
         :online?             online?
