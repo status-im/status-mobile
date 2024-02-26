@@ -535,7 +535,7 @@
            [quo/button
             {:type            :outline
              :container-style {:margin-vertical 8}
-             :on-press        #(rf/dispatch [:navigate-to category-name])}
+             :on-press        #(rf/dispatch [:open-modal category-name])}
             (name category-name)]))])))
 
 (defn- main-screen
