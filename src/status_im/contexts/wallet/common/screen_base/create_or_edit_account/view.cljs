@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
   (:require [quo.core :as quo]
-            quo.theme
+            [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.floating-button-page.view :as floating-button-page]
@@ -17,7 +17,16 @@
            hide-bottom-action?
            bottom-action-label bottom-action-props
            custom-bottom-action watch-only?]} & children]
-  (let [{window-width :width} (rn/get-window)]
+  (let [{window-width :width} (rn/get-window)
+        footer                (when-not hide-bottom-action?
+                                (if custom-bottom-action
+                                  custom-bottom-action
+                                  [quo/button
+                                   (merge
+                                    {:size 40
+                                     :type :primary}
+                                    bottom-action-props)
+                                   (i18n/label bottom-action-label)]))]
     [floating-button-page/view
      {:header                   [quo/page-nav
                                  {:type       :no-title
@@ -25,15 +34,7 @@
                                   :right-side page-nav-right-side
                                   :icon-name  :i/close
                                   :on-press   #(rf/dispatch [:navigate-back])}]
-      :footer                   (when-not hide-bottom-action?
-                                  (if custom-bottom-action
-                                    custom-bottom-action
-                                    [quo/button
-                                     (merge
-                                      {:size 40
-                                       :type :primary}
-                                      bottom-action-props)
-                                     (i18n/label bottom-action-label)]))
+      :footer                   footer
       :gradient-cover?          true
       :footer-container-padding 0
       :header-container-style   {:padding-top (safe-area/get-top)}
