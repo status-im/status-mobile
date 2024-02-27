@@ -255,7 +255,7 @@
             :show-user-info? true
             :preview?        true}]]))}]))
 
-(defn system-message?
+(defn get-system-message?
   [content-type]
   (#{constants/content-type-system-text
      constants/content-type-community
@@ -268,25 +268,31 @@
 (defn message
   [{:keys [pinned-by mentioned content-type last-in-group? deleted? deleted-for-me?]
     :as   message-data} {:keys [in-pinned-view?] :as context} keyboard-shown?]
-  [rn/view
-   {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
-    :accessibility-label :chat-item}
-   (cond
-     (system-message? content-type)
-     [system-message-content message-data]
+  (let [system-message? (get-system-message? content-type)]
+    [rn/view
+     {:style               (style/message-container
+                            {:in-pinned-view? in-pinned-view?
+                             :pinned-by       pinned-by
+                             :mentioned       mentioned
+                             :last-in-group?  last-in-group?
+                             :system-message? system-message?})
+      :accessibility-label :chat-item}
+     (cond
+       system-message?
+       [system-message-content message-data]
 
-     (or deleted? deleted-for-me?)
-     [content.deleted/deleted-message
-      (assoc message-data
-             :on-long-press
-             #(on-long-press message-data
-                             context
-                             keyboard-shown?))
-      context]
+       (or deleted? deleted-for-me?)
+       [content.deleted/deleted-message
+        (assoc message-data
+               :on-long-press
+               #(on-long-press message-data
+                               context
+                               keyboard-shown?))
+        context]
 
-     :else
-     [user-message-content
-      {:message-data    message-data
-       :context         context
-       :keyboard-shown? keyboard-shown?
-       :show-reactions? true}])])
+       :else
+       [user-message-content
+        {:message-data    message-data
+         :context         context
+         :keyboard-shown? keyboard-shown?
+         :show-reactions? true}])]))
