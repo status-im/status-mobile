@@ -62,7 +62,7 @@
 
 (defn log-headline
   [test-name]
-  (log/info (str "========= " (name test-name) " ==================")))
+  (log/info (str "==== " test-name " ====")))
 
 (defn wait-for
   ([target-event-ids]
