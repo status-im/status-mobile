@@ -66,36 +66,37 @@
   (log/info (str "==== " test-name " ====")))
 
 (defn wait-for
-  "Returns a promise that resolves when all `target-event-ids` are processed by re-frame,
+  "Returns a promise that resolves when all `event-ids` are processed by re-frame,
   otherwise rejects after `timeout-ms`.
 
-  If an event ID that is expected in `target-event-ids` happens in a different
-  order, the promise will be rejected."
-  ([target-event-ids]
-   (wait-for target-event-ids 10000))
-  ([target-event-ids timeout-ms]
-   (let [waiting-for (atom target-event-ids)]
+  If an event ID that is expected in `event-ids` happens in a different order,
+  the promise will be rejected."
+  ([event-ids]
+   (wait-for event-ids 10000))
+  ([event-ids timeout-ms]
+   (let [waiting-ids (atom event-ids)]
      (js/Promise.
       (fn [promise-resolve promise-reject]
         (let [cb-id    (gensym "post-event-callback")
               timer-id (js/setTimeout (fn []
                                         (rf/remove-post-event-callback cb-id)
-                                        (promise-reject (ex-info "some events did not run"
-                                                                 {:event-ids   target-event-ids
-                                                                  :timeout-ms  timeout-ms
-                                                                  :waiting-for @waiting-for}
-                                                                 ::timeout)))
+                                        (promise-reject (ex-info
+                                                         "timed out waiting for all event-ids to run"
+                                                         {:event-ids   event-ids
+                                                          :waiting-ids @waiting-ids
+                                                          :timeout-ms  timeout-ms}
+                                                         ::timeout)))
                                       timeout-ms)]
           (rf/add-post-event-callback
            cb-id
            (fn [[event-id & _]]
-             (when-let [idx (collection/first-index #(= % event-id) @waiting-for)]
-               ;; All `target-event-ids` should be processed in their original order.
+             (when-let [idx (collection/first-index #(= % event-id) @waiting-ids)]
+               ;; All `event-ids` should be processed in their original order.
                (if (zero? idx)
                  (do
-                   (swap! waiting-for rest)
+                   (swap! waiting-ids rest)
                    ;; When there's nothing else to wait for, clean up resources.
-                   (when (empty? @waiting-for)
+                   (when (empty? @waiting-ids)
                      (js/clearTimeout timer-id)
                      (rf/remove-post-event-callback cb-id)
                      (promise-resolve)))
@@ -103,8 +104,8 @@
                    (js/clearTimeout timer-id)
                    (rf/remove-post-event-callback cb-id)
                    (promise-reject (ex-info "event happened in unexpected order"
-                                            {:event-ids   target-event-ids
-                                             :waiting-for @waiting-for}
+                                            {:event-ids   event-ids
+                                             :waiting-for @waiting-ids}
                                             ::out-of-order-event-id)))))))))))))
 
 (defn rf-test-async
