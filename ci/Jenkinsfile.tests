@@ -62,6 +62,14 @@ pipeline {
         }
       }
     }
+    stage('Contract Tests') {
+      steps {
+        sh """#!/bin/bash
+          set -eo pipefail
+          make test-contract 2>&1 | tee -a ${LOG_FILE}
+        """
+      }
+    }
     stage('Integration Tests') {
       steps {
         sh """#!/bin/bash
