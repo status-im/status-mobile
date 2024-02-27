@@ -1,6 +1,5 @@
 (ns status-im.common.scalable-avatar.view
   (:require [quo.core :as quo]
-            [quo.theme :as quo.theme]
             [react-native.reanimated :as reanimated]
             [status-im.common.scalable-avatar.style :as style]))
 (def scroll-animation-input-range [0 50])
@@ -21,14 +20,12 @@
         image-side-margin-animation (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range
                                                             [-4 -20]
-                                                            header-extrapolation-option)
-        theme                       (quo.theme/get-theme)]
+                                                            header-extrapolation-option)]
     [reanimated/view
-     {:style (style/wrapper theme
-                            image-scale-animation
-                            image-top-margin-animation
-                            image-side-margin-animation
-                            border-color)}
+     {:style (style/wrapper {:scale        image-scale-animation
+                             :top-margin   image-top-margin-animation
+                             :side-margin  image-side-margin-animation
+                             :border-color border-color})}
      [quo/user-avatar
       {:full-name           full-name
        :online?             online?

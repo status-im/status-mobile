@@ -4,7 +4,6 @@
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [legacy.status-im.ui.components.react :as react]
     [re-frame.core :as re-frame]
-    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
@@ -73,21 +72,3 @@
   {:events [:show-tooltip]}
   [_ tooltip-id]
   {:show-tooltip tooltip-id})
-
-(rf/defn show-profile
-  {:events [:chat.ui/show-profile]}
-  [{:keys [db]} identity ens-name]
-  (let [my-public-key (get-in db [:profile/profile :public-key])]
-    (if (not= my-public-key identity)
-      {:db       (-> db
-                     (assoc :contacts/identity identity)
-                     (assoc :contacts/ens-name ens-name))
-       :dispatch [:contacts/build-contact
-                  {:pubkey     identity
-                   :ens        ens-name
-                   :success-fn (fn [_]
-                                 {:dispatch [:open-modal
-                                             (if (ff/enabled? ::ff/profile.new-contact-ui)
-                                               :contact-profile
-                                               :profile)]})}]}
-      {:dispatch [:navigate-to :my-profile]})))

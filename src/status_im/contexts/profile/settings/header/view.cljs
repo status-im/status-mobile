@@ -1,7 +1,8 @@
 (ns status-im.contexts.profile.settings.header.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
-            [quo.theme :as quo.theme]
+            [quo.foundations.colors :as colors]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.scalable-avatar.view :as avatar]
             [status-im.contexts.profile.settings.header.header-shape :as header.shape]
@@ -24,7 +25,8 @@
         full-name                                   (profile.utils/displayed-name profile)
         profile-picture                             (profile.utils/photo profile)
         emoji-string                                (string/join emoji-hash)
-        {:keys [status-title status-icon]}          (header.utils/visibility-status-type-data status)]
+        {:keys [status-title status-icon]}          (header.utils/visibility-status-type-data status)
+        border-theme                                (quo.theme/get-theme)]
     [:<>
      [header.shape/view
       {:scroll-y            scroll-y
@@ -35,6 +37,9 @@
        {:scroll-y            scroll-y
         :display-name        full-name
         :online?             online?
+        :border-color        (colors/theme-colors colors/border-avatar-light
+                                                  colors/neutral-80-opa-80
+                                                  border-theme)
         :customization-color customization-color
         :profile-picture     profile-picture}]
       [rn/view {:style {:margin-bottom 4}}
