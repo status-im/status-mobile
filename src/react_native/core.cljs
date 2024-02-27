@@ -122,6 +122,8 @@
 
 (def memo react/memo)
 
+(def use-state react/useState)
+
 (def create-ref react/createRef)
 
 (def use-ref react/useRef)
@@ -178,6 +180,10 @@
    (use-callback handler []))
   ([handler deps]
    (react/useCallback handler (get-js-deps deps))))
+
+(defn use-memo
+  [handler deps]
+  (react/useMemo handler (get-js-deps deps)))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))
