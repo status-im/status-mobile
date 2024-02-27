@@ -8,24 +8,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn local-notifications
-  []
-  (let [{:keys [enabled?]}               (rf/sub [:push-notifications/wallet-transactions])
-        {:keys [notifications-enabled?]} (rf/sub [:profile/profile])]
-    [:<>
-     [quo/separator
-      {:color (:ui-02 @colors/theme)
-       :style {:margin-vertical 8}}]
-     [quo/list-header (i18n/label :t/local-notifications)]
-     [list.item/list-item
-      {:size                :small
-       :title               (i18n/label :t/notifications-transactions)
-       :accessibility-label :notifications-button
-       :active              (and notifications-enabled? enabled?)
-       :on-press            #(rf/dispatch [:push-notifications.wallet/switch-transactions
-                                           (not enabled?)])
-       :accessory           :switch}]]))
-
 (defn notifications-settings-ios
   []
   (let [{:keys [notifications-enabled?
@@ -63,8 +45,7 @@
        :on-press            #(rf/dispatch
                               [:push-notifications/switch-block-mentions
                                (not push-notifications-block-mentions?)])
-       :accessory           :switch}]
-     [local-notifications]]))
+       :accessory           :switch}]]))
 
 (defn notifications-settings-android
   []
@@ -76,8 +57,7 @@
        :subtitle            (i18n/label :t/local-notifications-subtitle)
        :active              notifications-enabled?
        :on-press            #(rf/dispatch [:push-notifications/switch (not notifications-enabled?)])
-       :accessory           :switch}]
-     [local-notifications]]))
+       :accessory           :switch}]]))
 
 (defn notifications-settings
   []
