@@ -17,6 +17,20 @@
     [tests.integration-test.constants :as constants]
     [utils.collection :as collection]))
 
+(def default-re-frame-wait-for-timeout-ms
+  "Controls the maximum time allowed to wait for all events to be processed by
+  re-frame on every call to `wait-for`.
+
+  Take into consideration that some endpoints/signals may take significantly
+  more time to finish/arrive."
+  (* 10 1000))
+
+(def default-integration-test-timeout-ms
+  "Use a high-enough value in milliseconds to timeout integration tests. Not too
+  small, which would cause sporadic failures, and not too high as to make you
+  sleepy."
+  (* 60 1000))
+
 (defn initialize-app!
   []
   (rf/dispatch [:app-started]))
@@ -70,10 +84,10 @@
   "Returns a promise that resolves when all `event-ids` are processed by re-frame,
   otherwise rejects after `timeout-ms`.
 
-  If an event ID that is expected in `event-ids` happens in a different order,
+  If an event ID that is expected in `event-ids` occurs in a different order,
   the promise will be rejected."
   ([event-ids]
-   (wait-for event-ids 10000))
+   (wait-for event-ids default-re-frame-wait-for-timeout-ms))
   ([event-ids timeout-ms]
    (let [waiting-ids (atom event-ids)]
      (js/Promise.
@@ -137,16 +151,23 @@
   When `fail-fast?` is falsey, re-frame's state is automatically restored after
   a test failure, so that the next integration test can run from a pristine
   state.
+
+  Option `timeout-ms` controls the total time allowed to run `f`. The value
+  should be high enough to account for some variability, otherwise the test may
+  fail more often.
   "
   ([test-name f]
-   (integration-test test-name {:fail-fast? true} f))
-  ([test-name {:keys [fail-fast?]} f]
+   (integration-test test-name
+                     {:fail-fast? true
+                      :timeout-ms default-integration-test-timeout-ms}
+                     f))
+  ([test-name {:keys [fail-fast? timeout-ms]} f]
    (test/async
      done
      (let [restore-fn (rf/make-restore-fn)]
-       (-> (p/do
-             (log-headline test-name)
-             (f done))
+       (log-headline test-name)
+       (-> (p/do (f done))
+           (p/timeout timeout-ms)
            (p/catch (fn [error]
                       (is (nil? error))
                       (when fail-fast?
@@ -158,8 +179,8 @@
 ;;;; Fixtures
 
 (defn fixture-logged
-  "Fixture to set up the app and a logged account before the test runs. Log out
-  after the test is done.
+  "Fixture to set up the application and a logged account before the test runs.
+  Log out after the test is done.
 
   Usage:
 
@@ -178,6 +199,9 @@
 
 (defn fixture-silence-reframe
   "Fixture to disable most re-frame warnings.
+
+  Avoid using this fixture for non-dev purposes because in the CI output it's
+  desirable to have more data to debug, not less.
 
   Example messages disabled:
 
