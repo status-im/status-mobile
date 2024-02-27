@@ -158,6 +158,12 @@
 ;;;; Fixtures
 
 (defn fixture-logged
+  "Fixture to set up the app and a logged account before the test runs. Log out
+  after the test is done.
+
+  Usage:
+
+      (use-fixtures :each (h/fixture-logged))"
   []
   {:before (fn []
              (test/async done
@@ -170,12 +176,20 @@
                      (wait-for [::logout/logout-method])
                      (done))))})
 
-(defn fixture-silent-reframe
-  "Disables most re-frame warnings."
+(defn fixture-silence-reframe
+  "Fixture to disable most re-frame warnings.
+
+  Example messages disabled:
+
+  - Warning about subscriptions being used in non-reactive contexts.
+  - Debug message \"Handling re-frame event: XYZ\".
+
+  Usage:
+
+      (use-fixtures :once (h/fixture-silence-re-frame))
+  "
   []
   {:before (fn []
-             ;; Set to false to stop warning about subscriptions being used in non-reactive
-             ;; contexts.
              (set! rf.interop/debug-enabled? false))
    :after  (fn []
              (set! rf.interop/debug-enabled? true))})
