@@ -1,6 +1,7 @@
 (ns test-helpers.component-tests-preload
   {:dev/always true}
   (:require
+    [reagent.core :as reagent]
     ;; NOTE: Do NOT sort i18n-resources because it MUST be loaded first.
     [status-im.setup.i18n-resources :as i18n-resources]
     #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
@@ -15,6 +16,7 @@
   should never be directly required. However, it will be loaded automatically
   before any component test runs."
   []
+  (reagent/set-default-compiler! (reagent/create-compiler {:function-components true}))
   (interceptors/register-global-interceptors)
   (i18n/set-language "en")
   (i18n-resources/load-language "en"))
