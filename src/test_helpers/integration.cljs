@@ -146,7 +146,8 @@
 
   Option `fail-fast?`, when truthy (defaults to true), will force the test
   runner to terminate on any test failure. Setting it to false can be useful
-  when you want the rest of the test suite to run due to a flaky test.
+  during development when you want the rest of the test suite to run due to a
+  flaky test. Prefer to fail fast in the CI to save on time & resources.
 
   When `fail-fast?` is falsey, re-frame's state is automatically restored after
   a test failure, so that the next integration test can run from a pristine
@@ -198,7 +199,7 @@
                      (done))))})
 
 (defn fixture-silence-reframe
-  "Fixture to disable most re-frame warnings.
+  "Fixture to disable most re-frame messages.
 
   Avoid using this fixture for non-dev purposes because in the CI output it's
   desirable to have more data to debug, not less.
