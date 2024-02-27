@@ -1,4 +1,5 @@
 # This file contains the fastlane.tools configuration
+
 # You can find the documentation at https://docs.fastlane.tools
 #
 # For a list of all available actions, check out
@@ -96,7 +97,7 @@ end
 #    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
 # `pr_build`:
 #    if true  - uses StatusImPR scheme and postfixed app id with `.pr` to build an app, which can be used in parallel with release
-#    if false - uses StatusIm scheme to build the release app 
+#    if false - uses StatusIm scheme to build the release app
 
 def build_ios_adhoc(readonly: false, pr_build: false)
   # PR builds should appear as a separate App on iOS
@@ -123,7 +124,7 @@ def build_ios_adhoc(readonly: false, pr_build: false)
     export_method: 'ad-hoc',
     output_name: 'StatusIm',
     output_directory: 'status-ios',
-    buildlog_path: 'ios/logs',
+    buildlog_path: 'logs',
     export_options: {
       signingStyle: 'manual',
       provisioningProfiles: {

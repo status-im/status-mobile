@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -542,7 +542,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/usr/bin/env sh";
-			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\"${NODE_ARGS:- --max-old-space-size=16384 }\"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\"${NODE_ARGS:- --max-old-space-size=16384 }\"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ../logs/react-native-xcode.log 2>&1";
 		};
 		28606042DA81A750949525E4 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -578,7 +578,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/usr/bin/env sh";
-			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\"${NODE_ARGS:- --max-old-space-size=16384 }\"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ./logs/react-native-xcode.log 2>&1";
+			shellScript = "set -o errexit\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\nexport NODE_ARGS=\"${NODE_ARGS:- --max-old-space-size=16384 }\"\n\nbash -x ../node_modules/react-native/scripts/react-native-xcode.sh > ../logs/react-native-xcode.log 2>&1";
 		};
 		3AAD2AD724A3A60E0075D594 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -592,7 +592,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = "/usr/bin/env sh";
-			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ../logs/set_xcode_version.log 2>&1";
 		};
 		523CD6BCB20FD78FBF3564AD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -716,7 +716,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = "/usr/bin/env sh";
-			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1";
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ../logs/set_xcode_version.log 2>&1";
 		};
 /* End PBXShellScriptBuildPhase section */
 

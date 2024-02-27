@@ -1,6 +1,6 @@
 # Description
 
-This directory is the destination of logs created during build time of debug builds.
+This directory is the destination of logs created during build time of debug builds and logs created by Fastlane on CI.
 
 # Logs
 
@@ -16,3 +16,12 @@ This directory is the destination of logs created during build time of debug bui
     - Created by redirecting output of `adb shell monkey -p im.status.ethereum.debug 1 >`.
 * `ios_simulators_list.log` - Output from `status-mobile/scripts/run-ios.sh`.
     - Created by redirecting output of `xcrun simctl list devices -j`.
+
+# CI
+
+These log files are uploaded to Jenkins as CI job artifacts on failure using `archiveArtifacts`.
+
+* `react-native-xcode.log` - Output from `node_modules/react-native/scripts/react-native-xcode.sh`.
+  - Created by redirecting output of `shellScript` in `ios/StatusIm.xcodeproj/project.pbxproj`.
+* `Status PR-StatusImPR.log - Created by [Fastlane Gym](https://docs.fastlane.tools/actions/gym/).
+  - Configred via [`Fastfile`](../Fastfile) using `buildlog_path` argument for `build_ios_app`.

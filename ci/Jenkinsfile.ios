@@ -63,7 +63,7 @@ pipeline {
       }
       post {
         failure {
-          archiveArtifacts 'ios/logs/*'
+          archiveArtifacts 'logs/*'
         }
       }
     }
