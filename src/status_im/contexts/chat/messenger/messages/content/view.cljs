@@ -255,7 +255,7 @@
             :show-user-info? true
             :preview?        true}]]))}]))
 
-(defn get-system-message?
+(defn check-if-system-message?
   [content-type]
   (#{constants/content-type-system-text
      constants/content-type-community
@@ -268,7 +268,7 @@
 (defn message
   [{:keys [pinned-by mentioned content-type last-in-group? deleted? deleted-for-me?]
     :as   message-data} {:keys [in-pinned-view?] :as context} keyboard-shown?]
-  (let [system-message? (get-system-message? content-type)]
+  (let [system-message? (check-if-system-message? content-type)]
     [rn/view
      {:style               (style/message-container
                             {:in-pinned-view? in-pinned-view?
