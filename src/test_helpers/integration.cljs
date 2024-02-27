@@ -13,7 +13,8 @@
     status-im.navigation.core
     status-im.subs.root
     [taoensso.timbre :as log]
-    [tests.integration-test.constants :as constants]))
+    [tests.integration-test.constants :as constants]
+    [utils.collection :as collection]))
 
 (defn initialize-app!
   []
@@ -65,10 +66,15 @@
   (log/info (str "==== " test-name " ====")))
 
 (defn wait-for
+  "Returns a promise that resolves when all `target-event-ids` are processed by re-frame,
+  otherwise rejects after `timeout-ms`.
+
+  If an event ID that is expected in `target-event-ids` happens in a different
+  order, the promise will be rejected."
   ([target-event-ids]
    (wait-for target-event-ids 10000))
   ([target-event-ids timeout-ms]
-   (let [waiting-for (atom (set target-event-ids))]
+   (let [waiting-for (atom target-event-ids)]
      (js/Promise.
       (fn [promise-resolve promise-reject]
         (let [cb-id    (gensym "post-event-callback")
@@ -83,12 +89,23 @@
           (rf/add-post-event-callback
            cb-id
            (fn [[event-id & _]]
-             (when (contains? @waiting-for event-id)
-               (swap! waiting-for disj event-id)
-               (when (empty? @waiting-for)
-                 (js/clearTimeout timer-id)
-                 (rf/remove-post-event-callback cb-id)
-                 (promise-resolve)))))))))))
+             (when-let [idx (collection/first-index #(= % event-id) @waiting-for)]
+               ;; All `target-event-ids` should be processed in their original order.
+               (if (zero? idx)
+                 (do
+                   (swap! waiting-for rest)
+                   ;; When there's nothing else to wait for, clean up resources.
+                   (when (empty? @waiting-for)
+                     (js/clearTimeout timer-id)
+                     (rf/remove-post-event-callback cb-id)
+                     (promise-resolve)))
+                 (do
+                   (js/clearTimeout timer-id)
+                   (rf/remove-post-event-callback cb-id)
+                   (promise-reject (ex-info "event happened in unexpected order"
+                                            {:event-ids   target-event-ids
+                                             :waiting-for @waiting-for}
+                                            ::out-of-order-event-id)))))))))))))
 
 (defn rf-test-async
   [f]
