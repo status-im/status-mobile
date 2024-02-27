@@ -10,7 +10,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn keypair-options
+(defn- keypair-options
   []
   [quo/action-drawer
    [[{:icon                :i/add
@@ -28,13 +28,13 @@
       :accessibility-label :import-private-key
       :label               (i18n/label :t/import-private-key)}]]])
 
-(defn parse-accounts
+(defn- parse-accounts
   [given-accounts]
   (->> given-accounts
        (filter (fn [{:keys [path]}]
                  (not (string/starts-with? path constants/path-eip1581))))
-       (map (fn [{:keys [colorId emoji name address]}]
-              {:account-props {:customization-color (if (not-empty colorId) (keyword colorId) :blue)
+       (map (fn [{:keys [customization-color emoji name address]}]
+              {:account-props {:customization-color customization-color
                                :size                32
                                :emoji               emoji
                                :type                :default
@@ -46,13 +46,13 @@
                :state         :default
                :action        :none}))))
 
-(defn keypair
+(defn- keypair
   [item index _ {:keys [profile-picture compressed-key]}]
   (let [main-account (first (:accounts item))
-        color        (keyword (:colorId main-account))
+        color        (:customization-color main-account)
         accounts     (parse-accounts (:accounts item))]
     [quo/keypair
-     {:customization-color (if (not-empty (:colorId main-account)) color :blue)
+     {:customization-color (if (not-empty (:customization-color main-account)) color :blue)
       :profile-picture     (when (zero? index) profile-picture)
       :status-indicator    false
       :type                (if (zero? index) :default-keypair :other)
@@ -67,13 +67,12 @@
       :default-selected?   (zero? index)
       :container-style     {:margin-horizontal 20
                             :margin-vertical   8}}]))
-(defn- view-internal
+(defn view
   []
   (let [{:keys [compressed-key customization-color]} (rf/sub [:profile/profile])
         profile-with-image                           (rf/sub [:profile/profile-with-image])
         keypairs                                     (rf/sub [:wallet/keypairs])
         profile-picture                              (profile.utils/photo profile-with-image)]
-    (rn/use-effect #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
@@ -101,7 +100,3 @@
        :button-one-props {:disabled?           true
                           :customization-color customization-color}
        :container-style  style/bottom-action-container}]]))
-
-(defn view
-  []
-  [:f> view-internal])

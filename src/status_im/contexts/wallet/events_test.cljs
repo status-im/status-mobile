@@ -55,14 +55,15 @@
         effects     (events/clear-new-keypair {:db db})]
     (is (match? (:db effects) expected-db))))
 
-(deftest finalize-new-keypair
+(deftest add-keypair-and-create-account
   (let [db          {}
         sha3-pwd    "password"
         new-keypair {:public-key "public_key" :private-key "private_key"}
         expected-db {:wallet {:ui       {:create-account {:new-keypair "test-keypair"}}
                               :keypairs [new-keypair]}}
-        effects     (events/finalize-new-keypair {:db db}
-                                                 [{:sha3-pwd sha3-pwd :new-keypair new-keypair}])
+        effects     (events/add-keypair-and-create-account {:db db}
+                                                           [{:sha3-pwd    sha3-pwd
+                                                             :new-keypair new-keypair}])
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
 

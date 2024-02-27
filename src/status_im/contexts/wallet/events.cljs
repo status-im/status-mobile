@@ -1,5 +1,8 @@
 (ns status-im.contexts.wallet.events
   (:require
+    [camel-snake-kebab.core :as csk]
+    [camel-snake-kebab.extras :as cske]
+    [clojure.set :as set]
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
@@ -202,15 +205,15 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
-(defn finalize-new-keypair
+(defn add-keypair-and-create-account
   [_ [{:keys [sha3-pwd new-keypair]}]]
   {:fx [[:json-rpc/call
          [{:method     "accounts_addKeypair"
            :params     [sha3-pwd new-keypair]
-           :on-success [:wallet/add-account-success (string/lower-case (:address new-keypair))]
+           :on-success [:wallet/add-account-success (comp string/lower-case (:address new-keypair))]
            :on-error   #(log/info "failed to create keypair " %)}]]]})
 
-(rf/reg-event-fx :wallet/finalize-new-keypair finalize-new-keypair)
+(rf/reg-event-fx :wallet/add-keypair-and-create-account add-keypair-and-create-account)
 
 (defn get-keypairs
   [_]
@@ -222,9 +225,11 @@
 
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
+
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
-    {:db (assoc-in db [:wallet :keypairs] keypairs)})
+  (let [renamed-data (set/rename-keys keypairs {:colorId :customization-color})]
+    {:db (assoc-in db [:wallet :keypairs] (cske/transform-keys csk/->kebab-case-keyword renamed-data))}))
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 
@@ -397,7 +402,8 @@
  (fn []
    {:fx [[:dispatch [:wallet/start-wallet]]
          [:dispatch [:wallet/get-ethereum-chains]]
-         [:dispatch [:wallet/get-accounts]]]}))
+         [:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]

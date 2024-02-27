@@ -13,31 +13,13 @@
     [status-im.contexts.wallet.common.sheets.account-origin.view :as account-origin]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
+    [status-im.contexts.wallet.create-account.utils :as create-account.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
     [utils.security.core :as security]
     [utils.string]))
 
-(defn prepare-new-keypair
-  [{:keys [new-keypair address account-name account-color emoji derivation-path]}]
-  (assoc
-   (assoc new-keypair
-          :name         (:keypair-name new-keypair)
-          :key-uid      (:keyUid new-keypair)
-          :type         :seed
-          :derived-from address)
-   :accounts
-   [{:keypair-name (:keypair-name new-keypair)
-     :key-uid      (:keyUid new-keypair)
-     :seed-phrase  (:mnemonic new-keypair)
-     :public-key   (:publicKey new-keypair)
-     :name         account-name
-     :type         :seed
-     :emoji        emoji
-     :colorID      account-color
-     :path         derivation-path
-     :address      (:address new-keypair)}]))
 
 (defn- get-keypair-data
   [primary-name derivation-path account-color {:keys [keypair-name]}]
@@ -147,16 +129,17 @@
            :on-auth-success     (fn [entered-password]
                                   (if new-keypair
                                     (rf/dispatch
-                                     [:wallet/finalize-new-keypair
+                                     [:wallet/add-keypair-and-create-account
                                       {:sha3-pwd    (security/safe-unmask-data
                                                      entered-password)
-                                       :new-keypair (prepare-new-keypair {:new-keypair new-keypair
-                                                                          :address address
-                                                                          :account-name @account-name
-                                                                          :account-color @account-color
-                                                                          :emoji @emoji
-                                                                          :derivation-path
-                                                                          @derivation-path})}])
+                                       :new-keypair (create-account.utils/prepare-new-keypair
+                                                     {:new-keypair new-keypair
+                                                      :address address
+                                                      :account-name @account-name
+                                                      :account-color @account-color
+                                                      :emoji @emoji
+                                                      :derivation-path
+                                                      @derivation-path})}])
                                     (rf/dispatch [:wallet/derive-address-and-add-account
                                                   {:sha3-pwd     (security/safe-unmask-data
                                                                   entered-password)
