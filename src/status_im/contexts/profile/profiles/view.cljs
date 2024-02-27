@@ -5,7 +5,6 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.config :as config]
