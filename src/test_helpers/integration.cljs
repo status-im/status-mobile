@@ -109,18 +109,6 @@
                                              :waiting-for @waiting-ids}
                                             ::out-of-order-event-id)))))))))))))
 
-(defn rf-test-async
-  [f]
-  (test/async
-    done
-    (let [restore-fn (rf/make-restore-fn)]
-      (-> (f done)
-          (.catch (fn [error]
-                    (is (true? false) (str "async test failed" error))))
-          (.finally (fn []
-                      (restore-fn)
-                      (done)))))))
-
 (defn setup-app
   []
   (legacy-test/init!)
@@ -140,14 +128,32 @@
           (.then #(assert-messenger-started))))))
 
 (defn integration-test
-  [test-name f]
-  (rf-test-async
-   (fn []
-     (log-headline test-name)
-     (-> (p/do (f))
-         (p/catch (fn [error]
-                    (is (nil? error))
-                    (js/process.exit 1)))))))
+  "Runs `f` inside `cljs.test/async` macro in a restorable re-frame checkpoint.
+
+  Option `fail-fast?`, when truthy (defaults to true), will force the test
+  runner to terminate on any test failure. Setting it to false can be useful
+  when you want the rest of the test suite to run due to a flaky test.
+
+  When `fail-fast?` is falsey, re-frame's state is automatically restored after
+  a test failure, so that the next integration test can run from a pristine
+  state.
+  "
+  ([test-name f]
+   (integration-test test-name {:fail-fast? true} f))
+  ([test-name {:keys [fail-fast?]} f]
+   (test/async
+     done
+     (let [restore-fn (rf/make-restore-fn)]
+       (-> (p/do
+             (log-headline test-name)
+             (f done))
+           (p/catch (fn [error]
+                      (is (nil? error))
+                      (when fail-fast?
+                        (js/process.exit 1))))
+           (p/finally (fn []
+                        (restore-fn)
+                        (done))))))))
 
 ;;;; Fixtures
 
