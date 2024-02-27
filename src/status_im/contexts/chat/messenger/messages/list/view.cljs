@@ -23,6 +23,7 @@
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
 
+(defonce ^:const distance-from-last-message 4)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const min-message-height 32)
@@ -343,6 +344,7 @@
         :style                             {:background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
+        :content-container-style           {:padding-top distance-from-last-message}
         :inverted                          true
         :on-layout                         #(on-layout
                                              {:event %
