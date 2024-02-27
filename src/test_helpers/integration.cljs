@@ -9,6 +9,7 @@
     [native-module.core :as native-module]
     [promesa.core :as p]
     [re-frame.core :as rf]
+    [re-frame.interop :as rf.interop]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -124,7 +125,7 @@
   []
   (legacy-test/init!)
   (if (app-initialized)
-    (js/Promise.resolve)
+    (p/resolved ::app-initialized)
     (do
       (rf/dispatch [:app-started])
       (wait-for [:profile/get-profiles-overview-success]))))
@@ -132,11 +133,21 @@
 (defn setup-account
   []
   (if (messenger-started)
-    (js/Promise.resolve)
+    (p/resolved ::messenger-started)
     (do
       (create-multiaccount!)
       (-> (wait-for [:messenger-started])
           (.then #(assert-messenger-started))))))
+
+(defn integration-test
+  [test-name f]
+  (rf-test-async
+   (fn []
+     (log-headline test-name)
+     (-> (p/do (f))
+         (p/catch (fn [error]
+                    (is (nil? error))
+                    (js/process.exit 1)))))))
 
 ;;;; Fixtures
 
@@ -152,3 +163,13 @@
                (p/do (logout)
                      (wait-for [::logout/logout-method])
                      (done))))})
+
+(defn fixture-silent-reframe
+  "Disables most re-frame warnings."
+  []
+  {:before (fn []
+             ;; Set to false to stop warning about subscriptions being used in non-reactive
+             ;; contexts.
+             (set! rf.interop/debug-enabled? false))
+   :after  (fn []
+             (set! rf.interop/debug-enabled? true))})

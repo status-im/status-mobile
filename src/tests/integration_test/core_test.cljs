@@ -13,24 +13,22 @@
     [test-helpers.integration :as h]))
 
 (deftest initialize-app-test
-  (h/rf-test-async
-   (fn []
-     (h/log-headline ::initialize-app-test)
-     (utils.test/init!)
-     (rf/dispatch [:app-started])
-     ;; Use initialize-view because it has the longest avg. time and is
-     ;; dispatched by initialize-multiaccounts (last non-view event).
-     (p/do
-       (h/wait-for [:profile/get-profiles-overview-success
-                    :font/init-font-file-for-initials-avatar])
-       (h/assert-app-initialized)))))
+  (h/integration-test ::initialize-app
+    (fn []
+      (p/do
+        (utils.test/init!)
+        (rf/dispatch [:app-started])
+        ;; Use initialize-view because it has the longest avg. time and is
+        ;; dispatched by initialize-multiaccounts (last non-view event).
+        (h/wait-for [:profile/get-profiles-overview-success
+                     :font/init-font-file-for-initials-avatar])
+        (h/assert-app-initialized)))))
 
 (deftest create-account-test
-  (h/rf-test-async
-   (fn []
-     (h/log-headline ::create-account-test)
-     (p/do
-       (h/setup-app)
-       (h/setup-account)
-       (h/logout)
-       (h/wait-for [::logout/logout-method])))))
+  (h/integration-test ::create-account
+    (fn []
+      (p/do
+        (h/setup-app)
+        (h/setup-account)
+        (h/logout)
+        (h/wait-for [::logout/logout-method])))))
