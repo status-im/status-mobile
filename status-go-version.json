@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.175.4",
-    "commit-sha1": "5304406079a5e3e1cfea285fef892ac56f2c3aad",
-    "src-sha256": "08xprnmpw0nz2zjm1wp8ypjhdyfvgmh7pqrlk69prgr23xa31ady"
+    "version": "fix/createAccountAndLogin-lost-nameserver",
+    "commit-sha1": "5e63d6cdd19b317256057adc8c9526ef96ab61ea",
+    "src-sha256": "007s4fy72wy91v4wb5yji096hqp5va3cz5j1nsql75yjrv4znx3n"
 }
