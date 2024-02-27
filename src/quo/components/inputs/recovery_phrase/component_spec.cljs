@@ -39,7 +39,7 @@
             {:keys [ok-words error-words]} (group-by #(if (string? %) :ok-words :error-words)
                                                      children-text-nodes)]
         (h/is-equal (apply str ok-words) "Text with some   that   the ")
-        (h/is-truthy (= (map #(-> % :props :argv second) error-words)
+        (h/is-truthy (= (map #(-> % :props :argv first) error-words)
                         ["error" "words" "don't" "satisfy" "predicate"]))))
 
     (h/test "Marked when words exceed the limit given"
@@ -55,7 +55,7 @@
         (h/is-equal (string/trim (apply str ok-words))
                     "these are ok words,")
         (h/is-equal (->> error-words
-                         (map #(-> % :props :argv second))
+                         (map #(-> % :props :argv first))
                          (interpose " ")
                          (apply str))
                     "these words exceed the limit")))))
