@@ -1,6 +1,5 @@
 (ns status-im.contexts.profile.contact.header.view
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
@@ -16,7 +15,6 @@
          :as   profile}     (rf/sub [:contacts/current-contact])
         customization-color (or customization-color :blue)
         full-name           (profile.utils/displayed-name profile)
-        emoji-string        (string/join emoji-hash)
         profile-picture     (profile.utils/photo profile)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
         theme               (quo.theme/use-theme-value)]
@@ -33,4 +31,4 @@
       {:title            full-name
        :description      :text
        :description-text bio
-       :emoji-dash       emoji-string}]]))
+       :emoji-dash       emoji-hash}]]))
