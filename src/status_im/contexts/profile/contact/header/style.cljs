@@ -8,10 +8,10 @@
    :align-items  :flex-start})
 
 (defn header-container
-  [border-radius theme top-margin]
+  [border-radius theme margin-top]
   (reanimated/apply-animations-to-style
    {:border-top-left-radius  border-radius
     :border-top-right-radius border-radius}
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
-    :margin-top         top-margin}))
+    :margin-top         margin-top}))

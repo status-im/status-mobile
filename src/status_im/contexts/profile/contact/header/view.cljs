@@ -12,11 +12,10 @@
 (defn view
   [{:keys [scroll-y]}]
   (let [{:keys [public-key customization-color
-                emoji-hash]
+                emoji-hash bio]
          :as   profile}     (rf/sub [:contacts/current-contact])
         customization-color (or customization-color :blue)
         full-name           (profile.utils/displayed-name profile)
-        bio                 (:bio profile)
         emoji-string        (string/join emoji-hash)
         profile-picture     (profile.utils/photo profile)
         online?             (rf/sub [:visibility-status-updates/online? public-key])

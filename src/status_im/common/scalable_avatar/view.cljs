@@ -23,8 +23,8 @@
                                                             header-extrapolation-option)]
     [reanimated/view
      {:style (style/wrapper {:scale        image-scale-animation
-                             :top-margin   image-top-margin-animation
-                             :side-margin  image-side-margin-animation
+                             :margin-top   image-top-margin-animation
+                             :margin       image-side-margin-animation
                              :border-color border-color})}
      [quo/user-avatar
       {:full-name           full-name

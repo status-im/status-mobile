@@ -14,19 +14,18 @@
 
 (defn- f-view
   [{:keys [theme scroll-y]}]
-  (let [{:keys [public-key emoji-hash] :as profile} (rf/sub [:profile/profile-with-image])
-        online?                                     (rf/sub [:visibility-status-updates/online?
-                                                             public-key])
-        status                                      (rf/sub
-                                                     [:visibility-status-updates/visibility-status-update
-                                                      public-key])
-        customization-color                         (rf/sub [:profile/customization-color])
-        bio                                         (:bio profile)
-        full-name                                   (profile.utils/displayed-name profile)
-        profile-picture                             (profile.utils/photo profile)
-        emoji-string                                (string/join emoji-hash)
-        {:keys [status-title status-icon]}          (header.utils/visibility-status-type-data status)
-        border-theme                                (quo.theme/get-theme)]
+  (let [{:keys [public-key emoji-hash bio] :as profile} (rf/sub [:profile/profile-with-image])
+        online? (rf/sub [:visibility-status-updates/online?
+                         public-key])
+        status (rf/sub
+                [:visibility-status-updates/visibility-status-update
+                 public-key])
+        customization-color (rf/sub [:profile/customization-color])
+        full-name (profile.utils/displayed-name profile)
+        profile-picture (profile.utils/photo profile)
+        emoji-string (string/join emoji-hash)
+        {:keys [status-title status-icon]} (header.utils/visibility-status-type-data status)
+        border-theme (quo.theme/get-theme)]
     [:<>
      [header.shape/view
       {:scroll-y            scroll-y
