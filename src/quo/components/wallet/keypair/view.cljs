@@ -11,7 +11,6 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
@@ -73,7 +72,7 @@
      (when (= type :default-keypair)
        [text/text
         {:size  :paragraph-2
-         :style (merge (style/subtitle blur? theme) {:bottom (if platform/ios? 2 -2)})}
+         :style (style/dot blur? theme)}
         " ∙ "])
      [text/text
       {:size  :paragraph-2
