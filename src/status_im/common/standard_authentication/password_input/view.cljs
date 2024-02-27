@@ -12,7 +12,7 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
-(defn get-error-message
+(defn- get-error-message
   [error]
   (if (and (some? error)
            (or (= error "file is not a database")
@@ -21,6 +21,34 @@
     (i18n/label :t/oops-wrong-password)
     error))
 
+(defn- error-info
+  [error-message processing shell?]
+  (let [theme    (quo.theme/use-theme-value)
+        on-press (rn/use-callback
+                  (fn []
+                    (rn/dismiss-keyboard!)
+                    (rf/dispatch [:show-bottom-sheet
+                                  {:content #(forgot-password-doc/view {:shell? shell?})
+                                   :theme   theme
+                                   :shell?  shell?}]))
+                  [theme])]
+    [rn/view {:style style/error-message}
+     [quo/info-message
+      {:type :error
+       :size :default
+       :icon :i/info}
+      error-message]
+     [rn/pressable
+      {:hit-slop {:top 6 :bottom 20 :left 0 :right 0}
+       :disabled processing
+       :on-press on-press}
+      [rn/text
+       {:style                 {:text-decoration-line :underline
+                                :color                (colors/resolve-color :danger theme)}
+        :size                  :paragraph-2
+        :suppress-highlighting true}
+       (i18n/label :t/forgot-password)]]]))
+
 (defn- on-change-password
   [entered-password]
   (debounce/debounce-and-dispatch [:profile/on-password-input-changed
@@ -28,10 +56,10 @@
                                     :error    ""}]
                                   100))
 
-(defn- view-internal
-  [{:keys [default-password theme shell? on-press-biometrics blur?]}]
+(defn view
+  [{:keys [shell? on-press-biometrics blur?]}]
   (let [{:keys [error processing]} (rf/sub [:profile/login])
-        error-message              (get-error-message error)
+        error-message              (rn/use-memo #(get-error-message error) [error])
         error?                     (boolean (seq error-message))]
     [:<>
      [rn/view {:style {:flex-direction :row}}
@@ -44,8 +72,7 @@
         :auto-focus      true
         :error?          error?
         :label           (i18n/label :t/profile-password)
-        :on-change-text  on-change-password
-        :default-value   (security/safe-unmask-data default-password)}]
+        :on-change-text  on-change-password}]
       (when on-press-biometrics
         [quo/button
          {:container-style style/auth-button
@@ -55,26 +82,5 @@
           :type            :outline}
          :i/face-id])]
      (when error?
-       [rn/view {:style style/error-message}
-        [quo/info-message
-         {:type :error
-          :size :default
-          :icon :i/info}
-         error-message]
-        [rn/pressable
-         {:hit-slop {:top 6 :bottom 20 :left 0 :right 0}
-          :disabled processing
-          :on-press (fn []
-                      (rn/dismiss-keyboard!)
-                      (rf/dispatch [:show-bottom-sheet
-                                    {:content #(forgot-password-doc/view {:shell? shell?})
-                                     :theme   theme
-                                     :shell?  shell?}]))}
-         [rn/text
-          {:style                 {:text-decoration-line :underline
-                                   :color                (colors/resolve-color :danger theme)}
-           :size                  :paragraph-2
-           :suppress-highlighting true}
-          (i18n/label :t/forgot-password)]]])]))
+       [error-info error-message processing shell?])]))
 
-(def view (quo.theme/with-theme view-internal))
