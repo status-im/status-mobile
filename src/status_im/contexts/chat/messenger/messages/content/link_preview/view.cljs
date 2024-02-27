@@ -16,12 +16,13 @@
   (let [previews (rf/sub [:chats/message-link-previews chat-id message-id])]
     (when (seq previews)
       [:<>
-       (for [{:keys [url title description thumbnail hostname]} previews]
+       (for [{:keys [url title description thumbnail hostname favicon]} previews]
          ^{:key url}
          [quo/link-preview
           {:title           title
            :description     description
            :link            hostname
+           :logo            favicon
            :thumbnail       (:url thumbnail)
            :thumbnail-size  (when (nearly-square? thumbnail) :large)
            :container-style {:margin-top 8}}])])))

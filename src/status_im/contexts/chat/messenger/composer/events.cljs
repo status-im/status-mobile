@@ -159,7 +159,7 @@
   (->> link-previews
        (map #(select-keys %
                           [:url :title :description :thumbnail
-                           :status-link-preview?]))
+                           :status-link-preview? :favicon]))
        (filter (fn [preview]
                  (not (:status-link-preview? preview))))))
 
