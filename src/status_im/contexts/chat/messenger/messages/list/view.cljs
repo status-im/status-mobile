@@ -47,8 +47,8 @@
 
 (defn list-on-end-reached
   [distance-from-list-top]
-  ;; FIXME: that's a bit of a hack but we need to update `distance-from-list-top` once the new messages
-  ;; are fetched in order for the header to work properly
+  ;; FIXME: that's a bit of a hack but we need to update `distance-from-list-top` once the new
+  ;; messages are fetched in order for the header to work properly
   (let [on-loaded (fn [n]
                     (reanimated/set-shared-value distance-from-list-top
                                                  (+ (reanimated/get-shared-value distance-from-list-top)
@@ -143,7 +143,7 @@
         mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
         unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
     [quo/channel-actions
-     {:style   {:margin-top 16}
+     {:style   style/chat-actions-container
       :actions [{:accessibility-label :action-button-pinned
                  :big?                true
                  :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
