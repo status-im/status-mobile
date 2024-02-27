@@ -6,12 +6,15 @@
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [react-native.svg :as svg]))
+    [react-native.svg :as svg]
+    [status-im.constants :as constants]))
 
 (defn- logo-comp
   [{:keys [logo]}]
-  (if (string/starts-with? logo "<svg")
-    [svg/svg-xml (merge style/logo {:xml logo})]
+  (if (string/starts-with? logo constants/base64-svg-prefix)
+    [svg/svg-xml (merge style/logo {:xml (-> logo
+                                             (string/replace constants/base64-svg-prefix "")
+                                             js/atob)})]
     [rn/image
      {:accessibility-label :logo
       :source              (if (string? logo)
