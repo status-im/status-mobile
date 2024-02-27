@@ -45,12 +45,12 @@
     (query-fn (comp participant-set :public-key) (vals all-contacts))))
 
 (defn get-all-contacts-in-group-chat
-  [members admins contacts {:keys [public-key preferred-name name] :as current-account}]
+  [members admins contacts {:keys [public-key preferred-name name display-name] :as current-account}]
   (let [current-contact (some->
                           current-account
-                          (select-keys [:name :preferred-name :public-key :images])
+                          (select-keys [:name :preferred-name :public-key :images :compressed-key])
                           (set/rename-keys {:name :alias :preferred-name :name})
-                          (assoc :primary-name (or preferred-name name)))
+                          (assoc :primary-name (or display-name preferred-name name)))
         all-contacts    (cond-> contacts
                           current-contact
                           (assoc public-key current-contact))]

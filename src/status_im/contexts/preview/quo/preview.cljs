@@ -1,6 +1,7 @@
 (ns status-im.contexts.preview.quo.preview
   (:require
     [camel-snake-kebab.core :as camel-snake-kebab]
+    cljs.pprint
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]

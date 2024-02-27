@@ -30,6 +30,4 @@
 (defn gradient-cover-wrapper
   [width]
   {:width         (gradient-cover-size width)
-   :position      :absolute
-   :border-radius 12
-   :z-index       -1})
+   :border-radius 12})

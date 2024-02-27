@@ -78,7 +78,7 @@
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
           {:customization-color @account-color
-           :container-style     (style/gradient-cover-container top)}]
+           :container-style     {:top (- top)}}]
          [rn/view
           {:style style/account-avatar-container}
           [quo/account-avatar

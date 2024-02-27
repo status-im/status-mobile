@@ -132,10 +132,9 @@
                                           :shell?         shell?
                                           :padding-bottom content-padding-bottom})}
         (when (and gradient-cover? customization-color)
-          [rn/view {:style style/gradient-bg}
-           [quo/gradient-cover
-            {:customization-color customization-color
-             :opacity             0.4}]])
+          [quo/gradient-cover
+           {:customization-color customization-color
+            :opacity             0.4}])
         (when-not hide-handle?
           [quo/drawer-bar])
         [content]]]]]))

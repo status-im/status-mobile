@@ -20,8 +20,8 @@
     [text/text {:size :paragraph-1 :weight :medium :number-of-lines 2} label]]])
 
 (defn channel-actions
-  [{:keys [style actions]}]
-  [rn/view {:style (merge {:flex-direction :row :flex 1} style)}
+  [{:keys [container-style actions]}]
+  [rn/view {:style (assoc container-style :flex-direction :row)}
    (map-indexed
     (fn [index action]
       ^{:key index}
