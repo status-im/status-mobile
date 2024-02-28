@@ -33,6 +33,8 @@
     [status-im.contexts.preview.quo.colors.color :as color]
     [status-im.contexts.preview.quo.colors.color-picker :as color-picker]
     [status-im.contexts.preview.quo.common :as common]
+    [status-im.contexts.preview.quo.community.channel-action :as
+     channel-action]
     [status-im.contexts.preview.quo.community.channel-actions :as
      channel-actions]
     [status-im.contexts.preview.quo.community.community-card-view :as
@@ -260,6 +262,9 @@
                        {:name      :token-gating
                         :options   {:insets {:bottom? true}}
                         :component token-gating/view}
+                       {:name      :channel-action
+                        :options   {:insets {:bottom? true}}
+                        :component channel-action/view}
                        {:name      :channel-actions
                         :options   {:insets {:bottom? true}}
                         :component channel-actions/view}]
