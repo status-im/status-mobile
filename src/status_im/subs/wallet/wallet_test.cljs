@@ -296,12 +296,16 @@
     (is (nil? (rf/sub [sub-name]))))
 
   (testing "watch address activity state with no-activity value"
-    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :no-activity))
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :add-address-to-watch :activity-state] :no-activity))
     (is (match? :no-activity (rf/sub [sub-name]))))
 
   (testing "watch address activity state with has-activity value"
-    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :has-activity))
-    (is (match? :has-activity (rf/sub [sub-name])))))
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :add-address-to-watch :activity-state] :has-activity))
+    (is (match? :has-activity (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with invalid-ens value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :add-address-to-watch :activity-state] :invalid-ens))
+    (is (match? :invalid-ens (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/accounts-without-current-viewing-account
   [sub-name]
