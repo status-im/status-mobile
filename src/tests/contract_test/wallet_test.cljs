@@ -84,3 +84,23 @@
      (h/logout)
      (rf-test/wait-for
        [::logout/logout-method])))))
+
+(defn get-derived-account
+  [response]
+  (is (= "0x1" (:sha3-pwd response)))
+  (is (= "🍌" (:emoji response)))
+  (is (= :army (:color response)))
+  (is (= "m/44'/60'/0'/0/7" (:path response)))
+  (is (= "Test 3" (:account-name response))))
+
+(deftest wallet-create-derived-addresses-success
+  (h/log-headline :wallet/create-derived-addresses)
+  (rf-test/run-test-async
+   (h/with-app-initialized
+    (h/with-account
+     (contract-utils/call-rpc-endpoint
+      {:rpc-endpoint "wallet_getDerivedAccount"
+       :params       ["0x1"
+                      "some-account-address"
+                      ["m/44'/60'/0'/0/7"]]
+       :action       get-derived-account})))))
