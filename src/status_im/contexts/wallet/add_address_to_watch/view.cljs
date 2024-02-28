@@ -76,14 +76,18 @@
                                        :icon                :i/done
                                        :type                :success
                                        :message             :t/this-address-has-activity}
-                        :no-activity  {:accessibility-label :account-has-no-activity
-                                       :icon                :i/info
-                                       :type                :warning
-                                       :message             :t/this-address-has-no-activity}
-                        :invalid-ens  {:accessibility-label :error-message
-                                       :icon                :i/info
-                                       :type                :error
-                                       :message             :t/invalid-address}
+                        :no-activity {:accessibility-label :account-has-no-activity
+                                      :icon                :i/info
+                                      :type                :warning
+                                      :message             :t/this-address-has-no-activity}
+                        :invalid-ens {:accessibility-label :error-message
+                                      :icon                :i/info
+                                      :type                :error
+                                      :message             :t/invalid-address}
+                        :address-already-registered {:accessibility-label :error-message
+                                                     :icon                :i/info
+                                                     :type                :error
+                                                     :message             :t/address-already-in-use}
                         {:accessibility-label :searching-for-activity
                          :icon                :i/pending-state
                          :type                :default
@@ -145,12 +149,12 @@
             :validate       validate
             :validation-msg validation-msg
             :clear-input    clear-input}]
-          (when @validation-msg
+          (if @validation-msg
             [quo/info-message
              {:accessibility-label :error-message
               :size                :default
               :icon                :i/info
               :type                :error
               :style               style/info-message}
-             @validation-msg])
-          [activity-indicator activity-state]]]))))
+             @validation-msg]
+            [activity-indicator activity-state])]]))))

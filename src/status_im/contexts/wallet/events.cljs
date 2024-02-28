@@ -374,10 +374,16 @@
 (rf/reg-event-fx
  :wallet/store-valid-address-activity
  (fn [{:keys [db]} [address {:keys [hasActivity]}]]
-   (let [state (if hasActivity :has-activity :no-activity)]
-     {:db (-> db
-              (assoc-in [:wallet :ui :add-address-to-watch :activity-state] state)
-              (assoc-in [:wallet :ui :add-address-to-watch :validated-address] address))})))
+   (let [registered-addresses (-> db :wallet :accounts keys set)
+         already-registered?  (registered-addresses address)]
+     (if already-registered?
+       {:db (-> db
+                (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :address-already-registered)
+                (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}
+       (let [state (if hasActivity :has-activity :no-activity)]
+         {:db (-> db
+                  (assoc-in [:wallet :ui :add-address-to-watch :activity-state] state)
+                  (assoc-in [:wallet :ui :add-address-to-watch :validated-address] address))})))))
 
 ;;
 (rf/reg-event-fx
