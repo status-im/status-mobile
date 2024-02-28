@@ -88,7 +88,9 @@
     (load-and-show-profile scanned-text)
 
     (eth-address? scanned-text)
-    (debounce/debounce-and-dispatch [:navigate-to :wallet-accounts scanned-text] 300)
+    (do
+      (debounce/debounce-and-dispatch [:wallet/scan-qr-code-success scanned-text] 300)
+      (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 
     (eip681-address? scanned-text)
     (do

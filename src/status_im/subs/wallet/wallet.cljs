@@ -25,6 +25,11 @@
     (assoc account :network-preferences-names network-preferences-names)))
 
 (rf/reg-sub
+ :wallet/qr-code
+ :<- [:wallet]
+ :-> :qr-code)
+
+(rf/reg-sub
  :wallet/ui
  :<- [:wallet]
  :-> :ui)

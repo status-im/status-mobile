@@ -2555,5 +2555,6 @@
     "ledger-live": "Ledger live",
     "keep-key": "KeepKey",
     "type-your-path": "Type your own derivation path",
-    "default-format": "Default format"
+    "default-format": "Default format",
+    "send-to-this-address": "Send to this address"
 }
