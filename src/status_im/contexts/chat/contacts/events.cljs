@@ -23,7 +23,9 @@
    :blocked?              (oops/oget js-contact "blocked")
    :added?                (oops/oget js-contact "added")
    :has-added-us?         (oops/oget js-contact "hasAddedUs")
-   :mutual?               (oops/oget js-contact "mutual")})
+   :mutual?               (oops/oget js-contact "mutual")
+   :emoji-hash            (oops/oget js-contact "emojiHash")
+   :bio                   (oops/oget js-contact "bio")})
 
 (defn prepare-events-for-contact
   [db chats-js]
