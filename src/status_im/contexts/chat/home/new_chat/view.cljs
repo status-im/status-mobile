@@ -128,14 +128,13 @@
      (if (empty? contacts)
        [no-contacts-view {:theme theme}]
        [gesture/section-list
-        {:key-fn                         :title
-         :sticky-section-headers-enabled true
-         :sections                       (rf/sub [:contacts/filtered-active-sections])
-         :render-section-header-fn       contact-list/contacts-section-header
-         :content-container-style        {:padding-bottom 70}
-         :render-fn                      render-fn
-         :scroll-enabled                 @scroll-enabled?
-         :on-scroll                      on-scroll}])
+        {:key-fn                   :title
+         :sections                 (rf/sub [:contacts/filtered-active-sections])
+         :render-section-header-fn contact-list/contacts-section-header
+         :content-container-style  {:padding-bottom 70}
+         :render-fn                render-fn
+         :scroll-enabled           @scroll-enabled?
+         :on-scroll                on-scroll}])
      (when contacts-selected?
        [quo/button
         {:type                :primary
