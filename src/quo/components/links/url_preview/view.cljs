@@ -12,9 +12,11 @@
 (defn- logo-comp
   [{:keys [logo]}]
   (if (string/starts-with? logo constants/base64-svg-prefix)
-    [svg/svg-xml (merge style/logo {:xml (-> logo
-                                             (string/replace constants/base64-svg-prefix "")
-                                             js/atob)})]
+    [svg/svg-xml
+     (merge style/logo
+            {:xml (-> logo
+                      (string/replace constants/base64-svg-prefix "")
+                      js/atob)})]
     [rn/image
      {:accessibility-label :logo
       :source              (if (string? logo)

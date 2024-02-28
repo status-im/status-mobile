@@ -59,25 +59,24 @@
 
 (defn- logo-comp
   [logo]
-  (let [xml-data   (reagent/atom nil)
+  (let [image-data (reagent/atom nil)
         is-svg?    (reagent/atom nil)
-        on-success (fn [xml-string]
-                     (reset! xml-data xml-string))
+        on-success (fn [data-uri]
+                     (reset! image-data data-uri))
         _get-svg   (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?}))
                        (.fetch "GET" logo)
-                       (.then #(do
-                                 (reset! is-svg? (= "image/svg"
-                                                    (oops/oget % ["respInfo" "headers" "Content-Type"])))
-                                 (on-success (oops/oget % "data"))))
+                       (.then (fn [imgObj]
+                                (reset! is-svg? (= "image/svg"
+                                                   (oops/oget imgObj
+                                                              ["respInfo" "headers" "Content-Type"])))
+                                (on-success (oops/oget imgObj "data"))))
                        (.catch #(log/error "could not fetch favicon " logo)))]
     (fn []
       (if @is-svg?
-        [svg/svg-xml (merge style/logo {:xml @xml-data})]
+        [svg/svg-xml (merge style/logo {:xml @image-data})]
         [rn/image
          {:accessibility-label :logo
-          :source              (if (string? logo)
-                                 {:uri logo}
-                                 logo)
+          :source              {:uri (str "data:image/png;base64," @image-data)}
           :style               style/logo}]))))
 
 (defn view
