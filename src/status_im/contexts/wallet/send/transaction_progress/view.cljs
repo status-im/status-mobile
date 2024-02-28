@@ -27,11 +27,15 @@
     (some (fn [[_k v]] (= (:status v) :confirmed)) transaction-details)   :confirmed
     :else                                                                 nil))
 
-(defn show-save-address-modal []
-  (debounce/throttle-and-dispatch
-   [:show-bottom-sheet
-    {:content (fn [] [wallet-send-save-address/view])}]
-   1000))
+(defn show-save-address-bottom-sheet
+  ([] (show-save-address-bottom-sheet :blue))
+  ([color]
+   (debounce/throttle-and-dispatch
+    [:show-bottom-sheet
+     {:content             (fn [] [wallet-send-save-address/view])
+      :gradient-cover?     true
+      :customization-color color}]
+    1000)))
 
 (defn footer [{:keys [color leave-page]}]
   [rn/view {:style style/footer}
@@ -39,7 +43,7 @@
                 :icon-left           :i/contact-book
                 :accessibility-label :save-address
                 :container-style     style/footer-button
-                :on-press            show-save-address-modal}
+                :on-press            (partial show-save-address-bottom-sheet color)}
     (i18n/label :t/save-address)]
    [quo/button {:customization-color color
                 :type                :primary

@@ -7,8 +7,6 @@
 
 (defn view []
   [:<>
-   [quo/gradient-cover {:customization-color :blue
-                        :style style/absolutify}]
    [rn/view {:style style/absolutify}
     [quo/page-nav
      {:type                :no-title
