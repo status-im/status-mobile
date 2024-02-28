@@ -3,6 +3,7 @@
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
+            [status-im.common.not-implemented]
             [status-im.common.scalable-avatar.view :as avatar]
             [status-im.constants :as constants]
             [status-im.contexts.profile.contact.header.style :as style]
@@ -40,4 +41,9 @@
       {:title            full-name
        :description      :text
        :description-text bio
-       :emoji-dash       emoji-hash}]]))
+       :emoji-dash       emoji-hash}]
+     [rn/view {:style style/button-wrapper}
+      [quo/button
+       {:on-press status-im.common.not-implemented/alert
+        :icon-left :i/add-user}
+       (i18n/label :t/send-contact-request)]]]))
