@@ -111,7 +111,9 @@
         {:weight :semi-bold
          :size   :heading-1
          :style  {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
-        (i18n/label :t/new-chat)]
+        (if (or (not contacts-selected?) one-contact-selected?)
+          (i18n/label :t/new-chat)
+          (i18n/label :t/new-group-chat))]
        (when (seq contacts)
          [quo/text
           {:size   :paragraph-2
@@ -127,7 +129,7 @@
        [no-contacts-view {:theme theme}]
        [gesture/section-list
         {:key-fn                         :title
-         :sticky-section-headers-enabled false
+         :sticky-section-headers-enabled true
          :sections                       (rf/sub [:contacts/filtered-active-sections])
          :render-section-header-fn       contact-list/contacts-section-header
          :content-container-style        {:padding-bottom 70}
