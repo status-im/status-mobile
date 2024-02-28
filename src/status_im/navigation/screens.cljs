@@ -1,6 +1,7 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
+    [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
@@ -142,7 +143,8 @@
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
-     :options   options/camera-screen
+     :options   {:navigationBar {:backgroundColor colors/black}
+                 :theme         :dark}
      :component camera-screen/camera-screen}
 
     {:name      :new-contact
@@ -432,6 +434,13 @@
     {:name      :settings-password
      :options   options/transparent-modal-screen-options
      :component settings-password/view}]
+
+   [{:name    :shell
+     :options {:theme :dark}}
+    {:name :communities-stack}
+    {:name :chats-stack}
+    {:name :wallet-stack}
+    {:name :browser-stack}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview

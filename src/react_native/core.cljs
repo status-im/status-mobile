@@ -210,3 +210,5 @@
 (def linking (.-Linking react-native))
 
 (defn open-url [link] (.openURL ^js linking link))
+
+(def set-status-bar-style react-native/StatusBar.setBarStyle)
