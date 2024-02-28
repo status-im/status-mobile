@@ -452,12 +452,12 @@
   (let [current-pub-key (rf/sub [:multiaccount/public-key])]
     [quo/action-drawer
      [[(view-profile-entry public-key)
-       (remove-from-contacts-entry contact)
-       (rename-entry)
+       (when-not (= current-pub-key public-key) (remove-from-contacts-entry contact))
+       (when-not (= current-pub-key public-key) (rename-entry))
        (show-qr-entry)
        (share-profile-entry)]
-      [(mark-untrustworthy-entry)
-       (block-user-entry contact)]
+      [(when-not (= current-pub-key public-key) (mark-untrustworthy-entry))
+       (when-not (= current-pub-key public-key) (block-user-entry contact))]
       (when (and admin? chat-id)
         [(if (= current-pub-key public-key)
            (leave-group-entry contact extra-data)
