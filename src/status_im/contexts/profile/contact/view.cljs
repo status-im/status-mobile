@@ -2,8 +2,8 @@
   (:require [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.reanimated :as reanimated]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.common.scroll-page.view :as scroll-page]
+            [status-im.contexts.profile.contact.actions.view :as actions]
             [status-im.contexts.profile.contact.header.view :as contact-header]
             [utils.re-frame :as rf]))
 
@@ -20,5 +20,8 @@
       :cover-color      (or customization-color colors/primary-50)
       :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
       :page-nav-props   {:right-side [{:icon-name :i/options
-                                       :on-press  not-implemented/alert}]}}
+                                       :on-press  (fn []
+                                                    (rf/dispatch [:show-bottom-sheet
+                                                                  {:content (fn []
+                                                                              [actions/view])}]))}]}}
      [contact-header/view {:scroll-y scroll-y}]]))
