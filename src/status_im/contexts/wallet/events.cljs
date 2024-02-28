@@ -362,49 +362,48 @@
  (fn [{:keys [db]}]
    {:db (assoc db :wallet/valid-ens-or-address? false)}))
 
-(rf/reg-event-fx :wallet/get-address-details-success
- (fn [{:keys [db]} [{:keys [hasActivity] :as x}]]
-   {:db (assoc-in db
-         [:wallet :ui :watch-address-activity-state]
-         (if hasActivity :has-activity :no-activity))}))
-
-(rf/reg-event-fx :wallet/clear-address-activity-check
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui] dissoc :watch-address-activity-state)}))
-
+;;
 (rf/reg-event-fx
- :wallet/address-of-ens
- (fn [{:keys [db]} [{:keys [ens on-success on-error]}]]
-   (prn "looking for address...")
-   {:fx [[:json-rpc/call
-          [{:method     "ens_addressOf"
-            :params     [(chain/chain-id db) ens]
-            :on-success (if (fn? on-success)
-                          on-success
-                          #(conj on-success %))
-            :on-error   (if (fn? on-error)
-                          on-error
-                          #(conj on-error %))}]]]}))
+ :wallet/ens-not-found
+ (fn [{:keys [db]} _]
+   {:db (-> db
+            (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :invalid-ens)
+            (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}))
+
+;;
+(rf/reg-event-fx
+ :wallet/store-valid-address-activity
+ (fn [{:keys [db]} [address {:keys [hasActivity]}]]
+   (let [state (if hasActivity :has-activity :no-activity)]
+     {:db (-> db
+              (assoc-in [:wallet :ui :add-address-to-watch :activity-state] state)
+              (assoc-in [:wallet :ui :add-address-to-watch :validated-address] address))})))
+
+;;
+(rf/reg-event-fx
+ :wallet/clear-address-activity
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui] dissoc :add-address-to-watch)}))
 
 (rf/reg-event-fx
  :wallet/get-address-details
  (fn [{:keys [db]} [address-or-ens]]
-   (let [on-error #(log/info "failed to get address details"
-                             {:error %
-                              :event :wallet/get-address-details})]
-     (if (string/includes? "address" ".")
-       {:fx [[:dispatch [:wallet/address-of-ens {:ens        address-or-ens
-                                                 :on-success [:wallet/get-address-details]
-                                                 :on-error   on-error}]]]}
-       {:db (assoc-in db [:wallet :ui :watch-address-activity-state] :scanning)
-        :fx [[:json-rpc/call
-              [{:method     "wallet_getAddressDetails"
-                :params     [(chain/chain-id db) address-or-ens]
-                :on-success [:wallet/get-address-details-success]
-                :on-error   on-error}]]]}
-       ))
-
-   ))
+   (let [request-params [(chain/chain-id db) address-or-ens]
+         ens?           (string/includes? address-or-ens ".")]
+     {:db (-> db
+              (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)
+              (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))
+      :fx [(if ens?
+             [:json-rpc/call [{:method     "ens_addressOf"
+                               :params     request-params
+                               :on-success [:wallet/get-address-details]
+                               :on-error   [:wallet/ens-not-found]}]]
+             [:json-rpc/call [{:method     "wallet_getAddressDetails"
+                               :params     request-params
+                               :on-success [:wallet/store-valid-address-activity address-or-ens]
+                               :on-error   #(log/info "failed to get address details"
+                                                      {:error %
+                                                       :event :wallet/get-address-details})}]])]})))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet

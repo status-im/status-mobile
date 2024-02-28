@@ -94,9 +94,19 @@
  :-> :bridge-to-chain-id)
 
 (rf/reg-sub
- :wallet/watch-address-activity-state
+ :wallet/add-address-to-watch
  :<- [:wallet/ui]
- :-> :watch-address-activity-state)
+ :-> :add-address-to-watch)
+
+(rf/reg-sub
+ :wallet/watch-address-activity-state
+ :<- [:wallet/add-address-to-watch]
+ :-> :activity-state)
+
+(rf/reg-sub
+ :wallet/watch-address-validated-address
+ :<- [:wallet/add-address-to-watch]
+ :-> :validated-address)
 
 (rf/reg-sub
  :wallet/keypairs
