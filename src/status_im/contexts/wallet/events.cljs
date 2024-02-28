@@ -195,9 +195,7 @@
             [{:method     "accounts_addAccount"
               :params     [(when (= type :generated) sha3-pwd) account-config]
               :on-success [:wallet/add-account-success lowercase-address]
-              :on-error   #(log/info "failed to create account " %
-                                     "params:"
-                                     [(when (= type :generated) sha3-pwd) account-config])}]]]})))
+              :on-error   #(log/info "failed to create account " %)}]]]})))
 
 (rf/reg-event-fx
  :wallet/derive-address-and-add-account
@@ -362,7 +360,6 @@
  (fn [{:keys [db]}]
    {:db (assoc db :wallet/valid-ens-or-address? false)}))
 
-;;
 (rf/reg-event-fx
  :wallet/ens-not-found
  (fn [{:keys [db]} _]
@@ -370,7 +367,6 @@
             (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :invalid-ens)
             (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}))
 
-;;
 (rf/reg-event-fx
  :wallet/store-valid-address-activity
  (fn [{:keys [db]} [address {:keys [hasActivity]}]]
@@ -386,7 +382,6 @@
                   (assoc-in [:wallet :ui :add-address-to-watch :activity-state] state)
                   (assoc-in [:wallet :ui :add-address-to-watch :validated-address] address))})))))
 
-;;
 (rf/reg-event-fx
  :wallet/clear-address-activity
  (fn [{:keys [db]}]
