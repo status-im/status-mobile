@@ -48,7 +48,7 @@
            :disabled?           (:disabled? @state)
            :blur?               @blur?
            :type                (:type @state)
-           :on-complete         (fn []
+           :on-complete         (fn [_]
                                   (js/setTimeout (fn [] (reset! complete? true))
                                                  1000)
                                   (js/alert "I don't wanna slide anymore"))}]

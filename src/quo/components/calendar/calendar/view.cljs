@@ -8,36 +8,36 @@
     [quo.components.calendar.calendar.years-list.view :as years-list]
     [quo.theme :as theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [utils.number :as utils.number]))
 
-(defn- view-internal
-  []
-  (let [selected-year   (reagent/atom (utils/current-year))
-        selected-month  (reagent/atom (utils/current-month))
-        on-change-year  #(reset! selected-year %)
-        on-change-month (fn [new-date]
-                          (reset! selected-year (utils.number/parse-int (:year new-date)))
-                          (reset! selected-month (utils.number/parse-int (:month new-date))))]
-    (fn [{:keys [on-change start-date end-date theme]}]
-      [rn/view
-       {:style (style/container theme)}
-       [years-list/view
-        {:on-change-year on-change-year
-         :year           @selected-year}]
-       [rn/view
-        {:style style/container-main}
-        [month-picker/view
-         {:year      @selected-year
-          :month     @selected-month
-          :on-change on-change-month}]
-        [weekdays-header/view]
-        [days-grid/view
-         {:year                @selected-year
-          :month               @selected-month
-          :start-date          start-date
-          :end-date            end-date
-          :on-change           on-change
-          :customization-color :blue}]]])))
-
-(def view (theme/with-theme view-internal))
+(defn view
+  [{:keys [on-change start-date end-date]}]
+  (let [theme                               (theme/use-theme-value)
+        [selected-year set-selected-year]   (rn/use-state (utils/current-year))
+        [selected-month set-selected-month] (rn/use-state (utils/current-month))
+        on-change-year                      (rn/use-callback #(set-selected-year %))
+        on-change-month                     (rn/use-callback
+                                             (fn [new-date]
+                                               (set-selected-year
+                                                (utils.number/parse-int (:year new-date)))
+                                               (set-selected-month
+                                                (utils.number/parse-int (:month new-date)))))]
+    [rn/view
+     {:style (style/container theme)}
+     [years-list/view
+      {:on-change-year on-change-year
+       :year           selected-year}]
+     [rn/view
+      {:style style/container-main}
+      [month-picker/view
+       {:year      selected-year
+        :month     selected-month
+        :on-change on-change-month}]
+      [weekdays-header/view]
+      [days-grid/view
+       {:year                selected-year
+        :month               selected-month
+        :start-date          start-date
+        :end-date            end-date
+        :on-change           on-change
+        :customization-color :blue}]]]))

@@ -10,7 +10,7 @@ pipeline {
   options {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 15, unit: 'MINUTES')
+    timeout(time: 20, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
@@ -60,6 +60,14 @@ pipeline {
             """
           }
         }
+      }
+    }
+    stage('Contract Tests') {
+      steps {
+        sh """#!/bin/bash
+          set -eo pipefail
+          make test-contract 2>&1 | tee -a ${LOG_FILE}
+        """
       }
     }
     stage('Integration Tests') {

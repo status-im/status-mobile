@@ -21,10 +21,14 @@
     (h/fire-event :change-text
                   (h/get-by-label-text :add-address-to-watch)
                   "0x12E838Ae1f769147b12956485dc56e57138f3AC8")
-    (h/is-truthy (h/get-by-translation-text :t/address-already-in-use)))
+    (-> (h/wait-for #(h/get-by-translation-text :t/address-already-in-use))
+        (.then (fn []
+                 (h/is-truthy (h/get-by-translation-text :t/address-already-in-use))))))
 
   (h/test "validation messages show for invalid address"
     (h/render [add-address-to-watch/view])
     (h/is-falsy (h/query-by-label-text :error-message))
     (h/fire-event :change-text (h/get-by-label-text :add-address-to-watch) "0x12E838Ae1f769147b")
-    (h/is-truthy (h/get-by-translation-text :t/invalid-address))))
+    (-> (h/wait-for #(h/get-by-translation-text :t/invalid-address))
+        (.then (fn []
+                 (h/is-truthy (h/get-by-translation-text :t/invalid-address)))))))
