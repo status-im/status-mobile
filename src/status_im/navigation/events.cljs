@@ -191,5 +191,6 @@
 
 (comment
   (rf/dispatch [:navigate-to :generating-keys])
+  (rf/dispatch [:navigate-to :wallet-transaction-progress])
   (rf/dispatch [:navigate-to :enable-biometrics])
   ,)

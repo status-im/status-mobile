@@ -2,16 +2,17 @@
   (:require
    [quo.core :as quo]
    [react-native.core :as rn]
+   [react-native.hooks :as hooks]
    [react-native.safe-area :as safe-area]
    [status-im.common.biometric.events :as biometric]
    [status-im.common.parallax.view :as parallax]
-   [status-im.common.parallax.whitelist :as whitelist]
    [status-im.common.resources :as resources]
    [status-im.common.rive.view :as rive]
    [status-im.contexts.onboarding.enable-biometrics.style :as style]
    [status-im.navigation.state :as state]
    [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+   [utils.re-frame :as rf]
+   [utils.worklets.parallax :as worklets.parallax]))
 
 (defn page-title
   []
@@ -66,14 +67,31 @@
       :style       (style/page-illustration width)
       :source      (resources/get-image :biometrics)}]))
 
+(defn f-sensor-animate-ref [ref]
+  (let [x-gyro-val (hooks/use-gyroscope)]
+    (rn/use-effect
+     (fn []
+       ;; TODO: Pass the x-gyro-val here
+       ;; (-> @ref (.setInputState "stateMachine" "x" x-gyro-val))
+       )
+     [x-gyro-val])
+    ))
+
+(defn sensor-animate-ref [rive-ref]
+  [:f> f-sensor-animate-ref rive-ref])
+
 (defn enable-biometrics-rive
   []
-  (let [width (:width (rn/get-window))]
-    (rive/view
-     {:resourceName "Biometrics-Compressed"
-      :artboardName "Status Biometrics - Test 01"
-      :stateMachineName "State Machine 1"
-      :style (style/page-illustration width)})))
+  (let [width     (:width (rn/get-window))
+        rive-ref  (atom nil)]
+    [:<>
+     [sensor-animate-ref rive-ref]
+     (rive/view
+      {:ref              #(reset! rive-ref %)
+       :resourceName     "Biometrics Parallax"
+       :artboardName     "Status Biometrics - Test 01"
+       :stateMachineName "stateMachine"
+       :style            (style/page-illustration width)})]))
 
 (defn f-enable-biometrics
   []
