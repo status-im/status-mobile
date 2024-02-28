@@ -25,8 +25,8 @@
         :blur?                 (:blur? @state)
         :show-blur-background? true}
        [quo/address-input
-        (merge @state
-               {:on-scan       #(js/alert "Not implemented yet")
+        (merge (dissoc @state :scanned-value)
+               {:on-scan       (fn [on-result] (on-result (:scanned-value @state)))
                 :ens-regex     constants/regx-ens
                 :on-detect-ens (fn [_]
                                  (swap! state assoc :valid-ens-or-address? false)
