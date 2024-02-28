@@ -5,6 +5,7 @@
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
+    [status-im.subs.utils :as subs.utils]
     [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
