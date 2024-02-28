@@ -76,22 +76,23 @@
                                        :icon                :i/done
                                        :type                :success
                                        :message             :t/this-address-has-activity}
-                        :no-activity {:accessibility-label :account-has-no-activity
-                                      :icon                :i/info
-                                      :type                :warning
-                                      :message             :t/this-address-has-no-activity}
-                        :invalid-ens {:accessibility-label :error-message
-                                      :icon                :i/info
-                                      :type                :error
-                                      :message             :t/invalid-address}
+                        :no-activity  {:accessibility-label :account-has-no-activity
+                                       :icon                :i/info
+                                       :type                :warning
+                                       :message             :t/this-address-has-no-activity}
+                        :invalid-ens  {:accessibility-label :error-message
+                                       :icon                :i/info
+                                       :type                :error
+                                       :message             :t/invalid-address}
                         {:accessibility-label :searching-for-activity
                          :icon                :i/pending-state
                          :type                :default
                          :message             :t/searching-for-activity})]
     (when activity-state
-      [quo/info-message (assoc props
-                          :style style/info-message
-                          :size :default)
+      [quo/info-message
+       (assoc props
+              :style style/info-message
+              :size  :default)
        (i18n/label message)])))
 
 (defn view

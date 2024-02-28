@@ -394,16 +394,18 @@
               (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)
               (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))
       :fx [(if ens?
-             [:json-rpc/call [{:method     "ens_addressOf"
-                               :params     request-params
-                               :on-success [:wallet/get-address-details]
-                               :on-error   [:wallet/ens-not-found]}]]
-             [:json-rpc/call [{:method     "wallet_getAddressDetails"
-                               :params     request-params
-                               :on-success [:wallet/store-valid-address-activity address-or-ens]
-                               :on-error   #(log/info "failed to get address details"
-                                                      {:error %
-                                                       :event :wallet/get-address-details})}]])]})))
+             [:json-rpc/call
+              [{:method     "ens_addressOf"
+                :params     request-params
+                :on-success [:wallet/get-address-details]
+                :on-error   [:wallet/ens-not-found]}]]
+             [:json-rpc/call
+              [{:method     "wallet_getAddressDetails"
+                :params     request-params
+                :on-success [:wallet/store-valid-address-activity address-or-ens]
+                :on-error   #(log/info "failed to get address details"
+                                       {:error %
+                                        :event :wallet/get-address-details})}]])]})))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
