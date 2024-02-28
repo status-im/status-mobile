@@ -191,41 +191,50 @@
  (fn [_]
    {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
-(defn- build-transaction-path
-  [{:keys [from-address to-address token-id token-address route data
-           eth-transfer?]}]
-  (let [{:keys [bridge-name amount-in gas-amount
-                gas-fees bonder-fees from to]} route
-        eip-1559-enabled?                      (:eip-1559-enabled gas-fees)
+(defn- transaction-data
+  [{:keys [from-address to-address token-address route data eth-transfer?]}]
+  (let [{:keys [amount-in gas-amount gas-fees]} route
+        eip-1559-enabled?                       (:eip-1559-enabled gas-fees)
         {:keys [gas-price max-fee-per-gas-medium
-                max-priority-fee-per-gas]}     gas-fees
-        tx-data                                (cond-> {:From  from-address
-                                                        :To    (or token-address to-address)
-                                                        :Gas   (money/to-hex gas-amount)
-                                                        :Value (when eth-transfer? amount-in)
-                                                        :Nonce nil
-                                                        :Input ""
-                                                        :Data  (or data "0x")}
-                                                 eip-1559-enabled?       (assoc
-                                                                          :TxType "0x02"
-                                                                          :MaxFeePerGas
-                                                                          (money/to-hex
-                                                                           (money/->wei
-                                                                            :gwei
-                                                                            max-fee-per-gas-medium))
-                                                                          :MaxPriorityFeePerGas
-                                                                          (money/to-hex
-                                                                           (money/->wei
-                                                                            :gwei
-                                                                            max-priority-fee-per-gas)))
-                                                 (not eip-1559-enabled?) (assoc :TxType "0x00"
-                                                                                :GasPrice
-                                                                                (money/to-hex
-                                                                                 (money/->wei
-                                                                                  :gwei
-                                                                                  gas-price))))
-        to-chain-id                            (:chain-id to)
-        from-chain-id                          (:chain-id from)]
+                max-priority-fee-per-gas]}      gas-fees]
+    (cond-> {:From  from-address
+             :To    (or token-address to-address)
+             :Gas   (money/to-hex gas-amount)
+             :Value (when eth-transfer? amount-in)
+             :Nonce nil
+             :Input ""
+             :Data  (or data "0x")}
+      eip-1559-enabled?       (assoc
+                               :TxType "0x02"
+                               :MaxFeePerGas
+                               (money/to-hex
+                                (money/->wei
+                                 :gwei
+                                 max-fee-per-gas-medium))
+                               :MaxPriorityFeePerGas
+                               (money/to-hex
+                                (money/->wei
+                                 :gwei
+                                 max-priority-fee-per-gas)))
+      (not eip-1559-enabled?) (assoc :TxType "0x00"
+                                     :GasPrice
+                                     (money/to-hex
+                                      (money/->wei
+                                       :gwei
+                                       gas-price))))))
+
+(defn- transaction-path
+  [{:keys [from-address to-address token-id token-address route data eth-transfer?]}]
+  (let [{:keys [bridge-name amount-in bonder-fees from
+                to]}  route
+        tx-data       (transaction-data {:from-address  from-address
+                                         :to-address    to-address
+                                         :token-address token-address
+                                         :route         route
+                                         :data          data
+                                         :eth-transfer? eth-transfer?})
+        to-chain-id   (:chain-id to)
+        from-chain-id (:chain-id from)]
     (cond-> {:BridgeName bridge-name
              :ChainID    from-chain-id}
 
@@ -297,16 +306,16 @@
                                                 (native-module/encode-transfer
                                                  (address/normalized-hex to-address)
                                                  (:amount-in route)))]
-                                     (build-transaction-path {:to-address    to-address
-                                                              :from-address  from-address
-                                                              :route         route
-                                                              :token-address token-address
-                                                              :token-id      (if collectible
-                                                                               (money/to-hex (js/parseInt
-                                                                                              token-id))
-                                                                               token-id)
-                                                              :data          data
-                                                              :eth-transfer? eth-transfer?})))
+                                     (transaction-path {:to-address    to-address
+                                                        :from-address  from-address
+                                                        :route         route
+                                                        :token-address token-address
+                                                        :token-id      (if collectible
+                                                                         (money/to-hex (js/parseInt
+                                                                                        token-id))
+                                                                         token-id)
+                                                        :data          data
+                                                        :eth-transfer? eth-transfer?})))
                                  routes)
          request-params
          [(multi-transaction-command
