@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.contact-list-item.view :as contact-list-item]
             [status-im.common.contact-list.view :as contact-list]
@@ -11,7 +11,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- contact-item-render
+(defn- contact-item
   [public-key]
   (let [show-profile-actions          #(rf/dispatch [:show-bottom-sheet
                                                      {:content (fn [] [home.actions/contact-actions
@@ -49,7 +49,7 @@
     :sticky-section-headers-enabled    false
     :render-section-header-fn          contact-list/contacts-section-header
     :render-section-footer-fn          footer
-    :render-fn                         contact-item-render
+    :render-fn                         contact-item
     :scroll-event-throttle             8}])
 
 (defn- view-internal
