@@ -6,6 +6,7 @@
             [status-im.common.not-implemented]
             [status-im.common.scalable-avatar.view :as avatar]
             [status-im.constants :as constants]
+            [status-im.contexts.profile.contact.contact-request.view :as contact-request]
             [status-im.contexts.profile.contact.header.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -44,6 +45,11 @@
        :emoji-dash       emoji-hash}]
      [rn/view {:style style/button-wrapper}
       [quo/button
-       {:on-press status-im.common.not-implemented/alert
+       {:on-press  #(rf/dispatch [:show-bottom-sheet
+                                  {:content (fn [] [contact-request/view
+                                                    {:customization-color customization-color
+                                                     :profile-picture     profile-picture
+                                                     :full-name           full-name
+                                                     :public-key          public-key}])}])
         :icon-left :i/add-user}
        (i18n/label :t/send-contact-request)]]]))
