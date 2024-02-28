@@ -527,8 +527,8 @@
         :visibility-status-updates
         {"0x01" {:status-type constants/visibility-status-always-online}
          "0x02" {:status-type constants/visibility-status-always-online}})
-      (is (= [{:title (i18n/label :t/online-community-member)
+      (is (= [{:title (i18n/label :t/online)
                :data  ["0x01" "0x02"]}
-              {:title (i18n/label :t/offline-community-member)
+              {:title (i18n/label :t/offline)
                :data  ["0x03" "0x04"]}]
              (rf/sub [sub-name community-id]))))))
