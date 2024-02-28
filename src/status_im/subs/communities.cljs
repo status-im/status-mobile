@@ -4,6 +4,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
+    [status-im.subs.utils :as subs.utils]
     [utils.i18n :as i18n]
     [utils.money :as money]))
 
