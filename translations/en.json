@@ -1985,6 +1985,7 @@
     "contact-request-removed-you-as-contact": "removed you as a contact",
     "contact-request-removed-as-contact": "removed as a contact",
     "contact-requests": "Contact requests",
+    "contact-request-message-prompt": "Why should they accept your request?",
     "say-hi": "Say hi",
     "opened": "Opened",
     "accepted": "Accepted",
