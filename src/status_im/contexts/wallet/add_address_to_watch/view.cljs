@@ -72,18 +72,18 @@
   [activity-state]
   (let [{:keys [message]
          :as   props} (case activity-state
-                        :has-activity {:accessibility-label :account-has-activity
-                                       :icon                :i/done
-                                       :type                :success
-                                       :message             :t/this-address-has-activity}
-                        :no-activity {:accessibility-label :account-has-no-activity
-                                      :icon                :i/info
-                                      :type                :warning
-                                      :message             :t/this-address-has-no-activity}
-                        :invalid-ens {:accessibility-label :error-message
-                                      :icon                :i/info
-                                      :type                :error
-                                      :message             :t/invalid-address}
+                        :has-activity               {:accessibility-label :account-has-activity
+                                                     :icon                :i/done
+                                                     :type                :success
+                                                     :message             :t/this-address-has-activity}
+                        :no-activity                {:accessibility-label :account-has-no-activity
+                                                     :icon :i/info
+                                                     :type :warning
+                                                     :message :t/this-address-has-no-activity}
+                        :invalid-ens                {:accessibility-label :error-message
+                                                     :icon                :i/info
+                                                     :type                :error
+                                                     :message             :t/invalid-address}
                         :address-already-registered {:accessibility-label :error-message
                                                      :icon                :i/info
                                                      :type                :error

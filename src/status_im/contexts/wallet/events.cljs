@@ -378,7 +378,8 @@
          already-registered?  (registered-addresses address)]
      (if already-registered?
        {:db (-> db
-                (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :address-already-registered)
+                (assoc-in [:wallet :ui :add-address-to-watch :activity-state]
+                          :address-already-registered)
                 (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}
        (let [state (if hasActivity :has-activity :no-activity)]
          {:db (-> db
