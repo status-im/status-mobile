@@ -340,4 +340,8 @@
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction
                                                  :error  error
-                                                 :params request-params}))}]})))
+                                                 :params request-params})
+                                     (rf/dispatch [:toasts/upsert
+                                                   {:id   :send-transaction-error
+                                                    :type :negative
+                                                    :text (:message error)}]))}]})))
