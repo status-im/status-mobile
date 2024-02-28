@@ -206,6 +206,7 @@
             conversion-rate           (-> token :market-values-per-currency :usd :price)
             loading-routes?           (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
             suggested-routes          (rf/sub [:wallet/wallet-send-suggested-routes])
+            best-routes               (when suggested-routes (or (:best suggested-routes) []))
             route                     (rf/sub [:wallet/wallet-send-route])
             to-address                (rf/sub [:wallet/wallet-send-to-address])
             on-confirm                (or default-on-confirm handle-on-confirm)
@@ -280,7 +281,7 @@
                                    :limit-crypto crypto-limit})}]
          [routes/view
           {:amount       amount-text
-           :routes       suggested-routes
+           :routes       best-routes
            :token        token
            :input-value  @input-value
            :fetch-routes #(fetch-routes % (current-limit))}]
