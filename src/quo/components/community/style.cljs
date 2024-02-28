@@ -133,18 +133,24 @@
                       colors/neutral-80
                       theme)})
 
-(defn channel-action-touch
-  [big?]
-  {:flex      1
-   :max-width (if big? 216 104)})
+(defn channel-action-container
+  [{:keys [big? disabled?]}]
+  (cond-> {:height 102}
+    disabled?  (assoc :opacity 0.3)
+    ;; NOTE: The big action has to fill the available space when there's a small
+    ;; action next to it. If alone, take an approx. proportion of space ~2/3.
+    ;; Using fixed sizes according to the designs will make it look wrong on
+    ;; all other devices.
+    big?       (assoc :flex-shrink 1
+                      :flex-grow   0.66)
+    (not big?) (assoc :max-width 104 :flex-grow 1)))
 
 (defn channel-action
-  [color]
-  {:padding          12
-   :height           102
-   :flex             1
+  [{:keys [color pressed? theme]}]
+  {:flex             1
+   :padding          12
    :border-radius    16
-   :background-color (colors/custom-color color 50 10)
+   :background-color (colors/resolve-color color theme (if pressed? 20 10))
    :justify-content  :space-between})
 
 (def channel-action-row
