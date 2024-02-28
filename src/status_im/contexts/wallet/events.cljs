@@ -207,11 +207,14 @@
 
 (defn add-keypair-and-create-account
   [_ [{:keys [sha3-pwd new-keypair]}]]
-  {:fx [[:json-rpc/call
-         [{:method     "accounts_addKeypair"
-           :params     [sha3-pwd new-keypair]
-           :on-success [:wallet/add-account-success (comp string/lower-case (:address new-keypair))]
-           :on-error   #(log/info "failed to create keypair " %)}]]]})
+  (let [lowercase-address (if (:address new-keypair)
+                            (string/lower-case (:address new-keypair))
+                            (:address new-keypair))]
+    {:fx [[:json-rpc/call
+           [{:method     "accounts_addKeypair"
+             :params     [sha3-pwd new-keypair]
+             :on-success [:wallet/add-account-success lowercase-address]
+             :on-error   #(log/info "failed to create keypair " %)}]]]}))
 
 (rf/reg-event-fx :wallet/add-keypair-and-create-account add-keypair-and-create-account)
 
@@ -226,9 +229,20 @@
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
 
+(defn rename-color-id-in-data
+  [data]
+  (map (fn [item]
+         (update item
+                 :accounts
+                 (fn [accounts]
+                   (map (fn [account]
+                          (set/rename-keys account {:color-id :customization-color}))
+                        accounts))))
+       data))
+
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
-  (let [renamed-data (set/rename-keys keypairs {:colorId :customization-color})]
+  (let [renamed-data (rename-color-id-in-data keypairs)]
     {:db (assoc-in db [:wallet :keypairs] (cske/transform-keys csk/->kebab-case-keyword renamed-data))}))
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)

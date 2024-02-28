@@ -66,7 +66,7 @@
         {window-width :width}        (rn/get-window)]
     (fn [{:keys [theme]}]
       (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
-        (rn/use-effect (fn [] #(rf/dispatch [:wallet/clear-new-keypair])))
+        (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type       :no-title
