@@ -3,8 +3,7 @@
 (def container
   {:flex          1
    :margin-left   20
-   :margin-right  20
-   :margin-bottom 20})
+   :margin-right  20})
 
 (def inner-container
   {:display         :flex
@@ -14,4 +13,4 @@
 
 (def community-tag
   {:margin-right :auto
-   :margin-top   8})
+   :margin-top   4})

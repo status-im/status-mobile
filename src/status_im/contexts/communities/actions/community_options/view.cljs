@@ -25,12 +25,12 @@
                                                    {:community-id id}])})
 
 (defn view-rules
-  [id]
+  [id intro-message]
   {:icon                :i/bullet-list
    :right-icon          :i/chevron-right
    :accessibility-label :view-community-rules
    :on-press            #(rf/dispatch [:show-bottom-sheet
-                                       {:content (fn [] [see-rules/view id])}])
+                                       {:content (fn [] [see-rules/view id intro-message])}])
    :label               (i18n/label :t/view-community-rules)})
 
 (defn view-token-gating
@@ -131,9 +131,9 @@
                                                          request-id])}])})
 
 (defn not-joined-options
-  [id token-gated? pending?]
+  [id token-gated? pending? intro-message]
   [[(when-not token-gated? (view-members id))
-    (when-not token-gated? (view-rules id))
+    (when-not token-gated? (view-rules id intro-message))
     (invite-contacts id)
     (when token-gated? (view-token-gating id))
     (when (and pending? (ff/enabled? ::ff/community.edit-account-selection))
@@ -142,19 +142,19 @@
     (share-community id)]])
 
 (defn join-request-sent-options
-  [id token-gated? request-id]
-  [(conj (first (not-joined-options id token-gated? request-id))
+  [id token-gated? request-id intro-message]
+  [(conj (first (not-joined-options id token-gated? request-id intro-message))
          (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
-  [id token-gated?]
+  [id token-gated? intro-message]
   (let [pending? false]
-    (not-joined-options id token-gated? pending?)))
+    (not-joined-options id token-gated? pending? intro-message)))
 
 (defn joined-options
-  [id token-gated? muted? muted-till color]
+  [id token-gated? muted? muted-till color intro-message]
   [[(view-members id)
-    (view-rules id)
+    (view-rules id intro-message)
     (when token-gated? (view-token-gating id))
     (when (ff/enabled? ::ff/community.edit-account-selection)
       (edit-shared-addresses id))
@@ -167,9 +167,9 @@
    [(assoc (leave-community id color) :add-divider? true)]])
 
 (defn owner-options
-  [id token-gated? muted? muted-till]
+  [id token-gated? muted? muted-till intro-message]
   [[(view-members id)
-    (view-rules id)
+    (view-rules id intro-message)
     (when token-gated? (view-token-gating id))
     (mark-as-read id)
     (mute-community id muted? muted-till)
@@ -181,14 +181,14 @@
 (defn get-context-drawers
   [{:keys [id]}]
   (let [{:keys [token-permissions admin joined
-                muted banList muted-till color]} (rf/sub [:communities/community id])
+                muted banList muted-till color intro-message]} (rf/sub [:communities/community id])
         request-id                               (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
-      admin      (owner-options id token-permissions muted muted-till)
-      joined     (joined-options id token-permissions muted muted-till color)
-      request-id (join-request-sent-options id token-permissions request-id)
-      banList    (banned-options id token-permissions)
-      :else      (not-joined-options id token-permissions request-id))))
+      admin      (owner-options id token-permissions muted muted-till intro-message)
+      joined     (joined-options id token-permissions muted muted-till color intro-message)
+      request-id (join-request-sent-options id token-permissions request-id intro-message)
+      banList    (banned-options id token-permissions intro-message)
+      :else      (not-joined-options id token-permissions request-id intro-message))))
 
 (defn community-options-bottom-sheet
   [id]
