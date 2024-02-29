@@ -45,8 +45,14 @@
        :description      :text
        :description-text bio
        :emoji-dash       emoji-hash}]
-     [rn/view {:style style/button-wrapper}
-      [quo/button
-       {:on-press  on-contact-request
-        :icon-left :i/add-user}
-       (i18n/label :t/send-contact-request)]]]))
+
+     (cond
+       (or (not contact-request-state)
+           (= contact-request-state constants/contact-request-state-none))
+       [rn/view {:style style/button-wrapper}
+        [quo/button
+         {:on-press  on-contact-request
+          :icon-left :i/add-user}
+         (i18n/label :t/send-contact-request)]]
+
+       :else nil)]))
