@@ -236,7 +236,7 @@
                  :accounts
                  (fn [accounts]
                    (map (fn [account]
-                          (set/rename-keys account {:color-id :customization-color}))
+                          (set/rename-keys account {:colorId :customization-color}))
                         accounts))))
        data))
 
