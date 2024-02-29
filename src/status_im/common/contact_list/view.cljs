@@ -1,7 +1,7 @@
 (ns status-im.common.contact-list.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.contact-list.style :as style]))
 

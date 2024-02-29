@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
