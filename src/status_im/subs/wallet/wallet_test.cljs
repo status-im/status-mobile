@@ -498,6 +498,9 @@
              (assoc :network-preferences-names #{}))]
         (rf/sub [sub-name])))))
 
+(def keypairs
+  [{:key-uid "abc"}])
+
 (h/deftest-sub :wallet/keypairs
   [sub-name]
   (testing "returns all keypairs"
