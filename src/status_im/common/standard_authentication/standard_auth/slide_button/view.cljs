@@ -32,4 +32,4 @@
       :on-complete         on-complete
       :track-icon          (if biometric-auth? :i/face-id :password)
       :track-text          track-text
-      :disabled? disabled?}]))
+      :disabled?           disabled?}]))
