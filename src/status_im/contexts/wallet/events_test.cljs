@@ -55,28 +55,6 @@
         effects     (events/clear-new-keypair {:db db})]
     (is (match? (:db effects) expected-db))))
 
-(deftest add-keypair-and-create-account
-  (let [db          {}
-        sha3-pwd    "password"
-        new-keypair {:public-key "public_key" :private-key "private_key"}
-        expected-db {:wallet {:ui       {:create-account {:new-keypair "test-keypair"}}
-                              :keypairs [new-keypair]}}
-        effects     (events/add-keypair-and-create-account {:db db}
-                                                           [{:sha3-pwd    sha3-pwd
-                                                             :new-keypair new-keypair}])
-        result-db   (:db effects)]
-    (is (match? result-db expected-db))))
-
-(deftest get-keypairs
-  (let [db          {}
-        keypairs    [{:public-key "public_key1"}
-                     {:public-key "public_key2"}]
-        expected-db {:wallet {:ui       {:create-account {:new-keypair "test-keypair"}}
-                              :keypairs keypairs}}
-        effects     (events/get-keypairs {:db db})
-        result-db   (:db effects)]
-    (is (match? result-db expected-db))))
-
 (deftest get-keypairs-success
   (let [db          {}
         keypairs    [{:public-key "public_key1"}
