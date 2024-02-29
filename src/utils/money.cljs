@@ -213,9 +213,12 @@
   "Add with defaults, this version is able to receive `nil` and takes them as 0."
   (fnil add* (bignumber 0) (bignumber 0)))
 
-(defn mul
+(defn mul*
   [bn1 bn2]
   (.mul ^js bn1 bn2))
+
+(def mul
+  (fnil mul* (bignumber 0) (bignumber 0)))
 
 (defn mul-and-round
   [bn1 bn2]
