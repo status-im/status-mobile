@@ -199,9 +199,9 @@ class ProfileView(BaseView):
         self.online_indicator = Button(self.driver, accessibility_id="online-profile-photo-dot")
         self.edit_picture_button = Button(self.driver, accessibility_id="edit-profile-photo-button")
         self.confirm_edit_button = Button(self.driver, accessibility_id="done-button")
-        self.select_from_gallery_button = Button(self.driver, translation_id="profile-pic-pick")
+        self.select_from_gallery_button_old = Button(self.driver, translation_id="profile-pic-pick")
         self.capture_button = Button(self.driver, translation_id="image-source-make-photo")
-        self.take_photo_button = Button(self.driver, accessibility_id="take-photo")
+        self.take_photo_button_old = Button(self.driver, accessibility_id="take-photo")
         self.crop_photo_button = Button(self.driver, accessibility_id="Crop")
         self.decline_photo_crop = Button(self.driver, accessibility_id="Navigate up")
         self.shutter_button = Button(self.driver, accessibility_id="Shutter")
@@ -354,6 +354,12 @@ class ProfileView(BaseView):
         self.confirm_logout_button = Button(self.driver, translation_id="logout", uppercase=True)
 
         # New profile
+        self.edit_profile_button = Button(self.driver, accessibility_id="icon, Edit Profile, label-component, icon")
+        self.change_profile_photo_button = Button(
+            self.driver,
+            xpath="//*[@content-desc='user-avatar']/following-sibling::android.view.ViewGroup[@content-desc='icon']")
+        self.take_photo_button = Button(self.driver, accessibility_id="take-photo-button")
+        self.select_from_gallery_button = Button(self.driver, accessibility_id="select-from-gallery-button")
         self.profile_password_button = Button(self.driver, accessibility_id="icon, Password, label-component, icon")
         self.profile_legacy_button = Button(self.driver,
                                             accessibility_id="icon, Legacy settings, label-component, icon")
@@ -438,10 +444,8 @@ class ProfileView(BaseView):
         self.driver.info("## Setting custom profile image", device=False)
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
-        ## pointing to legacy profile until new feature is implemented
-        self.logout_button.scroll_to_element()
-        self.profile_legacy_button.click()
-        self.profile_picture.click()
+        self.edit_profile_button.click()
+        self.change_profile_photo_button.click()
         if update_by == "Gallery":
             self.select_from_gallery_button.click()
             self.select_photo_from_gallery_by_index(image_index)
@@ -454,6 +458,7 @@ class ProfileView(BaseView):
             self.accept_photo_button.click()
         self.crop_photo_button.click()
         self.driver.info("## Custom profile image has been set", device=False)
+        self.click_system_back_button()
 
     def take_photo(self):
         self.take_photo_button.click()

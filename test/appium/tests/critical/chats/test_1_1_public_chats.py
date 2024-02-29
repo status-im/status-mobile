@@ -271,8 +271,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.jump_to_messages_home()
         self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture(image_index=2)
-        self.profile_1.navigate_back_to_home_view()
-        self.profile_1.chats_tab.click()
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
         self.home_1.jump_to_card_by_text(self.username_2)

@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 
 from appium.webdriver import WebElement
+from appium.webdriver.applicationstate import ApplicationState
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions
@@ -658,13 +659,24 @@ class BaseView(object):
         self.click_on_floating_jump_to()
         self.element_by_text(text).click()
 
+    def wait_for_application_to_be_running(self, app_package: str, wait_time: int = 3):
+        for _ in range(wait_time):
+            if self.driver.query_app_state(app_package) == ApplicationState.RUNNING_IN_FOREGROUND:
+                return
+            time.sleep(1)
+        raise TimeoutException(msg="Status app is not running in foreground after %s sec" % wait_time)
+
+    def wait_for_application_to_not_run(self, app_package: str, wait_time: int = 3):
+        for _ in range(wait_time):
+            if self.driver.query_app_state(app_package) == ApplicationState.NOT_RUNNING:
+                return
+            time.sleep(1)
+        raise TimeoutException(msg="Status app is not terminated after %s sec" % wait_time)
+
     def reopen_app(self, password=common_password, sign_in=True):
         app_package = self.driver.current_package
         self.driver.terminate_app(app_package)
-        for _ in range(3):
-            if self.driver.query_app_state(app_package) == 1:
-                break
-            time.sleep(1)
+        self.wait_for_application_to_not_run(app_package=app_package)
         self.driver.activate_app(app_package)
         if sign_in:
             sign_in_view = self.get_sign_in_view()

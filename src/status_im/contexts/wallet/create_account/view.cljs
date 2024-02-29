@@ -10,6 +10,7 @@
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.sheets.account-origin.view :as account-origin]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.feature-flags :as ff]
@@ -69,7 +70,9 @@
          [quo/page-nav
           {:type       :no-title
            :background :blur
-           :right-side [{:icon-name :i/info}]
+           :right-side [{:icon-name :i/info
+                         :on-press  #(rf/dispatch [:show-bottom-sheet
+                                                   {:content account-origin/view}])}]
            :icon-name  :i/close
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
