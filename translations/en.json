@@ -1986,6 +1986,7 @@
     "accepted": "Accepted",
     "declined": "Declined",
     "contact-request-sent": "sent contact request",
+    "contact-request-review": "Review contact request",
     "contact-request-sent-toast": "{{name}} sent you a contact request",
     "contact-request-accepted-toast": "{{name}} accepted your contact request",
     "contact-request-outgoing": "You’re trying to connect with",
