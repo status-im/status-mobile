@@ -135,17 +135,18 @@
          :render-fn                render-fn
          :scroll-enabled           @scroll-enabled?
          :on-scroll                on-scroll}])
-     (when contacts-selected?
-       [quo/button
-        {:type                :primary
-         :accessibility-label :next-button
-         :container-style     style/chat-button
-         :on-press            (fn []
-                                (if one-contact-selected?
-                                  (rf/dispatch [:chat.ui/start-chat public-key])
-                                  (rf/dispatch [:navigate-to :new-group])))}
-        (if one-contact-selected?
-          (i18n/label :t/chat-with {:selected-user primary-name})
-          (i18n/label :t/setup-group-chat))])]))
+     [rn/view
+      {:style (style/chat-button-container theme)}
+      (when contacts-selected?
+        [quo/button
+         {:type                :primary
+          :accessibility-label :next-button
+          :on-press            (fn []
+                                 (if one-contact-selected?
+                                   (rf/dispatch [:chat.ui/start-chat public-key])
+                                   (rf/dispatch [:navigate-to :new-group])))}
+         (if one-contact-selected?
+           (i18n/label :t/chat-with {:selected-user primary-name})
+           (i18n/label :t/setup-group-chat))])]]))
 
 (def view (quo.theme/with-theme view-internal))
