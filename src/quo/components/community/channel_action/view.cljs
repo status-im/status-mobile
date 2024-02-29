@@ -1,6 +1,6 @@
-(ns quo.components.community.channel-action
+(ns quo.components.community.channel-action.view
   (:require
-    [quo.components.community.style :as style]
+    [quo.components.community.channel-action.style :as style]
     [quo.components.counter.counter.view :as counter]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]

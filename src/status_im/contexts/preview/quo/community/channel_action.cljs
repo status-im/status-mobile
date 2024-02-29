@@ -1,6 +1,5 @@
 (ns status-im.contexts.preview.quo.community.channel-action
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.contexts.preview.quo.preview :as preview]))
 
@@ -29,5 +28,4 @@
                              :big?          true})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
-       [rn/view {:style {:flex 1 :flex-direction :row}}
-        [quo/channel-action @state]]])))
+       [quo/channel-action @state]])))

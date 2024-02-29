@@ -133,31 +133,6 @@
                       colors/neutral-80
                       theme)})
 
-(defn channel-action-container
-  [{:keys [big? disabled?]}]
-  (cond-> {:height 102}
-    disabled?  (assoc :opacity 0.3)
-    ;; NOTE: The big action has to fill the available space when there's a small
-    ;; action next to it. If alone, take an approx. proportion of space ~2/3.
-    ;; Using fixed sizes according to the designs will make it look wrong on
-    ;; all other devices.
-    big?       (assoc :flex-shrink 1
-                      :flex-grow   0.66)
-    (not big?) (assoc :max-width 104 :flex-grow 1)))
-
-(defn channel-action
-  [{:keys [color pressed? theme]}]
-  {:flex             1
-   :padding          12
-   :border-radius    16
-   :background-color (colors/resolve-color color theme (if pressed? 20 10))
-   :justify-content  :space-between})
-
-(def channel-action-row
-  {:flex-direction  :row
-   :justify-content :space-between
-   :align-items     :center})
-
 (defn loading-card
   [width theme]
   (merge
