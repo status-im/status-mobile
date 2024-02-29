@@ -71,8 +71,8 @@
           {:type       :no-title
            :background :blur
            :right-side [{:icon-name :i/info
-                         :on-press #(rf/dispatch [:show-bottom-sheet
-                                                  {:content account-origin/view}])}]
+                         :on-press  #(rf/dispatch [:show-bottom-sheet
+                                                   {:content account-origin/view}])}]
            :icon-name  :i/close
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
