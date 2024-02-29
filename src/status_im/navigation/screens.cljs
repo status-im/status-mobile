@@ -73,8 +73,9 @@
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as wallet-scan-address]
+    [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
-    [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
+    [status-im.contexts.wallet.send.select-address.view :as wallet-select-address] 
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
@@ -414,6 +415,11 @@
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top? true}}
      :component wallet-select-address/view}
+    
+    {:name      :screen/wallet.select-from
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-select-from/view}
 
     {:name      :screen/wallet.select-asset
      :options   {:insets {:top? true}}
