@@ -55,4 +55,12 @@
           :icon-left :i/add-user}
          (i18n/label :t/send-contact-request)]]
 
+       (= contact-request-state constants/contact-request-state-received)
+       [rn/view {:style style/button-wrapper}
+        [quo/button
+         {:on-press  #(rf/dispatch [:show-bottom-sheet
+                                    {:content (fn [] [contact-request/view])}])
+          :icon-left :i/add-user}
+         (i18n/label :t/contact-request-review)]]
+
        :else nil)]))
