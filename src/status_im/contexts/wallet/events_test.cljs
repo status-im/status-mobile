@@ -57,8 +57,10 @@
 
 (deftest get-keypairs-success
   (let [db          {}
-        keypairs    [{:public-key "public_key1"}
-                     {:public-key "public_key2"}]
+        keypairs    [{:public-key "public_key1"
+                      :accounts [{:color-id :blue}]}
+                     {:public-key "public_key2"
+                      :accounts [{:color-id :red}]}]
         expected-db {:wallet {:keypairs keypairs}}
         effects     (events/get-keypairs-success {:db db} keypairs)
         result-db   (:db effects)]
