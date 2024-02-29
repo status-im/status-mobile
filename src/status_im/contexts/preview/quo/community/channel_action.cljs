@@ -14,18 +14,18 @@
     :type    :select
     :options [{:key :i/muted}
               {:key :i/pin}]}
-   (preview/customization-color-option {:key :color})
+   (preview/customization-color-option)
    {:key  :disabled?
     :type :boolean}])
 
 (defn view
   []
-  (let [state (reagent/atom {:label         "Action"
-                             :icon          :i/muted
-                             :color         :blue
-                             :counter-value nil
-                             :disabled?     false
-                             :big?          true})]
+  (let [state (reagent/atom {:label               "Action"
+                             :icon                :i/muted
+                             :customization-color :blue
+                             :counter-value       nil
+                             :disabled?           false
+                             :big?                true})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
        [quo/channel-action @state]])))
