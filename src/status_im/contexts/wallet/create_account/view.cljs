@@ -17,7 +17,7 @@
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
+    [utils.responsiveness :as responsiveness]
     [utils.security.core :as security]
     [utils.string]))
 
@@ -146,7 +146,8 @@
            {:default-selected @account-color
             :on-change        #(reset! account-color %)
             :container-style  {:padding-vertical 12
-                               :padding-left     (iphone-11-Pro-20-pixel-from-width window-width)}}]]
+                               :padding-left     (responsiveness/iphone-11-Pro-20-pixel-from-width
+                                                  window-width)}}]]
          [quo/divider-line]
          [quo/category
           {:list-type :settings
