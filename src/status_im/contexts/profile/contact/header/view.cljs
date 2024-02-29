@@ -46,10 +46,6 @@
      [rn/view {:style style/button-wrapper}
       [quo/button
        {:on-press  #(rf/dispatch [:show-bottom-sheet
-                                  {:content (fn [] [contact-request/view
-                                                    {:customization-color customization-color
-                                                     :profile-picture     profile-picture
-                                                     :full-name           full-name
-                                                     :public-key          public-key}])}])
+                                  {:content (fn [] [contact-request/view])}])
         :icon-left :i/add-user}
        (i18n/label :t/send-contact-request)]]]))

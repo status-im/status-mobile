@@ -3,12 +3,19 @@
             [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.contexts.profile.contact.contact-request.style :as style]
+            [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [full-name profile-picture customization-color public-key]}]
-  (let [[message set-message] (rn/use-state "")
+  []
+  (let [{:keys [public-key customization-color]
+         :as   profile}       (rf/sub [:contacts/current-contact])
+        ;; TODO: remove :blue when #18733 merged.
+        customization-color   (or customization-color :blue)
+        full-name             (profile.utils/displayed-name profile)
+        profile-picture       (profile.utils/photo profile)
+        [message set-message] (rn/use-state "")
         on-message-change     (rn/use-callback #(set-message %))
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
