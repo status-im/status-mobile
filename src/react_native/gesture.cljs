@@ -95,7 +95,7 @@
             (into [{:title title :header? true}] data))
    sections))
 
-(defn find-sticky-indices
+(defn- find-sticky-indices
   [data]
   (->> data
        (map-indexed (fn [index item] (if (:header? item) index nil)))
