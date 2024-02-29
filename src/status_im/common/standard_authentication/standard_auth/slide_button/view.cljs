@@ -9,7 +9,7 @@
 
 (defn view
   [{:keys [track-text customization-color auth-button-label on-auth-success on-auth-fail
-           auth-button-icon-left size blur? container-style]
+           auth-button-icon-left size blur? container-style disabled?]
     :or   {container-style {:flex 1}}}]
   (let [theme           (quo.theme/use-theme-value)
         auth-method     (rf/sub [:auth-method])
@@ -31,4 +31,5 @@
       :customization-color customization-color
       :on-complete         on-complete
       :track-icon          (if biometric-auth? :i/face-id :password)
-      :track-text          track-text}]))
+      :track-text          track-text
+      :disabled?           disabled?}]))
