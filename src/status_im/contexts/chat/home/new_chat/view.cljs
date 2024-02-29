@@ -85,9 +85,10 @@
                                 :on-check on-toggle}}
      item]))
 
-(defn- view-internal
-  [{:keys [scroll-enabled? on-scroll close theme]}]
-  (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+(defn view
+  [{:keys [scroll-enabled? on-scroll close]}]
+  (let [theme                             (quo.theme/use-theme-value)
+        contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
         one-contact-selected?             (= selected-contacts-count 1)
@@ -148,5 +149,3 @@
          (if one-contact-selected?
            (i18n/label :t/chat-with {:selected-user primary-name})
            (i18n/label :t/setup-group-chat))])]]))
-
-(def view (quo.theme/with-theme view-internal))
