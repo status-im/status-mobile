@@ -11,7 +11,7 @@
     ;; Using fixed sizes according to the designs will make it look wrong on
     ;; all other devices.
     big?       (assoc :flex-grow 1)
-    (not big?) (assoc :max-width 104)))
+    (not big?) (assoc :width 104)))
 
 (defn channel-action
   [{:keys [color pressed? theme]}]
