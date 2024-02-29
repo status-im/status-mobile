@@ -52,7 +52,7 @@
         color        (:customization-color main-account)
         accounts     (parse-accounts (:accounts item))]
     [quo/keypair
-     {:customization-color (if (not-empty (:customization-color main-account)) color :blue)
+     {:customization-color color
       :profile-picture     (when (zero? index) profile-picture)
       :status-indicator    false
       :type                (if (zero? index) :default-keypair :other)

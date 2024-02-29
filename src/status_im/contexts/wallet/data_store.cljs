@@ -112,7 +112,11 @@
                  :accounts
                  (fn [accounts]
                    (map (fn [account]
-                          (set/rename-keys account {:color-id :customization-color}))
+                          (let [renamed-account (set/rename-keys account
+                                                                 {:colorId :customization-color})]
+                            (if (contains? account :colorId)
+                              renamed-account
+                              (assoc renamed-account :customization-color :blue))))
                         accounts))))
        data))
 
