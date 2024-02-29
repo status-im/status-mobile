@@ -21,7 +21,9 @@
         full-name           (profile.utils/displayed-name profile)
         profile-picture     (profile.utils/photo profile)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
-        theme               (quo.theme/use-theme-value)]
+        theme               (quo.theme/use-theme-value)
+        on-contact-request  (rn/use-callback #(rf/dispatch [:show-bottom-sheet
+                                                            {:content (fn [] [contact-request/view])}]))]
     [rn/view {:style style/header-container}
      [rn/view {:style style/header-top-wrapper}
       [rn/view {:style style/avatar-wrapper}
@@ -45,7 +47,6 @@
        :emoji-dash       emoji-hash}]
      [rn/view {:style style/button-wrapper}
       [quo/button
-       {:on-press  #(rf/dispatch [:show-bottom-sheet
-                                  {:content (fn [] [contact-request/view])}])
+       {:on-press  on-contact-request
         :icon-left :i/add-user}
        (i18n/label :t/send-contact-request)]]]))
