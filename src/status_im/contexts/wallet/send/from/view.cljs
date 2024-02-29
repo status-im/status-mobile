@@ -9,6 +9,11 @@
    [utils.i18n :as i18n]
    [utils.re-frame :as rf]))
 
+(defn on-press
+  [address]
+  (rf/dispatch [:wallet/switch-current-viewing-account address])
+  (rf/dispatch [:navigate-to :wallet-select-asset]))
+
 (defn view
   []
   (let [on-close       (fn []
@@ -29,6 +34,7 @@
      :content-container-style           style/accounts-list-container
      :data                              accounts
      :render-fn                         (fn [item] [quo/account-item {:type :balance-neutral
+                                                                      :on-press #(on-press (:address item))
                                                                       :token-props         {:symbol "SNT"
                                                                                             :value  "1,000"}
                                                                       :balance-props       {:crypto-value      "0.00"

@@ -36,7 +36,12 @@
     [[{:icon                :i/send
        :accessibility-label :send-asset
        :label               (i18n/label :t/send-to-this-address)
-       :on-press            #(js/alert "navigate to select address from")}
+       :on-press            (fn []
+                              (rf/dispatch [:wallet/select-send-address
+                                            {:address address
+                                             :recipient address
+                                             :stack-id :wallet-select-address}])
+                              (rf/dispatch [:open-modal :wallet-select-from]))}
       {:icon                :i/save
        :accessibility-label :save-address
        :label               (i18n/label :t/save-address)

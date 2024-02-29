@@ -164,7 +164,7 @@
   {:db (update-in db [:wallet :ui] dissoc :scanned-address)})
 
 (rf/reg-event-fx :wallet/scan-qr-code-success
-                 (fn [{:keys [db]} address]
+                 (fn [{:keys [db]} [address]]
                    {:db (assoc-in db [:wallet :qr-code] address)
                     :dispatch [:navigate-back]}))
 
