@@ -59,8 +59,7 @@
   (let [db          {}
         keypairs    [{:public-key "public_key1"}
                      {:public-key "public_key2"}]
-        expected-db {:wallet {:ui       {:create-account {:new-keypair "test-keypair"}}
-                              :keypairs keypairs}}
+        expected-db {:wallet {:keypairs keypairs}}
         effects     (events/get-keypairs-success {:db db} keypairs)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
