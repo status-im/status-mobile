@@ -1,8 +1,5 @@
 (ns status-im.contexts.wallet.events
   (:require
-    [camel-snake-kebab.core :as csk]
-    [camel-snake-kebab.extras :as cske]
-    [clojure.set :as set]
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
@@ -228,22 +225,9 @@
 
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
-
-(defn rename-color-id-in-data
-  [data]
-  (map (fn [item]
-         (update item
-                 :accounts
-                 (fn [accounts]
-                   (map (fn [account]
-                          (set/rename-keys account {:colorId :customization-color}))
-                        accounts))))
-       data))
-
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
-  (let [renamed-data (rename-color-id-in-data keypairs)]
-    {:db (assoc-in db [:wallet :keypairs] (cske/transform-keys csk/->kebab-case-keyword renamed-data))}))
+  {:db (assoc-in db [:wallet :keypairs] (data-store/parse-keypairs keypairs))})
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 

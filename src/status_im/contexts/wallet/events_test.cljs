@@ -55,17 +55,6 @@
         effects     (events/clear-new-keypair {:db db})]
     (is (match? (:db effects) expected-db))))
 
-(deftest get-keypairs-success
-  (let [db          {}
-        keypairs    [{:public-key "public_key1"
-                      :accounts   [{:colorId :blue}]}
-                     {:public-key "public_key2"
-                      :accounts   [{:colorId :red}]}]
-        expected-db {:wallet {:keypairs keypairs}}
-        effects     (events/get-keypairs-success {:db db} keypairs)
-        result-db   (:db effects)]
-    (is (match? result-db expected-db))))
-
 (deftest store-collectibles
   (testing "(displayable-collectible?) helper function"
     (let [expected-results [[true
