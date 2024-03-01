@@ -50,3 +50,12 @@
     (has-special-characters? s) (i18n/label :t/are-not-allowed
                                             {:check (i18n/label :t/special-characters)})
     (bio-too-long? s)           (i18n/label :t/bio-is-too-long)))
+
+(defn validation-nickname
+  [s]
+  (cond
+    (or (= s nil) (= s ""))     nil
+    (has-emojis? s)             (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
+    (has-special-characters? s) (i18n/label :t/are-not-allowed
+                                            {:check (i18n/label :t/special-characters)})
+    (name-too-long? s)          (i18n/label :t/nickname-is-too-long)))

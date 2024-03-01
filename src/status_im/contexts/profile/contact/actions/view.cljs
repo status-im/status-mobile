@@ -1,31 +1,58 @@
 (ns status-im.contexts.profile.contact.actions.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
+            [react-native.core :as rn]
             [status-im.common.not-implemented :as not-implemented]
-            [utils.i18n :as i18n]))
+            [status-im.contexts.profile.contact.add-nickname.view :as add-nickname]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn view
   []
-  [quo/action-drawer
-   [[{:icon                :i/edit
-      :label               (i18n/label :t/add-nickname-title)
-      :on-press            not-implemented/alert
-      :accessibility-label :add-nickname}
-     {:icon                :i/qr-code
-      :label               (i18n/label :t/show-qr)
-      :on-press            not-implemented/alert
-      :accessibility-label :show-qr-code}
-     {:icon                :i/share
-      :label               (i18n/label :t/share-profile)
-      :on-press            not-implemented/alert
-      :accessibility-label :share-profile}
-     {:icon                :i/untrustworthy
-      :label               (i18n/label :t/mark-untrustworthy)
-      :on-press            not-implemented/alert
-      :accessibility-label :mark-untrustworthy
-      :add-divider?        true
-      :danger?             true}
-     {:icon                :i/block
-      :label               (i18n/label :t/block-user)
-      :on-press            not-implemented/alert
-      :accessibility-label :block-user
-      :danger?             true}]]])
+  (let [{:keys [nickname public-key]} (rf/sub [:contacts/current-contact])
+        on-add-nickname               (rn/use-callback #(rf/dispatch [:show-bottom-sheet
+                                                                      {:content
+                                                                       (fn [] [add-nickname/view])}]))
+        on-remove-nickname            (rn/use-callback
+                                       (fn []
+                                         (rf/dispatch [:hide-bottom-sheet])
+                                         (rf/dispatch [:toasts/upsert
+                                                       {:id   :remove-nickname
+                                                        :type :positive
+                                                        :text (i18n/label :t/nickname-removed)}])
+                                         (rf/dispatch [:contacts/update-nickname public-key ""]))
+                                       [public-key])
+        has-nickname?                 (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])]
+    [quo/action-drawer
+     [[{:icon                :i/edit
+        :label               (if has-nickname?
+                               (i18n/label :t/edit-nickname)
+                               (i18n/label :t/add-nickname-title))
+        :on-press            on-add-nickname
+        :accessibility-label (if nickname :edit-nickname :add-nickname)}
+       {:icon                :i/qr-code
+        :label               (i18n/label :t/show-qr)
+        :on-press            not-implemented/alert
+        :accessibility-label :show-qr-code}
+       {:icon                :i/share
+        :label               (i18n/label :t/share-profile)
+        :on-press            not-implemented/alert
+        :accessibility-label :share-profile}
+       (when has-nickname?
+         {:icon                :i/delete
+          :label               (i18n/label :t/remove-nickname)
+          :on-press            on-remove-nickname
+          :add-divider?        true
+          :accessibility-label :remove-nickname
+          :danger?             true})
+       {:icon                :i/untrustworthy
+        :label               (i18n/label :t/mark-untrustworthy)
+        :on-press            not-implemented/alert
+        :accessibility-label :mark-untrustworthy
+        :add-divider?        (when (not has-nickname?) true)
+        :danger?             true}
+       {:icon                :i/block
+        :label               (i18n/label :t/block-user)
+        :on-press            not-implemented/alert
+        :accessibility-label :block-user
+        :danger?             true}]]]))
