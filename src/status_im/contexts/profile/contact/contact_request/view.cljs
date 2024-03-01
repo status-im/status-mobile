@@ -44,3 +44,4 @@
        :button-one-props {:disabled? (string/blank? message)
                           :on-press  on-message-submit}
        :button-one-label (i18n/label :t/send-contact-request)}]]))
+
