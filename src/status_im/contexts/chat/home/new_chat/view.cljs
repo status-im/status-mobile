@@ -54,23 +54,21 @@
   (fn [{:keys [public-key] :as item}]
     (let [user-selected?          (rf/sub [:is-contact-selected? public-key])
           selected-contacts-count (rf/sub [:selected-contacts-count])
-          has-reached-max-contact (cond-> selected-contacts-count
-                                    user-selected?       (dec)
-                                    (not user-selected?) (inc)
-                                    true                 (> constants/max-group-chat-contacts))
           on-toggle               (fn []
-                                    (when has-reached-max-contact
-                                      (rf/dispatch
-                                       [:toasts/upsert
-                                        {:id   :remove-nickname
-                                         :type :negative
-                                         :text (i18n/label :t/new-group-limit
-                                                           {:max-contacts
-                                                            constants/max-group-chat-contacts})}]))
                                     (if
                                       user-selected?
                                       (re-frame/dispatch [:deselect-contact public-key])
-                                      (re-frame/dispatch [:select-contact public-key])))]
+                                      (do
+                                        (when (= constants/max-group-chat-contacts
+                                                 selected-contacts-count)
+                                          (rf/dispatch
+                                           [:toasts/upsert
+                                            {:id   :remove-nickname
+                                             :type :negative
+                                             :text (i18n/label :t/new-group-limit
+                                                               {:max-contacts
+                                                                constants/max-group-chat-contacts})}]))
+                                        (re-frame/dispatch [:select-contact public-key]))))]
       [contact-list-item/contact-list-item
        {:on-press                on-toggle
         :allow-multiple-presses? true
