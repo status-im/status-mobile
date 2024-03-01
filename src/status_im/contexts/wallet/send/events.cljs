@@ -64,11 +64,12 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
-      :fx [[:dispatch
-            [:navigate-to-within-stack
-             (if token?
-               [:screen/wallet.send-input-amount stack-id]
-               [:screen/wallet.select-asset stack-id])]]]})))
+      ;; :fx [[:dispatch
+      ;;       [:navigate-to-within-stack
+      ;;        (if token
+      ;;          [:wallet-send-input-amount stack-id]
+      ;;          [:wallet-select-asset stack-id])]]]
+      })))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks

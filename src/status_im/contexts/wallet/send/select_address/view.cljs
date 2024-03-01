@@ -8,9 +8,10 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.events :as wallet-events]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
-    [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
+    [status-im.contexts.wallet.send.select-address.tabs.view :as tabs] 
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -91,11 +92,13 @@
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
-                                      (rf/dispatch [:wallet/select-send-address
-                                                    {:address   address
-                                                     :token?    false
-                                                     :recipient local-suggestion
-                                                     :stack-id  :screen/wallet.select-address}]))))
+                                      (rf/dispatch [:navigation/wizard
+                                                    {:current-screen :wallet-select-address
+                                                     :flow-config wallet-events/send-asset-flow-config
+                                                     :skip-screens [:screen/wallet.send-from]
+                                                     :params {:address address
+                                                              :recipient local-suggestion}
+                                                     :stack-id :wallet-select-address}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -154,12 +157,12 @@
                                        {:accessibility-label :continue-button
                                         :type                :primary
                                         :disabled?           (not valid-ens-or-address?)
-                                        :on-press            #(rf/dispatch
-                                                               [:wallet/select-send-address
-                                                                {:address @input-value
-                                                                 :token? (some? token)
-                                                                 :stack-id
-                                                                 :screen/wallet.select-address}])
+                                        :on-press            #(rf/dispatch [:navigation/wizard
+                                                                            {:current-screen :wallet-select-address
+                                                                             :flow-config wallet-events/send-asset-flow-config
+                                                                             :skip-screens [:screen/wallet.send-from]
+                                                                             :params {:address @input-value}
+                                                                             :stack-id :wallet-select-address}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
          [quo/page-top

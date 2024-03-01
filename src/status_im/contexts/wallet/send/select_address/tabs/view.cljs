@@ -4,6 +4,7 @@
     [quo.theme :as quo.theme]
     [react-native.gesture :as gesture]
     [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.events :as wallet-events]
     [status-im.contexts.wallet.send.select-address.tabs.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -12,11 +13,13 @@
   [{:keys [color address] :as account}]
   [quo/account-item
    {:account-props (assoc account :customization-color color)
-    :on-press      #(rf/dispatch [:wallet/select-send-address
-                                  {:address   address
-                                   :token?    false
-                                   :recipient account
-                                   :stack-id  :screen/wallet.select-address}])}])
+    :on-press      #(rf/dispatch [:navigation/wizard
+                                  {:current-screen :wallet-select-address
+                                   :flow-config wallet-events/send-asset-flow-config
+                                   :skip-screens [:screen/wallet.send-from]
+                                   :params {:address address
+                                            :recipient account}
+                                   :stack-id :wallet-select-address}])}])
 
 (defn my-accounts
   [theme]

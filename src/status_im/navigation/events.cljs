@@ -173,3 +173,18 @@
   (let [view-id (if (= view-id :shell-stack) (shell.utils/calculate-view-id) view-id)]
     {:db             (assoc db :view-id view-id)
      :set-view-id-fx view-id}))
+
+(defn navigate-wizard-next-screen
+  [flow-config current-screen skip-values]
+  (first (filter (fn [screen]
+                   (and (not= (:screen-id screen) current-screen)
+                        (not (some #{(:screen-id screen)} skip-values)))) flow-config)))
+
+(rf/reg-event-fx 
+ :navigation/wizard
+ (fn [_ [{:keys [current-screen skip-screens flow-config params stack-id is-first?]}]]
+     (let [next-screen (navigate-wizard-next-screen flow-config current-screen skip-screens)]
+       (rf/dispatch [:wallet/select-send-address params])
+       (if is-first? 
+         (rf/dispatch [:open-modal (:screen-id next-screen)])
+         (rf/dispatch [:navigate-to-within-stack [(:screen-id next-screen) stack-id]])))))

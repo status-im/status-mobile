@@ -475,3 +475,12 @@
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
+
+(def send-asset-flow-config
+  [{:screen-id   :screen/wallet.send-from 
+    :event       [:save-info]}
+   {:screen-id   :wallet-select-address
+    :event       :wallet/select-send-address}
+   {:screen-id   :wallet-select-asset}
+   {:screen-id   :wallet-send-input-amount}
+   {:screen-id   :wallet-transaction-confirmation}])
