@@ -429,7 +429,11 @@
 (def ^:const optimism-short-name "opt")
 (def ^:const arbitrum-short-name "arb1")
 
-(def ^:const mainnet-network-name :ethereum)
+(def ^:const mainnet-abbreviated-name "Eth.")
+(def ^:const optimism-abbreviated-name "Opt.")
+(def ^:const arbitrum-abbreviated-name "Arb1.")
+
+(def ^:const mainnet-network-name :mainnet)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 
