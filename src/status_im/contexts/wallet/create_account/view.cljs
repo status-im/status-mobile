@@ -70,10 +70,11 @@
         on-change-text               #(reset! account-name %)
         primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
                                                      public-key]))
-        {window-width :width}        (rn/get-window)]
+        {window-width :width}        (rn/get-window)
+        {:keys [new-keypair]} (rf/sub [:wallet/create-account])]
     (fn [{:keys [theme]}]
-      (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
-        (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
+      (let []
+        ;(rn/use-effect (fn [] (rf/dispatch [:wallet/clear-new-keypair])))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type       :no-title

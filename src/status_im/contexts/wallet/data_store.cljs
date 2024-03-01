@@ -113,7 +113,7 @@
                    (map (fn [account]
                           (let [renamed-account (set/rename-keys account
                                                                  {:colorId :customization-color})]
-                            (if (contains? account :colorId)
+                            (if (and (contains? account :colorId) (seq (get account :colorId)))
                               renamed-account
                               (assoc renamed-account :customization-color :blue))))
                         accounts))))

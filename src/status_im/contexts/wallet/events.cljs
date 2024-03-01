@@ -178,7 +178,8 @@
                 :wallet              assoc
                 :navigate-to-account address
                 :new-account?        true)
-    :fx [[:dispatch [:wallet/get-accounts]]]}))
+    :fx [[:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/clear-new-keypair]]]}))
 
 (rf/reg-event-fx :wallet/add-account
  (fn [{:keys [db]}

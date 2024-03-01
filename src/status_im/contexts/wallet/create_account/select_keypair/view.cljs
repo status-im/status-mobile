@@ -34,7 +34,7 @@
        (filter (fn [{:keys [path]}]
                  (not (string/starts-with? path constants/path-eip1581))))
        (map (fn [{:keys [customization-color emoji name address]}]
-              {:account-props {:customization-color customization-color
+              {:account-props {:customization-color (or customization-color :blue)
                                :size                32
                                :emoji               emoji
                                :type                :default
@@ -73,6 +73,7 @@
         profile-with-image                           (rf/sub [:profile/profile-with-image])
         keypairs                                     (rf/sub [:wallet/keypairs])
         profile-picture                              (profile.utils/photo profile-with-image)]
+    (rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
