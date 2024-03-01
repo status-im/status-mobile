@@ -5,8 +5,12 @@
     [react-native.core :as rn]
     [status-im.common.contact-list.style :as style]))
 
+(defn contacts-section-footer
+  []
+  [rn/view style/contacts-section-footer])
+
 (defn contacts-section-header
-  [{:keys [title index]}]
+  [{:keys [title]}]
   (let [theme (quo.theme/use-theme-value)]
-    [rn/view (style/contacts-section-header (= index 0) theme)
+    [rn/view (style/contacts-section-header theme)
      [quo/divider-label title]]))
