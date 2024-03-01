@@ -179,7 +179,7 @@
 
 ;;;; Fixtures
 
-(defn fixture-logged
+(defn fixture-session
   "Fixture to set up the application and a logged account before the test runs.
   Log out after the test is done.
 

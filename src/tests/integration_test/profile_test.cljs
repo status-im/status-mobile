@@ -7,7 +7,7 @@
     [test-helpers.integration :as h]
     [utils.re-frame :as rf]))
 
-(use-fixtures :each (h/fixture-logged))
+(use-fixtures :each (h/fixture-session))
 
 (deftest edit-profile-name-test
   (h/integration-test ::edit-profile-name
