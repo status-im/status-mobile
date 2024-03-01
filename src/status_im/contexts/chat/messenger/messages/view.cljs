@@ -34,8 +34,7 @@
        :distance-atom                             distance-atom
        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?
        :distance-from-list-top                    distance-from-list-top
-       :chat-list-scroll-y                        chat-list-scroll-y
-       :cover-bg-color                            :turquoise}]
+       :chat-list-scroll-y                        chat-list-scroll-y}]
      [composer.view/composer
       {:insets                                    insets
        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?
