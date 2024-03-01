@@ -497,3 +497,15 @@
              (get "0x3")
              (assoc :network-preferences-names #{}))]
         (rf/sub [sub-name])))))
+
+(def keypairs
+  [{:key-uid "abc"}])
+
+(h/deftest-sub :wallet/keypairs
+  [sub-name]
+  (testing "returns all keypairs"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :keypairs] keypairs))
+    (is
+     (= keypairs
+        (rf/sub [sub-name])))))

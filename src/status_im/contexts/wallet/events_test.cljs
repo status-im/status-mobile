@@ -55,7 +55,6 @@
         effects     (events/clear-new-keypair {:db db})]
     (is (match? (:db effects) expected-db))))
 
-
 (deftest store-collectibles
   (testing "(displayable-collectible?) helper function"
     (let [expected-results [[true

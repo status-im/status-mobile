@@ -49,7 +49,7 @@
         secret-phrase       (reagent/atom [])
         random-phrase       (reagent/atom [])]
     (fn []
-      (rn/use-effect
+      (rn/use-mount
        (fn []
          (native-module/get-random-mnemonic #(reset! secret-phrase (string/split % #"\s")))
          (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
