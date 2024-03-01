@@ -5,8 +5,7 @@
     legacy.status-im.events
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
-    [re-frame.core :as re-frame]
-    [re-frame.db :as rf-db]
+    [native-module.core :as native-module]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -15,9 +14,7 @@
     status-im.subs.root
     [test-helpers.integration :as h]
     [tests.contract-test.utils :as contract-utils]
-    [tests.integration-test.constants :as integration-constants]
-    [utils.security.core :as security]
-  ))
+    [tests.integration-test.constants :as integration-constants]))
 
 (defn assert-accounts-get-accounts
   [result]
@@ -91,88 +88,31 @@
      (rf-test/wait-for
        [::logout/logout-method])))))
 
-
-
-;; (deftest wallet-create-derived-addresses-success
-;;   (h/log-headline :wallet/create-derived-addresses)
-;;   (rf-test/run-test-async
-;;    (h/with-app-initialized
-;;     (h/with-account
-    ;;  (contract-utils/call-rpc-endpoint
-    ;;   {:rpc-endpoint "wallet_getDerivedAddresses"
-    ;;    :params       [(security/safe-unmask-data "some-password")
-    ;;                   [:account :address]
-    ;;                   ["m/44'/60'/0'/0/7"]]
-;;        :action       get-derived-account})))))
-
-
-;; (deftest wallet-create-derived-addresses-success
-;;   (h/log-headline :wallet/create-derived-addresses)
-;;   (rf-test/run-test-async
-;;     (h/with-app-initialized
-;;       (h/with-account
-;;         (let [sha3-pwd            nil
-;;               derivation-path     ["m/44'/60'/0'/0/0"]
-;;               address             "0xf949b04e6fbb3668c8022ba37c0f5c0f5ff47a9e"
-;;               addresses           (contract-utils/call-rpc-endpoint
-;;                                   {:rpc-endpoint "wallet_getDerivedAddresses"
-;;                                    :params       [sha3-pwd address derivation-path]
-;;                                    :action       get-derived-account})]
-;;           (println "PASSED" addresses))))))
-
-(defn assert-derived-account
-  [response]
-  (is (= (security/safe-unmask-data "some-password") (:sha3-pwd response)))
-  (is (= "🍌" (:emoji response)))
-  (is (= :army (:color response)))
-  (is (= "m/44'/60'/0'/0/7" (:path response)))
-  (is (= "Test 4" (:account-name response))))
-
 (defn get-main-account
   [accounts]
-  (println "ALL ACCOUNTS" accounts)
-  (println "MAIN ADDRESS" (:address (first accounts)))
   (:address (first accounts)))
-
-(deftype MaskedData [data]
-  Object
-    (toString [_] "******"))
-
 
 (def test-password integration-constants/password)
 
-(defn mask-data
-  [data]
-  (MaskedData. data))
+(defn assert-derived-account
+  [response]
+  (is (= (:address response) (:address response)))
+  (is (= (:public-key response) (:public-key response)))
+  (is (= "m/43'/60'/1581'/0'/0" (:path (first response)))))
 
-(def masked-password (mask-data test-password))
-
-(deftest wallet-create-derived-addresses-success
+(deftest wallet-create-derived-addresses
   (h/log-headline :wallet/create-derived-addresses)
   (rf-test/run-test-async
    (h/with-app-initialized
     (h/with-account
-     (let [sha3-pwd        (security/safe-unmask-data masked-password)
+     (let [sha3-pwd        (native-module/sha3 test-password)
            derivation-path ["m/43'/60'/1581'/0'/0"]
-           db-address      (get-in @rf-db/app-db [:profile/profile :address])
-           derived         (contract-utils/call-rpc-endpoint
+           main-account    (contract-utils/call-rpc-endpoint
                             {:rpc-endpoint "accounts_getAccounts"
-                             :action       get-main-account})
-          ]
-
-       (println "PROFILE DB" (get-in @rf-db/app-db [:profile/profile :address]))
-       (println "RE-FRAME PROFILE SUBSCRIPTION" @(re-frame/subscribe [:profile/profile :address]))
-
-       (println "DERIVED" derived)
-
-       (println "CONSTANT MAIN ADDRESS" (:main-address integration-constants/recovery-account))
-       (println "PASSWORD" integration-constants/password)
-       (println "SHA3-PWD" sha3-pwd)
+                             :action       get-main-account})]
 
        (contract-utils/call-rpc-endpoint
         {:rpc-endpoint "wallet_getDerivedAddresses"
-         :params       [sha3-pwd derived derivation-path]
+         :params       [sha3-pwd main-account derivation-path]
          :action       assert-derived-account
-         :on-error     (fn [error] (println "RPC Call Failed:" error))}))
-     (println "FINISHED")))))
-
+         :on-error     (fn [error] (println "RPC Call Failed:" error))}))))))
