@@ -8793,6 +8793,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
+rive-react-native@^6.2.3:
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/rive-react-native/-/rive-react-native-6.2.3.tgz#358cf427940960b0d8c49975f3fe865fd98ee74c"
+  integrity sha512-oOhalZdCTCiSXDBR/YIYQtBmfunxKCZioCIjsQ/C+sd51b0G1hxk4TqDl4f0zE7iFC3y3k57G0aIL5+N+iYZhA==
+
 rn-emoji-keyboard@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/rn-emoji-keyboard/-/rn-emoji-keyboard-0.7.0.tgz#e2f23e846427d1f5e6413fab7beaf412c24f8c33"

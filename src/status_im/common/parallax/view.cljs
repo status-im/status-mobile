@@ -1,10 +1,12 @@
 (ns status-im.common.parallax.view
   (:require
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [react-native.transparent-video :as transparent-video]
-    [status-im.common.parallax.style :as style]
-    [utils.worklets.parallax :as worklets.parallax]))
+   [react-native.core :as rn]
+   [status-im.common.rive.view :as rive]
+   [react-native.reanimated :as reanimated]
+   [reagent.core :as reagent]
+   [react-native.transparent-video :as transparent-video]
+   [status-im.common.parallax.style :as style]
+   [utils.worklets.parallax :as worklets.parallax]))
 
 (defn f-sensor-animated-video
   [{:keys [offset stretch order source disable-parallax? enable-looping?]}]
@@ -52,3 +54,24 @@
 (defn video
   [props]
   [:f> f-video props])
+
+(defn f-rive
+  [{:keys [resource-name artboard-name state-machine-name container-style]}]
+
+  (let [rive-ref2 (reagent/atom 1)
+        vv (rn/use-ref (clj->js {:x 1}))]
+    ;; (worklets.parallax/use-giro  @rive-ref2)
+     
+
+    (rive/view {:ref  vv ; #(reset! rive-ref2 %)
+                ;; :resourceName resource-name
+                ;; :artboardName     artboard-names
+                ;; :stateMachineName state-machine-name
+                 :resourceName     "Biometrics Parallax"
+                :artboardName     "Status Biometrics - Test 01"
+                :stateMachineName "stateMachine"
+                :style container-style})))
+
+(defn rive
+  [props]
+  [:f> f-rive props])

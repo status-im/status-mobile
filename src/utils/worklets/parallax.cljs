@@ -5,3 +5,9 @@
 (defn sensor-animated-image
   [order offset stretch]
   (.sensorAnimatedImage ^js parallax-worklets order offset stretch))
+
+(defn use-giro
+  [rive-ref ]
+  (prn rive-ref)
+  (.useGiro ^js parallax-worklets rive-ref ))
+

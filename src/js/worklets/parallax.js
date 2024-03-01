@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAnimatedStyle, useAnimatedSensor, withTiming, interpolate, SensorType } from 'react-native-reanimated';
 import { Platform } from 'react-native';
 
@@ -43,4 +44,26 @@ export function sensorAnimatedImage(zIndex, offset, stretch) {
       transform: [{ translateX }, { translateY }],
     };
   });
+}
+
+// const useSensor = (updater, dependencies = []) => {
+//   'worklet';
+//   useEffect(() => {
+//     updater()
+
+//   },
+//     [...dependencies, updater.__workletHash])
+// }
+
+export function useGiro(ref) {
+  'worklet';
+
+  const rotationSensor = useAnimatedSensor(SensorType.GYROSCOPE, {});
+  const { x, y, z } = rotationSensor.sensor.value;
+  useEffect(() => {
+    'worklet';
+    console.log(x, "===")
+    ref && ref.state.setInputState('stateMachine', 'x', x)
+
+  }, [x])
 }

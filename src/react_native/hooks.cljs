@@ -1,6 +1,7 @@
 (ns react-native.hooks
   (:require
     ["@react-native-community/hooks" :as hooks]
+    ["react-native-reanimated" :as rn-reanimated :refer (SensorType)]
     [oops.core :as oops]
     [react-native.core :as rn]))
 
@@ -31,3 +32,10 @@
                (cleanup-cb)
                (js/clearInterval id))))))
      [delay-ms])))
+
+(defn use-gyroscope
+  []
+  (.useAnimatedSensor rn-reanimated
+                      (-> SensorType
+                          js->clj
+                          (get "GYROSCOPE"))))
