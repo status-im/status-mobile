@@ -236,9 +236,20 @@
 
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
-  {:db (assoc-in db [:wallet :keypairs] (data-store/parse-keypairs keypairs))})
+  (let [parsed-keypairs (data-store/parse-keypairs keypairs)
+        default-key-uid (:key-uid (first parsed-keypairs))]
+  {:db (-> db
+           (assoc-in [:wallet :keypairs] parsed-keypairs)
+           (assoc-in [:wallet :selected-keypair] default-key-uid))}))
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
+
+(defn confirm-account-origin
+  [{:keys [db]} [key-uid]]
+    {:db (assoc-in db [:wallet :selected-keypair] key-uid)
+     :fx [[:dispatch [:navigate-back]]]})
+
+(rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]

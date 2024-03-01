@@ -34,7 +34,7 @@
        (filter (fn [{:keys [path]}]
                  (not (string/starts-with? path constants/path-eip1581))))
        (map (fn [{:keys [customization-color emoji name address]}]
-              {:account-props {:customization-color (or customization-color :blue)
+              {:account-props {:customization-color customization-color
                                :size                32
                                :emoji               emoji
                                :type                :default
@@ -47,7 +47,7 @@
                :action        :none}))))
 
 (defn- keypair
-  [item index _ {:keys [profile-picture compressed-key]}]
+  [item index _ {:keys [profile-picture compressed-key selected-key-uid set-selected-key-uid]}]
   (let [main-account (first (:accounts item))
         color        (:customization-color main-account)
         accounts     (parse-accounts (:accounts item))]
@@ -63,17 +63,20 @@
       :details             {:full-name (:name item)
                             :address   (when (zero? index)
                                          (utils/get-shortened-compressed-key compressed-key))}
+      :on-press            #(set-selected-key-uid (:key-uid item))
       :accounts            accounts
-      :default-selected?   (zero? index)
+      :selected?           (= selected-key-uid (:key-uid item))
       :container-style     {:margin-horizontal 20
                             :margin-vertical   8}}]))
 (defn view
   []
   (let [{:keys [compressed-key customization-color]} (rf/sub [:profile/profile])
-        profile-with-image                           (rf/sub [:profile/profile-with-image])
-        keypairs                                     (rf/sub [:wallet/keypairs])
-        profile-picture                              (profile.utils/photo profile-with-image)]
-    (rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
+        profile-with-image (rf/sub [:profile/profile-with-image])
+        keypairs           (rf/sub [:wallet/keypairs])
+        selected-keypair   (rf/sub [:wallet/selected-keypair])
+        profile-picture    (profile.utils/photo profile-with-image)
+        [selected-key-uid set-selected-key-uid] (rn/use-state selected-keypair)]
+    ;(rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
@@ -86,18 +89,21 @@
        :title-right-props {:icon                :i/add
                            :customization-color customization-color
                            :on-press            #(rf/dispatch
-                                                  [:show-bottom-sheet {:content keypair-options}])}
+                                                   [:show-bottom-sheet {:content keypair-options}])}
        :description       :text
        :description-text  (i18n/label :t/keypairs-description)}]
      [rn/flat-list
       {:data                    keypairs
        :render-fn               keypair
-       :render-data             {:profile-picture profile-picture
-                                 :compressed-key  compressed-key}
+       :render-data             {:profile-picture      profile-picture
+                                 :compressed-key       compressed-key
+                                 :selected-key-uid     selected-key-uid
+                                 :set-selected-key-uid set-selected-key-uid}
        :content-container-style {:padding-bottom 60}}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/confirm-account-origin)
-       :button-one-props {:disabled?           true
-                          :customization-color customization-color}
+       :button-one-props {:disabled?           (= selected-keypair selected-key-uid)
+                          :customization-color customization-color
+                          :on-press #(rf/dispatch [:wallet/confirm-account-origin selected-key-uid])}
        :container-style  style/bottom-action-container}]]))

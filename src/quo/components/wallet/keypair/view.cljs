@@ -91,23 +91,21 @@
   [account-list-card/view item])
 
 (defn- view-internal
-  [{:keys [default-selected?]}]
-  (let [selected? (reagent/atom default-selected?)]
-    (fn [{:keys [accounts action container-style] :as props}]
+  [{:keys [accounts action container-style selected? on-press] :as props}]
       [rn/pressable
-       {:style    (merge (style/container (merge props {:selected? @selected?})) container-style)
-        :on-press #(when (= action :selector) (reset! selected? (not @selected?)))}
+       {:style    (merge (style/container (merge props {:selected? selected?})) container-style)
+        :on-press #(when (= action :selector) (on-press))}
        [rn/view {:style style/header-container}
         [avatar props]
         [rn/view
          {:style {:margin-left 8
                   :flex        1}}
-         [title-view (assoc props :selected? @selected?)]
+         [title-view (assoc props :selected? selected?)]
          [details-view props]]]
        [rn/flat-list
         {:data      accounts
          :render-fn acc-list-card
          :separator [rn/view {:style {:height 8}}]
-         :style     {:padding-horizontal 8}}]])))
+         :style     {:padding-horizontal 8}}]])
 
 (def view (quo.theme/with-theme view-internal))
