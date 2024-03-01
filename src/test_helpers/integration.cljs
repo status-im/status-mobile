@@ -90,7 +90,7 @@
    (wait-for event-ids default-re-frame-wait-for-timeout-ms))
   ([event-ids timeout-ms]
    (let [waiting-ids (atom event-ids)]
-     (js/Promise.
+     (p/create
       (fn [promise-resolve promise-reject]
         (let [cb-id    (gensym "post-event-callback")
               timer-id (js/setTimeout (fn []
