@@ -106,6 +106,7 @@
         :sections                          items
         :sticky-section-headers-enabled    false
         :render-section-header-fn          contact-list/contacts-section-header
+        :render-section-footer-fn          contact-list/contacts-section-footer
         :render-fn                         (fn [data]
                                              (contact-item-render data theme))
         :scroll-event-throttle             8

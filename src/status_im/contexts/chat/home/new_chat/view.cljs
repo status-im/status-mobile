@@ -132,6 +132,7 @@
         {:key-fn                   :title
          :sections                 (rf/sub [:contacts/filtered-active-sections])
          :render-section-header-fn contact-list/contacts-section-header
+         :render-section-footer-fn contact-list/contacts-section-footer
          :content-container-style  {:padding-bottom 70}
          :render-fn                render-fn
          :scroll-enabled           @scroll-enabled?
