@@ -49,6 +49,8 @@
                                (rf/dispatch [:open-modal :new-contact]))}
       (i18n/label :t/add-a-contact)]]))
 
+(def ^:private max-group-chat-contacts (dec constants/max-group-chat-participants))
+
 (defn contact-item-render
   [_]
   (fn [{:keys [public-key] :as item}]
@@ -59,7 +61,7 @@
                                       user-selected?
                                       (re-frame/dispatch [:deselect-contact public-key])
                                       (do
-                                        (when (= constants/max-group-chat-contacts
+                                        (when (= max-group-chat-contacts
                                                  selected-contacts-count)
                                           (rf/dispatch
                                            [:toasts/upsert
@@ -67,7 +69,7 @@
                                              :type :negative
                                              :text (i18n/label :t/new-group-limit
                                                                {:max-contacts
-                                                                constants/max-group-chat-contacts})}]))
+                                                                max-group-chat-contacts})}]))
                                         (re-frame/dispatch [:select-contact public-key]))))]
       [contact-list-item/contact-list-item
        {:on-press                on-toggle
@@ -81,7 +83,7 @@
   [{:keys [scroll-enabled? on-scroll close theme]}]
   (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
-        has-reached-max-contact           (> selected-contacts-count constants/max-group-chat-contacts)
+        has-reached-max-contact           (> selected-contacts-count max-group-chat-contacts)
         selected-contacts                 (rf/sub [:group/selected-contacts])
         one-contact-selected?             (= selected-contacts-count 1)
         contacts-selected?                (pos? selected-contacts-count)
@@ -111,7 +113,7 @@
                                      (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))}}
           (i18n/label :t/selected-count-from-max
                       {:selected selected-contacts-count
-                       :max      constants/max-group-chat-contacts})])]]
+                       :max      max-group-chat-contacts})])]]
      (if (empty? contacts)
        [no-contacts-view {:theme theme}]
        [gesture/section-list

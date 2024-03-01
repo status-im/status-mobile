@@ -120,7 +120,6 @@
 
 (def ^:const min-password-length 6)
 (def ^:const max-group-chat-participants 20)
-(def ^:const max-group-chat-contacts (dec max-group-chat-participants))
 (def ^:const default-number-of-messages 20)
 (def ^:const default-number-of-pin-messages 3)
 
