@@ -70,12 +70,14 @@
         handle-sheet-height               (rn/use-callback (fn [e]
                                                              (when (= sheet-height 0)
                                                                (set-sheet-height
-                                                                (get-layout-height e)))))
+                                                                (get-layout-height e))))
+                                                           [sheet-height])
         [item-height set-item-height]     (rn/use-state 0)
         handle-item-height                (rn/use-callback (fn [e]
                                                              (when (= item-height 0)
                                                                (set-item-height
-                                                                (get-layout-height e)))))
+                                                                (get-layout-height e))))
+                                                           [item-height])
         {window-height :height}           (rn/get-window)
         bg-opacity                        (reanimated/use-shared-value 0)
         translate-y                       (reanimated/use-shared-value window-height)
