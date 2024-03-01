@@ -4,26 +4,24 @@
     [quo.components.icon :as quo.icons]
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
-(defn- view-internal
-  []
-  (let [pressed? (reagent/atom false)]
-    (fn
-      [{:keys [on-press on-long-press disabled? icon accessibility-label container-style theme]}]
-      [rn/pressable
-       {:accessibility-label (or accessibility-label :wallet-button)
-        :on-press            on-press
-        :on-press-in         #(reset! pressed? true)
-        :on-press-out        #(reset! pressed? nil)
-        :on-long-press       on-long-press
-        :disabled            disabled?
-        :style               (merge (style/main {:pressed?  @pressed?
-                                                 :theme     theme
-                                                 :disabled? disabled?})
-                                    container-style)}
-       [quo.icons/icon icon
-        {:color (colors/theme-colors colors/neutral-100 colors/white theme)}]])))
-
-(def view (theme/with-theme view-internal))
+(defn view
+  [{:keys [on-press on-long-press disabled? icon accessibility-label container-style]}]
+  (let [theme                  (theme/use-theme-value)
+        [pressed? set-pressed] (rn/use-state false)
+        on-press-in            (rn/use-callback #(set-pressed true))
+        on-press-out           (rn/use-callback #(set-pressed nil))]
+    [rn/pressable
+     {:accessibility-label (or accessibility-label :wallet-button)
+      :on-press            on-press
+      :on-press-in         on-press-in
+      :on-press-out        on-press-out
+      :on-long-press       on-long-press
+      :disabled            disabled?
+      :style               (merge (style/main {:pressed?  pressed?
+                                               :theme     theme
+                                               :disabled? disabled?})
+                                  container-style)}
+     [quo.icons/icon icon
+      {:color (colors/theme-colors colors/neutral-100 colors/white theme)}]]))

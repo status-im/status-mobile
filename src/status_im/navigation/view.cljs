@@ -17,6 +17,8 @@
     [status-im.setup.hot-reload :as reloader]
     [utils.re-frame :as rf]))
 
+(def functional-compiler (reagent/create-compiler {:function-components true}))
+
 (defn get-screens
   []
   (reduce
@@ -72,7 +74,8 @@
         (when js/goog.DEBUG
           [:<>
            [reloader/reload-view]
-           [schema.view/view]])]))))
+           [schema.view/view]])]))
+   functional-compiler))
 
 (def bottom-sheet
   (reagent/reactify-component
@@ -90,7 +93,8 @@
           :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
          (when sheet
            [bottom-sheet/view {:insets insets :hide? hide?}
-            sheet])]]))))
+            sheet])]]))
+   functional-compiler))
 
 (def toasts (reagent/reactify-component toasts/toasts))
 
@@ -103,7 +107,8 @@
       [inactive]
       [popover/popover]
       (when js/goog.DEBUG
-        [reloader/reload-view])])))
+        [reloader/reload-view])])
+   functional-compiler))
 
 (def visibility-status-popover-comp
   (reagent/reactify-component
@@ -113,7 +118,8 @@
       [inactive]
       [visibility-status-views/visibility-status-popover]
       (when js/goog.DEBUG
-        [reloader/reload-view])])))
+        [reloader/reload-view])])
+   functional-compiler))
 
 (def sheet-comp-old
   (reagent/reactify-component
@@ -121,7 +127,8 @@
      ^{:key (str "sheet-old" @reloader/cnt)}
      [:<>
       [inactive]
-      [bottom-sheets-old/bottom-sheet]])))
+      [bottom-sheets-old/bottom-sheet]])
+   functional-compiler))
 
 (def signing-comp
   (reagent/reactify-component
@@ -131,4 +138,5 @@
       [inactive]
       [signing/signing]
       (when js/goog.DEBUG
-        [reloader/reload-view])])))
+        [reloader/reload-view])])
+   functional-compiler))

@@ -202,6 +202,35 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
+(defn add-keypair-and-create-account
+  [_ [{:keys [sha3-pwd new-keypair]}]]
+  (let [lowercase-address (if (:address new-keypair)
+                            (string/lower-case (:address new-keypair))
+                            (:address new-keypair))]
+    {:fx [[:json-rpc/call
+           [{:method     "accounts_addKeypair"
+             :params     [sha3-pwd new-keypair]
+             :on-success [:wallet/add-account-success lowercase-address]
+             :on-error   #(log/info "failed to create keypair " %)}]]]}))
+
+(rf/reg-event-fx :wallet/add-keypair-and-create-account add-keypair-and-create-account)
+
+(defn get-keypairs
+  [_]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_getKeypairs"
+           :params     []
+           :on-success [:wallet/get-keypairs-success]
+           :on-error   #(log/info "failed to get keypairs " %)}]]]})
+
+(rf/reg-event-fx :wallet/get-keypairs get-keypairs)
+
+(defn get-keypairs-success
+  [{:keys [db]} [keypairs]]
+  {:db (assoc-in db [:wallet :keypairs] (data-store/parse-keypairs keypairs))})
+
+(rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
+
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
@@ -371,7 +400,8 @@
  (fn []
    {:fx [[:dispatch [:wallet/start-wallet]]
          [:dispatch [:wallet/get-ethereum-chains]]
-         [:dispatch [:wallet/get-accounts]]]}))
+         [:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]

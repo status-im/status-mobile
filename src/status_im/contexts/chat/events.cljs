@@ -14,6 +14,7 @@
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
     [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
     [status-im.contexts.chat.messenger.messages.list.state :as chat.state]
+    [status-im.feature-flags :as ff]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -431,3 +432,20 @@
                      [:chat/inputs current-chat-id :metadata :sending-image]
                      dissoc
                      (:uri original))})))
+
+(rf/reg-event-fx :chat.ui/show-profile
+ (fn [{:keys [db]} [public-key ens-name]]
+   (let [my-public-key (get-in db [:profile/profile :public-key])]
+     (if (not= my-public-key public-key)
+       {:db       (-> db
+                      (assoc :contacts/identity public-key)
+                      (assoc :contacts/ens-name ens-name))
+        :dispatch [:contacts/build-contact
+                   {:pubkey     public-key
+                    :ens        ens-name
+                    :success-fn (fn [_]
+                                  {:dispatch [:open-modal
+                                              (if (ff/enabled? ::ff/profile.new-contact-ui)
+                                                :contact-profile
+                                                :profile)]})}]}
+       {:dispatch [:navigate-to :my-profile]}))))

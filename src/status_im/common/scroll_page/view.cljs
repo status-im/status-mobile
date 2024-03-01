@@ -98,9 +98,9 @@
 (defn scroll-page
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
-    (fn [{:keys [theme cover-image logo on-scroll
+    (fn [{:keys [theme cover-image cover-color logo on-scroll
                  collapsed? height top-nav title-colum background-color navigate-back? page-nav-props
-                 overlay-shown? sticky-header]}
+                 overlay-shown? sticky-header children-style]}
          children]
       [:<>
        [:f> f-scroll-page-header
@@ -125,6 +125,8 @@
                                                                       "nativeEvent.contentOffset.y")))
                                               (when on-scroll
                                                 (on-scroll @scroll-height)))}
+        (when cover-color
+          [rn/view {:style (style/cover-background cover-color)}])
         (when cover-image
           [rn/view {:style {:height (if collapsed? 110 151)}}
            [rn/image
@@ -136,8 +138,10 @@
                       :flex          1}}]])
         (when children
           [rn/view
-           {:style (style/children-container {:border-radius    (diff-with-max-min @scroll-height 16 0)
-                                              :background-color background-color})}
+           {:style (style/children-container (merge
+                                              children-style
+                                              {:border-radius    (diff-with-max-min @scroll-height 16 0)
+                                               :background-color background-color}))}
            (when (and (not collapsed?) cover-image)
              [:f> f-display-picture @scroll-height logo theme])
            children])]])))

@@ -35,12 +35,11 @@
 (defn image
   "Same as rn/image but cache the image source in a js/Set, so the image won't
   flicker when re-render on android"
-  []
-  (let [loaded-source    (reagent/atom nil)
-        on-source-loaded #(reset! loaded-source %)]
-    (fn [props]
-      (if platform/ios?
-        [rn/image props]
-        [:<>
-         [rn/image (assoc props :source @loaded-source)]
-         [caching-image props on-source-loaded]]))))
+  [props]
+  (let [[loaded-source set-loaded-source] (rn/use-state nil)
+        on-source-loaded                  (rn/use-callback #(set-loaded-source %))]
+    (if platform/ios?
+      [rn/image props]
+      [:<>
+       [rn/image (assoc props :source loaded-source)]
+       [caching-image props on-source-loaded]])))

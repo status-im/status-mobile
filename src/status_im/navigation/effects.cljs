@@ -1,5 +1,7 @@
 (ns status-im.navigation.effects
   (:require
+    [quo.theme]
+    [react-native.core :as rn]
     [react-native.navigation :as navigation]
     [status-im.navigation.options :as options]
     [status-im.navigation.roots :as roots]
@@ -8,10 +10,20 @@
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
+(defn- set-status-bar-color
+  [theme]
+  (rn/set-status-bar-style
+   (if (= theme :dark)
+     "light-content"
+     "dark-content")
+   true))
+
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
    (rf/dispatch [:screens/on-will-focus view-id])
-   (when-let [{:keys [on-focus]} (get views/screens view-id)]
+   (when-let [{:keys [on-focus options]} (get views/screens view-id)]
+     (set-status-bar-color (or (:theme options)
+                               (quo.theme/get-theme)))
      (when on-focus
        (rf/dispatch on-focus)))))
 
@@ -117,11 +129,12 @@
 
 (defn open-modal
   [component]
-  (let [{:keys [options]} (get views/screens component)
-        sheet?            (:sheet? options)]
+  (let [{:keys [options name]} (get views/screens component)
+        sheet?                 (:sheet? options)]
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do
+        (set-view-id name) ; TODO https://github.com/status-im/status-mobile/issues/18811
         (reset! state/curr-modal true)
         (swap! state/modals conj component)
         (navigation/show-modal

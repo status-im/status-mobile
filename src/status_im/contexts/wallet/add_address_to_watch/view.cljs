@@ -30,6 +30,7 @@
         on-change-text  (fn [new-text]
                           (reset! validation-msg (validate new-text))
                           (reset! input-value new-text)
+                          (reagent/flush)
                           (if (and (not-empty new-text) (nil? (validate new-text)))
                             (rf/dispatch [:wallet/get-address-details new-text])
                             (rf/dispatch [:wallet/clear-address-activity-check]))

@@ -122,6 +122,8 @@
 
 (def memo react/memo)
 
+(def use-state react/useState)
+
 (def create-ref react/createRef)
 
 (def use-ref react/useRef)
@@ -179,6 +181,10 @@
   ([handler deps]
    (react/useCallback handler (get-js-deps deps))))
 
+(defn use-memo
+  [handler deps]
+  (react/useMemo handler (get-js-deps deps)))
+
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))
 
@@ -204,3 +210,5 @@
 (def linking (.-Linking react-native))
 
 (defn open-url [link] (.openURL ^js linking link))
+
+(def set-status-bar-style react-native/StatusBar.setBarStyle)

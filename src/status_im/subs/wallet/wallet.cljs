@@ -94,6 +94,11 @@
  :-> :watch-address-activity-state)
 
 (rf/reg-sub
+ :wallet/keypairs
+ :<- [:wallet]
+ :-> :keypairs)
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]

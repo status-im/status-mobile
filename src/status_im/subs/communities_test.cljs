@@ -496,3 +496,12 @@
                   :network-preferences-names #{}
                   :name                      "account3"}]
                 (rf/sub [sub-name community-id])))))
+
+(h/deftest-sub :communities/community-color
+  [sub-name]
+  (testing "returns the community color"
+    (let [community-color "#FEFEFE"]
+      (swap! rf-db/app-db assoc
+        :communities
+        {community-id {:color community-color}})
+      (is (match? community-color (rf/sub [sub-name community-id]))))))

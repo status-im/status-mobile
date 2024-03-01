@@ -67,5 +67,8 @@
            :customization-color customization-color
            :on-press            (fn []
                                   (rf/dispatch [:profile/edit-bio @unsaved-bio]))
-           :disabled?           (boolean (or @typing? (not (string/blank? @error-msg))))}
+           :disabled?           (boolean (or @typing?
+                                             (and (string/blank? profile-bio)
+                                                  (string/blank? @unsaved-bio))
+                                             (not (string/blank? @error-msg))))}
           (i18n/label :t/save-bio)]]]])))

@@ -75,3 +75,9 @@
    :width            picture-diameter
    :height           picture-diameter
    :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+
+(defn cover-background
+  [cover-color]
+  {:background-color cover-color
+   :height           167
+   :margin-bottom    -16})

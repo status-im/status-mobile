@@ -1,6 +1,7 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
+    [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
@@ -36,6 +37,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
     [status-im.contexts.profile.edit.name.view :as edit-name]
@@ -141,7 +143,8 @@
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
-     :options   options/camera-screen
+     :options   {:navigationBar {:backgroundColor colors/black}
+                 :theme         :dark}
      :component camera-screen/camera-screen}
 
     {:name      :new-contact
@@ -201,6 +204,10 @@
     {:name      :edit-bio
      :options   options/transparent-modal-screen-options
      :component edit-bio/view}
+
+    {:name      :contact-profile
+     :options   {:modalPresentationStyle :overCurrentContext}
+     :component contact-profile/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
@@ -427,6 +434,13 @@
     {:name      :settings-password
      :options   options/transparent-modal-screen-options
      :component settings-password/view}]
+
+   [{:name    :shell
+     :options {:theme :dark}}
+    {:name :communities-stack}
+    {:name :chats-stack}
+    {:name :wallet-stack}
+    {:name :browser-stack}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview

@@ -23,7 +23,7 @@ pipeline {
     buildDiscarder(logRotator(
       numToKeepStr: '10',
       daysToKeepStr: '20',
-      artifactNumToKeepStr: '10',
+      artifactNumToKeepStr: '1',
     ))
     /* Allows combined build to copy */
     copyArtifactPermission('/status-mobile/*')
@@ -63,7 +63,7 @@ pipeline {
       }
       post {
         failure {
-          archiveArtifacts 'ios/logs/*'
+          archiveArtifacts 'logs/*'
         }
       }
     }
