@@ -57,8 +57,7 @@
     (let [user-selected?          (rf/sub [:is-contact-selected? public-key])
           selected-contacts-count (rf/sub [:selected-contacts-count])
           on-toggle               (fn []
-                                    (if
-                                      user-selected?
+                                    (if user-selected?
                                       (re-frame/dispatch [:deselect-contact public-key])
                                       (do
                                         (when (= max-group-chat-contacts
