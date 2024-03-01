@@ -144,6 +144,11 @@
 (defn integration-test
   "Runs `f` inside `cljs.test/async` macro in a restorable re-frame checkpoint.
 
+  `f` will be called with one argument, the `done` function exposed by the
+  `cljs.test/async` macro. Normally, you don't need to use `done`, but you can
+  call it if you want to early-terminate the current test, so that the test
+  runner can execute the next one.
+
   Option `fail-fast?`, when truthy (defaults to true), will force the test
   runner to terminate on any test failure. Setting it to false can be useful
   during development when you want the rest of the test suite to run due to a
