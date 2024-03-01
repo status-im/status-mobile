@@ -22,7 +22,7 @@
                     :params      [{:id      contact-public-key
                                    :message (i18n/label :t/add-me-to-your-contacts)}]
                     :on-error    [:contact.ui/send-contact-request-failure contact-public-key]
-                    :on-success  [:contact.ui/send-contact-request-success]}]]]}
+                    :on-success  [:transport/message-sent]}]]]}
            (chat.contacts/send-contact-request cofx [contact-public-key])))))
 
   (testing "creates contact request rpc with custom message"
@@ -37,5 +37,5 @@
                     :params      [{:id      contact-public-key
                                    :message custom-message}]
                     :on-error    [:contact.ui/send-contact-request-failure contact-public-key]
-                    :on-success  [:contact.ui/send-contact-request-success]}]]]}
+                    :on-success  [:transport/message-sent]}]]]}
            (chat.contacts/send-contact-request cofx [contact-public-key custom-message]))))))

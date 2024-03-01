@@ -83,15 +83,9 @@
              :js-response true
              :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
              :on-error    [:contact.ui/send-contact-request-failure id]
-             :on-success  [:contact.ui/send-contact-request-success]}]]]}))
+             :on-success  [:transport/message-sent]}]]]}))
 
 (rf/reg-event-fx :contact.ui/send-contact-request send-contact-request)
-
-(defn send-contact-request-success
-  [_ [response]]
-  (rf/dispatch [:transport/message-sent response]))
-
-(rf/reg-event-fx :contact.ui/send-contact-request-success send-contact-request-success)
 
 (defn send-contact-request-failure
   [_ [id error]]
