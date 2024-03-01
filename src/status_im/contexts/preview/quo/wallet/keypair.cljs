@@ -12,8 +12,8 @@
                     :type                :default
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :purple
@@ -22,8 +22,8 @@
                     :type                :default
                     :name                "My savings"
                     :address             "0x0ah...72b"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :army
@@ -32,8 +32,8 @@
                     :type                :default
                     :name                "Coin vault"
                     :address             "0x0ah...73c"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :orange
@@ -42,8 +42,8 @@
                     :type                :default
                     :name                "Crypto fortress"
                     :address             "0x0ah...74e"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}
    {:account-props {:customization-color :yellow
@@ -52,8 +52,8 @@
                     :type                :default
                     :name                "Block treasure"
                     :address             "0x0ah...75f"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}])
 

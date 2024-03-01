@@ -2,13 +2,15 @@
   (:require
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.icon :as icon]
+    [quo.components.list-items.account.schema :as component-schema]
     [quo.components.list-items.account.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.address-text.view :as address-text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn- account-view
   [{:keys [account-props title-icon blur? theme]}]
@@ -130,4 +132,6 @@
           (and (= type :default) (= state :selected))
           [check-icon props])]])))
 
-(def view (quo.theme/with-theme internal-view))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'internal-view component-schema/?schema)))
