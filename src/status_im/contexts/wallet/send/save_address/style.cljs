@@ -28,3 +28,7 @@
 
 (def save-address-button
   {:padding-horizontal 20})
+
+(def data-item
+  {:margin-horizontal 20
+   :margin-vertical   8})
