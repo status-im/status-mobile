@@ -31,8 +31,8 @@
    :bottom           0})
 
 (defn sheet-content
-  [{:keys [theme padding-bottom shell? max-height]}]
-  {:max-height              max-height
+  [{:keys [theme padding-bottom shell?]}]
+  {:overflow                :scroll
    :padding-bottom          padding-bottom
    :border-top-left-radius  sheet-border-radius
    :border-top-right-radius sheet-border-radius

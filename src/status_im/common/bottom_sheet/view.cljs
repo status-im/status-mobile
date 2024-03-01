@@ -130,9 +130,7 @@
         {:on-layout set-sheet-height
          :style     (style/sheet-content {:theme          theme
                                           :shell?         shell?
-                                          :padding-bottom content-padding-bottom
-                                          :max-height     (- sheet-max-height
-                                                             content-padding-bottom)})}
+                                          :padding-bottom content-padding-bottom})}
         (when (and gradient-cover? customization-color)
           [rn/view {:style style/gradient-bg}
            [quo/gradient-cover
