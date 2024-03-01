@@ -55,7 +55,7 @@
                                     :action              :selector
                                     :details             other-details}]
                                   theme)
-    (h/is-truthy (h/get-by-label-text :radio-on)))
+    (h/is-truthy (h/get-by-label-text :radio-off)))
 
   (h/test "Options action renders"
     (h/render-with-theme-provider [keypair/view
