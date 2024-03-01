@@ -52,10 +52,25 @@
 (defn contact-item-render
   [_]
   (fn [{:keys [public-key] :as item}]
-    (let [user-selected? (rf/sub [:is-contact-selected? public-key])
-          on-toggle      #(if user-selected?
-                            (re-frame/dispatch [:deselect-contact public-key])
-                            (re-frame/dispatch [:select-contact public-key]))]
+    (let [user-selected?          (rf/sub [:is-contact-selected? public-key])
+          selected-contacts-count (rf/sub [:selected-contacts-count])
+          has-reached-max-contact (cond-> selected-contacts-count
+                                    user-selected?       (dec)
+                                    (not user-selected?) (inc)
+                                    true                 (> constants/max-group-chat-contacts))
+          on-toggle               (fn []
+                                    (when has-reached-max-contact
+                                      (rf/dispatch
+                                       [:toasts/upsert
+                                        {:id   :remove-nickname
+                                         :type :negative
+                                         :text (i18n/label :t/new-group-limit
+                                                           {:max-contacts
+                                                            constants/max-group-chat-contacts})}]))
+                                    (if
+                                      user-selected?
+                                      (re-frame/dispatch [:deselect-contact public-key])
+                                      (re-frame/dispatch [:select-contact public-key])))]
       [contact-list-item/contact-list-item
        {:on-press                on-toggle
         :allow-multiple-presses? true
@@ -68,6 +83,7 @@
   [{:keys [scroll-enabled? on-scroll close theme]}]
   (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
+        has-reached-max-contact           (> selected-contacts-count constants/max-group-chat-contacts)
         selected-contacts                 (rf/sub [:group/selected-contacts])
         one-contact-selected?             (= selected-contacts-count 1)
         contacts-selected?                (pos? selected-contacts-count)
@@ -92,10 +108,12 @@
           {:size   :paragraph-2
            :weight :regular
            :style  {:margin-bottom 2
-                    :color         (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}}
+                    :color         (if has-reached-max-contact
+                                     (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+                                     (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))}}
           (i18n/label :t/selected-count-from-max
                       {:selected selected-contacts-count
-                       :max      constants/max-group-chat-participants})])]]
+                       :max      constants/max-group-chat-contacts})])]]
      (if (empty? contacts)
        [no-contacts-view {:theme theme}]
        [gesture/section-list
@@ -110,6 +128,7 @@
      (when contacts-selected?
        [quo/button
         {:type                :primary
+         :disabled?           has-reached-max-contact
          :accessibility-label :next-button
          :container-style     style/chat-button
          :on-press            (fn []
