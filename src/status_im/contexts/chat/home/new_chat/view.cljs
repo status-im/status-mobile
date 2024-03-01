@@ -51,25 +51,28 @@
 
 (def ^:private contacts-selection-limit (dec constants/max-group-chat-participants))
 
+(defn- toggle-selection
+  [public-key user-selected?]
+  (let [selected-contacts-count (rf/sub [:selected-contacts-count])]
+    (if user-selected?
+      (re-frame/dispatch [:deselect-contact public-key])
+      (do
+        (when (= contacts-selection-limit
+                 selected-contacts-count)
+          (rf/dispatch
+           [:toasts/upsert
+            {:id   :remove-nickname
+             :type :negative
+             :text (i18n/label :t/new-group-limit
+                               {:max-contacts
+                                contacts-selection-limit})}]))
+        (re-frame/dispatch [:select-contact public-key])))))
+
 (defn contact-item-render
   [_]
   (fn [{:keys [public-key] :as item}]
-    (let [user-selected?          (rf/sub [:is-contact-selected? public-key])
-          selected-contacts-count (rf/sub [:selected-contacts-count])
-          on-toggle               (fn []
-                                    (if user-selected?
-                                      (re-frame/dispatch [:deselect-contact public-key])
-                                      (do
-                                        (when (= contacts-selection-limit
-                                                 selected-contacts-count)
-                                          (rf/dispatch
-                                           [:toasts/upsert
-                                            {:id   :remove-nickname
-                                             :type :negative
-                                             :text (i18n/label :t/new-group-limit
-                                                               {:max-contacts
-                                                                contacts-selection-limit})}]))
-                                        (re-frame/dispatch [:select-contact public-key]))))]
+    (let [user-selected? (rf/sub [:is-contact-selected? public-key])
+          on-toggle      #(toggle-selection public-key user-selected?)]
       [contact-list-item/contact-list-item
        {:on-press                on-toggle
         :allow-multiple-presses? true
