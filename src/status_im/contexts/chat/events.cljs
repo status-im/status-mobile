@@ -274,9 +274,9 @@
 
 (rf/defn unmute-chat-community
   {:events [:chat/unmute-chat-community]}
-  [{:keys [db]} chat-id muted?]
+  [{:keys [db]} chat-id]
   (let [{:keys [community-id]} (get-in db [:chats chat-id])]
-    {:db (assoc-in db [:communities community-id :muted] muted?)}))
+    {:db (assoc-in db [:communities community-id :muted] false)}))
 
 (rf/defn mute-chat-failed
   {:events [:chat/mute-failed]}
@@ -289,7 +289,7 @@
   [{:keys [db]} chat-id muted-till mute-type muted? chat-type]
   (log/debug "muted chat successfully" chat-id " for" muted-till)
   (when-not muted?
-    (rf/dispatch [:chat/unmute-chat-community chat-id muted?]))
+    (rf/dispatch [:chat/unmute-chat-community chat-id]))
   (let [time-string (fn [duration-kw unmute-time]
                       (i18n/label duration-kw {:duration unmute-time}))
         not-community-chat? #(contains? #{constants/public-chat-type
@@ -331,9 +331,13 @@
                           :t/channel-unmuted-successfully))))]
     {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
-                {:type :positive
-                 :text (mute-duration-text (when (some? muted-till)
-                                             (str (format-mute-till muted-till))))}]}))
+                (cond-> {:type :positive
+                         :id   :mute-chat-toast
+                         :text (mute-duration-text (when (some? muted-till)
+                                                     (str (format-mute-till muted-till))))}
+                  muted? (assoc :duration      constants/mute-undo-time-limit-ms
+                                :undo-duration (/ constants/mute-undo-time-limit-ms 1000)
+                                :undo-on-press #(rf/dispatch [:chat.ui/undo-mute chat-id])))]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
@@ -347,6 +351,27 @@
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
                       :on-success #(rf/dispatch [:chat/mute-successfully chat-id % mute-type
                                                  muted? chat-type])}]}))
+
+(rf/reg-event-fx
+ :chat.ui/undo-mute
+ (fn [_ [chat-id]]
+   {:fx [[:json-rpc/call
+          [{:method     "wakuext_unmuteChat"
+            :params     [chat-id]
+            :on-error   #(rf/dispatch [:chat/mute-failed chat-id false %])
+            :on-success #(rf/dispatch [:chat/undo-mute-success chat-id])}]]]}))
+
+(rf/reg-event-fx
+ :chat/undo-mute-success
+ (fn [{:keys [db]} [chat-id]]
+   {:db (update-in db
+                   [:chats chat-id]
+                   (fn [chat]
+                     (-> chat
+                         (dissoc :muted-till)
+                         (assoc :muted false))))
+    :fx [[:dispatch [:toasts/close :mute-chat-toast]]
+         [:dispatch [:chat/unmute-chat-community chat-id]]]}))
 
 (rf/defn show-clear-history-confirmation
   {:events [:chat.ui/show-clear-history-confirmation]}
