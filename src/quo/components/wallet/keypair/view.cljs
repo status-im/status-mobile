@@ -11,7 +11,6 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (defn keypair-string
@@ -92,6 +91,7 @@
 
 (defn- view-internal
   [{:keys [accounts action container-style selected? on-press] :as props}]
+<<<<<<< HEAD
       [rn/pressable
        {:style    (merge (style/container (merge props {:selected? selected?})) container-style)
         :on-press #(when (= action :selector) (on-press))}
@@ -107,5 +107,22 @@
          :render-fn acc-list-card
          :separator [rn/view {:style {:height 8}}]
          :style     {:padding-horizontal 8}}]])
+=======
+  [rn/pressable
+   {:style    (merge (style/container (merge props {:selected? selected?})) container-style)
+    :on-press #(when (= action :selector) (on-press))}
+   [rn/view {:style style/header-container}
+    [avatar props]
+    [rn/view
+     {:style {:margin-left 8
+              :flex        1}}
+     [title-view (assoc props :selected? selected?)]
+     [details-view props]]]
+   [rn/flat-list
+    {:data      accounts
+     :render-fn account-list-card/view
+     :separator [rn/view {:style {:height 8}}]
+     :style     {:padding-horizontal 8}}]])
+>>>>>>> afdac25f1 (lint)
 
 (def view (quo.theme/with-theme view-internal))

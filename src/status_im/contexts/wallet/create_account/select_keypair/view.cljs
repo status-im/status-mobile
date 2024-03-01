@@ -71,11 +71,11 @@
 (defn view
   []
   (let [{:keys [compressed-key customization-color]} (rf/sub [:profile/profile])
-        profile-with-image (rf/sub [:profile/profile-with-image])
-        keypairs           (rf/sub [:wallet/keypairs])
-        selected-keypair   (rf/sub [:wallet/selected-keypair])
-        profile-picture    (profile.utils/photo profile-with-image)
-        [selected-key-uid set-selected-key-uid] (rn/use-state selected-keypair)]
+        profile-with-image                           (rf/sub [:profile/profile-with-image])
+        keypairs                                     (rf/sub [:wallet/keypairs])
+        selected-keypair                             (rf/sub [:wallet/selected-keypair])
+        profile-picture                              (profile.utils/photo profile-with-image)
+        [selected-key-uid set-selected-key-uid]      (rn/use-state selected-keypair)]
     ;(rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
@@ -89,7 +89,7 @@
        :title-right-props {:icon                :i/add
                            :customization-color customization-color
                            :on-press            #(rf/dispatch
-                                                   [:show-bottom-sheet {:content keypair-options}])}
+                                                  [:show-bottom-sheet {:content keypair-options}])}
        :description       :text
        :description-text  (i18n/label :t/keypairs-description)}]
      [rn/flat-list
@@ -105,5 +105,6 @@
        :button-one-label (i18n/label :t/confirm-account-origin)
        :button-one-props {:disabled?           (= selected-keypair selected-key-uid)
                           :customization-color customization-color
-                          :on-press #(rf/dispatch [:wallet/confirm-account-origin selected-key-uid])}
+                          :on-press            #(rf/dispatch [:wallet/confirm-account-origin
+                                                              selected-key-uid])}
        :container-style  style/bottom-action-container}]]))

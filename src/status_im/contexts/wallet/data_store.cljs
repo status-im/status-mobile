@@ -106,7 +106,9 @@
 
 (defn rename-color-id-in-data
   [data]
-  (let [sorted-data (sort-by #(if (some (fn [account] (string/starts-with? (:path account) constants/path-eip1581)) (:accounts %))
+  (let [sorted-data (sort-by #(if (some (fn [account]
+                                          (string/starts-with? (:path account) constants/path-eip1581))
+                                        (:accounts %))
                                 0
                                 1)
                              data)]
@@ -114,13 +116,14 @@
            (update item
                    :accounts
                    (fn [accounts]
-                     (map (fn [account]
-                            (let [renamed-account (set/rename-keys account
-                                                                   {:colorId :customization-color})]
-                              (if (and (contains? account :colorId) (seq (get account :colorId)))
-                                (assoc renamed-account :customization-color (keyword (get account :colorId)))
-                                (assoc renamed-account :customization-color :blue))))
-                          accounts))))
+                     (map
+                      (fn [account]
+                        (let [renamed-account (set/rename-keys account
+                                                               {:colorId :customization-color})]
+                          (if (and (contains? account :colorId) (seq (get account :colorId)))
+                            (assoc renamed-account :customization-color (keyword (get account :colorId)))
+                            (assoc renamed-account :customization-color :blue))))
+                      accounts))))
          sorted-data)))
 
 

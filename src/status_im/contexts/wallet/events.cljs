@@ -238,16 +238,16 @@
   [{:keys [db]} [keypairs]]
   (let [parsed-keypairs (data-store/parse-keypairs keypairs)
         default-key-uid (:key-uid (first parsed-keypairs))]
-  {:db (-> db
-           (assoc-in [:wallet :keypairs] parsed-keypairs)
-           (assoc-in [:wallet :selected-keypair] default-key-uid))}))
+    {:db (-> db
+             (assoc-in [:wallet :keypairs] parsed-keypairs)
+             (assoc-in [:wallet :selected-keypair] default-key-uid))}))
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 
 (defn confirm-account-origin
   [{:keys [db]} [key-uid]]
-    {:db (assoc-in db [:wallet :selected-keypair] key-uid)
-     :fx [[:dispatch [:navigate-back]]]})
+  {:db (assoc-in db [:wallet :selected-keypair] key-uid)
+   :fx [[:dispatch [:navigate-back]]]})
 
 (rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)
 
