@@ -40,7 +40,6 @@
          :on-change-color     on-change-color
          :on-change-emoji     on-change-emoji
          :watch-only?         true
-         :bottom-action?      true
          :bottom-action-label :t/add-watched-address
          :bottom-action-props {:customization-color @account-color
                                :disabled?           (string/blank? @account-name)

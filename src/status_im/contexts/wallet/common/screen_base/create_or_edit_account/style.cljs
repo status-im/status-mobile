@@ -1,4 +1,5 @@
-(ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.style)
+(ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.style
+  (:require [quo.foundations.colors :as colors]))
 
 (defn root-container
   [top]
@@ -49,7 +50,8 @@
    :margin-bottom 12})
 
 (defn bottom-action
-  [bottom]
+  [{:keys [bottom theme]}]
   {:padding-horizontal 20
    :padding-vertical   12
+   :background-color   (colors/theme-colors colors/white colors/neutral-100 theme)
    :margin-bottom      bottom})

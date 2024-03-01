@@ -52,7 +52,8 @@
      :remove-listeners    remove-listeners}))
 
 (defn view
-  [{:keys [header footer customization-color footer-container-padding gradient-cover?]
+  [{:keys [header footer customization-color footer-container-padding header-container-style
+           gradient-cover?]
     :or   {footer-container-padding (safe-area/get-top)}} &
    children]
   (reagent/with-let [window-height                (:height (rn/get-window))
@@ -85,7 +86,9 @@
       [:<>
        (when gradient-cover? [quo/gradient-cover {:customization-color customization-color}])
        [rn/view {:style style/page-container}
-        [rn/view {:on-layout set-header-height}
+        [rn/view
+         {:on-layout set-header-height
+          :style     header-container-style}
          header]
         [rn/scroll-view
          {:on-scroll               set-content-y-scroll
