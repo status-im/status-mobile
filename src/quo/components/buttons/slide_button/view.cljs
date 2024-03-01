@@ -86,7 +86,6 @@
                                                                   on-complete
                                                                   reset-fn)
                                                    [gestures-disabled? sliding-complete? disabled?])]
-    (rn/use-effect #(set-gestures-disabled disabled?) [disabled?])
     [gesture/gesture-detector
      {:gesture gesture}
      [reanimated/view
