@@ -78,12 +78,12 @@
 (defn send-contact-request
   [{:keys [db]} [id message]]
   (when (not= id (get-in db [:profile/profile :public-key]))
-    {:json-rpc/call
-     [{:method      "wakuext_sendContactRequest"
-       :js-response true
-       :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
-       :on-error    [:contact.ui/send-contact-request-failure id]
-       :on-success  [:contact.ui/send-contact-request-success]}]}))
+    {:fx [[:json-rpc/call
+           [{:method      "wakuext_sendContactRequest"
+             :js-response true
+             :params      [{:id id :message (or message (i18n/label :t/add-me-to-your-contacts))}]
+             :on-error    [:contact.ui/send-contact-request-failure id]
+             :on-success  [:contact.ui/send-contact-request-success]}]]]}))
 
 (rf/reg-event-fx :contact.ui/send-contact-request send-contact-request)
 
