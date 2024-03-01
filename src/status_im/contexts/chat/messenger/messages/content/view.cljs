@@ -81,7 +81,7 @@
         contact             (rf/sub [:contacts/contact-by-address chat-id])
         photo-path          (when (seq (:images contact)) (rf/sub [:chats/photo-path chat-id]))
         customization-color (rf/sub [:profile/customization-color])
-        public-key          (rf/sub [:multiaccount/public-key])]
+        public-key          (rf/sub [:profile/public-key])]
     [quo/system-message
      {:type                type
       :timestamp           timestamp-str
