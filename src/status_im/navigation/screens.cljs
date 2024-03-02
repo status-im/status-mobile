@@ -174,7 +174,7 @@
      :component settings-syncing/view}
 
     {:name      :settings-setup-syncing
-     :options   (merge options/dark-screen {:insets {:top? true}})
+     :options   options/transparent-screen-options
      :component settings-setup-syncing/view}
 
     ;; Onboarding
