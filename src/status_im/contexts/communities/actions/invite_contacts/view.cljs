@@ -1,7 +1,6 @@
 (ns status-im.contexts.communities.actions.invite-contacts.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [quo.theme]
     [react-native.core :as rn]
@@ -25,8 +24,7 @@
        [quo/text
         {:weight :semi-bold
          :size   :paragraph-1
-         :style  {:margin-bottom 2
-                  :margin-top    12}}
+         :style  style/no-contacts-text}
         (i18n/label :t/you-have-no-contacts)]
        [quo/text
         {:weight :regular
@@ -37,8 +35,7 @@
          :theme               theme
          :type                :primary
          :size                32
-         :container-style     {:margin-top    20
-                               :margin-bottom 12}
+         :container-style     style/no-contacts-button-container
          :on-press            #(rf/dispatch [:communities/share-community-url-with-data id])}
         (i18n/label :t/send-community-link)]
        [quo/button
@@ -46,8 +43,7 @@
          :theme               theme
          :type                :grey
          :size                32
-         :on-press            #(do
-                                 (share/open {:url universal-profile-url}))}
+         :on-press            #(share/open {:url universal-profile-url})}
         (i18n/label :t/invite-friends-to-status)]])))
 
 (defn- contact-item-render
@@ -68,7 +64,8 @@
 (defn view-internal
   [{:keys [theme]}]
   (let [{:keys [id]}          (rf/sub [:get-screen-params])
-        {:keys [name images]} (rf/sub [:communities/community id])]
+        {:keys [name images]} (rf/sub [:communities/community id])
+        contacts              (rf/sub [:contacts/filtered-active-sections])]
     (fn []
       (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
       (let [selected                (rf/sub [:group/selected-contacts])
@@ -85,7 +82,7 @@
                                                               (i18n/label
                                                                :t/n-users-were-invited
                                                                {:count selected-contacts-count}))}]))
-            window-height           (:height (rn/get-window))]
+            {window-height :height} (rn/get-window)]
         [rn/view {:flex 1}
          [rn/view {:padding-horizontal 20}
           [quo/button
@@ -97,17 +94,15 @@
            [quo/text
             {:weight :semi-bold
              :size   :heading-1
-             :style  {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
+             :style  (style/invite-to-community-text theme)}
             (i18n/label :t/invite-to-community)]]
           [quo/context-tag
            {:type            :community
             :size            24
             :community-logo  (:thumbnail images)
             :community-name  name
-            :container-style {:align-self    :flex-start
-                              :margin-top    -8
-                              :margin-bottom 12}}]]
-         (if (empty? (rf/sub [:contacts/filtered-active-sections]))
+            :container-style style/context-tag}]]
+         (if (empty? contacts)
            [no-contacts-view
             {:theme theme
              :id    id}]
@@ -115,12 +110,9 @@
             [gesture/section-list
              {:key-fn                         :public-key
               :sticky-section-headers-enabled false
-              :sections                       (rf/sub [:contacts/filtered-active-sections])
+              :sections                       contacts
               :render-section-header-fn       contact-list/contacts-section-header
-              :content-container-style        {:padding-bottom   70
-                                               :background-color (colors/theme-colors colors/white
-                                                                                      colors/neutral-95
-                                                                                      theme)}
+              :content-container-style        (style/section-list-container-style theme)
               :render-fn                      contact-item-render
               :style                          {:height window-height}}]
             (when (pos? selected-contacts-count)
