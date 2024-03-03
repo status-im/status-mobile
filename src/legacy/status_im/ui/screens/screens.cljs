@@ -290,26 +290,6 @@
                          :top?    true}}
     :component group-chat/add-participants-toggle-list}
 
-   ;[Communities] Invite people
-   {:name      :legacy-invite-people-community
-    ;;TODO dyn title
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component communities.invite/legacy-invite}
-   ;[Wallet] Recipient
-   {:name      :recipient
-    ;;TODO accessories
-    :options   {:insets {:bottom? true
-                         :top?    true}}
-    :component recipient/recipient}
-
-   ;[Wallet] New favourite
-   {:name      :new-favourite
-    :options   {:topBar {:title {:text (i18n/label :t/new-favourite)}}
-                :insets {:bottom? true
-                         :top?    true}}
-    :component recipient/new-favourite}
-
    ;QR Scanner
    {:name      :qr-scanner
     ;;TODO custom topbar

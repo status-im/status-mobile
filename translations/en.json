@@ -2578,6 +2578,7 @@
     "offline-community-member": "Offline",
     "invite-to-community": "Invite to community",
     "invite-n-users": "Invite {{count}} users",
+    "invite-1-user": "Invite 1 user",
     "one-user-was-invited": "1 user was invited",
     "n-users-were-invited": "{{count}} users were invited"
 }

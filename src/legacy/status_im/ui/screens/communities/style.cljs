@@ -13,8 +13,7 @@
   {:position         :absolute
    :bottom           (+ 12 (safe-area/get-bottom))
    :left             20
-   :right            20
-   :background-color :white})
+   :right            20})
 
 (defn no-contacts
   []
