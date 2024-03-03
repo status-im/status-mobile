@@ -16,7 +16,10 @@
 (defn- no-contacts-view
   [{:keys [theme id]}]
   (let [customization-color             (rf/sub [:profile/customization-color])
-        {:keys [universal-profile-url]} (rf/sub [:profile/profile])]
+        {:keys [universal-profile-url]} (rf/sub [:profile/profile])
+        on-press-share-community        (rn/use-callback
+                                         #(rf/dispatch [:communities/share-community-url-with-data id]))
+        on-press-share-profile          (rn/use-callback #(share/open {:url universal-profile-url}))]
     (fn []
       [rn/view
        {:style (style/no-contacts)}
@@ -36,14 +39,14 @@
          :type                :primary
          :size                32
          :container-style     style/no-contacts-button-container
-         :on-press            #(rf/dispatch [:communities/share-community-url-with-data id])}
+         :on-press            on-press-share-community}
         (i18n/label :t/send-community-link)]
        [quo/button
         {:customization-color customization-color
          :theme               theme
          :type                :grey
          :size                32
-         :on-press            #(share/open {:url universal-profile-url})}
+         :on-press            on-press-share-profile}
         (i18n/label :t/invite-friends-to-status)]])))
 
 (defn- contact-item-render
