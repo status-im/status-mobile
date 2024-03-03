@@ -413,10 +413,12 @@
  (fn [[accounts airdrop-address]]
    (first (filter #(= (:address %) airdrop-address) accounts))))
 
-(re-frame/reg-sub :communities/token-requirements-images
- :<- [:communities]
- (fn [communities [_ community-id]]
-   (->> (get-in communities [community-id :tokens-metadata])
+(re-frame/reg-sub
+ :communities/token-images-by-symbol
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [tokens-metadata]}] _]
+   (->> tokens-metadata
         (map (fn [{sym :symbol image :image}]
                {sym image}))
         (into {}))))

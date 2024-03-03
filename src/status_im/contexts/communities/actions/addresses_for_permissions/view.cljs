@@ -19,7 +19,7 @@
     nil))
 
 (defn- balances->components-props
-  [balances token-images-map]
+  [balances images-by-symbol]
   (for [{:keys [amount decimals type name] sym :symbol :as balance} balances]
     (cond-> balance
       true
@@ -31,24 +31,24 @@
 
       (= type constants/community-token-type-erc721)
       (assoc :collectible-name    name
-             :collectible-img-src (token-images-map sym))
+             :collectible-img-src (images-by-symbol sym))
 
       (= type constants/community-token-type-erc20)
       (assoc :amount        (str (money/token->unit amount decimals))
              :token         (:symbol balance)
-             :token-img-src (token-images-map sym)))))
+             :token-img-src (images-by-symbol sym)))))
 
 (defn- account-item
   [{:keys [color address name emoji]} _ _
    {:keys [selected-addresses community-id share-all-addresses? community-color]}]
   (let [balances         (rf/sub [:communities/permissioned-balances-by-address community-id address])
-        token-images-map (rf/sub [:communities/token-requirements-images community-id])]
+        images-by-symbol (rf/sub [:communities/token-images-by-symbol community-id])]
     [quo/account-permissions
      {:account             {:name                name
                             :address             address
                             :emoji               emoji
                             :customization-color color}
-      :token-details       (balances->components-props balances token-images-map)
+      :token-details       (balances->components-props balances images-by-symbol)
       :checked?            (contains? selected-addresses address)
       :disabled?           share-all-addresses?
       :on-change           #(rf/dispatch [:communities/toggle-selected-permission-address
