@@ -1,4 +1,4 @@
-(ns legacy.status-im.ui.screens.communities.style
+(ns status-im.contexts.communities.actions.invite-contacts.style
   (:require
     [react-native.safe-area :as safe-area]))
 

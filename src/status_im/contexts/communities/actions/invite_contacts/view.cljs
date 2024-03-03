@@ -1,7 +1,5 @@
-(ns legacy.status-im.ui.screens.communities.invite
+(ns status-im.contexts.communities.actions.invite-contacts.view
   (:require
-    [legacy.status-im.communities.core :as communities]
-    [legacy.status-im.ui.screens.communities.style :as style]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
@@ -11,6 +9,8 @@
     [react-native.share :as share]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
+    [status-im.contexts.communities.actions.invite-contacts.style :as style]
+    [status-im.contexts.communities.events :as communities]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -133,4 +133,4 @@
                   (i18n/label :t/invite-1-user)
                   (i18n/label :t/invite-n-users {:count selected-contacts-count}))]])])]))))
 
-(def legacy-invite (quo.theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))
