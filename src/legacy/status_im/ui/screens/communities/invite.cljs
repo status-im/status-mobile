@@ -1,18 +1,16 @@
 (ns legacy.status-im.ui.screens.communities.invite
   (:require
-    [legacy.status-im.communities.core :as communities]
-    [legacy.status-im.ui.screens.communities.style :as style]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.blur :as blur]
-    [react-native.core :as rn]
-    [react-native.gesture :as gesture]
-    [react-native.platform :as platform]
-    [status-im.common.contact-list-item.view :as contact-list-item]
-    [status-im.common.contact-list.view :as contact-list]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [legacy.status-im.communities.core :as communities]
+   [legacy.status-im.ui.screens.communities.style :as style]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.gesture :as gesture]
+   [status-im.common.contact-list-item.view :as contact-list-item]
+   [status-im.common.contact-list.view :as contact-list]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- contact-item-render
   [_]
@@ -42,21 +40,16 @@
                                                     selected id])
                                       (rf/dispatch [:navigate-back])
                                       (rf/dispatch [:toasts/upsert
-                                                    {:type  :negative
-                                                     :theme :dark
+                                                    {:type  :positive
+                                                     :theme theme
                                                      :text  (if (= 1 selected-contacts-count)
                                                               (i18n/label :t/one-user-was-invited)
                                                               (i18n/label
                                                                :t/n-users-were-invited
-                                                               {:count selected-contacts-count}))}]))]
-        [rn/view
-         {:flex 1}
-         [blur/view
-          {:style         {:padding-horizontal 20}
-           :blur-amount   0
-           :blur-type     :transparent
-           :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur)
-           :blur-radius   (if platform/ios? 20 10)}
+                                                               {:count selected-contacts-count}))}]))
+            window-height           (:height (rn/get-window))]
+        [rn/view {:flex 1}
+         [rn/view {:padding-horizontal 20}
           [quo/button
            {:type       :grey
             :size       32
@@ -75,21 +68,26 @@
             :community-name  name
             :container-style {:align-self    :flex-start
                               :margin-top    -8
-                              :margin-bottom 8}}]]
+                              :margin-bottom 12}}]]
          [gesture/section-list
           {:key-fn                         :public-key
            :sticky-section-headers-enabled false
            :sections                       (rf/sub [:contacts/filtered-active-sections])
            :render-section-header-fn       contact-list/contacts-section-header
-           :content-container-style        {:padding-bottom 70}
-           :render-fn                      contact-item-render}]
+           :content-container-style        {:padding-bottom   150
+                                            :background-color (colors/theme-colors colors/white
+                                                                                   colors/neutral-95
+                                                                                   theme)}
+           :render-fn                      contact-item-render
+           :style                          {:height (- window-height 100)}}]
          (when (pos? selected-contacts-count)
-           [rn/view
+           [rn/view {:style style/chat-button}
             [quo/button
              {:type                :primary
               :accessibility-label :next-button
-              :container-style     style/chat-button
               :on-press            on-press}
-             (i18n/label :t/invite-n-users {:count selected-contacts-count})]])]))))
+             (if (= 1 selected-contacts-count)
+               (i18n/label :t/invite-1-user)
+               (i18n/label :t/invite-n-users {:count selected-contacts-count}))]])]))))
 
 (def legacy-invite (quo.theme/with-theme view-internal))
