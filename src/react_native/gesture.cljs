@@ -115,14 +115,14 @@
   (let [data (flatten-sections sections)]
     [flat-list
      (merge props
-            {:data data
-             :render-fn
-             (fn [p1 p2 p3 p4]
-               [:<>
-                (if (:header? p1)
-                  [render-section-header-fn p1 p2 p3 p4]
-                  [render-fn p1 p2 p3 p4])
-                (when (and render-section-footer-fn (is-last-item-in-section data p2))
-                  [render-section-footer-fn p1 p2 p3 p4])])
+            {:data                  data
+             :render-fn             (fn [p1 p2 p3 p4]
+                                      [:<>
+                                       (if (:header? p1)
+                                         [render-section-header-fn p1 p2 p3 p4]
+                                         [render-fn p1 p2 p3 p4])
+                                       (when (and render-section-footer-fn
+                                                  (is-last-item-in-section data p2))
+                                         [render-section-footer-fn p1 p2 p3 p4])])
              :sticky-header-indices (when sticky-section-headers-enabled
                                       (find-sticky-indices data))})]))
