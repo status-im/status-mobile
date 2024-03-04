@@ -30,7 +30,7 @@
      :style  {:margin-left 4}}
     (case type
       :token       (str amount " " token)
-      :collectible collectible-name
+      :collectible (str amount " " collectible-name)
       nil)]
    (when divider?
      [rn/view

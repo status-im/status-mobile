@@ -13,9 +13,6 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
-    [status-im.contexts.communities.actions.addresses-for-permissions.view :as
-     addresses-for-permissions]
-    [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -125,14 +122,6 @@
     {:name      :community-account-selection
      :options   {:sheet? true}
      :component communities.accounts-selection/view}
-
-    {:name      :addresses-for-permissions
-     :options   {:sheet? true}
-     :component addresses-for-permissions/view}
-
-    {:name      :airdrop-addresses
-     :options   {:sheet? true}
-     :component airdrop-addresses/view}
 
     {:name      :lightbox
      :options   options/lightbox
