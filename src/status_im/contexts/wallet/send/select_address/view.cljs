@@ -23,47 +23,52 @@
 
 (defn- address-input
   [input-value input-focused?]
-  (fn []
-    (let [current-screen-id        (rf/sub [:navigation/current-screen-id])
-          scanned-address          (rf/sub [:wallet/scanned-address])
-          send-address             (rf/sub [:wallet/wallet-send-to-address])
-          recipient                (rf/sub [:wallet/wallet-send-recipient])
-          recipient-plain-address? (= send-address recipient)
-          valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
-          chain-id                 (rf/sub [:chain-id])
-          contacts                 (rf/sub [:contacts/active])]
-      [quo/address-input
-       {:on-focus              #(reset! input-focused? true)
-        :on-blur               #(reset! input-focused? false)
-        :on-scan               (fn []
-                                 (rn/dismiss-keyboard!)
-                                 (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:open-modal :scan-address]))
-        :ens-regex             constants/regx-ens
-        :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
-        :address-regex         constants/regx-multichain-address
-        :on-detect-address     #(when (or (= current-screen-id :wallet-select-address)
-                                          (= current-screen-id :scan-address))
-                                  ; ^ this check is to prevent effect being triggered when screen is
-                                  ; loaded but not being shown to the user (deep in the navigation
-                                  ; stack) and avoid undesired behaviors
-                                  (debounce/debounce-and-dispatch
-                                   [:wallet/validate-address %]
-                                   300))
-        :on-detect-ens         (fn [text cb]
-                                 (when (or (= current-screen-id :wallet-select-address)
-                                           (= current-screen-id :scan-address))
-                                   ; ^ this check is to prevent effect being triggered when screen
-                                   ; is loaded but not being shown to the user (deep in the
-                                   ; navigation stack) and avoid undesired behaviors
-                                   (debounce/debounce-and-dispatch
-                                    [:wallet/find-ens text contacts chain-id cb]
-                                    300)))
-        :on-change-text        (fn [text]
-                                 (when (empty? text)
-                                   (rf/dispatch [:wallet/clean-local-suggestions]))
-                                 (reset! input-value text))
-        :valid-ens-or-address? valid-ens-or-address?}])))
+  (let [set-value-fn (atom nil)]
+    (fn []
+      (let [current-screen-id        (rf/sub [:navigation/current-screen-id])
+            scanned-address          (rf/sub [:wallet/scanned-address])
+            send-address             (rf/sub [:wallet/wallet-send-to-address])
+            recipient                (rf/sub [:wallet/wallet-send-recipient])
+            recipient-plain-address? (= send-address recipient)
+            valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
+            chain-id                 (rf/sub [:chain-id])
+            contacts                 (rf/sub [:contacts/active])]
+        (when (and @set-value-fn scanned-address)
+          (@set-value-fn scanned-address)
+          (reset! set-value-fn nil))
+        [quo/address-input
+         {:on-focus              #(reset! input-focused? true)
+          :on-blur               #(reset! input-focused? false)
+          :on-scan               (fn [set-value]
+                                   (reset! set-value-fn set-value)
+                                   (rn/dismiss-keyboard!)
+                                   (rf/dispatch [:wallet/clean-scanned-address])
+                                   (rf/dispatch [:open-modal :scan-address]))
+          :ens-regex             constants/regx-ens
+          :default-value         (when recipient-plain-address? send-address)
+          :address-regex         constants/regx-multichain-address
+          :on-detect-address     #(when (or (= current-screen-id :wallet-select-address)
+                                            (= current-screen-id :scan-address))
+                                    ; ^ this check is to prevent effect being triggered when screen
+                                    ; is loaded but not being shown to the user (deep in the
+                                    ; navigation stack) and avoid undesired behaviors
+                                    (debounce/debounce-and-dispatch
+                                     [:wallet/validate-address %]
+                                     300))
+          :on-detect-ens         (fn [text cb]
+                                   (when (or (= current-screen-id :wallet-select-address)
+                                             (= current-screen-id :scan-address))
+                                     ; ^ this check is to prevent effect being triggered when screen
+                                     ; is loaded but not being shown to the user (deep in the
+                                     ; navigation stack) and avoid undesired behaviors
+                                     (debounce/debounce-and-dispatch
+                                      [:wallet/find-ens text contacts chain-id cb]
+                                      300)))
+          :on-change-text        (fn [text]
+                                   (when (empty? text)
+                                     (rf/dispatch [:wallet/clean-local-suggestions]))
+                                   (reset! input-value text))
+          :valid-ens-or-address? valid-ens-or-address?}]))))
 
 (defn- ens-linked-address
   [{:keys [address networks theme]}]

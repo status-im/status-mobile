@@ -150,10 +150,12 @@
                           (not hidden-screen?)
                           (:current-chat-id db))
                      (conj [:chat/close]))})
-    {:db          (-> db
-                      (assoc :view-id go-to-view-id)
-                      (dissoc :modal-view-ids))
-     :navigate-to go-to-view-id}))
+    (let [modal-view-ids (navigation.utils/remove-current-modal-stack (:modal-view-ids db))]
+      {:navigate-to go-to-view-id
+       :db          (cond-> db
+                      true                       (assoc :view-id go-to-view-id)
+                      (seq modal-view-ids)       (assoc :modal-view-ids modal-view-ids)
+                      (not (seq modal-view-ids)) (dissoc :modal-view-ids))})))
 
 (rf/defn shell-navigate-back
   {:events [:shell/navigate-back]}

@@ -81,13 +81,15 @@
 
 (rf/defn init-root
   {:events [:init-root]}
-  [_ root-id]
-  {:set-root root-id})
+  [{:keys [db]} root-id]
+  {:set-root root-id
+   :db       (dissoc db :modal-view-ids)})
 
 (rf/defn set-stack-root
   {:events [:set-stack-root]}
-  [_ stack root]
-  {:set-stack-root-fx [stack root]})
+  [{:keys [db]} stack root]
+  {:set-stack-root-fx [stack root]
+   :db                (dissoc db :modal-view-ids)})
 
 (rf/defn change-tab
   {:events [:navigate-change-tab]}
