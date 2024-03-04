@@ -7,6 +7,7 @@
     status-im.contexts.shell.jump-to.effects
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
     [status-im.navigation.state :as navigation.state]
+    [status-im.navigation.utils :as navigation.utils]
     [utils.re-frame :as rf]))
 
 ;;;; Events
@@ -176,8 +177,11 @@
                shell.constants/close-screen-with-slide-to-right-animation))}
        (when (and current-chat-id community-id)
          {:dispatch [:shell/add-switcher-card shell.constants/community-screen community-id]}))
-      {:navigate-back nil
-       :db            (dissoc db :modal-view-ids)})))
+      (let [modal-view-ids (navigation.utils/remove-last-view-from-modals (:modal-view-ids db))]
+        {:navigate-back nil
+         :db            (if modal-view-ids
+                          (assoc db :modal-view-ids modal-view-ids)
+                          (dissoc db :modal-view-ids))}))))
 
 (rf/defn floating-screen-opened
   {:events [:shell/floating-screen-opened]}

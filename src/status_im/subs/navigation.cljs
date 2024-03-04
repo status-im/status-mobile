@@ -7,4 +7,7 @@
  :<- [:view-id]
  :<- [:modal-view-ids]
  (fn [[view-id modal-view-ids]]
-   (or (peek modal-view-ids) view-id)))
+   (or (some-> modal-view-ids
+               last
+               last)
+       view-id)))
