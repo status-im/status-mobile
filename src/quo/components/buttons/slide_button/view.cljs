@@ -17,24 +17,23 @@
   [x-pos disabled? track-width sliding-complete?
    set-sliding-complete
    on-complete reset-fn]
-  (let [gestures-enabled? (not disabled?)]
-    (-> (gesture/gesture-pan)
-        (gesture/with-test-ID :slide-button-gestures)
-        (gesture/enabled gestures-enabled?)
-        (gesture/min-distance 0)
-        (gesture/on-update (fn [event]
-                             (let [x-translation (oops/oget event "translationX")
-                                   clamped-x     (utils/clamp-value x-translation 0 track-width)
-                                   reached-end?  (>= clamped-x track-width)]
-                               (reanimated/set-shared-value x-pos clamped-x)
-                               (when (and reached-end? (not sliding-complete?))
-                                 (set-sliding-complete true)
-                                 (when on-complete (on-complete reset-fn))))))
-        (gesture/on-end (fn [event]
-                          (let [x-translation (oops/oget event "translationX")
-                                reached-end?  (>= x-translation track-width)]
-                            (when (not reached-end?)
-                              (animations/reset-track-position x-pos))))))))
+  (-> (gesture/gesture-pan)
+      (gesture/with-test-ID :slide-button-gestures)
+      (gesture/enabled (not disabled?))
+      (gesture/min-distance 0)
+      (gesture/on-update (fn [event]
+                           (let [x-translation (oops/oget event "translationX")
+                                 clamped-x     (utils/clamp-value x-translation 0 track-width)
+                                 reached-end?  (>= clamped-x track-width)]
+                             (reanimated/set-shared-value x-pos clamped-x)
+                             (when (and reached-end? (not sliding-complete?))
+                               (set-sliding-complete true)
+                               (when on-complete (on-complete reset-fn))))))
+      (gesture/on-end (fn [event]
+                        (let [x-translation (oops/oget event "translationX")
+                              reached-end?  (>= x-translation track-width)]
+                          (when (not reached-end?)
+                            (animations/reset-track-position x-pos)))))))
 
 (defn view
   "Options
