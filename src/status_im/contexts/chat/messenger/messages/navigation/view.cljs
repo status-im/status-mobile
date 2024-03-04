@@ -15,6 +15,7 @@
     [status-im.contexts.chat.messenger.messages.pin.banner.view :as pin.banner]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
+    [utils.worklets.chat.messenger.messages :as messages.worklets]
     [utils.worklets.chat.messenger.navigation :as worklets]))
 
 (defn f-header-content-container
@@ -103,15 +104,20 @@
        :banner-opacity banner-opacity
        :top-offset     navigation-view-height}]]))
 
-(defn f-view
+(defn view
   [{:keys [distance-from-list-top chat-screen-layout-calculations-complete?]}]
   (let [{:keys [chat-id chat-type] :as chat} (rf/sub [:chats/current-chat-chat-view])
         all-loaded?                          (reanimated/use-shared-value false)
         all-loaded-sub                       (rf/sub [:chats/all-loaded? chat-id])
         top-insets                           (safe-area/get-top)
         top-bar-height                       messages.constants/top-bar-height
-        navigation-view-height               (+ top-bar-height top-insets)]
-    (reanimated/set-shared-value all-loaded? all-loaded-sub)
+        navigation-view-height               (+ top-bar-height top-insets)
+        reached-top?                         (messages.worklets/use-messages-scrolled-to-top
+                                              distance-from-list-top
+                                              top-bar-height)
+        button-background                    (if reached-top? :photo :blur)]
+    (rn/use-effect (fn [] (reanimated/set-shared-value all-loaded? all-loaded-sub))
+                   [all-loaded-sub])
     [rn/view
      {:style (style/navigation-view navigation-view-height messages.constants/pinned-banner-height)}
      [:f> f-animated-background-and-pinned-banner
@@ -123,7 +129,7 @@
       [quo/button
        {:icon-only?          true
         :type                :grey
-        :background          :blur
+        :background          button-background
         :size                32
         :accessibility-label :back-button
         :on-press            #(rf/dispatch [:navigate-back])}
@@ -136,7 +142,7 @@
       [quo/button
        {:icon-only?          true
         :type                :grey
-        :background          :blur
+        :background          button-background
         :size                32
         :accessibility-label :options-button
         :on-press            (fn []

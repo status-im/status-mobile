@@ -1,4 +1,5 @@
-import { withTiming, runOnJS } from 'react-native-reanimated';
+import { useAnimatedReaction, withTiming, runOnJS } from 'react-native-reanimated';
+import { useState } from "react"
 
 export function messagesListOnScroll(distanceFromListTop, chatListScrollY, callback) {
   return function (event) {
@@ -11,4 +12,18 @@ export function messagesListOnScroll(distanceFromListTop, chatListScrollY, callb
     chatListScrollY.value = currentY;
     runOnJS(callback)(layoutHeight, newDistance);
   };
+}
+
+export function useMessagesScrolledToTop(distanceFromListTop, threshold) {
+    const [scrolledToTop, setScrolledToTop] = useState(false)
+
+    useAnimatedReaction(function () {
+	return distanceFromListTop.value <= threshold;
+    }, function (current, previous) {
+	if(current !== previous && current !== scrolledToTop) {
+	    runOnJS(setScrolledToTop)(current)
+	}
+    }, [scrolledToTop])
+
+    return scrolledToTop
 }
