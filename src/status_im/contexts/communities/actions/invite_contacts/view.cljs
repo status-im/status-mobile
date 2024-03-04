@@ -9,7 +9,6 @@
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
     [status-im.contexts.communities.actions.invite-contacts.style :as style]
-    [status-im.contexts.communities.events :as communities]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
