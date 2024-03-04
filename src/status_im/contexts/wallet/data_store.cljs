@@ -122,4 +122,4 @@
 (defn parse-keypairs
   [keypairs]
   (let [renamed-data (rename-color-id-in-data keypairs)]
-    (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
+    (cske/transform-keys transforms/->kebab-case-keyword renamed-data)))
