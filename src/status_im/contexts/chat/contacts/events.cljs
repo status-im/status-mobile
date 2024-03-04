@@ -27,7 +27,10 @@
    :has-added-us?         (oops/oget js-contact "hasAddedUs")
    :mutual?               (oops/oget js-contact "mutual")
    :emoji-hash            (oops/oget js-contact "emojiHash")
-   :bio                   (oops/oget js-contact "bio")})
+   :bio                   (oops/oget js-contact "bio")
+   :customization-color   (-> js-contact
+                              (oops/oget "customizationColor")
+                              keyword)})
 
 (defn prepare-events-for-contact
   [db chats-js]
