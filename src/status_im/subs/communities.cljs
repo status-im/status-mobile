@@ -95,8 +95,8 @@
 (def memo-communities-stack-items (atom nil))
 
 (defn- merge-opened-communities
-  [{:keys [joined] :as assorted-communities}]
-  (update assorted-communities :opened concat joined))
+  [{:keys [joined pending] :as assorted-communities}]
+  (update assorted-communities :opened concat joined pending))
 
 (defn- group-communities-by-status
   [requests
