@@ -1,9 +1,12 @@
 (ns status-im.contexts.syncing.setup-syncing.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [react-native.safe-area :as safe-area]))
 
-(def container-main
+(defn container-main
+  []
   {:background-color colors/neutral-95
+   :padding-top      (safe-area/get-top)
    :flex             1})
 
 (def page-container
