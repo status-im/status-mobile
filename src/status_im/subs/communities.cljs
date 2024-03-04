@@ -1,11 +1,11 @@
 (ns status-im.subs.communities
   (:require
-    [clojure.string :as string]
-    [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [re-frame.core :as re-frame]
-    [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.utils :as wallet.utils]
-    [utils.i18n :as i18n]))
+   [clojure.string :as string]
+   [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+   [re-frame.core :as re-frame]
+   [status-im.constants :as constants]
+   [status-im.contexts.wallet.common.utils :as wallet.utils]
+   [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :communities/fetching-community
@@ -94,8 +94,14 @@
 
 (def memo-communities-stack-items (atom nil))
 
+(defn- merge-opened-communities
+  [{:keys [joined] :as assorted-communities}]
+  (update assorted-communities :opened concat joined))
+
 (defn- group-communities-by-status
-  [requests {:keys [id] :as community}]
+  [requests
+   {:keys [id]
+    :as   community}]
   (cond
     (:joined community)         :joined
     (boolean (get requests id)) :pending
@@ -113,11 +119,19 @@
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
      (let [grouped-communities (->> communities
                                     vals
-                                    (sort-by (fn [{:keys [requested-to-join-at last-opened-at
-                                                          joined-at]}]
-                                               (or last-opened-at (max requested-to-join-at joined-at)))
-                                             #(compare %2 %1))
-                                    (group-by #(group-communities-by-status requests %)))]
+                                    (group-by #(group-communities-by-status requests %))
+                                    merge-opened-communities
+                                    (map (fn [[k v]]
+                                           {k (sort-by (fn [{:keys [requested-to-join-at last-opened-at
+                                                                    joined-at]}]
+                                                         (condp = k
+                                                           :joined  joined-at
+                                                           :pending requested-to-join-at
+                                                           :opened  last-opened-at
+                                                           last-opened-at))
+                                                       #(compare %2 %1)
+                                                       v)}))
+                                    (into {}))]
        (reset! memo-communities-stack-items grouped-communities)
        grouped-communities)
      @memo-communities-stack-items)))
@@ -194,10 +208,10 @@
  :<- [:communities/requests-to-join]
  (fn [requests [_ community-id]]
    (->>
-     (get requests community-id {})
-     vals
-     (filter (fn [{:keys [state]}]
-               (= state constants/request-to-join-pending-state))))))
+    (get requests community-id {})
+    vals
+    (filter (fn [{:keys [state]}]
+              (= state constants/request-to-join-pending-state))))))
 
 (re-frame/reg-sub
  :community/categories
@@ -367,9 +381,9 @@
    (get-in communities [community-id :intro-message])))
 
 (re-frame/reg-sub :communities/permissioned-balances-by-address
- :<- [:communities/permissioned-balances]
- (fn [balances [_ community-id account-address]]
-   (get-in balances [community-id (keyword account-address)])))
+                  :<- [:communities/permissioned-balances]
+                  (fn [balances [_ community-id account-address]]
+                    (get-in balances [community-id (keyword account-address)])))
 
 (re-frame/reg-sub
  :communities/selected-permission-addresses
