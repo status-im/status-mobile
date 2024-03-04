@@ -29,7 +29,7 @@
            (let [{:keys [name preferred-name display-name]} (:profile/profile db)]
              [:json-rpc/call
               [{:method     "wakuext_sendContactUpdates"
-                :params     [(or preferred-name display-name name) ""]
+                :params     [(or preferred-name display-name name) "" ""]
                 :on-success #(log/debug "sent contact update")}]]))]}))
 
 (rf/reg-event-fx :profile.settings/change-webview-debug
