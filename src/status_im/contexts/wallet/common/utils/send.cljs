@@ -16,3 +16,7 @@
       (let [gas-price     (money/bignumber (get gas-fees :gas-price))
             total-gas-fee (money/mul gas-amount gas-price)]
         (money/with-precision (money/div total-gas-fee billion) 10)))))
+
+(defn calculate-full-route-gas-fee
+  [route]
+  (reduce money/add (map calculate-gas-fee route)))

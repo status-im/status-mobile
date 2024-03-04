@@ -86,6 +86,10 @@
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]))
 
+(defn- acc-list-card
+  [item & _rest]
+  [account-list-card/view item])
+
 (defn- view-internal
   [{:keys [default-selected?]}]
   (let [selected? (reagent/atom default-selected?)]
@@ -102,7 +106,7 @@
          [details-view props]]]
        [rn/flat-list
         {:data      accounts
-         :render-fn account-list-card/view
+         :render-fn acc-list-card
          :separator [rn/view {:style {:height 8}}]
          :style     {:padding-horizontal 8}}]])))
 

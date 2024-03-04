@@ -16,19 +16,22 @@
    (get networks (if test-networks-enabled? :test :prod))))
 
 (def mainnet-network-details
-  {:source       (resources/get-network constants/mainnet-network-name)
-   :short-name   constants/mainnet-short-name
-   :network-name constants/mainnet-network-name})
+  {:source           (resources/get-network constants/mainnet-network-name)
+   :short-name       constants/mainnet-short-name
+   :network-name     constants/mainnet-network-name
+   :abbreviated-name constants/mainnet-abbreviated-name})
 
 (def arbitrum-network-details
-  {:source       (resources/get-network constants/arbitrum-network-name)
-   :short-name   constants/arbitrum-short-name
-   :network-name constants/arbitrum-network-name})
+  {:source           (resources/get-network constants/arbitrum-network-name)
+   :short-name       constants/arbitrum-short-name
+   :network-name     constants/arbitrum-network-name
+   :abbreviated-name constants/arbitrum-abbreviated-name})
 
 (def optimism-network-details
-  {:source       (resources/get-network constants/optimism-network-name)
-   :short-name   constants/optimism-short-name
-   :network-name constants/optimism-network-name})
+  {:source           (resources/get-network constants/optimism-network-name)
+   :short-name       constants/optimism-short-name
+   :network-name     constants/optimism-network-name
+   :abbreviated-name constants/optimism-abbreviated-name})
 
 (defn get-network-details
   [chain-id]

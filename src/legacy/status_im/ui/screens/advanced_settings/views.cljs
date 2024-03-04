@@ -28,7 +28,7 @@
      :accessibility-label :network-button
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:navigate-to :network-settings])
+     #(re-frame/dispatch [:open-modal :network-settings])
      :accessory :text
      :accessory-text network-name
      :chevron true}
@@ -37,13 +37,13 @@
      :accessibility-label :network-button
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:navigate-to :network-info])
+     #(re-frame/dispatch [:open-modal :network-info])
      :chevron true}
     {:size :small
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
      :on-press
-     #(re-frame/dispatch [:navigate-to :log-level-settings])
+     #(re-frame/dispatch [:open-modal :log-level-settings])
      :accessory :text
      :accessory-text current-log-level
      :chevron true}
@@ -51,7 +51,7 @@
      :title (i18n/label :t/fleet)
      :accessibility-label :fleet-settings-button
      :on-press
-     #(re-frame/dispatch [:navigate-to :fleet-settings])
+     #(re-frame/dispatch [:open-modal :fleet-settings])
      :accessory :text
      :accessory-text current-fleet
      :chevron true}
@@ -66,14 +66,14 @@
      :accessibility-label :rpc-usage-info
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:navigate-to :rpc-usage-info])
+     #(re-frame/dispatch [:open-modal :rpc-usage-info])
      :chevron true}
     {:size :small
      :title (i18n/label :t/peers-stats)
      :accessibility-label :peers-stats
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:navigate-to :peers-stats])
+     #(re-frame/dispatch [:open-modal :peers-stats])
      :chevron true}
     {:size :small
      :title (i18n/label :t/light-client-enabled)
@@ -123,7 +123,7 @@
      :title               (i18n/label :t/set-currency)
      :accessibility-label :wallet-change-currency
      :on-press            #(hide-sheet-and-dispatch
-                            [:navigate-to :currency-settings])
+                            [:open-modal :currency-settings])
      :chevron             true}]))
 
 (defn- flat-list-data

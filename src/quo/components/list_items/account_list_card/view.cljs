@@ -2,13 +2,15 @@
   (:require
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.icon :as icon]
+    [quo.components.list-items.account-list-card.schema :as component-schema]
     [quo.components.list-items.account-list-card.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.address-text.view :as address-text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn- internal-view
   []
@@ -39,4 +41,6 @@
                                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
             :accessibility-label :icon}]])])))
 
-(def view (quo.theme/with-theme internal-view))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'internal-view component-schema/?schema)))

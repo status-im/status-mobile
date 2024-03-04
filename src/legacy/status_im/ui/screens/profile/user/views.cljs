@@ -102,7 +102,7 @@
                :chevron              true
                :icon                 :main-icons/username}
         registrar
-        (assoc :on-press #(re-frame/dispatch [:navigate-to :ens-main registrar])))]
+        (assoc :on-press #(re-frame/dispatch [:open-modal :ens-main registrar])))]
      [list.item/list-item
       {:title               (i18n/label :t/contacts)
        :icon                :main-icons/in-contacts
@@ -112,7 +112,7 @@
                               (str active-contacts-count)
                               (i18n/label :t/none))
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :contacts-list])}]
+       :on-press            #(re-frame/dispatch [:open-modal :contacts-list])}]
      [react/view {:padding-top 16}
       [quo/list-header (i18n/label :t/settings)]]
      [list.item/list-item
@@ -122,71 +122,71 @@
        :chevron             true
        :accessory           (when mnemonic
                               [components.common/counter {:size 22} 1])
-       :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}]
+       :on-press            #(re-frame/dispatch [:open-modal :privacy-and-security])}]
      (when config/quo-preview-enabled?
        [list.item/list-item
         {:icon                :main-icons/appearance
          :title               "Quo Preview"
          :accessibility-label :appearance-settings-button
          :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
+         :on-press            #(re-frame/dispatch [:open-modal :quo-preview])}])
      (when config/quo-preview-enabled?
        [list.item/list-item
         {:icon                :main-icons/appearance
          :title               "Status IM Components"
          :accessibility-label :status-im-common-components
          :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :status-im-preview])}])
+         :on-press            #(re-frame/dispatch [:open-modal :status-im-preview])}])
      [list.item/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)
        :accessibility-label :appearance-settings-button
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :appearance])}]
+       :on-press            #(re-frame/dispatch [:open-modal :appearance])}]
      [list.item/list-item
       {:icon                :main-icons/notification
        :title               (i18n/label :t/notifications)
        :accessibility-label :notifications-settings-button
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :notifications])}]
+       :on-press            #(re-frame/dispatch [:open-modal :notifications])}]
      [list.item/list-item
       {:icon                :main-icons/mobile
        :title               (i18n/label :t/sync-settings)
        :accessibility-label :sync-settings-button
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}]
+       :on-press            #(re-frame/dispatch [:open-modal :sync-settings])}]
      (when keycard-pairing
        [list.item/list-item
         {:icon                :main-icons/keycard
          :title               (i18n/label :t/keycard)
          :accessibility-label :keycard-button
          :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :keycard-settings])}])
+         :on-press            #(re-frame/dispatch [:open-modal :keycard-settings])}])
      [list.item/list-item
       {:icon                :main-icons/settings-advanced
        :title               (i18n/label :t/advanced)
        :accessibility-label :advanced-button
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :advanced-settings])}]
+       :on-press            #(re-frame/dispatch [:open-modal :advanced-settings])}]
      [list.item/list-item
       {:icon                :main-icons/help
        :title               (i18n/label :t/need-help)
        :accessibility-label :help-button
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :help-center])}]
+       :on-press            #(re-frame/dispatch [:open-modal :help-center])}]
      [list.item/list-item
       {:icon                :main-icons/info
        :title               (i18n/label :t/about-app)
        :accessibility-label :about-button
        :chevron             true
-       :on-press            #(re-frame/dispatch [:navigate-to :about-app])}]
+       :on-press            #(re-frame/dispatch [:open-modal :about-app])}]
      (when local-pairing-mode-enabled?
        [list.item/list-item
         {:icon                :i/mobile
          :title               (i18n/label :t/syncing)
          :accessibility-label :syncing
          :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :settings-syncing])}])
+         :on-press            #(re-frame/dispatch [:open-modal :settings-syncing])}])
      [react/view {:padding-vertical 24}
       [list.item/list-item
        {:icon :main-icons/log-out
