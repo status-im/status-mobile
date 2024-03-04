@@ -432,18 +432,17 @@
  (fn [{:keys [db]} [community-id last-opened-at]]
    {:db (assoc-in db [:communities community-id :last-opened-at] last-opened-at)}))
 
-(rf/defn share-community
-  {:events [::share-community-confirmation-pressed]}
-  [cofx users community-id]
-  (when (seq users)
-    {:json-rpc/call [{:method      "wakuext_shareCommunity"
-                      :params      [{:communityId community-id
-                                     :users       (vec users)}]
-                      :js-response true
-                      :on-success  #(rf/dispatch [::people-invited %])
-                      :on-error    #(do
-                                      (log/error "failed to invite-user community" %)
-                                      (rf/dispatch [::failed-to-share-community %]))}]}))
+(rf/reg-event-fx :share-community-confirmation-pressed
+ (fn [_ [users-public-keys community-id]]
+   (when (seq users-public-keys)
+     {:json-rpc/call [{:method      "wakuext_shareCommunity"
+                       :params      [{:communityId community-id
+                                      :users       users-public-keys}]
+                       :js-response true
+                       :on-success  #(rf/dispatch [::people-invited %])
+                       :on-error    (fn [err]
+                                      (log/error "failed to invite-user community" err)
+                                      (rf/dispatch [::failed-to-share-community err]))}]})))
 
 (rf/reg-event-fx :communities/invite-people-pressed
  (fn [{:keys [db]} [id]]

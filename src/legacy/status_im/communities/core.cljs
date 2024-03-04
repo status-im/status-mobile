@@ -30,23 +30,6 @@
   [_ response-js]
   {:dispatch [:sanitize-messages-and-process-response response-js]})
 
-(rf/defn invite-users
-  {:events [::invite-people-confirmation-pressed]}
-  [cofx user-pk contacts]
-  (let [community-id (fetch-community-id-input cofx)
-        pks          (if (seq user-pk)
-                       (conj contacts user-pk)
-                       contacts)]
-    (when (seq pks)
-      {:json-rpc/call [{:method      "wakuext_inviteUsersToCommunity"
-                        :params      [{:communityId community-id
-                                       :users       pks}]
-                        :js-response true
-                        :on-success  #(re-frame/dispatch [::people-invited %])
-                        :on-error    #(do
-                                        (log/error "failed to invite-user community" %)
-                                        (re-frame/dispatch [::failed-to-invite-people %]))}]})))
-
 (rf/defn people-invited
   {:events [::people-invited]}
   [cofx response-js]
