@@ -74,7 +74,7 @@
             {:keys [name images]}   (rf/sub [:communities/community id])
             selected-contacts-count (count selected)
             on-press                (fn []
-                                      (rf/dispatch [::communities/share-community-confirmation-pressed
+                                      (rf/dispatch [:communities/share-community-confirmation-pressed
                                                     selected id])
                                       (rf/dispatch [:navigate-back])
                                       (rf/dispatch [:toasts/upsert
