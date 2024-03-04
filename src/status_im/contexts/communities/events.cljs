@@ -439,7 +439,7 @@
                        :params      [{:communityId community-id
                                       :users       users-public-keys}]
                        :js-response true
-                       :on-success  #(rf/dispatch [::people-invited %])
+                       :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
                        :on-error    (fn [err]
                                       (log/error "failed to invite-user community" err)
                                       (rf/dispatch [::failed-to-share-community err]))}]})))
