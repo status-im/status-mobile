@@ -15,7 +15,7 @@
 
 (defn view
   [{:keys [scroll-y]}]
-  (let [{:keys [public-key customization-color
+  (let [{:keys [public-key customization-color ens-name
                 emoji-hash bio contact-request-state]
          :as   profile}     (rf/sub [:contacts/current-contact])
         customization-color (or customization-color :blue)
@@ -26,7 +26,11 @@
         on-contact-request  (rn/use-callback #(rf/dispatch [:show-bottom-sheet
                                                             {:content (fn [] [contact-request/view])}]))
         on-contact-review   (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                            {:content (fn [] [contact-review/view])}]))]
+                                                            {:content (fn [] [contact-review/view])}]))
+        on-start-chat       (rn/use-callback #(rf/dispatch [:chat.ui/start-chat
+                                                            public-key
+                                                            ens-name])
+                                             [ens-name public-key])]
     [rn/view {:style style/header-container}
      [rn/view {:style style/header-top-wrapper}
       [rn/view {:style style/avatar-wrapper}
@@ -64,5 +68,12 @@
          {:on-press  on-contact-review
           :icon-left :i/add-user}
          (i18n/label :t/contact-request-review)]]
+
+       (= contact-request-state constants/contact-request-state-mutual)
+       [rn/view {:style style/button-wrapper}
+        [quo/button
+         {:on-press  on-start-chat
+          :icon-left :i/messages}
+         (i18n/label :t/send-message)]]
 
        :else nil)]))
