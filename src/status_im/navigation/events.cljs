@@ -28,14 +28,14 @@
 (rf/defn navigate-to-within-stack
   {:events [:navigate-to-within-stack]}
   [{:keys [db]} comp-id]
-  {:db (update db :modal-view-ids navigation.utils/add-view-to-modals (first comp-id))
+  {:db (update db :modal-view-ids navigation.utils/add-view-to-modal-stack (first comp-id))
    :fx [[:navigate-to-within-stack comp-id]]})
 
 (re-frame/reg-event-fx :open-modal
  (fn [{:keys [db]} [component screen-params]]
    {:db (-> db
             (assoc :view-id component)
-            (update :modal-view-ids navigation.utils/add-stack-to-modals component)
+            (update :modal-view-ids navigation.utils/add-stack-to-modal-stacks component)
             (all-screens-params component screen-params))
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:open-modal-fx component]]}))
@@ -43,7 +43,7 @@
 (rf/defn dismiss-modal
   {:events [:dismiss-modal]}
   [{:keys [db]} comp-id]
-  {:db            (update db :modal-view-ids navigation.utils/remove-last-modal-stack)
+  {:db            (update db :modal-view-ids navigation.utils/remove-current-modal-stack)
    :dismiss-modal comp-id})
 
 (rf/defn navigate-back
@@ -54,13 +54,14 @@
 (rf/defn navigate-back-within-stack
   {:events [:navigate-back-within-stack]}
   [{:keys [db]} comp-id]
-  {:db (update db :modal-view-ids navigation.utils/remove-last-view-from-modals)
+  {:db (update db :modal-view-ids navigation.utils/remove-last-view-from-current-modal-stack)
    :fx [[:navigate-back-within-stack comp-id]]})
 
 (rf/defn navigate-back-to
   {:events [:navigate-back-to]}
   [{:keys [db]} comp-id]
-  (let [modal-view-ids (navigation.utils/remove-modal-views-until-comp-id (:modal-view-ids db) comp-id)]
+  (let [modal-view-ids (navigation.utils/remove-views-from-modal-stack-until-comp-id (:modal-view-ids db)
+                                                                                     comp-id)]
     (assoc {:navigate-back-to comp-id}
            :db
            (if modal-view-ids

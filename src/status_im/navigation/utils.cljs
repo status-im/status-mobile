@@ -1,6 +1,6 @@
 (ns status-im.navigation.utils)
 
-(defn add-view-to-modals
+(defn add-view-to-modal-stack
   [modal-view-ids new-id]
   (if-let [current-stack (and (seq modal-view-ids) (last modal-view-ids))]
     (let [updated-stack (conj current-stack new-id)
@@ -8,7 +8,7 @@
       (conj without-last updated-stack))
     modal-view-ids))
 
-(defn remove-last-view-from-modals
+(defn remove-last-view-from-current-modal-stack
   [modal-view-ids]
   (if (empty? modal-view-ids)
     modal-view-ids
@@ -19,19 +19,19 @@
         without-last-stack
         (conj without-last-stack updated-last-stack)))))
 
-(defn add-stack-to-modals
+(defn add-stack-to-modal-stacks
   [modal-view-ids first-view-id]
   (if (seq modal-view-ids)
     (conj modal-view-ids [first-view-id])
     [[first-view-id]]))
 
-(defn remove-last-modal-stack
+(defn remove-current-modal-stack
   [modal-view-ids]
   (if (seq modal-view-ids)
     (vec (butlast modal-view-ids))
     []))
 
-(defn remove-modal-views-until-comp-id
+(defn remove-views-from-modal-stack-until-comp-id
   [modal-view-ids comp-id]
   (let [found-index (first (keep-indexed (fn [idx stack]
                                            (when (some #{comp-id} stack) idx))
