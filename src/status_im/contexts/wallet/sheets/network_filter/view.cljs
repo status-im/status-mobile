@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.common.sheets.network-filter.view
+(ns status-im.contexts.wallet.sheets.network-filter.view
   (:require
     [quo.core :as quo]
     [reagent.core :as reagent]

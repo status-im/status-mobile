@@ -1,10 +1,10 @@
-(ns status-im.contexts.wallet.common.sheets.account-origin.view
+(ns status-im.contexts.wallet.sheets.account-origin.view
   (:require
     [quo.core :as quo]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.constants :as const]
-    [status-im.contexts.wallet.common.sheets.account-origin.style :as style]
+    [status-im.contexts.wallet.sheets.account-origin.style :as style]
     [utils.i18n :as i18n]))
 
 (defn- header

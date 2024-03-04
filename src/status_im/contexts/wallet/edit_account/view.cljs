@@ -5,10 +5,10 @@
             [reagent.core :as reagent]
             [status-im.contexts.wallet.common.screen-base.create-or-edit-account.view
              :as create-or-edit-account]
-            [status-im.contexts.wallet.common.sheets.network-preferences.view
-             :as network-preferences]
-            [status-im.contexts.wallet.common.sheets.remove-account.view :as remove-account]
             [status-im.contexts.wallet.edit-account.style :as style]
+            [status-im.contexts.wallet.sheets.network-preferences.view
+             :as network-preferences]
+            [status-im.contexts.wallet.sheets.remove-account.view :as remove-account]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))

@@ -45,20 +45,13 @@
             (update-in [:wallet :ui :send] dissoc :route)
             (update-in [:wallet :ui :send] dissoc :loading-suggested-routes?))}))
 
-(rf/reg-event-fx :wallet/select-send-account-address
- (fn [{:keys [db]} [{:keys [address stack-id]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :send-account-address] address)
-            (update-in [:wallet :ui :send] dissoc :to-address))
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-select-asset stack-id]]]]}))
-
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
 
 (rf/reg-event-fx
  :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
+ (fn [{:keys [db]} [{:keys [address token? recipient stack-id]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          test-net?           (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
@@ -73,7 +66,7 @@
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
       :fx [[:dispatch
             [:navigate-to-within-stack
-             (if token
+             (if token?
                [:wallet-send-input-amount stack-id]
                [:wallet-select-asset stack-id])]]]})))
 
