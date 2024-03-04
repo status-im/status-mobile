@@ -1,11 +1,11 @@
 (ns status-im.subs.communities
   (:require
-   [clojure.string :as string]
-   [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-   [re-frame.core :as re-frame]
-   [status-im.constants :as constants]
-   [status-im.contexts.wallet.common.utils :as wallet.utils]
-   [utils.i18n :as i18n]))
+    [clojure.string :as string]
+    [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [re-frame.core :as re-frame]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as wallet.utils]
+    [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :communities/fetching-community
@@ -208,10 +208,10 @@
  :<- [:communities/requests-to-join]
  (fn [requests [_ community-id]]
    (->>
-    (get requests community-id {})
-    vals
-    (filter (fn [{:keys [state]}]
-              (= state constants/request-to-join-pending-state))))))
+     (get requests community-id {})
+     vals
+     (filter (fn [{:keys [state]}]
+               (= state constants/request-to-join-pending-state))))))
 
 (re-frame/reg-sub
  :community/categories
@@ -381,9 +381,9 @@
    (get-in communities [community-id :intro-message])))
 
 (re-frame/reg-sub :communities/permissioned-balances-by-address
-                  :<- [:communities/permissioned-balances]
-                  (fn [balances [_ community-id account-address]]
-                    (get-in balances [community-id (keyword account-address)])))
+ :<- [:communities/permissioned-balances]
+ (fn [balances [_ community-id account-address]]
+   (get-in balances [community-id (keyword account-address)])))
 
 (re-frame/reg-sub
  :communities/selected-permission-addresses
