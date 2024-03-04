@@ -38,7 +38,7 @@
                                          modal-view-ids))]
     (if found-index
       (let [target-stack  (nth modal-view-ids found-index)
-            comp-id-index (.indexOf target-stack comp-id)
+            comp-id-index (.lastIndexOf target-stack comp-id)
             updated-stack (take (inc comp-id-index) target-stack)]
         (assoc modal-view-ids found-index updated-stack))
       modal-view-ids)))
