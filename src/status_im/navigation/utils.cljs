@@ -4,7 +4,7 @@
   [modal-view-ids new-id]
   (if-let [current-stack (and (seq modal-view-ids) (last modal-view-ids))]
     (let [updated-stack (conj current-stack new-id)
-          without-last  (butlast modal-view-ids)]
+          without-last  (vec (butlast modal-view-ids))]
       (conj without-last updated-stack))
     modal-view-ids))
 
@@ -13,8 +13,8 @@
   (if (empty? modal-view-ids)
     modal-view-ids
     (let [last-stack         (last modal-view-ids)
-          updated-last-stack (butlast last-stack)
-          without-last-stack (butlast modal-view-ids)]
+          updated-last-stack (vec (butlast last-stack))
+          without-last-stack (vec (butlast modal-view-ids))]
       (if (empty? updated-last-stack)
         without-last-stack
         (conj without-last-stack updated-last-stack)))))
