@@ -177,10 +177,9 @@
                shell.constants/close-screen-with-slide-to-right-animation))}
        (when (and current-chat-id community-id)
          {:dispatch [:shell/add-switcher-card shell.constants/community-screen community-id]}))
-      (let [modal-view-ids (navigation.utils/remove-last-view-from-current-modal-stack (:modal-view-ids
-                                                                                        db))]
+      (let [modal-view-ids (navigation.utils/remove-current-modal-stack (:modal-view-ids db))]
         {:navigate-back nil
-         :db            (if modal-view-ids
+         :db            (if (seq modal-view-ids)
                           (assoc db :modal-view-ids modal-view-ids)
                           (dissoc db :modal-view-ids))}))))
 
