@@ -432,7 +432,7 @@
  (fn [{:keys [db]} [community-id last-opened-at]]
    {:db (assoc-in db [:communities community-id :last-opened-at] last-opened-at)}))
 
-(rf/reg-event-fx :share-community-confirmation-pressed
+(rf/reg-event-fx :communities/share-community-confirmation-pressed
  (fn [_ [users-public-keys community-id]]
    (when (seq users-public-keys)
      {:json-rpc/call [{:method      "wakuext_shareCommunity"
