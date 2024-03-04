@@ -49,29 +49,29 @@
          :on-press            on-press-share-profile}
         (i18n/label :t/invite-friends-to-status)]])))
 
-(defn- contact-item-render
-  [_]
-  (fn [{:keys [public-key] :as item}]
-    (let [user-selected? (rf/sub [:is-contact-selected? public-key])
-          on-toggle      #(if user-selected?
-                            (rf/dispatch [:deselect-contact public-key])
-                            (rf/dispatch [:select-contact public-key]))]
-      [contact-list-item/contact-list-item
-       {:on-press                on-toggle
-        :allow-multiple-presses? true
-        :accessory               {:type     :checkbox
-                                  :checked? user-selected?
-                                  :on-check on-toggle}}
-       item])))
+(defn- contact-item
+  [{:keys [public-key] :as item}]
+  (let [user-selected? (rf/sub [:is-contact-selected? public-key])
+        on-toggle      (fn []
+                         (if user-selected?
+                           (rf/dispatch [:deselect-contact public-key])
+                           (rf/dispatch [:select-contact public-key])))]
+    [contact-list-item/contact-list-item
+     {:on-press                on-toggle
+      :allow-multiple-presses? true
+      :accessory               {:type     :checkbox
+                                :checked? user-selected?
+                                :on-check on-toggle}}
+     item]))
 
 (defn view-internal
   [{:keys [theme]}]
-  (let [{:keys [id]}          (rf/sub [:get-screen-params])
-        {:keys [name images]} (rf/sub [:communities/community id])
-        contacts              (rf/sub [:contacts/filtered-active-sections])]
+  (let [{:keys [id]} (rf/sub [:get-screen-params])
+        contacts     (rf/sub [:contacts/filtered-active-sections])]
     (fn []
       (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
       (let [selected                (rf/sub [:group/selected-contacts])
+            {:keys [name images]}   (rf/sub [:communities/community id])
             selected-contacts-count (count selected)
             on-press                (fn []
                                       (rf/dispatch [::communities/share-community-confirmation-pressed
@@ -116,7 +116,7 @@
               :sections                       contacts
               :render-section-header-fn       contact-list/contacts-section-header
               :content-container-style        (style/section-list-container-style theme)
-              :render-fn                      contact-item-render
+              :render-fn                      contact-item
               :style                          {:height window-height}}]
             (when (pos? selected-contacts-count)
               [rn/view {:style style/chat-button}
