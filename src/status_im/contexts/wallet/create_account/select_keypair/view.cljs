@@ -73,7 +73,7 @@
   (let [{:keys [compressed-key customization-color]} (rf/sub [:profile/profile])
         profile-with-image                           (rf/sub [:profile/profile-with-image])
         keypairs                                     (rf/sub [:wallet/keypairs])
-        selected-keypair                             (rf/sub [:wallet/selected-keypair])
+        selected-keypair                             (rf/sub [:wallet/selected-keypair-uid])
         profile-picture                              (profile.utils/photo profile-with-image)
         [selected-key-uid set-selected-key-uid]      (rn/use-state selected-keypair)]
     (rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))

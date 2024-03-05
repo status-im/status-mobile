@@ -85,29 +85,8 @@
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]))
 
-(defn- acc-list-card
-  [item & _rest]
-  [account-list-card/view item])
-
 (defn- view-internal
   [{:keys [accounts action container-style selected? on-press] :as props}]
-<<<<<<< HEAD
-      [rn/pressable
-       {:style    (merge (style/container (merge props {:selected? selected?})) container-style)
-        :on-press #(when (= action :selector) (on-press))}
-       [rn/view {:style style/header-container}
-        [avatar props]
-        [rn/view
-         {:style {:margin-left 8
-                  :flex        1}}
-         [title-view (assoc props :selected? selected?)]
-         [details-view props]]]
-       [rn/flat-list
-        {:data      accounts
-         :render-fn acc-list-card
-         :separator [rn/view {:style {:height 8}}]
-         :style     {:padding-horizontal 8}}]])
-=======
   [rn/pressable
    {:style    (merge (style/container (merge props {:selected? selected?})) container-style)
     :on-press #(when (= action :selector) (on-press))}
@@ -123,6 +102,5 @@
      :render-fn account-list-card/view
      :separator [rn/view {:style {:height 8}}]
      :style     {:padding-horizontal 8}}]])
->>>>>>> afdac25f1 (lint)
 
 (def view (quo.theme/with-theme view-internal))
