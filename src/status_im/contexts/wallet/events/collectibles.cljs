@@ -94,9 +94,10 @@
                                            {:request-id id
                                             :account    account
                                             :amount     collectibles-per-account}]])
-                                       rand-request-ids accounts)]
+                                       rand-request-ids
+                                       accounts)]
      {:db (cond-> db
-            :always (assoc-in [:wallet :ui :collectibles :pending-requests] num-accounts)
+            :always      (assoc-in [:wallet :ui :collectibles :pending-requests] num-accounts)
             new-request? (update-in [:wallet :accounts] update-vals #(dissoc % :collectibles)))
       :fx collectible-requests})))
 
@@ -115,7 +116,8 @@
   [db owner-address collectibles offset has-more?]
   (-> db
       (assoc-in [:wallet :ui :collectibles :fetched owner-address] collectibles)
-      (assoc-in [:wallet :accounts owner-address :current-collectible-idx] (+ offset (count collectibles)))
+      (assoc-in [:wallet :accounts owner-address :current-collectible-idx]
+                (+ offset (count collectibles)))
       (assoc-in [:wallet :accounts owner-address :has-more-collectibles?] has-more?)))
 
 (rf/reg-event-fx
@@ -123,12 +125,18 @@
  (fn [{:keys [db]} [{:keys [message]}]]
    (let [{:keys [offset ownershipStatus collectibles
                  hasMore]} (transforms/json->clj message)
-         collectibles     (cske/transform-keys transforms/->kebab-case-keyword collectibles)
-         pending-requests (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
-         owner-address    (some->> ownershipStatus first key name)]
+         collectibles      (cske/transform-keys transforms/->kebab-case-keyword collectibles)
+         pending-requests  (dec (get-in db [:wallet :ui :collectibles :pending-requests]))
+         owner-address     (some->> ownershipStatus
+                                    first
+                                    key
+                                    name)]
      {:db (cond-> db
             :always       (assoc-in [:wallet :ui :collectibles :pending-requests] pending-requests)
-            owner-address (update-fetched-collectibles-progress owner-address collectibles offset hasMore))
+            owner-address (update-fetched-collectibles-progress owner-address
+                                                                collectibles
+                                                                offset
+                                                                hasMore))
       :fx [(when (zero? pending-requests)
              [:dispatch [:wallet/flush-collectibles-fetched]])]})))
 
