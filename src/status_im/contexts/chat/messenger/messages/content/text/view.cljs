@@ -56,14 +56,16 @@
       :mention
       (conj
        units
-       [rn/pressable
-        {:on-press #(rf/dispatch [:chat.ui/show-profile literal])
-         :style    (style/mention-tag-wrapper first-child-mention)}
-        [quo/text
-         {:weight :medium
-          :style  style/mention-tag-text
-          :size   :paragraph-1}
-         (rf/sub [:messages/resolve-mention literal])]])
+       (let [resolved-mention (rf/sub [:messages/resolve-mention literal])]
+         [rn/pressable
+          {:on-press #(rf/dispatch [:chat.ui/show-profile literal])
+           :key      resolved-mention
+           :style    (style/mention-tag-wrapper first-child-mention)}
+          [quo/text
+           {:weight :medium
+            :style  style/mention-tag-text
+            :size   :paragraph-1}
+           resolved-mention]]))
 
       :edited
       (conj units
