@@ -15,3 +15,12 @@
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
     :margin-top         margin-top}))
+
+(def status-tag-wrapper
+  {:flex-direction :row
+   :padding-top    12
+   :padding-right  12})
+
+(def header-top-wrapper
+  {:flex-direction  :row
+   :justify-content :space-between})
