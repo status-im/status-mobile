@@ -166,6 +166,8 @@
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]
    (let [{:keys [address]} (:profile/profile db)]
+     ;; this address is the primary-keypair address. Need to use the selected-keypair address
+     (println "qqq" address)
      {:fx [[:json-rpc/call
             [{:method     "wallet_getDerivedAddresses"
               :params     [sha3-pwd address [path]]

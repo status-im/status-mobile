@@ -33,7 +33,7 @@
       :profile-picture     profile-picture}]
     [icon-avatar/icon-avatar
      {:size    :size-32
-      :icon    :i/placeholder
+      :icon    :i/seed
       :border? true}]))
 
 (defn title-view

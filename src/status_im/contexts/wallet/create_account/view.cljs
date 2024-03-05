@@ -23,14 +23,14 @@
 
 
 (defn- get-keypair-data
-  [primary-name derivation-path account-color {:keys [keypair-name]}]
-  [{:title             (or keypair-name (i18n/label :t/keypair-title {:name primary-name}))
-    :image             (if keypair-name :icon :avatar)
-    :image-props       (if keypair-name
-                         :i/seed
-                         {:full-name           (utils.string/get-initials primary-name 1)
+  [title primary-keypair? derivation-path account-color {:keys [keypair-name]}]
+  [{:title             (or keypair-name (if primary-keypair? (i18n/label :t/keypair-title {:name title}) title))
+    :image             (if primary-keypair? :avatar :icon)
+    :image-props       (if primary-keypair?
+                         {:full-name           (utils.string/get-initials title 1)
                           :size                :xxs
-                          :customization-color account-color})
+                          :customization-color account-color}
+                         :i/seed)
     :action            (when-not keypair-name :button)
     :action-props      {:on-press    (fn []
                                        (rf/dispatch [:navigate-to :screen/wallet.select-keypair]))
@@ -57,22 +57,24 @@
 
 (defn- f-view
   []
-  (let [top                          (safe-area/get-top)
-        bottom                       (safe-area/get-bottom)
-        account-color                (reagent/atom (rand-nth colors/account-colors))
-        emoji                        (reagent/atom (emoji-picker.utils/random-emoji))
-        number-of-accounts           (count (rf/sub [:wallet/accounts-without-watched-accounts]))
-        account-name                 (reagent/atom "")
-        placeholder                  (i18n/label :t/default-account-placeholder
-                                                 {:number (inc number-of-accounts)})
-        derivation-path              (reagent/atom (utils/get-derivation-path number-of-accounts))
-        {:keys [public-key address]} (rf/sub [:profile/profile])
-        on-change-text               #(reset! account-name %)
-        primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                     public-key]))
-        {window-width :width}        (rn/get-window)]
+  (let [top                (safe-area/get-top)
+        bottom             (safe-area/get-bottom)
+        account-color      (reagent/atom (rand-nth colors/account-colors))
+        emoji              (reagent/atom (emoji-picker.utils/random-emoji))
+        number-of-accounts (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        account-name       (reagent/atom "")
+        placeholder        (i18n/label :t/default-account-placeholder
+                                       {:number (inc number-of-accounts)})
+        derivation-path    (reagent/atom (utils/get-derivation-path number-of-accounts))
+        {:keys [public-key address customization-color]} (rf/sub [:profile/profile])
+        on-change-text     #(reset! account-name %)
+        {window-width :width} (rn/get-window)]
     (fn [{:keys [theme]}]
-      (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
+      (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])
+            keypairs           (rf/sub [:wallet/keypairs])
+            selected-keypair   (rf/sub [:wallet/selected-keypair])
+            keypair            (first (filter #(= (:key-uid %) selected-keypair) keypairs))
+            primary-keypair?     (= selected-keypair (:key-uid (first keypairs)))]
         ;(rn/use-effect (fn [] (rf/dispatch [:wallet/clear-new-keypair])))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
@@ -128,7 +130,7 @@
          [quo/category
           {:list-type :settings
            :label     (i18n/label :t/origin)
-           :data      (get-keypair-data primary-name @derivation-path @account-color new-keypair)}]
+           :data      (get-keypair-data (:name keypair) primary-keypair? @derivation-path customization-color new-keypair)}]
          [standard-auth/slide-button
           {:size                :size-48
            :track-text          (i18n/label :t/slide-to-create-account)
@@ -136,20 +138,20 @@
            :on-auth-success     (fn [entered-password]
                                   (if new-keypair
                                     (rf/dispatch
-                                     [:wallet/add-keypair-and-create-account
-                                      {:sha3-pwd    (security/safe-unmask-data
-                                                     entered-password)
-                                       :new-keypair (create-account.utils/prepare-new-keypair
-                                                     {:new-keypair new-keypair
-                                                      :address address
-                                                      :account-name @account-name
-                                                      :account-color @account-color
-                                                      :emoji @emoji
-                                                      :derivation-path
-                                                      @derivation-path})}])
+                                      [:wallet/add-keypair-and-create-account
+                                       {:sha3-pwd    (security/safe-unmask-data
+                                                       entered-password)
+                                        :new-keypair (create-account.utils/prepare-new-keypair
+                                                       {:new-keypair   new-keypair
+                                                        :address       address
+                                                        :account-name  @account-name
+                                                        :account-color @account-color
+                                                        :emoji         @emoji
+                                                        :derivation-path
+                                                        @derivation-path})}])
                                     (rf/dispatch [:wallet/derive-address-and-add-account
                                                   {:sha3-pwd     (security/safe-unmask-data
-                                                                  entered-password)
+                                                                   entered-password)
                                                    :emoji        @emoji
                                                    :color        @account-color
                                                    :path         @derivation-path
