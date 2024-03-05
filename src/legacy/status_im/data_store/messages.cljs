@@ -42,11 +42,15 @@
 
 (defn- <-link-preview-rpc
   [preview]
-  (update preview :thumbnail set/rename-keys {:dataUri :data-uri}))
+  (-> preview
+      (update :thumbnail set/rename-keys {:dataUri :data-uri})
+      (update :favicon set/rename-keys {:dataUri :data-uri})))
 
 (defn ->link-preview-rpc
   [preview]
-  (update preview :thumbnail set/rename-keys {:data-uri :dataUri}))
+  (-> preview
+      (update :thumbnail set/rename-keys {:data-uri :dataUri})
+      (update :favicon set/rename-keys {:data-uri :dataUri})))
 
 (defn <-rpc
   [message]

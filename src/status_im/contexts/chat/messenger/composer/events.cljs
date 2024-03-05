@@ -218,7 +218,7 @@
   (->> link-previews
        (map #(select-keys %
                           [:url :title :description :thumbnail
-                           :status-link-preview?]))
+                           :status-link-preview? :favicon]))
        (map data-store.messages/->link-preview-rpc)
        (filter (fn [preview]
                  (not (:status-link-preview? preview))))))
