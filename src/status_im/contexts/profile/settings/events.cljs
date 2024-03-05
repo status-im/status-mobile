@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.settings.events
   (:require [clojure.string :as string]
             [legacy.status-im.bottom-sheet.events :as bottom-sheet.events]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             status-im.contexts.profile.settings.effects
             [taoensso.timbre :as log]
@@ -90,6 +91,16 @@
              :preview-privacy?
              (boolean private?)
              {})))
+
+(re-frame/reg-event-fx :profile.settings/toggle-peer-syncing
+ (fn [{:keys [db]}]
+   (let [value     (get-in db [:profile/profile :peer-syncing-enabled?])
+         new-value (not value)]
+     {:db (assoc-in db [:profile/profile :peer-syncing-enabled?] new-value)
+      :fx [[:json-rpc/call
+            [{:method   "wakuext_togglePeerSyncing"
+              :params   [{:enabled new-value}]
+              :on-error #(log/error "failed to toggle peer syncing" new-value %)}]]]})))
 
 (rf/defn change-profile-pictures-show-to
   {:events [:profile.settings/change-profile-pictures-show-to]}
