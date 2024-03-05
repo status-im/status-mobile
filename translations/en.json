@@ -2529,5 +2529,8 @@
     "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
     "bridged-to": "Bridged to {{network}}",
     "slide-to-bridge": "Slide to bridge",
-    "provider-is-down": "The provider for the following chain(s) is down: {{chains}}"
+    "provider-is-down": "The provider for the following chain(s) is down: {{chains}}",
+    "unknown": "Unknown",
+    "unsupported-file": "Unsupported file",
+    "cant-fetch-info": "Can't fetch info"
 }

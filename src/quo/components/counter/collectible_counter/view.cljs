@@ -11,6 +11,7 @@
    [:catn
     [:props
      [:map {:closed true}
+      [:container-style {:optional true} [:maybe :map]]
       [:value {:optional true} [:maybe [:or :string :int]]]
       [:status {:optional true} [:maybe :keyword]]
       [:size {:optional true} [:maybe [:enum :size-32 :size-24]]]
@@ -19,7 +20,7 @@
    :any])
 
 (defn- view-internal
-  [{:keys [value accessibility-label]
+  [{:keys [value accessibility-label container-style]
     :as   props}]
   (let [default-props {:status :default
                        :size   :size-32}
@@ -27,7 +28,7 @@
     [rn/view
      {:accessible          true
       :accessibility-label (or accessibility-label :collectible-counter)
-      :style               (style/container props)}
+      :style               (merge (style/container props) container-style)}
      [text/text
       {:weight :medium
        :size   (style/get-text-size props)
