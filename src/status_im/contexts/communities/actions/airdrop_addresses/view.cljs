@@ -11,7 +11,9 @@
   [item _ _ [airdrop-address community-id]]
   [quo/account-item
    {:account-props item
-    :state         (when (= airdrop-address (:address item)) :selected)
+    :state         (if (= airdrop-address (:address item))
+                     :selected
+                     :default)
     :on-press      (fn []
                      (rf/dispatch [:communities/set-airdrop-address (:address item) community-id])
                      (rf/dispatch [:hide-bottom-sheet]))
