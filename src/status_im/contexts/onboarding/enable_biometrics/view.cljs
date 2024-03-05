@@ -11,14 +11,13 @@
    [status-im.contexts.onboarding.enable-biometrics.style :as style]
    [status-im.navigation.state :as state]
    [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [utils.worklets.parallax :as worklets.parallax]))
+   [utils.re-frame :as rf]))
 
 (defn page-title
   []
   [quo/text-combinations
    {:container-style                 style/title-container
-    :title                           (i18n/label :t/enable-biometrics)
+    :title                           "TEST"
     :title-accessibility-label       :enable-biometrics-title
     :description                     (i18n/label :t/use-biometrics)
     :description-accessibility-label :enable-biometrics-sub-title}])
@@ -51,11 +50,13 @@
 
 (defn enable-biometrics-parallax
   []
-  (let [stretch (if rn/small-screen? 25 40)
-        width     (:width (rn/get-window)) ]
+  (let [width     (:width (rn/get-window)) ]
 
     [rn/view
      {:position :absolute
+      :left 0
+      :right 0
+      :bottom 0
       :top      12}
      [parallax/rive
       {:resource-name     "Biometrics Parallax"

@@ -17,7 +17,7 @@
   {:flex           1
    :padding-top    12
    :padding-bottom 10
-   :width          200})
+   :width          width})
 
 (defn buttons
   [insets]

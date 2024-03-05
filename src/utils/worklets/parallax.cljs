@@ -8,6 +8,5 @@
 
 (defn use-giro
   [rive-ref ]
-  (prn rive-ref)
   (.useGiro ^js parallax-worklets rive-ref ))
 

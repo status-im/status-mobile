@@ -58,19 +58,14 @@
 (defn f-rive
   [{:keys [resource-name artboard-name state-machine-name container-style]}]
 
-  (let [rive-ref2 (reagent/atom 1)
-        vv (rn/use-ref (clj->js {:x 1}))]
-    ;; (worklets.parallax/use-giro  @rive-ref2)
-     
-
-    (rive/view {:ref  vv ; #(reset! rive-ref2 %)
-                ;; :resourceName resource-name
-                ;; :artboardName     artboard-names
-                ;; :stateMachineName state-machine-name
-                 :resourceName     "Biometrics Parallax"
-                :artboardName     "Status Biometrics - Test 01"
-                :stateMachineName "stateMachine"
-                :style container-style})))
+  (let [rive-ref2 (rn/use-ref nil)]
+    (worklets.parallax/use-giro rive-ref2)
+    (rive/view
+     {:ref   rive-ref2
+                :resourceName resource-name
+                :artboardName     artboard-name
+                :stateMachineName state-machine-name
+      :style container-style})))
 
 (defn rive
   [props]

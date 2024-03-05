@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAnimatedStyle, useAnimatedSensor, withTiming, interpolate, SensorType } from 'react-native-reanimated';
 import { Platform } from 'react-native';
 
@@ -46,24 +46,38 @@ export function sensorAnimatedImage(zIndex, offset, stretch) {
   });
 }
 
-// const useSensor = (updater, dependencies = []) => {
-//   'worklet';
-//   useEffect(() => {
-//     updater()
 
-//   },
-//     [...dependencies, updater.__workletHash])
-// }
+function useInterval(callback, delay) {
+  'worklet';
+  const savedCallback = useRef();
+
+  //Rember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback])
+
+  //Set up the interval.
+  useEffect(() => {
+    'worklet';
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
 
 export function useGiro(ref) {
   'worklet';
 
   const rotationSensor = useAnimatedSensor(SensorType.GYROSCOPE, {});
-  const { x, y, z } = rotationSensor.sensor.value;
-  useEffect(() => {
-    'worklet';
-    console.log(x, "===")
-    ref && ref.state.setInputState('stateMachine', 'x', x)
 
-  }, [x])
+  useInterval(function () {
+    const { x, y, z } = rotationSensor.sensor.value;
+    ref && ref.current.setInputState('stateMachine', 'x',  x *3)
+
+  }, 200)
 }
+
