@@ -338,7 +338,11 @@
    [:catn
     [:cofx :schema.re-frame/cofx]
     [:args
-     [:schema [:catn [:community-id [:? :string]]]]]]
+     [:schema
+      [:catn
+       [:map
+        [:community-id [:? :string]]
+        [:update-last-opened-at? [:? :boolean]]]]]]]
    [:maybe
     [:map
      [:db map?]
@@ -383,11 +387,7 @@
    [:catn
     [:cofx :schema.re-frame/cofx]
     [:args
-     [:schema
-      [:catn
-       [:map
-        [:community-id [:? :string]]
-        [:update-last-opened-at? [:? :boolean]]]]]]]
+     [:schema [:catn [:community-id [:? :string]]]]]]
    [:maybe
     [:map
      [:db map?]
