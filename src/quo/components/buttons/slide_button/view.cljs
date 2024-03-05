@@ -14,28 +14,26 @@
     [react-native.reanimated :as reanimated]))
 
 (defn drag-gesture
-  [x-pos gestures-disabled? set-gestures-disabled disabled? track-width sliding-complete?
+  [x-pos disabled? track-width sliding-complete?
    set-sliding-complete
    on-complete reset-fn]
-  (let [gestures-enabled? (not (or disabled? gestures-disabled?))]
-    (-> (gesture/gesture-pan)
-        (gesture/with-test-ID :slide-button-gestures)
-        (gesture/enabled gestures-enabled?)
-        (gesture/min-distance 0)
-        (gesture/on-update (fn [event]
-                             (let [x-translation (oops/oget event "translationX")
-                                   clamped-x     (utils/clamp-value x-translation 0 track-width)
-                                   reached-end?  (>= clamped-x track-width)]
-                               (reanimated/set-shared-value x-pos clamped-x)
-                               (when (and reached-end? (not sliding-complete?))
-                                 (set-gestures-disabled true)
-                                 (set-sliding-complete true)
-                                 (when on-complete (on-complete reset-fn))))))
-        (gesture/on-end (fn [event]
-                          (let [x-translation (oops/oget event "translationX")
-                                reached-end?  (>= x-translation track-width)]
-                            (when (not reached-end?)
-                              (animations/reset-track-position x-pos))))))))
+  (-> (gesture/gesture-pan)
+      (gesture/with-test-ID :slide-button-gestures)
+      (gesture/enabled (not disabled?))
+      (gesture/min-distance 0)
+      (gesture/on-update (fn [event]
+                           (let [x-translation (oops/oget event "translationX")
+                                 clamped-x     (utils/clamp-value x-translation 0 track-width)
+                                 reached-end?  (>= clamped-x track-width)]
+                             (reanimated/set-shared-value x-pos clamped-x)
+                             (when (and reached-end? (not sliding-complete?))
+                               (set-sliding-complete true)
+                               (when on-complete (on-complete reset-fn))))))
+      (gesture/on-end (fn [event]
+                        (let [x-translation (oops/oget event "translationX")
+                              reached-end?  (>= x-translation track-width)]
+                          (when (not reached-end?)
+                            (animations/reset-track-position x-pos)))))))
 
 (defn view
   "Options
@@ -55,14 +53,11 @@
         [track-width set-track-width] (rn/use-state nil)
         [sliding-complete?
          set-sliding-complete]        (rn/use-state false)
-        [gestures-disabled?
-         set-gestures-disabled]       (rn/use-state disabled?)
         on-track-layout               (rn/use-callback
                                        #(set-track-width (oops/oget % "nativeEvent.layout.width")))
         reset-fn                      (rn/use-callback
                                        (fn []
                                          (set-sliding-complete false)
-                                         (set-gestures-disabled false)
                                          (animations/reset-track-position x-pos)))
         dimensions                    (rn/use-callback
                                        (partial utils/get-dimensions
@@ -77,15 +72,13 @@
                                        [dimensions])
         custom-color                  (if (= type :danger) :danger customization-color)
         gesture                       (rn/use-memo #(drag-gesture x-pos
-                                                                  gestures-disabled?
-                                                                  set-gestures-disabled
                                                                   disabled?
                                                                   (dimensions :usable-track)
                                                                   sliding-complete?
                                                                   set-sliding-complete
                                                                   on-complete
                                                                   reset-fn)
-                                                   [gestures-disabled? sliding-complete? disabled?])]
+                                                   [sliding-complete? disabled?])]
     [gesture/gesture-detector
      {:gesture gesture}
      [reanimated/view

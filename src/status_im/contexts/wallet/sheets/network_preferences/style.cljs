@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.common.sheets.network-preferences.style
+(ns status-im.contexts.wallet.sheets.network-preferences.style
   (:require [quo.foundations.colors :as colors]))
 
 (def blur

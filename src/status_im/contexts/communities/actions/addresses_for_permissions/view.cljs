@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [react-native.gesture :as gesture]
             [status-im.common.not-implemented :as not-implemented]
-            [status-im.common.resources :as resources]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
             [utils.money :as money]
@@ -18,8 +17,8 @@
     nil))
 
 (defn- balances->components-props
-  [balances]
-  (for [{:keys [amount decimals type name] :as balance} balances]
+  [balances images-by-symbol]
+  (for [{:keys [amount decimals type name] sym :symbol :as balance} balances]
     (cond-> balance
       true
       (assoc :type
@@ -30,22 +29,24 @@
 
       (= type constants/community-token-type-erc721)
       (assoc :collectible-name    name
-             :collectible-img-src (resources/get-mock-image :collectible))
+             :collectible-img-src (images-by-symbol sym))
 
       (= type constants/community-token-type-erc20)
-      (assoc :amount (str (money/token->unit amount decimals))
-             :token  (:symbol balance)))))
+      (assoc :amount        (str (money/token->unit amount decimals))
+             :token         (:symbol balance)
+             :token-img-src (images-by-symbol sym)))))
 
 (defn- account-item
   [{:keys [color address name emoji]} _ _
    {:keys [selected-addresses community-id share-all-addresses? community-color]}]
-  (let [balances (rf/sub [:communities/permissioned-balances-by-address community-id address])]
+  (let [balances         (rf/sub [:communities/permissioned-balances-by-address community-id address])
+        images-by-symbol (rf/sub [:communities/token-images-by-symbol community-id])]
     [quo/account-permissions
      {:account             {:name                name
                             :address             address
                             :emoji               emoji
                             :customization-color color}
-      :token-details       (balances->components-props balances)
+      :token-details       (balances->components-props balances images-by-symbol)
       :checked?            (contains? selected-addresses address)
       :disabled?           share-all-addresses?
       :on-change           #(rf/dispatch [:communities/toggle-selected-permission-address
