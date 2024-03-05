@@ -76,7 +76,7 @@
         selected-keypair                             (rf/sub [:wallet/selected-keypair])
         profile-picture                              (profile.utils/photo profile-with-image)
         [selected-key-uid set-selected-key-uid]      (rn/use-state selected-keypair)]
-    ;(rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
+    (rn/use-mount #(rf/dispatch [:wallet/get-keypairs]))
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close

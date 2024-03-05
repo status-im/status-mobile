@@ -188,7 +188,7 @@
       [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
    (let [lowercase-address (if address (string/lower-case address) address)
-         key-uid           (get-in db [:profile/profile :key-uid])
+         key-uid           (get-in db [:profile/profile :key-uid]) ;; key-uid here
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
                             :chat       false

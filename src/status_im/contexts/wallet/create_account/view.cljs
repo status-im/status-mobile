@@ -71,11 +71,30 @@
         {window-width :width} (rn/get-window)]
     (fn [{:keys [theme]}]
       (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])
-            keypairs           (rf/sub [:wallet/keypairs])
-            selected-keypair   (rf/sub [:wallet/selected-keypair])
-            keypair            (first (filter #(= (:key-uid %) selected-keypair) keypairs))
-            primary-keypair?     (= selected-keypair (:key-uid (first keypairs)))]
-        ;(rn/use-effect (fn [] (rf/dispatch [:wallet/clear-new-keypair])))
+            keypairs         (rf/sub [:wallet/keypairs])
+            selected-keypair (rf/sub [:wallet/selected-keypair])
+            keypair          (first (filter #(= (:key-uid %) selected-keypair) keypairs))
+            primary-keypair? (= selected-keypair (:key-uid (first keypairs)))
+            fn-1             #(if new-keypair
+                                (rf/dispatch
+                                  [:wallet/add-keypair-and-create-account
+                                   {:sha3-pwd    (security/safe-unmask-data
+                                                   %)
+                                    :new-keypair (create-account.utils/prepare-new-keypair
+                                                   {:new-keypair   new-keypair
+                                                    :address       address
+                                                    :account-name  @account-name
+                                                    :account-color @account-color
+                                                    :emoji         @emoji
+                                                    :derivation-path
+                                                    @derivation-path})}])
+                                (rf/dispatch [:wallet/derive-address-and-add-account
+                                              {:sha3-pwd     (security/safe-unmask-data
+                                                               %)
+                                               :emoji        @emoji
+                                               :color        @account-color
+                                               :path         @derivation-path
+                                               :account-name @account-name}]))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type       :no-title
@@ -131,6 +150,7 @@
           {:list-type :settings
            :label     (i18n/label :t/origin)
            :data      (get-keypair-data (:name keypair) primary-keypair? @derivation-path customization-color new-keypair)}]
+<<<<<<< HEAD
          [standard-auth/slide-button
           {:size                :size-48
            :track-text          (i18n/label :t/slide-to-create-account)
@@ -159,6 +179,21 @@
            :auth-button-label   (i18n/label :t/confirm)
            :disabled?           (empty? @account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
+=======
+         (when new-keypair
+           [standard-auth/slide-button
+            {:size                :size-48
+             :track-text          (i18n/label :t/slide-to-create-account)
+             :customization-color @account-color
+             :on-auth-success     (fn [entered-password]
+                                    (fn-1 entered-password))
+             :auth-button-label   (i18n/label :t/confirm)
+             ;; TODO (@rende11) Add this property when sliding button issue will fixed
+             ;; https://github.com/status-im/status-mobile/pull/18683#issuecomment-1941564785
+             ;; :disabled?           (empty? @account-name)
+             :container-style     (style/slide-button-container bottom)}])
+         ]))))
+>>>>>>> 328595191 (lint)
 
 (defn- view-internal
   []
