@@ -36,7 +36,6 @@
 
 (defn get-default-account
   [accounts]
-  (println "DEFAULT ACCOUNT" accounts)
   (first (filter :wallet accounts)))
 
 (defn check-emoji-is-updated
@@ -100,11 +99,11 @@
   (is (= (:public-key response) (:public-key response)))
   (is (= "m/43'/60'/1581'/0'/0" (:path (first response)))))
 
-(deftest wallet-create-derived-addresses
+(deftest wallet-get-derived-addressess-contract
   (h/log-headline :wallet/create-derived-addresses)
   (rf-test/run-test-async
    (h/with-app-initialized
-    (h/with-account
+    (h/with-recovered-account
      (let [sha3-pwd        (native-module/sha3 test-password)
            derivation-path ["m/43'/60'/1581'/0'/0"]
            main-account    (contract-utils/call-rpc-endpoint
@@ -114,5 +113,4 @@
        (contract-utils/call-rpc-endpoint
         {:rpc-endpoint "wallet_getDerivedAddresses"
          :params       [sha3-pwd main-account derivation-path]
-         :action       assert-derived-account
-         :on-error     (fn [error] (println "RPC Call Failed:" error))}))))))
+         :action       assert-derived-account}))))))
