@@ -78,11 +78,14 @@
    :sub-label           (i18n/label :t/only-mentions)})
 
 (defn- action-pinned-messages
-  []
+  [chat-id]
   {:icon                :i/pin
    :right-icon          :i/chevron-right
    :accessibility-label :chat-pinned-messages
-   :on-press            not-implemented/alert
+   :on-press            (fn []
+                          (rf/dispatch [:pin-message/load-pin-messages chat-id])
+                          (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                        chat-id]))
    :label               (i18n/label :t/pinned-messages)})
 
 
@@ -124,7 +127,7 @@
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
-         (action-pinned-messages)
+         (action-pinned-messages chat-id)
          (action-invite-people)
          (action-qr-code chat-id)
          (action-share chat-id)]]]
