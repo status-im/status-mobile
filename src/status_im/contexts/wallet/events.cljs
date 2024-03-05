@@ -479,7 +479,7 @@
 (def send-asset-flow-config
   [
   ;;  {:screen-id   :screen/wallet.send-from
-  ;;   :event       [:save-info]}
+  ;;   :event       [:save-info]}  This screen is not implemented yet.
    {:screen-id   :wallet-select-address
     :skip-step?  (fn [db] (some? (get-in db [:wallet :ui :send :recipient])))
     :event       :wallet/select-send-address}
