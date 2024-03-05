@@ -11,7 +11,8 @@
     utils.string))
 
 (defn initials-avatar
-  [{:keys [full-name size customization-color theme]}]
+  [{:keys [full-name size customization-color theme]
+    :or   {customization-color :blue}}]
   (let [font-size       (get-in style/sizes [size :font-size])
         amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
     [rn/view
@@ -30,13 +31,12 @@
    When calling the `profile-picture-fn` and passing the `:ring?` key, be aware that the `profile-picture-fn`
    may have an `:override-ring?` value. If it does then the `:ring?` value will not be used.
    For reference, refer to the `utils.image-server` namespace for these `profile-picture-fn` are generated."
-  [{:keys [full-name size profile-picture customization-color static?
+  [{:keys [full-name size profile-picture static?
            status-indicator? online? ring? theme]
-    :or   {size                :big
-           status-indicator?   true
-           online?             true
-           ring?               true
-           customization-color :blue}
+    :or   {size              :big
+           status-indicator? true
+           online?           true
+           ring?             true}
     :as   props}]
   (let [full-name          (or full-name "Your Name")
         ;; image generated with `profile-picture-fn` is round cropped
@@ -75,7 +75,6 @@
                                                    (:status-indicator-center-to-edge sizes))
                        :indicator-color          indicator-color
                        :override-theme           theme
-                       :background-color         (style/customization-color customization-color theme)
                        :color                    (:color style/initials-avatar-text)
                        :size                     (:width outer-styles)
                        :ring?                    ring?
