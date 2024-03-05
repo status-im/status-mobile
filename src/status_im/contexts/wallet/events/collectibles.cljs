@@ -75,6 +75,14 @@
                                       :error  error
                                       :params request-params}))}]]]})))
 
+(defonce collectibles-request-ids (atom 0))
+
+(defn- get-unique-collectible-request-id [amount]
+  (let [initial-id (deref collectibles-request-ids)
+        last-id    (+ initial-id amount)]
+    (reset! collectibles-request-ids last-id)
+    (range initial-id last-id)))
+
 (rf/reg-event-fx
  :wallet/request-collectibles-for-all-accounts
  (fn [{:keys [db]} [{:keys [new-request?]}]]
@@ -86,15 +94,14 @@
          num-accounts             (count accounts)
          collectibles-per-account (quot collectibles-request-batch-size num-accounts)
          ;; We need to pass unique IDs for simultaneous requests, otherwise they'll fail
-         rand-initial-id          (rand-int 10000)
-         rand-request-ids         (range rand-initial-id (+ rand-initial-id num-accounts))
+         request-ids              (get-unique-collectible-request-id num-accounts)
          collectible-requests     (map (fn [id account]
                                          [:dispatch
                                           [:wallet/request-new-collectibles-for-account
                                            {:request-id id
                                             :account    account
                                             :amount     collectibles-per-account}]])
-                                       rand-request-ids
+                                       request-ids
                                        accounts)]
      {:db (cond-> db
             :always      (assoc-in [:wallet :ui :collectibles :pending-requests] num-accounts)
@@ -104,11 +111,12 @@
 (rf/reg-event-fx
  :wallet/request-collectibles-for-current-viewing-account
  (fn [{:keys [db]} _]
-   (let [current-viewing-account (-> db :wallet :current-viewing-account-address)]
+   (let [current-viewing-account (-> db :wallet :current-viewing-account-address)
+         [request-id]            (get-unique-collectible-request-id 1)]
      {:db (assoc-in db [:wallet :ui :collectibles :pending-requests] 1)
       :fx [[:dispatch
             [:wallet/request-new-collectibles-for-account
-             {:request-id 0
+             {:request-id request-id
               :account    current-viewing-account
               :amount     collectibles-request-batch-size}]]]})))
 
