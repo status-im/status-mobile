@@ -22,7 +22,7 @@
           {:title           title
            :description     description
            :link            hostname
-           :logo            favicon
+           :logo            (:url favicon)
            :thumbnail       (:url thumbnail)
            :thumbnail-size  (when (nearly-square? thumbnail) :large)
            :container-style {:margin-top 8}}])])))

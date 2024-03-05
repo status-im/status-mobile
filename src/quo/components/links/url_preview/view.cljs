@@ -75,6 +75,6 @@
       :style               (merge (style/container) container-style)}
      (when logo
        [logo-comp
-        {:logo logo}])
+        {:logo (:data-uri logo)}])
      [content {:title title :body body}]
      [clear-button {:on-press on-clear}]]))
