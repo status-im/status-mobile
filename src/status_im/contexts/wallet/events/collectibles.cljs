@@ -77,7 +77,8 @@
 
 (defonce collectibles-request-ids (atom 0))
 
-(defn- get-unique-collectible-request-id [amount]
+(defn- get-unique-collectible-request-id
+  [amount]
   (let [initial-id (deref collectibles-request-ids)
         last-id    (+ initial-id amount)]
     (reset! collectibles-request-ids last-id)
