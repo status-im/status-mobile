@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.common.sheets.remove-account.style)
+(ns status-im.contexts.wallet.sheets.remove-account.style)
 
 (def desc-container
   {:padding-horizontal 20

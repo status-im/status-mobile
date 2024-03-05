@@ -3,18 +3,18 @@
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))
 
+(def ^:private sheet-border-radius 20)
+
 (defn sheet
-  [{:keys [top]} window-height selected-item]
+  [{:keys [max-height]}]
   {:position                :absolute
-   :max-height              (- window-height top)
-   :z-index                 1
    :bottom                  0
    :left                    0
    :right                   0
-   :border-top-left-radius  20
-   :border-top-right-radius 20
-   :overflow                (when-not selected-item :hidden)
-   :flex                    1})
+   :z-index                 1
+   :max-height              max-height
+   :border-top-left-radius  sheet-border-radius
+   :border-top-right-radius sheet-border-radius})
 
 (def gradient-bg
   {:position :absolute
@@ -31,10 +31,11 @@
    :bottom           0})
 
 (defn sheet-content
-  [theme padding-bottom-override {:keys [bottom]} shell? bottom-margin]
-  {:border-top-left-radius  20
-   :border-top-right-radius 20
-   :padding-bottom          (or padding-bottom-override (+ bottom bottom-margin))
+  [{:keys [theme padding-bottom shell?]}]
+  {:overflow                :scroll
+   :padding-bottom          padding-bottom
+   :border-top-left-radius  sheet-border-radius
+   :border-top-right-radius sheet-border-radius
    :background-color        (if shell?
                               :transparent
                               (colors/theme-colors colors/white colors/neutral-95 theme))})

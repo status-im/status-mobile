@@ -20,7 +20,8 @@
   (let [network-text-xf (map #(colored-network-text theme %))
         address-text    [text/text
                          {:size   :paragraph-2
-                          ;; TODO: monospace font https://github.com/status-im/status-mobile/issues/17009
+                          ;; TODO: monospace font
+                          ;; https://github.com/status-im/status-mobile/issues/17009
                           :weight :monospace
                           :style  (style/address-text format blur? theme)}
                          (if (= format :short)

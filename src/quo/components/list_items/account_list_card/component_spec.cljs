@@ -13,9 +13,9 @@
 
 (h/describe "List items: account list card"
   (h/test "Test icon renders for ':action :icon'"
-    (h/render [account-list-card/view
-               {:account-props account-props
-                :network       :ethereum
-                :state         :default
-                :action        :icon}])
+    (h/render-with-theme-provider [account-list-card/view
+                                   {:account-props    account-props
+                                    :network          :ethereum
+                                    :action           :icon
+                                    :on-options-press (fn [])}])
     (h/is-truthy (h/get-by-label-text :icon))))

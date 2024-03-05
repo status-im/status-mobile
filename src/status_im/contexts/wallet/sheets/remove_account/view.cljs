@@ -1,12 +1,12 @@
-(ns status-im.contexts.wallet.common.sheets.remove-account.view
+(ns status-im.contexts.wallet.sheets.remove-account.view
   (:require
     [quo.core :as quo]
     [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.sheets.remove-account.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.sheets.remove-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

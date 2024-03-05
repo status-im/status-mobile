@@ -4,8 +4,8 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.biometric.events :as biometric]
+    [status-im.common.parallax.blacklist :as blacklist]
     [status-im.common.parallax.view :as parallax]
-    [status-im.common.parallax.whitelist :as whitelist]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-biometrics.style :as style]
     [status-im.navigation.state :as state]
@@ -71,9 +71,9 @@
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [page-title]
-     (if whitelist/whitelisted?
-       [enable-biometrics-parallax]
-       [enable-biometrics-simple])
+     (if blacklist/blacklisted?
+       [enable-biometrics-simple]
+       [enable-biometrics-parallax])
      [enable-biometrics-buttons insets]]))
 
 (defn view

@@ -129,12 +129,11 @@
 
 (defn open-modal
   [component]
-  (let [{:keys [options name]} (get views/screens component)
-        sheet?                 (:sheet? options)]
+  (let [{:keys [options]} (get views/screens component)
+        sheet?            (:sheet? options)]
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do
-        (set-view-id name) ; TODO https://github.com/status-im/status-mobile/issues/18811
         (reset! state/curr-modal true)
         (swap! state/modals conj component)
         (navigation/show-modal

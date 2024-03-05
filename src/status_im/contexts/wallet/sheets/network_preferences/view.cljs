@@ -1,11 +1,11 @@
-(ns status-im.contexts.wallet.common.sheets.network-preferences.view
+(ns status-im.contexts.wallet.sheets.network-preferences.view
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
-            [status-im.contexts.wallet.common.sheets.network-preferences.style :as style]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.sheets.network-preferences.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 

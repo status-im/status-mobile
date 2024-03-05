@@ -35,6 +35,7 @@
 (def ^:private networks
   {:arbitrum (js/require "../resources/images/networks/Arbitrum.png")
    :ethereum (js/require "../resources/images/networks/Ethereum.png")
+   :mainnet  (js/require "../resources/images/networks/Ethereum.png")
    :gnosis   (js/require "../resources/images/networks/Gnosis.png")
    :hermez   (js/require "../resources/images/networks/Hermez.png")
    :optimism (js/require "../resources/images/networks/Optimism.png")

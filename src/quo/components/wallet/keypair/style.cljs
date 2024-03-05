@@ -1,6 +1,7 @@
 (ns quo.components.wallet.keypair.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (defn container
   [{:keys [blur? customization-color theme selected?]}]
@@ -34,3 +35,8 @@
   {:color (if blur?
             colors/white-opa-40
             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
+
+(defn dot
+  [blur? theme]
+  (merge (subtitle blur? theme)
+         {:bottom (if platform/ios? 2 -2)}))

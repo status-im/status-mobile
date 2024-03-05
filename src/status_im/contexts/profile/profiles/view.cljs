@@ -170,15 +170,16 @@
 (defn password-input
   []
   (let [auth-method         (rf/sub [:auth-method])
-        on-press-biometrics (when (= auth-method constants/auth-method-biometric)
-                              (rn/use-callback
-                               (fn []
+        on-press-biometrics (rn/use-callback
+                             (fn []
+                               (when (= auth-method constants/auth-method-biometric)
                                  (rf/dispatch [:biometric/authenticate
                                                {:on-success #(rf/dispatch
                                                               [:profile.login/biometric-success])
                                                 :on-fail    #(rf/dispatch
                                                               [:profile.login/biometric-auth-fail
-                                                               %])}]))))]
+                                                               %])}])))
+                             [auth-method])]
     [standard-authentication/password-input
      {:shell?              true
       :blur?               true

@@ -12,12 +12,14 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
-    [status-im.feature-flags :as ff]
+    [status-im.contexts.wallet.create-account.utils :as create-account.utils]
+    [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
     [utils.security.core :as security]
     [utils.string]))
+
 
 (defn- get-keypair-data
   [primary-name derivation-path account-color {:keys [keypair-name]}]
@@ -29,9 +31,8 @@
                           :size                :xxs
                           :customization-color account-color})
     :action            (when-not keypair-name :button)
-    :action-props      {:on-press    #(ff/alert ::ff/wallet.edit-default-keypair
-                                                (fn []
-                                                  (rf/dispatch [:navigate-to :wallet-select-keypair])))
+    :action-props      {:on-press    (fn []
+                                       (rf/dispatch [:navigate-to :wallet-select-keypair]))
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
@@ -49,27 +50,30 @@
 
 (defn- f-view
   []
-  (let [top                   (safe-area/get-top)
-        bottom                (safe-area/get-bottom)
-        account-color         (reagent/atom (rand-nth colors/account-colors))
-        emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
-        number-of-accounts    (count (rf/sub [:wallet/accounts-without-watched-accounts]))
-        account-name          (reagent/atom "")
-        placeholder           (i18n/label :t/default-account-placeholder
-                                          {:number (inc number-of-accounts)})
-        derivation-path       (reagent/atom (utils/get-derivation-path number-of-accounts))
-        {:keys [public-key]}  (rf/sub [:profile/profile])
-        on-change-text        #(reset! account-name %)
-        primary-name          (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
-        {window-width :width} (rn/get-window)]
+  (let [top                          (safe-area/get-top)
+        bottom                       (safe-area/get-bottom)
+        account-color                (reagent/atom (rand-nth colors/account-colors))
+        emoji                        (reagent/atom (emoji-picker.utils/random-emoji))
+        number-of-accounts           (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        account-name                 (reagent/atom "")
+        placeholder                  (i18n/label :t/default-account-placeholder
+                                                 {:number (inc number-of-accounts)})
+        derivation-path              (reagent/atom (utils/get-derivation-path number-of-accounts))
+        {:keys [public-key address]} (rf/sub [:profile/profile])
+        on-change-text               #(reset! account-name %)
+        primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                     public-key]))
+        {window-width :width}        (rn/get-window)]
     (fn [{:keys [theme]}]
       (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
-        (rn/use-effect (fn [] #(rf/dispatch [:wallet/clear-new-keypair])))
+        (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type       :no-title
            :background :blur
-           :right-side [{:icon-name :i/info}]
+           :right-side [{:icon-name :i/info
+                         :on-press  #(rf/dispatch [:show-bottom-sheet
+                                                   {:content account-origin/view}])}]
            :icon-name  :i/close
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
@@ -124,7 +128,18 @@
            :customization-color @account-color
            :on-auth-success     (fn [entered-password]
                                   (if new-keypair
-                                    (js/alert "Feature under development")
+                                    (rf/dispatch
+                                     [:wallet/add-keypair-and-create-account
+                                      {:sha3-pwd    (security/safe-unmask-data
+                                                     entered-password)
+                                       :new-keypair (create-account.utils/prepare-new-keypair
+                                                     {:new-keypair new-keypair
+                                                      :address address
+                                                      :account-name @account-name
+                                                      :account-color @account-color
+                                                      :emoji @emoji
+                                                      :derivation-path
+                                                      @derivation-path})}])
                                     (rf/dispatch [:wallet/derive-address-and-add-account
                                                   {:sha3-pwd     (security/safe-unmask-data
                                                                   entered-password)
@@ -133,9 +148,7 @@
                                                    :path         @derivation-path
                                                    :account-name @account-name}])))
            :auth-button-label   (i18n/label :t/confirm)
-           ;; TODO (@rende11) Add this property when sliding button issue will fixed
-           ;; https://github.com/status-im/status-mobile/pull/18683#issuecomment-1941564785
-           ;; :disabled?           (empty? @account-name)
+           :disabled?           (empty? @account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
 
 (defn- view-internal

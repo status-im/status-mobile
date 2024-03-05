@@ -1,5 +1,6 @@
 (ns quo.components.wallet.account-permissions.view
-  (:require [quo.components.avatars.account-avatar.view :as account-avatar]
+  (:require [clojure.string :as string]
+            [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.dividers.divider-line.view :as divider-line]
             [quo.components.icon :as icons]
             [quo.components.markdown.text :as text]
@@ -28,17 +29,24 @@
          (i18n/label :t/no-relevant-tokens)]
 
         (let [token-length (dec (count tokens))]
-          (map-indexed (fn [idx {:keys [type token amount collectible-name collectible-img-src]}]
-                         ^{:key idx}
-                         [required-tokens/view
-                          {:container-style     style/token-and-text
-                           :type                type
-                           :amount              amount
-                           :token               token
-                           :collectible-img-src collectible-img-src
-                           :collectible-name    collectible-name
-                           :divider?            (not= token-length idx)}])
-                       tokens)))]]))
+          (map-indexed
+           (fn [idx
+                {:keys              [type token amount collectible-name collectible-img-src
+                                     token-img-src]
+                 collectible-symbol :symbol}]
+             ^{:key idx}
+             [required-tokens/view
+              {:container-style     style/token-and-text
+               :type                type
+               :amount              amount
+               :token               token
+               :token-img-src       token-img-src
+               :collectible-img-src collectible-img-src
+               :collectible-name    (if (string/blank? collectible-name)
+                                      collectible-symbol
+                                      collectible-name)
+               :divider?            (not= token-length idx)}])
+           tokens)))]]))
 
 (defn- view-internal
   [{:keys

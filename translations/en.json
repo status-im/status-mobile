@@ -69,6 +69,7 @@
     "bio": "Bio",
     "bio-added": "Bio added",
     "bio-is-too-long": "Bio is too long",
+    "bio-updated": "Bio updated",
     "biometric-auth-android-sensor-desc": "Touch sensor",
     "biometric-auth-android-sensor-error-desc": "Failed",
     "biometric-auth-android-title": "Authentication Required",
@@ -2052,8 +2053,7 @@
     "you-must-always-hold": "You must always hold:",
     "shell-placeholder-title": "Your open tabs will be here",
     "shell-placeholder-subtitle": "Jump between your communities, messages,\nwallet accounts and browser tabs",
-    "no-pinned-messages-desc": "This chat doesn’t have any\npinned messages.",
-    "no-pinned-messages-community-desc": "Just keep pinning, just keep pinning \nWhat do we do? We pin, pin, pin",
+    "no-pinned-messages-desc": "Just keep pinning, just keep pinning\nWhat do we do? We pin, pin, pin",
     "invite-friends-to-status": "Invite friends to Status",
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
@@ -2062,7 +2062,7 @@
     "and": "and",
     "rename": "Rename",
     "mark-untrustworthy": "Mark as Untrustworthy",
-    "block-user": "Block User",
+    "block-user": "Block user",
     "group-details": "Group details",
     "edit-name-and-image": "Edit name and image",
     "change-group-privacy": "Change group privacy",
@@ -2116,6 +2116,7 @@
     "selected-count-from-max": "{{selected}}/{{max}}",
     "online": "Online",
     "contact-request-chat-pending": "Your contact request is pending",
+    "contact-profile-request-pending": "Contact request pending",
     "contact-request-chat-add": "Add {{name}} as contact to send a message",
     "join-request": "Join request",
     "join-one-user": "Join {{user}}",
@@ -2518,5 +2519,7 @@
     "keypair-name": "Keypair name",
     "keypair-name-description": "Name keypair for your own personal reference",
     "keypair-name-input-placeholder": "Collectibles account, Old vault....",
-    "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again."
+    "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
+    "bridged-to": "Bridged to {{network}}",
+    "slide-to-bridge": "Slide to bridge"
 }
