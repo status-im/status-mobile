@@ -8,7 +8,6 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.events :as wallet-events]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs] 
@@ -92,13 +91,10 @@
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
-                                      (rf/dispatch [:navigation/wizard
+                                      (rf/dispatch [:navigation/wizard-send-flow
                                                     {:current-screen :wallet-select-address
-                                                     :flow-config wallet-events/send-asset-flow-config
-                                                     :skip-screens [:screen/wallet.send-from]
                                                      :params {:address address
-                                                              :recipient local-suggestion}
-                                                     :stack-id :wallet-select-address}]))))
+                                                              :recipient local-suggestion}}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -143,7 +139,7 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            token                 (rf/sub [:wallet/wallet-send-token])
+            ;; token                 (rf/sub [:wallet/wallet-send-token])
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
         [floating-button-page/view
@@ -157,12 +153,9 @@
                                        {:accessibility-label :continue-button
                                         :type                :primary
                                         :disabled?           (not valid-ens-or-address?)
-                                        :on-press            #(rf/dispatch [:navigation/wizard
+                                        :on-press            #(rf/dispatch [:navigation/wizard-send-flow
                                                                             {:current-screen :wallet-select-address
-                                                                             :flow-config wallet-events/send-asset-flow-config
-                                                                             :skip-screens [:screen/wallet.send-from]
-                                                                             :params {:address @input-value}
-                                                                             :stack-id :wallet-select-address}])
+                                                                             :params {:address @input-value}}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
          [quo/page-top

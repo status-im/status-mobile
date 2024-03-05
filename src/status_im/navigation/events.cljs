@@ -175,16 +175,20 @@
      :set-view-id-fx view-id}))
 
 (defn navigate-wizard-next-screen
-  [flow-config current-screen skip-values]
+  [db flow-config current-screen]
   (first (filter (fn [screen]
-                   (and (not= (:screen-id screen) current-screen)
-                        (not (some #{(:screen-id screen)} skip-values)))) flow-config)))
+                   (let [skip-step (:skip-step? screen)]
+                     (and (not= (:screen-id screen) current-screen)
+                          (not (when (not (nil? skip-step)) (skip-step db)))))) flow-config)))
 
 (rf/reg-event-fx 
  :navigation/wizard
- (fn [_ [{:keys [current-screen skip-screens flow-config params stack-id is-first?]}]]
-     (let [next-screen (navigate-wizard-next-screen flow-config current-screen skip-screens)]
-       (rf/dispatch [:wallet/select-send-address params])
-       (if is-first? 
-         (rf/dispatch [:open-modal (:screen-id next-screen)])
-         (rf/dispatch [:navigate-to-within-stack [(:screen-id next-screen) stack-id]])))))
+ (fn [{:keys [db]} [{:keys [current-screen flow-config params]}]]
+     (let [next-screen (navigate-wizard-next-screen db flow-config current-screen)
+           event       (->> flow-config
+                            (filter #(= (:screen-id %) current-screen))
+                            first
+                            :event)]
+       (when (some? event)
+         (rf/dispatch [event params]))
+       (rf/dispatch [:navigate-to-within-stack [(:screen-id next-screen) current-screen]]))))
