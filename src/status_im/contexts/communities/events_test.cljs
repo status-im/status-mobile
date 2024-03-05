@@ -106,7 +106,7 @@
     (testing "update fetching indicator in db"
       (is (match?
            {:db {:communities/fetching-community {community-id true}}}
-           (events/fetch-community {} [community-id]))))
+           (events/fetch-community {} [{:community-id community-id}]))))
     (testing "call the fetch community rpc method with correct community id"
       (is (match?
            {:json-rpc/call [{:method "wakuext_fetchCommunity"
