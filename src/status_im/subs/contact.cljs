@@ -35,7 +35,7 @@
 (defn- replace-contact-image-uri
   [contact port public-key font-file]
   (let [theme (theme/get-theme)
-        {:keys [images ens-name]} contact
+        {:keys [images ens-name customization-color]} contact
         images
         (reduce (fn [acc image]
                   (let [image-name (:type image)
@@ -63,13 +63,14 @@
                  images
                  {:thumbnail
                   {:fn (image-server/get-initials-avatar-uri-fn
-                        {:port            port
-                         :ratio           pixel-ratio/ratio
-                         :public-key      public-key
-                         :override-ring?  (when ens-name false)
-                         :uppercase-ratio (:uppercase-ratio constants/initials-avatar-font-conf)
-                         :theme           theme
-                         :font-file       font-file})}})]
+                        {:port                port
+                         :ratio               pixel-ratio/ratio
+                         :public-key          public-key
+                         :override-ring?      (when ens-name false)
+                         :uppercase-ratio     (:uppercase-ratio constants/initials-avatar-font-conf)
+                         :customization-color customization-color
+                         :theme               theme
+                         :font-file           font-file})}})]
 
     (assoc contact :images images)))
 

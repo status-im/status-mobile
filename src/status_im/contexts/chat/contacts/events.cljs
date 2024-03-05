@@ -30,7 +30,9 @@
    :bio                   (oops/oget js-contact "bio")
    :customization-color   (-> js-contact
                               (oops/oget "customizationColor")
-                              keyword)})
+                              keyword
+                              ;; newly created accounts
+                              (or :blue))})
 
 (defn prepare-events-for-contact
   [db chats-js]
