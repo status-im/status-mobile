@@ -517,6 +517,7 @@
      (= keypairs
         (rf/sub [sub-name])))))
 
+<<<<<<< HEAD
 (def local-suggestions ["a" "b"])
 
 (h/deftest-sub :wallet/local-suggestions
@@ -535,3 +536,12 @@
       #(assoc-in % [:wallet :ui :search-address :valid-ens-or-address?] true))
     (is
      (rf/sub [sub-name]))))
+=======
+(h/deftest-sub :wallet/selected-keypair-uid
+  [sub-name]
+  (testing "returns selected keypair uid"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :selected-keypair-uid] "key-uid"))
+    (is (= "key-uid" (rf/sub [sub-name])))))
+
+>>>>>>> ee780fbce (lint)

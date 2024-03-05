@@ -55,6 +55,28 @@
         effects     (events/clear-new-keypair {:db db})]
     (is (match? (:db effects) expected-db))))
 
+(deftest confirm-account-origin
+  (let [db          {}
+        props       [{:selected-keypair-uid "key-uid"}]
+        expected-db {:wallet {:selected-key-uid "key-uid"}}
+        effects     (events/confirm-account-origin {:db db} props)
+        result-db   (:db effects)]
+    (is (match? result-db expected-db))))
+
+(deftest get-keypairs-success
+  (let [db          {}
+        props       [{:key-uid  "key-uid"
+                      :colorId  :blue
+                      :accounts [{:colorId :blue :path "path"}]}]
+        expected-db {:wallet {:keypairs         [{:key-uid             "key-uid"
+                                                  :customization-color :blue
+                                                  :accounts            [{:customization-color :blue
+                                                                         :path                "path"}]}]
+                              :selected-key-uid "key-uid"}}
+        effects     (events/new-keypair-created {:db db} props)
+        result-db   (:db effects)]
+    (is (match? result-db expected-db))))
+
 (deftest store-collectibles
   (testing "flush-collectibles"
     (let [collectible-1 {:collectible-data {:image-url "https://..." :animation-url "https://..."}
