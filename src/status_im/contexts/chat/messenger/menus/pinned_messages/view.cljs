@@ -26,15 +26,13 @@
   [message/message message context (atom false)])
 
 (defn empty-pinned-messages-state
-  [{:keys [theme community?]}]
+  [{:keys [theme]}]
   [rn/view {:style style/no-pinned-messages-container}
    [quo/empty-state
     {:blur?       false
      :image       (resources/get-themed-image :no-pinned-messages theme)
      :title       (i18n/label :t/no-pinned-messages)
-     :description (i18n/label (if community?
-                                :t/no-pinned-messages-community-desc
-                                :t/no-pinned-messages-desc))}]])
+     :description (i18n/label :t/no-pinned-messages-desc)}]])
 
 (defn f-pinned-messages
   [{:keys [theme chat-id]}]
@@ -77,8 +75,7 @@
          :key-fn      list-key-fn
          :separator   [quo/separator {:style {:margin-vertical 8}}]}]
        [empty-pinned-messages-state
-        {:community? (boolean community)
-         :theme      theme}])]))
+        {:theme theme}])]))
 
 (defn- internal-pinned-messages
   [params]
