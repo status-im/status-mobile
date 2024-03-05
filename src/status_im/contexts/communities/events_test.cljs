@@ -113,7 +113,7 @@
                              :params [{:CommunityKey    community-id
                                        :TryDatabase     true
                                        :WaitForResponse true}]}]}
-           (events/fetch-community {} [community-id])))))
+           (events/fetch-community {} [{:community-id community-id}])))))
   (testing "with no community id"
     (testing "do nothing"
       (is (match?
