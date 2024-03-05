@@ -112,10 +112,10 @@
         top-insets                           (safe-area/get-top)
         top-bar-height                       messages.constants/top-bar-height
         navigation-view-height               (+ top-bar-height top-insets)
-        reached-top?                         (messages.worklets/use-messages-scrolled-to-top
+        reached-threshold?                   (messages.worklets/use-messages-scrolled-to-threshold
                                               distance-from-list-top
                                               top-bar-height)
-        button-background                    (if reached-top? :photo :blur)]
+        button-background                    (if reached-threshold? :photo :blur)]
     (rn/use-effect (fn [] (reanimated/set-shared-value all-loaded? all-loaded-sub))
                    [all-loaded-sub])
     [rn/view

@@ -6,8 +6,6 @@
   [distance-from-list-top chat-list-scroll-y callback]
   (.messagesListOnScroll ^js worklets distance-from-list-top chat-list-scroll-y callback))
 
-(defn use-messages-scrolled-to-top
-  "Returns true if `distance-from-list-top` (animated value) crossed the threshold.
-  e.g. reaching the very top would need a threshold of `0`"
+(defn use-messages-scrolled-to-threshold
   [distance-from-list-top threshold]
-  (.useMessagesScrolledToTop ^js worklets distance-from-list-top threshold))
+  (.useMessagesScrolledToThreshold ^js worklets distance-from-list-top threshold))

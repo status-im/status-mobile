@@ -14,16 +14,16 @@ export function messagesListOnScroll(distanceFromListTop, chatListScrollY, callb
   };
 }
 
-export function useMessagesScrolledToTop(distanceFromListTop, threshold) {
-    const [scrolledToTop, setScrolledToTop] = useState(false)
+export function useMessagesScrolledToThreshold(distanceFromListTop, threshold) {
+    const [scrolledToThreshold, setScrolledToThreshold] = useState(false)
 
     useAnimatedReaction(function () {
 	return distanceFromListTop.value <= threshold;
     }, function (current, previous) {
-	if(current !== previous && current !== scrolledToTop) {
-	    runOnJS(setScrolledToTop)(current)
+	if(current !== previous && current !== scrolledToThreshold) {
+	    runOnJS(setScrolledToThreshold)(current)
 	}
-    }, [scrolledToTop])
+    }, [scrolledToThreshold])
 
-    return scrolledToTop
+    return scrolledToThreshold
 }
