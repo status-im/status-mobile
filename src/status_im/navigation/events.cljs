@@ -183,7 +183,7 @@
 
 (rf/reg-event-fx 
  :navigation/wizard
- (fn [{:keys [db]} [{:keys [current-screen flow-config params]}]]
+ (fn [{:keys [db]} [{:keys [current-screen flow-config params is-first?]}]]
      (let [next-screen (navigate-wizard-next-screen db flow-config current-screen)
            event       (->> flow-config
                             (filter #(= (:screen-id %) current-screen))
@@ -191,4 +191,6 @@
                             :event)]
        (when (some? event)
          (rf/dispatch [event params]))
-       (rf/dispatch [:navigate-to-within-stack [(:screen-id next-screen) current-screen]]))))
+       (if is-first?
+         (rf/dispatch [:open-modal (:screen-id next-screen)])
+         (rf/dispatch [:navigate-to-within-stack [(:screen-id next-screen) current-screen]])))))

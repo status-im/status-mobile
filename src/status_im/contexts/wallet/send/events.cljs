@@ -292,7 +292,10 @@
 
 (rf/reg-event-fx
  :navigation/wizard-send-flow
- (fn [_ [{:keys [current-screen params]}]]
+ (fn [_ [{:keys [current-screen params is-first?]}]]
+   (when is-first?
+     (rf/dispatch [:wallet/clean-send-data]))
    (rf/dispatch [:navigation/wizard {:params params
                                      :current-screen current-screen
+                                     :is-first? is-first?
                                      :flow-config wallet-events/send-asset-flow-config}])))
