@@ -130,5 +130,5 @@
          [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer
           [[{:icon     :i/scan
-             :on-press #(rf/dispatch [:navigate-to :scan-sync-code-page])
+             :on-press #(rf/dispatch [:open-modal :scan-sync-code-page])
              :label    (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))
