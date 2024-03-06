@@ -34,6 +34,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.contact.share.view :as share-contact]
     [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
@@ -197,6 +198,10 @@
     {:name      :contact-profile
      :options   {:modalPresentationStyle :overCurrentContext}
      :component contact-profile/view}
+
+    {:name      :share-contact
+     :options   options/transparent-screen-options
+     :component share-contact/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
