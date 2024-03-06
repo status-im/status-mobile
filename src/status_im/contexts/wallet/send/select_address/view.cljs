@@ -126,14 +126,7 @@
 
 (defn- f-view
   []
-  (let [on-close       (fn []
-                         (rf/dispatch [:wallet/clean-scanned-address])
-                         (rf/dispatch [:wallet/clean-local-suggestions])
-                         (rf/dispatch [:wallet/clean-selected-token])
-                         (rf/dispatch [:wallet/clean-selected-collectible])
-                         (rf/dispatch [:wallet/clean-send-address])
-                         (rf/dispatch [:wallet/select-address-tab nil])
-                         (rf/dispatch [:navigate-back]))
+  (let [on-close       #(rf/dispatch [:navigation/wizard-back-send-flow])
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
