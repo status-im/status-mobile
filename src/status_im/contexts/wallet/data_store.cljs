@@ -60,8 +60,7 @@
                         :color                    :colorId})
       (update :prodPreferredChainIds chain-ids-set->string)
       (update :testPreferredChainIds chain-ids-set->string)
-      (dissoc :watch-only?)
-      (dissoc :default-account?)))
+      (dissoc :watch-only? :default-account? :tokens :collectibles)))
 
 (defn- rpc->balances-per-chain
   [token]
