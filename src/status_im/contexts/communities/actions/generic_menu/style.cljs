@@ -1,9 +1,9 @@
 (ns status-im.contexts.communities.actions.generic-menu.style)
 
 (def container
-  {:flex          1
-   :margin-left   20
-   :margin-right  20})
+  {:flex         1
+   :margin-left  20
+   :margin-right 20})
 
 (def inner-container
   {:display         :flex
