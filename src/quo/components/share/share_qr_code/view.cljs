@@ -150,8 +150,7 @@
            profile-picture emoji on-share-press address]
     :as   props}]
   [:<>
-   [rn/view {:style style/gradient-bg}
-    [gradient-cover/view {:customization-color customization-color :height 463}]]
+   [gradient-cover/view {:customization-color customization-color :height 463}]
    [rn/view {:style style/content-container}
     [rn/view {:style style/share-qr-container}
      [rn/view {:style style/share-qr-inner-container}

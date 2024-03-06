@@ -52,10 +52,9 @@
          :overlay-color (quo.theme/theme-value colors/white-70-blur
                                                colors/neutral-95-opa-70-blur
                                                theme)}])
-     [rn/view {:style style/gradient-container}
-      [quo/gradient-cover
-       {:customization-color color
-        :opacity             0.4}]]
+     [quo/gradient-cover
+      {:customization-color color
+       :opacity             0.4}]
      [quo/drawer-bar]
      [quo/drawer-top
       (cond-> {:title                name

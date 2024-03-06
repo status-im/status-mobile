@@ -143,28 +143,28 @@
         mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
         unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
     [quo/channel-actions
-     {:style   {:margin-top 16}
-      :actions [{:accessibility-label :action-button-pinned
-                 :big?                true
-                 :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
-                 :color               cover-bg-color
-                 :icon                :i/pin
-                 :counter-value       pins-count
-                 :on-press            (fn []
-                                        (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                                      chat-id]))}
-                {:accessibility-label :action-button-mute
-                 :label               (i18n/label (if muted
-                                                    unmute-chat-label
-                                                    mute-chat-label))
-                 :color               cover-bg-color
-                 :icon                (if muted? :i/activity-center :i/muted)
-                 :on-press            (fn []
-                                        (if muted?
-                                          (home.actions/unmute-chat-action chat-id)
-                                          (home.actions/mute-chat-action chat-id
-                                                                         chat-type
-                                                                         muted?)))}]}]))
+     {:container-style {:margin-top 16}
+      :actions         [{:accessibility-label :action-button-pinned
+                         :big?                true
+                         :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
+                         :color               cover-bg-color
+                         :icon                :i/pin
+                         :counter-value       pins-count
+                         :on-press            (fn []
+                                                (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                                              chat-id]))}
+                        {:accessibility-label :action-button-mute
+                         :label               (i18n/label (if muted
+                                                            unmute-chat-label
+                                                            mute-chat-label))
+                         :color               cover-bg-color
+                         :icon                (if muted? :i/activity-center :i/muted)
+                         :on-press            (fn []
+                                                (if muted?
+                                                  (home.actions/unmute-chat-action chat-id)
+                                                  (home.actions/mute-chat-action chat-id
+                                                                                 chat-type
+                                                                                 muted?)))}]}]))
 
 (defn f-list-footer
   [{:keys [chat distance-from-list-top theme customization-color]}]
