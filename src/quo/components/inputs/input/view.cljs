@@ -55,16 +55,17 @@
 
 (def ^:private custom-props
   "Custom properties that must be removed from properties map passed to InputText."
-  [:type :blur? :theme :error? :right-icon :left-icon :disabled? :small? :button
+  [:type :blur? :error? :right-icon :left-icon :disabled? :small? :button
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur
    :container-style])
 
 (defn- base-input
-  [{:keys [blur? theme error? right-icon left-icon disabled? small? button
+  [{:keys [blur? error? right-icon left-icon disabled? small? button
            label char-limit multiline? clearable? on-focus on-blur container-style
            on-change-text on-char-limit-reach weight default-value]
     :as   props}]
-  (let [[status set-status]    (rn/use-state :default)
+  (let [theme                  (quo.theme/use-theme-value)
+        [status set-status]    (rn/use-state :default)
         internal-on-focus      (rn/use-callback #(set-status :focus))
         internal-on-blur       (rn/use-callback #(set-status :default))
         [multiple-lines?
