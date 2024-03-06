@@ -95,10 +95,16 @@
 (rf/reg-event-fx
  :wallet/remove-account-success
  (fn [_ [toast-message _]]
-   {:fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:pop-to-root :shell-stack]]
-         [:dispatch [:wallet/get-accounts]]
-         [:dispatch [:wallet/show-account-deleted-toast toast-message]]]}))
+   {:fx [[:dispatch [:wallet/get-accounts]]
+         [:dispatch-later
+          {:ms       100
+           :dispatch [:hide-bottom-sheet]}]
+         [:dispatch-later
+          {:ms       100
+           :dispatch [:pop-to-root :shell-stack]}]
+         [:dispatch-later
+          {:ms       100
+           :dispatch [:wallet/show-account-deleted-toast toast-message]}]]}))
 
 (rf/reg-event-fx
  :wallet/remove-account
