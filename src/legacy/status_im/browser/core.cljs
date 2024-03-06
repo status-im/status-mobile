@@ -3,7 +3,6 @@
     ["eth-phishing-detect" :as eth-phishing-detect]
     [clojure.string :as string]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
-    [legacy.status-im.browser.eip3085 :as eip3085]
     [legacy.status-im.browser.eip3326 :as eip3326]
     [legacy.status-im.browser.permissions :as browser.permissions]
     [legacy.status-im.browser.webview-ref :as webview-ref]
@@ -442,9 +441,6 @@
                                                         :result    (types/json->clj %)}])}}
         (= method "wallet_switchEthereumChain")
         (eip3326/handle-switch-ethereum-chain cofx dapp-name id message-id (first params))
-
-        (= method "wallet_addEthereumChain")
-        (eip3085/handle-add-ethereum-chain cofx dapp-name id message-id (first params))
 
         :else
         {:browser/call-rpc [payload
