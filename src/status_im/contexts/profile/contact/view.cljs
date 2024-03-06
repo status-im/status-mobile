@@ -21,7 +21,7 @@
      {:navigate-back?   true
       :height           148
       :on-scroll        #(reanimated/set-shared-value scroll-y %)
-      ;TODO remove colors/primary-50 when #18733 merged.
+      ;; TODO(@mohsen): remove colors/primary-50, https://github.com/status-im/status-mobile/issues/18733
       :cover-color      (or customization-color colors/primary-50)
       :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
       :page-nav-props   {:right-side [{:icon-name :i/options

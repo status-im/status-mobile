@@ -15,7 +15,7 @@
   []
   (let [{:keys [public-key primary-name nickname customization-color]
          :as   profile}                         (rf/sub [:contacts/current-contact])
-        ;; TODO: remove :blue when #18733 merged.
+        ;; TODO(@mohsen): remove :blue, https://github.com/status-im/status-mobile/issues/18733
         customization-color                     (or customization-color :blue)
         full-name                               (profile.utils/displayed-name profile)
         profile-picture                         (profile.utils/photo profile)
@@ -67,8 +67,8 @@
       [info-message/info-message
        {:icon :i/info
         :size :default
-        :type (if (not (string/blank? error-msg)) :error :default)}
-       (if (not (string/blank? error-msg))
+        :type (if-not (string/blank? error-msg) :error :default)}
+       (if-not (string/blank? error-msg)
          error-msg
          (i18n/label :t/nickname-visible-to-you))]]
      [quo/bottom-actions
