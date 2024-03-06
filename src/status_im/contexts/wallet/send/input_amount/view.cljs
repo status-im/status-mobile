@@ -189,7 +189,7 @@
         handle-on-confirm     (fn []
                                 (rf/dispatch [:navigation/wizard-send-flow
                                               {:current-screen :wallet-send-input-amount
-                                               :params {:amount   @input-value}}]))
+                                               :params         {:amount @input-value}}]))
         selection-change      (fn [selection]
                                 ;; `reagent/flush` is needed to properly propagate the
                                 ;; input cursor state. Since this is a controlled

@@ -10,7 +10,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
-    [status-im.contexts.wallet.send.select-address.tabs.view :as tabs] 
+    [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -93,8 +93,8 @@
                                     (when-not ens
                                       (rf/dispatch [:navigation/wizard-send-flow
                                                     {:current-screen :wallet-select-address
-                                                     :params {:address address
-                                                              :recipient local-suggestion}}]))))
+                                                     :params         {:address   address
+                                                                      :recipient local-suggestion}}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -147,8 +147,10 @@
                                         :type                :primary
                                         :disabled?           (not valid-ens-or-address?)
                                         :on-press            #(rf/dispatch [:navigation/wizard-send-flow
-                                                                            {:current-screen :wallet-select-address
-                                                                             :params {:address @input-value}}])
+                                                                            {:current-screen
+                                                                             :wallet-select-address
+                                                                             :params {:address
+                                                                                      @input-value}}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
          [quo/page-top

@@ -65,7 +65,7 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
-      })))
+     })))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -295,24 +295,25 @@
  (fn [_ [{:keys [current-screen params is-first?]}]]
    (when is-first?
      (rf/dispatch [:wallet/clean-send-data]))
-   (rf/dispatch [:navigation/wizard {:params params
-                                     :current-screen current-screen
-                                     :is-first? is-first?
-                                     :flow-config wallet-events/send-asset-flow-config}])))
+   (rf/dispatch [:navigation/wizard
+                 {:params         params
+                  :current-screen current-screen
+                  :is-first?      is-first?
+                  :flow-config    wallet-events/send-asset-flow-config}])))
 
 (rf/reg-event-fx
  :navigation/wizard-back-send-flow
  (fn [{:keys [db]}]
-   (let [stack (:modal-view-ids db)
+   (let [stack          (:modal-view-ids db)
          current-screen (last stack)]
      (case current-screen
-       :wallet-select-address (do
-                                (rf/dispatch [:wallet/clean-scanned-address])
-                                (rf/dispatch [:wallet/clean-local-suggestions])
-                                (rf/dispatch [:wallet/clean-selected-token])
-                                (rf/dispatch [:wallet/clean-send-address])
-                                (rf/dispatch [:wallet/select-address-tab nil]))
-       :wallet-select-asset  (rf/dispatch [:wallet/clean-selected-token])
+       :wallet-select-address           (do
+                                          (rf/dispatch [:wallet/clean-scanned-address])
+                                          (rf/dispatch [:wallet/clean-local-suggestions])
+                                          (rf/dispatch [:wallet/clean-selected-token])
+                                          (rf/dispatch [:wallet/clean-send-address])
+                                          (rf/dispatch [:wallet/select-address-tab nil]))
+       :wallet-select-asset             (rf/dispatch [:wallet/clean-selected-token])
        :wallet-transaction-confirmation (do
                                           (rf/dispatch [:wallet/clean-suggested-routes])
                                           (rf/dispatch [:wallet/clean-selected-collectible]))

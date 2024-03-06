@@ -46,7 +46,7 @@
         on-token-press          (fn [token]
                                   (rf/dispatch [:navigation/wizard-send-flow
                                                 {:current-screen :wallet-select-asset
-                                                 :params {:token token}}]))]
+                                                 :params         {:token token}}]))]
     [:<>
      (when show-search-input?
        [search-input search-text on-change-text])

@@ -14,8 +14,8 @@
    {:account-props (assoc account :customization-color color)
     :on-press      #(rf/dispatch [:navigation/wizard-send-flow
                                   {:current-screen :wallet-select-address
-                                   :params {:address address
-                                            :recipient account}}])}])
+                                   :params         {:address   address
+                                                    :recipient account}}])}])
 
 (defn my-accounts
   [theme]
