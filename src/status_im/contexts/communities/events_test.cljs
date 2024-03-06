@@ -106,14 +106,14 @@
     (testing "update fetching indicator in db"
       (is (match?
            {:db {:communities/fetching-community {community-id true}}}
-           (events/fetch-community {} [community-id]))))
+           (events/fetch-community {} [{:community-id community-id}]))))
     (testing "call the fetch community rpc method with correct community id"
       (is (match?
            {:json-rpc/call [{:method "wakuext_fetchCommunity"
                              :params [{:CommunityKey    community-id
                                        :TryDatabase     true
                                        :WaitForResponse true}]}]}
-           (events/fetch-community {} [community-id])))))
+           (events/fetch-community {} [{:community-id community-id}])))))
   (testing "with no community id"
     (testing "do nothing"
       (is (match?
@@ -143,6 +143,7 @@
         (testing "dispatch fxs"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
+                     [:dispatch [:communities/update-last-opened-at community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
                        {:id community-id}]]]}
@@ -153,6 +154,7 @@
         (testing "dispatch fxs, do not spectate community"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
+                     [:dispatch [:communities/update-last-opened-at community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
                        {:id community-id}]]]}
@@ -163,6 +165,7 @@
         (testing "dispatch fxs, do not spectate community"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
+                     [:dispatch [:communities/update-last-opened-at community-id]]
                      [:dispatch
                       [:chat.ui/cache-link-preview-data "community-link+community-id"
                        {:id community-id}]]]}

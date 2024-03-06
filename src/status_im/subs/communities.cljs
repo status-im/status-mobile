@@ -94,6 +94,19 @@
 
 (def memo-communities-stack-items (atom nil))
 
+(defn- merge-opened-communities
+  [{:keys [joined pending] :as assorted-communities}]
+  (update assorted-communities :opened concat joined pending))
+
+(defn- group-communities-by-status
+  [requests
+   {:keys [id]
+    :as   community}]
+  (cond
+    (:joined community)         :joined
+    (boolean (get requests id)) :pending
+    :else                       :opened))
+
 (re-frame/reg-sub
  :communities/grouped-by-status
  :<- [:view-id]
@@ -104,16 +117,21 @@
  ;; in app-db. Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
  (fn [[view-id communities requests]]
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
-     (let [grouped-communities (reduce (fn [acc community]
-                                         (let [joined?      (:joined community)
-                                               community-id (:id community)
-                                               pending?     (boolean (get requests community-id))]
-                                           (cond
-                                             joined?  (update acc :joined conj community)
-                                             pending? (update acc :pending conj community)
-                                             :else    (update acc :opened conj community))))
-                                       {:joined [] :pending [] :opened []}
-                                       (vals communities))]
+     (let [grouped-communities (->> communities
+                                    vals
+                                    (group-by #(group-communities-by-status requests %))
+                                    merge-opened-communities
+                                    (map (fn [[k v]]
+                                           {k (sort-by (fn [{:keys [requested-to-join-at last-opened-at
+                                                                    joined-at]}]
+                                                         (condp = k
+                                                           :joined  joined-at
+                                                           :pending requested-to-join-at
+                                                           :opened  last-opened-at
+                                                           last-opened-at))
+                                                       #(compare %2 %1)
+                                                       v)}))
+                                    (into {}))]
        (reset! memo-communities-stack-items grouped-communities)
        grouped-communities)
      @memo-communities-stack-items)))

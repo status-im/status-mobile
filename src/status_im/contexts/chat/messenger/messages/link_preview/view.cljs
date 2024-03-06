@@ -81,7 +81,9 @@
       (fn []
         (when-not cached-preview-data
           (let [community-id (community-id-from-link community-link)]
-            (rf/dispatch [:communities/fetch-community community-id]))))
+            (rf/dispatch [:communities/fetch-community
+                          {:community-id           community-id
+                           :update-last-opened-at? false}]))))
       :reagent-render
       (fn []
         (when cached-preview-data
