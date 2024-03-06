@@ -1,7 +1,8 @@
 (ns status-im.contexts.chat.group-create.events
   (:require [legacy.status-im.data-store.chats :as data-store.chats]
             [oops.core :as oops]
-            [re-frame.core :as rf]))
+            [re-frame.core :as rf]
+            [status-im.common.avatar-picture-picker.view :as avatar-picture-picker]))
 
 (rf/reg-event-fx :group-chat/create
  (fn [{:keys [db]} [group-name color image]]
@@ -28,7 +29,12 @@
 (rf/reg-event-fx :group-chat/edit
  (fn [_ [{:keys [chat-id group-name color image]}]]
    {:json-rpc/call [{:method      "chat_editChat"
-                     :params      ["" chat-id group-name (name color) image]
+                     :params      ["" chat-id group-name (name color)
+                                   {:imagePath image
+                                    :x         0
+                                    :y         0
+                                    :width     avatar-picture-picker/crop-size
+                                    :height    avatar-picture-picker/crop-size}]
                      :js-response true
                      :on-success  #(rf/dispatch [:group-chat/edit-success
                                                  (data-store.chats/<-rpc-js %)])}]}))

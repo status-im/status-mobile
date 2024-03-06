@@ -120,6 +120,7 @@
        :profile-public-key      (.-profile chat)
        :highlight               (.-highlight chat)
        :active                  (.-active chat)
+       :image                   (.-image chat)
        :members                 (types/js->clj (.-members chat))}
       rpc->type
       unmarshal-members))

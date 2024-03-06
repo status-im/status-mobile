@@ -4,6 +4,7 @@
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
+            [status-im.common.avatar-picture-picker.view :as avatar-picture-picker]
             [status-im.common.floating-button-page.view :as floating-button-page]
             [status-im.constants :as constants]
             [status-im.contexts.chat.group-create.style :as style]
@@ -15,30 +16,29 @@
             [utils.responsiveness :as responsiveness]))
 
 (defn avatar
-  [{:keys [customization-color]}]
-  [rn/pressable {:style style/avatar}
-   ;;NOTE with hole-view group-avatar doesn't change it's background color
-   #_[hole-view/hole-view
-      {:holes [style/hole]}]
-   [quo/group-avatar
-    {:customization-color customization-color
-     :size                :size-80}]
-   [quo/button
-    {:on-press        (fn []
-                        #_(rf/dispatch
-                           [:show-bottom-sheet
-                            {:content (fn []
-                                        [profile-picture-picker/view
-                                         {:update-profile-pic-callback on-change-profile-pic
-                                          :has-picture?                has-picture?}])
-                             :theme   :dark
-                             :shell?  true}]))
-     :container-style style/camera
-     :icon-only?      true
-     :type            :grey
-     :background      :photo
-     :size            32}
-    :i/camera]])
+  [{:keys [customization-color group-image set-group-image]}]
+  (let [on-press (rn/use-callback (fn []
+                                    (rf/dispatch
+                                     [:show-bottom-sheet
+                                      {:content (fn []
+                                                  [avatar-picture-picker/view
+                                                   {:on-result set-group-image}])}])))]
+    [rn/view {:style style/avatar}
+     ;;NOTE with hole-view group-avatar doesn't change it's background color
+     #_[hole-view/hole-view
+        {:holes [style/hole]}]
+     [quo/group-avatar
+      {:customization-color customization-color
+       :size                :size-80
+       :picture             group-image}]
+     [quo/button
+      {:on-press        on-press
+       :container-style style/camera
+       :icon-only?      true
+       :type            :grey
+       :background      :photo
+       :size            32}
+      :i/camera]]))
 
 (defn view
   []
@@ -63,10 +63,12 @@
          set-error-message]           (rn/use-state nil)
         group-name-empty?             (not (and (string? group-name) (not-empty group-name)))
         [group-color set-group-color] (rn/use-state (rand-nth colors/account-colors))
+        [group-image set-group-image] (rn/use-state nil)
         create-group-on-press         (rn/use-callback #(debounce/throttle-and-dispatch
-                                                         [:group-chat/create group-name group-color]
+                                                         [:group-chat/create group-name group-color
+                                                          group-image]
                                                          300)
-                                                       [group-name group-color])
+                                                       [group-name group-color group-image])
         back-on-press                 (rn/use-callback #(rf/dispatch [:navigate-back]))
         on-change-text                (rn/use-callback
                                        (fn [text]
@@ -91,7 +93,10 @@
                                 :on-press            create-group-on-press}
                                (i18n/label :t/create-group-chat)]}
      [:<>
-      [avatar {:customization-color group-color}]
+      [avatar
+       {:customization-color group-color
+        :group-image         group-image
+        :set-group-image     set-group-image}]
       [quo/title-input
        {:on-change-text  on-change-text
         :default-value   default-value
