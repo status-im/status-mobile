@@ -1,43 +1,81 @@
 (ns status-im.contexts.communities.actions.airdrop-addresses.view
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
+    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.airdrop-addresses.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn- render-item
-  [item _ _ [airdrop-address community-id]]
-  [quo/account-item
-   {:account-props item
-    :state         (if (= airdrop-address (:address item))
-                     :selected
-                     :default)
-    :on-press      (fn []
-                     (rf/dispatch [:communities/set-airdrop-address (:address item) community-id])
-                     (rf/dispatch [:hide-bottom-sheet]))
-    :emoji         (:emoji item)}])
+(defn- account-item
+  [{:keys [address emoji] :as account}
+   _ _
+   [community-id airdrop-address can-edit-addresses?]]
+  (let [airdrop-address? (= address airdrop-address)
+        on-press
+        (when-not airdrop-address?
+          (fn []
+            (if can-edit-addresses?
+              (rf/dispatch
+               [:password-authentication/show
+                {:content (fn [] [password-authentication/view])}
+                {:label    (i18n/label :t/enter-password)
+                 :on-press (fn [password]
+                             (rf/dispatch
+                              [:communities/edit-shared-addresses
+                               {:community-id    community-id
+                                :password        password
+                                :airdrop-address address
+                                :on-success      (fn []
+                                                   (rf/dispatch [:dismiss-modal :address-for-airdrop])
+                                                   (rf/dispatch [:hide-bottom-sheet]))}]))}])
+              (do
+                (rf/dispatch [:communities/set-airdrop-address community-id address])
+                (rf/dispatch [:hide-bottom-sheet])))))]
+    [quo/account-item
+     {:account-props account
+      :emoji         emoji
+      :state         (if airdrop-address? :selected :default)
+      :on-press      on-press}]))
 
 (defn view
   []
-  (let [{id :community-id}          (rf/sub [:get-screen-params])
-        {:keys [name images color]} (rf/sub [:communities/community id])
-        selected-accounts           (rf/sub [:communities/selected-permission-accounts id])
-        airdrop-address             (rf/sub [:communities/airdrop-address id])]
+  (let [{id :community-id}        (rf/sub [:get-screen-params])
+        {:keys [name logo color]} (rf/sub [:communities/for-context-tag id])
+        accounts                  (rf/sub [:communities/accounts-to-reveal id])
+        airdrop-address           (rf/sub [:communities/airdrop-address id])
+        can-edit-addresses?       (rf/sub [:communities/can-edit-shared-addresses? id])
+        go-back                   (rn/use-callback #(rf/dispatch [:dismiss-modal :address-for-airdrop]))]
     [:<>
-     [quo/drawer-top
-      {:type                :context-tag
-       :context-tag-type    :community
-       :title               (i18n/label :t/airdrop-addresses)
-       :community-name      name
-       :button-icon         :i/info
-       :on-button-press     not-implemented/alert
-       :community-logo      (get-in images [:thumbnail :uri])
-       :customization-color color}]
+     (when can-edit-addresses?
+       [quo/page-nav
+        {:type      :no-title
+         :icon-name :i/arrow-left
+         :on-press  go-back}])
+
+     (if can-edit-addresses?
+       [quo/page-top
+        {:title                     (i18n/label :t/airdrop-addresses)
+         :title-accessibility-label :title-label
+         :description               :context-tag
+         :context-tag               {:type           :community
+                                     :community-logo logo
+                                     :community-name name}}]
+       [quo/drawer-top
+        {:type                :context-tag
+         :context-tag-type    :community
+         :title               (i18n/label :t/airdrop-addresses)
+         :community-name      name
+         :button-icon         :i/info
+         :on-button-press     not-implemented/alert
+         :community-logo      logo
+         :customization-color color}])
+
      [gesture/flat-list
-      {:data                    selected-accounts
-       :render-fn               render-item
-       :render-data             [airdrop-address id]
+      {:data                    accounts
+       :render-fn               account-item
+       :render-data             [id airdrop-address can-edit-addresses?]
        :content-container-style style/account-list-container
        :key-fn                  :address}]]))

@@ -13,6 +13,8 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
+    [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
+    [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -121,9 +123,23 @@
      :options   options/transparent-screen-options
      :component share-community-channel/view}
 
-    {:name      :community-account-selection
+    ;; Note: the sheet screen is used when selecting addresses to share when
+    ;; joining a community. The non-sheet screen is used when editing shared
+    ;; addresses after the join request was sent.
+    {:name      :community-account-selection-sheet
      :options   {:sheet? true}
      :component communities.accounts-selection/view}
+    {:name      :community-account-selection
+     :options   {:insets {:top? true}}
+     :component communities.accounts-selection/view}
+
+    {:name      :addresses-for-permissions
+     :options   {:insets {:top? true}}
+     :component addresses-for-permissions/view}
+
+    {:name      :address-for-airdrop
+     :options   {:insets {:top? true}}
+     :component airdrop-addresses/view}
 
     {:name      :lightbox
      :options   options/lightbox
