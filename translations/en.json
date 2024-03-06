@@ -2514,5 +2514,6 @@
     "keypair-name-input-placeholder": "Collectibles account, Old vault....",
     "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
     "bridged-to": "Bridged to {{network}}",
-    "slide-to-bridge": "Slide to bridge"
+    "slide-to-bridge": "Slide to bridge",
+    "provider-is-down": "The provider for the following chain(s) is down: {{chains}}"
 }
