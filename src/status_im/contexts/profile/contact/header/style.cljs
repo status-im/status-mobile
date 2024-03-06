@@ -7,6 +7,11 @@
    :padding-left 20
    :align-items  :flex-start})
 
+(def button-wrapper
+  {:padding-top        8
+   :padding-bottom     16
+   :padding-horizontal 20})
+
 (defn header-container
   [border-radius theme margin-top]
   (reanimated/apply-animations-to-style
