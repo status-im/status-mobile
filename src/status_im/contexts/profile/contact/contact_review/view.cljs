@@ -21,7 +21,12 @@
                                         (fn []
                                           (rf/dispatch [:hide-bottom-sheet])
                                           (rf/dispatch [:activity-center.contact-requests/accept
-                                                        contact-request-id]))
+                                                        contact-request-id])
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:id   :accept-contact-request
+                                                         :type :positive
+                                                         :text (i18n/label
+                                                                :t/contact-request-was-accepted)}]))
                                         [contact-request-id])
         on-contact-ignore              (rn/use-callback (fn []
                                                           (rf/dispatch [:hide-bottom-sheet])))]
