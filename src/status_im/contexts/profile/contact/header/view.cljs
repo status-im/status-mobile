@@ -56,24 +56,24 @@
      (cond
        (or (not contact-request-state)
            (= contact-request-state constants/contact-request-state-none))
-       [rn/view {:style style/button-wrapper}
-        [quo/button
-         {:on-press  on-contact-request
-          :icon-left :i/add-user}
-         (i18n/label :t/send-contact-request)]]
+       [quo/button
+        {:container-style style/button-wrapper
+         :on-press        on-contact-request
+         :icon-left       :i/add-user}
+        (i18n/label :t/send-contact-request)]
 
        (= contact-request-state constants/contact-request-state-received)
-       [rn/view {:style style/button-wrapper}
-        [quo/button
-         {:on-press  on-contact-review
-          :icon-left :i/add-user}
-         (i18n/label :t/contact-request-review)]]
+       [quo/button
+        {:container-style style/button-wrapper
+         :on-press        on-contact-review
+         :icon-left       :i/add-user}
+        (i18n/label :t/contact-request-review)]
 
        (= contact-request-state constants/contact-request-state-mutual)
-       [rn/view {:style style/button-wrapper}
-        [quo/button
-         {:on-press  on-start-chat
-          :icon-left :i/messages}
-         (i18n/label :t/send-message)]]
+       [quo/button
+        {:container-style style/button-wrapper
+         :on-press        on-start-chat
+         :icon-left       :i/messages}
+        (i18n/label :t/send-message)]
 
        :else nil)]))

@@ -8,8 +8,8 @@
    :align-items  :flex-start})
 
 (def button-wrapper
-  {:padding-top        8
-   :padding-bottom     16
+  {:margin-top         8
+   :margin-bottom      16
    :padding-horizontal 20})
 
 (defn header-container
