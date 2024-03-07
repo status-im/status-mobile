@@ -49,7 +49,7 @@
         :label               (i18n/label :t/mark-untrustworthy)
         :on-press            not-implemented/alert
         :accessibility-label :mark-untrustworthy
-        :add-divider?        (when (not has-nickname?) true)
+        :add-divider?        (when-not has-nickname? true)
         :danger?             true}
        {:icon                :i/block
         :label               (i18n/label :t/block-user)

@@ -1,6 +1,5 @@
 (ns status-im.contexts.profile.contact.add-nickname.view
   (:require [clojure.string :as string]
-            [quo.components.info.info-message :as info-message]
             [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.validation.profile :as profile-validator]
@@ -64,7 +63,7 @@
         :label          (i18n/label :t/nickname)
         :on-change-text on-nickname-change}
        :on-submit-editing on-nickname-submit]
-      [info-message/info-message
+      [quo/info-message
        {:icon :i/info
         :size :default
         :type (if-not (string/blank? error-msg) :error :default)}
