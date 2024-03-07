@@ -40,3 +40,7 @@
    :background-color   (colors/theme-colors colors/white colors/neutral-95-opa-70)
    :flex-direction     :row})
 
+(def floating-shell-button
+  {:position :absolute
+   :bottom   21})
+

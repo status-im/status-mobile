@@ -9,6 +9,7 @@
     [status-im.common.home.actions.view :as actions]
     [status-im.constants :as constants]
     [status-im.contexts.chat.group-details.style :as style]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -113,6 +114,7 @@
         members         (rf/sub [:contacts/group-members-sections chat-id])
         pinned-messages (rf/sub [:chats/pinned chat-id])
         current-pk      (rf/sub [:multiaccount/public-key])
+        profile-color   (rf/sub [:profile/customization-color])
         admin?          (get admins current-pk)]
     [:<>
      [quo/gradient-cover
@@ -126,8 +128,8 @@
                                                {:content (fn [] [actions/group-details-actions
                                                                  group])}])}]
        :icon-name  :i/arrow-left
+       :margin-top 30
        :on-press   #(rf/dispatch [:navigate-back])}]
-
      [quo/page-top
       {:title  chat-name
        :avatar {:customization-color color}}]
@@ -167,4 +169,15 @@
        :render-section-footer-fn       contacts-section-footer
        :render-data                    {:chat-id chat-id
                                         :admin?  admin?}
-       :render-fn                      contact-item-render}]]))
+       :render-fn                      contact-item-render}]
+     [quo/floating-shell-button
+      {:key     :shell
+       :jump-to {:on-press            (fn []
+                                        (rf/dispatch [:navigate-back])
+                                        (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to]
+                                                                        500))
+                 :customization-color profile-color
+                 :label               (i18n/label :t/jump-to)}
+      }
+      style/floating-shell-button
+     ]]))
