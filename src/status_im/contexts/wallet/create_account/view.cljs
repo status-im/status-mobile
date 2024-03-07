@@ -118,13 +118,8 @@
            :icon-name  :i/close
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
-<<<<<<< HEAD
-          {:customization-color @account-color
-           :container-style     {:top (- top)}}]
-=======
           {:customization-color account-color
-           :container-style     (style/gradient-cover-container top)}]
->>>>>>> d07b628d9 (review)
+           :container-style     {:top (- top)}}]
          [rn/view
           {:style style/account-avatar-container}
           [quo/account-avatar
