@@ -55,7 +55,8 @@
 
      (cond
        (or (not contact-request-state)
-           (= contact-request-state constants/contact-request-state-none))
+           (= contact-request-state constants/contact-request-state-none)
+           (= contact-request-state constants/contact-request-state-dismissed))
        [quo/button
         {:container-style style/button-wrapper
          :on-press        on-contact-request
