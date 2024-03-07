@@ -8,6 +8,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.add-address-to-watch.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -29,7 +30,8 @@
                           (reset! input-value new-text)
                           (reagent/flush)
                           (if (and (not-empty new-text) (nil? (validate new-text)))
-                            (rf/dispatch [:wallet/get-address-details new-text])
+                            (debounce/debounce-and-dispatch [:wallet/get-address-details new-text]
+                                                            500)
                             (rf/dispatch [:wallet/clear-address-activity]))
                           (when (and scanned-address (not= scanned-address new-text))
                             (rf/dispatch [:wallet/clear-address-activity])
@@ -41,8 +43,7 @@
                      (when-not (string/blank? scanned-address)
                        (on-change-text scanned-address)))
                    [scanned-address])
-    [rn/view
-     {:style style/input-container}
+    [rn/view {:style style/input-container}
      [quo/input
       {:accessibility-label :add-address-to-watch
        :placeholder         (i18n/label :t/address-placeholder)

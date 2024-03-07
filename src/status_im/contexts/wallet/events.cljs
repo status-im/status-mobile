@@ -368,14 +368,13 @@
             (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}))
 
 (rf/reg-event-fx
- :wallet/store-valid-address-activity
+ :wallet/store-address-activity
  (fn [{:keys [db]} [address {:keys [hasActivity]}]]
-   (let [registered-addresses (-> db :wallet :accounts keys set)
-         already-registered?  (registered-addresses address)]
-     (if already-registered?
+   (let [registered-addresses        (-> db :wallet :accounts keys set)
+         address-already-registered? (registered-addresses address)]
+     (if address-already-registered?
        {:db (-> db
-                (assoc-in [:wallet :ui :add-address-to-watch :activity-state]
-                          :address-already-registered)
+                (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :address-already-registered)
                 (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}
        (let [state (if hasActivity :has-activity :no-activity)]
          {:db (-> db
@@ -390,7 +389,7 @@
 (rf/reg-event-fx
  :wallet/get-address-details
  (fn [{:keys [db]} [address-or-ens]]
-   (let [request-params [(chain/chain-id db) address-or-ens]
+   (let [request-params [constants/ethereum-mainnet-chain-id address-or-ens]
          ens?           (string/includes? address-or-ens ".")]
      {:db (-> db
               (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)
@@ -404,7 +403,7 @@
              [:json-rpc/call
               [{:method     "wallet_getAddressDetails"
                 :params     request-params
-                :on-success [:wallet/store-valid-address-activity address-or-ens]
+                :on-success [:wallet/store-address-activity address-or-ens]
                 :on-error   #(log/info "failed to get address details"
                                        {:error %
                                         :event :wallet/get-address-details})}]])]})))
