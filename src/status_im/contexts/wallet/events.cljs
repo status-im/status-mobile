@@ -410,7 +410,7 @@
   {:db (-> db
            (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
            (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
-   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]})
+   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screens/wallet.check-your-backup]}]]]})
 
 (rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
 
