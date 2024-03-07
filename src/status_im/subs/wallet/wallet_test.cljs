@@ -183,7 +183,7 @@
              :color                     :blue
              :hidden                    false
              :prod-preferred-chain-ids  #{1 10 42161}
-             :network-preferences-names #{:ethereum :arbitrum :optimism}
+             :network-preferences-names #{:mainnet :arbitrum :optimism}
              :position                  0
              :clock                     1698945829328
              :created-at                1698928839000
@@ -205,7 +205,7 @@
              :color                     :purple
              :hidden                    false
              :prod-preferred-chain-ids  #{1 10 42161}
-             :network-preferences-names #{:ethereum :arbitrum :optimism}
+             :network-preferences-names #{:mainnet :arbitrum :optimism}
              :position                  1
              :clock                     1698945829328
              :created-at                1698928839000
@@ -269,7 +269,7 @@
            :color                     :blue
            :hidden                    false
            :prod-preferred-chain-ids  #{1 10 42161}
-           :network-preferences-names #{:ethereum :arbitrum :optimism}
+           :network-preferences-names #{:mainnet :arbitrum :optimism}
            :position                  0
            :clock                     1698945829328
            :created-at                1698928839000
@@ -326,7 +326,7 @@
           :color                     :blue
           :hidden                    false
           :prod-preferred-chain-ids  #{1 10 42161}
-          :network-preferences-names #{:ethereum :arbitrum :optimism}
+          :network-preferences-names #{:mainnet :arbitrum :optimism}
           :position                  0
           :clock                     1698945829328
           :created-at                1698928839000
@@ -383,7 +383,7 @@
         :customization-color       :blue
         :hidden                    false
         :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:ethereum :arbitrum :optimism}
+        :network-preferences-names #{:mainnet :arbitrum :optimism}
         :position                  0
         :clock                     1698945829328
         :created-at                1698928839000
@@ -406,7 +406,7 @@
         :customization-color       :purple
         :hidden                    false
         :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:ethereum :arbitrum :optimism}
+        :network-preferences-names #{:mainnet :arbitrum :optimism}
         :position                  1
         :clock                     1698945829328
         :created-at                1698928839000
@@ -427,17 +427,20 @@
            (assoc-in [:wallet :networks] network-data)))
     (is
      (match? [{:short-name       "eth"
-               :network-name     :ethereum
+               :network-name     :mainnet
+               :abbreviated-name "Eth."
                :chain-id         1
                :related-chain-id nil
                :layer            1}
               {:short-name       "arb1"
                :network-name     :arbitrum
+               :abbreviated-name "Arb1."
                :chain-id         42161
                :related-chain-id nil
                :layer            2}
               {:short-name       "opt"
                :network-name     :optimism
+               :abbreviated-name "Opt."
                :chain-id         10
                :related-chain-id nil
                :layer            2}]
@@ -474,11 +477,11 @@
      (= [(-> accounts
              (get "0x1")
              (assoc :customization-color :blue)
-             (assoc :network-preferences-names #{:ethereum :arbitrum :optimism}))
+             (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
          (-> accounts
              (get "0x2")
              (assoc :customization-color :purple)
-             (assoc :network-preferences-names #{:ethereum :arbitrum :optimism}))
+             (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
          (-> accounts
              (get "0x3")
              (assoc :customization-color :magenta)
@@ -496,4 +499,16 @@
      (= [(-> accounts
              (get "0x3")
              (assoc :network-preferences-names #{}))]
+        (rf/sub [sub-name])))))
+
+(def keypairs
+  [{:key-uid "abc"}])
+
+(h/deftest-sub :wallet/keypairs
+  [sub-name]
+  (testing "returns all keypairs"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :keypairs] keypairs))
+    (is
+     (= keypairs
         (rf/sub [sub-name])))))

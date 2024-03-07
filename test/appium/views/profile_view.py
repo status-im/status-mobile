@@ -309,8 +309,6 @@ class ProfileView(BaseView):
                                         xpath="//android.widget.TextView[contains(@text,'with upstream RPC')]")
         self.plus_button = Button(self.driver, xpath="(//android.widget.ImageView[@content-desc='icon'])[2]")
         self.custom_chain_button = Button(self.driver, translation_id="custom")
-        self.custom_network_url_input = EditBox(self.driver, translation_id="rpc-url",
-                                                suffix="/following-sibling::*[1]/android.widget.EditText")
         self.custom_network_symbol_input = EditBox(self.driver, translation_id="specify-symbol")
         self.specify_name_input = EditBox(self.driver, translation_id="name",
                                           suffix="/following-sibling::*[1]/android.widget.EditText")

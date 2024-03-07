@@ -3,6 +3,7 @@
   (:require
     [re-frame.core :as re-frame]
     [re-frame.interceptor :as interceptor]
+    [re-frame.interop :as rf.interop]
     [reagent.core :as reagent]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime])
@@ -20,7 +21,9 @@
              [context]
              (when js/goog.DEBUG
                (reset! handler-nesting-level 0))
-             (log/debug "Handling re-frame event: " (first (interceptor/get-coeffect context :event)))
+             (when rf.interop/debug-enabled?
+               (log/debug "Handling re-frame event: "
+                          (first (interceptor/get-coeffect context :event))))
              context)))
 
 (defn- update-db

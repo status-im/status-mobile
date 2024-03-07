@@ -6,10 +6,11 @@
 (deftest edit-bio-test
   (let [new-bio  "New Bio text"
         cofx     {:db {:profile/profile {:bio "Old Bio text"}}}
-        expected {:db {:profile/profile {:bio new-bio}}
-                  :fx [[:json-rpc/call
+        expected {:fx [[:json-rpc/call
                         [{:method     "wakuext_setBio"
                           :params     [new-bio]
-                          :on-success [:profile/edit-profile-bio-success]}]]]}]
+                          :on-success [:profile/edit-profile-bio-success
+                                       {:bio    new-bio
+                                        :added? false}]}]]]}]
     (is (match? expected
                 (sut/edit-profile-bio cofx [new-bio])))))

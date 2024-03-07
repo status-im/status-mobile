@@ -3,6 +3,7 @@
     ["react" :as react]
     ["react-native" :as react-native]
     [oops.core :as oops]
+    [promesa.core :as p]
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
@@ -24,12 +25,23 @@
 
 (defn image
   [{:keys [source] :as props}]
-  [image-native
-   (if (string? source)
-     (assoc props :source {:uri source})
-     props)])
+  (let [props (cond-> props
+                platform/ios?
+                (dissoc :resize-method)
+                (and (:style props) platform/ios?)
+                (update :style dissoc :resize-method))]
+    [image-native
+     (if (string? source)
+       (assoc props :source {:uri source})
+       props)]))
 
-(defn image-get-size [uri callback] (.getSize ^js (.-Image ^js react-native) uri callback))
+(defn image-get-size
+  [uri]
+  (p/create (fn [res rej]
+              (.getSize ^js (.-Image ^js react-native)
+                        uri
+                        (fn [width height] (res [width height]))
+                        rej))))
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
 (def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
 

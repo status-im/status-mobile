@@ -23,8 +23,8 @@
   (assoc account :watch-only? (= (:type account) :watch)))
 
 (defn- sanitize-emoji
-  "As Desktop uses Twemoji, the emoji received can be an img tag 
-   with raw emoji in alt attribute. This function help us to extract 
+  "As Desktop uses Twemoji, the emoji received can be an img tag
+   with raw emoji in alt attribute. This function help us to extract
    the emoji from it as mobile doesn't support HTML rendering and Twemoji"
   [emoji]
   (if (string/starts-with? emoji "<img")
@@ -60,8 +60,7 @@
                         :color                    :colorId})
       (update :prodPreferredChainIds chain-ids-set->string)
       (update :testPreferredChainIds chain-ids-set->string)
-      (dissoc :watch-only?)
-      (dissoc :default-account?)))
+      (dissoc :watch-only? :default-account? :tokens :collectibles)))
 
 (defn- rpc->balances-per-chain
   [token]
@@ -104,3 +103,23 @@
         :blockExplorerUrl       :block-explorer-url
         :nativeCurrencySymbol   :native-currency-symbol
         :nativeCurrencyName     :native-currency-symbol})))
+
+(defn rename-color-id-in-data
+  [data]
+  (map (fn [item]
+         (update item
+                 :accounts
+                 (fn [accounts]
+                   (map (fn [account]
+                          (let [renamed-account (set/rename-keys account
+                                                                 {:colorId :customization-color})]
+                            (if (contains? account :colorId)
+                              renamed-account
+                              (assoc renamed-account :customization-color :blue))))
+                        accounts))))
+       data))
+
+(defn parse-keypairs
+  [keypairs]
+  (let [renamed-data (rename-color-id-in-data keypairs)]
+    (cske/transform-keys csk/->kebab-case-keyword renamed-data)))

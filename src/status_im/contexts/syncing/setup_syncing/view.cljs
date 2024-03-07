@@ -57,7 +57,7 @@
                                         (rf/dispatch [:syncing/get-connection-string entered-password
                                                       set-code]))]
     (fn []
-      [rn/view {:style style/container-main}
+      [rn/view {:style (style/container-main)}
        [:f> f-use-interval clock cleanup-clock @delay-ms]
        [rn/scroll-view {}
         [quo/page-nav
@@ -130,5 +130,5 @@
          [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer
           [[{:icon     :i/scan
-             :on-press #(rf/dispatch [:navigate-to :scan-sync-code-page])
+             :on-press #(rf/dispatch [:open-modal :scan-sync-code-page])
              :label    (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))

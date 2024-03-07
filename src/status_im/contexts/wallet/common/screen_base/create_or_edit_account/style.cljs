@@ -1,17 +1,10 @@
-(ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.style)
+(ns status-im.contexts.wallet.common.screen-base.create-or-edit-account.style
+  (:require [quo.foundations.colors :as colors]))
 
 (defn root-container
   [top]
   {:flex       1
    :margin-top top})
-
-(defn gradient-cover-container
-  [top]
-  {:position :absolute
-   :top      (- top)
-   :left     0
-   :right    0
-   :z-index  -1})
 
 (def account-avatar-container
   {:padding-horizontal 20
@@ -49,7 +42,8 @@
    :margin-bottom 12})
 
 (defn bottom-action
-  [bottom]
+  [{:keys [bottom theme]}]
   {:padding-horizontal 20
    :padding-vertical   12
+   :background-color   (colors/theme-colors colors/white colors/neutral-100 theme)
    :margin-bottom      bottom})

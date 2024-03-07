@@ -89,9 +89,19 @@
  :-> :suggested-routes)
 
 (rf/reg-sub
+ :wallet/wallet-bridge-to-chain-id
+ :<- [:wallet/wallet-send]
+ :-> :bridge-to-chain-id)
+
+(rf/reg-sub
  :wallet/watch-address-activity-state
  :<- [:wallet/ui]
  :-> :watch-address-activity-state)
+
+(rf/reg-sub
+ :wallet/keypairs
+ :<- [:wallet]
+ :-> :keypairs)
 
 (rf/reg-sub
  :wallet/accounts

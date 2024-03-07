@@ -496,3 +496,33 @@
                   :network-preferences-names #{}
                   :name                      "account3"}]
                 (rf/sub [sub-name community-id])))))
+
+(h/deftest-sub :communities/community-color
+  [sub-name]
+  (testing "returns the community color"
+    (let [community-color "#FEFEFE"]
+      (swap! rf-db/app-db assoc
+        :communities
+        {community-id {:color community-color}})
+      (is (match? community-color (rf/sub [sub-name community-id]))))))
+
+(h/deftest-sub :communities/token-images-by-symbol
+  [sub-name]
+  (testing
+    "returns a map keyed by the images of tokens/collectibles
+            And has data-uri as it's values"
+    (swap! rf-db/app-db assoc-in
+      [:communities community-id :tokens-metadata]
+      [{:contract-addresses {:420 "0x1"}
+        :image              "data:image/jpeg;base64,/9j/2wCEAAYEBQYFBAYGBQYH"
+        :tokenType          2
+        :symbol             "DOGE"
+        :name               "Doge Coin coll"}
+       {:contract-addresses {:420 "0x1"}
+        :image              "data:image/jpeg;base64,/9j/2wCEAAYEBQYFBAYGBQYH"
+        :tokenType          2
+        :symbol             "BTC"
+        :name               "Bitcoin coll"}])
+    (is (match? {"DOGE" "data:image/jpeg;base64,/9j/2wCEAAYEBQYFBAYGBQYH"
+                 "BTC"  "data:image/jpeg;base64,/9j/2wCEAAYEBQYFBAYGBQYH"}
+                (rf/sub [sub-name community-id])))))

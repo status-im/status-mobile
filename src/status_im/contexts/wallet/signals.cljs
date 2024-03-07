@@ -2,12 +2,13 @@
   (:require
     [oops.core :as oops]
     [taoensso.timbre :as log]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx
  :wallet/pending-transaction-status-changed-received
  (fn [{:keys [db]} [{:keys [message]}]]
-   (let [details (js->clj (js/JSON.parse message) :keywordize-keys true)
+   (let [details (transforms/json->clj message)
          tx-hash (:hash details)]
      {:db (update-in db [:wallet :transactions tx-hash] assoc :status :confirmed :blocks 1)})))
 
@@ -25,22 +26,17 @@
        "pending-transaction-status-changed"       {:fx
                                                    [[:dispatch
                                                      [:wallet/pending-transaction-status-changed-received
-                                                      (js->clj event-js
-                                                               :keywordize-keys
-                                                               true)]]]}
+                                                      (transforms/js->clj event-js)]]]}
        "wallet-owned-collectibles-filtering-done" {:fx [[:dispatch
                                                          [:wallet/owned-collectibles-filtering-done
-                                                          (js->clj event-js
-                                                                   :keywordize-keys
-                                                                   true)]]]}
+                                                          (transforms/js->clj event-js)]]]}
        "wallet-get-collectibles-details-done"     {:fx [[:dispatch
                                                          [:wallet/get-collectible-details-done
-                                                          (js->clj event-js
-                                                                   :keywordize-keys
-                                                                   true)]]]}
+                                                          (transforms/js->clj event-js)]]]}
        "wallet-tick-reload"                       {:fx [[:dispatch [:wallet/reload]]]}
+       "wallet-blockchain-status-changed"         {:fx [[:dispatch
+                                                         [:wallet/blockchain-status-changed
+                                                          (transforms/js->clj event-js)]]]}
        (log/debug ::unknown-wallet-event
-                  :type  type
-                  :event (js->clj event-js
-                                  :keywordize-keys
-                                  true))))))
+                  :type  event-type
+                  :event (transforms/js->clj event-js))))))

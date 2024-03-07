@@ -2,12 +2,14 @@
   (:require
     [quo.components.icon :as icon]
     [quo.components.list-items.preview-list.view :as preview-list]
+    [quo.components.list-items.token-network.schema :as component-schema]
     [quo.components.list-items.token-network.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [schema.core :as schema]))
 
 (defn- info
   [{:keys [token label networks]}]
@@ -67,4 +69,6 @@
          [info props]
          [values props]]))))
 
-(def view (quo.theme/with-theme view-internal))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal component-schema/?schema)))

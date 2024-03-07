@@ -35,7 +35,7 @@
              :on-press            on-press
              :background          (if behind-overlay?
                                     :blur
-                                    (button-properties/backgrounds background))
+                                    (when (button-properties/backgrounds background) background))
              :accessibility-label accessibility-label}
             icon-name])]
         children))

@@ -16,8 +16,8 @@
     {:type                 :account
      :blur?                false
      :title                "Collectibles vault"
-     :networks             [{:name :ethereum :short-name "eth"}
-                            {:name :optimism :short-name "opt"}]
+     :networks             [{:network-name :ethereum :short-name "eth"}
+                            {:network-name :optimism :short-name "opt"}]
      :description          "0x0ah...78b"
      :account-avatar-emoji "🍿"
      :customization-color  (or customization-color :blue)}]
@@ -66,11 +66,6 @@
              :source (resources/get-mock-image :dark-blur-bg)}])
          [(if @blur? blur/view rn/view)
           {:style     {:height           332
-                       :position         :absolute
-                       :top              0
-                       :left             0
-                       :right            0
-                       :bottom           0
                        :padding-vertical 40}
            :blur-type :dark}
           [quo/gradient-cover @state]]]

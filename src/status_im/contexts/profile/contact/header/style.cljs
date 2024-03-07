@@ -7,6 +7,11 @@
    :padding-left 20
    :align-items  :flex-start})
 
+(def button-wrapper
+  {:padding-top        8
+   :padding-bottom     16
+   :padding-horizontal 20})
+
 (defn header-container
   [border-radius theme margin-top]
   (reanimated/apply-animations-to-style
@@ -15,3 +20,12 @@
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
     :margin-top         margin-top}))
+
+(def status-tag-wrapper
+  {:flex-direction :row
+   :padding-top    12
+   :padding-right  12})
+
+(def header-top-wrapper
+  {:flex-direction  :row
+   :justify-content :space-between})

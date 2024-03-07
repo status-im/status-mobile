@@ -3,6 +3,8 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -12,7 +14,8 @@
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
@@ -202,6 +205,35 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
+(defn add-keypair-and-create-account
+  [_ [{:keys [sha3-pwd new-keypair]}]]
+  (let [lowercase-address (if (:address new-keypair)
+                            (string/lower-case (:address new-keypair))
+                            (:address new-keypair))]
+    {:fx [[:json-rpc/call
+           [{:method     "accounts_addKeypair"
+             :params     [sha3-pwd new-keypair]
+             :on-success [:wallet/add-account-success lowercase-address]
+             :on-error   #(log/info "failed to create keypair " %)}]]]}))
+
+(rf/reg-event-fx :wallet/add-keypair-and-create-account add-keypair-and-create-account)
+
+(defn get-keypairs
+  [_]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_getKeypairs"
+           :params     []
+           :on-success [:wallet/get-keypairs-success]
+           :on-error   #(log/info "failed to get keypairs " %)}]]]})
+
+(rf/reg-event-fx :wallet/get-keypairs get-keypairs)
+
+(defn get-keypairs-success
+  [{:keys [db]} [keypairs]]
+  {:db (assoc-in db [:wallet :keypairs] (data-store/parse-keypairs keypairs))})
+
+(rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
+
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
@@ -371,7 +403,8 @@
  (fn []
    {:fx [[:dispatch [:wallet/start-wallet]]
          [:dispatch [:wallet/get-ethereum-chains]]
-         [:dispatch [:wallet/get-accounts]]]}))
+         [:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
@@ -396,7 +429,6 @@
 
 (rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
 
-
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
   {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
@@ -418,3 +450,38 @@
   {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)})
 
 (rf/reg-event-fx :wallet/clear-new-keypair clear-new-keypair)
+
+(rf/reg-event-fx
+ :wallet/blockchain-status-changed
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [chains                  (-> (transforms/json->clj message)
+                                     (update-keys (comp utils.number/parse-int name)))
+         down-chains             (-> (select-keys chains
+                                                  (for [[k v] chains :when (= v "down")] k))
+                                     keys)
+         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
+         disabled-chain-id?      (fn [chain-id]
+                                   (let [mainnet-chain? (contains? constants/mainnet-chain-ids chain-id)]
+                                     (if test-networks-enabled?
+                                       mainnet-chain?
+                                       (not mainnet-chain?))))
+         chains-filtered-by-mode (remove disabled-chain-id? down-chains)
+         chains-down?            (seq chains-filtered-by-mode)
+         chain-names             (when chains-down?
+                                   (->> (map #(-> (utils/id->network %)
+                                                  name
+                                                  string/capitalize)
+                                             chains-filtered-by-mode)
+                                        distinct
+                                        (string/join ", ")))]
+     (when (seq down-chains)
+       (log/info "[wallet] Chain(s) down: " down-chains)
+       (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?)))
+     {:db (assoc-in db [:wallet :statuses :blockchains] chains)
+      :fx (when chains-down?
+            [[:dispatch
+              [:toasts/upsert
+               {:id       :chains-down
+                :type     :negative
+                :text     (i18n/label :t/provider-is-down {:chains chain-names})
+                :duration 10000}]]])})))

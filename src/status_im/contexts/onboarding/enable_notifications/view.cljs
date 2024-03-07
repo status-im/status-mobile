@@ -4,8 +4,8 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
+    [status-im.common.parallax.blacklist :as blacklist]
     [status-im.common.parallax.view :as parallax]
-    [status-im.common.parallax.whitelist :as whitelist]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
@@ -78,9 +78,9 @@
         :icon-name  :i/arrow-left
         :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-biometrics])}]
       [page-title]]
-     (if whitelist/whitelisted?
-       [enable-notifications-parallax]
-       [enable-notifications-simple])
+     (if blacklist/blacklisted?
+       [enable-notifications-simple]
+       [enable-notifications-parallax])
      [enable-notification-buttons {:insets insets}]]))
 
 (defn view

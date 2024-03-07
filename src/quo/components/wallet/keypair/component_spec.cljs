@@ -12,9 +12,8 @@
                     :type                :default
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
-    :state         :default
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :action        :none}])
 
 (def default-details
@@ -55,7 +54,7 @@
                                     :action              :selector
                                     :details             other-details}]
                                   theme)
-    (h/is-truthy (h/get-by-label-text :radio-on)))
+    (h/is-truthy (h/get-by-label-text :radio-off)))
 
   (h/test "Options action renders"
     (h/render-with-theme-provider [keypair/view

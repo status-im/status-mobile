@@ -2,14 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(defn gradient-cover-container
-  [top]
-  {:position :absolute
-   :top      (- top)
-   :left     0
-   :right    0
-   :z-index  -1})
-
 (def account-avatar-container
   {:padding-horizontal 20
    :padding-top        12})

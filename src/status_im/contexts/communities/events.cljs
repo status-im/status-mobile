@@ -22,15 +22,18 @@
   [{:keys [db]} [community-js]]
   (when community-js
     (let [{:keys [token-permissions
-                  token-permissions-check joined id]
+                  token-permissions-check joined id last-opened-at]
            :as   community} (data-store.communities/<-rpc community-js)
           has-channel-perm? (fn [id-perm-tuple]
                               (let [{:keys [type]} (second id-perm-tuple)]
                                 (or (= type constants/community-token-permission-can-view-channel)
                                     (=
                                      type
-                                     constants/community-token-permission-can-view-and-post-channel))))]
-      {:db (assoc-in db [:communities id] community)
+                                     constants/community-token-permission-can-view-and-post-channel))))
+          previous-last-opened-at (get-in db [:communities id :last-opened-at])]
+      {:db (assoc-in db
+            [:communities id]
+            (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
        :fx [[:dispatch [:communities/initialize-permission-addresses id]]
             (when (not joined)
               [:dispatch [:chat.ui/spectate-community id]])
@@ -299,6 +302,7 @@
   (when community
     {:db (update db :communities/fetching-community dissoc community-id)
      :fx [[:dispatch [:communities/handle-community community]]
+          [:dispatch [:communities/update-last-opened-at community-id]]
           [:dispatch
            [:chat.ui/cache-link-preview-data (link-preview.events/community-link community-id)
             community]]]}))
@@ -312,7 +316,7 @@
 (rf/reg-event-fx :chat.ui/community-failed-to-fetch community-failed-to-fetch)
 
 (defn fetch-community
-  [{:keys [db]} [community-id]]
+  [{:keys [db]} [{:keys [community-id update-last-opened-at?]}]]
   (when (and community-id (not (get-in db [:communities/fetching-community community-id])))
     {:db            (assoc-in db [:communities/fetching-community community-id] true)
      :json-rpc/call [{:method     "wakuext_fetchCommunity"
@@ -320,6 +324,8 @@
                                     :TryDatabase     true
                                     :WaitForResponse true}]
                       :on-success (fn [community]
+                                    (when update-last-opened-at?
+                                      (rf/dispatch [:communities/update-last-opened-at community-id]))
                                     (rf/dispatch [:chat.ui/community-fetched community-id community]))
                       :on-error   (fn [err]
                                     (rf/dispatch [:chat.ui/community-failed-to-fetch community-id])
@@ -332,7 +338,11 @@
    [:catn
     [:cofx :schema.re-frame/cofx]
     [:args
-     [:schema [:catn [:community-id [:? :string]]]]]]
+     [:schema
+      [:catn
+       [:map
+        [:community-id [:? :string]]
+        [:update-last-opened-at? [:? :boolean]]]]]]]
    [:maybe
     [:map
      [:db map?]
@@ -400,17 +410,21 @@
      (navigate-to-serialized-community cofx deserialized-key)
      (rf/merge
       cofx
-      {:fx [[:dispatch [:communities/fetch-community deserialized-key]]
-            [:dispatch [:navigate-to :community-overview deserialized-key]]
-            [:dispatch [:communities/update-last-opened-at deserialized-key]]]}
+      {:fx [[:dispatch
+             [:communities/fetch-community
+              {:community-id           deserialized-key
+               :update-last-opened-at? true}]]
+            [:dispatch [:navigate-to :community-overview deserialized-key]]]}
       (navigation/pop-to-root :shell-stack)))))
 
 (rf/reg-event-fx :communities/navigate-to-community-chat
  (fn [{:keys [db]} [chat-id pop-to-root?]]
    (let [{:keys [community-id]} (get-in db [:chats chat-id])]
      {:fx [(when community-id
-             [:dispatch [:communities/fetch-community community-id]]
-             [:dispatch [:communities/update-last-opened-at community-id]])
+             [:dispatch
+              [:communities/fetch-community
+               {:community-id           community-id
+                :update-last-opened-at? true}]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
              [:dispatch [:chat/navigate-to-chat chat-id]])]})))
