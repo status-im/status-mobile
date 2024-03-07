@@ -129,7 +129,7 @@
                                                          request-id])}])})
 
 (defn not-joined-options
-  [id token-gated? pending?]
+  [id token-gated? pending? intro-message]
   [[(when-not token-gated? (view-members id))
     (when-not token-gated? (view-rules id intro-message))
     (invite-contacts id)
@@ -140,14 +140,14 @@
     (share-community id)]])
 
 (defn join-request-sent-options
-  [id token-gated? request-id]
-  [(conj (first (not-joined-options id token-gated? request-id))
+  [id token-gated? request-id intro-message]
+  [(conj (first (not-joined-options id token-gated? request-id intro-message))
          (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
-  [id token-gated?]
+  [id token-gated? intro-message]
   (let [pending? false]
-    (not-joined-options id token-gated? pending?)))
+    (not-joined-options id token-gated? pending? intro-message)))
 
 (defn joined-options
   [id token-gated? muted? muted-till intro-message]
@@ -182,19 +182,11 @@
                 muted banList muted-till]} (rf/sub [:communities/community id])
         request-id                         (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
-<<<<<<< HEAD
-      admin      (owner-options id token-permissions muted muted-till)
-      joined     (joined-options id token-permissions muted muted-till)
-      request-id (join-request-sent-options id token-permissions request-id)
-      banList    (banned-options id token-permissions)
-      :else      (not-joined-options id token-permissions request-id))))
-=======
       admin      (owner-options id token-permissions muted muted-till intro-message)
       joined     (joined-options id token-permissions muted muted-till intro-message)
       request-id (join-request-sent-options id token-permissions request-id intro-message)
       banList    (banned-options id token-permissions intro-message)
-      :else      (not-joined-options id token-permissions intro-message))))
->>>>>>> updated community rules to display the actual rules
+      :else      (not-joined-options id token-permissions request-id intro-message))))
 
 (defn community-options-bottom-sheet
   [id]
