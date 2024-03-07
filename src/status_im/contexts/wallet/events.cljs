@@ -10,7 +10,6 @@
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]
-    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
