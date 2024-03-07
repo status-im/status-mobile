@@ -33,6 +33,7 @@
     [collectibles-tab/view
      {:collectibles         collectibles
       :filtered?            search-performed?
+      :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
       :on-collectible-press #(rf/dispatch [:wallet/send-select-collectible
                                            {:collectible %
                                             :stack-id    :wallet-select-asset}])}]))

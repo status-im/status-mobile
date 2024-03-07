@@ -59,7 +59,7 @@
            [:wallet :accounts]
            (utils.collection/index-by :address (data-store/rpc->accounts wallet-accounts)))
       :fx [[:dispatch [:wallet/get-wallet-token]]
-           [:dispatch [:wallet/request-collectibles {:start-at-index 0 :new-request? true}]]
+           [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 

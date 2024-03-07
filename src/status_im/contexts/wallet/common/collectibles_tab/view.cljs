@@ -8,7 +8,7 @@
     [utils.i18n :as i18n]))
 
 (defn- view-internal
-  [{:keys [theme collectibles filtered? on-collectible-press]}]
+  [{:keys [theme collectibles filtered? on-collectible-press on-end-reached]}]
   (let [no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
@@ -26,14 +26,17 @@
 
       :else
       [rn/flat-list
-       {:data                    collectibles
-        :style                   {:flex 1}
-        :content-container-style {:align-items :center}
-        :num-columns             2
-        :render-fn               (fn [{:keys [preview-url] :as collectible}]
-                                   [quo/collectible
-                                    {:images   [preview-url]
-                                     :on-press #(when on-collectible-press
-                                                  (on-collectible-press collectible))}])}])))
+       {:data                     collectibles
+        :style                    {:flex 1}
+        :content-container-style  {:align-items :center}
+        :window-size              11
+        :num-columns              2
+        :render-fn                (fn [{:keys [preview-url] :as collectible}]
+                                    [quo/collectible
+                                     {:images   [preview-url]
+                                      :on-press #(when on-collectible-press
+                                                   (on-collectible-press collectible))}])
+        :on-end-reached           on-end-reached
+        :on-end-reached-threshold 4}])))
 
 (def view (quo.theme/with-theme view-internal))
