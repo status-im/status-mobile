@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.accounts.add-account.address-to-watch.events
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.re-frame :as rf]))
 
 (rf/reg-event-fx
  :wallet/ens-not-found

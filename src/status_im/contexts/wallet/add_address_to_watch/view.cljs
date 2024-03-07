@@ -13,12 +13,13 @@
     [utils.re-frame :as rf]))
 
 (defn- validate-address
-  [known-addresses s]
+  [known-addresses user-input]
   (cond
-    (or (nil? s) (= s ""))              nil
-    (contains? known-addresses s)       (i18n/label :t/address-already-in-use)
-    (not (or (validation/eth-address? s)
-             (validation/ens-name? s))) (i18n/label :t/invalid-address)))
+    (or (nil? user-input) (= user-input "")) nil
+    (contains? known-addresses user-input)   (i18n/label :t/address-already-in-use)
+    (not
+     (or (validation/eth-address? user-input)
+         (validation/ens-name? user-input))) (i18n/label :t/invalid-address)))
 
 (defn- address-input
   [{:keys [input-value validation-msg validate clear-input]}]
