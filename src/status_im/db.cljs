@@ -40,6 +40,7 @@
    :registry                           {}
    :visibility-status-updates          {}
    :stickers/packs-pending             #{}
+   :settings/change-password           {}
    :keycard                            {:nfc-enabled? false
                                         :pin          {:original     []
                                                        :confirmation []

@@ -48,6 +48,7 @@
     [status-im.contexts.profile.edit.name.view :as edit-name]
     [status-im.contexts.profile.edit.view :as edit-profile]
     [status-im.contexts.profile.profiles.view :as profiles]
+    [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
     [status-im.contexts.profile.settings.screens.password.view :as settings-password]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.shell.activity-center.view :as activity-center]
@@ -471,7 +472,13 @@
 
     {:name      :settings-password
      :options   options/transparent-modal-screen-options
-     :component settings-password/view}]
+     :component settings-password/view}
+
+    {:name      :change-password
+     :options   (merge
+                 options/transparent-modal-screen-options
+                 {:theme :dark})
+     :component change-password/view}]
 
    [{:name    :shell
      :options {:theme :dark}}]

@@ -4,7 +4,6 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.biometric.utils :as biometric]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.constants :as constants]
             [status-im.contexts.profile.settings.screens.password.style :as style]
             [utils.i18n :as i18n]
@@ -50,7 +49,7 @@
 (defn- get-change-password-item
   []
   {:title       (i18n/label :t/change-password)
-   :on-press    not-implemented/alert
+   :on-press    #(rf/dispatch [:open-modal :change-password])
    :blur?       true
    :image       :icon
    :image-props :i/password
