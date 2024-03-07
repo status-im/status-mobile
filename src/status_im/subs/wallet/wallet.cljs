@@ -101,7 +101,7 @@
 
 (rf/reg-sub
  :wallet/selected-keypair-uid
- :<- [:wallet]
+ :<- [:wallet/create-account]
  :-> :selected-keypair-uid)
 
 (rf/reg-sub

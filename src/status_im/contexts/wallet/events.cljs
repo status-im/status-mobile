@@ -186,7 +186,7 @@
       [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
    (let [lowercase-address (if address (string/lower-case address) address)
-         key-uid           (get-in db [:wallet :selected-keypair-uid])
+         key-uid           (get-in db [:wallet :ui :create-account :selected-keypair-uid])
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
                             :chat       false
@@ -240,13 +240,13 @@
         default-key-uid (:key-uid (first parsed-keypairs))]
     {:db (-> db
              (assoc-in [:wallet :keypairs] parsed-keypairs)
-             (assoc-in [:wallet :selected-keypair-uid] default-key-uid))}))
+             (assoc-in [:wallet :ui :create-account :selected-keypair-uid] default-key-uid))}))
 
 (rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
 
 (defn confirm-account-origin
   [{:keys [db]} [key-uid]]
-  {:db (assoc-in db [:wallet :selected-keypair-uid] key-uid)
+  {:db (assoc-in db [:wallet :ui :create-account :selected-keypair-uid] key-uid)
    :fx [[:dispatch [:navigate-back]]]})
 
 (rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)

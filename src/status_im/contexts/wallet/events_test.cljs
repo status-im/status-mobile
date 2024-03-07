@@ -58,7 +58,7 @@
 (deftest confirm-account-origin
   (let [db          {}
         props       [{:selected-keypair-uid "key-uid"}]
-        expected-db {:wallet {:selected-key-uid "key-uid"}}
+        expected-db {:wallet {:create-account {:ui {:selected-key-uid "key-uid"}}}}
         effects     (events/confirm-account-origin {:db db} props)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
@@ -68,11 +68,11 @@
         props       [{:key-uid  "key-uid"
                       :colorId  :blue
                       :accounts [{:colorId :blue :path "path"}]}]
-        expected-db {:wallet {:keypairs         [{:key-uid             "key-uid"
-                                                  :customization-color :blue
-                                                  :accounts            [{:customization-color :blue
-                                                                         :path                "path"}]}]
-                              :selected-key-uid "key-uid"}}
+        expected-db {:wallet {:keypairs       [{:key-uid             "key-uid"
+                                                :customization-color :blue
+                                                :accounts            [{:customization-color :blue
+                                                                       :path                "path"}]}]
+                              :create-account {:ui {:selected-key-uid "key-uid"}}}}
         effects     (events/new-keypair-created {:db db} props)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))

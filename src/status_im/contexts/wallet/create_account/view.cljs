@@ -6,7 +6,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
@@ -23,18 +22,26 @@
 
 
 (defn- get-keypair-data
-  [title primary-keypair? derivation-path account-color {:keys [keypair-name]}]
-  [{:title             (or keypair-name
-                           (if primary-keypair? (i18n/label :t/keypair-title {:name title}) title))
+  [{:keys [title primary-keypair? new-keypair? derivation-path customization-color]}]
+  [{:title             title
     :image             (if primary-keypair? :avatar :icon)
     :image-props       (if primary-keypair?
                          {:full-name           (utils.string/get-initials title 1)
                           :size                :xxs
-                          :customization-color account-color}
+                          :customization-color customization-color}
                          :i/seed)
+<<<<<<< HEAD
     :action            (when-not keypair-name :button)
     :action-props      {:on-press    (fn []
+<<<<<<< HEAD
                                        (rf/dispatch [:navigate-to :screen/wallet.select-keypair]))
+=======
+                                       (rf/dispatch [:navigate-to :scrren/wallet.select-keypair]))
+=======
+    :action            (when-not new-keypair? :button)
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-select-keypair])
+>>>>>>> 8544e3fae (review)
+>>>>>>> ea622a4f6 (review)
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
@@ -58,44 +65,49 @@
 
 (defn- f-view
   []
-  (let [top                                   (safe-area/get-top)
-        bottom                                (safe-area/get-bottom)
-        account-color                         (reagent/atom (rand-nth colors/account-colors))
-        emoji                                 (reagent/atom (emoji-picker.utils/random-emoji))
-        number-of-accounts                    (count (rf/sub
-                                                      [:wallet/accounts-without-watched-accounts]))
-        account-name                          (reagent/atom "")
-        placeholder                           (i18n/label :t/default-account-placeholder
-                                                          {:number (inc number-of-accounts)})
-        derivation-path                       (reagent/atom (utils/get-derivation-path
-                                                             number-of-accounts))
-        {:keys [address customization-color]} (rf/sub [:profile/profile])
-        on-change-text                        #(reset! account-name %)
-        {window-width :width}                 (rn/get-window)]
+  (let [top                   (safe-area/get-top)
+        bottom                (safe-area/get-bottom)
+        {window-width :width} (rn/get-window)]
     (fn [{:keys [theme]}]
-      (let [{:keys [new-keypair]}           (rf/sub [:wallet/create-account])
-            keypairs                        (rf/sub [:wallet/keypairs])
-            selected-keypair-uid            (rf/sub [:wallet/selected-keypair-uid])
-            keypair                         (first (filter #(= (:key-uid %) selected-keypair-uid)
-                                                           keypairs))
-            primary-keypair?                (= selected-keypair-uid (:key-uid (first keypairs)))
-            create-new-keypair-account      #(rf/dispatch
-                                              [:wallet/add-keypair-and-create-account
-                                               {:sha3-pwd    (security/safe-unmask-data %)
-                                                :new-keypair (create-account.utils/prepare-new-keypair
-                                                              {:new-keypair new-keypair
-                                                               :address address
-                                                               :account-name @account-name
-                                                               :account-color @account-color
-                                                               :emoji @emoji
-                                                               :derivation-path
-                                                               @derivation-path})}])
-            create-existing-keypair-account #(rf/dispatch [:wallet/derive-address-and-add-account
-                                                           {:sha3-pwd     (security/safe-unmask-data %)
-                                                            :emoji        @emoji
-                                                            :color        @account-color
-                                                            :path         @derivation-path
-                                                            :account-name @account-name}])]
+      (let [[account-color set-account-color]     (rn/use-state (rand-nth colors/account-colors))
+            [account-name set-account-name]       (rn/use-state "")
+            [emoji set-emoji]                     (rn/use-state (emoji-picker.utils/random-emoji))
+            number-of-accounts                    (count (rf/sub
+                                                          [:wallet/accounts-without-watched-accounts]))
+            {:keys [address customization-color]} (rf/sub [:profile/profile])
+            {:keys [new-keypair]}                 (rf/sub [:wallet/create-account])
+            keypairs                              (rf/sub [:wallet/keypairs])
+            selected-keypair-uid                  (rf/sub [:wallet/selected-keypair-uid])
+            placeholder                           (i18n/label :t/default-account-placeholder
+                                                              {:number (inc number-of-accounts)})
+            derivation-path                       (utils/get-derivation-path
+                                                   number-of-accounts)
+            keypair                               (first (filter #(= (:key-uid %) selected-keypair-uid)
+                                                                 keypairs))
+            primary-keypair?                      (= selected-keypair-uid (:key-uid (first keypairs)))
+            create-new-keypair-account            #(rf/dispatch
+                                                    [:wallet/add-keypair-and-create-account
+                                                     {:sha3-pwd (security/safe-unmask-data %)
+                                                      :new-keypair
+                                                      (create-account.utils/prepare-new-keypair
+                                                       {:new-keypair new-keypair
+                                                        :address address
+                                                        :account-name account-name
+                                                        :account-color account-color
+                                                        :emoji emoji
+                                                        :derivation-path
+                                                        derivation-path})}])
+            create-existing-keypair-account       #(rf/dispatch [:wallet/derive-address-and-add-account
+                                                                 {:sha3-pwd (security/safe-unmask-data %)
+                                                                  :emoji emoji
+                                                                  :color account-color
+                                                                  :path derivation-path
+                                                                  :account-name account-name}])
+            keypair-title                         (or (:keypair-name new-keypair)
+                                                      (if primary-keypair?
+                                                        (i18n/label :t/keypair-title
+                                                                    {:name (:name keypair)})
+                                                        (:name keypair)))]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type       :no-title
@@ -106,14 +118,19 @@
            :icon-name  :i/close
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
+<<<<<<< HEAD
           {:customization-color @account-color
            :container-style     {:top (- top)}}]
+=======
+          {:customization-color account-color
+           :container-style     (style/gradient-cover-container top)}]
+>>>>>>> d07b628d9 (review)
          [rn/view
           {:style style/account-avatar-container}
           [quo/account-avatar
-           {:customization-color @account-color
+           {:customization-color account-color
             :size                80
-            :emoji               @emoji
+            :emoji               emoji
             :type                :default}]
           [quo/button
            {:size            32
@@ -122,16 +139,16 @@
             :icon-only?      true
             :on-press        #(rf/dispatch [:emoji-picker/open
                                             {:on-select (fn [selected-emoji]
-                                                          (reset! emoji selected-emoji))}])
+                                                          (set-emoji selected-emoji))}])
             :container-style style/reaction-button-container} :i/reaction]]
          [quo/title-input
-          {:customization-color @account-color
+          {:customization-color account-color
            :placeholder         placeholder
-           :on-change-text      on-change-text
+           :on-change-text      #(set-account-name %)
            :max-length          constants/wallet-account-name-max-length
            :blur?               true
            :disabled?           false
-           :default-value       @account-name
+           :default-value       account-name
            :container-style     style/title-input-container}]
          [quo/divider-line]
          [rn/view
@@ -142,29 +159,29 @@
             :style  (style/color-label theme)}
            (i18n/label :t/colour)]
           [quo/color-picker
-           {:default-selected @account-color
-            :on-change        #(reset! account-color %)
+           {:default-selected account-color
+            :on-change        #(set-account-color %)
             :container-style  {:padding-vertical 12
                                :padding-left     (iphone-11-Pro-20-pixel-from-width window-width)}}]]
          [quo/divider-line]
          [quo/category
           {:list-type :settings
            :label     (i18n/label :t/origin)
-           :data      (get-keypair-data (:name keypair)
-                                        primary-keypair?
-                                        @derivation-path
-                                        customization-color
-                                        new-keypair)}]
+           :data      (get-keypair-data {:title               keypair-title
+                                         :primary-keypair?    primary-keypair?
+                                         :new-keypair?        (boolean new-keypair)
+                                         :derivation-path     derivation-path
+                                         :customization-color customization-color})}]
          [standard-auth/slide-button
           {:size                :size-48
            :track-text          (i18n/label :t/slide-to-create-account)
-           :customization-color @account-color
+           :customization-color account-color
            :on-auth-success     (fn [password]
                                   (if new-keypair
                                     (create-new-keypair-account password)
                                     (create-existing-keypair-account password)))
            :auth-button-label   (i18n/label :t/confirm)
-           :disabled?           (empty? @account-name)
+           :disabled?           (empty? account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
 
 (defn- view-internal

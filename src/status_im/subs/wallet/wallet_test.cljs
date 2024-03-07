@@ -541,7 +541,7 @@
   [sub-name]
   (testing "returns selected keypair uid"
     (swap! rf-db/app-db
-      #(assoc-in % [:wallet :selected-keypair-uid] "key-uid"))
+      #(assoc-in % [:wallet :ui :create-account :selected-keypair-uid] "key-uid"))
     (is (= "key-uid" (rf/sub [sub-name])))))
 
 >>>>>>> ee780fbce (lint)

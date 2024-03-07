@@ -104,30 +104,38 @@
         :nativeCurrencySymbol   :native-currency-symbol
         :nativeCurrencyName     :native-currency-symbol})))
 
-(defn rename-color-id-in-data
-  [data]
-  (let [sorted-data (sort-by #(if (some (fn [account]
-                                          (string/starts-with? (:path account) constants/path-eip1581))
-                                        (:accounts %))
-                                0
-                                1)
-                             data)]
+(defn sort-keypairs
+  [keypairs]
+  (sort-by #(if (some (fn [account]
+                        (string/starts-with? (:path account) constants/path-eip1581))
+                      (:accounts %))
+              0
+              1)
+           keypairs))
+
+(defn sort-and-rename-keypairs
+  [keypairs]
+  (let [sorted-keypairs (sort-keypairs keypairs)]
     (map (fn [item]
            (update item
                    :accounts
                    (fn [accounts]
                      (map
-                      (fn [account]
-                        (let [renamed-account (set/rename-keys account
-                                                               {:colorId :customization-color})]
-                          (if (and (contains? account :colorId) (seq (get account :colorId)))
-                            (assoc renamed-account :customization-color (keyword (get account :colorId)))
-                            (assoc renamed-account :customization-color :blue))))
+                      (fn [{:keys [colorId] :as account}]
+                        (assoc account
+                               :customization-color
+                               (if (seq colorId)
+                                 (keyword colorId)
+                                 :blue)))
                       accounts))))
-         sorted-data)))
-
+         sorted-keypairs)))
 
 (defn parse-keypairs
   [keypairs]
+<<<<<<< HEAD
   (let [renamed-data (rename-color-id-in-data keypairs)]
     (cske/transform-keys transforms/->kebab-case-keyword renamed-data)))
+=======
+  (let [renamed-data (sort-and-rename-keypairs keypairs)]
+    (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
+>>>>>>> d6eef4188 (review)

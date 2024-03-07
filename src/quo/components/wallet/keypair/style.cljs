@@ -4,19 +4,20 @@
     [react-native.platform :as platform]))
 
 (defn container
-  [{:keys [blur? customization-color theme selected?]}]
-  {:border-radius  16
-   :border-width   1
-   :border-color   (if selected?
-                     (if blur?
-                       colors/white
-                       (colors/theme-colors (colors/custom-color customization-color 50)
-                                            (colors/custom-color customization-color 60)
-                                            theme))
-                     (if blur?
-                       colors/white-opa-5
-                       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)))
-   :padding-bottom 8})
+  [{:keys [blur? customization-color theme]} selected? container-style]
+  (merge {:border-radius  16
+          :border-width   1
+          :border-color   (if selected?
+                            (if blur?
+                              colors/white
+                              (colors/theme-colors (colors/custom-color customization-color 50)
+                                                   (colors/custom-color customization-color 60)
+                                                   theme))
+                            (if blur?
+                              colors/white-opa-5
+                              (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)))
+          :padding-bottom 8}
+         container-style))
 
 (def header-container
   {:padding-horizontal 12
