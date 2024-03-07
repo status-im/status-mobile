@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.subs.wallet.add-account.address-to-watch]
             [utils.number]))
 
 (defn- filter-networks
@@ -92,21 +93,6 @@
  :wallet/wallet-bridge-to-chain-id
  :<- [:wallet/wallet-send]
  :-> :bridge-to-chain-id)
-
-(rf/reg-sub
- :wallet/add-address-to-watch
- :<- [:wallet/ui]
- :-> :add-address-to-watch)
-
-(rf/reg-sub
- :wallet/watch-address-activity-state
- :<- [:wallet/add-address-to-watch]
- :-> :activity-state)
-
-(rf/reg-sub
- :wallet/watch-address-validated-address
- :<- [:wallet/add-address-to-watch]
- :-> :validated-address)
 
 (rf/reg-sub
  :wallet/keypairs

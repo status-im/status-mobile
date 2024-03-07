@@ -4,6 +4,7 @@
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
@@ -358,54 +359,6 @@
 (rf/reg-event-fx :wallet/clean-ens-or-address-validation
  (fn [{:keys [db]}]
    {:db (assoc db :wallet/valid-ens-or-address? false)}))
-
-(rf/reg-event-fx
- :wallet/ens-not-found
- (fn [{:keys [db]} _]
-   {:db (-> db
-            (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :invalid-ens)
-            (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}))
-
-(rf/reg-event-fx
- :wallet/store-address-activity
- (fn [{:keys [db]} [address {:keys [hasActivity]}]]
-   (let [registered-addresses        (-> db :wallet :accounts keys set)
-         address-already-registered? (registered-addresses address)]
-     (if address-already-registered?
-       {:db (-> db
-                (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :address-already-registered)
-                (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))}
-       (let [state (if hasActivity :has-activity :no-activity)]
-         {:db (-> db
-                  (assoc-in [:wallet :ui :add-address-to-watch :activity-state] state)
-                  (assoc-in [:wallet :ui :add-address-to-watch :validated-address] address))})))))
-
-(rf/reg-event-fx
- :wallet/clear-address-activity
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui] dissoc :add-address-to-watch)}))
-
-(rf/reg-event-fx
- :wallet/get-address-details
- (fn [{:keys [db]} [address-or-ens]]
-   (let [request-params [constants/ethereum-mainnet-chain-id address-or-ens]
-         ens?           (string/includes? address-or-ens ".")]
-     {:db (-> db
-              (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)
-              (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))
-      :fx [(if ens?
-             [:json-rpc/call
-              [{:method     "ens_addressOf"
-                :params     request-params
-                :on-success [:wallet/get-address-details]
-                :on-error   [:wallet/ens-not-found]}]]
-             [:json-rpc/call
-              [{:method     "wallet_getAddressDetails"
-                :params     request-params
-                :on-success [:wallet/store-address-activity address-or-ens]
-                :on-error   #(log/info "failed to get address details"
-                                       {:error %
-                                        :event :wallet/get-address-details})}]])]})))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
