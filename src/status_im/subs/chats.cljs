@@ -181,14 +181,15 @@
        (chat.events/public-chat? current-chat)
        (assoc :able-to-send-message? true)
 
+       (and (chat.events/community-chat? current-chat)
+            (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
+       (assoc :able-to-send-message? true)
+
+
        (and (chat.events/group-chat? current-chat)
             (group-chats.db/member? my-public-key current-chat))
        (assoc :able-to-send-message? true
               :member?               true)
-
-       (and (chat.events/community-chat? current-chat)
-            (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
-       (assoc :able-to-send-message? true)
 
        (not group-chat)
        (assoc

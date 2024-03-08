@@ -14,6 +14,7 @@
    :canManageUsers              :can-manage-users?
    :categoryID                  :category-id
    :canPost                     :can-post?
+   :tokenGated                  :token-gated?
    :isControlNode               :is-control-node?
    :pinMessageAllMembersEnabled :pin-message-all-members-enabled
    :isMember                    :is-member?

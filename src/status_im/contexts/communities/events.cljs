@@ -21,28 +21,21 @@
 (defn handle-community
   [{:keys [db]} [community-js]]
   (when community-js
-    (let [{:keys [token-permissions
+    (let [{:keys [clock
                   token-permissions-check joined id last-opened-at]
-           :as   community} (data-store.communities/<-rpc community-js)
-          has-channel-perm? (fn [id-perm-tuple]
-                              (let [{:keys [type]} (second id-perm-tuple)]
-                                (or (= type constants/community-token-permission-can-view-channel)
-                                    (=
-                                     type
-                                     constants/community-token-permission-can-view-and-post-channel))))
+           :as   community}       (data-store.communities/<-rpc community-js)
           previous-last-opened-at (get-in db [:communities id :last-opened-at])]
-      {:db (assoc-in db
-            [:communities id]
-            (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
-       :fx [[:dispatch [:communities/initialize-permission-addresses id]]
-            (when (not joined)
-              [:dispatch [:chat.ui/spectate-community id]])
-            (when (nil? token-permissions-check)
-              [:dispatch [:communities/check-permissions-to-join-community id]])
-            (when (some has-channel-perm? token-permissions)
-              [:dispatch [:communities/check-all-community-channels-permissions id]])
-            (when joined
-              [:dispatch [:communities/get-revealed-accounts id]])]})))
+      (when (> clock (get-in db [:communities id :clock]))
+        {:db (assoc-in db
+              [:communities id]
+              (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
+         :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+              (when (not joined)
+                [:dispatch [:chat.ui/spectate-community id]])
+              (when (nil? token-permissions-check)
+                [:dispatch [:communities/check-permissions-to-join-community id]])
+              (when joined
+                [:dispatch [:communities/get-revealed-accounts id]])]}))))
 
 (rf/reg-event-fx :communities/handle-community handle-community)
 

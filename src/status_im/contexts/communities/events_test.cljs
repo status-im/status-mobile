@@ -2,7 +2,6 @@
   (:require [cljs.test :refer [deftest is testing]]
             [legacy.status-im.mailserver.core :as mailserver]
             matcher-combinators.test
-            [status-im.constants :as constants]
             [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
             [status-im.contexts.communities.events :as events]))
 
@@ -262,7 +261,7 @@
                     (-> effects :json-rpc/call first (select-keys [:method :params]))))))))
 
 (deftest handle-community
-  (let [community {:id community-id}]
+  (let [community {:id community-id :clock 2}]
     (testing "given a unjoined community"
       (let [effects (events/handle-community {} [community])]
         (is (match? community-id
@@ -287,29 +286,10 @@
              [[:dispatch [:communities/initialize-permission-addresses community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]]
              (filter some? (:fx effects))))))
-    (testing "given a community with view channel permission"
-      (let [community (assoc community
-                             :token-permissions
-                             [["perm-id" {:type constants/community-token-permission-can-view-channel}]])
+    (testing "given a community with lower clock"
+      (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
+        (is (nil? effects))))
+    (testing "given a community without clock"
+      (let [community (dissoc community :clock)
             effects   (events/handle-community {} [community])]
-        (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]
-              [:dispatch [:communities/check-permissions-to-join-community community-id]]
-              [:dispatch
-               [:communities/check-all-community-channels-permissions community-id]]]
-             (filter some? (:fx effects))))))
-
-    (testing "given a community with post in channel permission"
-      (let [community (assoc community
-                             :token-permissions
-                             [["perm-id"
-                               {:type constants/community-token-permission-can-view-and-post-channel}]])
-            effects   (events/handle-community {} [community])]
-        (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]
-              [:dispatch [:communities/check-permissions-to-join-community community-id]]
-              [:dispatch
-               [:communities/check-all-community-channels-permissions community-id]]]
-             (filter some? (:fx effects))))))))
+        (is (nil? effects))))))
