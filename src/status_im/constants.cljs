@@ -429,6 +429,12 @@
 (def ^:const mainnet-chain-ids
   #{ethereum-mainnet-chain-id arbitrum-mainnet-chain-id optimism-mainnet-chain-id})
 
+(def ^:const goerli-chain-ids
+  #{ethereum-goerli-chain-id arbitrum-goerli-chain-id optimism-goerli-chain-id})
+
+(def ^:const sepolia-chain-ids
+  #{ethereum-sepolia-chain-id arbitrum-sepolia-chain-id optimism-sepolia-chain-id})
+
 (def ^:const mainnet-short-name "eth")
 (def ^:const optimism-short-name "opt")
 (def ^:const arbitrum-short-name "arb1")
