@@ -128,7 +128,6 @@
                                                {:content (fn [] [actions/group-details-actions
                                                                  group])}])}]
        :icon-name  :i/arrow-left
-       :margin-top 30
        :on-press   #(rf/dispatch [:navigate-back])}]
      [quo/page-top
       {:title  chat-name
