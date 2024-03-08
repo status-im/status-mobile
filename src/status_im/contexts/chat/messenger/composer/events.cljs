@@ -160,8 +160,8 @@
        (map #(select-keys %
                           [:url :title :description :thumbnail
                            :status-link-preview? :favicon]))
-       (filter (fn [preview]
-                 (not (:status-link-preview? preview))))))
+       (filter (fn [{:keys [status-link-preview?]}]
+                 (not status-link-preview?)))))
 
 (defn build-text-message
   [{:keys [db]} input-text current-chat-id]
@@ -220,8 +220,8 @@
                           [:url :title :description :thumbnail
                            :status-link-preview? :favicon]))
        (map data-store.messages/->link-preview-rpc)
-       (filter (fn [preview]
-                 (not (:status-link-preview? preview))))))
+       (filter (fn [{:keys [status-link-preview?]}]
+                 (not status-link-preview?)))))
 
 (rf/defn send-edited-message
   [{:keys [db]

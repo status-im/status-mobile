@@ -362,12 +362,8 @@
 (defn- link-preview->rpc
   [preview]
   (-> preview
-      (update :thumbnail
-              (fn [thumbnail]
-                (image->rpc thumbnail)))
-      (update :favicon
-              (fn [favicon]
-                (image->rpc favicon)))))
+      (update :thumbnail image->rpc)
+      (update :favicon image->rpc)))
 
 (defn build-message
   [msg]
