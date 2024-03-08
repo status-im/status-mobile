@@ -4,13 +4,13 @@
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]
-    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
@@ -359,27 +359,6 @@
 (rf/reg-event-fx :wallet/clean-ens-or-address-validation
  (fn [{:keys [db]}]
    {:db (assoc db :wallet/valid-ens-or-address? false)}))
-
-(rf/reg-event-fx :wallet/get-address-details-success
- (fn [{:keys [db]} [{:keys [hasActivity]}]]
-   {:db (assoc-in db
-         [:wallet :ui :watch-address-activity-state]
-         (if hasActivity :has-activity :no-activity))}))
-
-(rf/reg-event-fx :wallet/clear-address-activity-check
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui] dissoc :watch-address-activity-state)}))
-
-(rf/reg-event-fx :wallet/get-address-details
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :ui :watch-address-activity-state] :scanning)
-    :fx [[:json-rpc/call
-          [{:method     "wallet_getAddressDetails"
-            :params     [(chain/chain-id db) address]
-            :on-success [:wallet/get-address-details-success]
-            :on-error   #(log/info "failed to get address details"
-                                   {:error %
-                                    :event :wallet/get-address-details})}]]]}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
