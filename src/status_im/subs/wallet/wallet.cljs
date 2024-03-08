@@ -267,3 +267,18 @@
  :wallet/transactions
  :<- [:wallet]
  :-> :transactions)
+
+(rf/reg-sub
+ :wallet/search-address
+ :<- [:wallet]
+ :-> :search-address)
+
+(rf/reg-sub
+ :wallet/local-suggestions
+ :<- [:wallet/search-address]
+ :-> :local-suggestions)
+
+(rf/reg-sub
+ :wallet/valid-ens-or-address?
+ :<- [:wallet/search-address]
+ :-> :valid-ens-or-address?)
