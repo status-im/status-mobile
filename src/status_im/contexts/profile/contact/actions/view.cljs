@@ -22,6 +22,13 @@
                                                         :text (i18n/label :t/nickname-removed)}])
                                          (rf/dispatch [:contacts/update-nickname public-key ""]))
                                        [public-key])
+        on-show-qr                    (rn/use-callback
+                                       (fn []
+                                         (rf/dispatch [:universal-links/generate-profile-url
+                                                       {:public-key public-key
+                                                        :on-success #(rf/dispatch [:open-modal
+                                                                                   :share-contact])}]))
+                                       [public-key])
         has-nickname?                 (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])]
     [quo/action-drawer
      [[{:icon                :i/edit
@@ -32,7 +39,7 @@
         :accessibility-label (if nickname :edit-nickname :add-nickname)}
        {:icon                :i/qr-code
         :label               (i18n/label :t/show-qr)
-        :on-press            not-implemented/alert
+        :on-press            on-show-qr
         :accessibility-label :show-qr-code}
        {:icon                :i/share
         :label               (i18n/label :t/share-profile)
