@@ -48,15 +48,16 @@
                             :emoji               emoji
                             :customization-color community-color
                             :mentions-count      mentions-count
+                            ;; NOTE: this is a troolean, nil/true/false have different meaning
                             :locked?             locked?
                             :notification        notification}
         channel-sheet-data {:selected-item (fn [] [quo/channel channel-options])
                             :content       (fn [] sheet-content)}]
     [rn/view {:key id}
      [quo/channel
-      (merge channel-options
-             {:on-press      on-press
-              :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])})]]))
+      (assoc channel-options
+             :on-press      on-press
+             :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data]))]]))
 
 (defn- channel-list-component
   [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
@@ -253,8 +254,7 @@
     :description-accessibility-label :community-description}])
 
 (defn- community-content
-  [id]
-  (rf/dispatch [:communities/check-all-community-channels-permissions id])
+  [_]
   (fn [id
        {:keys [on-category-layout
                collapsed?
