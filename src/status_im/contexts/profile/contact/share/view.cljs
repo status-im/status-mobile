@@ -17,8 +17,6 @@
         abbreviated-url (rn/use-memo (fn []
                                        (address/get-abbreviated-profile-url universal-profile-url))
                                      [universal-profile-url])
-        profile-picture (rn/use-memo #(profile.utils/photo profile) [profile])
-        display-name    (rn/use-memo #(profile.utils/displayed-name profile) [profile])
         on-back-press   #(rf/dispatch [:navigate-back])
         on-share-press  (rn/use-callback #(list-selection/open-share {:message universal-profile-url})
                                          [universal-profile-url])
@@ -49,6 +47,6 @@
          :on-share-press      on-share-press
          :on-text-press       on-copy-press
          :on-text-long-press  on-copy-press
-         :profile-picture     profile-picture
-         :full-name           display-name
+         :profile-picture     (profile.utils/photo profile)
+         :full-name           (profile.utils/displayed-name profile)
          :customization-color (or customization-color :blue)}]]]]))
