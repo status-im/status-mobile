@@ -20,7 +20,12 @@
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:contact.ui/send-contact-request
-                                                               public-key message]))
+                                                               public-key message])
+                                                 (rf/dispatch [:toasts/upsert
+                                                               {:id   :send-contact-request
+                                                                :type :positive
+                                                                :text (i18n/label
+                                                                       :t/contact-request-was-sent)}]))
                                                [public-key message])]
     [:<>
      [quo/drawer-top
