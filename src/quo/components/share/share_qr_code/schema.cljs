@@ -23,7 +23,7 @@
 (def ?profile
   [:map
    [:type [:= :profile]]
-   [:profile-picture :schema.common/image-source]])
+   [:profile-picture [:maybe :schema.quo/profile-picture-source]]])
 
 (def ?wallet
   [:map

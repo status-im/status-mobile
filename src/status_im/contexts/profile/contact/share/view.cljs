@@ -10,6 +10,8 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn navigation-back [] (rf/dispatch [:navigate-back]))
+
 (defn view
   []
   (let [{:keys [universal-profile-url customization-color]
@@ -17,7 +19,6 @@
         abbreviated-url (rn/use-memo (fn []
                                        (address/get-abbreviated-profile-url universal-profile-url))
                                      [universal-profile-url])
-        on-back-press   #(rf/dispatch [:navigate-back])
         on-share-press  (rn/use-callback #(list-selection/open-share {:message universal-profile-url})
                                          [universal-profile-url])
         on-copy-press   (rn/use-callback (fn []
@@ -33,7 +34,7 @@
        :key   :share-community}
       [quo/page-nav
        {:icon-name           :i/close
-        :on-press            on-back-press
+        :on-press            navigation-back
         :background          :blur
         :accessibility-label :top-bar}]
       [quo/page-top
