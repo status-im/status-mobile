@@ -366,8 +366,6 @@
   "We prefix our keys with 0xe701 prior to serialisation them"
   "0xe701")
 
-(def base64-svg-prefix "data:image/svg;base64,")
-
 (def ^:const theme-type-system 0)
 (def ^:const theme-type-light 1)
 (def ^:const theme-type-dark 2)
