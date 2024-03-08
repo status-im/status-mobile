@@ -283,9 +283,9 @@
      (if (and input (empty? result))
        (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
        {:db (-> db
-                (assoc-in [:wallet :search-address :local-suggestions]
+                (assoc-in [:wallet :ui :search-address :local-suggestions]
                           (map #(assoc % :type item-types/saved-address) result))
-                (assoc-in [:wallet :search-address :valid-ens-or-address?]
+                (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
                           (not-empty result)))}))))
 
 (rf/reg-event-fx :wallet/search-ens
@@ -306,65 +306,65 @@
  (fn [{:keys [db]} [result ens]]
    {:db
     (-> db
-        (assoc-in [:wallet :search-address :local-suggestions]
+        (assoc-in [:wallet :ui :search-address :local-suggestions]
                   (if result
                     [{:type     item-types/address
                       :ens      ens
                       :address  (eip55/address->checksum result)
                       :networks [:ethereum :optimism]}]
                     []))
-        (assoc-in [:wallet :search-address :valid-ens-or-address?]
+        (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
                   (boolean result)))}))
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [_address]]
    {:db (-> db
-            (assoc-in [:wallet :search-address :local-suggestions] nil)
-            (assoc-in [:wallet :search-address :valid-ens-or-address?] false))}))
+            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
  (fn [{:keys [db]} [_ens]]
    {:db (-> db
-            (assoc-in [:wallet :search-address :local-suggestions] nil)
-            (assoc-in [:wallet :search-address :valid-ens-or-address?] true))}))
+            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] true))}))
 
 (rf/reg-event-fx :wallet/address-validation-success
  (fn [{:keys [db]} [_]]
-   {:db (assoc-in db [:wallet :search-address :valid-ens-or-address?] true)}))
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
 
 (rf/reg-event-fx :wallet/validate-address
  (fn [{:keys [db]} [address]]
-   (let [current-timeout (get-in db [:wallet :search-address :search-timeout])
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
          timeout         (background-timer/set-timeout
                           #(rf/dispatch [:wallet/address-validation-success address])
                           2000)]
      (background-timer/clear-timeout current-timeout)
      {:db (-> db
-              (assoc-in [:wallet :search-address :search-timeout] timeout)
-              (assoc-in [:wallet :search-address :valid-ens-or-address?] false))})))
+              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/validate-ens
  (fn [{:keys [db]} [ens]]
-   (let [current-timeout (get-in db [:wallet :search-address :search-timeout])
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
          timeout         (background-timer/set-timeout
                           #(rf/dispatch [:wallet/ens-validation-success ens])
                           2000)]
      (background-timer/clear-timeout current-timeout)
      {:db (-> db
-              (assoc-in [:wallet :search-address :search-timeout] timeout)
-              (assoc-in [:wallet :search-address :valid-ens-or-address?] false))})))
+              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
-   (let [current-timeout (get-in db [:wallet :search-address :search-timeout])]
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])]
      (background-timer/clear-timeout current-timeout)
      {:db (-> db
-              (assoc-in [:wallet :search-address :local-suggestions] [])
-              (assoc-in [:wallet :search-address :valid-ens-or-address?] false))})))
+              (assoc-in [:wallet :ui :search-address :local-suggestions] [])
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/clean-ens-or-address-validation
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :search-address :valid-ens-or-address?] false)}))
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
