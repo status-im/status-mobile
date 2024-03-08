@@ -16,9 +16,9 @@
   []
   (let [{:keys [address]}  (rf/sub [:get-screen-params])
         number-of-accounts (count (rf/sub [:wallet/watch-only-accounts]))
-        account-name       (reagent/atom "")
         placeholder        (i18n/label :t/default-watched-address-placeholder
                                        {:number (inc number-of-accounts)})
+        account-name       (reagent/atom placeholder)
         account-color      (reagent/atom (rand-nth colors/account-colors))
         account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
         on-change-name     #(reset! account-name %)
