@@ -37,7 +37,8 @@
                     :compressed-key             "c"
                     :timestamp                  3
                     :link-previews              [{:thumbnail {:url      "http://localhost"
-                                                              :data-uri "data:image/png"}}]
+                                                              :data-uri "data:image/png"}
+                                                  :favicon   nil}]
                     :status-link-previews       [{:url       "http://localhost"
                                                   :community {:community-id "0x01"
                                                               :display-name "Test Comm"
@@ -72,7 +73,8 @@
                     :timestamp                3
                     :outgoingStatus           "sending"
                     :linkPreviews             [{:thumbnail {:url     "http://localhost"
-                                                            :dataUri "data:image/png"}}]
+                                                            :dataUri "data:image/png"}
+                                                :favicon   nil}]
                     :statusLinkPreviews       [{:url       "http://localhost"
                                                 :community {:communityId "0x01"
                                                             :displayName "Test Comm"
