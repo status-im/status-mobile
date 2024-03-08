@@ -56,16 +56,15 @@
   (let [selected-contacts-count (rf/sub [:selected-contacts-count])]
     (if user-selected?
       (re-frame/dispatch [:deselect-contact public-key])
-      (do
-        (when (= contacts-selection-limit
-                 selected-contacts-count)
-          (rf/dispatch
-           [:toasts/upsert
-            {:id   :remove-nickname
-             :type :negative
-             :text (i18n/label :t/new-group-limit
-                               {:max-contacts
-                                contacts-selection-limit})}]))
+      (if (= contacts-selection-limit
+             selected-contacts-count)
+        (rf/dispatch
+         [:toasts/upsert
+          {:id   :remove-nickname
+           :type :negative
+           :text (i18n/label :t/new-group-limit
+                             {:max-contacts
+                              contacts-selection-limit})}])
         (re-frame/dispatch [:select-contact public-key])))))
 
 (defn contact-item-render
