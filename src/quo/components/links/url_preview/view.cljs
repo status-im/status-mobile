@@ -11,7 +11,8 @@
 
 (defn- logo-comp
   [{:keys [logo]}]
-  (if (string/starts-with? logo constants/base64-svg-prefix)
+  (if (and (string? logo)
+           (string/starts-with? logo constants/base64-svg-prefix))
     [svg/svg-xml
      (merge style/logo
             {:xml (-> logo
@@ -75,6 +76,8 @@
       :style               (merge (style/container) container-style)}
      (when logo
        [logo-comp
-        {:logo (:data-uri logo)}])
+        {:logo (if (map? logo)
+                 (:data-uri logo)
+                 logo)}])
      [content {:title title :body body}]
      [clear-button {:on-press on-clear}]]))
