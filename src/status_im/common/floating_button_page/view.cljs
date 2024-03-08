@@ -54,8 +54,8 @@
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
            gradient-cover?]
-    :or   {footer-container-padding (safe-area/get-top)}} &
-   children]
+    :or   {footer-container-padding (safe-area/get-top)}}
+   & children]
   (reagent/with-let [window-height                (:height (rn/get-window))
                      footer-container-height      (reagent/atom 0)
                      header-height                (reagent/atom 0)
@@ -84,16 +84,20 @@
                                              :header-height            @header-height
                                              :keyboard-shown?          keyboard-shown?})]
       [:<>
-       (when gradient-cover? [quo/gradient-cover {:customization-color customization-color}])
+       (when gradient-cover?
+         [quo/gradient-cover {:customization-color customization-color}])
        [rn/view {:style style/page-container}
         [rn/view
          {:on-layout set-header-height
           :style     header-container-style}
          header]
         [rn/scroll-view
-         {:on-scroll               set-content-y-scroll
-          :scroll-event-throttle   64
-          :content-container-style {:flex-grow 1}}
+         {:on-scroll                       set-content-y-scroll
+          :scroll-event-throttle           64
+          :content-container-style         {:flex-grow      1
+                                            :padding-bottom (when @keyboard-did-show?
+                                                              @footer-container-height)}
+          :shows-vertical-scroll-indicator false}
          (into [rn/view {:on-layout set-content-container-height}]
                children)]
         [rn/keyboard-avoiding-view
