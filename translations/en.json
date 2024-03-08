@@ -1975,6 +1975,7 @@
     "send-contact-request-message": "To start a chat you need to become contacts",
     "contact-request": "Contact request",
     "send-contact-request": "Send contact request",
+    "contact-request-was-sent": "Contact request sent",
     "contact-request-sent-to": "Contact request sent to",
     "contact-request-was-accepted": "Contact request accepted",
     "contact-request-is-now-a-contact": "is now a contact",
