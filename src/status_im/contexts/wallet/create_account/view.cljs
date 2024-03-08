@@ -68,6 +68,7 @@
         (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
         [floating-button-page/view
          {:gradient-cover?        true
+          :footer-container-padding 0
           :header-container-style {:padding-top top}
           :customization-color    @account-color
           :header                 [quo/page-nav

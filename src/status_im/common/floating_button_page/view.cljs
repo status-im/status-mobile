@@ -97,6 +97,7 @@
           :content-container-style         {:flex-grow      1
                                             :padding-bottom (when @keyboard-did-show?
                                                               @footer-container-height)}
+          :always-bounce-vertical          false
           :shows-vertical-scroll-indicator false}
          (into [rn/view {:on-layout set-content-container-height}]
                children)]
