@@ -26,8 +26,8 @@
                                        (fn []
                                          (rf/dispatch [:universal-links/generate-profile-url
                                                        {:public-key public-key
-                                                        :cb         (#(rf/dispatch [:open-modal
-                                                                                    :share-contact]))}]))
+                                                        :on-success #(rf/dispatch [:open-modal
+                                                                                   :share-contact])}]))
                                        [public-key])
         has-nickname?                 (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])]
     [quo/action-drawer

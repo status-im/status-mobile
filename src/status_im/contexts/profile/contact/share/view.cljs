@@ -17,10 +17,11 @@
         abbreviated-url (rn/use-memo (fn []
                                        (address/get-abbreviated-profile-url universal-profile-url))
                                      [universal-profile-url])
-        profile-picture (rn/use-memo #(profile.utils/photo profile) [])
-        display-name    (rn/use-memo #(profile.utils/displayed-name profile) [])
-        on-back-press   (rn/use-callback #(rf/dispatch [:navigate-back]))
-        on-share-press  (rn/use-callback #(list-selection/open-share {:message universal-profile-url}))
+        profile-picture (rn/use-memo #(profile.utils/photo profile) [profile])
+        display-name    (rn/use-memo #(profile.utils/displayed-name profile) [profile])
+        on-back-press   #(rf/dispatch [:navigate-back])
+        on-share-press  (rn/use-callback #(list-selection/open-share {:message universal-profile-url})
+                                         [universal-profile-url])
         on-copy-press   (rn/use-callback (fn []
                                            (rf/dispatch [:share/copy-text-and-show-toast
                                                          {:text-to-copy universal-profile-url
