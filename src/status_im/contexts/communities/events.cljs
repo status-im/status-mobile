@@ -79,6 +79,7 @@
   (let [my-public-key (get-in db [:profile/profile :public-key])]
     {:db (reduce (fn [db {:keys [public-key] :as request}]
                    (let [my-request? (= my-public-key public-key)]
+                     (log/info "Handling community request to join " \newline request \newline " My Request == " my-request? \newline)
                      (if my-request?
                        (handle-my-request db request)
                        (handle-admin-request db request))))
