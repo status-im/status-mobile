@@ -186,7 +186,7 @@
          :params     [public-key]
          :on-success (fn [url]
                        (rf/dispatch [:universal-links/save-profile-url public-key url])
-                       (when (fn? on-success) (on-success)))
+                       (when (fn? on-success) (on-success url)))
          :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
                                  {:error      %
                                   :public-key public-key})}]})))
