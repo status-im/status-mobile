@@ -54,9 +54,8 @@
         account-color                (reagent/atom (rand-nth colors/account-colors))
         emoji                        (reagent/atom (emoji-picker.utils/random-emoji))
         number-of-accounts           (count (rf/sub [:wallet/accounts-without-watched-accounts]))
-        placeholder                  (i18n/label :t/default-account-placeholder
-                                                 {:number (inc number-of-accounts)})
-        account-name                 (reagent/atom placeholder)
+        placeholder                  (i18n/label :t/default-account-placeholder)
+        account-name                 (reagent/atom "")
         derivation-path              (reagent/atom (utils/get-derivation-path number-of-accounts))
         {:keys [public-key address]} (rf/sub [:profile/profile])
         on-change-text               #(reset! account-name %)
@@ -91,13 +90,12 @@
                                                {:sha3-pwd    (security/safe-unmask-data
                                                               entered-password)
                                                 :new-keypair (create-account.utils/prepare-new-keypair
-                                                              {:new-keypair new-keypair
-                                                               :address address
-                                                               :account-name @account-name
-                                                               :account-color @account-color
-                                                               :emoji @emoji
-                                                               :derivation-path
-                                                               @derivation-path})}])
+                                                              {:new-keypair     new-keypair
+                                                               :address         address
+                                                               :account-name    @account-name
+                                                               :account-color   @account-color
+                                                               :emoji           @emoji
+                                                               :derivation-path @derivation-path})}])
                                              (rf/dispatch [:wallet/derive-address-and-add-account
                                                            {:sha3-pwd     (security/safe-unmask-data
                                                                            entered-password)
@@ -106,8 +104,7 @@
                                                             :path         @derivation-path
                                                             :account-name @account-name}])))
                     :auth-button-label   (i18n/label :t/confirm)
-                    :disabled?           (empty? @account-name)
-                   }]}
+                    :disabled?           (empty? @account-name)}]}
          [rn/view {:style style/account-avatar-container}
           [quo/account-avatar
            {:customization-color @account-color
