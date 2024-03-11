@@ -61,50 +61,56 @@
         on-change-text               #(reset! account-name %)
         primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
                                                      public-key]))
+        show-account-origin          #(rf/dispatch
+                                       [:show-bottom-sheet {:content account-origin/view}])
         {window-width :width}        (rn/get-window)]
     (fn [{:keys [theme]}]
-      (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])]
+      (let [{:keys [new-keypair]} (rf/sub [:wallet/create-account])
+            ;;
+            add-keypair           (fn [password]
+                                    (rf/dispatch
+                                     [:wallet/add-keypair-and-create-account
+                                      {:sha3-pwd    (security/safe-unmask-data password)
+                                       :new-keypair (create-account.utils/prepare-new-keypair
+                                                     {:new-keypair     new-keypair
+                                                      :address         address
+                                                      :account-name    @account-name
+                                                      :account-color   @account-color
+                                                      :emoji           @emoji
+                                                      :derivation-path @derivation-path})}]))
+            derive-address        (fn [password]
+                                    (rf/dispatch
+                                     [:wallet/derive-address-and-add-account
+                                      {:sha3-pwd     (security/safe-unmask-data password)
+                                       :emoji        @emoji
+                                       :color        @account-color
+                                       :path         @derivation-path
+                                       :account-name @account-name}]))
+           ]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
         [floating-button-page/view
-         {:gradient-cover? true
+         {:gradient-cover?          true
           :footer-container-padding 0
-          :header-container-style {:padding-top top}
-          :customization-color @account-color
-          :header [quo/page-nav
-                   {:type       :no-title
-                    :background :blur
-                    :right-side [{:icon-name :i/info
-                                  :on-press  #(rf/dispatch [:show-bottom-sheet
-                                                            {:content account-origin/view}])}]
-                    :icon-name  :i/close
-                    :on-press   #(rf/dispatch [:navigate-back])}]
-          :footer [standard-auth/slide-button
-                   {:container-style     style/slide-button-container
-                    :size                :size-48
-                    :track-text          (i18n/label :t/slide-to-create-account)
-                    :customization-color @account-color
-                    :on-auth-success     (fn [entered-password]
-                                           (if new-keypair
-                                             (rf/dispatch
-                                              [:wallet/add-keypair-and-create-account
-                                               {:sha3-pwd    (security/safe-unmask-data
-                                                              entered-password)
-                                                :new-keypair (create-account.utils/prepare-new-keypair
-                                                              {:new-keypair     new-keypair
-                                                               :address         address
-                                                               :account-name    @account-name
-                                                               :account-color   @account-color
-                                                               :emoji           @emoji
-                                                               :derivation-path @derivation-path})}])
-                                             (rf/dispatch [:wallet/derive-address-and-add-account
-                                                           {:sha3-pwd     (security/safe-unmask-data
-                                                                           entered-password)
-                                                            :emoji        @emoji
-                                                            :color        @account-color
-                                                            :path         @derivation-path
-                                                            :account-name @account-name}])))
-                    :auth-button-label   (i18n/label :t/confirm)
-                    :disabled?           (empty? @account-name)}]}
+          :header-container-style   {:padding-top top}
+          :customization-color      @account-color
+          :header                   [quo/page-nav
+                                     {:type       :no-title
+                                      :background :blur
+                                      :right-side [{:icon-name :i/info
+                                                    :on-press  show-account-origin}]
+                                      :icon-name  :i/close
+                                      :on-press   #(rf/dispatch [:navigate-back])}]
+          :footer                   [standard-auth/slide-button
+                                     {:container-style     style/slide-button-container
+                                      :size                :size-48
+                                      :track-text          (i18n/label :t/slide-to-create-account)
+                                      :customization-color @account-color
+                                      :on-auth-success     (fn [entered-password]
+                                                             (if new-keypair
+                                                               (add-keypair entered-password)
+                                                               (derive-address entered-password)))
+                                      :auth-button-label   (i18n/label :t/confirm)
+                                      :disabled?           (empty? @account-name)}]}
          [rn/view {:style style/account-avatar-container}
           [quo/account-avatar
            {:customization-color @account-color

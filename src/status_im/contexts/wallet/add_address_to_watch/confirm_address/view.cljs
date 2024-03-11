@@ -14,14 +14,14 @@
 
 (defn view
   []
-  (let [{:keys [address]}  (rf/sub [:get-screen-params])
-        placeholder        (i18n/label :t/default-watched-address-placeholder)
-        account-name       (reagent/atom "")
-        account-color      (reagent/atom (rand-nth colors/account-colors))
-        account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
-        on-change-name     #(reset! account-name %)
-        on-change-color    #(reset! account-color %)
-        on-change-emoji    #(reset! account-emoji %)]
+  (let [{:keys [address]} (rf/sub [:get-screen-params])
+        placeholder       (i18n/label :t/default-watched-address-placeholder)
+        account-name      (reagent/atom "")
+        account-color     (reagent/atom (rand-nth colors/account-colors))
+        account-emoji     (reagent/atom (emoji-picker.utils/random-emoji))
+        on-change-name    #(reset! account-name %)
+        on-change-color   #(reset! account-color %)
+        on-change-emoji   #(reset! account-emoji %)]
     (fn []
       [rn/view {:style style/container}
        [create-or-edit-account/view
