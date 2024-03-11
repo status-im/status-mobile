@@ -10,7 +10,8 @@
     [utils.address :as address]
     [utils.money :as money]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
