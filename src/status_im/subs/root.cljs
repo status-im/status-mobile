@@ -156,8 +156,6 @@
 
 ;;wallet
 (reg-root-key-sub :wallet :wallet)
-(reg-root-key-sub :wallet/local-suggestions :wallet/local-suggestions)
-(reg-root-key-sub :wallet/valid-ens-or-address? :wallet/valid-ens-or-address?)
 
 ;;debug
 (when js/goog.DEBUG
