@@ -82,8 +82,9 @@
                                                               {:number (inc number-of-accounts)})
             derivation-path                       (utils/get-derivation-path
                                                    number-of-accounts)
-            keypair                               (first (filter #(= (:key-uid %) selected-keypair-uid)
-                                                                 keypairs))
+            keypair                               (some #(when (= (:key-uid %) selected-keypair-uid)
+                                                           %)
+                                                        keypairs)
             primary-keypair?                      (= selected-keypair-uid (:key-uid (first keypairs)))
             create-new-keypair-account            #(rf/dispatch
                                                     [:wallet/add-keypair-and-create-account

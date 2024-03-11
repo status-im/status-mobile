@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.constants :as constants]
-    [status-im.contexts.profile.utils :as profile.utils]
     [status-im.contexts.wallet.create-account.select-keypair.style :as style]
     [utils.address :as utils]
     [utils.i18n :as i18n]
@@ -70,12 +69,12 @@
                             :margin-vertical   8}}]))
 (defn view
   []
-  (let [{:keys [compressed-key customization-color]} (rf/sub [:profile/profile])
-        profile-with-image                           (rf/sub [:profile/profile-with-image])
-        keypairs                                     (rf/sub [:wallet/keypairs])
-        selected-keypair                             (rf/sub [:wallet/selected-keypair-uid])
-        profile-picture                              (profile.utils/photo profile-with-image)
-        [selected-key-uid set-selected-key-uid]      (rn/use-state selected-keypair)]
+  (let [compressed-key                          (rf/sub [:profile/compressed-key])
+        customization-color                     (rf/sub [:profile/customization-color])
+        keypairs                                (rf/sub [:wallet/keypairs])
+        selected-keypair                        (rf/sub [:wallet/selected-keypair-uid])
+        profile-picture                         (rf/sub [:profile/image])
+        [selected-key-uid set-selected-key-uid] (rn/use-state selected-keypair)]
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
