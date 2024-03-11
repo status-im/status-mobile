@@ -66,26 +66,33 @@
            gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme-value)
-        sheet-height                      (rn/use-ref-atom 0)
-        item-height                       (rn/use-ref-atom 0)
-        set-sheet-height                  (rn/use-callback #(reset! sheet-height (get-layout-height %)))
-        set-item-height                   (rn/use-callback #(reset! item-height (get-layout-height %)))
+        [sheet-height set-sheet-height]   (rn/use-state 0)
+        handle-sheet-height               (rn/use-callback (fn [e]
+                                                             (when (= sheet-height 0)
+                                                               (set-sheet-height
+                                                                (get-layout-height e)))))
+        [item-height set-item-height]     (rn/use-state 0)
+        handle-item-height                (rn/use-callback (fn [e]
+                                                             (when (= item-height 0)
+                                                               (set-item-height
+                                                                (get-layout-height e)))))
         {window-height :height}           (rn/get-window)
         bg-opacity                        (reanimated/use-shared-value 0)
         translate-y                       (reanimated/use-shared-value window-height)
-        sheet-gesture                     (get-sheet-gesture translate-y
-                                                             bg-opacity
-                                                             window-height
-                                                             on-close)
-        selected-item-smaller-than-sheet? (< @item-height
+        sheet-gesture                     (rn/use-memo #(get-sheet-gesture translate-y
+                                                                           bg-opacity
+                                                                           window-height
+                                                                           on-close)
+                                                       [window-height on-close])
+        selected-item-smaller-than-sheet? (< item-height
                                              (- window-height
-                                                @sheet-height
+                                                sheet-height
                                                 (:top insets)
                                                 (:bottom insets)
                                                 bottom-margin))
-        top                               (- window-height (:top insets) @sheet-height)
+        top                               (- window-height (:top insets) sheet-height)
         bottom                            (if selected-item-smaller-than-sheet?
-                                            (+ @sheet-height bottom-margin)
+                                            (+ sheet-height bottom-margin)
                                             (:bottom insets))
         sheet-max-height                  (- window-height (:top insets))
         content-padding-bottom            (or padding-bottom-override
@@ -123,11 +130,12 @@
            :overlay-color :transparent}])
        (when selected-item
          [rn/view
-          {:on-layout set-item-height
-           :style (style/selected-item theme top bottom selected-item-smaller-than-sheet? border-radius)}
+          {:on-layout handle-item-height
+           :style
+           (style/selected-item theme top bottom selected-item-smaller-than-sheet? border-radius)}
           [selected-item]])
        [rn/view
-        {:on-layout set-sheet-height
+        {:on-layout handle-sheet-height
          :style     (style/sheet-content {:theme          theme
                                           :shell?         shell?
                                           :padding-bottom content-padding-bottom})}
