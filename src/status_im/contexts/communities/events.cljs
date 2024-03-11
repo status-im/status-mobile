@@ -59,16 +59,11 @@
 
 (defn- handle-my-request
   [db {:keys [community-id state deleted] :as request}]
-  (let [{:keys [name]} (get-in db [:communities community-id])]
-    (cond (and (= constants/community-request-to-join-state-pending state) (not deleted))
-          (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
-          (and (= constants/community-request-to-join-state-accepted state) (not deleted))
-          (do (rf/dispatch [:toasts/upsert
-                            {:id   :joined-community
-                             :type :positive
-                             :text (i18n/label :t/joined-community {:community name})}])
-              (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))
-          :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))))
+  (cond (and (= constants/community-request-to-join-state-pending state) (not deleted))
+        (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
+        (and (= constants/community-request-to-join-state-accepted state) (not deleted))
+        (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)
+        :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)))
 
 (defn handle-admin-request
   [db {:keys [id community-id deleted] :as request}]
@@ -81,7 +76,13 @@
   (let [my-public-key (get-in db [:profile/profile :public-key])]
     {:db (reduce (fn [db {:keys [public-key] :as request}]
                    (let [my-request? (= my-public-key public-key)]
-                     (log/info "Handling community request to join " \newline request \newline " My Request == " my-request? \newline)
+                     (log/info "Handling community request to join "
+                               \newline
+                               request
+                               \newline
+                               " My Request == "
+                               my-request?
+                               \newline)
                      (if my-request?
                        (handle-my-request db request)
                        (handle-admin-request db request))))
