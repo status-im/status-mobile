@@ -516,3 +516,22 @@
     (is
      (= keypairs
         (rf/sub [sub-name])))))
+
+(def local-suggestions ["a" "b"])
+
+(h/deftest-sub :wallet/local-suggestions
+  [sub-name]
+  (testing "returns local suggestions:"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :search-address :local-suggestions] local-suggestions))
+    (is
+     (= local-suggestions
+        (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/valid-ens-or-address?
+  [sub-name]
+  (testing "returns local suggestions:"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :search-address :valid-ens-or-address?] true))
+    (is
+     (rf/sub [sub-name]))))

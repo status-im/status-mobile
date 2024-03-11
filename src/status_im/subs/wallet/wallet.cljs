@@ -270,7 +270,7 @@
 
 (rf/reg-sub
  :wallet/search-address
- :<- [:wallet]
+ :<- [:wallet/ui]
  :-> :search-address)
 
 (rf/reg-sub
