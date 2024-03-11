@@ -163,7 +163,8 @@
                              [layout])
         status-bar-height   (get insets :top 0)
         height              (+ header-height status-bar-height)
-        title-style         (rn/use-memo (get-title-style layout title-align) [layout title-align])]
+        title-style         (rn/use-memo (fn [] (get-title-style layout title-align))
+                                         [layout title-align])]
     [reanimated/view
      {:style (header-wrapper-style {:height        height
                                     :background    background
