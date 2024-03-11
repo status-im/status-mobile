@@ -68,11 +68,11 @@
         props       [{:key-uid  "key-uid"
                       :colorId  :blue
                       :accounts [{:colorId :blue :path "path"}]}]
-        expected-db {:wallet {:keypairs       [{:key-uid             "key-uid"
-                                                :customization-color :blue
-                                                :accounts            [{:customization-color :blue
-                                                                       :path                "path"}]}]
-                              :ui {:create-account {:selected-key-uid "key-uid"}}}}
+        expected-db {:wallet {:keypairs [{:key-uid             "key-uid"
+                                          :customization-color :blue
+                                          :accounts            [{:customization-color :blue
+                                                                 :path                "path"}]}]
+                              :ui       {:create-account {:selected-key-uid "key-uid"}}}}
         effects     (events/new-keypair-created {:db db} props)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
