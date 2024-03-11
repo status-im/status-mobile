@@ -1,7 +1,6 @@
 (ns quo.components.profile.showcase-nav.component-spec
   (:require
     [quo.components.profile.showcase-nav.view :as view]
-    [reagent.core :as reagent]
     [test-helpers.component :as h]))
 
 (def nav-data
@@ -35,7 +34,7 @@
           (.toHaveBeenCalled))))
 
   (h/test "active id updated"
-    (let [active-id (reagent/atom :recent)]
+    (let [active-id (atom :recent)]
       (h/render [view/view
                  {:data     nav-data
                   :on-press #(reset! active-id %)}])

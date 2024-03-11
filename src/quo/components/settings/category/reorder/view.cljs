@@ -7,17 +7,22 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.draggable-flatlist :as draggable-flatlist]
-    [reagent.core :as reagent]))
+    [react-native.draggable-flatlist :as draggable-flatlist]))
 
-(defn on-drag-end-fn
-  [data atom-data]
-  (reset! atom-data data)
-  (reagent/flush))
+(defn key-fn [item index] (str (:title item) index))
 
-(defn- reorder-category-internal
-  [{:keys [label data blur? theme container-style]}]
-  (reagent/with-let [atom-data (reagent/atom data)]
+(defn reorder-category
+  [{:keys [label data blur? container-style]}]
+  (let [theme                     (quo.theme/use-theme-value)
+        [atom-data set-atom-data] (rn/use-state data)
+        render-fn                 (rn/use-callback
+                                   (fn [item _ _ _ _ drag]
+                                     [reorder-item/reorder-item item types/item
+                                      {:blur? blur? :drag drag}])
+                                   [blur?])
+        on-drag-end-fn            (rn/use-callback (fn [_ _ data] (set-atom-data data)))
+        separator                 (rn/use-memo [rn/view {:style (style/reorder-separator blur? theme)}]
+                                               [blur? theme])]
     [rn/view {:style (merge (style/container label) container-style)}
      [text/text
       {:weight :medium
@@ -25,14 +30,9 @@
        :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
       label]
      [draggable-flatlist/draggable-flatlist
-      {:data           @atom-data
-       :key-fn         (fn [item index] (str (:title item) index))
+      {:data           atom-data
+       :key-fn         key-fn
        :style          style/reorder-items
-       :render-fn      (fn [item _ _ _ _ drag] [reorder-item/reorder-item item types/item
-                                                {:blur? blur? :drag drag}])
-       :on-drag-end-fn (fn [_ _ data]
-                         (on-drag-end-fn data atom-data))
-       :separator      [rn/view
-                        {:style (style/reorder-separator blur? theme)}]}]]))
-
-(def reorder-category (quo.theme/with-theme reorder-category-internal))
+       :render-fn      render-fn
+       :on-drag-end-fn on-drag-end-fn
+       :separator      separator}]]))

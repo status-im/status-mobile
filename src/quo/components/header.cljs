@@ -6,8 +6,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [react-native.reanimated :as reanimated]))
 
 (def header-height 56)
 
@@ -57,7 +56,7 @@
    :justify-content :center
    :align-items     :flex-end})
 
-(defn title-style
+(defn get-title-style
   [{:keys [left right]} title-align]
   (merge
    absolute-fill
@@ -133,76 +132,76 @@
              :size            :large}
             title])])
 
-(defn- header-internal
-  [{:keys [left-width right-width]}]
-  (let [layout        (reagent/atom {:left  {:width  (or left-width 8)
-                                             :height header-height}
-                                     :right {:width  (or right-width 8)
-                                             :height header-height}
-                                     :title {:width  0
-                                             :height header-height}})
-        handle-layout (fn [el get-layout]
-                        (fn [evt]
-                          (let [width  (oget evt "nativeEvent" "layout" "width")
-                                height (oget evt "nativeEvent" "layout" "height")]
-                            (when get-layout
-                              (get-layout el
-                                          {:width  width
-                                           :height height}))
-                            (swap! layout assoc
-                              el
-                              {:width  width
-                               :height height}))))]
-    (fn
-      [{:keys [left-accessories left-component border-bottom
-               right-accessories right-component insets get-layout
-               title subtitle title-component style title-align
-               background theme]
-        :or   {title-align   :center
-               border-bottom false}}]
-      (let [status-bar-height (get insets :top 0)
-            height            (+ header-height status-bar-height)]
-        [reanimated/view
-         {:style (header-wrapper-style {:height        height
-                                        :background    background
-                                        :border-bottom border-bottom
-                                        :theme         theme})}
-         [rn/view
-          {:pointer-events :box-none
-           :height         status-bar-height}]
-         [rn/view
-          {:style          (merge {:height header-height}
-                                  style)
-           :pointer-events :box-none}
-          [rn/view
-           {:style          absolute-fill
-            :pointer-events :box-none}
-           [rn/view
-            {:style          content
-             :pointer-events :box-none}
-            [rn/view
-             {:style          left-style
-              :on-layout      (handle-layout :left get-layout)
-              :pointer-events :box-none}
-             [header-actions
-              {:accessories left-accessories
-               :component   left-component}]]
-
-            [rn/view
-             {:style          (title-style @layout title-align)
-              :on-layout      (handle-layout :title get-layout)
-              :pointer-events :box-none}
-             [header-title
-              {:title       title
-               :subtitle    subtitle
-               :title-align title-align
-               :component   title-component}]]
-            [rn/view
-             {:style          right-style
-              :on-layout      (handle-layout :right get-layout)
-              :pointer-events :box-none}
-             [header-actions
-              {:accessories right-accessories
-               :component   right-component}]]]]]]))))
-
-(def header (quo.theme/with-theme header-internal))
+(defn header
+  [{:keys [left-accessories left-component border-bottom left-width right-width
+           right-accessories right-component insets get-layout
+           title subtitle title-component style title-align
+           background]
+    :or   {title-align   :center
+           border-bottom false}}]
+  (let [theme               (quo.theme/use-theme-value)
+        [layout set-layout] (rn/use-state {:left  {:width  (or left-width 8)
+                                                   :height header-height}
+                                           :right {:width  (or right-width 8)
+                                                   :height header-height}
+                                           :title {:width  0
+                                                   :height header-height}})
+        handle-layout       (rn/use-callback
+                             (fn [el get-layout]
+                               (fn [evt]
+                                 (let [width  (oget evt "nativeEvent" "layout" "width")
+                                       height (oget evt "nativeEvent" "layout" "height")]
+                                   (when get-layout
+                                     (get-layout el
+                                                 {:width  width
+                                                  :height height}))
+                                   (set-layout
+                                    (assoc layout
+                                           el
+                                           {:width  width
+                                            :height height})))))
+                             [layout])
+        status-bar-height   (get insets :top 0)
+        height              (+ header-height status-bar-height)
+        title-style         (rn/use-memo (get-title-style layout title-align) [layout title-align])]
+    [reanimated/view
+     {:style (header-wrapper-style {:height        height
+                                    :background    background
+                                    :border-bottom border-bottom
+                                    :theme         theme})}
+     [rn/view
+      {:pointer-events :box-none
+       :height         status-bar-height}]
+     [rn/view
+      {:style          (merge {:height header-height}
+                              style)
+       :pointer-events :box-none}
+      [rn/view
+       {:style          absolute-fill
+        :pointer-events :box-none}
+       [rn/view
+        {:style          content
+         :pointer-events :box-none}
+        [rn/view
+         {:style          left-style
+          :on-layout      (handle-layout :left get-layout)
+          :pointer-events :box-none}
+         [header-actions
+          {:accessories left-accessories
+           :component   left-component}]]
+        [rn/view
+         {:style          title-style
+          :on-layout      (handle-layout :title get-layout)
+          :pointer-events :box-none}
+         [header-title
+          {:title       title
+           :subtitle    subtitle
+           :title-align title-align
+           :component   title-component}]]
+        [rn/view
+         {:style          right-style
+          :on-layout      (handle-layout :right get-layout)
+          :pointer-events :box-none}
+         [header-actions
+          {:accessories right-accessories
+           :component   right-component}]]]]]]))

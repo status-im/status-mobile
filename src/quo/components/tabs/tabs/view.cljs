@@ -41,7 +41,7 @@
     (into [:<>] children)))
 
 (defn- on-scroll-handler
-  [{:keys [on-scroll fading fade-end-percentage fade-end?]} ^js e]
+  [{:keys [on-scroll fading set-fading fade-end-percentage fade-end?]} ^js e]
   (when fade-end?
     (let [offset-x       (oget e "nativeEvent.contentOffset.x")
           content-width  (oget e "nativeEvent.contentSize.width")
@@ -52,11 +52,8 @@
                            :layout-width        layout-width
                            :max-fade-percentage fade-end-percentage})]
       ;; Avoid unnecessary re-rendering.
-      (when (not= new-percentage
-                  (get @fading :fade-end-percentage))
-        (swap! fading assoc
-          :fade-end-percentage
-          new-percentage))))
+      (when (not= new-percentage (get fading :fade-end-percentage))
+        (set-fading (assoc fading :fade-end-percentage new-percentage)))))
   (when on-scroll
     (on-scroll e)))
 
@@ -64,6 +61,7 @@
   [{:keys [id label notification-dot? accessibility-label]}
    index _
    {:keys [active-tab-id
+           set-active-tab-id
            blur?
            customization-color
            flat-list-ref
@@ -85,9 +83,9 @@
      :accessibility-label accessibility-label
      :size                size
      :blur?               blur?
-     :active              (= id @active-tab-id)
+     :active              (= id active-tab-id)
      :on-press            (fn [id]
-                            (reset! active-tab-id id)
+                            (set-active-tab-id id)
                             (when (and scroll-on-press? @flat-list-ref)
                               (.scrollToIndex ^js @flat-list-ref
                                               #js
@@ -118,87 +116,81 @@
   - `scroll-on-press?` When non-nil, clicking on a tag centers it the middle
     (with animation enabled).
   "
-  [{:keys [default-active fade-end-percentage]
-    :or   {fade-end-percentage 0.8}}]
-  (let [active-tab-id (reagent/atom default-active)
-        fading        (reagent/atom {:fade-end-percentage fade-end-percentage})
-        flat-list-ref (atom nil)]
-    (fn
-      [{:keys [data
-               fade-end-percentage
-               fade-end?
-               on-change
-               on-scroll
-               scroll-on-press?
-               scrollable?
-               style
-               container-style
-               size
-               blur?
-               in-scroll-view?
-               customization-color]
-        :or   {fade-end-percentage fade-end-percentage
-               fade-end?           false
-               scrollable?         false
-               scroll-on-press?    false
-               size                default-tab-size}
-        :as   props}]
-      (if scrollable?
-        [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
-         [masked-view-wrapper
-          {:fade-end-percentage (get @fading :fade-end-percentage) :fade-end? fade-end?}
-          [(if in-scroll-view?
-             gesture/flat-list
-             rn/flat-list)
-           (merge
-            (dissoc props
-             :default-active
-             :fade-end-percentage
-             :fade-end?
-             :on-change
-             :scroll-on-press?
-             :size)
-            (when scroll-on-press?
-              {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
-            {:ref #(reset! flat-list-ref %)
-             :style style
-             ;; The padding-top workaround is needed because on Android
-             ;; {:overflow :visible} doesn't work on components inheriting
-             ;; from ScrollView (e.g. FlatList). There are open issues, here's
-             ;; just one about this topic:
-             ;; https://github.com/facebook/react-native/issues/31218
-             :content-container-style
-             (assoc container-style :padding-top (dec unread-count-offset))
-             :horizontal true
-             :scroll-event-throttle 64
-             :shows-horizontal-scroll-indicator false
-             :data data
-             :key-fn (comp str :id)
-             :on-scroll-to-index-failed identity
-             :on-scroll (partial on-scroll-handler
-                                 {:fade-end-percentage fade-end-percentage
-                                  :fade-end?           fade-end?
-                                  :fading              fading
-                                  :on-scroll           on-scroll})
-             :render-fn tab-view
-             :render-data {:active-tab-id       active-tab-id
-                           :blur?               blur?
-                           :customization-color customization-color
-                           :flat-list-ref       flat-list-ref
-                           :number-of-items     (count data)
-                           :on-change           on-change
-                           :scroll-on-press?    scroll-on-press?
-                           :size                size
-                           :style               style}})]]]
-        [rn/view (merge style {:flex-direction :row})
-         (map-indexed (fn [index item]
-                        ^{:key (:id item)}
-                        [tab-view item index nil
-                         {:active-tab-id       active-tab-id
-                          :blur?               blur?
-                          :customization-color customization-color
-                          :number-of-items     (count data)
-                          :on-change           on-change
-                          :size                size
-                          :style               style}])
-                      data)]))))
+  [{:keys [default-active data fade-end-percentage fade-end? on-change on-scroll scroll-on-press?
+           scrollable? style container-style size blur? in-scroll-view? customization-color]
+    :or   {fade-end-percentage 0.8
+           fade-end?           false
+           scrollable?         false
+           scroll-on-press?    false
+           size                default-tab-size}
+    :as   props}]
+  (let [[active-tab-id
+         set-active-tab-id] (rn/use-state default-active)
+        [fading set-fading] (rn/use-state {:fade-end-percentage fade-end-percentage})
+        flat-list-ref       (rn/use-ref-atom nil)
+        clean-props         (dissoc props
+                             :default-active
+                             :fade-end-percentage
+                             :fade-end?
+                             :on-change
+                             :scroll-on-press?
+                             :size)
+        on-scroll           (rn/use-callback
+                             (partial on-scroll-handler
+                                      {:fade-end-percentage fade-end-percentage
+                                       :fade-end?           fade-end?
+                                       :fading              fading
+                                       :set-fading          set-fading
+                                       :on-scroll           on-scroll})
+                             [fade-end? fading])]
+    (if scrollable?
+      [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
+       [masked-view-wrapper
+        {:fade-end-percentage (get fading :fade-end-percentage) :fade-end? fade-end?}
+        [(if in-scroll-view?
+           gesture/flat-list
+           rn/flat-list)
+         (merge
+          clean-props
+          (when scroll-on-press?
+            {:initial-scroll-index (utils.collection/first-index #(= active-tab-id (:id %)) data)})
+          {:ref #(reset! flat-list-ref %)
+           :style style
+           ;; The padding-top workaround is needed because on Android
+           ;; {:overflow :visible} doesn't work on components inheriting
+           ;; from ScrollView (e.g. FlatList). There are open issues, here's
+           ;; just one about this topic:
+           ;; https://github.com/facebook/react-native/issues/31218
+           :content-container-style
+           (assoc container-style :padding-top (dec unread-count-offset))
+           :horizontal true
+           :scroll-event-throttle 64
+           :shows-horizontal-scroll-indicator false
+           :data data
+           :key-fn (comp str :id)
+           :on-scroll-to-index-failed identity
+           :on-scroll on-scroll
+           :render-fn tab-view
+           :render-data {:active-tab-id       active-tab-id
+                         :set-active-tab-id   set-active-tab-id
+                         :blur?               blur?
+                         :customization-color customization-color
+                         :flat-list-ref       flat-list-ref
+                         :number-of-items     (count data)
+                         :on-change           on-change
+                         :scroll-on-press?    scroll-on-press?
+                         :size                size
+                         :style               style}})]]]
+      [rn/view (merge style {:flex-direction :row})
+       (map-indexed (fn [index item]
+                      ^{:key (:id item)}
+                      [tab-view item index nil
+                       {:active-tab-id       active-tab-id
+                        :set-active-tab-id   set-active-tab-id
+                        :blur?               blur?
+                        :customization-color customization-color
+                        :number-of-items     (count data)
+                        :on-change           on-change
+                        :size                size
+                        :style               style}])
+                    data)])))

@@ -16,7 +16,6 @@
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
 
@@ -190,20 +189,20 @@
 
 (defn- view-internal
   [props]
-  (reagent/with-let [component-width     (reagent/atom nil)
-                     container-component [rn/view {:background-color style/overlay-color}]]
+  (let [[component-width
+         set-component-width] (rn/use-state nil)
+        on-layout             (rn/use-callback #(set-component-width
+                                                 (oops/oget % "nativeEvent.layout.width")))
+        props                 (-> props
+                                  (assoc :component-width component-width)
+                                  (clojure.set/rename-keys {:type :share-qr-type}))]
     [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code
        :style               style/outer-container
-       :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
-      (conj container-component
-            (when @component-width
-              [share-qr-code
-               (-> props
-                   (assoc :component-width @component-width)
-                   (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
+       :on-layout           on-layout}
+      [rn/view {:style {:background-color style/overlay-color}}
+       (when component-width
+         [share-qr-code props])]]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))
