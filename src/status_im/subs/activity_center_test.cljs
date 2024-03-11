@@ -86,3 +86,21 @@
     (swap! rf-db/app-db assoc-in [:activity-center :unread-counts-by-type] {types/one-to-one-chat 1})
     (swap! rf-db/app-db assoc-in [:activity-center :seen?] true)
     (is (= :unread-indicator/seen (rf/sub [sub-name])))))
+
+(h/deftest-sub :activity-center/pending-contact-request-from-contact-id
+  [sub-name]
+  (testing "returns contact request data if it finds a matching contact-id"
+    (let [contact-id      "0x01"
+          contact-request {:author  contact-id
+                           :message {:content {:text "Hey there"}}}]
+      (swap! rf-db/app-db assoc-in [:activity-center :contact-requests] [contact-request])
+      (is (match? contact-request
+                  (rf/sub [sub-name contact-id])))))
+
+  (testing "returns nil if it does not find a matching contact-id"
+    (let [contact-id      "0x01"
+          contact-request {:author  "0x02"
+                           :message {:content {:text "Hey there"}}}]
+      (swap! rf-db/app-db assoc-in [:activity-center :contact-requests] [contact-request])
+      (is (match? nil
+                  (rf/sub [sub-name contact-id]))))))

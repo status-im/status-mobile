@@ -22,7 +22,20 @@
                                                         :text (i18n/label :t/nickname-removed)}])
                                          (rf/dispatch [:contacts/update-nickname public-key ""]))
                                        [public-key])
-        has-nickname?                 (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])]
+        on-show-qr                    (rn/use-callback
+                                       (fn []
+                                         (rf/dispatch [:universal-links/generate-profile-url
+                                                       {:public-key public-key
+                                                        :on-success #(rf/dispatch [:open-modal
+                                                                                   :share-contact])}]))
+                                       [public-key])
+        has-nickname?                 (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])
+        on-share-profile              (rn/use-callback
+                                       (fn []
+                                         (rf/dispatch [:universal-links/generate-profile-url
+                                                       {:public-key public-key
+                                                        :on-success #(rn/sharing {:message %})}]))
+                                       [public-key])]
     [quo/action-drawer
      [[{:icon                :i/edit
         :label               (if has-nickname?
@@ -32,11 +45,11 @@
         :accessibility-label (if nickname :edit-nickname :add-nickname)}
        {:icon                :i/qr-code
         :label               (i18n/label :t/show-qr)
-        :on-press            not-implemented/alert
+        :on-press            on-show-qr
         :accessibility-label :show-qr-code}
        {:icon                :i/share
         :label               (i18n/label :t/share-profile)
-        :on-press            not-implemented/alert
+        :on-press            on-share-profile
         :accessibility-label :share-profile}
        (when has-nickname?
          {:icon                :i/delete

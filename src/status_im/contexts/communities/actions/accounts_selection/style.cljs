@@ -14,6 +14,6 @@
 
 (defn bottom-actions
   []
-  {:padding-top        12
+  {:padding-vertical   12
    :padding-horizontal screen-horizontal-padding
    :background-color   (colors/theme-colors colors/white colors/neutral-95)})

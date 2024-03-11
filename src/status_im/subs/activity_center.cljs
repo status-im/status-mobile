@@ -80,3 +80,11 @@
  :<- [:activity-center]
  (fn [activity-center]
    (:contact-requests activity-center)))
+
+(re-frame/reg-sub
+ :activity-center/pending-contact-request-from-contact-id
+ :<- [:activity-center/pending-contact-requests]
+ (fn [pending-contact-requests [_ contact-id]]
+   (->> pending-contact-requests
+        (filter #(= contact-id (:author %)))
+        (first))))
