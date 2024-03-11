@@ -21,7 +21,8 @@
                                       {:blur? blur? :drag drag}])
                                    [blur?])
         on-drag-end-fn            (rn/use-callback (fn [_ _ data] (set-atom-data data)))
-        separator                 (rn/use-memo [rn/view {:style (style/reorder-separator blur? theme)}]
+        separator                 (rn/use-memo (fn [] [rn/view
+                                                       {:style (style/reorder-separator blur? theme)}])
                                                [blur? theme])]
     [rn/view {:style (merge (style/container label) container-style)}
      [text/text
