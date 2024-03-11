@@ -64,7 +64,7 @@
     (is (match? result-db expected-db))))
 
 (deftest get-keypairs-success
-  (let [db          {:wallet {:ui {:create-account {}}}}
+  (let [db          {:wallet {:ui {:create-account {:new-keypair nil}}}}
         props       [[{:key-uid  "key-uid"
                        :colorId  :blue
                        :accounts [{:colorId :blue :path "path"}]}]]
