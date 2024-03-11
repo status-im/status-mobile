@@ -26,7 +26,12 @@
                :membersCount       :members-count
                :activeMembersCount :active-members-count})
       (update-in [:community :banner] set/rename-keys {:dataUri :data-uri})
-      (update-in [:community :icon] set/rename-keys {:dataUri :data-uri})))
+      (update-in [:community :icon] set/rename-keys {:dataUri :data-uri})
+      (update-in [:contact :icon] set/rename-keys {:dataUri :data-uri})
+      (update :contact
+              set/rename-keys
+              {:publicKey   :public-key
+               :displayName :display-name})))
 
 (defn ->status-link-previews-rpc
   [preview]
@@ -38,7 +43,12 @@
                :members-count        :membersCount
                :active-members-count :activeMembersCount})
       (update-in [:community :banner] set/rename-keys {:data-uri :dataUri})
-      (update-in [:community :icon] set/rename-keys {:data-uri :dataUri})))
+      (update-in [:community :icon] set/rename-keys {:data-uri :dataUri})
+      (update :contact
+              set/rename-keys
+              {:public-key   :publicKey
+               :display-name :displayName})
+      (update-in [:contact :icon] set/rename-keys {:data-uri :dataUri})))
 
 (defn- <-link-preview-rpc
   [preview]

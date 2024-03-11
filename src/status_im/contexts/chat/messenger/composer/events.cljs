@@ -135,23 +135,29 @@
 (defn- build-status-link-previews
   [status-link-previews]
   (map (fn [{{:keys [community-id color description display-name
-                     members-count active-members-count icon banner]}
-             :community
-             url :url}]
-         {:url url
-          :community
-          {:community-id         community-id
-           :color                color
-           :description          description
-           :display-name         display-name
-           :members-count        members-count
-           :active-members-count active-members-count
-           :icon                 {:data-uri (:data-uri icon)
-                                  :width    (:width icon)
-                                  :height   (:height icon)}
-           :banner               {:data-uri (:data-uri banner)
-                                  :width    (:width banner)
-                                  :height   (:height banner)}}})
+                     members-count active-members-count icon banner]} :community
+             url                                                      :url
+             {contact-description  :description
+              contact-icon         :icon
+              contact-display-name :display-name
+              pk                   :public-key}                       :contact}]
+         {:url       url
+          :community {:community-id         community-id
+                      :color                color
+                      :description          description
+                      :display-name         display-name
+                      :members-count        members-count
+                      :active-members-count active-members-count
+                      :icon                 {:data-uri (:data-uri icon)
+                                             :width    (:width icon)
+                                             :height   (:height icon)}
+                      :banner               {:data-uri (:data-uri banner)
+                                             :width    (:width banner)
+                                             :height   (:height banner)}}
+          :contact   {:public-key   pk
+                      :display-name contact-display-name
+                      :description  contact-description
+                      :icon         {:data-uri (:data-uri contact-icon)}}})
        status-link-previews))
 
 (defn- build-link-previews

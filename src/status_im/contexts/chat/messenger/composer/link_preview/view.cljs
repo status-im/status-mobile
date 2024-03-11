@@ -37,13 +37,14 @@
        :loading-message      (i18n/label :t/link-preview-loading-message)
        :on-clear             #(rf/dispatch [:link-preview/clear])
        :data                 (map
-                              (fn [{:keys [title display-name thumbnail hostname loading? url favicon]}]
+                              (fn [{:keys [title display-name thumbnail hostname loading? url favicon
+                                           icon]}]
                                 {:title     (or display-name title)
                                  :body      (or (when-not display-name hostname)
                                                 status-im.constants/status-hostname)
-                                 :logo      (if (string/starts-with? url "https://status.app")
+                                 :logo      (if (string/starts-with? url "https://status.app/c")
                                               (resources/get-mock-image :status-logo)
-                                              favicon)
+                                              (or icon favicon))
                                  :loading?  loading?
                                  :thumbnail (:data-uri thumbnail)
                                  :url       url})

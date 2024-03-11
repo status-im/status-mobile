@@ -84,15 +84,17 @@
   [new-previews new-status-link-previews]
   (-> (map
        (fn [{{:keys [display-name members-count banner icon
-                     description]} :community
-             url                   :url}]
+                     description]}        :community
+             {contact-display-name :display-name
+              contact-icon         :icon} :contact
+             url                          :url}]
          ;; Other types of previews need to be done here too
          ;; Like User link preview and Channel link preview
          {:url                  url
-          :display-name         display-name
+          :display-name         (or contact-display-name display-name)
           :members-count        members-count
           :banner               banner
-          :icon                 icon
+          :icon                 (or (:data-uri contact-icon) icon)
           :description          description
           ;; Need to set status-link-preview?
           ;; to true to not send status-link-previews
