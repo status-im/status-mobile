@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.data-store
   (:require
+    [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.set :as set]
     [clojure.string :as string]
@@ -132,10 +133,5 @@
 
 (defn parse-keypairs
   [keypairs]
-<<<<<<< HEAD
-  (let [renamed-data (rename-color-id-in-data keypairs)]
-    (cske/transform-keys transforms/->kebab-case-keyword renamed-data)))
-=======
   (let [renamed-data (sort-and-rename-keypairs keypairs)]
     (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
->>>>>>> d6eef4188 (review)
