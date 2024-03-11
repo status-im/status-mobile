@@ -3,39 +3,57 @@
             [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.not-implemented :as not-implemented]
+            [status-im.constants :as constants]
             [status-im.contexts.profile.contact.add-nickname.view :as add-nickname]
+            [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn view
   []
-  (let [{:keys [nickname public-key]} (rf/sub [:contacts/current-contact])
-        on-add-nickname               (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                                      {:content
-                                                                       (fn [] [add-nickname/view])}]))
-        on-remove-nickname            (rn/use-callback
-                                       (fn []
-                                         (rf/dispatch [:hide-bottom-sheet])
-                                         (rf/dispatch [:toasts/upsert
-                                                       {:id   :remove-nickname
-                                                        :type :positive
-                                                        :text (i18n/label :t/nickname-removed)}])
-                                         (rf/dispatch [:contacts/update-nickname public-key ""]))
-                                       [public-key])
-        on-show-qr                    (rn/use-callback
-                                       (fn []
-                                         (rf/dispatch [:universal-links/generate-profile-url
-                                                       {:public-key public-key
-                                                        :on-success #(rf/dispatch [:open-modal
-                                                                                   :share-contact])}]))
-                                       [public-key])
-        has-nickname?                 (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])
-        on-share-profile              (rn/use-callback
-                                       (fn []
-                                         (rf/dispatch [:universal-links/generate-profile-url
-                                                       {:public-key public-key
-                                                        :on-success #(rn/sharing {:message %})}]))
-                                       [public-key])]
+  (let [{:keys [nickname
+                public-key
+                contact-request-state]
+         :as   contact}    (rf/sub [:contacts/current-contact])
+
+        full-name          (profile.utils/displayed-name contact)
+        on-add-nickname    (rn/use-callback #(rf/dispatch [:show-bottom-sheet
+                                                           {:content
+                                                            (fn [] [add-nickname/view])}]))
+        on-remove-nickname (rn/use-callback
+                            (fn []
+                              (rf/dispatch [:hide-bottom-sheet])
+                              (rf/dispatch [:toasts/upsert
+                                            {:id   :remove-nickname
+                                             :type :positive
+                                             :text (i18n/label :t/nickname-removed)}])
+                              (rf/dispatch [:contacts/update-nickname public-key ""]))
+                            [public-key])
+        on-show-qr         (rn/use-callback
+                            (fn []
+                              (rf/dispatch [:universal-links/generate-profile-url
+                                            {:public-key public-key
+                                             :on-success #(rf/dispatch [:open-modal
+                                                                        :share-contact])}]))
+                            [public-key])
+        has-nickname?      (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])
+        on-share-profile   (rn/use-callback
+                            (fn []
+                              (rf/dispatch [:universal-links/generate-profile-url
+                                            {:public-key public-key
+                                             :on-success #(rn/sharing {:message %})}]))
+                            [public-key])
+        on-remove-contact  (rn/use-callback
+                            (fn []
+                              (rf/dispatch [:hide-bottom-sheet])
+                              (rf/dispatch [:toasts/upsert
+                                            {:id   :remove-contact
+                                             :type :positive
+                                             :text (->> (i18n/label :t/removed-from-contacts)
+                                                        (string/lower-case)
+                                                        (str full-name " "))}])
+                              (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
+                            [public-key full-name])]
     [quo/action-drawer
      [[{:icon                :i/edit
         :label               (if has-nickname?
@@ -64,6 +82,12 @@
         :accessibility-label :mark-untrustworthy
         :add-divider?        (when-not has-nickname? true)
         :danger?             true}
+       (when (= constants/contact-request-state-mutual contact-request-state)
+         {:icon                :i/remove-user
+          :label               (i18n/label :t/remove-contact)
+          :on-press            on-remove-contact
+          :accessibility-label :remove-contact
+          :danger?             true})
        {:icon                :i/block
         :label               (i18n/label :t/block-user)
         :on-press            not-implemented/alert
