@@ -56,6 +56,7 @@
         error?                     (boolean (seq error-message))
         default-value              (rn/use-ref-atom "") ;;bug on Android
                                                         ;;https://github.com/status-im/status-mobile/issues/19004
+        theme                      (quo.theme/use-theme-value)
         on-change-password         (rn/use-callback
                                     (fn [entered-password]
                                       (reset! default-value entered-password)
@@ -69,6 +70,7 @@
       [quo/input
        {:container-style {:flex 1}
         :type            :password
+        :theme           theme
         :default-value   @default-value
         :blur?           blur?
         :disabled?       processing
