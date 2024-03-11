@@ -106,6 +106,32 @@ The convention is `:size-<number>`, e.g size `20` is `:size-20`
 - Try to make all other vars private because they should almost never be used
   directly.
 
+## Default value when destructuring
+
+Too often callers pass nil values because values can be wrapped in a `when` for example.
+In this case, the default value is not applied, because :or macro will use default only when the value is absent.
+Instead, use `(or (:value props) some-default-value)` in a `let` expression or as a parameter value.
+
+```clojure
+;; bad (unreliable)
+(defn- view-internal
+  [{:keys [auto-focus?
+           init-value
+           return-key-type]
+    :or   {auto-focus?     false
+           init-value      0
+           return-key-type :done}}]
+  ...)
+
+;; good
+(defn- view-internal
+   [{:keys [theme size something] :as props}]
+   (let [auto-focus? (or (:auto-focus? props) false)
+         init-value (or (:init-value props) 0)
+         return-key-type (or (:return-key-type props) :done)]
+     ...))
+```
+
 ## Component tests
 
 We don't attempt to write component tests verifying how components look on the

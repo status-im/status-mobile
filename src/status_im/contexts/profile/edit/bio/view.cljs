@@ -44,8 +44,7 @@
         [rn/view {:style {:gap 22}}
          [quo/text-combinations {:title (i18n/label :t/bio)}]
          [quo/input
-          {:theme           :dark
-           :blur?           true
+          {:blur?           true
            :multiline?      true
            :error?          (not (string/blank? @error-msg))
            :container-style {:margin-bottom -11}

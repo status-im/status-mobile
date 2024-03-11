@@ -2,11 +2,9 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(defn actions-view
-  []
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :margin-vertical    20
+(def actions-view
+  {:margin-top         8
+   :margin-bottom      20
    :padding-horizontal 20})
 
 (defn action-container

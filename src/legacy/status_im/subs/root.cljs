@@ -5,7 +5,6 @@
     legacy.status-im.subs.ens
     legacy.status-im.subs.keycard
     legacy.status-im.subs.mailservers
-    legacy.status-im.subs.networks
     legacy.status-im.subs.stickers
     [re-frame.core :as re-frame]))
 

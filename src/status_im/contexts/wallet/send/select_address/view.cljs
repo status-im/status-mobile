@@ -93,6 +93,7 @@
                                     (when-not ens
                                       (rf/dispatch [:wallet/select-send-address
                                                     {:address   address
+                                                     :token?    false
                                                      :recipient local-suggestion
                                                      :stack-id  :wallet-select-address}]))))
                  :active-state? false}]
@@ -114,16 +115,15 @@
 
 (defn- local-suggestions-list
   []
-  (fn []
-    (let [local-suggestion (rf/sub [:wallet/local-suggestions])]
-      [rn/view {:style {:flex 1}}
-       [rn/flat-list
-        {:data                         local-suggestion
-         :content-container-style      {:flex-grow 1}
-         :key-fn                       :id
-         :on-scroll-to-index-failed    identity
-         :keyboard-should-persist-taps :handled
-         :render-fn                    suggestion-component}]])))
+  (let [local-suggestion (rf/sub [:wallet/local-suggestions])]
+    [rn/view {:style {:flex 1}}
+     [rn/flat-list
+      {:data                         local-suggestion
+       :content-container-style      {:flex-grow 1}
+       :key-fn                       :id
+       :on-scroll-to-index-failed    identity
+       :keyboard-should-persist-taps :handled
+       :render-fn                    suggestion-component}]]))
 
 (defn- f-view
   []
@@ -156,7 +156,7 @@
                                         :disabled?           (not valid-ens-or-address?)
                                         :on-press            #(rf/dispatch [:wallet/select-send-address
                                                                             {:address @input-value
-                                                                             :token token
+                                                                             :token? (some? token)
                                                                              :stack-id
                                                                              :wallet-select-address}])
                                         :customization-color color}

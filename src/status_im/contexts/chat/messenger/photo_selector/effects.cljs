@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.messenger.photo-selector.effects
   (:require
     [clojure.string :as string]
+    [promesa.core :as p]
     [react-native.cameraroll :as cameraroll]
     [react-native.core :as rn]
     [react-native.image-resizer :as image-resizer]
@@ -29,27 +30,30 @@
         #(rf/dispatch [:on-camera-roll-get-photos (:edges %) (:page_info %) end-cursor])))})))
 
 (defn- resize-photo
-  [uri callback]
-  (rn/image-get-size
-   uri
-   (fn [width height]
-     (let [resize? (> (max width height) maximum-image-size-px)]
-       (image-resizer/resize
-        uri
-        (if resize? maximum-image-size-px width)
-        (if resize? maximum-image-size-px height)
-        60
-        (fn [^js resized-image]
-          (let [path (.-path resized-image)
-                path (if (string/starts-with? path "file") path (str "file://" path))]
-            (callback {:resized-uri path
-                       :width       width
-                       :height      height})))
-        #(log/error "could not resize image" %))))))
+  [uri]
+  (p/let [[width height] (rn/image-get-size uri)
+          resize?        (> (max width height)
+                            maximum-image-size-px)
+          resized-uri    (-> (image-resizer/resize
+                              {:max-width  (if resize? maximum-image-size-px width)
+                               :max-height (if resize? maximum-image-size-px height)
+                               :path       uri
+                               :quality    60})
+                             (p/then (fn [^js resized-image]
+                                       (let [path (.-path resized-image)]
+                                         (if (string/starts-with? path "file")
+                                           path
+                                           (str "file://" path))))))]
+    {:resized-uri resized-uri
+     :width       width
+     :height      height}))
 
 (rf/reg-fx :effects.camera-roll/image-selected
  (fn [[image chat-id]]
-   (resize-photo (:uri image) #(rf/dispatch [:photo-selector/image-selected chat-id image %]))))
+   (-> (resize-photo (:uri image))
+       (p/then #(rf/dispatch
+                 [:photo-selector/image-selected chat-id image %]))
+       (p/catch #(log/error "could not resize image" %)))))
 
 (defn- get-albums
   [callback]

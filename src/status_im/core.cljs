@@ -21,6 +21,7 @@
     [status-im.contexts.profile.push-notifications.events :as notifications]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im.navigation.core :as navigation]
     status-im.contexts.wallet.signals
     status-im.events
     status-im.navigation.core
@@ -44,7 +45,7 @@
 
 (defn init
   []
-
+  (navigation/init)
   (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
   (when platform/android?
     (native-module/set-soft-input-mode adjust-resize))

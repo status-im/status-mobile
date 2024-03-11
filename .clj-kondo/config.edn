@@ -26,6 +26,7 @@
                                                           malli.generator         malli.generator
                                                           malli.transform         malli.transform
                                                           malli.util              malli.util
+                                                          promesa.core            p
                                                           schema.core             schema
                                                           status-im.feature-flags ff
                                                           taoensso.timbre         log}}

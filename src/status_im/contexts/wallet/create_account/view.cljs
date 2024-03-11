@@ -10,10 +10,10 @@
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.sheets.account-origin.view :as account-origin]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.contexts.wallet.create-account.utils :as create-account.utils]
+    [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
@@ -78,7 +78,7 @@
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
           {:customization-color @account-color
-           :container-style     (style/gradient-cover-container top)}]
+           :container-style     {:top (- top)}}]
          [rn/view
           {:style style/account-avatar-container}
           [quo/account-avatar
@@ -148,9 +148,7 @@
                                                    :path         @derivation-path
                                                    :account-name @account-name}])))
            :auth-button-label   (i18n/label :t/confirm)
-           ;; TODO (@rende11) Add this property when sliding button issue will fixed
-           ;; https://github.com/status-im/status-mobile/pull/18683#issuecomment-1941564785
-           ;; :disabled?           (empty? @account-name)
+           :disabled?           (empty? @account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
 
 (defn- view-internal

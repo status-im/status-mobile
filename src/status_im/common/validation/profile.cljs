@@ -29,7 +29,7 @@
 (defn validation-name
   [s]
   (cond
-    (or (= s nil) (= s ""))      nil
+    (string/blank? s)            nil
     (string/ends-with? s "-eth") (i18n/label :t/ending-not-allowed {:ending "-eth"})
     (string/ends-with? s "_eth") (i18n/label :t/ending-not-allowed {:ending "_eth"})
     (string/ends-with? s ".eth") (i18n/label :t/ending-not-allowed {:ending ".eth"})
@@ -45,8 +45,17 @@
 (defn validation-bio
   [s]
   (cond
-    (or (= s nil) (= s ""))     nil
+    (string/blank? s)           nil
     (has-emojis? s)             (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
     (has-special-characters? s) (i18n/label :t/are-not-allowed
                                             {:check (i18n/label :t/special-characters)})
     (bio-too-long? s)           (i18n/label :t/bio-is-too-long)))
+
+(defn validation-nickname
+  [s]
+  (cond
+    (string/blank? s)           nil
+    (has-emojis? s)             (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
+    (has-special-characters? s) (i18n/label :t/are-not-allowed
+                                            {:check (i18n/label :t/special-characters)})
+    (name-too-long? s)          (i18n/label :t/nickname-is-too-long)))

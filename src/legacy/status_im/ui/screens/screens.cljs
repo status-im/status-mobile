@@ -24,10 +24,6 @@
     [legacy.status-im.ui.screens.link-previews-settings.views :as link-previews-settings]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
     [legacy.status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-    [legacy.status-im.ui.screens.network-info.views :as network-info]
-    [legacy.status-im.ui.screens.network.edit-network.views :as edit-network]
-    [legacy.status-im.ui.screens.network.network-details.views :as network-details]
-    [legacy.status-im.ui.screens.network.views :as network]
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [legacy.status-im.ui.screens.offline-messaging-settings.edit-mailserver.views :as edit-mailserver]
     [legacy.status-im.ui.screens.offline-messaging-settings.views :as offline-messaging-settings]
@@ -227,18 +223,6 @@
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
     :component dapps-permissions/manage}
-   {:name      :network-settings
-    ;;TODO accessories
-    :options   {:insets {:top? true}}
-    :component network/network-settings}
-   {:name      :network-details
-    :options   {:topBar {:title {:text (i18n/label :t/network-details)}}
-                :insets {:top? true}}
-    :component network-details/network-details}
-   {:name      :network-info
-    :options   {:topBar {:title {:text (i18n/label :t/network-info)}}
-                :insets {:top? true}}
-    :component network-info/network-info}
    {:name      :rpc-usage-info
     :options   {:topBar {:title {:text (i18n/label :t/rpc-usage-info)}}
                 :insets {:top? true}}
@@ -247,10 +231,6 @@
     :options   {:topBar {:title {:text (i18n/label :t/peers-stats)}}
                 :insets {:top? true}}
     :component peers-stats/peers-stats}
-   {:name      :edit-network
-    :options   {:topBar {:title {:text (i18n/label :t/add-network)}}
-                :insets {:top? true}}
-    :component edit-network/edit-network}
    {:name      :log-level-settings
     :options   {:topBar {:title {:text (i18n/label :t/log-level-settings)}}
                 :insets {:top? true}}

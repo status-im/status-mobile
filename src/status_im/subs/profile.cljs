@@ -112,6 +112,12 @@
    (:is-goerli-enabled? profile)))
 
 (re-frame/reg-sub
+ :profile/peer-syncing-enabled?
+ :<- [:profile/profile]
+ (fn [profile]
+   (:peer-syncing-enabled? profile)))
+
+(re-frame/reg-sub
  :multiaccount/contact
  :<- [:profile/profile]
  (fn [current-account]

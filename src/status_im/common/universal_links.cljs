@@ -173,7 +173,7 @@
               (handle-url url))))
 
 (defn generate-profile-url
-  [{:keys [db]} [{:keys [public-key cb]}]]
+  [{:keys [db]} [{:keys [public-key on-success]}]]
   (let [profile-public-key (get-in db [:profile/profile :public-key])
         profile?           (or (not public-key) (= public-key profile-public-key))
         ens-name?          (if profile?
@@ -186,7 +186,7 @@
          :params     [public-key]
          :on-success (fn [url]
                        (rf/dispatch [:universal-links/save-profile-url public-key url])
-                       (when (fn? cb) (cb)))
+                       (when (fn? on-success) (on-success url)))
          :on-error   #(log/error "failed to wakuext_shareUserURLWithData"
                                  {:error      %
                                   :public-key public-key})}]})))
@@ -200,7 +200,7 @@
       [:?
        [:map
         [:public-key {:optional true} :schema.common/public-key]
-        [:cb {:optional true} fn?]]]]]]
+        [:on-success {:optional true} fn?]]]]]]
    [:map
     [:json-rpc/call :schema.common/rpc-call]]])
 

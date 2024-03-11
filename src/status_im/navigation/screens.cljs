@@ -13,9 +13,6 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
-    [status-im.contexts.communities.actions.addresses-for-permissions.view :as
-     addresses-for-permissions]
-    [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -37,6 +34,7 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.contact.share.view :as share-contact]
     [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
@@ -126,14 +124,6 @@
      :options   {:sheet? true}
      :component communities.accounts-selection/view}
 
-    {:name      :addresses-for-permissions
-     :options   {:sheet? true}
-     :component addresses-for-permissions/view}
-
-    {:name      :airdrop-addresses
-     :options   {:sheet? true}
-     :component airdrop-addresses/view}
-
     {:name      :lightbox
      :options   options/lightbox
      :component lightbox/lightbox}
@@ -174,7 +164,7 @@
      :component settings-syncing/view}
 
     {:name      :settings-setup-syncing
-     :options   (merge options/dark-screen {:insets {:top? true}})
+     :options   options/transparent-screen-options
      :component settings-setup-syncing/view}
 
     ;; Onboarding
@@ -208,6 +198,10 @@
     {:name      :contact-profile
      :options   {:modalPresentationStyle :overCurrentContext}
      :component contact-profile/view}
+
+    {:name      :share-contact
+     :options   options/transparent-screen-options
+     :component share-contact/view}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
