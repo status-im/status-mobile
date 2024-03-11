@@ -9,6 +9,5 @@
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
      [:on-press {:optional true} [:maybe fn?]]
      [:blur? {:optional true} [:maybe :boolean]]
-     [:theme :schema.common/theme]
      [:active-state? {:optional true} [:maybe :boolean]]]]
    :any])

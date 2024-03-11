@@ -23,7 +23,6 @@
      [:contact-props ?contact]
      [:accounts {:optional true} ?accounts]
      [:on-press {:optional true} [:maybe fn?]]
-     [:theme :schema.common/theme]
      [:active-state? {:optional true} [:maybe :boolean]]
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]]]
    :any])

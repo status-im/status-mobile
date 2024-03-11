@@ -17,7 +17,6 @@
      [:values ?values]
      [:on-press {:optional true} [:maybe fn?]]
      [:on-long-press {:optional true} [:maybe fn?]]
-     [:theme :schema.common/theme]
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
      [:metrics? {:optional true} [:maybe :boolean]]]]
    :any])
