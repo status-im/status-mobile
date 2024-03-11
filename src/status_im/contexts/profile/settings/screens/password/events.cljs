@@ -23,12 +23,11 @@
 (rf/reg-event-fx
  :password-settings/password-verify-success
  (fn [{:keys [db]} [valid? old-password]]
-   (when valid?
-     {:db (if valid?
-            (-> db
-                (assoc-in [:settings/change-password :old-password] old-password)
-                (assoc-in [:settings/change-password :current-step] :new-password))
-            (assoc-in db [:settings/change-password :verify-error] true))})))
+   {:db (if valid?
+          (-> db
+              (assoc-in [:settings/change-password :old-password] old-password)
+              (assoc-in [:settings/change-password :current-step] :new-password))
+          (assoc-in db [:settings/change-password :verify-error] true))}))
 
 (rf/reg-event-fx
  :password-settings/change-password-reset-error
