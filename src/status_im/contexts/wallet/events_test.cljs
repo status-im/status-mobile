@@ -72,7 +72,8 @@
                                           :customization-color :blue
                                           :accounts            [{:customization-color :blue
                                                                  :path                "path"}]}]}
-                     :ui     {:create-account {:selected-keypair-uid "key-uid"}}}
+                     :ui     {:create-account {:selected-keypair-uid "key-uid"
+                                               :new-keypair          nil}}}
         effects     (events/new-keypair-created {:db db} props)
         result-db   (:db effects)]
     (is (match? result-db expected-db))))
