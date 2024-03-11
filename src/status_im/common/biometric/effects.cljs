@@ -3,6 +3,7 @@
     [react-native.biometrics :as biometrics]
     [status-im.common.biometric.utils :as utils]
     [status-im.common.keychain.events :as keychain]
+    [status-im.constants :as constant]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -55,14 +56,16 @@
                        (throw (js/Error. "biometric-not-available")))))
             (.then #(keychain/get-auth-method! key-uid))
             (.then (fn [auth-method]
-                     (when auth-method
-                       (on-success auth-method))))
+                     (if (= auth-method constant/auth-method-biometric)
+                       (on-success auth-method)
+                       (throw (js/Error. "biometric-not-enabled")))))
             (.catch (fn [err]
                       (let [message (.-message err)]
                         (on-fail (ex-info message
                                           {:err    err
                                            :effect :effects.biometric/check-if-available}))
-                        (when-not (= message "biometric-not-available")
+                        (when-not (or (= message "biometric-not-available")
+                                      (= message "biometric-not-enabled"))
                           (log/error "Failed to check if biometrics is available"
                                      {:error   err
                                       :key-uid key-uid
