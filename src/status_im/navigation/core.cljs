@@ -92,35 +92,16 @@
   (navigation/register-component
    "bottom-sheet"
    (fn [] (gesture/gesture-handler-root-hoc views/bottom-sheet))
-   (fn [] views/bottom-sheet)))
+   (fn [] views/bottom-sheet))
 
-;;;; Alert Banner
-(navigation/register-component
- "alert-banner"
- (fn [] (gesture/gesture-handler-root-hoc views/alert-banner #js {:flex 0}))
- (fn [] views/alert-banner))
+  ;;;; Alert Banner
+  (navigation/register-component
+   "alert-banner"
+   (fn [] (gesture/gesture-handler-root-hoc views/alert-banner #js {:flex 0}))
+   (fn [] views/alert-banner))
 
-
-;; LEGACY (should be removed in status 2.0)
-
-(defonce
-  _
-  [(navigation/register-component
-    "popover"
-    (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
-    (fn [] views/popover-comp))
-
-   (navigation/register-component
-    "visibility-status-popover"
-    (fn [] (gesture/gesture-handler-root-hoc views/visibility-status-popover-comp))
-    (fn [] views/visibility-status-popover-comp))
-
-   (navigation/register-component
-    "bottom-sheet-old"
-    (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp-old))
-    (fn [] views/sheet-comp-old))
-
-   (navigation/register-component
-    "signing-sheet"
-    (fn [] (gesture/gesture-handler-root-hoc views/signing-comp))
-    (fn [] views/signing-comp))])
+  ;;;; LEGACY (should be removed in status 2.0)
+  (navigation/register-component
+   "bottom-sheet-old"
+   (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp-old))
+   (fn [] views/sheet-comp-old)))
