@@ -5,7 +5,6 @@
     legacy.status-im.events
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
-    [legacy.status-im.utils.test :as legacy-test]
     [native-module.core :as native-module]
     [promesa.core :as p]
     [re-frame.core :as rf]
@@ -15,6 +14,7 @@
     status-im.subs.root
     [taoensso.timbre :as log]
     [tests.integration-test.constants :as constants]
+    [tests.test-utils :as test-utils]
     [utils.collection :as collection]
     [utils.security.core :as security]
     [utils.transforms :as transforms]))
@@ -137,7 +137,7 @@
 
 (defn setup-app
   []
-  (legacy-test/init!)
+  (test-utils/init!)
   (if (app-initialized)
     (p/resolved ::app-initialized)
     (do
