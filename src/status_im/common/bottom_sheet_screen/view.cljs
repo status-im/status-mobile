@@ -49,21 +49,24 @@
         set-animating-false (fn [ms]
                               (js/setTimeout #(reset! animating? false) ms))]
     (fn [{:keys [content skip-background? theme]}]
-      (let [insets           (safe-area/get-insets)
-            {:keys [height]} (rn/get-window)
-            opacity          (reanimated/use-shared-value 0)
-            translate-y      (reanimated/use-shared-value height)
-            close            (fn []
-                               (set-animating-true)
-                               (reanimated/animate translate-y height 300)
-                               (reanimated/animate opacity 0 300)
-                               (rf/dispatch [:navigate-back])
-                               true)
-            reset-open-sheet (fn []
-                               (reanimated/animate translate-y 0 300)
-                               (reanimated/animate opacity 1 300)
-                               (set-animating-false 300)
-                               (reset! scroll-enabled? true))]
+      (let [{:keys [top] :as insets} (safe-area/get-insets)
+            alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
+            padding-top              (+ alert-banners-top-margin
+                                        (if platform/ios? top (+ top 10)))
+            {:keys [height]}         (rn/get-window)
+            opacity                  (reanimated/use-shared-value 0)
+            translate-y              (reanimated/use-shared-value height)
+            close                    (fn []
+                                       (set-animating-true)
+                                       (reanimated/animate translate-y height 300)
+                                       (reanimated/animate opacity 0 300)
+                                       (rf/dispatch [:navigate-back])
+                                       true)
+            reset-open-sheet         (fn []
+                                       (reanimated/animate translate-y 0 300)
+                                       (reanimated/animate opacity 1 300)
+                                       (set-animating-false 300)
+                                       (reset! scroll-enabled? true))]
         (rn/use-mount
          (fn []
            (rn/hw-back-add-listener close)
@@ -71,7 +74,7 @@
            (reanimated/animate opacity 1 300)
            (set-animating-false 300)
            #(rn/hw-back-remove-listener close)))
-        [rn/view {:style (style/container insets)}
+        [rn/view {:style (style/container padding-top)}
          (when-not skip-background?
            [reanimated/view {:style (style/background opacity)}])
          [gesture/gesture-detector
