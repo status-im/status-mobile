@@ -28,8 +28,17 @@
                                                          :text (i18n/label
                                                                 :t/contact-request-was-accepted)}]))
                                         [contact-request-id])
-        on-contact-ignore              (rn/use-callback (fn []
-                                                          (rf/dispatch [:hide-bottom-sheet])))]
+        on-contact-ignore              (rn/use-callback
+                                        (fn []
+                                          (rf/dispatch [:hide-bottom-sheet])
+                                          (rf/dispatch [:activity-center.contact-requests/decline
+                                                        contact-request-id])
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:id   :ignore-contact-request
+                                                         :type :positive
+                                                         :text (i18n/label
+                                                                :t/contact-request-was-ignored)}]))
+                                        [contact-request-id])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag
