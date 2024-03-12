@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.create-account.events-test
   (:require
-    [cljs.test :refer-macros [deftest is testing]]
+    [cljs.test :refer-macros [deftest is]]
     matcher-combinators.test
     [status-im.contexts.wallet.create-account.events :as events]))
 
