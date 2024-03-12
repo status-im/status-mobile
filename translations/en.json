@@ -1224,6 +1224,7 @@
     "remove": "Remove",
     "remove-from-chat": "Remove from chat",
     "remove-from-contacts": "Remove from contacts",
+    "remove-contact": "Remove contact",
     "remove-from-contacts-text": "By removing a user from your contact list you do not hide your wallet address from them",
     "remove-network": "Remove network",
     "remove-token": "Remove token",
