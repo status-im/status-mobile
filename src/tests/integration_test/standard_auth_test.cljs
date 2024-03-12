@@ -1,6 +1,6 @@
 (ns tests.integration-test.standard-auth-test
   (:require
-    [cljs.test :refer [deftest testing is]]
+    [cljs.test :refer [deftest is testing]]
     [day8.re-frame.test :as rf-test]
     re-frame.core
     [test-helpers.integration :as h]

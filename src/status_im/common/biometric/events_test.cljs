@@ -1,5 +1,5 @@
 (ns status-im.common.biometric.events-test
-  (:require [cljs.test :refer [deftest testing is]]
+  (:require [cljs.test :refer [deftest is testing]]
             matcher-combinators.test
             [status-im.common.biometric.events :as sut]
             [status-im.constants :as constants]

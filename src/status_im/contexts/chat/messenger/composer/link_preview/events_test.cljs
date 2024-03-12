@@ -6,6 +6,8 @@
 
 (def url-github "https://github.com")
 (def url-gitlab "https://gitlab.com")
+(def url-community
+  "https://status.app/c/iyKACkQKB0Rvb2RsZXMSJ0NvbG9yaW5nIHRoZSB3b3JsZCB3aXRoIGpveSDigKIg4bSXIOKAohiYohsiByMxMzFEMkYqAwEhMwM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11")
 (def preview-github {:url url-github :thumbnail nil})
 (def preview-gitlab {:url url-gitlab :thumbnail nil})
 (def request-id "abc123")
@@ -31,7 +33,15 @@
       (is (match? {:json-rpc/call [{:method "wakuext_getTextURLs"
                                     :params [url-github]}]}
                   (remove-rpc-callbacks
-                   (events/unfurl-urls cofx url-github)))))))
+                   (events/unfurl-urls cofx url-github))))))
+  (testing "fetches status community URLs"
+    (let [cofx {:db {:chat/link-previews {:unfurled   {}
+                                          :cache      {}
+                                          :request-id "123"}}}]
+      (is (match? {:json-rpc/call [{:method "wakuext_getTextURLs"
+                                    :params [url-community]}]}
+                  (remove-rpc-callbacks
+                   (events/unfurl-urls cofx url-community)))))))
 
 (deftest unfurl-parsed-urls-test
   (with-redefs [events/new-request-id (constantly request-id)]

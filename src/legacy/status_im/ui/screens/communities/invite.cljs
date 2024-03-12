@@ -85,9 +85,7 @@
              :accessibility-label :share-community-link
              :type                :secondary
              :on-press            #(debounce/throttle-and-dispatch
-                                    [(if can-invite?
-                                       ::communities/invite-people-confirmation-pressed
-                                       ::communities/share-community-confirmation-pressed) @user-pk
+                                    [::communities/share-community-confirmation-pressed @user-pk
                                      selected]
                                     3000)}
             (i18n/label (if can-invite? :t/invite :t/share))]}]]))))
