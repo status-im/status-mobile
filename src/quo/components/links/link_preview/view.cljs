@@ -57,27 +57,30 @@
                            thumbnail)
     :accessibility-label :thumbnail}])
 
+(defn- get-image-data
+  [logo set-is-svg on-success]
+  (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?}))
+      (.fetch "GET" logo)
+      (.then (fn [imgObj]
+               (set-is-svg (= "image/svg"
+                              (oops/oget imgObj
+                                         ["respInfo" "headers" "Content-Type"])))
+               (on-success (oops/oget imgObj "data"))))
+      (.catch #(log/error "could not fetch favicon " logo))))
+
 (defn- logo-comp
   [logo]
-  (let [image-data (reagent/atom nil)
-        is-svg?    (reagent/atom nil)
-        on-success (fn [data-uri]
-                     (reset! image-data data-uri))
-        _get-svg   (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?}))
-                       (.fetch "GET" logo)
-                       (.then (fn [imgObj]
-                                (reset! is-svg? (= "image/svg"
-                                                   (oops/oget imgObj
-                                                              ["respInfo" "headers" "Content-Type"])))
-                                (on-success (oops/oget imgObj "data"))))
-                       (.catch #(log/error "could not fetch favicon " logo)))]
-    (fn []
-      (if @is-svg?
-        [svg/svg-xml (merge style/logo {:xml @image-data})]
-        [rn/image
-         {:accessibility-label :logo
-          :source              {:uri (str "data:image/png;base64," @image-data)}
-          :style               style/logo}]))))
+  (let [[image-data set-image-data] (rn/use-state nil)
+        [is-svg? set-is-svg]        (rn/use-state nil)
+        on-success                  (fn [data-uri]
+                                      (set-image-data data-uri))
+        _get-image-data             (get-image-data logo set-is-svg on-success)]
+    (if is-svg?
+      [svg/svg-xml (merge style/logo {:xml @image-data})]
+      [rn/image
+       {:accessibility-label :logo
+        :source              {:uri (str "data:image/png;base64," image-data)}
+        :style               style/logo}])))
 
 (defn view
   [{:keys [title logo description link thumbnail
