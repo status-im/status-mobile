@@ -31,6 +31,10 @@
   [accounts]
   (first (filter :wallet accounts)))
 
+(defn get-default-account-address
+  [accounts]
+  (:address (first accounts)))
+
 (defn check-emoji-is-updated
   [test-emoji accounts]
   (let [default-account (get-default-account accounts)]
