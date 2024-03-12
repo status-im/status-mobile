@@ -227,6 +227,15 @@
       :testnet-enabled? testnet-enabled?
       :goerli-enabled?  goerli-enabled?})))
 
+
+(defn short-name->id
+  ([db short-name]
+   (let [{:keys [test-networks-enabled? goerli-enabled?]} (:profile/profile db)]
+     (short-name->id short-name test-networks-enabled? goerli-enabled?)))
+  ([short-name testnet-enabled? goerli-enabled?]
+   (let [chain-id-map (get-chain-id testnet-enabled? goerli-enabled?)]
+     (get chain-id-map short-name))))
+
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
   (if (string/includes? crypto-value "<")

@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.accounts.add-account.address-to-watch.events
   (:require [clojure.string :as string]
-            [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.utils :as utils]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
@@ -33,9 +33,10 @@
 
 (rf/reg-event-fx
  :wallet/get-address-details
- (fn [{:keys [db]} [address-or-ens]]
-   (let [request-params [constants/ethereum-mainnet-chain-id address-or-ens]
-         ens?           (string/includes? address-or-ens ".")]
+ (fn [{db :db} [address-or-ens]]
+   (let [ens?           (string/includes? address-or-ens ".")
+         chain-id       (utils/short-name->id db :eth)
+         request-params [chain-id address-or-ens]]
      {:db (-> db
               (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)
               (assoc-in [:wallet :ui :add-address-to-watch :validated-address] nil))
