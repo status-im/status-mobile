@@ -11,5 +11,6 @@
    :justify-content :space-between
    :width           "100%"})
 
-(def footer-button
-  {:width "48%"})
+(defn footer-button
+  [save-address-visible?]
+  {:width (if save-address-visible? "48%" "100%")})

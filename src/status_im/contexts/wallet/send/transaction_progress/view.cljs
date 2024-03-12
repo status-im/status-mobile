@@ -1,15 +1,14 @@
 (ns status-im.contexts.wallet.send.transaction-progress.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [status-im.common.floating-button-page.view :as floating-button-page]
-   [status-im.common.resources :as resources]
-   [status-im.contexts.wallet.send.save-address.view :as wallet-send-save-address]
-   [status-im.contexts.wallet.send.transaction-progress.style :as style]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.send.transaction-progress.style :as style]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn titles
   [status]
@@ -29,28 +28,35 @@
 
 (defn show-save-address-bottom-sheet
   ([] (show-save-address-bottom-sheet :blue))
-  ([color]
+  ([_color]
    (debounce/throttle-and-dispatch
-    [:show-bottom-sheet
-     {:content             (fn [] [wallet-send-save-address/view])
-      :gradient-cover?     true
-      :customization-color color}]
+    [:open-modal
+     :wallet-save-address
+     {;; :content             (fn [] [wallet-send-save-address/view])
+      ;; :gradient-cover?     true
+      ;; :customization-color color
+     }]
     1000)))
 
-(defn footer [{:keys [color leave-page]}]
-  [rn/view {:style style/footer}
-   [quo/button {:type                :grey
-                :icon-left           :i/contact-book
-                :accessibility-label :save-address
-                :container-style     style/footer-button
-                :on-press            (partial show-save-address-bottom-sheet color)}
-    (i18n/label :t/save-address)]
-   [quo/button {:customization-color color
-                :type                :primary
-                :accessibility-label :done
-                :container-style     style/footer-button
-                :on-press            leave-page}
-    (i18n/label :t/done)]])
+(defn footer
+  [{:keys [color leave-page]}]
+  (let [save-address-visible? false]
+    [rn/view {:style style/footer}
+     (when save-address-visible?
+       [quo/button
+        {:type                :grey
+         :icon-left           :i/contact-book
+         :accessibility-label :save-address
+         :container-style     (style/footer-button save-address-visible?)
+         :on-press            (partial show-save-address-bottom-sheet color)}
+        (i18n/label :t/save-address)])
+     [quo/button
+      {:customization-color color
+       :type                :primary
+       :accessibility-label :done
+       :container-style     (style/footer-button save-address-visible?)
+       :on-press            leave-page}
+      (i18n/label :t/done)]]))
 
 (defn view
   []
@@ -78,6 +84,3 @@
             :style  {:margin-bottom 12}}]
           [quo/standard-title
            {:title (titles (combined-status-overview transaction-details))}]]]))))
-
-(comment
-  ,)
