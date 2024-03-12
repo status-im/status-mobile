@@ -3,9 +3,8 @@
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im.common.biometric.events :as biometric]
+            [status-im.common.biometric.utils :as biometric]
             [status-im.common.not-implemented :as not-implemented]
-            [status-im.common.standard-authentication.standard-auth.authorize :as authorize]
             [status-im.constants :as constants]
             [status-im.contexts.profile.settings.screens.password.style :as style]
             [utils.i18n :as i18n]
@@ -14,21 +13,22 @@
 (defn- on-press-biometric-enable
   [button-label theme]
   (fn []
-    (authorize/authorize
-     {:biometric-auth?   false
-      :blur?             true
-      :theme             theme
-      :auth-button-label (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
-      :on-close          (fn [] (rf/dispatch [:standard-auth/reset-login-password]))
-      :on-auth-success   (fn [password]
-                           (rf/dispatch [:hide-bottom-sheet])
-                           (rf/dispatch [:standard-auth/reset-login-password])
-                           (rf/dispatch [:biometric/enable password]))})))
+    (rf/dispatch
+     [:standard-auth/authorize-with-password
+      {:blur?             true
+       :theme             theme
+       :auth-button-label (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
+       :on-auth-success   (fn [password]
+                            (rf/dispatch [:hide-bottom-sheet])
+                            (rf/dispatch
+                             [:biometric/authenticate
+                              {:on-success #(rf/dispatch [:biometric/enable password])
+                               :on-fail    #(rf/dispatch [:biometric/show-message (ex-cause %)])}]))}])))
 
 (defn- get-biometric-item
   [theme]
   (let [auth-method    (rf/sub [:auth-method])
-        biometric-type (rf/sub [:biometric/supported-type])
+        biometric-type (rf/sub [:biometrics/supported-type])
         label          (biometric/get-label-by-type biometric-type)
         icon           (biometric/get-icon-by-type biometric-type)
         supported?     (boolean biometric-type)
@@ -45,7 +45,7 @@
      :action-props {:disabled? (not supported?)
                     :on-change press-handler
                     :checked?  biometric-on?}
-     :on-press     press-handler}))
+     :on-press     (when supported? press-handler)}))
 
 (defn- get-change-password-item
   []

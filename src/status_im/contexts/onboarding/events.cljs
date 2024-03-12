@@ -2,7 +2,7 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.common.biometric.events :as biometric]
+    status-im.common.biometric.events
     [status-im.constants :as constants]
     [status-im.contexts.profile.create.events :as profile.create]
     [status-im.contexts.profile.recover.events :as profile.recover]
@@ -32,8 +32,10 @@
 (rf/defn enable-biometrics
   {:events [:onboarding/enable-biometrics]}
   [_]
-  {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding/biometrics-done])
-                            :on-fail    #(rf/dispatch [:onboarding/biometrics-fail %])}})
+  {:fx [[:dispatch
+         [:biometric/authenticate
+          {:on-success #(rf/dispatch [:onboarding/biometrics-done])
+           :on-fail    #(rf/dispatch [:onboarding/biometrics-fail %])}]]]})
 
 (rf/defn navigate-to-enable-notifications
   {:events [:onboarding/navigate-to-enable-notifications]}
@@ -51,10 +53,10 @@
                  [:onboarding/finalize-setup]
                  [:onboarding/create-account-and-login])}))
 
-(rf/defn biometrics-fail
-  {:events [:onboarding/biometrics-fail]}
-  [cofx code]
-  (biometric/show-message cofx code))
+(rf/reg-event-fx
+ :onboarding/biometrics-fail
+ (fn [_ [error]]
+   {:dispatch [:biometric/show-message (ex-cause error)]}))
 
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}
@@ -85,7 +87,7 @@
 (rf/defn password-set
   {:events [:onboarding/password-set]}
   [{:keys [db]} password]
-  (let [supported-type (:biometric/supported-type db)]
+  (let [supported-type (get-in db [:biometrics :supported-type])]
     {:db       (-> db
                    (assoc-in [:onboarding/profile :password] password)
                    (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
@@ -96,7 +98,7 @@
 (rf/defn navigate-to-enable-biometrics
   {:events [:onboarding/navigate-to-enable-biometrics]}
   [{:keys [db]}]
-  (let [supported-type (:biometric/supported-type db)]
+  (let [supported-type (get-in db [:biometrics :supported-type])]
     {:dispatch (if supported-type
                  [:open-modal :enable-biometrics]
                  [:open-modal :enable-notifications])}))
