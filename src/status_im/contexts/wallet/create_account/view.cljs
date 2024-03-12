@@ -32,7 +32,7 @@
                           :customization-color account-color})
     :action            (when-not keypair-name :button)
     :action-props      {:on-press    (fn []
-                                       (rf/dispatch [:navigate-to :wallet-select-keypair]))
+                                       (rf/dispatch [:navigate-to :scrren/wallet.select-keypair]))
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text

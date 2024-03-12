@@ -56,12 +56,18 @@
 
 (defn screen
   [screen-key]
+
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component options]}   (get (if js/goog.DEBUG
+     (let [screen-details                (get (if js/goog.DEBUG
                                                 (get-screens)
                                                 screens)
                                               (keyword screen-key))
+           qualified-screen-details      (get (if js/goog.DEBUG
+                                                (get-screens)
+                                                screens)
+                                              (keyword "screen" screen-key))
+           {:keys [component options]}   (or qualified-screen-details screen-details)
            {:keys [insets sheet? theme]} options
            user-theme                    (theme/get-theme)
            alert-banners-top-margin      (rf/sub [:alert-banners/top-margin])

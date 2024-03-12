@@ -65,7 +65,7 @@
       {:type            :outline
        :on-press        (fn []
                           (rn/dismiss-keyboard!)
-                          (rf/dispatch [:open-modal :scan-address]))
+                          (rf/dispatch [:open-modal :screen/wallet.scan-address]))
        :container-style style/scan
        :size            40
        :icon-only?      true}
@@ -137,7 +137,7 @@
                                               (not validated-address))
                      :on-press            (fn []
                                             (rf/dispatch [:navigate-to
-                                                          :confirm-address-to-watch
+                                                          :screen/wallet.confirm-address-to-watch
                                                           {:address validated-address}])
                                             (clear-input))
                      :container-style     {:z-index 2}}

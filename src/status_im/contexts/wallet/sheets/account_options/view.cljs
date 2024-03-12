@@ -71,7 +71,7 @@
       [[{:icon                :i/edit
          :accessibility-label :edit
          :label               (i18n/label :t/edit-account)
-         :on-press            #(rf/dispatch [:navigate-to :wallet-edit-account])}
+         :on-press            #(rf/dispatch [:navigate-to :screen/wallet.edit-account])}
         {:icon                :i/copy
          :accessibility-label :copy-address
          :label               (i18n/label :t/copy-address)
@@ -83,7 +83,7 @@
         {:icon                :i/qr-code
          :accessibility-label :show-address-qr
          :label               (i18n/label :t/show-address-qr)
-         :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
+         :on-press            #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :share}])}
         {:icon                :i/share
          :accessibility-label :share-account
          :label               (i18n/label :t/share-address)

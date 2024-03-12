@@ -98,7 +98,7 @@
   [cofx {address :account}]
   (when-let [account (existing-account? cofx address)]
     (navigation/navigate-to cofx
-                            :wallet-account
+                            :screen/wallet.accounts
                             account)))
 
 (defn handle-not-found
