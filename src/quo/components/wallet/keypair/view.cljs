@@ -92,7 +92,9 @@
 (defn- view-internal
   [{:keys [accounts action container-style selected? on-press] :as props}]
   [rn/pressable
-   {:style    (style/container props selected? container-style)
+   {:style    (style/container (merge props
+                                      {:selected?       selected?
+                                       :container-style container-style}))
     :on-press #(when (= action :selector) (on-press))}
    [rn/view {:style style/header-container}
     [avatar props]

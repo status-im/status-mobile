@@ -234,23 +234,6 @@
 
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
-(defn get-keypairs-success
-  [{:keys [db]} [keypairs]]
-  (let [parsed-keypairs (data-store/parse-keypairs keypairs)
-        default-key-uid (:key-uid (first parsed-keypairs))]
-    {:db (-> db
-             (assoc-in [:wallet :keypairs] parsed-keypairs)
-             (assoc-in [:wallet :ui :create-account :selected-keypair-uid] default-key-uid))}))
-
-(rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
-
-(defn confirm-account-origin
-  [{:keys [db]} [key-uid]]
-  {:db (assoc-in db [:wallet :ui :create-account :selected-keypair-uid] key-uid)
-   :fx [[:dispatch [:navigate-back]]]})
-
-(rf/reg-event-fx :wallet/confirm-account-origin confirm-account-origin)
-
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
@@ -422,6 +405,7 @@
              :subject title
              :message content})]]}))
 
+<<<<<<< HEAD
 (defn store-secret-phrase
   [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
   {:db (-> db
@@ -453,6 +437,8 @@
 
 (rf/reg-event-fx :wallet/clear-new-keypair clear-new-keypair)
 
+=======
+>>>>>>> e61fbffde (lint)
 (rf/reg-event-fx
  :wallet/blockchain-status-changed
  (fn [{:keys [db]} [{:keys [message]}]]

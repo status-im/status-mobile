@@ -4,15 +4,13 @@
     [react-native.platform :as platform]))
 
 (defn container
-  [{:keys [blur? customization-color theme]} selected? container-style]
+  [{:keys [blur? customization-color theme selected? container-style]}]
   (merge {:border-radius  16
           :border-width   1
           :border-color   (if selected?
                             (if blur?
                               colors/white
-                              (colors/theme-colors (colors/custom-color customization-color 50)
-                                                   (colors/custom-color customization-color 60)
-                                                   theme))
+                              (colors/resolve-color customization-color theme))
                             (if blur?
                               colors/white-opa-5
                               (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)))
