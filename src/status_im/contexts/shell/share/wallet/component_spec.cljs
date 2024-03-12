@@ -26,19 +26,23 @@
 
   (h/test "should display the the wallet tab"
     (render-wallet-view)
-    (h/wait-for #(h/is-truthy (h/get-by-text "Wallet One"))))
+    (-> (h/wait-for #(h/get-by-text "Wallet One"))
+        (.then (fn [] (h/is-truthy (h/get-by-text "Wallet One"))))))
 
   (h/test "should display the the legacy account"
     (render-wallet-view)
     (-> (h/wait-for #(h/get-by-label-text :share-qr-code-legacy-tab))
         (.then (fn []
-                 (h/fire-event :press (h/get-by-label-text :share-qr-code-legacy-tab))
-                 (-> (h/wait-for #(h/is-falsy (h/query-by-text "eth:"))))))))
+                 (h/is-truthy (h/query-by-text "0x707f635951193ddafbb40971a0fcaab8a6415160"))
+                 (h/is-falsy (h/query-by-text "eth:"))))))
 
   (h/test "should display the the multichain account"
     (render-wallet-view)
     (-> (h/wait-for #(h/get-by-label-text :share-qr-code-multichain-tab))
         (.then (fn []
                  (h/fire-event :press (h/get-by-label-text :share-qr-code-multichain-tab))
-                 (-> (h/wait-for #(h/is-truthy (h/query-by-text "eth:")))))))))
-
+                 (-> (h/wait-for #(h/get-by-label-text :share-qr-code-settings))
+                     (.then (fn []
+                              (h/is-truthy (h/get-by-text "eth:"))
+                              (h/is-truthy (h/get-by-text "opt:"))
+                              (h/is-truthy (h/get-by-text "arb1:"))))))))))

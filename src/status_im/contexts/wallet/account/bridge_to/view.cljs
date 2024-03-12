@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.account.bridge-to.style :as style]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
@@ -48,7 +48,7 @@
                                      {:name (string/upper-case (str (:name token)))})]
     [rn/view
      [account-switcher/view
-      {:on-press            #(rf/dispatch [:navigate-back-within-stack :wallet-bridge-to])
+      {:on-press            #(rf/dispatch [:navigate-back-within-stack :screen/wallet.bridge-to])
        :icon-name           :i/arrow-left
        :accessibility-label :top-bar}]
      [quo/page-top {:title bridge-to-title}]

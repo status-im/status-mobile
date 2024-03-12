@@ -2,6 +2,7 @@
   (:require
     [legacy.status-im.bottom-sheet.events]
     [legacy.status-im.keycard.core :as keycard]
+    status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.async-storage.effects
     status-im.common.emoji-picker.events
@@ -38,7 +39,7 @@
    {:db db/app-db
     :theme/init-theme nil
     :network/listen-to-network-info nil
-    :biometric/get-supported-biometric-type nil
+    :effects.biometric/get-supported-type nil
     ;;app starting flow continues in get-profiles-overview
     :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
     :effects.font/get-font-file-for-initials-avatar

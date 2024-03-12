@@ -37,7 +37,6 @@
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
-    [status-im.common.biometric.events :as biometric]
     status-im.common.serialization
     status-im.common.standard-authentication.events
     [status-im.common.theme.core :as theme]
@@ -120,7 +119,7 @@
       :content             (i18n/label :t/biometric-auth-confirm-message)
       :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
       :cancel-button-text  (i18n/label :t/biometric-auth-confirm-logout)
-      :on-accept           #(biometric/authenticate nil {:on-fail on-biometric-auth-fail})
+      :on-accept           #(rf/dispatch [:biometric/authenticate {:on-fail on-biometric-auth-fail}])
       :on-cancel           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])})))
 
 (rf/defn on-return-from-background
@@ -142,7 +141,7 @@
               #(when-let [chat-id (:current-chat-id db)]
                  {:dispatch [:chat/mark-all-as-read chat-id]})
               #(when requires-bio-auth
-                 (biometric/authenticate % {:on-fail on-biometric-auth-fail})))))
+                 {:dispatch [:biometric/authenticate {:on-fail on-biometric-auth-fail}]}))))
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]

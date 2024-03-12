@@ -39,13 +39,13 @@
   [message]
   (let [cause (if platform/android?
                 (condp = message
-                  android-not-enrolled-error-message  ::not-enrolled
-                  android-not-available-error-message ::not-available
-                  ::unknown)
+                  android-not-enrolled-error-message  :biometrics/not-enrolled-error
+                  android-not-available-error-message :biometrics/not-available-error
+                  :biometrics/unknown-error)
 
                 (condp #(string/includes? %2 %1) message
-                  ios-not-enrolled-error-message ::not-enrolled
-                  ::unknown))]
+                  ios-not-enrolled-error-message :biometrics/not-enrolled-error
+                  :biometrics/unknown-error))]
     (ex-info "Failed to authenticate with biometrics"
              {:orig-error-message message}
              cause)))

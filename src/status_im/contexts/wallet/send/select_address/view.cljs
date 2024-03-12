@@ -38,12 +38,12 @@
         :on-scan               (fn []
                                  (rn/dismiss-keyboard!)
                                  (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:open-modal :scan-address]))
+                                 (rf/dispatch [:open-modal :screen/wallet.scan-address]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :address-regex         constants/regx-multichain-address
-        :on-detect-address     #(when (or (= current-screen-id :wallet-select-address)
-                                          (= current-screen-id :scan-address))
+        :on-detect-address     #(when (or (= current-screen-id :screen/wallet.select-address)
+                                          (= current-screen-id :screen/wallet.scan-address))
                                   ; ^ this check is to prevent effect being triggered when screen is
                                   ; loaded but not being shown to the user (deep in the navigation
                                   ; stack) and avoid undesired behaviors
@@ -51,8 +51,8 @@
                                    [:wallet/validate-address %]
                                    300))
         :on-detect-ens         (fn [text cb]
-                                 (when (or (= current-screen-id :wallet-select-address)
-                                           (= current-screen-id :scan-address))
+                                 (when (or (= current-screen-id :screen/wallet.select-address)
+                                           (= current-screen-id :screen/wallet.scan-address))
                                    ; ^ this check is to prevent effect being triggered when screen
                                    ; is loaded but not being shown to the user (deep in the
                                    ; navigation stack) and avoid undesired behaviors
@@ -95,7 +95,7 @@
                                                     {:address   address
                                                      :token?    false
                                                      :recipient local-suggestion
-                                                     :stack-id  :wallet-select-address}]))))
+                                                     :stack-id  :screen/wallet.select-address}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -154,11 +154,12 @@
                                        {:accessibility-label :continue-button
                                         :type                :primary
                                         :disabled?           (not valid-ens-or-address?)
-                                        :on-press            #(rf/dispatch [:wallet/select-send-address
-                                                                            {:address @input-value
-                                                                             :token? (some? token)
-                                                                             :stack-id
-                                                                             :wallet-select-address}])
+                                        :on-press            #(rf/dispatch
+                                                               [:wallet/select-send-address
+                                                                {:address @input-value
+                                                                 :token? (some? token)
+                                                                 :stack-id
+                                                                 :screen/wallet.select-address}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
          [quo/page-top

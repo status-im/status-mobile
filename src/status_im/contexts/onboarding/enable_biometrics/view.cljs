@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.common.biometric.events :as biometric]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.common.parallax.blacklist :as blacklist]
     [status-im.common.parallax.view :as parallax]
     [status-im.common.resources :as resources]
@@ -24,7 +24,7 @@
 
 (defn enable-biometrics-buttons
   [insets]
-  (let [supported-biometric-type (rf/sub [:biometric/supported-type])
+  (let [supported-biometric-type (rf/sub [:biometrics/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
         profile-color            (or (:color (rf/sub [:onboarding/profile]))
                                      (rf/sub [:profile/customization-color]))

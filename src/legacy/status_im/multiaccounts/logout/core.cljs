@@ -13,15 +13,14 @@
    (native-module/logout)))
 
 (rf/defn initialize-app-db
-  [{{:keys           [keycard initials-avatar-font-file]
-     :biometric/keys [supported-type]
-     :network/keys   [type]}
+  [{{:keys         [keycard initials-avatar-font-file biometrics]
+     :network/keys [type]}
     :db}]
   {:db (assoc db/app-db
               :network/type              type
               :initials-avatar-font-file initials-avatar-font-file
               :keycard                   (dissoc keycard :secrets :pin :application-info)
-              :biometric/supported-type  supported-type
+              :biometrics                biometrics
               :syncing                   nil)})
 
 (rf/defn logout-method
@@ -46,6 +45,7 @@
   [_]
   ;; we need to disable notifications before starting the logout process
   {:effects/push-notifications-disable nil
+   :dispatch                           [:alert-banners/remove-all]
    :dispatch-later                     [{:ms       100
                                          :dispatch [::logout-method
                                                     {:auth-method keychain/auth-method-none

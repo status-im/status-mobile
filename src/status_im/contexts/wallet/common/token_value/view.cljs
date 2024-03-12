@@ -20,7 +20,7 @@
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (rf/dispatch [:wallet/clean-send-data])
                                 (rf/dispatch [:wallet/send-select-token-drawer {:token token-data}])
-                                (rf/dispatch [:open-modal :wallet-select-address]))}
+                                (rf/dispatch [:open-modal :screen/wallet.select-address]))}
         {:icon                :i/receive
          :accessibility-label :receive
          :label               (i18n/label :t/receive)

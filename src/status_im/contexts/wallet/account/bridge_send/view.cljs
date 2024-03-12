@@ -11,10 +11,10 @@
   []
   [rn/view {:style style/bridge-send-wrapper}
    [input-amount/view
-    {:current-screen-id :wallet-bridge-send
+    {:current-screen-id :screen/wallet.bridge-send
      :button-one-label  (i18n/label :t/confirm-bridge)
      :button-one-props  {:icon-left :i/bridge}
      :on-navigate-back  (fn []
-                          (rf/dispatch [:navigate-back-within-stack :wallet-bridge-send]))}]])
+                          (rf/dispatch [:navigate-back-within-stack :screen/wallet.bridge-send]))}]])
 
 (def view (quo.theme/with-theme view-internal))
