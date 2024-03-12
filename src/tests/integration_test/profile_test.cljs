@@ -1,10 +1,10 @@
 (ns tests.integration-test.profile-test
   (:require
     [cljs.test :refer [deftest is use-fixtures]]
-    [legacy.status-im.utils.test :as utils.test]
     [promesa.core :as p]
     [status-im.contexts.profile.utils :as profile.utils]
     [test-helpers.integration :as h]
+    [tests.test-utils :as test-utils]
     [utils.re-frame :as rf]))
 
 (use-fixtures :each (h/fixture-session))
@@ -24,7 +24,7 @@
   (h/integration-test ::edit-profile-picture
     (fn []
       (let [mock-image    "resources/images/mock2/monkey.png"
-            absolute-path (.resolve utils.test/path mock-image)]
+            absolute-path (.resolve test-utils/path mock-image)]
         (p/do
           (rf/dispatch [:profile/edit-picture absolute-path 80 80])
           (h/wait-for [:profile/update-local-picture :toasts/upsert])

@@ -5,6 +5,7 @@
     legacy.status-im.events
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
+    [native-module.core :as native-module]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -12,7 +13,8 @@
     status-im.navigation.core
     status-im.subs.root
     [test-helpers.integration :as h]
-    [tests.contract-test.utils :as contract-utils]))
+    [tests.contract-test.utils :as contract-utils]
+    [tests.integration-test.constants :as integration-constants]))
 
 (defn assert-accounts-get-accounts
   [result]
@@ -84,3 +86,31 @@
      (h/logout)
      (rf-test/wait-for
        [::logout/logout-method])))))
+
+(defn get-main-account
+  [accounts]
+  (:address (first accounts)))
+
+(def test-password integration-constants/password)
+
+(defn assert-derived-account
+  [response]
+  (is (= (:address response) (:address response)))
+  (is (= (:public-key response) (:public-key response)))
+  (is (= "m/43'/60'/1581'/0'/0" (:path (first response)))))
+
+(deftest wallet-get-derived-addressess-contract
+  (h/log-headline :wallet/create-derived-addresses)
+  (rf-test/run-test-async
+   (h/with-app-initialized
+    (h/with-recovered-account
+     (let [sha3-pwd        (native-module/sha3 test-password)
+           derivation-path ["m/43'/60'/1581'/0'/0"]
+           main-account    (contract-utils/call-rpc-endpoint
+                            {:rpc-endpoint "accounts_getAccounts"
+                             :action       get-main-account})]
+
+       (contract-utils/call-rpc-endpoint
+        {:rpc-endpoint "wallet_getDerivedAddresses"
+         :params       [sha3-pwd main-account derivation-path]
+         :action       assert-derived-account}))))))
