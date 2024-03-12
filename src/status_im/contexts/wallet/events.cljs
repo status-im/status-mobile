@@ -475,15 +475,3 @@
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
-
-(def send-asset-flow-config
-  [{:screen-id  :wallet-select-address
-    :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :recipient])))
-    :event      :wallet/select-send-address}
-   {:screen-id  :wallet-select-asset
-    :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :token])))
-    :event      :wallet/send-select-token}
-   {:screen-id  :wallet-send-input-amount
-    :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :amount])))
-    :event      :wallet/send-select-amount}
-   {:screen-id :wallet-transaction-confirmation}])

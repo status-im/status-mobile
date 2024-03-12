@@ -5,7 +5,7 @@
     [native-module.core :as native-module]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.events :as wallet-events]
+    [status-im.contexts.wallet.send.flow-config :as flow-config]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
     [utils.address :as address]
@@ -299,7 +299,7 @@
                  {:params         params
                   :current-screen current-screen
                   :is-first?      is-first?
-                  :flow-config    wallet-events/send-asset-flow-config}])))
+                  :flow-config    flow-config/send-asset}])))
 
 (rf/reg-event-fx
  :navigation/wizard-back-send-flow
