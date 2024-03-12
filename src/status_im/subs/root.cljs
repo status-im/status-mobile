@@ -2,6 +2,8 @@
   (:require
     [re-frame.core :as re-frame]
     status-im.subs.activity-center
+    status-im.subs.alert-banner
+    status-im.subs.biometrics
     status-im.subs.chats
     status-im.subs.communities
     status-im.subs.contact
@@ -56,12 +58,12 @@
 (reg-root-key-sub :networks/manage :networks/manage)
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :tooltips :tooltips)
-(reg-root-key-sub :biometric/supported-type :biometric/supported-type)
 (reg-root-key-sub :app-state :app-state)
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
 (reg-root-key-sub :password-authentication :password-authentication)
 (reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
+(reg-root-key-sub :alert-banners :alert-banners)
 
 ;;onboarding
 (reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)
@@ -156,6 +158,9 @@
 
 ;;wallet
 (reg-root-key-sub :wallet :wallet)
+
+;;biometrics
+(reg-root-key-sub :biometrics :biometrics)
 
 ;;debug
 (when js/goog.DEBUG

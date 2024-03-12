@@ -9,9 +9,7 @@
 
 (defn page-illustration
   [width]
-  {:resize-mode   :stretch
-   :resize-method :scale
-   :width         width
+  {:width         width
    :margin-top    12
    :margin-bottom 4})
 

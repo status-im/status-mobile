@@ -94,6 +94,13 @@
    (fn [] (gesture/gesture-handler-root-hoc views/bottom-sheet))
    (fn [] views/bottom-sheet)))
 
+;;;; Alert Banner
+(navigation/register-component
+ "alert-banner"
+ (fn [] (gesture/gesture-handler-root-hoc views/alert-banner #js {:flex 0}))
+ (fn [] views/alert-banner))
+
+
 ;; LEGACY (should be removed in status 2.0)
 
 (defonce

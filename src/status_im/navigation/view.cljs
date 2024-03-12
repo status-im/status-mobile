@@ -10,6 +10,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     schema.view
+    [status-im.common.alert-banner.view :as alert-banner]
     [status-im.common.bottom-sheet-screen.view :as bottom-sheet-screen]
     [status-im.common.bottom-sheet.view :as bottom-sheet]
     [status-im.common.toasts.view :as toasts]
@@ -43,9 +44,10 @@
       :z-index          999999999999999999}]))
 
 (defn wrapped-screen-style
-  [{:keys [top? bottom?]} background-color]
+  [{:keys [top? bottom? background-color alert-banners-top-margin]}]
   (merge
    {:flex             1
+    :margin-top       alert-banners-top-margin
     :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100))}
    (when bottom?
      {:padding-bottom (safe-area/get-bottom)})
@@ -68,11 +70,16 @@
            {:keys [component options]}   (or qualified-screen-details screen-details)
            {:keys [insets sheet? theme]} options
            user-theme                    (theme/get-theme)
+           alert-banners-top-margin      (rf/sub [:alert-banners/top-margin])
            background-color              (or (get-in options [:layout :backgroundColor])
                                              (when sheet? :transparent))]
        ^{:key (str "root" screen-key @reloader/cnt)}
        [theme/provider {:theme (or theme user-theme)}
-        [rn/view {:style (wrapped-screen-style insets background-color)}
+        [rn/view
+         {:style (wrapped-screen-style (assoc
+                                        insets
+                                        :background-color         background-color
+                                        :alert-banners-top-margin alert-banners-top-margin))}
          [inactive]
          (if sheet?
            [bottom-sheet-screen/view {:content component}]
@@ -145,4 +152,12 @@
       [signing/signing]
       (when js/goog.DEBUG
         [reloader/reload-view])])
+   functional-compiler))
+
+(def alert-banner
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "alert-banner" @reloader/cnt)}
+     [theme/provider {:theme :dark}
+      [alert-banner/view]])
    functional-compiler))
