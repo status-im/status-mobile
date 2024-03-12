@@ -14,12 +14,14 @@
 
 (defn- no-contacts-view
   [{:keys [theme id]}]
-  (let [customization-color             (rf/sub [:profile/customization-color])
-        {:keys [universal-profile-url]} (rf/sub [:profile/profile])
-        on-press-share-community        (rn/use-callback
-                                         #(rf/dispatch [:communities/share-community-url-with-data id]))
-        on-press-share-profile          (rn/use-callback #(share/open {:url universal-profile-url}))]
-    (fn []
+  (fn []
+    (let [customization-color             (rf/sub [:profile/customization-color])
+          {:keys [universal-profile-url]} (rf/sub [:profile/profile])
+          on-press-share-community        (rn/use-callback
+                                           #(rf/dispatch [:communities/share-community-url-with-data
+                                                          id]))
+          on-press-share-profile          (rn/use-callback #(share/open {:url universal-profile-url})
+                                                           [universal-profile-url])]
       [rn/view
        {:style (style/no-contacts)}
        [rn/image {:source (resources/get-themed-image :no-contacts-to-chat theme)}]
@@ -65,66 +67,67 @@
 
 (defn view-internal
   [{:keys [theme]}]
-  (let [{:keys [id]} (rf/sub [:get-screen-params])
-        contacts     (rf/sub [:contacts/filtered-active-sections])]
-    (fn []
-      (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
-      (let [selected                (rf/sub [:group/selected-contacts])
-            {:keys [name images]}   (rf/sub [:communities/community id])
-            selected-contacts-count (count selected)
-            on-press                (fn []
-                                      (rf/dispatch [:communities/share-community-confirmation-pressed
-                                                    selected id])
-                                      (rf/dispatch [:navigate-back])
-                                      (rf/dispatch [:toasts/upsert
-                                                    {:type  :positive
-                                                     :theme theme
-                                                     :text  (if (= 1 selected-contacts-count)
-                                                              (i18n/label :t/one-user-was-invited)
-                                                              (i18n/label
-                                                               :t/n-users-were-invited
-                                                               {:count selected-contacts-count}))}]))
-            {window-height :height} (rn/get-window)]
-        [rn/view {:flex 1}
-         [rn/view {:padding-horizontal 20}
-          [quo/button
-           {:type       :grey
-            :size       32
-            :icon-only? true
-            :on-press   #(rf/dispatch [:navigate-back])} :i/close]
-          [rn/view {:style style/contact-selection-heading}
-           [quo/text
-            {:weight :semi-bold
-             :size   :heading-1
-             :style  (style/invite-to-community-text theme)}
-            (i18n/label :t/invite-to-community)]]
-          [quo/context-tag
-           {:type            :community
-            :size            24
-            :community-logo  (:thumbnail images)
-            :community-name  name
-            :container-style style/context-tag}]]
-         (if (empty? contacts)
-           [no-contacts-view
-            {:theme theme
-             :id    id}]
-           [:<>
-            [gesture/section-list
-             {:key-fn                         :public-key
-              :sticky-section-headers-enabled false
-              :sections                       contacts
-              :render-section-header-fn       contact-list/contacts-section-header
-              :content-container-style        (style/section-list-container-style theme)
-              :render-fn                      contact-item
-              :style                          {:height window-height}}]
-            (when (pos? selected-contacts-count)
-              [rn/view {:style style/chat-button}
-               [quo/button
-                {:type                :primary
-                 :accessibility-label :next-button
-                 :on-press            on-press}
-                (if (= 1 selected-contacts-count)
-                  (i18n/label :t/invite-1-user)
-                  (i18n/label :t/invite-n-users {:count selected-contacts-count}))]])])]))))
+  (fn []
+    (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
+    (let [{:keys [id]}            (rf/sub [:get-screen-params])
+          contacts                (rf/sub [:contacts/filtered-active-sections])
+          selected                (rf/sub [:group/selected-contacts])
+          {:keys [name images]}   (rf/sub [:communities/community id])
+          selected-contacts-count (count selected)
+          on-press                (fn []
+                                    (rf/dispatch [:communities/share-community-confirmation-pressed
+                                                  selected id])
+                                    (rf/dispatch [:navigate-back])
+                                    (rf/dispatch [:toasts/upsert
+                                                  {:type  :positive
+                                                   :theme theme
+                                                   :text  (if (= 1 selected-contacts-count)
+                                                            (i18n/label :t/one-user-was-invited)
+                                                            (i18n/label
+                                                             :t/n-users-were-invited
+                                                             {:count selected-contacts-count}))}]))
+          {window-height :height} (rn/get-window)]
+      [rn/view {:style {:flex 1}}
+       [rn/view {:style {:padding-horizontal 20}}
+        [quo/button
+         {:type       :grey
+          :size       32
+          :icon-only? true
+          :on-press   #(rf/dispatch [:navigate-back])}
+         :i/close]
+        [rn/view {:style style/contact-selection-heading}
+         [quo/text
+          {:weight :semi-bold
+           :size   :heading-1
+           :style  (style/invite-to-community-text theme)}
+          (i18n/label :t/invite-to-community)]]
+        [quo/context-tag
+         {:type            :community
+          :size            24
+          :community-logo  (:thumbnail images)
+          :community-name  name
+          :container-style style/context-tag}]]
+       (if (empty? contacts)
+         [no-contacts-view
+          {:theme theme
+           :id    id}]
+         [:<>
+          [gesture/section-list
+           {:key-fn                         :public-key
+            :sticky-section-headers-enabled false
+            :sections                       contacts
+            :render-section-header-fn       contact-list/contacts-section-header
+            :content-container-style        (style/section-list-container-style theme)
+            :render-fn                      contact-item
+            :style                          {:height window-height}}]
+          (when (pos? selected-contacts-count)
+            [quo/button
+             {:type                :primary
+              :accessibility-label :next-button
+              :container-style     style/chat-button
+              :on-press            on-press}
+             (if (= 1 selected-contacts-count)
+               (i18n/label :t/invite-1-user)
+               (i18n/label :t/invite-n-users {:count selected-contacts-count}))])])])))
 
 (def view (quo.theme/with-theme view-internal))
