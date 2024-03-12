@@ -2,7 +2,6 @@
   (:require
     [quo.components.record-audio.record-audio.view :as record-audio]
     [react-native.audio-toolkit :as audio]
-    [reagent.core :as reagent]
     [test-helpers.component :as h]
     [utils.datetime :as datetime]))
 
@@ -11,8 +10,10 @@
 
   (h/test "renders record-audio"
     (h/render [record-audio/record-audio])
-    (-> (h/expect (h/get-by-test-id "record-audio"))
-        (.toBeTruthy)))
+    (-> (h/wait-for #(h/get-by-test-id "record-audio"))
+        (.then (fn []
+                 (-> (h/expect (h/get-by-test-id "record-audio"))
+                     (.toBeTruthy))))))
 
   (h/test "record-audio on-start-recording works"
     (let [event (js/jest.fn)]
@@ -31,7 +32,7 @@
 
   (h/test "record-audio on-reviewing-audio works"
     (let [event    (js/jest.fn)
-          on-meter (reagent/atom nil)]
+          on-meter (atom nil)]
       (h/render [record-audio/record-audio
                  {:on-reviewing-audio              event
                   :record-audio-permission-granted true}])
@@ -39,7 +40,7 @@
                                                    (reset! on-meter on-meter-fn))
                     audio/start-recording        (fn [_ on-start _]
                                                    (on-start)
-                                                   (js/setInterval #(@on-meter) 100))
+                                                   (js/setInterval @on-meter 100))
                     audio/get-recorder-file-path (fn [] "file-path")]
         (h/fire-event
          :on-start-should-set-responder
@@ -48,6 +49,7 @@
                         :locationY  70
                         :timestamp  0
                         :identifier 0}})
+
         (with-redefs [datetime/timestamp (fn [] (+ (.now js/Date) 1000))]
           (h/advance-timers-by-time 100)
           (h/fire-event
@@ -63,7 +65,7 @@
 
   (h/test "record-audio on-send works after reviewing audio"
     (let [event    (js/jest.fn)
-          on-meter (reagent/atom nil)]
+          on-meter (atom nil)]
       (h/render [record-audio/record-audio
                  {:on-send                         event
                   :record-audio-permission-granted true}])
@@ -114,14 +116,15 @@
 
   (h/test "record-audio on-send works after sliding to the send button"
     (let [event       (js/jest.fn)
-          on-meter    (reagent/atom nil)
+          on-meter    (atom nil)
           last-now-ms (atom nil)
           duration-ms (atom nil)]
       (h/render [record-audio/record-audio
                  {:on-send                         event
                   :record-audio-permission-granted true}])
       (with-redefs [audio/new-recorder           (fn [_ on-meter-fn _]
-                                                   (reset! on-meter on-meter-fn))
+                                                   (reset! on-meter on-meter-fn)
+                                                   #js {:destroy #()})
                     audio/start-recording        (fn [_ on-start _]
                                                    (on-start)
                                                    (js/setInterval #(@on-meter) 100))
@@ -170,15 +173,16 @@
 
   (h/test "record-audio on-cancel works after reviewing audio"
     (let [event    (js/jest.fn)
-          on-meter (reagent/atom nil)]
+          on-meter (atom nil)]
       (h/render [record-audio/record-audio
                  {:on-cancel                       event
                   :record-audio-permission-granted true}])
       (with-redefs [audio/new-recorder    (fn [_ on-meter-fn _]
-                                            (reset! on-meter on-meter-fn))
+                                            (reset! on-meter on-meter-fn)
+                                            #js {:destroy #()})
                     audio/start-recording (fn [_ on-start _]
                                             (on-start)
-                                            (js/setInterval #(@on-meter) 100))]
+                                            (js/setInterval @on-meter 100))]
         (h/fire-event
          :on-start-should-set-responder
          (h/get-by-test-id "record-audio")
@@ -195,6 +199,7 @@
                           :locationY  70
                           :timestamp  200
                           :identifier 0}})
+          (h/advance-timers-by-time 250)
           (h/fire-event
            :on-responder-release
            (h/get-by-test-id "record-audio")
@@ -202,13 +207,12 @@
                           :locationY  80
                           :timestamp  200
                           :identifier 0}})
-          (h/advance-timers-by-time 250)
           (-> (js/expect event)
               (.toHaveBeenCalledTimes 1))))))
 
   (h/test "record-audio on-cancel works after sliding to the cancel button"
     (let [event    (js/jest.fn)
-          on-meter (reagent/atom nil)]
+          on-meter (atom nil)]
       (h/render [record-audio/record-audio
                  {:on-cancel                       event
                   :record-audio-permission-granted true}])
