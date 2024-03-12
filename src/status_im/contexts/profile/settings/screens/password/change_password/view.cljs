@@ -176,7 +176,7 @@
         ;; TODO fix
         on-submit                                      (fn []
                                                          (rf/dispatch
-                                                          [:password-settings/change-password-submit
+                                                          [:password-settings/confirm-new-password
                                                            (security/mask-data password)]))
         hint-1-status                                  (if long-enough? :success :default)
         hint-2-status                                  (if same-passwords? :success :error)
@@ -237,10 +237,10 @@
                                      :old-password)
         customization-color      (rf/sub [:profile/customization-color])]
     (rn/use-unmount #(rf/dispatch [:password-settings/reset-change-password]))
-    [quo/overlay {:type :shell}
-     [rn/touchable-without-feedback
-      {:on-press   rn/dismiss-keyboard!
-       :accessible false}
+    [rn/touchable-without-feedback
+     {:on-press   rn/dismiss-keyboard!
+      :accessible false}
+     [quo/overlay {:type :shell}
       [rn/view {:style style/flex-fill}
        [quo/page-nav
         {:margin-top top

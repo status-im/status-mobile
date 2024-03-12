@@ -80,7 +80,7 @@
 
 (defn save-user-password!
   [key-uid password]
-  (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
+  (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password)))
 
 (defn get-user-password!
   [key-uid callback]
