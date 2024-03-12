@@ -8,7 +8,6 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.svg :as svg]
-    [reagent.core :as reagent]
     [taoensso.timbre :as log]))
 
 (defn- button-disabled
