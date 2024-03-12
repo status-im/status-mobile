@@ -5,17 +5,15 @@
             [status-im.common.not-implemented :as not-implemented]
             [status-im.constants :as constants]
             [status-im.contexts.profile.contact.add-nickname.view :as add-nickname]
+            [status-im.contexts.profile.contact.block-contact.view :as block-contact]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn view
   []
-  (let [{:keys [nickname
-                public-key
-                contact-request-state]
+  (let [{:keys [nickname public-key contact-request-state blocked?]
          :as   contact}    (rf/sub [:contacts/current-contact])
-
         full-name          (profile.utils/displayed-name contact)
         on-add-nickname    (rn/use-callback #(rf/dispatch [:show-bottom-sheet
                                                            {:content
@@ -53,43 +51,49 @@
                                                         (string/lower-case)
                                                         (str full-name " "))}])
                               (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
-                            [public-key full-name])]
+                            [public-key full-name])
+        on-block-contact   (rn/use-callback #(rf/dispatch [:show-bottom-sheet
+                                                           {:content
+                                                            (fn [] [block-contact/view])}]))]
+    (println blocked?)
     [quo/action-drawer
-     [[{:icon                :i/edit
-        :label               (if has-nickname?
-                               (i18n/label :t/edit-nickname)
-                               (i18n/label :t/add-nickname-title))
-        :on-press            on-add-nickname
-        :accessibility-label (if nickname :edit-nickname :add-nickname)}
-       {:icon                :i/qr-code
-        :label               (i18n/label :t/show-qr)
-        :on-press            on-show-qr
-        :accessibility-label :show-qr-code}
-       {:icon                :i/share
-        :label               (i18n/label :t/share-profile)
-        :on-press            on-share-profile
-        :accessibility-label :share-profile}
-       (when has-nickname?
-         {:icon                :i/delete
-          :label               (i18n/label :t/remove-nickname)
-          :on-press            on-remove-nickname
-          :add-divider?        true
-          :accessibility-label :remove-nickname
-          :danger?             true})
-       {:icon                :i/untrustworthy
-        :label               (i18n/label :t/mark-untrustworthy)
-        :on-press            not-implemented/alert
-        :accessibility-label :mark-untrustworthy
-        :add-divider?        (when-not has-nickname? true)
-        :danger?             true}
-       (when (= constants/contact-request-state-mutual contact-request-state)
-         {:icon                :i/remove-user
-          :label               (i18n/label :t/remove-contact)
-          :on-press            on-remove-contact
-          :accessibility-label :remove-contact
-          :danger?             true})
-       {:icon                :i/block
-        :label               (i18n/label :t/block-user)
-        :on-press            not-implemented/alert
-        :accessibility-label :block-user
-        :danger?             true}]]]))
+     [(concat
+       [{:icon                :i/edit
+         :label               (if has-nickname?
+                                (i18n/label :t/edit-nickname)
+                                (i18n/label :t/add-nickname-title))
+         :on-press            on-add-nickname
+         :accessibility-label (if nickname :edit-nickname :add-nickname)}
+        {:icon                :i/qr-code
+         :label               (i18n/label :t/show-qr)
+         :on-press            on-show-qr
+         :accessibility-label :show-qr-code}
+        {:icon                :i/share
+         :label               (i18n/label :t/share-profile)
+         :on-press            on-share-profile
+         :accessibility-label :share-profile}
+        (when has-nickname?
+          {:icon                :i/delete
+           :label               (i18n/label :t/remove-nickname)
+           :on-press            on-remove-nickname
+           :add-divider?        true
+           :accessibility-label :remove-nickname
+           :danger?             true})]
+       (when-not blocked?
+         [{:icon                :i/untrustworthy
+           :label               (i18n/label :t/mark-untrustworthy)
+           :on-press            not-implemented/alert
+           :accessibility-label :mark-untrustworthy
+           :add-divider?        (when-not has-nickname? true)
+           :danger?             true}
+          (when (= constants/contact-request-state-mutual contact-request-state)
+            {:icon                :i/remove-user
+             :label               (i18n/label :t/remove-contact)
+             :on-press            on-remove-contact
+             :accessibility-label :remove-contact
+             :danger?             true})
+          {:icon                :i/block
+           :label               (i18n/label :t/block-user)
+           :on-press            on-block-contact
+           :accessibility-label :block-user
+           :danger?             true}]))]]))

@@ -54,15 +54,15 @@
        :customization-color customization-color}]
      [rn/view {:style style/input-wrapper}
       [quo/input
-       {:type           :text
-        :char-limit     constants/profile-name-max-length
-        :max-length     constants/profile-name-max-length
-        :auto-focus     true
-        :default-value  unsaved-nickname
-        :error?         (not (string/blank? error-msg))
-        :label          (i18n/label :t/nickname)
-        :on-change-text on-nickname-change}
-       :on-submit-editing on-nickname-submit]
+       {:type              :text
+        :char-limit        constants/profile-name-max-length
+        :max-length        constants/profile-name-max-length
+        :auto-focus        true
+        :default-value     unsaved-nickname
+        :error?            (not (string/blank? error-msg))
+        :label             (i18n/label :t/nickname)
+        :on-change-text    on-nickname-change
+        :on-submit-editing on-nickname-submit}]
       [quo/info-message
        {:icon :i/info
         :size :default

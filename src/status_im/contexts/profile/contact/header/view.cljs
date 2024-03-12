@@ -16,7 +16,7 @@
 (defn view
   [{:keys [scroll-y]}]
   (let [{:keys [public-key customization-color ens-name
-                emoji-hash bio contact-request-state]
+                emoji-hash bio blocked? contact-request-state]
          :as   profile}     (rf/sub [:contacts/current-contact])
         customization-color (or customization-color :blue)
         full-name           (profile.utils/displayed-name profile)
@@ -30,7 +30,17 @@
         on-start-chat       (rn/use-callback #(rf/dispatch [:chat.ui/start-chat
                                                             public-key
                                                             ens-name])
-                                             [ens-name public-key])]
+                                             [ens-name public-key])
+        on-unblock-press    (rn/use-callback (fn []
+                                               (rf/dispatch [:contact.ui/unblock-contact-pressed
+                                                             public-key])
+                                               (rf/dispatch [:toasts/upsert
+                                                             {:id   :user-unblocked
+                                                              :type :positive
+                                                              :text (i18n/label :t/user-unblocked
+                                                                                {:username
+                                                                                 full-name})}]))
+                                             [public-key full-name])]
     [rn/view {:style style/header-container}
      [rn/view {:style style/header-top-wrapper}
       [rn/view {:style style/avatar-wrapper}
@@ -53,10 +63,20 @@
        :description-text bio
        :emoji-dash       emoji-hash}]
 
+     (when blocked?
+       [quo/button
+        {:container-style style/button-wrapper
+         :on-press        on-unblock-press
+         :icon-left       :i/block}
+        (i18n/label :t/unblock)])
+
      (cond
-       (or (not contact-request-state)
-           (= contact-request-state constants/contact-request-state-none)
-           (= contact-request-state constants/contact-request-state-dismissed))
+       (and (not blocked?)
+            (or
+             (not contact-request-state)
+             (= contact-request-state constants/contact-request-state-none)
+             (= contact-request-state constants/contact-request-state-dismissed)))
+
        [quo/button
         {:container-style style/button-wrapper
          :on-press        on-contact-request
