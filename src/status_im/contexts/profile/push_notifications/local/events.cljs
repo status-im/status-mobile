@@ -2,6 +2,7 @@
   (:require
     [legacy.status-im.notifications.wallet :as notifications.wallet]
     [react-native.platform :as platform]
+    [status-im.constants :as constants]
     status-im.contexts.profile.push-notifications.local.effects
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -26,7 +27,7 @@
 
 (defn show-community-joined-toast
   [{:keys [bodyType title]}]
-  (when (= bodyType "communityJoined")
+  (when (= bodyType constants/community-joined-notification-type)
     {:dispatch [:toasts/upsert
                 {:id   :joined-community
                  :type :positive

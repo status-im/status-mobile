@@ -481,3 +481,5 @@
 (def ^:const alert-banner-height 40)
 
 (def ^:const status-hostname "status.app")
+
+(def ^:const community-joined-notification-type "communityJoined")
