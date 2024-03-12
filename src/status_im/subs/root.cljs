@@ -2,6 +2,7 @@
   (:require
     [re-frame.core :as re-frame]
     status-im.subs.activity-center
+    status-im.subs.alert-banner
     status-im.subs.chats
     status-im.subs.communities
     status-im.subs.contact
@@ -62,6 +63,7 @@
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
 (reg-root-key-sub :password-authentication :password-authentication)
 (reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
+(reg-root-key-sub :alert-banners :alert-banners)
 
 ;;onboarding
 (reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)

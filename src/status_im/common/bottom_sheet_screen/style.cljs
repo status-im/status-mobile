@@ -2,14 +2,12 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
-    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]))
 
 (defn container
-  [{:keys [top] :as _insets}]
-  (let [padding-top (if platform/ios? top (+ top 10))]
-    {:flex        1
-     :padding-top padding-top}))
+  [padding-top]
+  {:flex        1
+   :padding-top padding-top})
 
 (defn background
   [opacity]

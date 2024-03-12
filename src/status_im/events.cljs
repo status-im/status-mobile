@@ -2,6 +2,7 @@
   (:require
     [legacy.status-im.bottom-sheet.events]
     [legacy.status-im.keycard.core :as keycard]
+    status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.async-storage.effects
     status-im.common.emoji-picker.events

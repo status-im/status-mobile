@@ -181,6 +181,13 @@
 (rf/reg-fx :hide-bottom-sheet
  (fn [] (navigation/dissmiss-overlay "bottom-sheet")))
 
+;;;; Alert Banner
+(rf/reg-fx :show-alert-banner
+ (fn [] (show-overlay "alert-banner" {:overlay {:interceptTouchOutside false}})))
+
+(rf/reg-fx :hide-alert-banner
+ (fn [] (navigation/dissmiss-overlay "alert-banner")))
+
 ;;;; Merge options
 
 (rf/reg-fx :merge-options
