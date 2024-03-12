@@ -86,7 +86,7 @@
   (concat
    (old-screens/screens)
 
-   {:name      :activity-center
+   [{:name      :activity-center
      :options   options/transparent-screen-options
      :component activity-center/view}
 
@@ -384,11 +384,11 @@
     {:name      :screen/wallet.saved-addresses
      :component wallet-saved-addresses/view}
 
-    {:name      :screen/wallet-save-address
+    {:name      :screen/wallet.save-address
      :options   {:sheet? true}
      :component wallet-save-address/view}
 
-    {:name      :wallet-send-input-amount
+    {:name      :screen/wallet.send-input-amount
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top?    true
                                           :bottom? true}}
@@ -425,7 +425,7 @@
 
     {:name      :settings-password
      :options   options/transparent-modal-screen-options
-     :component settings-password/view}
+     :component settings-password/view}]
 
    [{:name    :shell
      :options {:theme :dark}}

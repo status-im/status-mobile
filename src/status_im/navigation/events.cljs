@@ -173,9 +173,3 @@
   (let [view-id (if (= view-id :shell-stack) (shell.utils/calculate-view-id) view-id)]
     {:db             (assoc db :view-id view-id)
      :set-view-id-fx view-id}))
-
-(comment
-  (rf/dispatch [:navigate-to :generating-keys])
-  (rf/dispatch [:navigate-to :wallet-transaction-progress])
-  (rf/dispatch [:navigate-to :enable-biometrics])
-  ,)

@@ -6,8 +6,6 @@
 
 (def footer
   {:flex-direction  :row
-   :border-color    "red"
-   :border-width    0
    :justify-content :space-between
    :width           "100%"})
 
