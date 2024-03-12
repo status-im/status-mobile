@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "add-favicons-to-link-previews",
-    "commit-sha1": "ab85a9591b5ee08ebed16fed83bd53ffc1b43de3",
-    "src-sha256": "1ldgzvsn8hv3k4r35l1x7zhzl8xmi72bbz1wsr7jmj5x8mmlfbwm"
+    "version": "v0.176.8",
+    "commit-sha1": "8c0e24dc260031a822604f7a2771f22daea79aa4",
+    "src-sha256": "1c6r5gizcvixawl1c0lxd022wg54m5qxw8rr1q1i9221pzbfmmsl"
 }
