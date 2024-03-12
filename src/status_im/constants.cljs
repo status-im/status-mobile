@@ -465,3 +465,5 @@
 
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
+
+(def ^:const alert-banner-height 40)

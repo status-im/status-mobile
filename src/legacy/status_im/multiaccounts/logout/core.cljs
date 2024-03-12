@@ -46,6 +46,7 @@
   [_]
   ;; we need to disable notifications before starting the logout process
   {:effects/push-notifications-disable nil
+   :dispatch                           [:alert-banners/remove-all]
    :dispatch-later                     [{:ms       100
                                          :dispatch [::logout-method
                                                     {:auth-method keychain/auth-method-none
