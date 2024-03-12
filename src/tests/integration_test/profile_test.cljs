@@ -10,7 +10,7 @@
 (use-fixtures :each (h/fixture-session))
 
 (deftest edit-profile-name-test
-  (h/integration-test ::edit-profile-name
+  (h/test-async ::edit-profile-name
     (fn []
       (let [new-name "John Doe"]
         (p/do
@@ -21,7 +21,7 @@
             (is (= new-name display-name))))))))
 
 (deftest edit-profile-picture-test
-  (h/integration-test ::edit-profile-picture
+  (h/test-async ::edit-profile-picture
     (fn []
       (let [mock-image    "resources/images/mock2/monkey.png"
             absolute-path (.resolve test-utils/path mock-image)]
@@ -32,7 +32,7 @@
             (is (not (nil? (:images profile))))))))))
 
 (deftest delete-profile-picture-test
-  (h/integration-test ::delete-profile-picture
+  (h/test-async ::delete-profile-picture
     (fn []
       (p/do
         (rf/dispatch [:profile/delete-picture])
@@ -41,7 +41,7 @@
           (is (nil? (:image profile))))))))
 
 (deftest edit-profile-bio-test
-  (h/integration-test ::edit-profile-bio
+  (h/test-async ::edit-profile-bio
     (fn []
       (let [new-bio "New bio text"]
         (p/do

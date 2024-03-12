@@ -1,5 +1,4 @@
 (ns test-helpers.integration
-  (:require-macros [test-helpers.integration])
   (:require
     [cljs.test :refer [is] :as test]
     legacy.status-im.events
@@ -20,14 +19,16 @@
     [utils.transforms :as transforms]))
 
 (defn validate-mnemonic
-  [mnemonic on-success on-error]
-  (native-module/validate-mnemonic
-   (security/safe-unmask-data mnemonic)
-   (fn [result]
-     (let [{:keys [error keyUID]} (transforms/json->clj result)]
-       (if (seq error)
-         (when on-error (on-error error))
-         (on-success mnemonic keyUID))))))
+  [mnemonic]
+  (p/create
+   (fn [p-resolve p-reject]
+     (native-module/validate-mnemonic
+      (security/safe-unmask-data mnemonic)
+      (fn [result]
+        (let [{:keys [error keyUID]} (transforms/json->clj result)]
+          (if (seq error)
+            (p-reject error)
+            (p-resolve [mnemonic keyUID]))))))))
 
 (def default-re-frame-wait-for-timeout-ms
   "Controls the maximum time allowed to wait for all events to be processed by
@@ -153,7 +154,7 @@
       (-> (wait-for [:messenger-started])
           (.then #(assert-messenger-started))))))
 
-(defn integration-test
+(defn test-async
   "Runs `f` inside `cljs.test/async` macro in a restorable re-frame checkpoint.
 
   `f` will be called with one argument, the `done` function exposed by the
@@ -175,10 +176,11 @@
   fail more often.
   "
   ([test-name f]
-   (integration-test test-name
-                     {:fail-fast? true
-                      :timeout-ms default-integration-test-timeout-ms}
-                     f))
+   (test-async
+     test-name
+     {:fail-fast? true
+      :timeout-ms default-integration-test-timeout-ms}
+     f))
   ([test-name {:keys [fail-fast? timeout-ms]} f]
    (test/async
      done
@@ -193,6 +195,29 @@
            (p/finally (fn []
                         (restore-fn)
                         (done))))))))
+
+(defn test-app-initialization
+  []
+  (test-async ::initialize-app
+    (fn []
+      (p/do
+        (test-utils/init!)
+        (rf/dispatch [:app-started])
+        ;; Use initialize-view because it has the longest avg. time and is
+        ;; dispatched by initialize-multiaccounts (last non-view event).
+        (wait-for [:profile/get-profiles-overview-success
+                   :font/init-font-file-for-initials-avatar])
+        (assert-app-initialized)))))
+
+(defn test-account-creation
+  []
+  (test-async ::create-account
+    (fn []
+      (p/do
+        (setup-app)
+        (setup-account)
+        (logout)
+        (wait-for [::logout/logout-method])))))
 
 ;;;; Fixtures
 
@@ -246,19 +271,14 @@
 
 (defn enable-testnet!
   []
-  (rf/dispatch [:profile.settings/profile-update :test-networks-enabled?
-                true {}])
+  (rf/dispatch [:profile.settings/profile-update :test-networks-enabled? true {}])
   (rf/dispatch [:wallet/initialize]))
 
 (defn recover-multiaccount!
   []
-  (let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))]
-    (validate-mnemonic
-     masked-seed-phrase
-     (fn [mnemonic key-uid]
-       (rf/dispatch [:onboarding/seed-phrase-validated
-                     (security/mask-data mnemonic) key-uid])
-       (rf/dispatch [:pop-to-root :profiles])
-       (rf/dispatch [:profile/profile-selected key-uid])
-       (recover-and-login mnemonic))
-     #())))
+  (p/let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))
+          [mnemonic key-uid] (validate-mnemonic masked-seed-phrase)]
+    (rf/dispatch [:onboarding/seed-phrase-validated (security/mask-data mnemonic) key-uid])
+    (rf/dispatch [:pop-to-root :profiles])
+    (rf/dispatch [:profile/profile-selected key-uid])
+    (recover-and-login mnemonic)))
