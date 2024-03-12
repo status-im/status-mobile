@@ -5,7 +5,7 @@
 (defmacro with-app-initialized
   [& body]
   `(do
-     (legacy.status-im.utils.test/init!)
+     (tests.test-utils/init!)
      (if (test-helpers.integration/app-initialized)
        (do ~@body)
        (do
@@ -20,5 +20,17 @@
      (do
        (test-helpers.integration/create-multiaccount!)
        (rf-test/wait-for [:messenger-started]
+         (test-helpers.integration/assert-messenger-started)
+         ~@body))))
+
+(defmacro with-recovered-account
+  [& body]
+  `(if (test-helpers.integration/messenger-started)
+     (do ~@body)
+     (do
+       (test-helpers.integration/recover-multiaccount!)
+       (rf-test/wait-for
+         [:messenger-started]
+         (test-helpers.integration/enable-testnet!)
          (test-helpers.integration/assert-messenger-started)
          ~@body))))
