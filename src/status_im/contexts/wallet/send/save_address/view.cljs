@@ -5,9 +5,9 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.contexts.wallet.common.sheets.network-preferences.view
-     :as network-preferences]
     [status-im.contexts.wallet.send.save-address.style :as style]
+    [status-im.contexts.wallet.sheets.network-preferences.view
+     :as network-preferences]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

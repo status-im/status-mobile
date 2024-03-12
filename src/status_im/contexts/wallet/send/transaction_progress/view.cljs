@@ -29,14 +29,7 @@
 (defn show-save-address-bottom-sheet
   ([] (show-save-address-bottom-sheet :blue))
   ([_color]
-   (debounce/throttle-and-dispatch
-    [:open-modal
-     :wallet-save-address
-     {;; :content             (fn [] [wallet-send-save-address/view])
-      ;; :gradient-cover?     true
-      ;; :customization-color color
-     }]
-    1000)))
+   (debounce/throttle-and-dispatch [:open-modal :screen/wallet-save-address] 1000)))
 
 (defn footer
   [{:keys [color leave-page]}]
