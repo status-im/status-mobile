@@ -26,10 +26,10 @@
                            :users       users-public-keys}]
             :js-response true
             :on-success  [:sanitize-messages-and-process-response]
-            :on-error    #(fn [err]
-                            (log/error {:message      "failed to share community"
-                                        :community-id community-id
-                                        :err          err}))}]]]}))
+            :on-error    (fn [err]
+                           (log/error {:message      "failed to share community"
+                                       :community-id community-id
+                                       :err          err}))}]]]}))
 
 (rf/reg-event-fx :communities/share-community-channel-url-qr-code
  (fn [_ [chat-id]]
