@@ -357,7 +357,7 @@
 
 ;;;; Record Audio
 (def record-audio quo.components.record-audio.record-audio.view/record-audio)
-(def soundtrack quo.components.record-audio.soundtrack.view/f-soundtrack)
+(def soundtrack quo.components.record-audio.soundtrack.view/soundtrack)
 
 ;;;; Selectors
 (def disclaimer quo.components.selectors.disclaimer.view/view)
