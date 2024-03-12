@@ -50,13 +50,14 @@
                                        {:on-success on-success}])
              :on-cancel nil}]]})))
 
-(rf/reg-event-fx :profile.settings/toggle-goerli-test-network
+(rf/reg-event-fx
+ :profile.settings/toggle-goerli-test-network
  (fn [{:keys [db]}]
-   (let [value      (get-in db [:profile/profile :is-goerli-enabled?])
+   (let [value      (get-in db [:profile/profile :goerli-enabled?])
          on-success #(rf/dispatch [:logout])]
      {:fx [[:ui/show-confirmation
             {:content   (i18n/label :t/goerli-testnet-toggle-confirmation)
-             :on-accept #(rf/dispatch [:profile.settings/profile-update :is-goerli-enabled?
+             :on-accept #(rf/dispatch [:profile.settings/profile-update :goerli-enabled?
                                        (not value)
                                        {:on-success on-success}])
              :on-cancel nil}]]})))
