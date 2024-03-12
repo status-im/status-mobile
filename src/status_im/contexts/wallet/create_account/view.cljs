@@ -8,6 +8,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
+    [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -19,7 +20,6 @@
     [utils.responsiveness :as responsiveness]
     [utils.security.core :as security]
     [utils.string]))
-
 
 (defn- get-keypair-data
   [{:keys [title primary-keypair? new-keypair? derivation-path customization-color]}]
@@ -48,22 +48,24 @@
     :description-props {:text (string/replace derivation-path #"/" " / ")}}])
 
 (defn- f-view
-  [{:keys [theme]}]
-  (let [account-name  (reagent/atom "")
-        account-color (reagent/atom (rand-nth colors/account-colors))
-        emoji         (reagent/atom (emoji-picker.utils/random-emoji))]
-    (fn []
-      (let [top                                   (safe-area/get-top)
-            bottom                                (safe-area/get-bottom)
-            {window-width :width}                 (rn/get-window)
-            number-of-accounts                    (count (rf/sub
+  [_]
+  (let [top                 (safe-area/get-top)
+        bottom              (safe-area/get-bottom)
+        {window-width :width} (rn/get-window)
+        account-color       (reagent/atom (rand-nth colors/account-colors))
+        emoji               (reagent/atom (emoji-picker.utils/random-emoji))
+        account-name        (reagent/atom "")
+        on-change-text      #(reset! account-name %)
+        show-account-origin #(rf/dispatch [:show-bottom-sheet
+                                           {:content account-origin/view}])]
+    (fn [{:keys [theme]}]
+      (let [number-of-accounts                    (count (rf/sub
                                                           [:wallet/accounts-without-watched-accounts]))
             {:keys [address customization-color]} (rf/sub [:profile/profile])
             {:keys [new-keypair]}                 (rf/sub [:wallet/create-account])
             keypairs                              (rf/sub [:wallet/keypairs])
             selected-keypair-uid                  (rf/sub [:wallet/selected-keypair-uid])
-            placeholder                           (i18n/label :t/default-account-placeholder
-                                                              {:number (inc number-of-accounts)})
+            placeholder                           (i18n/label :t/default-account-placeholder)
             derivation-path                       (utils/get-derivation-path
                                                    number-of-accounts)
             keypair                               (some #(when (= (:key-uid %) selected-keypair-uid)
@@ -94,20 +96,31 @@
                                                                     {:name (:name keypair)})
                                                         (:name keypair)))]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
-        [rn/view {:style {:flex 1}}
-         [quo/page-nav
-          {:type       :no-title
-           :background :blur
-           :right-side [{:icon-name :i/info
-                         :on-press  #(rf/dispatch [:show-bottom-sheet
-                                                   {:content account-origin/view}])}]
-           :icon-name  :i/close
-           :on-press   #(rf/dispatch [:navigate-back])}]
-         [quo/gradient-cover
-          {:customization-color @account-color
-           :container-style     {:top (- top)}}]
-         [rn/view
-          {:style style/account-avatar-container}
+        [floating-button-page/view
+         {:gradient-cover?          true
+          :footer-container-padding 0
+          :header-container-style   {:padding-top top}
+          :customization-color      @account-color
+          :header                   [quo/page-nav
+                                     {:type       :no-title
+                                      :background :blur
+                                      :right-side [{:icon-name :i/info
+                                                    :on-press  show-account-origin}]
+                                      :icon-name  :i/close
+                                      :on-press   #(rf/dispatch [:navigate-back])}]
+          :footer                   [standard-auth/slide-button
+                                     {:size                :size-48
+                                      :track-text          (i18n/label :t/slide-to-create-account)
+                                      :customization-color @account-color
+                                      :on-auth-success     (fn [password]
+                                                             (if new-keypair
+                                                               (create-new-keypair-account password)
+                                                               (create-existing-keypair-account password)))
+                                      :auth-button-label   (i18n/label :t/confirm)
+                                      :disabled?           (empty? @account-name)
+                                      :container-style     (style/slide-button-container bottom)
+                                      :dependencies        [new-keypair]}]}
+         [rn/view {:style style/account-avatar-container}
           [quo/account-avatar
            {:customization-color @account-color
             :size                80
@@ -121,19 +134,19 @@
             :on-press        #(rf/dispatch [:emoji-picker/open
                                             {:on-select (fn [selected-emoji]
                                                           (reset! emoji selected-emoji))}])
-            :container-style style/reaction-button-container} :i/reaction]]
+            :container-style style/reaction-button-container}
+           :i/reaction]]
          [quo/title-input
           {:customization-color @account-color
            :placeholder         placeholder
-           :on-change-text      #(reset! account-name %)
+           :on-change-text      on-change-text
            :max-length          constants/wallet-account-name-max-length
            :blur?               true
            :disabled?           false
            :default-value       @account-name
            :container-style     style/title-input-container}]
          [quo/divider-line]
-         [rn/view
-          {:style style/color-picker-container}
+         [rn/view {:style style/color-picker-container}
           [quo/text
            {:size   :paragraph-2
             :weight :medium
@@ -153,19 +166,7 @@
                                          :primary-keypair?    primary-keypair?
                                          :new-keypair?        (boolean new-keypair)
                                          :derivation-path     derivation-path
-                                         :customization-color customization-color})}]
-         [standard-auth/slide-button
-          {:size                :size-48
-           :track-text          (i18n/label :t/slide-to-create-account)
-           :customization-color @account-color
-           :on-auth-success     (fn [password]
-                                  (if new-keypair
-                                    (create-new-keypair-account password)
-                                    (create-existing-keypair-account password)))
-           :auth-button-label   (i18n/label :t/confirm)
-           :disabled?           (empty? @account-name)
-           :container-style     (style/slide-button-container bottom)
-           :dependencies        [new-keypair]}]]))))
+                                         :customization-color customization-color})}]]))))
 
 (defn- view-internal
   []
