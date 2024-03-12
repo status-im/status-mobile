@@ -49,8 +49,10 @@
          [quo/wallet-graph {:time-frame :empty}]
          (when (not watch-only?)
            [quo/wallet-ctas
-            {:send-action    #(rf/dispatch [:navigation/wizard-send-flow {:is-first? true}])
-             :receive-action #(rf/dispatch [:open-modal :wallet-share-address {:status :receive}])
+            {:send-action    (fn []
+                                (rf/dispatch [:wallet/clean-send-data])
+                                (rf/dispatch [:open-modal :screen/wallet.select-address]))
+             :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
              :bridge-action  #(ff/alert ::ff/wallet.bridge-token

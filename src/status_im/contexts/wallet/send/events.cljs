@@ -52,7 +52,7 @@
 
 (rf/reg-event-fx
  :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address recipient]}]]
+ (fn [{:keys [db]} [{:keys [address token? recipient stack-id]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          test-net?           (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
@@ -65,7 +65,11 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
-     })))
+     :fx [[:dispatch
+               [:navigate-to-within-stack
+                (if token?
+                  [:screen/wallet.send-input-amount stack-id]
+                  [:screen/wallet.select-asset stack-id])]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -73,11 +77,12 @@
    {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
 
 (rf/reg-event-fx :wallet/send-select-token
- (fn [{:keys [db]} [{:keys [token]}]]
+ (fn [{:keys [db]} [{:keys [token stack-id]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
-    :fx [[:dispatch [:wallet/clean-suggested-routes]]]}))
+    :fx [[:dispatch [:wallet/clean-suggested-routes]]
+         [:dispatch [:navigate-to-within-stack [:screen/wallet.send-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/send-select-token-drawer
@@ -109,8 +114,9 @@
          [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
- (fn [{:keys [db]} [{:keys [amount]}]]
-   {:db (assoc-in db [:wallet :ui :send :amount] amount)}))
+ (fn [{:keys [db]} [{:keys [amount stack-id]}]]
+   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
@@ -292,12 +298,11 @@
 
 (rf/reg-event-fx
  :navigation/wizard-send-flow
- (fn [_ [{:keys [current-screen params is-first?]}]]
-   (when is-first?
-     (rf/dispatch [:wallet/clean-send-data]))
+ (fn [_ [{:keys [current-screen is-first?]}]]
+  ;;  (when is-first?
+  ;;    (rf/dispatch [:wallet/clean-send-data]))
    (rf/dispatch [:navigation/wizard
-                 {:params         params
-                  :current-screen current-screen
+                 {:current-screen current-screen
                   :is-first?      is-first?
                   :flow-config    flow-config/send-asset}])))
 

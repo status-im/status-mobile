@@ -91,10 +91,11 @@
     (let [props {:on-press      (fn []
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
-                                      (rf/dispatch [:navigation/wizard-send-flow
-                                                    {:current-screen :wallet-select-address
-                                                     :params         {:address   address
-                                                                      :recipient local-suggestion}}]))))
+                                      (rf/dispatch [:wallet/select-send-address
+                                                       {:address   address
+                                                        :token?    false
+                                                        :recipient local-suggestion
+                                                        :stack-id  :screen/wallet.select-address}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -126,13 +127,20 @@
 
 (defn- f-view
   []
-  (let [on-close       #(rf/dispatch [:navigation/wizard-back-send-flow])
+  (let [on-close       (fn []
+                         (rf/dispatch [:wallet/clean-scanned-address])
+                         (rf/dispatch [:wallet/clean-local-suggestions])
+                         (rf/dispatch [:wallet/clean-selected-token])
+                         (rf/dispatch [:wallet/clean-selected-collectible])
+                         (rf/dispatch [:wallet/clean-send-address])
+                         (rf/dispatch [:wallet/select-address-tab nil])
+                         (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            ;; token                 (rf/sub [:wallet/wallet-send-token])
+            token                 (rf/sub [:wallet/wallet-send-token])
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
         [floating-button-page/view
@@ -146,11 +154,12 @@
                                        {:accessibility-label :continue-button
                                         :type                :primary
                                         :disabled?           (not valid-ens-or-address?)
-                                        :on-press            #(rf/dispatch [:navigation/wizard-send-flow
-                                                                            {:current-screen
-                                                                             :wallet-select-address
-                                                                             :params {:address
-                                                                                      @input-value}}])
+                                        :on-press           #(rf/dispatch
+                                                              [:wallet/select-send-address
+                                                               {:address @input-value
+                                                                :token? (some? token)
+                                                                :stack-id
+                                                                :screen/wallet.select-address}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
          [quo/page-top

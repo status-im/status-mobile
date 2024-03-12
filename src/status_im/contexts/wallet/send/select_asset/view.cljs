@@ -44,9 +44,9 @@
                                     (and (= selected-tab :tab/collectibles)
                                          (seq unfiltered-collectibles)))
         on-token-press          (fn [token]
-                                  (rf/dispatch [:navigation/wizard-send-flow
-                                                {:current-screen :wallet-select-asset
-                                                 :params         {:token token}}]))]
+                                 (rf/dispatch [:wallet/send-select-token
+                                               {:token    token
+                                                :stack-id :wallet-select-asset}]))]
     [:<>
      (when show-search-input?
        [search-input search-text on-change-text])
@@ -63,7 +63,7 @@
         search-text    (reagent/atom "")
         on-change-text #(reset! search-text %)
         on-change-tab  #(reset! selected-tab %)
-        on-close       #(rf/dispatch [:navigation/wizard-back-send-flow])]
+        on-close       #(rf/dispatch [:navigate-back-within-stack :screen/wallet.select-asset])]
     (fn []
       [rn/safe-area-view {:style style/container}
        [account-switcher/view
