@@ -14,41 +14,40 @@
 
 (defn- no-contacts-view
   [{:keys [theme id]}]
-  (fn []
-    (let [customization-color             (rf/sub [:profile/customization-color])
-          {:keys [universal-profile-url]} (rf/sub [:profile/profile])
-          on-press-share-community        (rn/use-callback
-                                           #(rf/dispatch [:communities/share-community-url-with-data
-                                                          id]))
-          on-press-share-profile          (rn/use-callback #(share/open {:url universal-profile-url})
-                                                           [universal-profile-url])]
-      [rn/view
-       {:style (style/no-contacts)}
-       [rn/image {:source (resources/get-themed-image :no-contacts-to-chat theme)}]
-       [quo/text
-        {:weight :semi-bold
-         :size   :paragraph-1
-         :style  style/no-contacts-text}
-        (i18n/label :t/you-have-no-contacts)]
-       [quo/text
-        {:weight :regular
-         :size   :paragraph-2}
-        (i18n/label :t/dont-yell-at-me)]
-       [quo/button
-        {:customization-color customization-color
-         :theme               theme
-         :type                :primary
-         :size                32
-         :container-style     style/no-contacts-button-container
-         :on-press            on-press-share-community}
-        (i18n/label :t/send-community-link)]
-       [quo/button
-        {:customization-color customization-color
-         :theme               theme
-         :type                :grey
-         :size                32
-         :on-press            on-press-share-profile}
-        (i18n/label :t/invite-friends-to-status)]])))
+  (let [customization-color             (rf/sub [:profile/customization-color])
+        {:keys [universal-profile-url]} (rf/sub [:profile/profile])
+        on-press-share-community        (rn/use-callback
+                                         #(rf/dispatch [:communities/share-community-url-with-data
+                                                        id]))
+        on-press-share-profile          (rn/use-callback #(share/open {:url universal-profile-url})
+                                                         [universal-profile-url])]
+    [rn/view
+     {:style (style/no-contacts)}
+     [rn/image {:source (resources/get-themed-image :no-contacts-to-chat theme)}]
+     [quo/text
+      {:weight :semi-bold
+       :size   :paragraph-1
+       :style  style/no-contacts-text}
+      (i18n/label :t/you-have-no-contacts)]
+     [quo/text
+      {:weight :regular
+       :size   :paragraph-2}
+      (i18n/label :t/dont-yell-at-me)]
+     [quo/button
+      {:customization-color customization-color
+       :theme               theme
+       :type                :primary
+       :size                32
+       :container-style     style/no-contacts-button-container
+       :on-press            on-press-share-community}
+      (i18n/label :t/send-community-link)]
+     [quo/button
+      {:customization-color customization-color
+       :theme               theme
+       :type                :grey
+       :size                32
+       :on-press            on-press-share-profile}
+      (i18n/label :t/invite-friends-to-status)]]))
 
 (defn- contact-item
   [{:keys [public-key] :as item}]
