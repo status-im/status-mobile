@@ -75,7 +75,7 @@
                                       (set-image-data data-uri))
         _get-image-data             (get-image-data logo set-is-svg on-success)]
     (if is-svg?
-      [svg/svg-xml (merge style/logo {:xml @image-data})]
+      [svg/svg-xml (merge style/logo {:xml image-data})]
       [rn/image
        {:accessibility-label :logo
         :source              {:uri (str "data:image/png;base64," image-data)}
