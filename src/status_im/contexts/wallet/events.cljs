@@ -275,7 +275,8 @@
                      data)}]
      {:db (assoc-in db [:wallet :networks] network-data)})))
 
-(rf/reg-event-fx :wallet/find-ens
+(rf/reg-event-fx
+ :wallet/find-ens
  (fn [{:keys [db]} [input contacts chain-id cb]]
    (let [result (if (empty? input)
                   []
@@ -288,7 +289,8 @@
                 (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
                           (not-empty result)))}))))
 
-(rf/reg-event-fx :wallet/search-ens
+(rf/reg-event-fx
+ :wallet/search-ens
  (fn [_ [input chain-id cb domain]]
    (let [ens (if (string/includes? input ".") input (str input domain))]
      {:fx [[:json-rpc/call
