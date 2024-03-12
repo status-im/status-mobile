@@ -23,10 +23,6 @@
           {}
           requests))
 
-(defn- fetch-community-id-input
-  [{:keys [db]}]
-  (:communities/community-id-input db))
-
 (rf/defn handle-response
   [_ response-js]
   {:dispatch [:sanitize-messages-and-process-response response-js]})
