@@ -2,7 +2,6 @@
   (:require
     [quo.components.record-audio.soundtrack.view :as soundtrack]
     [react-native.audio-toolkit :as audio]
-    [reagent.core :as reagent]
     [test-helpers.component :as h]))
 
 (h/describe "soundtrack component"
@@ -10,23 +9,21 @@
 
   (h/test "renders soundtrack"
     (with-redefs [audio/get-player-duration (fn [] 2000)]
-      (let [player-ref            (reagent/atom {})
-            audio-current-time-ms (reagent/atom 0)]
-        (h/render [:f> soundtrack/f-soundtrack
-                   {:player-ref            @player-ref
-                    :audio-current-time-ms audio-current-time-ms}])
-        (-> (h/expect (h/get-by-test-id "soundtrack"))
-            (.toBeTruthy)))))
+      (h/render [soundtrack/soundtrack
+                 {:player-ref            {}
+                  :audio-current-time-ms 0}])
+      (-> (h/expect (h/get-by-test-id "soundtrack"))
+          (.toBeTruthy))))
 
   (h/test "soundtrack on-sliding-start works"
     (with-redefs [audio/get-player-duration (fn [] 2000)]
-      (let [seeking-audio?        (reagent/atom false)
-            player-ref            (reagent/atom {})
-            audio-current-time-ms (reagent/atom 0)]
-        (h/render [:f> soundtrack/f-soundtrack
-                   {:seeking-audio?        seeking-audio?
-                    :player-ref            @player-ref
-                    :audio-current-time-ms audio-current-time-ms}])
+      (let [seeking-audio? (atom false)]
+        (h/render [soundtrack/soundtrack
+                   {:seeking-audio?            seeking-audio?
+                    :set-seeking-audio         #(reset! seeking-audio? %)
+                    :player-ref                {}
+                    :audio-current-time-ms     0
+                    :set-audio-current-time-ms #()}])
         (h/fire-event
          :on-sliding-start
          (h/get-by-test-id "soundtrack"))
@@ -36,13 +33,13 @@
   (h/test "soundtrack on-sliding-complete works"
     (with-redefs [audio/get-player-duration (fn [] 2000)
                   audio/seek-player         (js/jest.fn)]
-      (let [seeking-audio?        (reagent/atom false)
-            player-ref            (reagent/atom {})
-            audio-current-time-ms (reagent/atom 0)]
-        (h/render [:f> soundtrack/f-soundtrack
-                   {:seeking-audio?        seeking-audio?
-                    :player-ref            @player-ref
-                    :audio-current-time-ms audio-current-time-ms}])
+      (let [seeking-audio? (atom false)]
+        (h/render [soundtrack/soundtrack
+                   {:seeking-audio?            seeking-audio?
+                    :set-seeking-audio         #(reset! seeking-audio? %)
+                    :player-ref                {}
+                    :audio-current-time-ms     0
+                    :set-audio-current-time-ms #()}])
         (h/fire-event
          :on-sliding-start
          (h/get-by-test-id "soundtrack"))
@@ -58,13 +55,14 @@
   (h/test "soundtrack on-value-change when seeking audio works"
     (with-redefs [audio/get-player-duration (fn [] 2000)
                   audio/seek-player         (js/jest.fn)]
-      (let [seeking-audio?        (reagent/atom false)
-            player-ref            (reagent/atom {})
-            audio-current-time-ms (reagent/atom 0)]
-        (h/render [:f> soundtrack/f-soundtrack
-                   {:seeking-audio?        seeking-audio?
-                    :player-ref            @player-ref
-                    :audio-current-time-ms audio-current-time-ms}])
+      (let [seeking-audio?        (atom false)
+            audio-current-time-ms (atom 0)]
+        (h/render [soundtrack/soundtrack
+                   {:seeking-audio?            seeking-audio?
+                    :set-seeking-audio         #(reset! seeking-audio? %)
+                    :player-ref                {}
+                    :audio-current-time-ms     audio-current-time-ms
+                    :set-audio-current-time-ms #(reset! audio-current-time-ms %)}])
         (h/fire-event
          :on-sliding-start
          (h/get-by-test-id "soundtrack"))
