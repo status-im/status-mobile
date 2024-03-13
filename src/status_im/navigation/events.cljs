@@ -162,7 +162,6 @@
                 [:hide-visibility-status-popover]
                 [:hide-bottom-sheet]
                 [:bottom-sheet-hidden]
-                [:hide-signing-sheet]
                 [:bottom-sheet/hide-old-navigation-overlay]
                 [:toasts/close-all-toasts]]})
 

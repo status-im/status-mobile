@@ -56,7 +56,9 @@
            (rf/dispatch event))
          (effects/dismiss-modal))
        (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
-         (handler)))))
+         (handler)))
+     (when (= "legacy-back-button" id)
+       (rf/dispatch [:navigate-back]))))
 
   (navigation/reg-modal-dismissed-listener
    (fn []
