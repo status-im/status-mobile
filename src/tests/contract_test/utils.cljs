@@ -1,14 +1,14 @@
 (ns tests.contract-test.utils
   (:require
+    [promesa.core :as p]
     [status-im.common.json-rpc.events :as rpc-events]
     [utils.number]))
 
-(defn call-rpc-endpoint
-  [{:keys [rpc-endpoint
-           params
-           action
-           on-error]}]
-  (rpc-events/call {:method     rpc-endpoint
-                    :params     params
-                    :on-success action
-                    :on-error   on-error}))
+(defn call-rpc
+  [method & args]
+  (p/create
+   (fn [p-resolve p-reject]
+     (rpc-events/call {:method     method
+                       :params     args
+                       :on-success p-resolve
+                       :on-error   p-reject}))))
