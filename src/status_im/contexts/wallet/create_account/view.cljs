@@ -31,6 +31,7 @@
                           :customization-color customization-color}
                          :i/seed)
 <<<<<<< HEAD
+<<<<<<< HEAD
     :action            (when-not keypair-name :button)
     :action-props      {:on-press    (fn []
 <<<<<<< HEAD
@@ -42,6 +43,11 @@
     :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-select-keypair])
 >>>>>>> 8544e3fae (review)
 >>>>>>> ea622a4f6 (review)
+=======
+    :action            (when-not new-keypair? :button)
+    :action-props      {:on-press    (fn []
+                                       (rf/dispatch [:navigate-to :screen/wallet.select-keypair]))
+>>>>>>> c802d3240 (lint)
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
