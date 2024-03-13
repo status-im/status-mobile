@@ -176,11 +176,11 @@
 
 (defn wizard-find-next-screen
   [db flow-config current-screen]
-  (first (filter (fn [screen]
-                   (let [skip-step (:skip-step? screen)]
-                     (and (not= (:screen-id screen) current-screen)
-                          (not (when (not (nil? skip-step)) (skip-step db))))))
-                 flow-config)))
+  (->> flow-config
+       (filter (fn [{:keys [skip-step? screen-id]}]
+                 (and (not= screen-id current-screen)
+                      (not (and (fn? skip-step?) (skip-step? db))))))
+       first))
 
 (rf/reg-event-fx
  :navigation/wizard-forward
