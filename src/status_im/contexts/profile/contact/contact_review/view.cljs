@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.contact.contact-review.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
+            [status-im.constants :as constants]
             [status-im.contexts.profile.contact.contact-review.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -14,7 +15,7 @@
          :keys              [message]} (rf/sub [:activity-center/pending-contact-request-from-contact-id
                                                 public-key])
         ;; TODO(@seanstrom): https://github.com/status-im/status-mobile/issues/18733
-        customization-color            (or customization-color :blue)
+        customization-color            (or customization-color constants/profile-default-color)
         full-name                      (profile.utils/displayed-name profile)
         profile-picture                (profile.utils/photo profile)
         on-contact-accept              (rn/use-callback
