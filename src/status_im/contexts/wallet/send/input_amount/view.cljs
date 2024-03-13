@@ -188,8 +188,8 @@
                                       (rf/dispatch [:wallet/clean-suggested-routes])))))
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
-                                                {:amount   @input-value
-                                                 :stack-id current-screen-id}]))
+                                              {:amount   @input-value
+                                               :stack-id current-screen-id}]))
         selection-change      (fn [selection]
                                 ;; `reagent/flush` is needed to properly propagate the
                                 ;; input cursor state. Since this is a controlled

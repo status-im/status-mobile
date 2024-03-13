@@ -19,8 +19,9 @@
          :on-press            (fn []
                                 (rf/dispatch [:hide-bottom-sheet])
                                 (rf/dispatch [:wallet/clean-send-data])
-                                (rf/dispatch [:wallet/send-select-token {:token token-data
-                                                                                :start-flow? true}]))}
+                                (rf/dispatch [:wallet/send-select-token
+                                              {:token       token-data
+                                               :start-flow? true}]))}
         {:icon                :i/receive
          :accessibility-label :receive
          :label               (i18n/label :t/receive)

@@ -237,10 +237,10 @@
 
 (defn- view-internal
   [_]
-  (let [on-close (fn [] 
-                    (rf/dispatch [:wallet/clean-suggested-routes])
-                    (rf/dispatch [:wallet/clean-selected-collectible])
-                    (rf/dispatch [:navigation/wizard-backward]))]
+  (let [on-close (fn []
+                   (rf/dispatch [:wallet/clean-suggested-routes])
+                   (rf/dispatch [:wallet/clean-selected-collectible])
+                   (rf/dispatch [:navigation/wizard-backward]))]
     (fn [{:keys [theme]}]
       (let [send-transaction-data (rf/sub [:wallet/wallet-send])
             token                 (:token send-transaction-data)

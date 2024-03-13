@@ -44,9 +44,9 @@
                                     (and (= selected-tab :tab/collectibles)
                                          (seq unfiltered-collectibles)))
         on-token-press          (fn [token]
-                                 (rf/dispatch [:wallet/send-select-token
-                                               {:token    token
-                                                :stack-id :screen/wallet.select-asset}]))]
+                                  (rf/dispatch [:wallet/send-select-token
+                                                {:token    token
+                                                 :stack-id :screen/wallet.select-asset}]))]
     [:<>
      (when show-search-input?
        [search-input search-text on-change-text])

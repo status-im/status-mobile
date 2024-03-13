@@ -92,9 +92,9 @@
                                   (let [address (if accounts (:address (first accounts)) address)]
                                     (when-not ens
                                       (rf/dispatch [:wallet/select-send-address
-                                                       {:address   address
-                                                        :recipient local-suggestion
-                                                        :stack-id  :screen/wallet.select-address}]))))
+                                                    {:address   address
+                                                     :recipient local-suggestion
+                                                     :stack-id  :screen/wallet.select-address}]))))
                  :active-state? false}]
       (cond
         (= type types/saved-address)
@@ -152,11 +152,11 @@
                                        {:accessibility-label :continue-button
                                         :type                :primary
                                         :disabled?           (not valid-ens-or-address?)
-                                        :on-press           #(rf/dispatch
-                                                              [:wallet/select-send-address
-                                                               {:address @input-value
-                                                                :stack-id
-                                                                :screen/wallet.select-address}])
+                                        :on-press            #(rf/dispatch
+                                                               [:wallet/select-send-address
+                                                                {:address @input-value
+                                                                 :stack-id
+                                                                 :screen/wallet.select-address}])
                                         :customization-color color}
                                        (i18n/label :t/continue)])}
          [quo/page-top

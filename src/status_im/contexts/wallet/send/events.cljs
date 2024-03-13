@@ -65,9 +65,10 @@
               (assoc-in [:wallet :ui :send :to-address] to-address)
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
-     :fx [[:dispatch
-               [:wallet/wizard.send-forward {:current-screen stack-id
-                                              :start-flow?      start-flow?}]]]})))
+      :fx [[:dispatch
+            [:wallet/wizard.send-forward
+             {:current-screen stack-id
+              :start-flow?    start-flow?}]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -80,9 +81,11 @@
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
-         [:dispatch [:wallet/wizard.send-forward {:current-screen stack-id
-                                                   :start-flow? start-flow?}]]
-]}))
+         [:dispatch
+          [:wallet/wizard.send-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?}]]
+        ]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
@@ -111,8 +114,10 @@
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch [:wallet/wizard.send-forward {:current-screen stack-id
-                                                   :start-flow? start-flow?}]]]}))
+    :fx [[:dispatch
+          [:wallet/wizard.send-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?}]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
@@ -297,5 +302,5 @@
    {:fx [[:dispatch
           [:navigation/wizard-forward
            {:current-screen current-screen
-            :start-flow?      start-flow?
+            :start-flow?    start-flow?
             :flow-config    flow-config/send-asset}]]]}))
