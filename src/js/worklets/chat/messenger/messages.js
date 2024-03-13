@@ -19,8 +19,8 @@ export function useMessagesScrolledToThreshold(distanceFromListTop, threshold) {
 
     useAnimatedReaction(function () {
 	return distanceFromListTop.value <= threshold;
-    }, function (current, previous) {
-	if(current !== previous && current !== scrolledToThreshold) {
+    }, function (current) {
+	if(current !== scrolledToThreshold) {
 	    runOnJS(setScrolledToThreshold)(current)
 	}
     }, [scrolledToThreshold])

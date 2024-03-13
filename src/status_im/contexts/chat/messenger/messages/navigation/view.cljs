@@ -112,6 +112,8 @@
         top-insets                           (safe-area/get-top)
         top-bar-height                       messages.constants/top-bar-height
         navigation-view-height               (+ top-bar-height top-insets)
+        navigation-buttons-opacity           (worklets/navigation-buttons-complete-opacity
+                                              chat-screen-layout-calculations-complete?)
         reached-threshold?                   (messages.worklets/use-messages-scrolled-to-threshold
                                               distance-from-list-top
                                               top-bar-height)
@@ -126,27 +128,29 @@
        :distance-from-list-top distance-from-list-top
        :all-loaded?            all-loaded?}]
      [rn/view {:style (style/header-container top-insets top-bar-height)}
-      [quo/button
-       {:icon-only?          true
-        :type                :grey
-        :background          button-background
-        :size                32
-        :accessibility-label :back-button
-        :on-press            #(rf/dispatch [:navigate-back])}
-       (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]
+      [reanimated/view {:style (style/button-animation-container navigation-buttons-opacity)}
+       [quo/button
+        {:icon-only?          true
+         :type                :grey
+         :background          button-background
+         :size                32
+         :accessibility-label :back-button
+         :on-press            #(rf/dispatch [:navigate-back])}
+        (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]]
       [:f> f-header-content-container
        {:chat                                      chat
         :distance-from-list-top                    distance-from-list-top
         :all-loaded?                               all-loaded?
         :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?}]
-      [quo/button
-       {:icon-only?          true
-        :type                :grey
-        :background          button-background
-        :size                32
-        :accessibility-label :options-button
-        :on-press            (fn []
-                               (rf/dispatch [:dismiss-keyboard])
-                               (rf/dispatch [:show-bottom-sheet
-                                             {:content (fn [] [actions/chat-actions chat true])}]))}
-       :i/options]]]))
+      [reanimated/view {:style (style/button-animation-container navigation-buttons-opacity)}
+       [quo/button
+        {:icon-only?          true
+         :type                :grey
+         :background          button-background
+         :size                32
+         :accessibility-label :options-button
+         :on-press            (fn []
+                                (rf/dispatch [:dismiss-keyboard])
+                                (rf/dispatch [:show-bottom-sheet
+                                              {:content (fn [] [actions/chat-actions chat true])}]))}
+        :i/options]]]]))
