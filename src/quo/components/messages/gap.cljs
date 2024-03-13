@@ -5,8 +5,7 @@
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
 ;;; helpers
 (def themes
@@ -137,24 +136,25 @@
            style
            on-press
            warning-label]}]
-  (let [body-height (reagent/atom nil)]
-    (fn []
-      [rn/view
-       {:on-layout #(reset! body-height (oget % "nativeEvent.layout.height"))
-        :overflow  :hidden
-        :flex      1}
-       [hborder {:type :top}]
-       [hborder {:type :bottom}]
-       [rn/view
-        (merge {:width            "100%"
-                :background-color (get-color :background)
-                :flex-direction   :row
-                :padding          20
-                :padding-left     31
-                :margin-vertical  4}
-               style)
+  (let [[body-height set-body-height] (rn/use-state nil)
+        on-layout                     (rn/use-callback #(set-body-height
+                                                         (oget % "nativeEvent.layout.height")))]
+    [rn/view
+     {:on-layout on-layout
+      :overflow  :hidden
+      :flex      1}
+     [hborder {:type :top}]
+     [hborder {:type :bottom}]
+     [rn/view
+      (merge {:width            "100%"
+              :background-color (get-color :background)
+              :flex-direction   :row
+              :padding          20
+              :padding-left     31
+              :margin-vertical  4}
+             style)
 
-        [timeline]
-        [body timestamp-far timestamp-near on-info-button-pressed on-press warning-label]]
-       [vborder :left body-height]
-       [vborder :right body-height]])))
+      [timeline]
+      [body timestamp-far timestamp-near on-info-button-pressed on-press warning-label]]
+     [vborder :left body-height]
+     [vborder :right body-height]]))
