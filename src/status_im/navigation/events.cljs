@@ -174,7 +174,7 @@
     {:db             (assoc db :view-id view-id)
      :set-view-id-fx view-id}))
 
-(defn wizard-find-next-screen
+(defn- wizard-find-next-screen
   [db flow-config current-screen]
   (->> flow-config
        (filter (fn [{:keys [skip-step? screen-id]}]

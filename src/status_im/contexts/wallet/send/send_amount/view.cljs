@@ -8,7 +8,7 @@
 (defn- view-internal
   []
   [input-amount/view
-   {:current-screen-id :wallet-send-input-amount
+   {:current-screen-id :screen/wallet.send-input-amount
     :button-one-label  (i18n/label :t/confirm)
     :on-navigate-back  (fn []
                          (rf/dispatch [:wallet/clean-selected-token])
