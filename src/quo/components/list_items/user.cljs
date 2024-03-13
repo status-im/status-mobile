@@ -6,7 +6,8 @@
     [quo.components.messages.author.view :as author]
     [quo.components.selectors.selectors.view :as selectors]
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [utils.re-frame :as rf]))
 
 (def container-style
   {:margin-horizontal  8
@@ -19,23 +20,25 @@
 
 (defn action-icon
   [{:keys [type on-press on-check disabled? checked?]} theme]
-  [rn/touchable-opacity
-   {:on-press (when on-press on-press)}
-   (case type
-     :options
-     [icons/icon :i/options
-      {:size  20
-       :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
-     :checkbox
-     [selectors/view
-      {:type                :checkbox
-       :checked?            checked?
-       :accessibility-label :user-list-toggle-check
-       :disabled?           disabled?
-       :on-change           (when on-check on-check)}]
-     :close
-     [text/text "not implemented"]
-     [rn/view])])
+  (let [customization-color (rf/sub [:profile/customization-color])]
+    [rn/touchable-opacity
+     {:on-press (when on-press on-press)}
+     (case type
+       :options
+       [icons/icon :i/options
+        {:size  20
+         :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
+       :checkbox
+       [selectors/view
+        {:type                :checkbox
+         :checked?            checked?
+         :customization-color customization-color
+         :accessibility-label :user-list-toggle-check
+         :disabled?           disabled?
+         :on-change           (when on-check on-check)}]
+       :close
+       [text/text "not implemented"]
+       [rn/view])]))
 
 (defn user
   [{:keys [short-chat-key primary-name secondary-name photo-path online? contact? verified?

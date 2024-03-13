@@ -91,6 +91,7 @@
         contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
+        customization-color               (rf/sub [:profile/customization-color])
         one-contact-selected?             (= selected-contacts-count 1)
         [has-error? set-has-error]        (rn/use-state false)
         render-fn                         (rn/use-callback (fn [item]
@@ -137,11 +138,12 @@
          :render-fn                render-fn
          :scroll-enabled           @scroll-enabled?
          :on-scroll                on-scroll}])
-     [rn/view
-      {:style (style/chat-button-container theme)}
-      (when contacts-selected?
+     (when contacts-selected?
+       [rn/view
+        {:style (style/chat-button-container theme)}
         [quo/button
          {:type                :primary
+          :customization-color customization-color
           :accessibility-label :next-button
           :on-press            (fn []
                                  (if one-contact-selected?
@@ -149,4 +151,4 @@
                                    (rf/dispatch [:navigate-to :new-group])))}
          (if one-contact-selected?
            (i18n/label :t/chat-with {:selected-user primary-name})
-           (i18n/label :t/setup-group-chat))])]]))
+           (i18n/label :t/setup-group-chat))]])]))
