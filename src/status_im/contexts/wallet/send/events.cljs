@@ -294,10 +294,11 @@
 (rf/reg-event-fx
  :navigation/wizard-send-flow
  (fn [_ [{:keys [current-screen is-first?]}]]
-   (rf/dispatch [:navigation/wizard
-                 {:current-screen current-screen
-                  :is-first?      is-first?
-                  :flow-config    flow-config/send-asset}])))
+   {:fx [[:dispatch
+          [:navigation/wizard
+           {:current-screen current-screen
+            :is-first?      is-first?
+            :flow-config    flow-config/send-asset}]]]}))
 
 (rf/reg-event-fx
  :navigation/wizard-back-send-flow
@@ -316,6 +317,7 @@
                                           (rf/dispatch [:wallet/clean-suggested-routes])
                                           (rf/dispatch [:wallet/clean-selected-collectible]))
        nil)
-     (if (= (count stack) 1)
-       (rf/dispatch [:navigate-back])
-       (rf/dispatch [:navigate-back-within-stack current-screen])))))
+     {:fx [[:dispatch
+            (if (= (count stack) 1)
+              [:navigate-back]
+              [:navigate-back-within-stack current-screen])]]})))
