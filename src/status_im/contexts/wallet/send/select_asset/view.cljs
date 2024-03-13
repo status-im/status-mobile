@@ -63,7 +63,7 @@
         search-text    (reagent/atom "")
         on-change-text #(reset! search-text %)
         on-change-tab  #(reset! selected-tab %)
-        on-close       #(rf/dispatch [:navigate-back-within-stack :screen/wallet.select-asset])]
+        on-close       #(rf/dispatch [:navigation/wizard-backward])]
     (fn []
       [rn/safe-area-view {:style style/container}
        [account-switcher/view

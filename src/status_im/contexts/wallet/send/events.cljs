@@ -295,29 +295,7 @@
  :navigation/wizard-send-flow
  (fn [_ [{:keys [current-screen is-first?]}]]
    {:fx [[:dispatch
-          [:navigation/wizard
+          [:navigation/wizard-forward
            {:current-screen current-screen
             :is-first?      is-first?
             :flow-config    flow-config/send-asset}]]]}))
-
-(rf/reg-event-fx
- :navigation/wizard-back-send-flow
- (fn [{:keys [db]}]
-   (let [stack          (:modal-view-ids db)
-         current-screen (last stack)]
-     (case current-screen
-       :wallet-select-address           (do
-                                          (rf/dispatch [:wallet/clean-scanned-address])
-                                          (rf/dispatch [:wallet/clean-local-suggestions])
-                                          (rf/dispatch [:wallet/clean-selected-token])
-                                          (rf/dispatch [:wallet/clean-send-address])
-                                          (rf/dispatch [:wallet/select-address-tab nil]))
-       :wallet-select-asset             (rf/dispatch [:wallet/clean-selected-token])
-       :wallet-transaction-confirmation (do
-                                          (rf/dispatch [:wallet/clean-suggested-routes])
-                                          (rf/dispatch [:wallet/clean-selected-collectible]))
-       nil)
-     {:fx [[:dispatch
-            (if (= (count stack) 1)
-              [:navigate-back]
-              [:navigate-back-within-stack current-screen])]]})))

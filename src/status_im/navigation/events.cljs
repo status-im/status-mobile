@@ -183,10 +183,20 @@
                  flow-config)))
 
 (rf/reg-event-fx
- :navigation/wizard
+ :navigation/wizard-forward
  (fn [{:keys [db]} [{:keys [current-screen flow-config is-first?]}]]
    (let [next-screen (navigate-wizard-next-screen db flow-config current-screen)]
      {:fx [[:dispatch
             (if is-first?
               [:open-modal (:screen-id next-screen)]
               [:navigate-to-within-stack [(:screen-id next-screen) current-screen]])]]})))
+
+(rf/reg-event-fx
+ :navigation/wizard-backward
+ (fn [{:keys [db]}]
+   (let [stack          (:modal-view-ids db)
+         current-screen (last stack)]
+     {:fx [[:dispatch
+            (if (= (count stack) 1)
+              [:navigate-back]
+              [:navigate-back-within-stack current-screen])]]})))

@@ -8,7 +8,11 @@
 (defn- view-internal
   []
   [input-amount/view
-   {:button-one-label (i18n/label :t/confirm)
-    :on-navigate-back #(rf/dispatch [:navigation/wizard-back-send-flow])}])
+   {:current-screen-id :wallet-send-input-amount
+    :button-one-label  (i18n/label :t/confirm)
+    :on-navigate-back  (fn []
+                         (rf/dispatch [:wallet/clean-selected-token])
+                         (rf/dispatch [:wallet/clean-selected-collectible])
+                         (rf/dispatch [:navigation/wizard-backward]))}])
 
 (def view (quo.theme/with-theme view-internal))
