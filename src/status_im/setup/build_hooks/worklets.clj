@@ -1,6 +1,13 @@
 (ns status-im.setup.build-hooks.worklets
-  (:require [clojure.set])
-  (:import (java.io BufferedReader InputStreamReader PrintWriter)))
+  (:require [clojure.set]
+            [clojure.java.io :as io]
+            [cljs.build.api :as b])
+  (:import (java.io BufferedReader InputStreamReader PrintWriter)
+           (javax.script ScriptEngineManager)))
+
+(def engine
+  (doto (.getEngineByName (ScriptEngineManager.) "nashorn")
+    (.eval (io/reader (io/file "babel.min.js")))))
 
 (defn- update-js-output
   [build-state code-processed]
@@ -9,11 +16,13 @@
              build-state
              code-processed))
 
-(defn- get-workletized-code!
+
+(defn- gen-workletized-code!
   [code-seq store-atom]
   (doall
    (pmap (fn [[[_ filepath :as ns-key] js-code]]
            (println "Workletizing:" filepath) ;; TODO: debug remove
+           (def js-code* js-code)
            (try
              (let [command       "node workletize-code.js"
                    process       (.exec (Runtime/getRuntime) command)
@@ -61,5 +70,5 @@
   (let [files-to-workletize  (get-files-to-workletize build-state)
         js-code-with-ns      (map #(get-js-code-with-ns output %) files-to-workletize)
         code-processed-store (atom {})]
-    (get-workletized-code! js-code-with-ns code-processed-store)
+    (gen-workletized-code! js-code-with-ns code-processed-store)
     (update-js-output build-state @code-processed-store)))

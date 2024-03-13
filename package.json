@@ -78,6 +78,7 @@
     "@babel/helper-builder-react-jsx": "^7.20.0",
     "@babel/plugin-transform-block-scoping": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
+    "@babel/preset-es2015": "^7.0.0-beta.53",
     "@babel/preset-react": "^7.18.6",
     "@babel/register": "7.0.0",
     "@jest/globals": "^25.1.0",
