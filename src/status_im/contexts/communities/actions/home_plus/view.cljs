@@ -7,15 +7,22 @@
   []
   [quo/action-drawer
    [[{:icon                :i/communities
-      :accessibility-label :create-closed-community
-      :label               "Create closed community (only for testing)"
-      :on-press            #(rf/dispatch [:fast-create-community/create-closed-community])}
-     {:icon                :i/communities
       :accessibility-label :create-open-community
-      :label               "Create open community (only for testing)"
-      :on-press            #(rf/dispatch [:fast-create-community/create-open-community])}
+      :label               "Create Open community (only for testing)"
+      :on-press            #(rf/dispatch [:e2e/create-open-community])}
+     {:icon                :i/communities
+      :accessibility-label :create-closed-community
+      :label               "Create Closed community (only for testing)"
+      :on-press            #(rf/dispatch [:e2e/create-closed-community])}
+     {:icon                :i/communities
+      :accessibility-label :create-admin-and-member-community
+      :label               "Create Admin and Member community (only for testing)"
+      :on-press            #(rf/dispatch [:e2e/create-admin-and-member-community])}
+     {:icon                :i/communities
+      :accessibility-label :create-snt-admin-community
+      :label               "Create SNT Admin community (only for testing)"
+      :on-press            #(rf/dispatch [:e2e/create-snt-admin-community])}
      {:icon                :i/communities
       :accessibility-label :create-token-gated-community
-      :label               "Create token-gated community (only for testing)"
-      :on-press            #(rf/dispatch
-                             [:fast-create-community/create-token-gated-community])}]]])
+      :label               "Create Token Gated community (only for testing)"
+      :on-press            #(rf/dispatch [:e2e/create-token-gated-community])}]]])

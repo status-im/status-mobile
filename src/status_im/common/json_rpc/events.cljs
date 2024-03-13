@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [promesa.core :as promesa]
     [re-frame.core :as re-frame]
     [react-native.background-timer :as background-timer]
     [taoensso.timbre :as log]
@@ -30,6 +31,14 @@
                                       updated-delay)))
     on-error))
 
+(defn- handle-rpc-response
+  [callback deferred promise-resolution-fn result]
+  (when callback
+    (if (vector? callback)
+      (rf/dispatch (conj callback result))
+      (callback result)))
+  (promise-resolution-fn deferred result))
+
 (defn call
   "Call private RPC endpoint.
 
@@ -57,7 +66,8 @@
   will be used.
   "
   [{:keys [method params on-success on-error js-response] :as arg}]
-  (let [params   (or params [])
+  (let [deferred (promesa/deferred)
+        params   (or params [])
         on-error (or on-error
                      (on-error-retry call arg)
                      #(log/warn :json-rpc/error method :error % :params params))]
@@ -68,23 +78,15 @@
                             :params  params})
      (fn [raw-response]
        (if (string/blank? raw-response)
-         (let [error {:message "Blank response"}]
-           (if (vector? on-error)
-             (rf/dispatch (conj on-error error))
-             (on-error error)))
+         (handle-rpc-response on-error deferred promesa/reject! {:message "Blank response"})
          (let [^js response-js (transforms/json->js raw-response)]
            (if-let [error (.-error response-js)]
-             (let [error (transforms/js->clj error)]
-               (if (vector? on-error)
-                 (rf/dispatch (conj on-error error))
-                 (on-error error)))
-             (when on-success
-               (let [result (if js-response
-                              (.-result response-js)
-                              (transforms/js->clj (.-result response-js)))]
-                 (if (vector? on-success)
-                   (rf/dispatch (conj on-success result))
-                   (on-success result)))))))))))
+             (handle-rpc-response on-error deferred promesa/reject! (transforms/js->clj error))
+             (let [result (if js-response
+                            (.-result response-js)
+                            (transforms/js->clj (.-result response-js)))]
+               (handle-rpc-response on-success deferred promesa/resolve! result)))))))
+    deferred))
 
 (re-frame/reg-fx
  :json-rpc/call

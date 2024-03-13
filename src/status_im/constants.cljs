@@ -71,6 +71,9 @@
 (def ^:const timeline-chat-type 5)
 (def ^:const community-chat-type 6)
 
+(def ^:const community-permissions-auto-accept 1)
+(def ^:const community-permissions-manual-accept 3)
+
 (def ^:const contact-request-message-state-none 0)
 (def ^:const contact-request-message-state-pending 1)
 (def ^:const contact-request-message-state-accepted 2)
@@ -167,6 +170,8 @@
 
 (def ^:const community-token-type-erc20 1)
 (def ^:const community-token-type-erc721 2)
+
+(def ^:const sepolia-stt-contract-address "0xe452027cdef746c7cd3db31cb700428b16cd8e51")
 
 ;; Community rules for joining
 (def ^:const community-rule-ens-only "ens-only")
