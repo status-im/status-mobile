@@ -58,35 +58,43 @@
       (re-frame/dispatch [:deselect-contact public-key])
       (if (= contacts-selection-limit
              selected-contacts-count)
-        (rf/dispatch
-         [:toasts/upsert
-          {:id   :remove-nickname
-           :type :negative
-           :text (i18n/label :t/new-group-limit
-                             {:max-contacts
-                              contacts-selection-limit})}])
+        (do
+          (rf/dispatch
+           [:toasts/upsert
+            {:id   :remove-nickname
+             :type :negative
+             :text (i18n/label :t/new-group-limit
+                               {:max-contacts
+                                contacts-selection-limit})}])
+          true)
         (re-frame/dispatch [:select-contact public-key])))))
 
 (defn contact-item-render
-  [_]
-  (fn [{:keys [public-key] :as item}]
-    (let [user-selected? (rf/sub [:is-contact-selected? public-key])
-          on-toggle      #(toggle-selection public-key user-selected?)]
-      [contact-list-item/contact-list-item
-       {:on-press                on-toggle
-        :allow-multiple-presses? true
-        :accessory               {:type     :checkbox
-                                  :checked? user-selected?
-                                  :on-check on-toggle}}
-       item])))
+  [{:keys [public-key] :as item} set-has-error]
+  (let [user-selected? (rf/sub [:is-contact-selected? public-key])
+        on-toggle      (fn []
+                         (-> public-key
+                             (toggle-selection user-selected?)
+                             boolean
+                             set-has-error))]
+    [contact-list-item/contact-list-item
+     {:on-press                on-toggle
+      :allow-multiple-presses? true
+      :accessory               {:type     :checkbox
+                                :checked? user-selected?
+                                :on-check on-toggle}}
+     item]))
 
 (defn- view-internal
   [{:keys [scroll-enabled? on-scroll close theme]}]
   (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
-        has-reached-max-contact           (> selected-contacts-count contacts-selection-limit)
         selected-contacts                 (rf/sub [:group/selected-contacts])
         one-contact-selected?             (= selected-contacts-count 1)
+        [has-error? set-has-error]        (rn/use-state false)
+        render-fn                         (rn/use-callback (fn [item]
+                                                             (contact-item-render item set-has-error))
+                                                           [set-has-error])
         contacts-selected?                (pos? selected-contacts-count)
         {:keys [primary-name public-key]} (when one-contact-selected?
                                             (rf/sub [:contacts/contact-by-identity
@@ -109,7 +117,7 @@
           {:size   :paragraph-2
            :weight :regular
            :style  {:margin-bottom 2
-                    :color         (if has-reached-max-contact
+                    :color         (if has-error?
                                      (colors/theme-colors colors/danger-50 colors/danger-60 theme)
                                      (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))}}
           (i18n/label :t/selected-count-from-max
@@ -123,13 +131,12 @@
          :sections                       (rf/sub [:contacts/filtered-active-sections])
          :render-section-header-fn       contact-list/contacts-section-header
          :content-container-style        {:padding-bottom 70}
-         :render-fn                      contact-item-render
+         :render-fn                      render-fn
          :scroll-enabled                 @scroll-enabled?
          :on-scroll                      on-scroll}])
      (when contacts-selected?
        [quo/button
         {:type                :primary
-         :disabled?           has-reached-max-contact
          :accessibility-label :next-button
          :container-style     style/chat-button
          :on-press            (fn []
