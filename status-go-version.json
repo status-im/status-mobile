@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.176.9",
-    "commit-sha1": "a3ad05db58b8af20bf6b7ab852f8603212abac4e",
-    "src-sha256": "10c05kgihczbams3i8fkfm1mh5m61bnsjh255c22m4awc073rg12"
+    "version": "seanstrom/add-and-persist-bio-in-contacts",
+    "commit-sha1": "dfe23f6336c086a0473e7b403806a7ca033504c2",
+    "src-sha256": "121l96h27irxpmajp9y518c7dhaddhwy11nm4hsflk8aqlr44zm5"
 }
