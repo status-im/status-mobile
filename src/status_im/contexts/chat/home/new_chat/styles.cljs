@@ -14,7 +14,7 @@
   [theme]
   {:position           :absolute
    :bottom             0
-   :padding-bottom     (+ 12 (safe-area/get-bottom))
+   :padding-bottom     33
    :background-color   (colors/theme-colors colors/white-opa-70 colors/neutral-95-opa-70 theme)
    :padding-top        12
    :padding-horizontal 20
