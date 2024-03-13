@@ -11,6 +11,5 @@
      [:networks [:* [:map [:source :schema.common/image-source]]]]
      [:on-press {:optional true} [:maybe fn?]]
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-     [:state {:optional true} [:enum :default :active :selected]]
-     [:theme :schema.common/theme]]]
+     [:state {:optional true} [:enum :default :active :selected]]]]
    :any])
