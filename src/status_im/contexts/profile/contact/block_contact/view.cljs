@@ -18,7 +18,7 @@
         full-name                             (profile.utils/displayed-name contact)
         profile-picture                       (profile.utils/photo contact)
         [remove-contact? set-remove-contact?] (rn/use-state false)
-        on-remove-change                      (rn/use-callback #(set-remove-contact? %))
+        on-remove-toggle                      (rn/use-callback #(set-remove-contact? not) [])
         on-block-press                        (rn/use-callback
                                                (fn []
                                                  (rf/dispatch [:toasts/upsert
@@ -54,11 +54,11 @@
       (when (= constants/contact-request-state-mutual contact-request-state)
         [rn/pressable
          {:style    style/checkbox-wrapper
-          :on-press #(on-remove-change (not remove-contact?))}
+          :on-press on-remove-toggle}
          [quo/selectors
           {:type      :checkbox
            :checked?  remove-contact?
-           :on-change on-remove-change}]
+           :on-change on-remove-toggle}]
          [quo/text (i18n/label :t/remove-contact)]])]
      [quo/bottom-actions
       {:actions          :two-actions
