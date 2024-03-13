@@ -55,7 +55,6 @@
         on-block-contact   (rn/use-callback #(rf/dispatch [:show-bottom-sheet
                                                            {:content
                                                             (fn [] [block-contact/view])}]))]
-    (println blocked?)
     [quo/action-drawer
      [(concat
        [{:icon                :i/edit
