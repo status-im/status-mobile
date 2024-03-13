@@ -184,10 +184,10 @@
 
 (rf/reg-event-fx
  :navigation/wizard-forward
- (fn [{:keys [db]} [{:keys [current-screen flow-config is-first?]}]]
+ (fn [{:keys [db]} [{:keys [current-screen flow-config start-flow?]}]]
    (let [next-screen (navigate-wizard-next-screen db flow-config current-screen)]
      {:fx [[:dispatch
-            (if is-first?
+            (if start-flow?
               [:open-modal (:screen-id next-screen)]
               [:navigate-to-within-stack [(:screen-id next-screen) current-screen]])]]})))
 
