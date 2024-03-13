@@ -174,7 +174,7 @@
     {:db             (assoc db :view-id view-id)
      :set-view-id-fx view-id}))
 
-(defn navigate-wizard-next-screen
+(defn wizard-find-next-screen
   [db flow-config current-screen]
   (first (filter (fn [screen]
                    (let [skip-step (:skip-step? screen)]
@@ -185,7 +185,7 @@
 (rf/reg-event-fx
  :navigation/wizard-forward
  (fn [{:keys [db]} [{:keys [current-screen flow-config start-flow?]}]]
-   (let [next-screen (navigate-wizard-next-screen db flow-config current-screen)]
+   (let [next-screen (wizard-find-next-screen db flow-config current-screen)]
      {:fx [[:dispatch
             (if start-flow?
               [:open-modal (:screen-id next-screen)]
