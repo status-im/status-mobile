@@ -3,7 +3,7 @@
     [quo.foundations.colors :as colors]))
 
 (def ^:private themes
-  {:light {:default      {:bg     colors/white
+  {:light {:default      {:bg     colors/neutral-5
                           :border colors/neutral-20
                           :icon   colors/neutral-50
                           :text   colors/neutral-100}

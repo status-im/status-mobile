@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [status-im.constants :as constants]
             [status-im.contexts.profile.contact.contact-request.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -11,8 +12,8 @@
   []
   (let [{:keys [public-key customization-color]
          :as   profile}       (rf/sub [:contacts/current-contact])
-        ;; TODO: remove :blue when #18733 merged.
-        customization-color   (or customization-color :blue)
+        ;; TODO: remove default color when #18733 merged.
+        customization-color   (or customization-color constants/profile-default-color)
         full-name             (profile.utils/displayed-name profile)
         profile-picture       (profile.utils/photo profile)
         [message set-message] (rn/use-state "")
