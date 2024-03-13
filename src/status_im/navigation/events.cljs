@@ -155,22 +155,6 @@
               #(when-not hide?
                  (if (seq sheets) (hide-bottom-sheet %) {:show-bottom-sheet nil})))))
 
-;; LEGACY (should be removed in status 2.0)
-(rf/defn hide-signing-sheet
-  {:events [:hide-signing-sheet]}
-  [_]
-  {:hide-signing-sheet nil})
-
-(rf/defn set-multiaccount-root
-  {:events [:set-multiaccount-root]}
-  [{:keys [db]}]
-  (let [key-uid          (get-in db [:profile/login :key-uid])
-        keycard-account? (boolean (get-in db
-                                          [:profile/profiles-overview
-                                           key-uid
-                                           :keycard-pairing]))]
-    {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))
-
 (rf/defn dismiss-all-overlays
   {:events [:dismiss-all-overlays]}
   [_]
@@ -178,7 +162,6 @@
                 [:hide-visibility-status-popover]
                 [:hide-bottom-sheet]
                 [:bottom-sheet-hidden]
-                [:hide-signing-sheet]
                 [:bottom-sheet/hide-old-navigation-overlay]
                 [:toasts/close-all-toasts]]})
 

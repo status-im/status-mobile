@@ -1,9 +1,6 @@
 (ns status-im.navigation.view
   (:require
     [legacy.status-im.bottom-sheet.sheets :as bottom-sheets-old]
-    [legacy.status-im.ui.screens.popover.views :as popover]
-    [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
-    [legacy.status-im.ui.screens.signing.views :as signing]
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
     [react-native.core :as rn]
@@ -111,29 +108,15 @@
 
 (def toasts (reagent/reactify-component toasts/toasts))
 
+(def alert-banner
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "alert-banner" @reloader/cnt)}
+     [theme/provider {:theme :dark}
+      [alert-banner/view]])
+   functional-compiler))
+
 ;; LEGACY (should be removed in status 2.0)
-(def popover-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "popover" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [popover/popover]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])
-   functional-compiler))
-
-(def visibility-status-popover-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "visibility-status-popover" @reloader/cnt)}
-     [rn/view
-      [inactive]
-      [visibility-status-views/visibility-status-popover]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])
-   functional-compiler))
-
 (def sheet-comp-old
   (reagent/reactify-component
    (fn []
@@ -141,23 +124,4 @@
      [:<>
       [inactive]
       [bottom-sheets-old/bottom-sheet]])
-   functional-compiler))
-
-(def signing-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "signing-sheet" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [signing/signing]
-      (when js/goog.DEBUG
-        [reloader/reload-view])])
-   functional-compiler))
-
-(def alert-banner
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "alert-banner" @reloader/cnt)}
-     [theme/provider {:theme :dark}
-      [alert-banner/view]])
    functional-compiler))
