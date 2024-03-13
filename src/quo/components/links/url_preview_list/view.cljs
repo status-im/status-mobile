@@ -32,7 +32,7 @@
   [rn/view {:style style/url-preview-separator}])
 
 (defn- item-component
-  [{:keys [title body loading? logo]} _ _
+  [{:keys [title body loading? logo url]} _ _
    {:keys [width on-clear loading-message container-style]}]
   [url-preview/view
    {:logo            logo
@@ -41,7 +41,8 @@
     :loading?        loading?
     :loading-message loading-message
     :on-clear        on-clear
-    :container-style (merge container-style {:width width})}])
+    :container-style (merge container-style {:width width})
+    :url             url}])
 
 (defn- f-view
   []

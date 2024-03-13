@@ -60,8 +60,8 @@
    :padding-horizontal 12
    :padding-top        10
    :padding-bottom     12
-   :height             (if (= :message size) 245 266)
-   :width              (if (= :message size) 295 335)})
+   :width              (if (= :message size) 295 335)
+   :flex               1})
 
 (def header-container
   {:flex-direction :row

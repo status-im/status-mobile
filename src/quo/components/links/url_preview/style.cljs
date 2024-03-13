@@ -21,6 +21,7 @@
    :border-radius   12
    :border-style    :dashed
    :align-items     :center
+   :flex-direction  :row
    :justify-content :center
    :align-self      :stretch
    :padding         horizontal-padding

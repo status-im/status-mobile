@@ -159,3 +159,19 @@
           :pinned-at  nil
           :pinned-by  :test-user}]
         (rf/sub [sub-name :0xChat])))))
+
+(def message-with-link-previews
+  {:0xChat {:0x01 {:content        {:response-to nil}
+                   :quoted-message nil
+                   :message-id     "0x1"
+                   :from           :xyz
+                   :timestamp-str  "14:00"
+                   :content-type   constants/content-type-text
+                   :chat-id        :0xChat
+                   :link-previews  [{:dummy-link-preview 1}]}}})
+
+(h/deftest-sub :chats/message-link-previews?
+  [sub-name]
+  (testing "It returns true if link previews exists in a message"
+    (swap! rf-db/app-db assoc :messages message-with-link-previews)
+    (is (rf/sub [sub-name :0xChat :0x01]))))
