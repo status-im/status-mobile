@@ -10,14 +10,23 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn on-add-nickname
+  []
+  (rf/dispatch [:show-bottom-sheet
+                {:content
+                 (fn [] [add-nickname/view])}]))
+
+(defn on-block-contact
+  []
+  (rf/dispatch [:show-bottom-sheet
+                {:content
+                 (fn [] [block-contact/view])}]))
+
 (defn view
   []
   (let [{:keys [nickname public-key contact-request-state blocked?]
          :as   contact}    (rf/sub [:contacts/current-contact])
         full-name          (profile.utils/displayed-name contact)
-        on-add-nickname    (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                           {:content
-                                                            (fn [] [add-nickname/view])}]))
         on-remove-nickname (rn/use-callback
                             (fn []
                               (rf/dispatch [:hide-bottom-sheet])
@@ -51,10 +60,7 @@
                                                         (string/lower-case)
                                                         (str full-name " "))}])
                               (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
-                            [public-key full-name])
-        on-block-contact   (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                           {:content
-                                                            (fn [] [block-contact/view])}]))]
+                            [public-key full-name])]
     [quo/action-drawer
      [(concat
        [{:icon                :i/edit

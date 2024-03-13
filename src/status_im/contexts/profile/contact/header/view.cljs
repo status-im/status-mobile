@@ -13,20 +13,26 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn on-contact-request
+  []
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn [] [contact-request/view])}]))
+
+(defn on-contact-review
+  []
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn [] [contact-review/view])}]))
+
 (defn view
   [{:keys [scroll-y]}]
   (let [{:keys [public-key customization-color ens-name
                 emoji-hash bio blocked? contact-request-state]
-         :as   profile}     (rf/sub [:contacts/current-contact])
+         :as   contact}     (rf/sub [:contacts/current-contact])
         customization-color (or customization-color :blue)
-        full-name           (profile.utils/displayed-name profile)
-        profile-picture     (profile.utils/photo profile)
+        full-name           (profile.utils/displayed-name contact)
+        profile-picture     (profile.utils/photo contact)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
         theme               (quo.theme/use-theme-value)
-        on-contact-request  (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                            {:content (fn [] [contact-request/view])}]))
-        on-contact-review   (rn/use-callback #(rf/dispatch [:show-bottom-sheet
-                                                            {:content (fn [] [contact-review/view])}]))
         on-start-chat       (rn/use-callback #(rf/dispatch [:chat.ui/start-chat
                                                             public-key
                                                             ens-name])

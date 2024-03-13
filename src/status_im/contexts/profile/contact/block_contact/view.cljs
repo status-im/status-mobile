@@ -18,6 +18,7 @@
         full-name                             (profile.utils/displayed-name contact)
         profile-picture                       (profile.utils/photo contact)
         [remove-contact? set-remove-contact?] (rn/use-state false)
+        on-remove-change                      (rn/use-callback #(set-remove-contact? %))
         on-block-press                        (rn/use-callback
                                                (fn []
                                                  (rf/dispatch [:toasts/upsert
@@ -30,9 +31,9 @@
                                                                public-key])
                                                  (when remove-contact?
                                                    (rf/dispatch [:contact.ui/remove-contact-pressed
-                                                                 contact]))
+                                                                 {:public-key public-key}]))
                                                  (on-close))
-                                               [remove-contact? contact full-name])]
+                                               [remove-contact? public-key full-name])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag
@@ -53,11 +54,11 @@
       (when (= constants/contact-request-state-mutual contact-request-state)
         [rn/pressable
          {:style    style/checkbox-wrapper
-          :on-press #(set-remove-contact? (not remove-contact?))}
+          :on-press #(on-remove-change (not remove-contact?))}
          [quo/selectors
           {:type      :checkbox
            :checked?  remove-contact?
-           :on-change #(set-remove-contact? %)}]
+           :on-change on-remove-change}]
          [quo/text (i18n/label :t/remove-contact)]])]
      [quo/bottom-actions
       {:actions          :two-actions
