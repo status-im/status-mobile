@@ -66,7 +66,7 @@
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
      :fx [[:dispatch
-               [:navigation/wizard-send-flow {:current-screen stack-id
+               [:wallet/wizard.send-forward {:current-screen stack-id
                                               :start-flow?      start-flow?}]]]})))
 
 (rf/reg-event-fx
@@ -80,7 +80,7 @@
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
-         [:dispatch [:navigation/wizard-send-flow {:current-screen stack-id
+         [:dispatch [:wallet/wizard.send-forward {:current-screen stack-id
                                                    :start-flow? start-flow?}]]
 ]}))
 
@@ -111,7 +111,7 @@
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch [:navigation/wizard-send-flow {:current-screen stack-id
+    :fx [[:dispatch [:wallet/wizard.send-forward {:current-screen stack-id
                                                    :start-flow? start-flow?}]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
@@ -181,7 +181,7 @@
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:navigation/wizard-send-flow {:current-screen :screen/wallet.transaction-confirmation}]]]})))
+            [:wallet/wizard.send-forward {:current-screen :screen/wallet.transaction-confirmation}]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
@@ -292,7 +292,7 @@
                                                  :params request-params}))}]})))
 
 (rf/reg-event-fx
- :navigation/wizard-send-flow
+ :wallet/wizard.send-forward
  (fn [_ [{:keys [current-screen start-flow?]}]]
    {:fx [[:dispatch
           [:navigation/wizard-forward
