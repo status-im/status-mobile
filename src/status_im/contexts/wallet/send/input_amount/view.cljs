@@ -174,11 +174,11 @@
                                     (reagent/flush))))
         on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount]
-                                (let [nav-current-screen-id (rf/sub [:view-id])]
+                                (let [view-id (rf/sub [:view-id])]
                                   ; this check is to prevent effect being triggered when screen is
                                   ; loaded but not being shown to the user (deep in the navigation
                                   ; stack) and avoid undesired behaviors
-                                  (when (= nav-current-screen-id current-screen-id)
+                                  (when (= view-id current-screen-id)
                                     (if-not (or (empty? @input-value)
                                                 (<= input-num-value 0)
                                                 (> input-num-value current-limit-amount))
