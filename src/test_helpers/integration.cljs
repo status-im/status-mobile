@@ -151,7 +151,7 @@
     (p/resolved ::messenger-started)
     (do
       (create-multiaccount!)
-      (-> (wait-for [:messenger-started])
+      (-> (wait-for [:profile.login/messenger-started])
           (.then #(assert-messenger-started))))))
 
 (defn test-async

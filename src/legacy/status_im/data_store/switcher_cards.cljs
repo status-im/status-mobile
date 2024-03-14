@@ -2,6 +2,8 @@
   (:require
     [clojure.set :as set]
     [clojure.walk :as walk]
+    [re-frame.core :as re-frame]
+    [status-im.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
@@ -32,11 +34,11 @@
                     :on-success #()
                     :on-error   #()}]})
 
-(rf/defn fetch-switcher-cards-rpc
-  [_]
-  {:json-rpc/call [{:method     "wakuext_switcherCards"
-                    :params     []
-                    :on-success #(rf/dispatch
-                                  [:shell/switcher-cards-loaded
-                                   (:switcherCards ^js %)])
-                    :on-error   #(log/error "Failed to fetch switcher cards" %)}]})
+(re-frame/reg-fx :switcher-cards/fetch
+ (fn []
+   (json-rpc/call {:method     "wakuext_switcherCards"
+                   :params     []
+                   :on-success #(rf/dispatch
+                                 [:shell/switcher-cards-loaded
+                                  (:switcherCards ^js %)])
+                   :on-error   #(log/error "Failed to fetch switcher cards" %)})))

@@ -7,7 +7,6 @@
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview]
     [status-im.contexts.chat.messenger.messages.transport.events :as messages.transport]
     [status-im.contexts.communities.discover.events]
-    [status-im.contexts.profile.login.events :as profile.login]
     [status-im.contexts.profile.push-notifications.local.events :as local-notifications]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
@@ -37,7 +36,9 @@
         ^js event-js (.-event data)
         type         (.-type data)]
     (case type
-      "node.login"                 (profile.login/login-node-signal cofx (transforms/js->clj event-js))
+      "node.login"                 {:fx [[:dispatch
+                                          [:profile.login/login-node-signal
+                                           (transforms/js->clj event-js)]]]}
       "backup.performed"           {:db (assoc-in db
                                          [:profile/profile :last-backup]
                                          (.-lastBackup event-js))}

@@ -51,4 +51,4 @@
          :icon                :main-icons/delete
          :theme               :accent
          :title               (i18n/label :t/profile-pic-remove)
-         :on-press            #(re-frame/dispatch [:profile.settings/delete-profile-picture nil])}])]))
+         :on-press            #(re-frame/dispatch [:profile.settings/delete-profile-picture])}])]))

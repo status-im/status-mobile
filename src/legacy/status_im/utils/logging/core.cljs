@@ -10,6 +10,7 @@
     [re-frame.core :as re-frame]
     [react-native.mail :as react-native-mail]
     [react-native.platform :as platform]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.log :as log]
     [status-im.config :as config]
     [utils.datetime :as datetime]
@@ -31,11 +32,10 @@
   [{:keys [db]} node-version]
   {:db (assoc db :web3-node-version node-version)})
 
-(rf/defn initialize-web3-client-version
-  {:events [:logging/initialize-web3-client-version]}
-  [_]
-  {:json-rpc/call [{:method     "web3_clientVersion"
-                    :on-success #(re-frame/dispatch [:logging/store-web3-client-version %])}]})
+(re-frame/reg-fx :logging/initialize-web3-client-version
+ (fn []
+   (json-rpc/call {:method     "web3_clientVersion"
+                   :on-success [:logging/store-web3-client-version]})))
 
 (defn extract-url-components
   [address]

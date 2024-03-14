@@ -6,7 +6,6 @@
     [re-frame.core :as re-frame]
     [status-im.contexts.chat.contacts.events :as contacts-store]
     [status-im.contexts.chat.messenger.messages.list.events :as message-list]
-    [status-im.contexts.shell.activity-center.events :as activity-center]
     [status-im.navigation.events :as navigation]
     [utils.re-frame :as rf]))
 
@@ -45,16 +44,16 @@
     (apply
      rf/merge
      cofx
-     {:db                                                     (->
-                                                                db
-                                                                (update :chats dissoc public-key)
-                                                                (update :chats-home-list disj public-key)
-                                                                (assoc-in [:contacts/contacts public-key
-                                                                           :added?]
-                                                                          false))
-      :dispatch                                               [:shell/close-switcher-card public-key]
-      :effects/push-notifications-clear-message-notifications [public-key]}
-     (activity-center/notifications-fetch-unread-count)
+     {:db (->
+            db
+            (update :chats dissoc public-key)
+            (update :chats-home-list disj public-key)
+            (assoc-in [:contacts/contacts public-key
+                       :added?]
+                      false))
+      :fx [[:activity-center.notifications/fetch-unread-count]
+           [:effects/push-notifications-clear-message-notifications [public-key]]
+           [:dispatch [:shell/close-switcher-card public-key]]]}
      fxs)))
 
 (rf/defn block-contact

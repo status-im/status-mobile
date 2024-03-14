@@ -8,13 +8,17 @@
     status-im.common.emoji-picker.events
     status-im.common.font.events
     [status-im.common.json-rpc.events]
+    status-im.common.log
     status-im.common.password-authentication.events
     status-im.common.signals.events
     status-im.common.theme.events
     [status-im.common.toasts.events]
+    status-im.common.universal-links
+    status-im.contexts.chat.contacts.events
     status-im.contexts.chat.events
     [status-im.contexts.chat.home.add-new-contact.events]
     status-im.contexts.chat.messenger.composer.events
+    status-im.contexts.chat.messenger.messages.link-preview.events
     status-im.contexts.chat.messenger.photo-selector.events
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events
@@ -29,6 +33,7 @@
     status-im.contexts.wallet.send.events
     status-im.contexts.wallet.signals
     [status-im.db :as db]
+    status-im.navigation.events
     [utils.re-frame :as rf]))
 
 (rf/defn start-app

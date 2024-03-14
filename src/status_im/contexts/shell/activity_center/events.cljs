@@ -4,6 +4,7 @@
     [legacy.status-im.data-store.chats :as data-store.chats]
     [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.toasts.events :as toasts]
     [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.notification-types :as types]
@@ -408,6 +409,17 @@
                           (constantly processed)
                           #(concat % processed))))}))
 
+(re-frame/reg-fx :activity-center.notifications/fetch-pending-contact-requests-fx
+ (fn []
+   (json-rpc/call {:method     "wakuext_activityCenterNotifications"
+                   :params     [{:cursor        start-or-end-cursor
+                                 :limit         20
+                                 :activityTypes [types/contact-request]
+                                 :readType      (->rpc-read-type :unread)}]
+                   :on-success [:activity-center.notifications/fetch-pending-contact-requests-success]
+                   :on-error   [:activity-center.notifications/fetch-error types/contact-request
+                                :unread]})))
+
 (rf/defn notifications-fetch-pending-contact-requests
   "Unread contact requests are, in practical terms, the same as pending contact
   requests in the Activity Center, because pending contact requests are always
@@ -419,14 +431,7 @@
   {:events [:activity-center.notifications/fetch-pending-contact-requests]}
   [{:keys [db]}]
   {:db (assoc-in db [:activity-center :loading?] true)
-   :json-rpc/call
-   [{:method     "wakuext_activityCenterNotifications"
-     :params     [{:cursor        start-or-end-cursor
-                   :limit         20
-                   :activityTypes [types/contact-request]
-                   :readType      (->rpc-read-type :unread)}]
-     :on-success [:activity-center.notifications/fetch-pending-contact-requests-success]
-     :on-error   [:activity-center.notifications/fetch-error types/contact-request :unread]}]})
+   :fx [[:activity-center.notifications/fetch-pending-contact-requests-fx]]})
 
 (rf/defn notifications-fetch-pending-contact-requests-success
   {:events [:activity-center.notifications/fetch-pending-contact-requests-success]}
@@ -448,14 +453,12 @@
 
 ;;;; Unread counters
 
-(rf/defn update-seen-state
-  {:events [:activity-center/update-seen-state]}
-  [_]
-  {:json-rpc/call
-   [{:method     "wakuext_hasUnseenActivityCenterNotifications"
-     :params     []
-     :on-success [:activity-center/update-seen-state-success]
-     :on-error   [:activity-center/update-seen-state-error]}]})
+(re-frame/reg-fx :activity-center/update-seen-state
+ (fn []
+   (json-rpc/call [{:method     "wakuext_hasUnseenActivityCenterNotifications"
+                    :params     []
+                    :on-success [:activity-center/update-seen-state-success]
+                    :on-error   [:activity-center/update-seen-state-error]}])))
 
 (rf/defn update-seen-state-success
   {:events [:activity-center/update-seen-state-success]}
@@ -491,6 +494,14 @@
   (log/error "Failed to mark Activity Center as seen"
              {:error error
               :event :activity-center/mark-as-seen}))
+
+(re-frame/reg-fx :activity-center.notifications/fetch-unread-count
+ (fn []
+   (json-rpc/call {:method     "wakuext_activityCenterNotificationsCount"
+                   :params     [{:activityTypes types/all-supported
+                                 :readType      (->rpc-read-type :unread)}]
+                   :on-success [:activity-center.notifications/fetch-unread-count-success]
+                   :on-error   [:activity-center.notifications/fetch-unread-count-error]})))
 
 (rf/defn notifications-fetch-unread-count
   {:events [:activity-center.notifications/fetch-unread-count]}
