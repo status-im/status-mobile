@@ -106,4 +106,9 @@
   (navigation/register-component
    "bottom-sheet-old"
    (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp-old))
-   (fn [] views/sheet-comp-old)))
+   (fn [] views/sheet-comp-old))
+
+  (navigation/register-component
+   "popover"
+   (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
+   (fn [] views/popover-comp)))
