@@ -54,7 +54,7 @@
  (fn [{:keys [db]} [{:keys [address token? recipient stack-id]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          test-net?           (get-in db [:profile/profile :test-networks-enabled?])
-         goerli-enabled?     (get-in db [:profile/profile :goerli-enabled?])
+         goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
          prefix-seq          (string/split prefix #":")
          selected-networks   (->> prefix-seq
                                   (remove string/blank?)
