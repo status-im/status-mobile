@@ -26,7 +26,8 @@
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.address :as address]
     [utils.datetime :as datetime]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [react-native.fast-image :as fast-image]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -112,6 +113,29 @@
 
       constants/content-type-system-message-mutual-event-sent
       [system-message-contact-request message-data :contact-request])))
+
+(defn bridge-message-content
+  [{:keys [bridge-message timestamp]}]
+  (let [{:keys [user-avatar user-name bridge-name content]} bridge-message]
+    [rn/view
+     {:style {:flex-direction     :row
+              :padding-horizontal 12
+              :padding-top        4}}
+     [fast-image/fast-image
+      {:source {:uri user-avatar}
+       :style  {:width         32
+                :margin-top    4
+                :border-radius 16
+                :height        32}}]
+     [rn/view {:margin-left 8 :flex 1}
+      [quo/author
+       {:primary-name   (str user-name)
+        :short-chat-key (str "Bridged from " bridge-name)
+        :time-str       (datetime/timestamp->time timestamp)}]
+      [quo/text
+       {:size  :paragraph-1
+        :style {:line-height 22.75}}
+       content]]]))
 
 (declare on-long-press)
 
@@ -283,6 +307,9 @@
                              context
                              keyboard-shown?))
       context]
+
+     (= content-type constants/content-type-bridge-message)
+     [bridge-message-content message-data]
 
      :else
      [user-message-content
