@@ -52,20 +52,13 @@
         :style  (style/heading community)}
        (i18n/label :t/pinned-messages)]
       (when community
-        [rn/view {:style (style/heading-container)}
-         [fast-image/fast-image
-          {:source (community-avatar community-images)
-           :style  {:width         20
-                    :height        20
-                    :border-radius 20}}]
-         [rn/text {:style (style/heading-text)} (:name community)]
-         [quo/icon
-          :i/chevron-right
-          {:color (colors/theme-colors colors/neutral-60 colors/neutral-30)
-           :size  12}]
-         [rn/text
-          {:style (style/chat-name-text)}
-          (str "# " (:chat-name current-chat))]])]
+        [quo/context-tag
+         {:type            :channel
+          :size            24
+          :container-style style/community-tag-container
+          :community-logo  (community-avatar community-images)
+          :community-name  (:name community)
+          :channel-name    (:chat-name current-chat)}])]
      (if (pos? (count pinned))
        [rn/flat-list
         {:data        pinned
