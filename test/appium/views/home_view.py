@@ -412,9 +412,12 @@ class HomeView(BaseView):
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
         if remove_from_contacts and chat.profile_remove_from_contacts.is_element_displayed():
             chat.profile_remove_from_contacts.click()
-        chat.profile_add_to_contacts_button.click()
+        chat.profile_send_contact_request_button.click()
+        chat.contact_request_message_input.send_keys("hi")
+        chat.confirm_send_contact_request_button.click()
         if nickname:
             chat.set_nickname(nickname)
+        chat.close_profile_button.click()
         self.navigate_back_to_home_view()
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
@@ -433,19 +436,6 @@ class HomeView(BaseView):
         chat.create_button.click()
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat
-
-    def send_contact_request_via_bottom_sheet(self, key: str):
-        chat = self.get_chat_view()
-        self.new_chat_button.click()
-        self.add_a_contact_chat_bottom_sheet_button.click()
-        chat.public_key_edit_box.click()
-        chat.public_key_edit_box.send_keys(key)
-        chat.element_by_translation_id("user-found").wait_for_visibility_of_element()
-        if not chat.view_profile_new_contact_button.is_element_displayed():
-            chat.click_system_back_button()
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts_button)
-        chat.profile_add_to_contacts_button.click()
-        self.navigate_back_to_home_view()
 
     def create_community_e2e(self, name: str, description="some_description", set_image=False,
                              file_name='sauce_logo.png',

@@ -38,7 +38,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
             self.channel.chat_message_input.clear()
             self.channel.send_message(url)
             self.channel.chat_element_by_text(url).click_on_link_inside_message_body()
-            if self.channel.profile_add_to_contacts_button.is_element_displayed(10):
+            if self.channel.profile_send_contact_request_button.is_element_displayed(10):
                 username_text = self.profile_view.default_username_text.text
                 if not (username_text.endswith(url[-6:]) or username_text == text):
                     self.errors.append("Incorrect username is shown for profile url %s" % url)
@@ -86,7 +86,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 name_is_shown = shown_name_text == text or shown_name_text.endswith(link[-6:])
             else:
                 name_is_shown = shown_name_text.endswith(link[-6:])
-            if not self.channel.profile_add_to_contacts_button.is_element_displayed(10) or not name_is_shown:
+            if not self.channel.profile_send_contact_request_button.is_element_displayed(10) or not name_is_shown:
                 self.errors.append("Profile was not opened by the profile deep link %s" % link)
             self.browser_view.click_system_back_button()
 
