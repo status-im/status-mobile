@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.home.actions.view :as actions]
+    [status-im.common.not-implemented :as not-implemented]
     [status-im.common.scroll-page.style :as scroll-page.style]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.config :as config]
@@ -176,7 +177,6 @@
          :disabled?           (not can-request-access?)
          :icon-left           (if can-request-access? :i/unlocked :i/locked)}
         (i18n/label :t/join-open-community)]])))
-
 
 (defn- join-community
   [{:keys [id joined permissions role-permissions? can-join?] :as community}]
@@ -366,14 +366,28 @@
            ;; might have been removed.
            on-first-channel-height-changed}]]))))
 
+(defn- community-fetching-placeholder
+  [id]
+  (let [fetching? (rf/sub [:communities/fetching-community id])]
+    [rn/view
+     {:style               style/fetching-placeholder
+      :accessibility-label (if fetching?
+                             :fetching-community-overview
+                             :failed-to-fetch-community-overview)}
+     [not-implemented/not-implemented
+      [rn/text
+       {:style style/fetching-text}
+       (if fetching?
+         "Fetching community..."
+         "Failed to fetch community")]]]))
+
 (defn- community-card-page-view
   [id]
-  (let [{:keys [id joined name images]
+  (let [{:keys [joined name images]
          :as   community} (rf/sub [:communities/community id])]
-    (when community
-      (when joined
-        (rf/dispatch [:activity-center.notifications/dismiss-community-overview id]))
-      [community-scroll-page id joined name images])))
+    (if community
+      [community-scroll-page id joined name images]
+      [community-fetching-placeholder id])))
 
 (defn view
   [id]

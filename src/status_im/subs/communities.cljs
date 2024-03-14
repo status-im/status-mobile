@@ -9,7 +9,7 @@
 
 (re-frame/reg-sub
  :communities/fetching-community
- :<- [:communities/fetching-community]
+ :<- [:communities/fetching-communities]
  (fn [info [_ id]]
    (get info id)))
 

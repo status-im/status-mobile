@@ -143,7 +143,7 @@
 (reg-root-key-sub :communities/create-channel :communities/create-channel)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
-(reg-root-key-sub :communities/fetching-community :communities/fetching-community)
+(reg-root-key-sub :communities/fetching-communities :communities/fetching-communities)
 (reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
