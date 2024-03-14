@@ -93,10 +93,10 @@
    (:test-networks-enabled? profile)))
 
 (re-frame/reg-sub
- :profile/goerli-enabled?
+ :profile/is-goerli-enabled?
  :<- [:profile/profile]
  (fn [profile]
-   (:goerli-enabled? profile)))
+   (:is-goerli-enabled? profile)))
 
 (re-frame/reg-sub
  :profile/peer-syncing-enabled?

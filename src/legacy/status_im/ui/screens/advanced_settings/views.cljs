@@ -19,7 +19,7 @@
            current-fleet
            webview-debug
            test-networks-enabled?
-           goerli-enabled?
+           is-goerli-enabled?
            peer-syncing-enabled?]}]
   (keep
    identity
@@ -102,7 +102,7 @@
      :on-press
      #(re-frame/dispatch [:profile.settings/toggle-goerli-test-network])
      :accessory :switch
-     :active goerli-enabled?}
+     :active is-goerli-enabled?}
     {:size :small
      :title "Peer syncing"
      :accessibility-label :peer-syncing
@@ -131,7 +131,7 @@
 (views/defview advanced-settings
   []
   (views/letsubs [test-networks-enabled?           [:profile/test-networks-enabled?]
-                  goerli-enabled?                  [:profile/goerli-enabled?]
+                  is-goerli-enabled?               [:profile/is-goerli-enabled?]
                   light-client-enabled?            [:profile/light-client-enabled?]
                   webview-debug                    [:profile/webview-debug]
                   transactions-management-enabled? [:wallet-legacy/transactions-management-enabled?]
@@ -147,7 +147,7 @@
                    :dev-mode?                        false
                    :webview-debug                    webview-debug
                    :test-networks-enabled?           test-networks-enabled?
-                   :goerli-enabled?                  goerli-enabled?
+                   :is-goerli-enabled?               is-goerli-enabled?
                    :peer-syncing-enabled?            peer-syncing-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))
