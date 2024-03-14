@@ -133,24 +133,6 @@
                       colors/neutral-80
                       theme)})
 
-(defn channel-action-touch
-  [big?]
-  {:flex      1
-   :max-width (if big? 216 104)})
-
-(defn channel-action
-  [color]
-  {:padding          12
-   :height           102
-   :border-radius    16
-   :background-color (colors/custom-color color 50 10)
-   :justify-content  :space-between})
-
-(def channel-action-row
-  {:flex-direction  :row
-   :justify-content :space-between
-   :align-items     :center})
-
 (defn loading-card
   [width theme]
   (merge

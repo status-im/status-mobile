@@ -29,7 +29,8 @@
     quo.components.common.notification-dot.view
     quo.components.common.separator.view
     quo.components.community.banner.view
-    quo.components.community.channel-actions
+    quo.components.community.channel-action.view
+    quo.components.community.channel-actions.view
     quo.components.community.community-card-view
     quo.components.community.community-list-view
     quo.components.community.community-stat.view
@@ -229,7 +230,8 @@
 (def discover-card quo.components.community.banner.view/view)
 (def community-icon quo.components.community.icon/community-icon)
 (def token-requirement-list quo.components.community.token-gating/token-requirement-list)
-(def channel-actions quo.components.community.channel-actions/channel-actions)
+(def channel-action quo.components.community.channel-action.view/view)
+(def channel-actions quo.components.community.channel-actions.view/view)
 
 ;;;; Counter
 (def collectible-counter quo.components.counter.collectible-counter.view/view)
