@@ -203,7 +203,6 @@
     (rf/merge
      cofx
      {:db (assoc-in db [:profile/login :password] password)}
-     (navigation/init-root :progress)
      (biometrics-login))))
 
 (rf/reg-event-fx
