@@ -30,11 +30,11 @@
   (hide-sheet-and-dispatch [:chat.ui/mute chat-id false 0]))
 
 (defn- action-view-members-and-details
-  []
+  [chat-id]
   {:icon                :i/members
    :accessibility-label :chat-view-members-and-details
    :label               (i18n/label :t/view-channel-members-and-details)
-   :on-press            not-implemented/alert})
+   :on-press            #(hide-sheet-and-dispatch [:navigate-to :channel-chat-profile chat-id])})
 
 (defn- action-token-requirements
   []
@@ -122,7 +122,7 @@
 
       (and (not inside-chat?) (not locked?))
       [quo/action-drawer
-       [[(action-view-members-and-details)
+       [[(action-view-members-and-details chat-id)
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
@@ -133,7 +133,7 @@
 
       (and inside-chat? (not locked?))
       [quo/action-drawer
-       [[(action-view-members-and-details)
+       [[(action-view-members-and-details chat-id)
          (action-token-requirements)
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)

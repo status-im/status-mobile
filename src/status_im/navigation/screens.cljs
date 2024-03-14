@@ -18,6 +18,7 @@
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
+    [status-im.contexts.communities.channel-details.view :as channel-details]
     [status-im.contexts.communities.discover.view :as communities.discover]
     [status-im.contexts.communities.overview.view :as communities.overview]
     [status-im.contexts.onboarding.create-password.view :as create-password]
@@ -129,6 +130,10 @@
     {:name      :share-community-channel
      :options   options/transparent-screen-options
      :component share-community-channel/view}
+
+    {:name      :channel-chat-profile
+     :options   {:insets {:top? true}}
+     :component channel-details/channel-details}
 
     ;; Note: the sheet screen is used when selecting addresses to share when
     ;; joining a community. The non-sheet screen is used when editing shared
