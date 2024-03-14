@@ -1,10 +1,8 @@
 (ns status-im.contexts.chat.messenger.menus.pinned-messages.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
-    [react-native.fast-image :as fast-image]
     [react-native.gesture :as gesture]
     [status-im.common.resources :as resources]
     [status-im.contexts.chat.messenger.menus.pinned-messages.style :as style]

@@ -12,8 +12,8 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [schema.core :as schema]
-    [react-native.fast-image :as fast-image]))
+    [react-native.fast-image :as fast-image]
+    [schema.core :as schema]))
 
 (defn- tag-skeleton
   [{:keys [theme size text] :or {size 24}} logo-component]
