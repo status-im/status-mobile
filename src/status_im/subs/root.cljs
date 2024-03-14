@@ -9,7 +9,6 @@
     status-im.subs.contact
     status-im.subs.general
     status-im.subs.messages
-    status-im.subs.navigation
     status-im.subs.onboarding
     status-im.subs.pairing
     status-im.subs.profile
