@@ -5,7 +5,7 @@
     [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.constants :as constants]
-    [status-im.contexts.chat.messenger.messages.content.sticker.view :as sticker]
+    [status-im.contexts.chat.messenger.messages.content.sticker-message.view :as sticker-message]
     [status-im.contexts.shell.activity-center.notification.common.view :as common]
     [status-im.contexts.shell.activity-center.notification.reply.style :as style]
     [utils.datetime :as datetime]
@@ -34,7 +34,7 @@
         :message-text (get-in message [:content :text])}])
 
     constants/content-type-sticker
-    [sticker/sticker-message {:url (-> message :content :sticker :url)}]
+    [sticker-message/view {:url (-> message :content :sticker :url)}]
 
     constants/content-type-system-pinned-message
     [not-implemented/not-implemented

@@ -15,12 +15,12 @@
     [status-im.contexts.chat.messenger.messages.content.album.view :as album]
     [status-im.contexts.chat.messenger.messages.content.audio.view :as audio]
     [status-im.contexts.chat.messenger.messages.content.deleted.view :as content.deleted]
-    [status-im.contexts.chat.messenger.messages.content.emoji.view :as emoji]
+    [status-im.contexts.chat.messenger.messages.content.emoji-message.view :as emoji-message]
     [status-im.contexts.chat.messenger.messages.content.image.view :as image]
     [status-im.contexts.chat.messenger.messages.content.pin.view :as pin]
     [status-im.contexts.chat.messenger.messages.content.reactions.view :as reactions]
     [status-im.contexts.chat.messenger.messages.content.status.view :as status]
-    [status-im.contexts.chat.messenger.messages.content.sticker.view :as sticker]
+    [status-im.contexts.chat.messenger.messages.content.sticker-message.view :as sticker-message]
     [status-im.contexts.chat.messenger.messages.content.style :as style]
     [status-im.contexts.chat.messenger.messages.content.system.text.view :as system.text]
     [status-im.contexts.chat.messenger.messages.content.text.view :as content.text]
@@ -201,10 +201,13 @@
                [content.text/text-content message-data context]
 
                constants/content-type-emoji
-               [emoji/emoji-message message-data context]
+               [emoji-message/view
+                (-> message-data
+                    (select-keys [:content :last-in-group? :pinned])
+                    (assoc :in-pinned-view? (:in-pinned-view? context)))]
 
                constants/content-type-sticker
-               [sticker/sticker-message {:url (-> message-data :content :sticker :url)}]
+               [sticker-message/view {:url (-> message-data :content :sticker :url)}]
 
                constants/content-type-audio
                [audio/audio-message message-data context]

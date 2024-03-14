@@ -1,8 +1,8 @@
-(ns status-im.contexts.chat.messenger.messages.content.sticker.view
+(ns status-im.contexts.chat.messenger.messages.content.sticker-message.view
   (:require [react-native.core :as rn]
             [react-native.fast-image :as fast-image]))
 
-(defn sticker-message
+(defn view
   [{:keys [url]}]
   [rn/view {:style {:margin-top 6 :margin-bottom 4}}
    [fast-image/fast-image

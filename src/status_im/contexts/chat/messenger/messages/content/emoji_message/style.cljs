@@ -1,4 +1,4 @@
-(ns status-im.contexts.chat.messenger.messages.content.emoji.style)
+(ns status-im.contexts.chat.messenger.messages.content.emoji-message.style)
 
 (defn emoji-container
   [margin-top]
