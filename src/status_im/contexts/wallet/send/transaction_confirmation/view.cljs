@@ -158,7 +158,7 @@
                                          (map (fn [[k v]]
                                                 [k
                                                  (if (money/equal-to (v :amount) 0)
-                                                   (assoc v :amount "<0.00")
+                                                   (assoc v :amount "<0.01")
                                                    v)])
                                               network-values))]
       [rn/view
