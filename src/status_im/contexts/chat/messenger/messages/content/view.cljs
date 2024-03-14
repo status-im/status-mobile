@@ -5,6 +5,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
@@ -26,8 +27,7 @@
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.address :as address]
     [utils.datetime :as datetime]
-    [utils.re-frame :as rf]
-    [react-native.fast-image :as fast-image]))
+    [utils.re-frame :as rf]))
 
 (def delivery-state-showing-time-ms 3000)
 
