@@ -15,6 +15,7 @@
     [status-im.contexts.chat.messenger.messages.content.album.view :as album]
     [status-im.contexts.chat.messenger.messages.content.audio.view :as audio]
     [status-im.contexts.chat.messenger.messages.content.deleted.view :as content.deleted]
+    [status-im.contexts.chat.messenger.messages.content.emoji.view :as emoji]
     [status-im.contexts.chat.messenger.messages.content.image.view :as image]
     [status-im.contexts.chat.messenger.messages.content.pin.view :as pin]
     [status-im.contexts.chat.messenger.messages.content.reactions.view :as reactions]
@@ -199,7 +200,7 @@
                [content.text/text-content message-data context]
 
                constants/content-type-emoji
-               [not-implemented/not-implemented [old-message/emoji message-data]]
+               [emoji/emoji-message message-data context]
 
                constants/content-type-sticker
                [not-implemented/not-implemented [old-message/sticker message-data]]

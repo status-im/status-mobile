@@ -145,16 +145,6 @@
      [rn/text {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
 
-;; EMOJI
-(defn emoji
-  []
-  (fn [{:keys [content] :as message}]
-    [rn/view (style/message-view message)
-     [rn/view {:style (style/message-view-content)}
-      [rn/view {:style (style/style-message-text)}
-       [rn/text {:style (style/emoji-message message)}
-        (:text content)]]]]))
-
 ;; STICKER
 (defn sticker
   [{:keys [content]}]
