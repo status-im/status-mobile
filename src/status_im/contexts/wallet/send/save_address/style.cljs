@@ -9,7 +9,7 @@
   {:padding-horizontal 20
    :padding-top        12})
 
-(def divider-1
+(def color-picker-top-divider
   {:margin-bottom 12})
 
 (def color-picker-container
@@ -23,7 +23,7 @@
   {:padding-horizontal 20
    :padding-top        12})
 
-(def divider-2
+(def color-picker-bottom-divider
   {:padding-top    8
    :padding-bottom 12})
 
@@ -39,9 +39,4 @@
    :padding-bottom 12})
 
 (def container
-  {:flex         1
-   ;; This negative margin is needed because bottom sheet as a modal
-   ;; doesn't play well with `:sheet? true`
-   :margin-top   -20
-   :border-width 0
-   :border-color :red})
+  {:flex 1})

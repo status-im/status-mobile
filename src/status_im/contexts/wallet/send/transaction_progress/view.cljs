@@ -6,7 +6,6 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.send.transaction-progress.style :as style]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -26,30 +25,25 @@
     (some (fn [[_k v]] (= (:status v) :confirmed)) transaction-details)   :confirmed
     :else                                                                 nil))
 
-(defn show-save-address-bottom-sheet
-  ([] (show-save-address-bottom-sheet :blue))
-  ([_color]
-   (debounce/throttle-and-dispatch [:open-modal :screen/wallet.save-address] 1000)))
+(defn show-save-address-modal
+  []
+  (rf/dispatch [:open-modal :screen/wallet.save-address] 1000))
 
-(defn footer
+(defn- footer
   [{:keys [color leave-page]}]
-  (let [save-address-visible? false]
-    [rn/view {:style style/footer}
-     (when save-address-visible?
-       [quo/button
-        {:type                :grey
-         :icon-left           :i/contact-book
-         :accessibility-label :save-address
-         :container-style     (style/footer-button save-address-visible?)
-         :on-press            (partial show-save-address-bottom-sheet color)}
-        (i18n/label :t/save-address)])
-     [quo/button
-      {:customization-color color
-       :type                :primary
-       :accessibility-label :done
-       :container-style     (style/footer-button save-address-visible?)
-       :on-press            leave-page}
-      (i18n/label :t/done)]]))
+  (let [save-address-visible? true]
+    [quo/bottom-actions
+     {:actions          (if save-address-visible? :two-actions :one-action)
+      :button-two-label (i18n/label :t/save-address)
+      :button-two-props {:type                :grey
+                         :icon-left           :i/contact-book
+                         :accessibility-label :save-address
+                         :on-press            show-save-address-modal}
+      :button-one-label (i18n/label :t/done)
+      :button-one-props {:customization-color color
+                         :type                :primary
+                         :accessibility-label :done
+                         :on-press            leave-page}}]))
 
 (defn view
   []

@@ -25,25 +25,23 @@
        :right-icon      :i/advanced
        :card?           true
        :title           (i18n/label :t/address)
-       :custom-subtitle (fn [] [quo/address-text
-                                {:networks network-details
-                                 :address  address
-                                 :format   :long}])
-       :on-press        (fn []
-                          (rf/dispatch [:show-bottom-sheet
-                                        {:content
-                                         (fn []
-                                           [network-preferences/view
-                                            {:on-save (fn [])
-                                             ;; (fn [chain-ids]
-                                             ;;   (rf/dispatch [:hide-bottom-sheet])
-                                             ;;   (save-account
-                                             ;;    {:account     account
-                                             ;;     :updated-key network-preferences-key
-                                             ;;     :new-value   chain-ids}))
-                                             ;; :watch-only? watch-only?
-                                            }])}]))
+       :custom-subtitle (rn/use-callback
+                         (fn [] [quo/address-text
+                                 {:networks network-details
+                                  :address  address
+                                  :format   :long}]))
+       :on-press        (rn/use-callback
+                         (fn []
+                           (rf/dispatch [:show-bottom-sheet
+                                         {:content
+                                          (fn []
+                                            [network-preferences/view
+                                             {:on-save (fn [])}])}])))
        :container-style style/data-item}]]))
+
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
 
 (defn view
   []
@@ -57,7 +55,7 @@
                                   {:type                :no-title
                                    :background          :blur
                                    :icon-name           :i/close
-                                   :on-press            #(rf/dispatch [:navigate-back])
+                                   :on-press            navigate-back
                                    :accessibility-label :save-address-top-bar}]
        :footer                   [quo/button
                                   {:accessibility-label :save-address-button
@@ -88,7 +86,7 @@
         :customization-color address-color
         :container-style     style/title-input-container}]
 
-      [quo/divider-line {:container-style style/divider-1}]
+      [quo/divider-line {:container-style style/color-picker-top-divider}]
 
       [quo/section-label
        {:section         (i18n/label :t/colour)
@@ -99,6 +97,6 @@
         :on-change        set-address-color
         :container-style  style/color-picker}]
 
-      [quo/divider-line {:container-style style/divider-2}]
+      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
 
       [address-view "0xshivek"]]]))
