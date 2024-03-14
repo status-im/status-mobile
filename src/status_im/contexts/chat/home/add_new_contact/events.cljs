@@ -186,9 +186,3 @@
   {:db (dissoc db :contacts/new-identity)})
 
 (re-frame/reg-event-fx :contacts/clear-new-identity clear-new-identity)
-
-(defn set-new-identity-reconnected
-  [{:keys [db]}]
-  (let [input (get-in db [:contacts/new-identity :input])]
-    (re-frame/dispatch [:contacts/set-new-identity {:input input}])))
-

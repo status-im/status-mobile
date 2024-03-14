@@ -4,7 +4,6 @@
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     legacy.status-im.communities.e2e
     [re-frame.core :as re-frame]
-    [status-im.contexts.shell.activity-center.events :as activity-center]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
@@ -84,13 +83,12 @@
             (navigation/navigate-back)
             (handle-response response-js)))
 
-(rf/defn member-banned
-  {:events [::member-banned]}
-  [cofx response-js]
-  (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet-old)
-            (handle-response response-js)
-            (activity-center/notifications-fetch-unread-count)))
+(re-frame/reg-event-fx ::member-banned
+ (fn [{:keys [db]} [response-js]]
+   {:db (assoc db :bottom-sheet/show? false)
+    :fx [[:dismiss-bottom-sheet-overlay-old]
+         [:sanitize-messages-and-process-response response-js]
+         [:activity-center.notifications/fetch-unread-count]]}))
 
 (rf/defn member-ban
   {:events [::member-ban]}

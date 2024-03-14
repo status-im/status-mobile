@@ -1,63 +1,47 @@
 (ns status-im.contexts.profile.settings.events
   (:require [clojure.string :as string]
-            [legacy.status-im.bottom-sheet.events :as bottom-sheet.events]
-            [re-frame.core :as re-frame]
+            [status-im.common.json-rpc.events :as json-rpc]
             [status-im.constants :as constants]
             status-im.contexts.profile.settings.effects
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(rf/defn send-contact-update
-  [{:keys [db]}]
-  (let [{:keys [name preferred-name display-name]} (:profile/profile db)]
-    {:json-rpc/call [{:method     "wakuext_sendContactUpdates"
-                      :params     [(or preferred-name display-name name) ""]
-                      :on-success #(log/debug "sent contact update")}]}))
+(defn- set-setting-value
+  [db setting setting-value]
+  (if setting-value
+    (assoc-in db [:profile/profile setting] setting-value)
+    (update db :profile/profile dissoc setting)))
 
-(rf/defn profile-update
-  {:events [:profile.settings/profile-update]}
-  [{:keys [db] :as cofx}
-   setting setting-value
-   {:keys [dont-sync? on-success] :or {on-success #()}}]
-  (rf/merge
-   cofx
-   {:db (if setting-value
-          (assoc-in db [:profile/profile setting] setting-value)
-          (update db :profile/profile dissoc setting))
-    :json-rpc/call
-    [{:method     "settings_saveSetting"
-      :params     [setting setting-value]
-      :on-success on-success}]}
+(rf/reg-event-fx :profile.settings/profile-update
+ (fn [{:keys [db]} [setting setting-value {:keys [dont-sync? on-success]}]]
+   {:db (-> db
+            (set-setting-value setting setting-value))
+    :fx [[:json-rpc/call
+          [{:method     "settings_saveSetting"
+            :params     [setting setting-value]
+            :on-success on-success}]]
 
-   (when (#{:name :preferred-name} setting)
-     (constantly {:profile/get-profiles-overview #(rf/dispatch [:multiaccounts.ui/update-name %])}))
+         (when (#{:name :preferred-name} setting)
+           [:profile/get-profiles-overview #(rf/dispatch [:multiaccounts.ui/update-name %])])
 
-   (when (and (not dont-sync?) (#{:name :preferred-name} setting))
-     (send-contact-update))))
+         (when (and (not dont-sync?) (#{:name :preferred-name} setting))
+           (let [{:keys [name preferred-name display-name]} (:profile/profile db)]
+             [:json-rpc/call
+              [{:method     "wakuext_sendContactUpdates"
+                :params     [(or preferred-name display-name name) ""]
+                :on-success #(log/debug "sent contact update")}]]))]}))
 
-(rf/defn optimistic-profile-update
-  [{:keys [db]} setting setting-value]
-  {:db (if setting-value
-         (assoc-in db [:profile/profile setting] setting-value)
-         (update db :profile/profile dissoc setting))})
+(rf/reg-event-fx :profile.settings/change-preview-privacy
+ (fn [{:keys [db]}]
+   (let [private? (get-in db [:profile/profile :preview-privacy?])]
+     {:fx [[:profile.settings/blank-preview-flag-changed private?]]})))
 
-(rf/defn change-preview-privacy
-  [{:keys [db]}]
-  (let [private? (get-in db [:profile/profile :preview-privacy?])]
-    {:profile.settings/blank-preview-flag-changed private?}))
-
-(rf/defn update-value
-  {:events [:profile.settings/update-value]}
-  [cofx key value]
-  (profile-update cofx key value {}))
-
-(rf/defn change-webview-debug
-  {:events [:profile.settings/change-webview-debug]}
-  [{:keys [db] :as cofx} value]
-  (rf/merge cofx
-            {:profile.settings/webview-debug-changed value}
-            (profile-update :webview-debug (boolean value) {})))
+(rf/reg-event-fx :profile.settings/change-webview-debug
+ (fn [_ [value]]
+   (let [value' (boolean value)]
+     {:fx [[:dispatch [:profile.settings/profile-update :webview-debug value']]
+           [:profile.settings/webview-debug-changed value']]})))
 
 (rf/reg-event-fx :profile.settings/toggle-test-networks
  (fn [{:keys [db]}]
@@ -82,17 +66,22 @@
                                        {:on-success on-success}])
              :on-cancel nil}]]})))
 
-(rf/defn change-preview-privacy-flag
-  {:events [:profile.settings/change-preview-privacy]}
-  [{:keys [db] :as cofx} private?]
-  (rf/merge cofx
-            {:profile.settings/blank-preview-flag-changed private?}
-            (profile-update
-             :preview-privacy?
-             (boolean private?)
-             {})))
+(rf/reg-event-fx :profile.settings/change-preview-privacy
+ (fn [_ [private?]]
+   (let [private?' (boolean private?)]
+     {:fx [[:dispatch [:profile.settings/profile-update :preview-privacy? private?']]
+           [:profile.settings/blank-preview-flag-changed private?']]})))
 
-(re-frame/reg-event-fx :profile.settings/toggle-peer-syncing
+(rf/reg-event-fx :profile.settings/change-profile-pictures-show-to
+ (fn [{:keys [db]} [id]]
+   {:db (-> db
+            (assoc-in [:profile/profile :profile-pictures-show-to] id))
+    :fx [[:json-rpc/call
+          [{:method     "wakuext_changeIdentityImageShowTo"
+            :params     [id]
+            :on-success #(log/debug "picture settings changed successfully")}]]]}))
+
+(rf/reg-event-fx :profile.settings/toggle-peer-syncing
  (fn [{:keys [db]}]
    (let [value     (get-in db [:profile/profile :peer-syncing-enabled?])
          new-value (not value)]
@@ -102,81 +91,69 @@
               :params   [{:enabled new-value}]
               :on-error #(log/error "failed to toggle peer syncing" new-value %)}]]]})))
 
-(rf/defn change-profile-pictures-show-to
-  {:events [:profile.settings/change-profile-pictures-show-to]}
-  [cofx id]
-  (rf/merge cofx
-            {:json-rpc/call [{:method     "wakuext_changeIdentityImageShowTo"
-                              :params     [id]
-                              :on-success #(log/debug "picture settings changed successfully")}]}
-            (optimistic-profile-update :profile-pictures-show-to id)))
+(rf/reg-event-fx :profile.settings/change-appearance
+ (fn [_ [theme]]
+   {:fx [[:dispatch [:profile.settings/profile-update :appearance theme]]
+         [:profile.settings/switch-theme-fx [theme :appearance true]]]}))
 
-(rf/defn change-appearance
-  {:events [:profile.settings/change-appearance]}
-  [cofx theme]
-  (rf/merge cofx
-            {:profile.settings/switch-theme-fx [theme :appearance true]}
-            (profile-update :appearance theme {})))
+(rf/reg-event-fx :profile.settings/switch-theme
+ (fn [{:keys [db]} [theme view-id]]
+   (let [theme (or theme
+                   (get-in db [:profile/profile :appearance])
+                   constants/theme-type-dark)]
+     {:fx [[:profile.settings/switch-theme-fx [theme view-id false]]]})))
 
-(rf/defn switch-theme
-  {:events [:profile.settings/switch-theme]}
-  [cofx theme view-id]
-  (let [theme (or theme
-                  (get-in cofx [:db :profile/profile :appearance])
-                  constants/theme-type-dark)]
-    {:profile.settings/switch-theme-fx [theme view-id false]}))
+(rf/reg-fx :profile.settings/get-profile-picture
+ (fn [key-uid]
+   (json-rpc/call {:method     "multiaccounts_getIdentityImages"
+                   :params     [key-uid]
+                   :on-success [:profile.settings/update-local-picture]})))
 
-(rf/defn get-profile-picture
-  {:events [:profile.settings/get-profile-picture]}
-  [cofx]
-  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
-    {:json-rpc/call [{:method     "multiaccounts_getIdentityImages"
-                      :params     [key-uid]
-                      :on-success [:profile.settings/update-local-picture]}]}))
+(rf/reg-event-fx :profile.settings/save-profile-picture
+ (fn [{:keys [db]} [path ax ay bx by]]
+   (let [key-uid (get-in db [:profile/profile :key-uid])]
+     {:db (-> db
+              (assoc :bottom-sheet/show? false))
+      :fx [[:json-rpc/call
+            [{:method     "multiaccounts_storeIdentityImage"
+              :params     [key-uid (string/replace-first path #"file://" "") ax ay bx
+                           by]
+              :on-success [:profile.settings/update-local-picture]}]]
+           [:dismiss-bottom-sheet-overlay-old]]})))
 
-(rf/defn save-profile-picture
-  {:events [:profile.settings/save-profile-picture]}
-  [cofx path ax ay bx by]
-  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
-    (rf/merge cofx
-              {:json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
-                                :params     [key-uid (string/replace-first path #"file://" "") ax ay bx
-                                             by]
-                                :on-success [:profile.settings/update-local-picture]}]}
-              (bottom-sheet.events/hide-bottom-sheet-old))))
+(rf/reg-event-fx :profile.settings/save-profile-picture-from-url
+ (fn [{:keys [db]} [url]]
+   (let [key-uid (get-in db [:profile/profile :key-uid])]
+     {:db (-> db
+              (assoc :bottom-sheet/show? false))
+      :fx [[:json-rpc/call
+            [{:method     "multiaccounts_storeIdentityImageFromURL"
+              :params     [key-uid url]
+              :on-error   #(log/error "::save-profile-picture-from-url error" %)
+              :on-success [:profile.settings/update-local-picture]}]]
+           [:dismiss-bottom-sheet-overlay-old]]})))
 
-(rf/defn save-profile-picture-from-url
-  {:events [:profile.settings/save-profile-picture-from-url]}
-  [cofx url]
-  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
-    (rf/merge cofx
-              {:json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
-                                :params     [key-uid url]
-                                :on-error   #(log/error "::save-profile-picture-from-url error" %)
-                                :on-success [:profile.settings/update-local-picture]}]}
-              (bottom-sheet.events/hide-bottom-sheet-old))))
+(rf/reg-event-fx :profile.settings/delete-profile-picture
+ (fn [{:keys [db]}]
+   (let [key-uid (get-in db [:profile/profile :key-uid])]
+     {:db (-> db
+              (update :profile/profile dissoc :images)
+              (assoc :bottom-sheet/show? false))
+      :fx [[:json-rpc/call
+            [{:method     "multiaccounts_deleteIdentityImage"
+              :params     [key-uid]
+              ;; NOTE: In case of an error we could fallback to previous image in
+              ;; UI with a toast error
+              :on-success #(log/info "[profile] Delete profile image" %)}]]
+           [:dismiss-bottom-sheet-overlay-old]]})))
 
-(rf/defn delete-profile-picture
-  {:events [:profile.settings/delete-profile-picture]}
-  [cofx name]
-  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
-    (rf/merge cofx
-              {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
-                                :params     [key-uid]
-                                ;; NOTE: In case of an error we could fallback to previous image in
-                                ;; UI with a toast error
-                                :on-success #(log/info "[profile] Delete profile image" %)}]}
-              (optimistic-profile-update :images nil)
-              (bottom-sheet.events/hide-bottom-sheet-old))))
+(rf/reg-event-fx :profile.settings/update-local-picture
+ (fn [{:keys [db]} [images]]
+   {:db (assoc-in db [:profile/profile :images] images)}))
 
-(rf/defn store-profile-picture
-  {:events [:profile.settings/update-local-picture]}
-  [cofx pics]
-  (optimistic-profile-update cofx :images pics))
-
-(rf/defn mark-mnemonic-as-shown
-  {:events [:profile.settings/mnemonic-was-shown]}
-  [cofx]
-  {:json-rpc/call [{:method     "settings_mnemonicWasShown"
-                    :on-success #(log/debug "mnemonic was marked as shown")
-                    :on-error   #(log/error "mnemonic was not marked as shown" %)}]})
+(rf/reg-event-fx :profile.settings/mnemonic-was-shown
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method     "settings_mnemonicWasShown"
+            :on-success #(log/debug "mnemonic was marked as shown")
+            :on-error   #(log/error "mnemonic was not marked as shown" %)}]]]}))

@@ -3,9 +3,10 @@
     [clojure.set :as set]
     [legacy.status-im.data-store.messages :as messages]
     [legacy.status-im.utils.deprecated-types :as types]
+    [re-frame.core :as re-frame]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.constants :as constants]
-    [taoensso.timbre :as log]
-    [utils.re-frame :as rf]))
+    [taoensso.timbre :as log]))
 
 (defn rpc->type
   [{:keys [chat-type name] :as chat}]
@@ -117,10 +118,10 @@
       rpc->type
       unmarshal-members))
 
-(rf/defn fetch-chats-preview
-  [_ {:keys [on-success]}]
-  {:json-rpc/call [{:method      "wakuext_chatsPreview"
-                    :params      []
-                    :js-response true
-                    :on-success  #(on-success ^js %)
-                    :on-error    #(log/error "failed to fetch chats" 0 -1 %)}]})
+(re-frame/reg-fx :fetch-chats-preview
+ (fn [{:keys [on-success]}]
+   (json-rpc/call {:method      "wakuext_chatsPreview"
+                   :params      []
+                   :js-response true
+                   :on-success  #(on-success ^js %)
+                   :on-error    #(log/error "failed to fetch chats" 0 -1 %)})))
