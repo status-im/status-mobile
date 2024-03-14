@@ -82,7 +82,13 @@
         :albumImagesCount         :album-images-count
         :displayName              :display-name
         :linkPreviews             :link-previews
-        :statusLinkPreviews       :status-link-previews})
+        :statusLinkPreviews       :status-link-previews
+        :bridgeMessage            :bridge-message})
+      (update :bridge-message
+              set/rename-keys
+              {:bridgeName :bridge-name
+               :userName   :user-name
+               :userAvatar :user-avatar})
       (update :link-previews #(map <-link-preview-rpc %))
       (update :status-link-previews #(map <-status-link-previews-rpc %))
       (update :quoted-message
