@@ -153,9 +153,10 @@
                                     (reagent/flush))))
         handle-delete         (fn [loading-routes? current-limit-amount]
                                 (when-not loading-routes?
-                                  (let [{:keys [start end]} @input-selection]
-                                    (reset-input-error @input-value current-limit-amount input-error)
+                                  (let [{:keys [start end]} @input-selection
+                                        new-value           (delete-from-string @input-value start)]
                                     (when (= start end)
+                                      (reset-input-error new-value current-limit-amount input-error)
                                       (swap! input-value delete-from-string start)
                                       (move-input-cursor input-selection (dec start)))
                                     (reagent/flush))))
@@ -213,16 +214,16 @@
             crypto-limit              (or default-limit-crypto
                                           (utils/get-standard-crypto-format token token-balance))
             fiat-limit                (.toFixed (* token-balance conversion-rate) 2)
-            current-limit             (if @crypto-currency? crypto-limit fiat-limit)
+            current-limit             #(if @crypto-currency? crypto-limit fiat-limit)
             current-currency          (if @crypto-currency? token-symbol fiat-currency)
-            limit-label               (make-limit-label {:amount   current-limit
+            limit-label               (make-limit-label {:amount   (current-limit)
                                                          :currency current-currency})
             input-num-value           (parse-double @input-value)
             confirm-disabled?         (or (nil? route)
                                           (empty? route)
                                           (empty? @input-value)
                                           (<= input-num-value 0)
-                                          (> input-num-value current-limit))
+                                          (> input-num-value (current-limit)))
             amount-text               (str @input-value " " token-symbol)
             native-currency-symbol    (when-not confirm-disabled?
                                         (get-in route [:from :native-currency-symbol]))
@@ -248,7 +249,7 @@
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
         (rn/use-effect
-         #(fetch-routes input-num-value current-limit)
+         #(fetch-routes input-num-value (current-limit))
          [@input-value])
         [rn/view
          {:style               style/screen
@@ -269,7 +270,7 @@
            :show-keyboard?      false
            :value               @input-value
            :selection           @input-selection
-           :on-change-text      #(handle-on-change % current-limit)
+           :on-change-text      #(handle-on-change % (current-limit))
            :on-selection-change selection-change
            :on-swap             #(handle-swap
                                   {:crypto?      %
@@ -282,7 +283,7 @@
            :routes       suggested-routes
            :token        token
            :input-value  @input-value
-           :fetch-routes #(fetch-routes % current-limit)}]
+           :fetch-routes #(fetch-routes % (current-limit))}]
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
@@ -299,8 +300,8 @@
           {:container-style      (style/keyboard-container bottom)
            :left-action          :dot
            :delete-key?          true
-           :on-press             #(handle-keyboard-press % loading-routes? current-limit)
-           :on-delete            #(handle-delete loading-routes? current-limit)
+           :on-press             #(handle-keyboard-press % loading-routes? (current-limit))
+           :on-delete            #(handle-delete loading-routes? (current-limit))
            :on-long-press-delete #(on-long-press-delete loading-routes?)}]]))))
 
 (defn- view-internal

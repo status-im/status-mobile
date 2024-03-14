@@ -1888,6 +1888,36 @@ void _InitLogging(const FunctionCallbackInfo<Value>& args) {
     delete c;
 }
 
+void _RestoreAccountAndLogin(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for RestoreAccountAndLogin")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'RestoreAccountAndLogin'")));
+		return;
+	}
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = RestoreAccountAndLogin(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+}
+
 
 void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountGenerateAndDeriveAddresses", _MultiAccountGenerateAndDeriveAddresses);
@@ -1945,6 +1975,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "connectionChange", _ConnectionChange);
 	NODE_SET_METHOD(exports, "pollSignal", _PollSignal);
 	NODE_SET_METHOD(exports, "initLogging", _InitLogging);
+	NODE_SET_METHOD(exports, "restoreAccountAndLogin", _RestoreAccountAndLogin);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, init)

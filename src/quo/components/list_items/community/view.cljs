@@ -7,8 +7,7 @@
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
 (defn- logo-component
   [logo]
@@ -83,7 +82,7 @@
         :style               {:margin-left 10}}
        component])))
 
-(defn- view-internal
+(defn view
   "Options:
 
   :type - :discover/engage/share
@@ -116,49 +115,48 @@
   :unread-count - number - When the info is :mention, it will be used to show
   the number of unread mentions.
   "
-  []
-  (let [pressed? (reagent/atom false)]
-    (fn [{:keys [members type info tokens locked? title subtitle
-                 logo blur? customization-color
-                 on-press on-long-press on-press-info
-                 container-style unread-count theme]}]
-      [rn/pressable
-       {:accessibility-label :container
-        :on-press-in         (fn [] (reset! pressed? true))
-        :on-press            on-press
-        :on-long-press       on-long-press
-        :on-press-out        (fn [] (reset! pressed? false))
-        :style               (merge (style/container {:blur?               blur?
-                                                      :customization-color customization-color
-                                                      :info                info
-                                                      :type                type
-                                                      :pressed?            @pressed?
-                                                      :theme               theme})
-                                    container-style)}
-       [logo-component logo]
-       [rn/view {:style {:flex 1}}
-        [title-component
-         {:blur? blur?
-          :info  info
-          :theme theme
-          :title title
-          :type  type}]
-        (when (and (= type :share) subtitle)
-          [subtitle-component subtitle blur? theme])
-        (when (and members (= type :discover))
-          [community-view/community-stats-column
-           {:type          :list-view
-            :members-count (:members-count members)
-            :active-count  (:active-count members)}])]
-       [info-component
-        {:blur?               blur?
-         :customization-color customization-color
-         :info                info
-         :type                type
-         :locked?             locked?
-         :on-press-info       on-press-info
-         :theme               theme
-         :tokens              tokens
-         :unread-count        unread-count}]])))
+  [{:keys [members type info tokens locked? title subtitle logo blur? customization-color
+           on-press on-long-press on-press-info container-style unread-count]}]
+  (let [theme                  (quo.theme/use-theme-value)
+        [pressed? set-pressed] (rn/use-state false)
+        on-press-in            (rn/use-callback #(set-pressed true))
+        on-press-out           (rn/use-callback #(set-pressed false))]
+    [rn/pressable
+     {:accessibility-label :container
 
-(def view (quo.theme/with-theme view-internal))
+      :on-press            on-press
+      :on-long-press       on-long-press
+      :on-press-in         on-press-in
+      :on-press-out        on-press-out
+      :style               (merge (style/container {:blur?               blur?
+                                                    :customization-color customization-color
+                                                    :info                info
+                                                    :type                type
+                                                    :pressed?            pressed?
+                                                    :theme               theme})
+                                  container-style)}
+     [logo-component logo]
+     [rn/view {:style {:flex 1}}
+      [title-component
+       {:blur? blur?
+        :info  info
+        :theme theme
+        :title title
+        :type  type}]
+      (when (and (= type :share) subtitle)
+        [subtitle-component subtitle blur? theme])
+      (when (and members (= type :discover))
+        [community-view/community-stats-column
+         {:type          :list-view
+          :members-count (:members-count members)
+          :active-count  (:active-count members)}])]
+     [info-component
+      {:blur?               blur?
+       :customization-color customization-color
+       :info                info
+       :type                type
+       :locked?             locked?
+       :on-press-info       on-press-info
+       :theme               theme
+       :tokens              tokens
+       :unread-count        unread-count}]]))

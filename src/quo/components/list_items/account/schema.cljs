@@ -27,7 +27,6 @@
    [:blur? {:optional true} [:maybe :boolean]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
    [:on-press {:optional true} [:maybe fn?]]
-   [:theme :schema.common/theme]
    [:title-icon {:optional true} [:maybe :keyword]]
    [:account-props
     [:map

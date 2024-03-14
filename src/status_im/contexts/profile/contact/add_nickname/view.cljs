@@ -14,8 +14,8 @@
   []
   (let [{:keys [public-key primary-name nickname customization-color]
          :as   profile}                         (rf/sub [:contacts/current-contact])
-        ;; TODO(@mohsen): remove :blue, https://github.com/status-im/status-mobile/issues/18733
-        customization-color                     (or customization-color :blue)
+        ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
+        customization-color                     (or customization-color constants/profile-default-color)
         full-name                               (profile.utils/displayed-name profile)
         profile-picture                         (profile.utils/photo profile)
         [unsaved-nickname set-unsaved-nickname] (rn/use-state nickname)
@@ -54,15 +54,15 @@
        :customization-color customization-color}]
      [rn/view {:style style/input-wrapper}
       [quo/input
-       {:type           :text
-        :char-limit     constants/profile-name-max-length
-        :max-length     constants/profile-name-max-length
-        :auto-focus     true
-        :default-value  unsaved-nickname
-        :error?         (not (string/blank? error-msg))
-        :label          (i18n/label :t/nickname)
-        :on-change-text on-nickname-change}
-       :on-submit-editing on-nickname-submit]
+       {:type              :text
+        :char-limit        constants/profile-name-max-length
+        :max-length        constants/profile-name-max-length
+        :auto-focus        true
+        :default-value     unsaved-nickname
+        :error?            (not (string/blank? error-msg))
+        :label             (i18n/label :t/nickname)
+        :on-change-text    on-nickname-change
+        :on-submit-editing on-nickname-submit}]
       [quo/info-message
        {:icon :i/info
         :size :default

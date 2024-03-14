@@ -21,28 +21,21 @@
 (defn handle-community
   [{:keys [db]} [community-js]]
   (when community-js
-    (let [{:keys [token-permissions
+    (let [{:keys [clock
                   token-permissions-check joined id last-opened-at]
-           :as   community} (data-store.communities/<-rpc community-js)
-          has-channel-perm? (fn [id-perm-tuple]
-                              (let [{:keys [type]} (second id-perm-tuple)]
-                                (or (= type constants/community-token-permission-can-view-channel)
-                                    (=
-                                     type
-                                     constants/community-token-permission-can-view-and-post-channel))))
+           :as   community}       (data-store.communities/<-rpc community-js)
           previous-last-opened-at (get-in db [:communities id :last-opened-at])]
-      {:db (assoc-in db
-            [:communities id]
-            (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
-       :fx [[:dispatch [:communities/initialize-permission-addresses id]]
-            (when (not joined)
-              [:dispatch [:chat.ui/spectate-community id]])
-            (when (nil? token-permissions-check)
-              [:dispatch [:communities/check-permissions-to-join-community id]])
-            (when (some has-channel-perm? token-permissions)
-              [:dispatch [:communities/check-all-community-channels-permissions id]])
-            (when joined
-              [:dispatch [:communities/get-revealed-accounts id]])]})))
+      (when (> clock (get-in db [:communities id :clock]))
+        {:db (assoc-in db
+              [:communities id]
+              (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
+         :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+              (when (not joined)
+                [:dispatch [:chat.ui/spectate-community id]])
+              (when (nil? token-permissions-check)
+                [:dispatch [:communities/check-permissions-to-join-community id]])
+              (when joined
+                [:dispatch [:communities/get-revealed-accounts id]])]}))))
 
 (rf/reg-event-fx :communities/handle-community handle-community)
 
@@ -300,7 +293,7 @@
 (defn community-fetched
   [{:keys [db]} [community-id community]]
   (when community
-    {:db (update db :communities/fetching-community dissoc community-id)
+    {:db (update db :communities/fetching-communities dissoc community-id)
      :fx [[:dispatch [:communities/handle-community community]]
           [:dispatch [:communities/update-last-opened-at community-id]]
           [:dispatch
@@ -311,14 +304,14 @@
 
 (defn community-failed-to-fetch
   [{:keys [db]} [community-id]]
-  {:db (update db :communities/fetching-community dissoc community-id)})
+  {:db (update db :communities/fetching-communities dissoc community-id)})
 
 (rf/reg-event-fx :chat.ui/community-failed-to-fetch community-failed-to-fetch)
 
 (defn fetch-community
   [{:keys [db]} [{:keys [community-id update-last-opened-at?]}]]
-  (when (and community-id (not (get-in db [:communities/fetching-community community-id])))
-    {:db            (assoc-in db [:communities/fetching-community community-id] true)
+  (when (and community-id (not (get-in db [:communities/fetching-communities community-id])))
+    {:db            (assoc-in db [:communities/fetching-communities community-id] true)
      :json-rpc/call [{:method     "wakuext_fetchCommunity"
                       :params     [{:CommunityKey    community-id
                                     :TryDatabase     true
@@ -405,7 +398,7 @@
                                  :community-id community-id})}})
 
 (rf/reg-event-fx :communities/navigate-to-community-overview
- (fn [cofx [deserialized-key]]
+ (fn [{:keys [db] :as cofx} [deserialized-key]]
    (if (string/starts-with? deserialized-key constants/serialization-key)
      (navigate-to-serialized-community cofx deserialized-key)
      (rf/merge
@@ -414,7 +407,9 @@
              [:communities/fetch-community
               {:community-id           deserialized-key
                :update-last-opened-at? true}]]
-            [:dispatch [:navigate-to :community-overview deserialized-key]]]}
+            [:dispatch [:navigate-to :community-overview deserialized-key]]
+            (when (get-in db [:communities deserialized-key :joined])
+              [:dispatch [:activity-center.notifications/dismiss-community-overview deserialized-key]])]}
       (navigation/pop-to-root :shell-stack)))))
 
 (rf/reg-event-fx :communities/navigate-to-community-chat

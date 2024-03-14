@@ -10,7 +10,7 @@
    :background-color   (colors/theme-colors colors/neutral-10
                                             colors/neutral-80-opa-80
                                             theme)
-   :height             40
+   :min-height         40
    :padding-horizontal 12
    :padding-vertical   9
    :margin-top         4})

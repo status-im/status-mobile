@@ -30,13 +30,13 @@
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}))
+    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:navigate-to :wallet-accounts address]]
+         [:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
@@ -240,17 +240,17 @@
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
               (assoc-in [:wallet :ui :send :to-address] to-address))
-      :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-to stack-id]]]]})))
+      :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]]]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :type] :bridge)
-    :fx [[:dispatch [:open-modal :wallet-bridge]]]}))
+    :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-send stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-send stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
@@ -282,10 +282,11 @@
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
        (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
-       {:db (assoc db
-                   :wallet/local-suggestions
-                   (map #(assoc % :type item-types/saved-address) result)
-                   :wallet/valid-ens-or-address? (not-empty result))}))))
+       {:db (-> db
+                (assoc-in [:wallet :ui :search-address :local-suggestions]
+                          (map #(assoc % :type item-types/saved-address) result))
+                (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
+                          (not-empty result)))}))))
 
 (rf/reg-event-fx :wallet/search-ens
  (fn [_ [input chain-id cb domain]]
@@ -303,62 +304,67 @@
 
 (rf/reg-event-fx :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
-   {:db (assoc db
-               :wallet/local-suggestions     (if result
-                                               [{:type     item-types/address
-                                                 :ens      ens
-                                                 :address  (eip55/address->checksum result)
-                                                 :networks [:ethereum :optimism]}]
-                                               [])
-               :wallet/valid-ens-or-address? (boolean result))}))
+   {:db
+    (-> db
+        (assoc-in [:wallet :ui :search-address :local-suggestions]
+                  (if result
+                    [{:type     item-types/address
+                      :ens      ens
+                      :address  (eip55/address->checksum result)
+                      :networks [:ethereum :optimism]}]
+                    []))
+        (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
+                  (boolean result)))}))
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [_address]]
-   {:db (assoc db
-               :wallet/local-suggestions     nil
-               :wallet/valid-ens-or-address? false)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
  (fn [{:keys [db]} [_ens]]
-   {:db (assoc db
-               :wallet/local-suggestions     nil
-               :wallet/valid-ens-or-address? true)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] true))}))
 
 (rf/reg-event-fx :wallet/address-validation-success
  (fn [{:keys [db]} [_]]
-   {:db (assoc db :wallet/valid-ens-or-address? true)}))
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
 
 (rf/reg-event-fx :wallet/validate-address
  (fn [{:keys [db]} [address]]
-   (let [current-timeout (get db :wallet/search-timeout)
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
          timeout         (background-timer/set-timeout
                           #(rf/dispatch [:wallet/address-validation-success address])
                           2000)]
      (background-timer/clear-timeout current-timeout)
-     {:db (assoc db
-                 :wallet/valid-ens-or-address? false
-                 :wallet/search-timeout        timeout)})))
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/validate-ens
  (fn [{:keys [db]} [ens]]
-   (let [current-timeout (get db :wallet/search-timeout)
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
          timeout         (background-timer/set-timeout
                           #(rf/dispatch [:wallet/ens-validation-success ens])
                           2000)]
      (background-timer/clear-timeout current-timeout)
-     {:db (assoc db
-                 :wallet/valid-ens-or-address? false
-                 :wallet/search-timeout        timeout)})))
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
-   (let [current-timeout (get db :wallet/search-timeout)]
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])]
      (background-timer/clear-timeout current-timeout)
-     {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :local-suggestions] [])
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/clean-ens-or-address-validation
  (fn [{:keys [db]}]
-   {:db (assoc db :wallet/valid-ens-or-address? false)}))
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
@@ -404,7 +410,7 @@
   {:db (-> db
            (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
            (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
-   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]})
+   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screens/wallet.check-your-backup]}]]]})
 
 (rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
 

@@ -2,7 +2,6 @@
   (:require [cljs.test :refer [deftest is testing]]
             [legacy.status-im.mailserver.core :as mailserver]
             matcher-combinators.test
-            [status-im.constants :as constants]
             [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
             [status-im.contexts.communities.events :as events]))
 
@@ -105,7 +104,7 @@
   (testing "with community id"
     (testing "update fetching indicator in db"
       (is (match?
-           {:db {:communities/fetching-community {community-id true}}}
+           {:db {:communities/fetching-communities {community-id true}}}
            (events/fetch-community {} [{:community-id community-id}]))))
     (testing "call the fetch community rpc method with correct community id"
       (is (match?
@@ -125,21 +124,21 @@
     (testing "remove community id from fetching indicator in db"
       (is (match?
            nil
-           (get-in (events/community-failed-to-fetch {:db {:communities/fetching-community
+           (get-in (events/community-failed-to-fetch {:db {:communities/fetching-communities
                                                            {community-id true}}}
                                                      [community-id])
-                   [:db :communities/fetching-community community-id]))))))
+                   [:db :communities/fetching-communities community-id]))))))
 
 (deftest community-fetched
   (with-redefs [link-preview.events/community-link (fn [id] (str "community-link+" id))]
     (testing "given a community"
-      (let [cofx {:db {:communities/fetching-community {community-id true}}}
+      (let [cofx {:db {:communities/fetching-communities {community-id true}}}
             arg  [community-id {:id community-id}]]
         (testing "remove community id from fetching indicator in db"
           (is (match?
                nil
                (get-in (events/community-fetched cofx arg)
-                       [:db :communities/fetching-community community-id]))))
+                       [:db :communities/fetching-communities community-id]))))
         (testing "dispatch fxs"
           (is (match?
                {:fx [[:dispatch [:communities/handle-community {:id community-id}]]
@@ -149,7 +148,7 @@
                        {:id community-id}]]]}
                (events/community-fetched cofx arg))))))
     (testing "given a joined community"
-      (let [cofx {:db {:communities/fetching-community {community-id true}}}
+      (let [cofx {:db {:communities/fetching-communities {community-id true}}}
             arg  [community-id {:id community-id :joined true}]]
         (testing "dispatch fxs, do not spectate community"
           (is (match?
@@ -160,7 +159,7 @@
                        {:id community-id}]]]}
                (events/community-fetched cofx arg))))))
     (testing "given a token-gated community"
-      (let [cofx {:db {:communities/fetching-community {community-id true}}}
+      (let [cofx {:db {:communities/fetching-communities {community-id true}}}
             arg  [community-id {:id community-id :tokenPermissions [1]}]]
         (testing "dispatch fxs, do not spectate community"
           (is (match?
@@ -262,7 +261,7 @@
                     (-> effects :json-rpc/call first (select-keys [:method :params]))))))))
 
 (deftest handle-community
-  (let [community {:id community-id}]
+  (let [community {:id community-id :clock 2}]
     (testing "given a unjoined community"
       (let [effects (events/handle-community {} [community])]
         (is (match? community-id
@@ -287,29 +286,10 @@
              [[:dispatch [:communities/initialize-permission-addresses community-id]]
               [:dispatch [:chat.ui/spectate-community community-id]]]
              (filter some? (:fx effects))))))
-    (testing "given a community with view channel permission"
-      (let [community (assoc community
-                             :token-permissions
-                             [["perm-id" {:type constants/community-token-permission-can-view-channel}]])
+    (testing "given a community with lower clock"
+      (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
+        (is (nil? effects))))
+    (testing "given a community without clock"
+      (let [community (dissoc community :clock)
             effects   (events/handle-community {} [community])]
-        (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]
-              [:dispatch [:communities/check-permissions-to-join-community community-id]]
-              [:dispatch
-               [:communities/check-all-community-channels-permissions community-id]]]
-             (filter some? (:fx effects))))))
-
-    (testing "given a community with post in channel permission"
-      (let [community (assoc community
-                             :token-permissions
-                             [["perm-id"
-                               {:type constants/community-token-permission-can-view-and-post-channel}]])
-            effects   (events/handle-community {} [community])]
-        (is (match?
-             [[:dispatch [:communities/initialize-permission-addresses community-id]]
-              [:dispatch [:chat.ui/spectate-community community-id]]
-              [:dispatch [:communities/check-permissions-to-join-community community-id]]
-              [:dispatch
-               [:communities/check-all-community-channels-permissions community-id]]]
-             (filter some? (:fx effects))))))))
+        (is (nil? effects))))))

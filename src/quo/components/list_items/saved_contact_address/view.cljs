@@ -9,91 +9,89 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [schema.core :as schema]
     [utils.address :as address]
     [utils.i18n :as i18n]))
 
 (defn- account
-  [{:keys [emoji name address customization-color theme]}]
-  [rn/view
-   {:accessibility-label :account-container
-    :style               style/account-container}
-   [account-avatar/view
-    {:emoji               emoji
-     :size                16
-     :customization-color customization-color}]
-   [text/text
-    {:size   :paragraph-2
-     :weight :monospace
-     :style  (style/account-name theme)}
-    name]
-   [rn/view {:style (style/dot-divider theme)}]
-   [text/text
-    {:size   :paragraph-2
-     :weight :monospace
-     :style  (style/account-address theme)}
-    (address/get-shortened-key address)]])
+  [{:keys [emoji name address customization-color]}]
+  (let [theme (quo.theme/use-theme-value)]
+    [rn/view
+     {:accessibility-label :account-container
+      :style               style/account-container}
+     [account-avatar/view
+      {:emoji               emoji
+       :size                16
+       :customization-color customization-color}]
+     [text/text
+      {:size   :paragraph-2
+       :weight :monospace
+       :style  (style/account-name theme)}
+      name]
+     [rn/view {:style (style/dot-divider theme)}]
+     [text/text
+      {:size   :paragraph-2
+       :weight :monospace
+       :style  (style/account-address theme)}
+      (address/get-shortened-key address)]]))
 
 (defn- internal-view
-  []
-  (let [state       (reagent/atom :default)
-        active?     (atom false)
-        timer       (atom nil)
-        on-press-in (fn []
-                      (when-not (= @state :selected)
-                        (reset! timer (js/setTimeout #(reset! state :pressed) 100))))]
-    (fn [{:keys [contact-props accounts active-state? customization-color on-press theme]
-          :or   {customization-color :blue
-                 accounts            []
-                 active-state?       true}}]
-      (let [accounts-count (count accounts)
-            account-props  (when (= accounts-count 1)
-                             (first accounts))
-            on-press-out   (fn []
+  [{:keys [contact-props accounts active-state? customization-color on-press]
+    :or   {customization-color :blue
+           accounts            []
+           active-state?       true}}]
+  (let [theme             (quo.theme/use-theme-value)
+        [state set-state] (rn/use-state :default)
+        active?           (rn/use-ref-atom false)
+        timer             (rn/use-ref-atom nil)
+        on-press          (rn/use-callback #(when on-press (on-press)))
+        on-press-in       (rn/use-callback
+                           (fn []
+                             (when-not (= state :selected)
+                               (reset! timer (js/setTimeout #(set-state :pressed) 100))))
+                           [state])
+        accounts-count    (count accounts)
+        account-props     (when (= accounts-count 1) (first accounts))
+        on-press-out      (rn/use-callback
+                           (fn []
                              (let [new-state (if (or (not active-state?) @active?) :default :active)]
                                (when @timer (js/clearTimeout @timer))
                                (reset! timer nil)
                                (reset! active? (= new-state :active))
-                               (reset! state new-state)))]
-        [rn/pressable
-         {:style               (style/container
-                                {:state @state :customization-color customization-color})
-          :on-press-in         on-press-in
-          :on-press-out        on-press-out
-          :on-press            #(when on-press
-                                  (on-press))
-          :accessibility-label :container}
-         [rn/view {:style style/left-container}
-          [user-avatar/user-avatar (assoc contact-props :size :small)]
-          [rn/view {:style style/saved-contact-container}
-           [rn/view
-            {:style style/account-title-container}
-            [text/text
-             {:weight :semi-bold
-              :size   :paragraph-1}
-             (:full-name contact-props)]
-            [icon/icon :i/contact
-             {:container-style     style/contact-icon-container
-              :accessibility-label :contact-icon
-              :size                12
-              :color               (colors/theme-colors colors/primary-50 colors/primary-60 theme)
-              :color-2             colors/white}]]
-           (if account-props
-             [account (assoc account-props :theme theme)]
-             [text/text
-              {:accessibility-label :accounts-count
-               :size                :paragraph-2
-               :style               (style/accounts-count theme)}
-              (i18n/label :t/accounts-count {:count accounts-count})])]]
-         (when (> accounts-count 1)
-           [icon/icon :i/chevron-right
-            {:accessibility-label :check-icon
-             :size                20
-             :color               (colors/theme-colors colors/neutral-50
-                                                       colors/neutral-40
-                                                       theme)}])]))))
+                               (set-state new-state)))
+                           [active-state?])]
+    [rn/pressable
+     {:style               (style/container {:state state :customization-color customization-color})
+      :on-press-in         on-press-in
+      :on-press-out        on-press-out
+      :on-press            on-press
+      :accessibility-label :container}
+     [rn/view {:style style/left-container}
+      [user-avatar/user-avatar (assoc contact-props :size :small)]
+      [rn/view {:style style/saved-contact-container}
+       [rn/view
+        {:style style/account-title-container}
+        [text/text
+         {:weight :semi-bold
+          :size   :paragraph-1}
+         (:full-name contact-props)]
+        [icon/icon :i/contact
+         {:container-style     style/contact-icon-container
+          :accessibility-label :contact-icon
+          :size                12
+          :color               (colors/theme-colors colors/primary-50 colors/primary-60 theme)
+          :color-2             colors/white}]]
+       (if account-props
+         [account (assoc account-props :theme theme)]
+         [text/text
+          {:accessibility-label :accounts-count
+           :size                :paragraph-2
+           :style               (style/accounts-count theme)}
+          (i18n/label :t/accounts-count {:count accounts-count})])]]
+     (when (> accounts-count 1)
+       [icon/icon :i/chevron-right
+        {:accessibility-label :check-icon
+         :size                20
+         :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'internal-view component-schema/?schema)))
+(def view (schema/instrument #'internal-view component-schema/?schema))

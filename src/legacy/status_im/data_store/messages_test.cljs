@@ -37,7 +37,19 @@
                     :compressed-key             "c"
                     :timestamp                  3
                     :link-previews              [{:thumbnail {:url      "http://localhost"
-                                                              :data-uri "data:image/png"}}]}
+                                                              :data-uri "data:image/png"}
+                                                  :favicon   nil}]
+                    :status-link-previews       [{:url       "http://localhost"
+                                                  :community {:community-id "0x01"
+                                                              :display-name "Test Comm"
+                                                              :members-count 12
+                                                              :active-members-count 12
+                                                              :banner
+                                                              {:data-uri
+                                                               "data:image/png"}
+                                                              :icon
+                                                              {:data-uri
+                                                               "data:image/png"}}}]}
           message  {:id                       message-id
                     :whisperTimestamp         1
                     :parsedText               "parsed-text"
@@ -61,5 +73,17 @@
                     :timestamp                3
                     :outgoingStatus           "sending"
                     :linkPreviews             [{:thumbnail {:url     "http://localhost"
-                                                            :dataUri "data:image/png"}}]}]
+                                                            :dataUri "data:image/png"}
+                                                :favicon   nil}]
+                    :statusLinkPreviews       [{:url       "http://localhost"
+                                                :community {:communityId "0x01"
+                                                            :displayName "Test Comm"
+                                                            :membersCount 12
+                                                            :activeMembersCount 12
+                                                            :banner
+                                                            {:dataUri
+                                                             "data:image/png"}
+                                                            :icon
+                                                            {:dataUri
+                                                             "data:image/png"}}}]}]
       (is (= expected (m/<-rpc message))))))

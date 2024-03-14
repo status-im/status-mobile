@@ -210,12 +210,14 @@
            :else :i/play-audio)
          {:size  20
           :color colors/white}]]
-       [:f> quo/soundtrack
-        {:style                 style/slider-container
-         :audio-current-time-ms progress
-         :player-ref            (@active-players player-key)
-         :seeking-audio?        seeking-audio?
-         :max-audio-duration-ms constants/audio-max-duration-ms}]
+       [quo/soundtrack
+        {:style                     style/slider-container
+         :audio-current-time-ms     @progress
+         :set-audio-current-time-ms #(reset! progress %)
+         :player-ref                (@active-players player-key)
+         :seeking-audio?            @seeking-audio?
+         :set-seeking-audio?        #(reset! seeking-audio? %)
+         :max-audio-duration-ms     constants/audio-max-duration-ms}]
        [quo/text
         {:style               style/timestamp
          :accessibility-label :audio-duration-label

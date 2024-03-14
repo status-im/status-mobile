@@ -1,16 +1,16 @@
 (ns tests.integration-test.profile-test
   (:require
     [cljs.test :refer [deftest is use-fixtures]]
-    [legacy.status-im.utils.test :as utils.test]
     [promesa.core :as p]
     [status-im.contexts.profile.utils :as profile.utils]
     [test-helpers.integration :as h]
+    [tests.test-utils :as test-utils]
     [utils.re-frame :as rf]))
 
 (use-fixtures :each (h/fixture-session))
 
 (deftest edit-profile-name-test
-  (h/integration-test ::edit-profile-name
+  (h/test-async ::edit-profile-name
     (fn []
       (let [new-name "John Doe"]
         (p/do
@@ -21,10 +21,10 @@
             (is (= new-name display-name))))))))
 
 (deftest edit-profile-picture-test
-  (h/integration-test ::edit-profile-picture
+  (h/test-async ::edit-profile-picture
     (fn []
       (let [mock-image    "resources/images/mock2/monkey.png"
-            absolute-path (.resolve utils.test/path mock-image)]
+            absolute-path (.resolve test-utils/path mock-image)]
         (p/do
           (rf/dispatch [:profile/edit-picture absolute-path 80 80])
           (h/wait-for [:profile/update-local-picture :toasts/upsert])
@@ -32,7 +32,7 @@
             (is (not (nil? (:images profile))))))))))
 
 (deftest delete-profile-picture-test
-  (h/integration-test ::delete-profile-picture
+  (h/test-async ::delete-profile-picture
     (fn []
       (p/do
         (rf/dispatch [:profile/delete-picture])
@@ -41,7 +41,7 @@
           (is (nil? (:image profile))))))))
 
 (deftest edit-profile-bio-test
-  (h/integration-test ::edit-profile-bio
+  (h/test-async ::edit-profile-bio
     (fn []
       (let [new-bio "New bio text"]
         (p/do

@@ -53,7 +53,7 @@
                                                                 :eip1559-enabled          true}}]
    :wallet/wallet-send-suggested-routes          {:candidates []}
    :wallet/wallet-send-selected-networks         []
-   :navigation/current-screen-id                 :wallet-send-input-amount
+   :navigation/current-screen-id                 :screen/wallet.send-input-amount
    :wallet/wallet-send-to-address                "0x04371e2d9d66b82f056bc128064"
    :profile/currency-symbol                      "$"
    :wallet/token-by-symbol                       {:symbol                     :eth

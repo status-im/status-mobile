@@ -17,7 +17,7 @@
   "0x0402905bed83f0bbf993cee8239012ccb1a8bc86907ead834c1e38476a0eda71414eed0e25f525f270592a2eebb01c9119a4ed6429ba114e51f5cb0a28dae1adfd")
 
 (deftest one-to-one-chat-test
-  (h/integration-test ::one-to-one-chat
+  (h/test-async ::one-to-one-chat
     (fn []
       (p/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
@@ -26,7 +26,7 @@
         (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))))))
 
 (deftest delete-chat-test
-  (h/integration-test ::delete-chat
+  (h/test-async ::delete-chat
     (fn []
       (p/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
@@ -38,7 +38,7 @@
         (rf/dispatch-sync [:chat.ui/remove-chat chat-id])))))
 
 (deftest mute-chat-test
-  (h/integration-test ::mute-chat
+  (h/test-async ::mute-chat
     (fn []
       (p/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
@@ -57,7 +57,7 @@
         (is (not @(rf/subscribe [:chats/muted chat-id])))))))
 
 (deftest add-contact-test
-  (h/integration-test ::add-contact
+  (h/test-async ::add-contact
     (fn []
       (let [compressed-key "zQ3shMwgSMKHVznoowceZMxWde9HUnkQEVSGvvex8UFpFNErL"
             public-key     (str "0x0407e9dc435fe366cb0b4c4f35cbd925438c0f46fe0"

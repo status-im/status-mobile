@@ -5,7 +5,6 @@
    [:action {:optional true} [:enum :icon :none]]
    [:blur? {:optional true} [:maybe :boolean]]
    [:on-press {:optional true} [:maybe fn?]]
-   [:theme :schema.common/theme]
    [:account-props
     [:map {:closed true}
      [:type [:enum :default :watch-only]]

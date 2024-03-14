@@ -16,13 +16,41 @@
                       :community-id      :communityId
                       :clock-value       :clock})))
 
+(defn- <-status-link-previews-rpc
+  [preview]
+  (-> preview
+      (update :community
+              set/rename-keys
+              {:communityId        :community-id
+               :displayName        :display-name
+               :membersCount       :members-count
+               :activeMembersCount :active-members-count})
+      (update-in [:community :banner] set/rename-keys {:dataUri :data-uri})
+      (update-in [:community :icon] set/rename-keys {:dataUri :data-uri})))
+
+(defn ->status-link-previews-rpc
+  [preview]
+  (-> preview
+      (update :community
+              set/rename-keys
+              {:community-id         :communityId
+               :display-name         :displayName
+               :members-count        :membersCount
+               :active-members-count :activeMembersCount})
+      (update-in [:community :banner] set/rename-keys {:data-uri :dataUri})
+      (update-in [:community :icon] set/rename-keys {:data-uri :dataUri})))
+
 (defn- <-link-preview-rpc
   [preview]
-  (update preview :thumbnail set/rename-keys {:dataUri :data-uri}))
+  (-> preview
+      (update :thumbnail set/rename-keys {:dataUri :data-uri})
+      (update :favicon set/rename-keys {:dataUri :data-uri})))
 
 (defn ->link-preview-rpc
   [preview]
-  (update preview :thumbnail set/rename-keys {:data-uri :dataUri}))
+  (-> preview
+      (update :thumbnail set/rename-keys {:data-uri :dataUri})
+      (update :favicon set/rename-keys {:data-uri :dataUri})))
 
 (defn <-rpc
   [message]
@@ -53,8 +81,10 @@
         :new                      :new?
         :albumImagesCount         :album-images-count
         :displayName              :display-name
-        :linkPreviews             :link-previews})
+        :linkPreviews             :link-previews
+        :statusLinkPreviews       :status-link-previews})
       (update :link-previews #(map <-link-preview-rpc %))
+      (update :status-link-previews #(map <-status-link-previews-rpc %))
       (update :quoted-message
               set/rename-keys
               {:parsedText       :parsed-text

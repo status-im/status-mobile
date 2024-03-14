@@ -9,7 +9,6 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [schema.core :as schema]))
 
 (defn- account-view
@@ -97,41 +96,40 @@
               (colors/resolve-color customization-color theme))}]])
 
 (defn- internal-view
-  [_]
-  (let [pressed?     (reagent/atom false)
-        on-press-in  #(reset! pressed? true)
-        on-press-out #(reset! pressed? false)]
-    (fn [{:keys [type state blur? customization-color on-press]
-          :or   {customization-color :blue
-                 type                :default
-                 state               :default
-                 blur?               false}
-          :as   props}]
-      [rn/pressable
-       {:style               (style/container
-                              {:state               state
-                               :blur?               blur?
-                               :customization-color customization-color
-                               :pressed?            @pressed?})
-        :on-press-in         on-press-in
-        :on-press            on-press
-        :on-press-out        on-press-out
-        :accessibility-label :container}
-       [account-view props]
-       [rn/view {:style (when (= type :tag) style/token-tag-container)}
-        (cond
-          (#{:balance-neutral :balance-negative :balance-positive} type)
-          [balance-view props]
+  [{:keys [type state blur? customization-color on-press]
+    :or   {customization-color :blue
+           type                :default
+           state               :default
+           blur?               false}
+    :as   props}]
+  (let [theme                  (quo.theme/use-theme-value)
+        [pressed? set-pressed] (rn/use-state false)
+        on-press-in            (rn/use-callback #(set-pressed true))
+        on-press-out           (rn/use-callback #(set-pressed false))
+        props                  (assoc props :theme theme)]
+    [rn/pressable
+     {:style               (style/container
+                            {:state               state
+                             :blur?               blur?
+                             :customization-color customization-color
+                             :pressed?            pressed?})
+      :on-press-in         on-press-in
+      :on-press            on-press
+      :on-press-out        on-press-out
+      :accessibility-label :container}
+     [account-view props]
+     [rn/view {:style (when (= type :tag) style/token-tag-container)}
+      (cond
+        (#{:balance-neutral :balance-negative :balance-positive} type)
+        [balance-view props]
 
-          (= type :tag)
-          [token-tag props]
+        (= type :tag)
+        [token-tag props]
 
-          (= type :action)
-          [options-button props]
+        (= type :action)
+        [options-button props]
 
-          (and (= type :default) (= state :selected))
-          [check-icon props])]])))
+        (and (= type :default) (= state :selected))
+        [check-icon props])]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'internal-view component-schema/?schema)))
+(def view (schema/instrument #'internal-view component-schema/?schema))

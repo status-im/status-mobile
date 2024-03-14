@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.composer.events
   (:require [clojure.string :as string]
             [legacy.status-im.chat.models.mentions :as mentions]
-            [legacy.status-im.data-store.messages :as data-store-messages]
+            [legacy.status-im.data-store.messages :as data-store.messages]
             [status-im.constants :as constants]
             [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
             [status-im.contexts.chat.messenger.messages.transport.events :as messages.transport]
@@ -132,6 +132,37 @@
              :response-to   message-id})
           images)))
 
+(defn- build-status-link-previews
+  [status-link-previews]
+  (map (fn [{{:keys [community-id color description display-name
+                     members-count active-members-count icon banner]}
+             :community
+             url :url}]
+         {:url url
+          :community
+          {:community-id         community-id
+           :color                color
+           :description          description
+           :display-name         display-name
+           :members-count        members-count
+           :active-members-count active-members-count
+           :icon                 {:data-uri (:data-uri icon)
+                                  :width    (:width icon)
+                                  :height   (:height icon)}
+           :banner               {:data-uri (:data-uri banner)
+                                  :width    (:width banner)
+                                  :height   (:height banner)}}})
+       status-link-previews))
+
+(defn- build-link-previews
+  [link-previews]
+  (->> link-previews
+       (map #(select-keys %
+                          [:url :title :description :thumbnail
+                           :status-link-preview? :favicon]))
+       (filter (fn [{:keys [status-link-preview?]}]
+                 (not status-link-preview?)))))
+
 (defn build-text-message
   [{:keys [db]} input-text current-chat-id]
   (when-not (string/blank? input-text)
@@ -140,15 +171,16 @@
           preferred-name (get-in db [:profile/profile :preferred-name])
           emoji? (emoji-only-content? {:text        input-text
                                        :response-to message-id})]
-      {:chat-id       current-chat-id
-       :content-type  (if emoji?
-                        constants/content-type-emoji
-                        constants/content-type-text)
-       :text          input-text
-       :response-to   message-id
-       :ens-name      preferred-name
-       :link-previews (map #(select-keys % [:url :title :description :thumbnail])
-                           (get-in db [:chat/link-previews :unfurled]))})))
+      {:chat-id              current-chat-id
+       :content-type         (if emoji?
+                               constants/content-type-emoji
+                               constants/content-type-text)
+       :text                 input-text
+       :response-to          message-id
+       :ens-name             preferred-name
+       :link-previews        (build-link-previews (get-in db [:chat/link-previews :unfurled]))
+       :status-link-previews (build-status-link-previews
+                              (get-in db [:chat/status-link-previews :unfurled]))})))
 
 (rf/defn send-messages
   [{:keys [db] :as cofx} input-text current-chat-id]
@@ -181,29 +213,41 @@
           (when message-id
             {:response-to message-id}))])))))
 
+(defn- process-link-previews
+  [link-previews]
+  (->> link-previews
+       (map #(select-keys %
+                          [:url :title :description :thumbnail
+                           :status-link-preview? :favicon]))
+       (map data-store.messages/->link-preview-rpc)
+       (filter (fn [{:keys [status-link-preview?]}]
+                 (not status-link-preview?)))))
+
 (rf/defn send-edited-message
   [{:keys [db]
     :as   cofx} text {:keys [message-id quoted-message chat-id]}]
   (rf/merge
    cofx
-   {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id           message-id
-                                    :text         text
-                                    :content-type (if (emoji-only-content?
-                                                       {:text        text
-                                                        :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)
-                                    :linkPreviews (map #(-> %
-                                                            (select-keys [:url :title :description
-                                                                          :thumbnail])
-                                                            data-store-messages/->link-preview-rpc)
-                                                       (get-in db [:chat/link-previews :unfurled]))}]
-                     :js-response true
-                     :on-error    #(log/error "failed to edit message " %)
-                     :on-success  (fn [result]
-                                    (rf/dispatch [:sanitize-messages-and-process-response
-                                                  result]))}]}
+   {:json-rpc/call
+    [{:method      "wakuext_editMessage"
+      :params      [{:id                 message-id
+                     :text               text
+                     :content-type       (if (emoji-only-content?
+                                              {:text        text
+                                               :response-to quoted-message})
+                                           constants/content-type-emoji
+                                           constants/content-type-text)
+                     :linkPreviews       (process-link-previews (get-in db
+                                                                        [:chat/link-previews :unfurled]))
+                     :statusLinkPreviews (map data-store.messages/->status-link-previews-rpc
+                                              (get-in db
+                                                      [:chat/status-link-previews
+                                                       :unfurled]))}]
+      :js-response true
+      :on-error    #(log/error "failed to edit message " %)
+      :on-success  (fn [result]
+                     (rf/dispatch [:sanitize-messages-and-process-response
+                                   result]))}]}
    (link-preview/reset-unfurled)
    (cancel-message-edit)))
 
