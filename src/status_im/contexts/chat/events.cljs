@@ -14,7 +14,6 @@
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
     [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
     [status-im.contexts.chat.messenger.messages.list.state :as chat.state]
-    [status-im.feature-flags :as ff]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -444,8 +443,5 @@
                    {:pubkey     public-key
                     :ens        ens-name
                     :success-fn (fn [_]
-                                  {:dispatch [:open-modal
-                                              (if (ff/enabled? ::ff/profile.new-contact-ui)
-                                                :contact-profile
-                                                :profile)]})}]}
+                                  {:dispatch [:open-modal :contact-profile]})}]}
        {:dispatch [:navigate-to :my-profile]}))))
