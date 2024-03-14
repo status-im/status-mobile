@@ -22,7 +22,7 @@
   [{:keys [type on-press on-check disabled? checked?]} theme]
   (let [customization-color (rf/sub [:profile/customization-color])]
     [rn/touchable-opacity
-     {:on-press (when on-press on-press)}
+     {:on-press on-press}
      (case type
        :options
        [icons/icon :i/options

@@ -98,8 +98,8 @@
 (defn- find-sticky-indices
   [data]
   (->> data
-       (map-indexed (fn [index item] (if (:header? item) index nil)))
-       (filter (complement nil?))
+       (map-indexed (fn [index item] (when (:header? item) index)))
+       (remove nil?)
        (vec)))
 
 (defn- is-last-item-in-section
