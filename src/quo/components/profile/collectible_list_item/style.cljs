@@ -17,12 +17,15 @@
    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :border-width     1
    :border-radius    container-border-radius
-   :height           (if (= type :image)
-                       width
-                       (- width borders-width (* 2 card-image-padding-horizontal)))
-   :width            (if (= type :image)
-                       width
-                       (- width borders-width (* 2 card-image-padding-horizontal)))
+  ;;  :height           (if (= type :image)
+  ;;                      width
+  ;;                      (- width borders-width (* 2 card-image-padding-horizontal)))
+  ;;  :width            (if (= type :image)
+  ;;                      width
+  ;;                      (- width borders-width (* 2 card-image-padding-horizontal)))
+  :width "100%"
+  :aspect-ratio 1
+            ;; :flex 1
    :align-items      :center
    :justify-content  :center})
 
@@ -37,7 +40,8 @@
    :left     12})
 
 (def container
-  {:flex 1})
+  {:flex 1
+  })
 
 (defn card-view-container
   [theme]
@@ -54,15 +58,18 @@
 
 (defn card-image
   [width]
-  {:aspect-ratio  1
-   :flex          1
-   :height        (- width borders-width (* 2 card-image-padding-horizontal))
-   :width         (- width borders-width (* 2 card-image-padding-horizontal))
+  {:position :absolute
+                        :top 0
+                        :bottom 0
+                        :right 0
+                        :left 0
    :border-radius container-border-radius})
 
 (defn card-details-container
   [status]
   {:flex-direction :row
+        :height 24
+
    :margin-top     (if (= :loading status) 4 3)
    :margin-bottom  (if (= :loading status) 4 2)
    :align-items    :center

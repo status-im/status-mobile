@@ -13,7 +13,7 @@
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
-(defn- fallback
+(defn- fallback-view
   [{:keys [label theme width type]}]
   [rn/view
    {:style (style/fallback {:type  type
@@ -101,22 +101,26 @@
           :height               style/type-card-image-height-and-border}]
 
         (= status :unsupported)
-        [fallback
+        [fallback-view
          {:theme theme
           :width width
           :type  type
           :label (i18n/label :t/unsupported-file)}]
 
         (= status :cant-fetch)
-        [fallback
+        [fallback-view
          {:theme theme
           :width width
           :type  type
           :label (i18n/label :t/cant-fetch-info)}]
 
-        :else [rn/image
-               {:style  (style/card-image width)
-                :source image-src}])]
+        :else 
+        [rn/view {:style {:aspect-ratio 1}}
+        [rn/image
+               {:style  {
+                  :width "100%"
+                  :flex 1}
+                :source image-src}]])]
      (when (and (not= status :loading) (not= status :cant-fetch) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -142,24 +146,29 @@
          :height               style/type-image-height}]
 
        (= status :unsupported)
-       [fallback
+       [fallback-view
         {:theme theme
          :width width
          :type  type
          :label (i18n/label :t/unsupported-file)}]
 
        (= status :cant-fetch)
-       [fallback
+       [fallback-view
         {:theme theme
          :width width
          :type  type
          :label (i18n/label :t/cant-fetch-info)}]
 
-       :else [rn/image
-              {:style  {:width         width
-                        :height        width
+       :else [rn/view {:style {:aspect-ratio 1}}
+         [rn/image
+              {:style  {
+                        :position :absolute
+                        :top 0
+                        :bottom 0
+                        :right 0
+                        :left 0
                         :border-radius style/container-border-radius}
-               :source image-src}])
+               :source image-src}]])
      (when (and (not= status :loading) (not= status :cant-fetch) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -206,3 +215,27 @@ This will used in large lists, to avoid recalculating the same value it is easie
    :any])
 
 (def view (schema/instrument #'view-internal ?schema))
+
+#_(defn compe []
+[rn/view {:style {
+  :border-width 1
+  :border-color :red
+  :padding 4}} 
+
+    [rn/view {:style {
+      :aspect-ratio 1
+      :border-width 1
+      :border-color :green}}
+    
+    [rn/image 
+      {:source test-image
+       :style {
+            :width "100%"
+            :flex 1
+            :border-width 1
+            :border-color :blue}}]]
+  
+    [rn/view {:style {
+      :height 16
+      :border-width 1
+      :border-color :yellow}}]])

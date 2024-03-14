@@ -50,6 +50,8 @@
         :descriptor                descriptor
         :component-container-style {:padding-vertical  20
                                     :margin-horizontal 95}}
+       
+       
        [rn/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
         [quo/collectible-list-item
          (assoc @state
