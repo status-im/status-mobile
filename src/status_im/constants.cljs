@@ -19,6 +19,7 @@
 (def ^:const content-type-system-message-mutual-event-sent 15)
 (def ^:const content-type-system-message-mutual-event-accepted 16)
 (def ^:const content-type-system-message-mutual-event-removed 17)
+(def ^:const content-type-bridge-message 18)
 
 ;; Not implemented in status-go, only used for testing/ui work
 (def ^:const content-type-gif 100)

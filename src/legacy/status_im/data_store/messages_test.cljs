@@ -21,6 +21,7 @@
                                                  :image       nil
                                                  :response-to "a"
                                                  :links       nil}
+                    :bridge-message             nil
                     :whisper-timestamp          1
                     :contact-verification-state 1
                     :contact-request-state      2
