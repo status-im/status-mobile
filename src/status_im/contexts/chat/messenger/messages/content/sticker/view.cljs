@@ -3,8 +3,8 @@
             [react-native.fast-image :as fast-image]))
 
 (defn sticker-message
-  [{:keys [content]}]
+  [{:keys [url]}]
   [rn/view {:style {:margin-top 6 :margin-bottom 4}}
    [fast-image/fast-image
     {:style  {:width 120 :height 120}
-     :source {:uri (str (-> content :sticker :url) "&download=true")}}]])
+     :source {:uri (str url "&download=true")}}]])

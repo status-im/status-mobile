@@ -34,7 +34,7 @@
         :message-text (get-in message [:content :text])}])
 
     constants/content-type-sticker
-    [sticker/sticker-message message]
+    [sticker/sticker-message {:url (-> message :content :sticker :url)}]
 
     constants/content-type-system-pinned-message
     [not-implemented/not-implemented

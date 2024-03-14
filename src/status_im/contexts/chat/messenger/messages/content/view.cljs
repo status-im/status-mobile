@@ -204,7 +204,7 @@
                [emoji/emoji-message message-data context]
 
                constants/content-type-sticker
-               [sticker/sticker-message message-data]
+               [sticker/sticker-message {:url (-> message-data :content :sticker :url)}]
 
                constants/content-type-audio
                [audio/audio-message message-data context]
