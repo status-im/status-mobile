@@ -11,8 +11,8 @@
 
 (defn on-press
   [address]
-  (rf/dispatch [:wallet/switch-current-viewing-account address])
-  (rf/dispatch [:navigate-to :wallet-select-asset]))
+  (rf/dispatch [:wallet/select-from-account {:address address 
+                                             :stack-id :screen/wallet.select-from}]))
 
 (defn view
   []

@@ -41,7 +41,9 @@
                                             {:address address
                                              :recipient address
                                              :stack-id :wallet-select-address}])
-                              (rf/dispatch [:open-modal :wallet-select-from]))}
+                              (rf/dispatch [:wallet/wizard-navigate-forward
+                                            {:start-flow? true
+                                             :flow-id     :wallet-flow}]))}
       {:icon                :i/save
        :accessibility-label :save-address
        :label               (i18n/label :t/save-address)
