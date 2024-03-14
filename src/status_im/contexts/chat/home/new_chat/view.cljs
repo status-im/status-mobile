@@ -49,20 +49,41 @@
                                (rf/dispatch [:open-modal :new-contact]))}
       (i18n/label :t/add-a-contact)]]))
 
+(def ^:private contacts-selection-limit (dec constants/max-group-chat-participants))
+
+(defn- toggle-selection
+  [public-key user-selected?]
+  (let [selected-contacts-count (rf/sub [:selected-contacts-count])]
+    (if user-selected?
+      (re-frame/dispatch [:deselect-contact public-key])
+      (if (= contacts-selection-limit
+             selected-contacts-count)
+        (do
+          (rf/dispatch
+           [:toasts/upsert
+            {:id   :remove-nickname
+             :type :negative
+             :text (i18n/label :t/new-group-limit
+                               {:max-contacts
+                                contacts-selection-limit})}])
+          true)
+        (re-frame/dispatch [:select-contact public-key])))))
+
 (defn contact-item-render
-  [_]
-  (fn [{:keys [public-key] :as item}]
-    (let [user-selected? (rf/sub [:is-contact-selected? public-key])
-          on-toggle      #(if user-selected?
-                            (re-frame/dispatch [:deselect-contact public-key])
-                            (re-frame/dispatch [:select-contact public-key]))]
-      [contact-list-item/contact-list-item
-       {:on-press                on-toggle
-        :allow-multiple-presses? true
-        :accessory               {:type     :checkbox
-                                  :checked? user-selected?
-                                  :on-check on-toggle}}
-       item])))
+  [{:keys [public-key] :as item} set-has-error]
+  (let [user-selected? (rf/sub [:is-contact-selected? public-key])
+        on-toggle      (fn []
+                         (-> public-key
+                             (toggle-selection user-selected?)
+                             boolean
+                             set-has-error))]
+    [contact-list-item/contact-list-item
+     {:on-press                on-toggle
+      :allow-multiple-presses? true
+      :accessory               {:type     :checkbox
+                                :checked? user-selected?
+                                :on-check on-toggle}}
+     item]))
 
 (defn- view-internal
   [{:keys [scroll-enabled? on-scroll close theme]}]
@@ -70,6 +91,10 @@
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
         one-contact-selected?             (= selected-contacts-count 1)
+        [has-error? set-has-error]        (rn/use-state false)
+        render-fn                         (rn/use-callback (fn [item]
+                                                             (contact-item-render item set-has-error))
+                                                           [set-has-error])
         contacts-selected?                (pos? selected-contacts-count)
         {:keys [primary-name public-key]} (when one-contact-selected?
                                             (rf/sub [:contacts/contact-by-identity
@@ -92,10 +117,12 @@
           {:size   :paragraph-2
            :weight :regular
            :style  {:margin-bottom 2
-                    :color         (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}}
+                    :color         (if has-error?
+                                     (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+                                     (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))}}
           (i18n/label :t/selected-count-from-max
                       {:selected selected-contacts-count
-                       :max      constants/max-group-chat-participants})])]]
+                       :max      contacts-selection-limit})])]]
      (if (empty? contacts)
        [no-contacts-view {:theme theme}]
        [gesture/section-list
@@ -104,7 +131,7 @@
          :sections                       (rf/sub [:contacts/filtered-active-sections])
          :render-section-header-fn       contact-list/contacts-section-header
          :content-container-style        {:padding-bottom 70}
-         :render-fn                      contact-item-render
+         :render-fn                      render-fn
          :scroll-enabled                 @scroll-enabled?
          :on-scroll                      on-scroll}])
      (when contacts-selected?

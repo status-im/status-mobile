@@ -1037,6 +1037,7 @@
     "new-contract": "New Contract",
     "new-group": "New group",
     "new-group-chat": "New group chat",
+    "new-group-limit": "You can only add {{max-contacts}} contacts to the group chat",
     "new-network": "New network",
     "new-pin-description": "Enter new 6-digit passcode",
     "new-puk-description": "Enter new 12-digit PUK",
