@@ -28,7 +28,8 @@
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     (rf/merge cofx
-              {:effects.shell/reset-state              nil
+              {:set-root                               :progress
+               :effects.shell/reset-state              nil
                :hide-popover                           nil
                ::logout                                nil
                :profile.settings/webview-debug-changed false
