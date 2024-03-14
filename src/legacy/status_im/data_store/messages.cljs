@@ -90,11 +90,6 @@
               {:bridgeName :bridge-name
                :userName   :user-name
                :userAvatar :user-avatar})
-      (update-in [:bridge-message :user-name]
-                 #(when %
-                    (-> %
-                        (string/replace "<b>" "")
-                        (string/replace "</b>" ""))))
       (update :link-previews #(map <-link-preview-rpc %))
       (update :status-link-previews #(map <-status-link-previews-rpc %))
       (update :quoted-message

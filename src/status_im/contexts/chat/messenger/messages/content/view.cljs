@@ -27,7 +27,8 @@
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.address :as address]
     [utils.datetime :as datetime]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [clojure.string :as string]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -116,7 +117,12 @@
 
 (defn bridge-message-content
   [{:keys [bridge-message timestamp]}]
-  (let [{:keys [user-avatar user-name bridge-name content]} bridge-message]
+  (let [{:keys [user-avatar user-name
+                bridge-name content]} bridge-message
+        user-name                     (when (string? user-name)
+                                        (-> user-name
+                                            (string/replace "<b>" "")
+                                            (string/replace "</b>" "")))]
     [rn/view
      {:style {:flex-direction     :row
               :padding-horizontal 12
