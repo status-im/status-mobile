@@ -10,5 +10,6 @@
       [:format {:optional true} [:enum :short :long]]
       [:theme :schema.common/theme]
       [:networks {:optional true}
-       [:maybe [:sequential [:map [:network-name :keyword] [:short-name :string]]]]]]]]
+       [:maybe [:sequential [:map [:network-name :keyword] [:short-name :string]]]]]
+      [:full-address? {:optional true} [:maybe :boolean]]]]]
    :any])
