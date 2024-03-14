@@ -9,34 +9,42 @@
     [utils.re-frame :as rf]))
 
 (defn view
-  [contact-id contact-request-state group-chat]
-  (let [customization-color (rf/sub [:profile/customization-color])
-        [primary-name _]    (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
+  [{:keys [contact-id]}]
+  (let [customization-color             (rf/sub [:profile/customization-color])
+        [primary-name _]                (rf/sub [:contacts/contact-two-names-by-identity contact-id])
+        {:keys [contact-request-state]} (rf/sub [:chats/current-chat-chat-view])
+        chat-type                       (rf/sub [:chats/chat-type])
+        contact-request-send?           (or (not contact-request-state)
+                                            (= contact-request-state
+                                               constants/contact-request-state-none))
+        contact-request-received?       (= contact-request-state
+                                           constants/contact-request-state-received)
+        contact-request-pending?        (= contact-request-state
+                                           constants/contact-request-state-sent)]
+
     [rn/view {:style style/container}
      [quo/permission-context
-      [quo/button
-       {:type      :ghost
-        :size      24
-        :on-press  #(rf/dispatch [:chat.ui/show-profile contact-id])
-        :icon-left (if (= contact-request-state constants/contact-request-state-sent)
-                     :i/pending-state
-                     :i/add-user)}
-       (cond
-         group-chat
-         (i18n/label :t/group-chat-not-member)
+      {:on-press     #(rf/dispatch [:chat.ui/show-profile contact-id])
+       :type         :action
+       :action-icon  (cond
+                       (= chat-type :community-chat) :i/communities
+                       contact-request-pending?      :i/pending-state
+                       :else                         :i/add-user)
+       :action-label (cond
+                       (= chat-type :community-chat)
+                       (i18n/label :t/join-community-to-post)
 
-         (or (not contact-request-state)
-             (= contact-request-state
-                constants/contact-request-state-none))
-         (i18n/label :t/contact-request-chat-add {:name primary-name})
+                       (= chat-type :group-chat)
+                       (i18n/label :t/group-chat-not-member)
 
-         (= contact-request-state
-            constants/contact-request-state-received)
-         (str primary-name " sent you a contact request")
+                       contact-request-send?
+                       (i18n/label :t/contact-request-chat-add {:name primary-name})
 
-         (= contact-request-state
-            constants/contact-request-state-sent)
-         (i18n/label :t/contact-request-chat-pending))]]
+                       contact-request-received?
+                       (i18n/label :t/contact-request-chat-received {:name primary-name})
+
+                       contact-request-pending?
+                       (i18n/label :t/contact-request-chat-pending))}]
      [quo/floating-shell-button
       {:jump-to
        {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
