@@ -20,6 +20,7 @@
     [status-im.contexts.chat.messenger.messages.content.pin.view :as pin]
     [status-im.contexts.chat.messenger.messages.content.reactions.view :as reactions]
     [status-im.contexts.chat.messenger.messages.content.status.view :as status]
+    [status-im.contexts.chat.messenger.messages.content.sticker.view :as sticker]
     [status-im.contexts.chat.messenger.messages.content.style :as style]
     [status-im.contexts.chat.messenger.messages.content.system.text.view :as system.text]
     [status-im.contexts.chat.messenger.messages.content.text.view :as content.text]
@@ -203,7 +204,7 @@
                [emoji/emoji-message message-data context]
 
                constants/content-type-sticker
-               [not-implemented/not-implemented [old-message/sticker message-data]]
+               [sticker/sticker-message message-data]
 
                constants/content-type-audio
                [audio/audio-message message-data context]
