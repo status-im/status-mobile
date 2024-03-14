@@ -5,8 +5,7 @@
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
 (defn- get-button-color
   [{:keys [type pressed? customization-color theme]}]
@@ -45,48 +44,48 @@
     :color           (get-icon-and-text-color type theme)
     :container-style (style/container type)}])
 
-(defn- view-internal
+(defn view
   "[dynamic-button opts]
    opts
    {:type                :jump-to/:mention/:notification-down/:notification-up/:search/:search-with-label/:scroll-to-bottom
     :on-press            fn
     :count               mentions or notifications count
     :customization-color customize jump-to and mention button color}"
-  [_]
-  (let [pressed? (reagent/atom false)]
-    (fn [{:keys [type label on-press customization-color style theme] :as args}]
-      [rn/touchable-opacity
-       {:on-press-in         #(reset! pressed? true)
-        :on-press-out        #(reset! pressed? false)
-        :on-press            on-press
-        :active-opacity      1
-        :hit-slop            {:top 5 :bottom 5 :left 5 :right 5}
-        :pointer-events      :auto
-        :style               {:height 24}
-        :accessibility-label type}
-       [rn/view
-        {:style (merge
-                 {:flex-direction   :row
-                  :height           24
-                  :border-radius    12
-                  :background-color (get-button-color {:type                type
-                                                       :pressed?            @pressed?
-                                                       :customization-color (or customization-color
-                                                                                :primary)
-                                                       :theme               theme})}
-                 style)}
-        (when (#{:mention :search :search-with-label :scroll-to-bottom} type)
-          [icon-view type])
-        (when (#{:jump-to :mention :notification-down :notification-up :search-with-label} type)
-          [text/text
-           {:weight :medium
-            :size   :paragraph-2
-            :style  (assoc (style/text type) :color (get-icon-and-text-color type theme))}
-           (case type
-             :jump-to                                       label
-             :search-with-label                             label
-             (:mention :notification-down :notification-up) (str (:count args)))])
-        (when (#{:jump-to :notification-down :notification-up} type)
-          [icon-view type theme])]])))
-
-(def view (quo.theme/with-theme view-internal))
+  [{:keys [type label on-press customization-color style] :as args}]
+  (let [theme                  (quo.theme/use-theme-value)
+        [pressed? set-pressed] (rn/use-state false)
+        button-color           (get-button-color {:type                type
+                                                  :pressed?            pressed?
+                                                  :customization-color (or customization-color :primary)
+                                                  :theme               theme})
+        on-press-in            (rn/use-callback #(set-pressed true))
+        on-press-out           (rn/use-callback #(set-pressed false))]
+    [rn/touchable-opacity
+     {:on-press-in         on-press-in
+      :on-press-out        on-press-out
+      :on-press            on-press
+      :active-opacity      1
+      :hit-slop            {:top 5 :bottom 5 :left 5 :right 5}
+      :pointer-events      :auto
+      :style               {:height 24}
+      :accessibility-label type}
+     [rn/view
+      {:style (merge
+               {:flex-direction   :row
+                :height           24
+                :border-radius    12
+                :background-color button-color}
+               style)}
+      (when (#{:mention :search :search-with-label :scroll-to-bottom} type)
+        [icon-view type])
+      (when (#{:jump-to :mention :notification-down :notification-up :search-with-label} type)
+        [text/text
+         {:weight :medium
+          :size   :paragraph-2
+          :style  (assoc (style/text type) :color (get-icon-and-text-color type theme))}
+         (case type
+           :jump-to                                       label
+           :search-with-label                             label
+           (:mention :notification-down :notification-up) (str (:count args)))])
+      (when (#{:jump-to :notification-down :notification-up} type)
+        [icon-view type theme])]]))

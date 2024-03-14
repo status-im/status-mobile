@@ -38,7 +38,8 @@
     (when on-meter
       (.on ^js recorder "meter" on-meter))
     (when on-ended
-      (.on ^js recorder "ended" on-ended))))
+      (.on ^js recorder "ended" on-ended))
+    recorder))
 
 (defn new-player
   [audio options on-ended]
@@ -46,7 +47,8 @@
                     audio
                     (clj->js options))]
     (when on-ended
-      (.on ^js player "ended" on-ended))))
+      (.on ^js player "ended" on-ended))
+    player))
 
 (defn prepare-player
   [player on-prepared on-error]
@@ -157,20 +159,16 @@
                (on-error {:error (.-err err) :message (.-message err)})
                (on-seek))))))
 
-(defn can-play?
-  [player]
-  (and player (.-canPlay ^js player)))
-
 (defn destroy-recorder
   [recorder]
   (stop-recording recorder
-                  #(when (and recorder (not= (get-state recorder) DESTROYED))
+                  #(when (and recorder (.-destroy ^js recorder) (not= (get-state recorder) DESTROYED))
                      (.destroy ^js recorder))
                   #()))
 
 (defn destroy-player
   [player]
   (stop-playing player
-                #(when (and player (not= (get-state player) IDLE))
+                #(when (and player (.-destroy ^js player) (not= (get-state player) IDLE))
                    (.destroy ^js player))
                 #()))

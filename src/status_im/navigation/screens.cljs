@@ -1,6 +1,7 @@
 (ns status-im.navigation.screens
   (:require
     [legacy.status-im.ui.screens.screens :as old-screens]
+    [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
@@ -12,9 +13,6 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
-    [status-im.contexts.communities.actions.addresses-for-permissions.view :as
-     addresses-for-permissions]
-    [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -36,6 +34,8 @@
     [status-im.contexts.preview.quo.component-preview.view :as component-preview]
     [status-im.contexts.preview.quo.main :as quo.preview]
     [status-im.contexts.preview.status-im.main :as status-im-preview]
+    [status-im.contexts.profile.contact.share.view :as share-contact]
+    [status-im.contexts.profile.contact.view :as contact-profile]
     [status-im.contexts.profile.edit.accent-colour.view :as edit-accent-colour]
     [status-im.contexts.profile.edit.bio.view :as edit-bio]
     [status-im.contexts.profile.edit.name.view :as edit-name]
@@ -52,12 +52,13 @@
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
-    [status-im.contexts.wallet.account.bridge-send.view :as bridge-send]
-    [status-im.contexts.wallet.account.bridge-to.view :as bridge-to]
-    [status-im.contexts.wallet.account.bridge.view :as bridge]
+    [status-im.contexts.wallet.account.bridge-send.view :as wallet-bridge-send]
+    [status-im.contexts.wallet.account.bridge-to.view :as wallet-bridge-to]
+    [status-im.contexts.wallet.account.bridge.view :as wallet-bridge]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
-    [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
-    [status-im.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
+    [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as
+     wallet-confirm-address-to-watch]
+    [status-im.contexts.wallet.add-address-to-watch.view :as wallet-add-address-to-watch]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
@@ -69,7 +70,7 @@
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
-    [status-im.contexts.wallet.scan-account.view :as scan-address]
+    [status-im.contexts.wallet.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
@@ -124,24 +125,17 @@
      :options   {:sheet? true}
      :component communities.accounts-selection/view}
 
-    {:name      :addresses-for-permissions
-     :options   {:sheet? true}
-     :component addresses-for-permissions/view}
-
-    {:name      :airdrop-addresses
-     :options   {:sheet? true}
-     :component airdrop-addresses/view}
-
     {:name      :lightbox
      :options   options/lightbox
      :component lightbox/lightbox}
 
     {:name      :photo-selector
-     :options   (merge {:sheet? true} (options/statusbar-and-navbar-root))
+     :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
     {:name      :camera-screen
-     :options   options/camera-screen
+     :options   {:navigationBar {:backgroundColor colors/black}
+                 :theme         :dark}
      :component camera-screen/camera-screen}
 
     {:name      :new-contact
@@ -171,7 +165,7 @@
      :component settings-syncing/view}
 
     {:name      :settings-setup-syncing
-     :options   (merge options/dark-screen {:insets {:top? true}})
+     :options   options/transparent-screen-options
      :component settings-setup-syncing/view}
 
     ;; Onboarding
@@ -202,6 +196,14 @@
      :options   options/transparent-modal-screen-options
      :component edit-bio/view}
 
+    {:name      :contact-profile
+     :options   {:modalPresentationStyle :overCurrentContext}
+     :component contact-profile/view}
+
+    {:name      :share-contact
+     :options   options/transparent-screen-options
+     :component share-contact/view}
+
     {:name      :new-to-status
      :options   {:theme                  :dark
                  :layout                 options/onboarding-transparent-layout
@@ -228,17 +230,15 @@
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   (merge
-                 (options/statusbar-and-navbar-root)
-                 {:theme                  :dark
-                  :layout                 options/onboarding-transparent-layout
-                  :animations             (merge
-                                           transitions/new-to-status-modal-animations
-                                           transitions/push-animations-for-transparent-background)
-                  :popGesture             false
-                  :modalPresentationStyle :overCurrentContext
-                  :hardwareBackButton     {:dismissModalOnPress false
-                                           :popStackOnPress     false}})
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/new-to-status-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
      :component enable-biometrics/view}
 
     {:name      :generating-keys
@@ -258,14 +258,12 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   (merge
-                 (options/statusbar-and-navbar-root)
-                 {:theme                  :dark
-                  :layout                 options/onboarding-transparent-layout
-                  :animations             (merge
-                                           transitions/new-to-status-modal-animations
-                                           transitions/push-animations-for-transparent-background)
-                  :modalPresentationStyle :overCurrentContext})
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/new-to-status-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext}
      :component enable-notifications/view}
 
     {:name      :identifiers
@@ -296,11 +294,9 @@
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   (merge
-                 (options/statusbar-and-navbar-root)
-                 {:theme      :dark
-                  :layout     options/onboarding-layout
-                  :popGesture false})
+     :options   {:theme      :dark
+                 :layout     options/onboarding-layout
+                 :popGesture false}
      :component syncing-devices/view}
 
     {:name      :syncing-progress-intro
@@ -315,106 +311,104 @@
      :component syncing-results/view}
 
     {:name      :welcome
-     :options   (merge
-                 (options/statusbar-and-navbar-root)
-                 {:theme      :dark
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background})
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background}
      :component welcome/view}
 
     {:name      :emoji-picker
      :options   {:sheet? true}
      :component emoji-picker/view}
 
-    {:name      :wallet-accounts
+    {:name      :screen/wallet.accounts
      :options   {:insets             {:top? true}
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component wallet-accounts/view}
 
-    {:name      :wallet-edit-account
+    {:name      :screen/wallet.edit-account
      :component wallet-edit-account/view}
 
-    {:name      :add-address-to-watch
+    {:name      :screen/wallet.add-address-to-watch
      :options   {:insets {:top? true}}
-     :component add-address-to-watch/view}
+     :component wallet-add-address-to-watch/view}
 
-    {:name      :confirm-address-to-watch
-     :component confirm-address-to-watch/view}
+    {:name      :screen/wallet.confirm-address-to-watch
+     :component wallet-confirm-address-to-watch/view}
 
-    {:name      :wallet-bridge
+    {:name      :screen/wallet.bridge
      :options   {:insets                 {:top? true}
                  :modalPresentationStyle :overCurrentContext}
-     :component bridge/view}
+     :component wallet-bridge/view}
 
-    {:name      :wallet-bridge-to
+    {:name      :screen/wallet.bridge-to
      :options   {:insets {:top? true}}
-     :component bridge-to/view}
+     :component wallet-bridge-to/view}
 
-    {:name      :wallet-bridge-send
+    {:name      :screen/wallet.bridge-send
      :options   {:insets {:top? true}}
-     :component bridge-send/view}
+     :component wallet-bridge-send/view}
 
-    {:name      :wallet-edit-derivation-path
+    {:name      :screen/wallet.edit-derivation-path
      :component wallet-edit-derivation-path/view}
 
-    {:name      :wallet-collectible
+    {:name      :screen/wallet.collectible
      :component wallet-collectible/view}
 
-    {:name      :wallet-select-keypair
+    {:name      :screen/wallet.select-keypair
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-select-keypair/view}
 
-    {:name      :wallet-create-account
+    {:name      :screen/wallet.create-account
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
 
-    {:name      :wallet-backup-recovery-phrase
+    {:name      :screen/wallet.backup-recovery-phrase
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-backup-recovery-phrase/view}
 
-    {:name      :wallet-check-your-backup
+    {:name      :screen/wallet.check-your-backup
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-check-your-backup/view}
 
-    {:name      :wallet-keypair-name
+    {:name      :screen/wallet.keypair-name
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-keypair-name/view}
 
-    {:name      :wallet-share-address
+    {:name      :screen/wallet.share-address
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
 
-    {:name      :wallet-saved-addresses
+    {:name      :screen/wallet.saved-addresses
      :component wallet-saved-addresses/view}
 
-    {:name      :wallet-send-input-amount
+    {:name      :screen/wallet.send-input-amount
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top?    true
                                           :bottom? true}}
      :component wallet-send-input-amount/view}
 
-    {:name      :wallet-select-address
+    {:name      :screen/wallet.select-address
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top? true}}
      :component wallet-select-address/view}
 
-    {:name      :wallet-select-asset
+    {:name      :screen/wallet.select-asset
      :options   {:insets {:top? true}}
      :component wallet-select-asset/view}
 
-    {:name      :wallet-transaction-confirmation
+    {:name      :screen/wallet.transaction-confirmation
      :component wallet-transaction-confirmation/view}
 
-    {:name      :wallet-transaction-progress
+    {:name      :screen/wallet.transaction-progress
      :component wallet-transaction-progress/view}
 
-    {:name      :scan-address
+    {:name      :screen/wallet.scan-address
      :options   (merge
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
-     :component scan-address/view}
+     :component wallet-scan-address/view}
 
     {:name      :scan-profile-qr-code
      :options   (merge
@@ -427,6 +421,13 @@
     {:name      :settings-password
      :options   options/transparent-modal-screen-options
      :component settings-password/view}]
+
+   [{:name    :shell
+     :options {:theme :dark}}
+    {:name :communities-stack}
+    {:name :chats-stack}
+    {:name :wallet-stack}
+    {:name :browser-stack}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview

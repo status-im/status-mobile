@@ -80,24 +80,51 @@
           []
           curr-previews))
 
+(defn- merge-preview-types
+  [new-previews new-status-link-previews]
+  (-> (map
+       (fn [{{:keys [display-name members-count banner icon
+                     description]} :community
+             url                   :url}]
+         ;; Other types of previews need to be done here too
+         ;; Like User link preview and Channel link preview
+         {:url                  url
+          :display-name         display-name
+          :members-count        members-count
+          :banner               banner
+          :icon                 icon
+          :description          description
+          ;; Need to set status-link-preview?
+          ;; to true to not send status-link-previews
+          ;; with normal link-previews
+          :status-link-preview? true})
+       new-status-link-previews)
+      (concat new-previews)))
+
 (rf/defn unfurl-parsed-urls-success
   {:events [:link-preview/unfurl-parsed-urls-success]}
-  [{:keys [db]} request-id {new-previews :linkPreviews}]
+  [{:keys [db]} request-id {new-previews :linkPreviews status-link-previews :statusLinkPreviews}]
   (when (= request-id (get-in db [:chat/link-previews :request-id]))
-    (let [new-previews         (map data-store.messages/<-link-preview-rpc new-previews)
-          curr-previews        (get-in db [:chat/link-previews :unfurled])
-          indexed-new-previews (utils.collection/index-by :url new-previews)]
+    (let [new-previews             (map data-store.messages/<-link-preview-rpc new-previews)
+          new-status-link-previews (map data-store.messages/<-status-link-previews-rpc
+                                        status-link-previews)
+          merged-preview-types     (merge-preview-types new-previews new-status-link-previews)
+          curr-previews            (get-in db [:chat/link-previews :unfurled])
+          indexed-new-previews     (utils.collection/index-by :url merged-preview-types)]
       (log/debug "URLs unfurled"
+                 :chat/link-previews
                  {:event      :link-preview/unfurl-parsed-urls-success
-                  :previews   (map #(update % :thumbnail dissoc :data-uri) new-previews)
+                  :previews   (map #(update % :thumbnail dissoc :data-uri) merged-preview-types)
                   :request-id request-id})
       {:db (-> db
+               (assoc-in [:chat/status-link-previews :unfurled] new-status-link-previews)
                (update-in [:chat/link-previews :unfurled] reconcile-unfurled indexed-new-previews)
                (update-in [:chat/link-previews :cache]
                           merge
                           indexed-new-previews
                           (utils.collection/index-by :url
-                                                     (failed-previews curr-previews new-previews))))})))
+                                                     (failed-previews curr-previews
+                                                                      merged-preview-types))))})))
 
 (rf/defn unfurl-parsed-urls-error
   {:events [:link-preview/unfurl-parsed-urls-error]}

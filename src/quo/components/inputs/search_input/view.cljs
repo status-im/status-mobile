@@ -4,8 +4,7 @@
     [quo.components.icon :as icon]
     [quo.components.inputs.search-input.style :as style]
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
 (def ^:private tag-separator [rn/view {:style style/tag-separator}])
 
@@ -41,54 +40,52 @@
     text-input))
 
 (defn search-input
-  [{:keys [value]}]
-  (let [state           (reagent/atom :default)
-        set-active      #(reset! state :active)
-        set-default     #(reset! state :default)
-        scroll-view-ref (atom nil)
-        use-value?      (boolean value)]
-    (fn [{:keys [value tags disabled? blur? on-change-text customization-color
-                 on-clear on-focus on-blur override-theme container-style]
-          :or   {customization-color :blue}
-          :as   props}
-         & children]
-      (let [clean-props (apply dissoc props props-to-remove)]
-        [rn/view
-         {:accessibility-label :search-input
-          :style               (style/container container-style)}
-         [rn/scroll-view
-          {:ref                               #(reset! scroll-view-ref %)
-           :style                             style/scroll-container
-           :content-container-style           style/scroll-content
-           :horizontal                        true
-           :shows-horizontal-scroll-indicator false}
-          (when (seq tags)
-            [inner-tags tags])
-
-          (add-children
-           [rn/text-input
-            (cond-> {:style                  (style/input-text disabled?)
-                     :cursor-color           (style/cursor customization-color override-theme)
-                     :placeholder-text-color (style/placeholder-color @state blur? override-theme)
-                     :editable               (not disabled?)
-                     :on-key-press           #(handle-backspace % @scroll-view-ref)
-                     :keyboard-appearance    (colors/theme-colors :light :dark override-theme)
-                     :on-change-text         (fn [new-text]
-                                               (when on-change-text
-                                                 (on-change-text new-text))
-                                               (reagent/flush))
-                     :on-focus               (fn []
-                                               (set-active)
-                                               (when on-focus (on-focus)))
-                     :on-blur                (fn []
-                                               (set-default)
-                                               (when on-blur (on-blur)))}
-              use-value?        (assoc :value value)
-              (seq clean-props) (merge clean-props))]
-           (when-not use-value? children))]
-
-         (when (or (seq value) (seq children))
-           [clear-button
-            {:on-press       on-clear
-             :blur?          blur?
-             :override-theme override-theme}])]))))
+  [{:keys [value tags disabled? blur? on-change-text customization-color
+           on-clear on-focus on-blur override-theme container-style]
+    :or   {customization-color :blue}
+    :as   props}
+   & children]
+  (let [[state set-state]  (rn/use-state :default)
+        on-focus           (rn/use-callback
+                            (fn []
+                              (set-state :active)
+                              (when on-focus (on-focus))))
+        on-blur            (rn/use-callback
+                            (fn []
+                              (set-state :default)
+                              (when on-blur (on-blur))))
+        scroll-view-ref    (rn/use-ref-atom nil)
+        on-scroll-view-ref (rn/use-callback #(reset! scroll-view-ref %))
+        on-key-press       (rn/use-callback #(handle-backspace % @scroll-view-ref))
+        use-value?         (boolean value)
+        clean-props        (apply dissoc props props-to-remove)]
+    [rn/view
+     {:accessibility-label :search-input
+      :style               (style/container container-style)}
+     [rn/scroll-view
+      {:ref                               on-scroll-view-ref
+       :style                             style/scroll-container
+       :content-container-style           style/scroll-content
+       :horizontal                        true
+       :shows-horizontal-scroll-indicator false}
+      (when (seq tags)
+        [inner-tags tags])
+      (add-children
+       [rn/text-input
+        (cond-> {:style                  (style/input-text disabled?)
+                 :cursor-color           (style/cursor customization-color override-theme)
+                 :placeholder-text-color (style/placeholder-color state blur? override-theme)
+                 :editable               (not disabled?)
+                 :on-key-press           on-key-press
+                 :keyboard-appearance    (colors/theme-colors :light :dark override-theme)
+                 :on-change-text         on-change-text
+                 :on-focus               on-focus
+                 :on-blur                on-blur}
+          use-value?        (assoc :value value)
+          (seq clean-props) (merge clean-props))]
+       (when-not use-value? children))]
+     (when (or (seq value) (seq children))
+       [clear-button
+        {:on-press       on-clear
+         :blur?          blur?
+         :override-theme override-theme}])]))

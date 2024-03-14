@@ -52,7 +52,7 @@
        {:icon                :i/qr-code
         :accessibility-label :show-address-qr
         :label               (i18n/label :t/show-address-qr)
-        :on-press            #(rf/dispatch [:open-modal :wallet-share-address {:status :share}])}
+        :on-press            #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :share}])}
        {:icon                :i/share
         :accessibility-label :share-address
         :label               (i18n/label :t/share-address)

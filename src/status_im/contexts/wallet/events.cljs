@@ -3,16 +3,19 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]
-    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
@@ -27,13 +30,13 @@
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}))
+    :fx [[:dispatch [:navigate-to :screen/wallet.accounts address]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:navigate-to :wallet-accounts address]]
+         [:dispatch [:navigate-to :screen/wallet.accounts address]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
@@ -56,7 +59,7 @@
            [:wallet :accounts]
            (utils.collection/index-by :address (data-store/rpc->accounts wallet-accounts)))
       :fx [[:dispatch [:wallet/get-wallet-token]]
-           [:dispatch [:wallet/request-collectibles {:start-at-index 0 :new-request? true}]]
+           [:dispatch [:wallet/request-collectibles-for-all-accounts {:new-request? true}]]
            (when new-account?
              [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])]})))
 
@@ -202,23 +205,52 @@
                                     (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses account-details on-success]]]})))
 
+(defn add-keypair-and-create-account
+  [_ [{:keys [sha3-pwd new-keypair]}]]
+  (let [lowercase-address (if (:address new-keypair)
+                            (string/lower-case (:address new-keypair))
+                            (:address new-keypair))]
+    {:fx [[:json-rpc/call
+           [{:method     "accounts_addKeypair"
+             :params     [sha3-pwd new-keypair]
+             :on-success [:wallet/add-account-success lowercase-address]
+             :on-error   #(log/info "failed to create keypair " %)}]]]}))
+
+(rf/reg-event-fx :wallet/add-keypair-and-create-account add-keypair-and-create-account)
+
+(defn get-keypairs
+  [_]
+  {:fx [[:json-rpc/call
+         [{:method     "accounts_getKeypairs"
+           :params     []
+           :on-success [:wallet/get-keypairs-success]
+           :on-error   #(log/info "failed to get keypairs " %)}]]]})
+
+(rf/reg-event-fx :wallet/get-keypairs get-keypairs)
+
+(defn get-keypairs-success
+  [{:keys [db]} [keypairs]]
+  {:db (assoc-in db [:wallet :keypairs] (data-store/parse-keypairs keypairs))})
+
+(rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
+
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
      {:db (-> db
               (assoc-in [:wallet :ui :send :token] token)
               (assoc-in [:wallet :ui :send :to-address] to-address))
-      :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-to stack-id]]]]})))
+      :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-to stack-id]]]]})))
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :type] :bridge)
-    :fx [[:dispatch [:open-modal :wallet-bridge]]]}))
+    :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-bridge-send stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-send stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
@@ -250,10 +282,11 @@
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
        (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
-       {:db (assoc db
-                   :wallet/local-suggestions
-                   (map #(assoc % :type item-types/saved-address) result)
-                   :wallet/valid-ens-or-address? (not-empty result))}))))
+       {:db (-> db
+                (assoc-in [:wallet :ui :search-address :local-suggestions]
+                          (map #(assoc % :type item-types/saved-address) result))
+                (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
+                          (not-empty result)))}))))
 
 (rf/reg-event-fx :wallet/search-ens
  (fn [_ [input chain-id cb domain]]
@@ -271,83 +304,67 @@
 
 (rf/reg-event-fx :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
-   {:db (assoc db
-               :wallet/local-suggestions     (if result
-                                               [{:type     item-types/address
-                                                 :ens      ens
-                                                 :address  (eip55/address->checksum result)
-                                                 :networks [:ethereum :optimism]}]
-                                               [])
-               :wallet/valid-ens-or-address? (boolean result))}))
+   {:db
+    (-> db
+        (assoc-in [:wallet :ui :search-address :local-suggestions]
+                  (if result
+                    [{:type     item-types/address
+                      :ens      ens
+                      :address  (eip55/address->checksum result)
+                      :networks [:ethereum :optimism]}]
+                    []))
+        (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
+                  (boolean result)))}))
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [_address]]
-   {:db (assoc db
-               :wallet/local-suggestions     nil
-               :wallet/valid-ens-or-address? false)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))}))
 
 (rf/reg-event-fx :wallet/ens-validation-success
  (fn [{:keys [db]} [_ens]]
-   {:db (assoc db
-               :wallet/local-suggestions     nil
-               :wallet/valid-ens-or-address? true)}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :search-address :local-suggestions] nil)
+            (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] true))}))
 
 (rf/reg-event-fx :wallet/address-validation-success
  (fn [{:keys [db]} [_]]
-   {:db (assoc db :wallet/valid-ens-or-address? true)}))
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] true)}))
 
 (rf/reg-event-fx :wallet/validate-address
  (fn [{:keys [db]} [address]]
-   (let [current-timeout (get db :wallet/search-timeout)
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
          timeout         (background-timer/set-timeout
                           #(rf/dispatch [:wallet/address-validation-success address])
                           2000)]
      (background-timer/clear-timeout current-timeout)
-     {:db (assoc db
-                 :wallet/valid-ens-or-address? false
-                 :wallet/search-timeout        timeout)})))
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/validate-ens
  (fn [{:keys [db]} [ens]]
-   (let [current-timeout (get db :wallet/search-timeout)
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])
          timeout         (background-timer/set-timeout
                           #(rf/dispatch [:wallet/ens-validation-success ens])
                           2000)]
      (background-timer/clear-timeout current-timeout)
-     {:db (assoc db
-                 :wallet/valid-ens-or-address? false
-                 :wallet/search-timeout        timeout)})))
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :search-timeout] timeout)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/clean-local-suggestions
  (fn [{:keys [db]}]
-   (let [current-timeout (get db :wallet/search-timeout)]
+   (let [current-timeout (get-in db [:wallet :ui :search-address :search-timeout])]
      (background-timer/clear-timeout current-timeout)
-     {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :local-suggestions] [])
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] false))})))
 
 (rf/reg-event-fx :wallet/clean-ens-or-address-validation
  (fn [{:keys [db]}]
-   {:db (assoc db :wallet/valid-ens-or-address? false)}))
-
-(rf/reg-event-fx :wallet/get-address-details-success
- (fn [{:keys [db]} [{:keys [hasActivity]}]]
-   {:db (assoc-in db
-         [:wallet :ui :watch-address-activity-state]
-         (if hasActivity :has-activity :no-activity))}))
-
-(rf/reg-event-fx :wallet/clear-address-activity-check
- (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui] dissoc :watch-address-activity-state)}))
-
-(rf/reg-event-fx :wallet/get-address-details
- (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :ui :watch-address-activity-state] :scanning)
-    :fx [[:json-rpc/call
-          [{:method     "wallet_getAddressDetails"
-            :params     [(chain/chain-id db) address]
-            :on-success [:wallet/get-address-details-success]
-            :on-error   #(log/info "failed to get address details"
-                                   {:error %
-                                    :event :wallet/get-address-details})}]]]}))
+   {:db (assoc-in db [:wallet :ui :search-address :valid-ens-or-address?] false)}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer-from-bottom-sheet
@@ -371,7 +388,8 @@
  (fn []
    {:fx [[:dispatch [:wallet/start-wallet]]
          [:dispatch [:wallet/get-ethereum-chains]]
-         [:dispatch [:wallet/get-accounts]]]}))
+         [:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]]}))
 
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
@@ -392,10 +410,9 @@
   {:db (-> db
            (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
            (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
-   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :wallet-check-your-backup]}]]]})
+   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screens/wallet.check-your-backup]}]]]})
 
 (rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
-
 
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
@@ -418,3 +435,38 @@
   {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)})
 
 (rf/reg-event-fx :wallet/clear-new-keypair clear-new-keypair)
+
+(rf/reg-event-fx
+ :wallet/blockchain-status-changed
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [chains                  (-> (transforms/json->clj message)
+                                     (update-keys (comp utils.number/parse-int name)))
+         down-chains             (-> (select-keys chains
+                                                  (for [[k v] chains :when (= v "down")] k))
+                                     keys)
+         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
+         disabled-chain-id?      (fn [chain-id]
+                                   (let [mainnet-chain? (contains? constants/mainnet-chain-ids chain-id)]
+                                     (if test-networks-enabled?
+                                       mainnet-chain?
+                                       (not mainnet-chain?))))
+         chains-filtered-by-mode (remove disabled-chain-id? down-chains)
+         chains-down?            (seq chains-filtered-by-mode)
+         chain-names             (when chains-down?
+                                   (->> (map #(-> (utils/id->network %)
+                                                  name
+                                                  string/capitalize)
+                                             chains-filtered-by-mode)
+                                        distinct
+                                        (string/join ", ")))]
+     (when (seq down-chains)
+       (log/info "[wallet] Chain(s) down: " down-chains)
+       (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?)))
+     {:db (assoc-in db [:wallet :statuses :blockchains] chains)
+      :fx (when chains-down?
+            [[:dispatch
+              [:toasts/upsert
+               {:id       :chains-down
+                :type     :negative
+                :text     (i18n/label :t/provider-is-down {:chains chain-names})
+                :duration 10000}]]])})))

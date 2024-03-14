@@ -22,11 +22,12 @@
 (defn- locked-input-internal
   [{:keys [label icon container-style theme]} value]
   [rn/view {:style container-style}
-   [text/text
-    {:size   :paragraph-2
-     :weight :medium
-     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-    label]
+   (when label
+     [text/text
+      {:size   :paragraph-2
+       :weight :medium
+       :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+      label])
    [info-box
     {:theme      theme
      :icon       icon

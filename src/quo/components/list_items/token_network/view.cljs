@@ -2,12 +2,13 @@
   (:require
     [quo.components.icon :as icon]
     [quo.components.list-items.preview-list.view :as preview-list]
+    [quo.components.list-items.token-network.schema :as component-schema]
     [quo.components.list-items.token-network.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [schema.core :as schema]))
 
 (defn- info
   [{:keys [token label networks]}]
@@ -29,42 +30,40 @@
      networks]]])
 
 (defn- values
-  [{:keys [state token-value fiat-value customization-color theme]}]
-  (if (= state :selected)
-    [icon/icon :i/check
-     {:color               (style/check-color customization-color theme)
-      :accessibility-label :check-icon}]
-    [rn/view {:style style/values-container}
-     [text/text
-      {:weight          :medium
-       :size            :paragraph-2
-       :number-of-lines 1}
-      token-value]
-     [text/text
-      {:style           (style/fiat-value theme)
-       :size            :paragraph-2
-       :number-of-lines 1}
-      fiat-value]]))
+  [{:keys [state token-value fiat-value customization-color]}]
+  (let [theme (quo.theme/use-theme-value)]
+    (if (= state :selected)
+      [icon/icon :i/check
+       {:color               (style/check-color customization-color theme)
+        :accessibility-label :check-icon}]
+      [rn/view {:style style/values-container}
+       [text/text
+        {:weight          :medium
+         :size            :paragraph-2
+         :number-of-lines 1}
+        token-value]
+       [text/text
+        {:style           (style/fiat-value theme)
+         :size            :paragraph-2
+         :number-of-lines 1}
+        fiat-value]])))
 
 (defn- view-internal
-  []
-  (let [pressed?     (reagent/atom false)
-        on-press-in  #(reset! pressed? true)
-        on-press-out #(reset! pressed? false)]
-    (fn [{:keys [on-press state customization-color
-                 _token _networks _token-value _fiat-value theme]
-          :as   props
-          :or   {customization-color :blue}}]
-      (let [internal-state (if @pressed?
-                             :pressed
-                             state)]
-        [rn/pressable
-         {:style               (style/container internal-state customization-color theme)
-          :on-press-in         on-press-in
-          :on-press-out        on-press-out
-          :on-press            on-press
-          :accessibility-label :token-network}
-         [info props]
-         [values props]]))))
+  [{:keys [on-press state customization-color _token _networks _token-value _fiat-value]
+    :as   props
+    :or   {customization-color :blue}}]
+  (let [theme                  (quo.theme/use-theme-value)
+        [pressed? set-pressed] (rn/use-state false)
+        on-press-in            (rn/use-callback #(set-pressed true))
+        on-press-out           (rn/use-callback #(set-pressed false))
+        internal-state         (if pressed? :pressed state)]
+    [rn/pressable
+     {:style               (style/container internal-state customization-color theme)
+      :on-press-in         on-press-in
+      :on-press-out        on-press-out
+      :on-press            on-press
+      :accessibility-label :token-network}
+     [info props]
+     [values props]]))
 
-(def view (quo.theme/with-theme view-internal))
+(def view (schema/instrument #'view-internal component-schema/?schema))

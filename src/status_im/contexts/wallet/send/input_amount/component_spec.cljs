@@ -43,17 +43,17 @@
                                                   :total-balance              100
                                                   :market-values-per-currency {:usd {:price 10}}}
    :wallet/wallet-send-loading-suggested-routes? false
-   :wallet/wallet-send-route                     {:from       {:chainid                1
-                                                               :native-currency-symbol "ETH"}
-                                                  :to         {:chain-id               1
-                                                               :native-currency-symbol "ETH"}
-                                                  :gas-amount "23487"
-                                                  :gas-fees   {:base-fee                 "32.325296406"
-                                                               :max-priority-fee-per-gas "0.011000001"
-                                                               :eip1559-enabled          true}}
+   :wallet/wallet-send-route                     [{:from       {:chainid                1
+                                                                :native-currency-symbol "ETH"}
+                                                   :to         {:chain-id               1
+                                                                :native-currency-symbol "ETH"}
+                                                   :gas-amount "23487"
+                                                   :gas-fees   {:base-fee                 "32.325296406"
+                                                                :max-priority-fee-per-gas "0.011000001"
+                                                                :eip1559-enabled          true}}]
    :wallet/wallet-send-suggested-routes          {:candidates []}
    :wallet/wallet-send-selected-networks         []
-   :navigation/current-screen-id                 :wallet-send-input-amount
+   :navigation/current-screen-id                 :screen/wallet.send-input-amount
    :wallet/wallet-send-to-address                "0x04371e2d9d66b82f056bc128064"
    :profile/currency-symbol                      "$"
    :wallet/token-by-symbol                       {:symbol                     :eth

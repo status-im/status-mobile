@@ -20,7 +20,7 @@
       (h/fire-event :on-focus (h/get-by-label-text :address-text-input))
       (h/has-prop (h/get-by-label-text :address-text-input)
                   :placeholder-text-color
-                  colors/neutral-40)))
+                  colors/neutral-30)))
 
   (h/test "on focus with blur? true"
     (with-redefs [clipboard/get-string #(% "")]
@@ -30,27 +30,22 @@
       (h/fire-event :on-focus (h/get-by-label-text :address-text-input))
       (h/has-prop (h/get-by-label-text :address-text-input)
                   :placeholder-text-color
-                  colors/neutral-80-opa-40)))
+                  colors/neutral-80-opa-20)))
 
-  (h/test "scanned value is properly set"
-    (let [on-change-text (h/mock-fn)
-          scanned-value  "scanned-value"]
+  (h/test "default value is properly set"
+    (let [default-value "default-value"]
       (with-redefs [clipboard/get-string #(% "")]
         (h/render [address-input/address-input
-                   {:scanned-value  scanned-value
-                    :on-change-text on-change-text
-                    :ens-regex      ens-regex}])
-        (-> (h/wait-for #(h/get-by-label-text :clear-button))
-            (.then (fn []
-                     (h/was-called-with on-change-text scanned-value)
-                     (h/has-prop (h/get-by-label-text :address-text-input)
-                                 :default-value
-                                 scanned-value)))))))
+                   {:default-value default-value
+                    :ens-regex     ens-regex}])
+        (h/has-prop (h/get-by-label-text :address-text-input)
+                    :value
+                    default-value))))
 
   (h/test "clear icon is shown when input has text"
     (with-redefs [clipboard/get-string #(% "")]
       (h/render [address-input/address-input
-                 {:scanned-value "scanned value"
+                 {:default-value "default value"
                   :ens-regex     ens-regex}])
       (-> (h/wait-for #(h/get-by-label-text :clear-button-container))
           (.then #(h/is-truthy (h/get-by-label-text :clear-button))))))
@@ -58,7 +53,7 @@
   (h/test "on blur with text and blur? false"
     (with-redefs [clipboard/get-string #(% "")]
       (h/render [address-input/address-input
-                 {:scanned-value "scanned value"
+                 {:default-value "default value"
                   :ens-regex     ens-regex}])
       (-> (h/wait-for #(h/get-by-label-text :clear-button))
           (.then (fn []
@@ -71,7 +66,7 @@
   (h/test "on blur with text blur? true"
     (with-redefs [clipboard/get-string #(% "")]
       (h/render [address-input/address-input
-                 {:scanned-value "scanned value"
+                 {:default-value "default value"
                   :blur?         true
                   :ens-regex     ens-regex}])
       (-> (h/wait-for #(h/get-by-label-text :clear-button))
@@ -106,7 +101,7 @@
     (let [on-clear (h/mock-fn)]
       (with-redefs [clipboard/get-string #(% "")]
         (h/render [address-input/address-input
-                   {:scanned-value "scanned value"
+                   {:default-value "default value"
                     :on-clear      on-clear
                     :ens-regex     ens-regex}])
         (-> (h/wait-for #(h/get-by-label-text :clear-button))
@@ -148,7 +143,7 @@
         (-> (h/wait-for #(h/get-by-label-text :clear-button))
             (.then (fn []
                      (h/has-prop (h/get-by-label-text :address-text-input)
-                                 :default-value
+                                 :value
                                  clipboard)))))))
 
   (h/test "ENS loading state and call on-detect-ens"

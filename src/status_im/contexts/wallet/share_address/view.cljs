@@ -6,9 +6,9 @@
     [react-native.safe-area :as safe-area]
     [react-native.share :as share]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.share-address.style :as style]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
@@ -48,11 +48,14 @@
 
 (defn view
   []
-  (let [padding-top       (:top (safe-area/get-insets))
-        wallet-type       (reagent/atom :legacy)
-        ;; Design team is yet to confirm the default selected networks here.
-        ;; Should be the current selected for the account or all the networks always
-        selected-networks (reagent/atom [:ethereum :optimism :arbitrum])]
+  (let [padding-top         (:top (safe-area/get-insets))
+        wallet-type         (reagent/atom :legacy)
+        ;; Design team is yet to confirm the default selected networks here. Should be the current
+        ;; selected for the account or all the networks always
+        selected-networks   (reagent/atom [:ethereum :optimism :arbitrum])
+        on-settings-press   #(open-preferences selected-networks)
+        on-legacy-press     #(reset! wallet-type :legacy)
+        on-multichain-press #(reset! wallet-type :multichain)]
     (fn []
       (let [{:keys [address color emoji watch-only?]
              :as   account}     (rf/sub [:wallet/current-viewing-account])
@@ -97,6 +100,6 @@
              :full-name           (:name account)
              :customization-color color
              :emoji               emoji
-             :on-legacy-press     #(reset! wallet-type :legacy)
-             :on-multichain-press #(reset! wallet-type :multichain)
-             :on-settings-press   #(open-preferences selected-networks)}]]]]))))
+             :on-legacy-press     on-legacy-press
+             :on-multichain-press on-multichain-press
+             :on-settings-press   on-settings-press}]]]]))))

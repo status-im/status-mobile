@@ -4,13 +4,6 @@
     [clojure.walk :as walk]
     [status-im.constants :as constants]))
 
-(defn rpc->channel-permissions
-  [rpc-channels-permissions]
-  (update-vals rpc-channels-permissions
-               (fn [{:keys [viewAndPostPermissions viewOnlyPermissions]}]
-                 {:view-only     (set/rename-keys viewOnlyPermissions {:satisfied :satisfied?})
-                  :view-and-post (set/rename-keys viewAndPostPermissions {:satisfied :satisfied?})})))
-
 (defn <-revealed-accounts-rpc
   [accounts]
   (mapv
@@ -34,8 +27,9 @@
                (assoc acc
                       (name k)
                       (-> v
-                          (assoc :can-post? (:canPost v))
-                          (dissoc :canPost)
+                          (assoc :token-gated? (:tokenGated v)
+                                 :can-post?    (:canPost v))
+                          (dissoc :canPost :tokenGated)
                           (update :members walk/stringify-keys))))
              {}
              chats))

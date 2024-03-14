@@ -59,6 +59,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             self.errors.append("Push notification with text was received for new message in activity centre")
         self.device_1.click_system_back_button()
         self.device_1.driver.activate_app(app_package)
+        self.device_1.wait_for_application_to_be_running(app_package)
 
         self.device_1.just_fyi('Device1 verifies pending contact request')
         self.home_1.contacts_tab.click()

@@ -331,13 +331,14 @@ shadow-server:##@ Start shadow-cljs in server mode for watching
 
 _test-clojure: export TARGET := clojure
 _test-clojure: export WATCH ?= false
+_test-clojure: status-go-library
 _test-clojure:
 ifeq ($(WATCH), true)
-	yarn install && \
+	yarn node-pre-gyp rebuild && \
 	yarn shadow-cljs compile mocks && \
 	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
 else
-	yarn install && \
+	yarn node-pre-gyp rebuild && \
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
@@ -350,8 +351,9 @@ test: _test-clojure
 
 test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
+test-watch-for-repl: status-go-library
 test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
-	yarn install
+	yarn node-pre-gyp rebuild
 	rm -f target/test/test.js
 	yarn shadow-cljs compile mocks && \
 	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
@@ -359,7 +361,7 @@ test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connection
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
 test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
-test-unit: export SHADOW_NS_REGEXP := ^(?!tests\.integration-test)(?!tests-im\.contract-test).*-test$$
+test-unit: export SHADOW_NS_REGEXP := ^(?!tests\.integration-test)(?!tests\.contract-test).*-test$$
 test-unit: ##@test Run unit tests
 test-unit: _test-clojure
 

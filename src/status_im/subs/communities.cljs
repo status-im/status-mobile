@@ -9,7 +9,7 @@
 
 (re-frame/reg-sub
  :communities/fetching-community
- :<- [:communities/fetching-community]
+ :<- [:communities/fetching-communities]
  (fn [info [_ id]]
    (get info id)))
 
@@ -35,6 +35,12 @@
  :<- [:communities]
  (fn [communities [_ id]]
    (get-in communities [id :chats])))
+
+(re-frame/reg-sub
+ :communities/community-color
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get-in communities [id :color])))
 
 (re-frame/reg-sub
  :communities/community-members
@@ -88,6 +94,19 @@
 
 (def memo-communities-stack-items (atom nil))
 
+(defn- merge-opened-communities
+  [{:keys [joined pending] :as assorted-communities}]
+  (update assorted-communities :opened concat joined pending))
+
+(defn- group-communities-by-status
+  [requests
+   {:keys [id]
+    :as   community}]
+  (cond
+    (:joined community)         :joined
+    (boolean (get requests id)) :pending
+    :else                       :opened))
+
 (re-frame/reg-sub
  :communities/grouped-by-status
  :<- [:view-id]
@@ -98,16 +117,21 @@
  ;; in app-db. Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
  (fn [[view-id communities requests]]
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
-     (let [grouped-communities (reduce (fn [acc community]
-                                         (let [joined?      (:joined community)
-                                               community-id (:id community)
-                                               pending?     (boolean (get requests community-id))]
-                                           (cond
-                                             joined?  (update acc :joined conj community)
-                                             pending? (update acc :pending conj community)
-                                             :else    (update acc :opened conj community))))
-                                       {:joined [] :pending [] :opened []}
-                                       (vals communities))]
+     (let [grouped-communities (->> communities
+                                    vals
+                                    (group-by #(group-communities-by-status requests %))
+                                    merge-opened-communities
+                                    (map (fn [[k v]]
+                                           {k (sort-by (fn [{:keys [requested-to-join-at last-opened-at
+                                                                    joined-at]}]
+                                                         (condp = k
+                                                           :joined  joined-at
+                                                           :pending requested-to-join-at
+                                                           :opened  last-opened-at
+                                                           last-opened-at))
+                                                       #(compare %2 %1)
+                                                       v)}))
+                                    (into {}))]
        (reset! memo-communities-stack-items grouped-communities)
        grouped-communities)
      @memo-communities-stack-items)))
@@ -205,42 +229,13 @@
         (sort-by :position)
         (into []))))
 
-(defn- get-chat-lock-state
-  "Returns the chat lock state.
-
-  - Nil:   no lock  (there are no permissions for the chat)
-  - True:  locked   (there are permissions and can-post? is false)
-  - False: unlocked (there are permissions and can-post? is true)"
-  [community-id channels-permissions {chat-id :id}]
-  (let [composite-key                            (keyword (str community-id chat-id))
-        permissions                              (get channels-permissions composite-key)
-        {view-only-satisfied?  :satisfied?
-         view-only-permissions :permissions}     (:view-only permissions)
-        {view-and-post-satisfied?  :satisfied?
-         view-and-post-permissions :permissions} (:view-and-post permissions)
-        can-access?                              (or (and (seq view-only-permissions)
-                                                          view-only-satisfied?)
-                                                     (and (seq view-and-post-permissions)
-                                                          view-and-post-satisfied?))]
-    (if (and (empty? view-only-permissions)
-             (empty? view-and-post-permissions))
-      nil
-      (not can-access?))))
-
-(re-frame/reg-sub
- :communities/community-channels-permissions
- :<- [:communities/channels-permissions]
- (fn [channel-permissions [_ community-id]]
-   (get channel-permissions community-id)))
-
 (defn- reduce-over-categories
   [community-id
    categories
    collapsed-categories
-   full-chats-data
-   channels-permissions]
+   full-chats-data]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji] :as chat}]]
+       [_ {:keys [name categoryID position id emoji can-post? token-gated?]}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -262,9 +257,11 @@
                              :unread-messages? (pos? unviewed-messages-count)
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
-                             :locked?          (get-chat-lock-state community-id
-                                                                    channels-permissions
-                                                                    chat)
+                             :can-post?        can-post?
+                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false ->
+                             ;; has access
+                             :locked?          (when token-gated?
+                                                 (not can-post?))
                              :id               id}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
@@ -273,17 +270,14 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:chats/chats])
-    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])
-    (re-frame/subscribe [:communities/community-channels-permissions community-id])])
- (fn [[{:keys [categories chats]} full-chats-data collapsed-categories
-       channels-permissions]
+    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])])
+ (fn [[{:keys [categories chats]} full-chats-data collapsed-categories]
       [_ community-id]]
    (let [reduce-fn (reduce-over-categories
                     community-id
                     categories
                     collapsed-categories
-                    full-chats-data
-                    channels-permissions)
+                    full-chats-data)
          categories-and-chats
          (->> chats
               (reduce reduce-fn {})
@@ -406,3 +400,13 @@
     (re-frame/subscribe [:communities/airdrop-address community-id])])
  (fn [[accounts airdrop-address]]
    (first (filter #(= (:address %) airdrop-address) accounts))))
+
+(re-frame/reg-sub
+ :communities/token-images-by-symbol
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [tokens-metadata]}] _]
+   (->> tokens-metadata
+        (map (fn [{sym :symbol image :image}]
+               {sym image}))
+        (into {}))))

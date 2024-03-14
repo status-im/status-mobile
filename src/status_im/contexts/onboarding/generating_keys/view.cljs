@@ -4,8 +4,8 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
+    [status-im.common.parallax.blacklist :as blacklist]
     [status-im.common.parallax.view :as parallax]
-    [status-im.common.parallax.whitelist :as whitelist]
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.generating-keys.style :as style]
     [utils.i18n :as i18n]))
@@ -149,9 +149,9 @@
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     (if whitelist/whitelisted?
-       [parallax-page insets]
-       [:f> f-simple-page insets])]))
+     (if blacklist/blacklisted?
+       [:f> f-simple-page insets]
+       [parallax-page insets])]))
 
 (defn generating-keys
   []

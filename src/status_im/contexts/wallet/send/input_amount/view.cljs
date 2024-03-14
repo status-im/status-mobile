@@ -129,6 +129,7 @@
     on-navigate-back         :on-navigate-back
     button-one-label         :button-one-label
     button-one-props         :button-one-props
+    current-screen-id        :current-screen-id
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
@@ -152,9 +153,10 @@
                                     (reagent/flush))))
         handle-delete         (fn [loading-routes? current-limit-amount]
                                 (when-not loading-routes?
-                                  (let [{:keys [start end]} @input-selection]
-                                    (reset-input-error @input-value current-limit-amount input-error)
+                                  (let [{:keys [start end]} @input-selection
+                                        new-value           (delete-from-string @input-value start)]
                                     (when (= start end)
+                                      (reset-input-error new-value current-limit-amount input-error)
                                       (swap! input-value delete-from-string start)
                                       (move-input-cursor input-selection (dec start)))
                                     (reagent/flush))))
@@ -172,11 +174,11 @@
                                     (reagent/flush))))
         on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount]
-                                (let [current-screen-id (rf/sub [:navigation/current-screen-id])]
+                                (let [nav-current-screen-id (rf/sub [:navigation/current-screen-id])]
                                   ; this check is to prevent effect being triggered when screen is
                                   ; loaded but not being shown to the user (deep in the navigation
                                   ; stack) and avoid undesired behaviors
-                                  (when (= current-screen-id :wallet-send-input-amount)
+                                  (when (= nav-current-screen-id current-screen-id)
                                     (if-not (or (empty? @input-value)
                                                 (<= input-num-value 0)
                                                 (> input-num-value current-limit-amount))
@@ -187,7 +189,7 @@
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   @input-value
-                                               :stack-id :wallet-send-input-amount}]))
+                                               :stack-id current-screen-id}]))
         selection-change      (fn [selection]
                                 ;; `reagent/flush` is needed to properly propagate the
                                 ;; input cursor state. Since this is a controlled
@@ -212,21 +214,23 @@
             crypto-limit              (or default-limit-crypto
                                           (utils/get-standard-crypto-format token token-balance))
             fiat-limit                (.toFixed (* token-balance conversion-rate) 2)
-            current-limit             (if @crypto-currency? crypto-limit fiat-limit)
+            current-limit             #(if @crypto-currency? crypto-limit fiat-limit)
             current-currency          (if @crypto-currency? token-symbol fiat-currency)
-            limit-label               (make-limit-label {:amount   current-limit
+            limit-label               (make-limit-label {:amount   (current-limit)
                                                          :currency current-currency})
             input-num-value           (parse-double @input-value)
             confirm-disabled?         (or (nil? route)
+                                          (empty? route)
                                           (empty? @input-value)
                                           (<= input-num-value 0)
-                                          (> input-num-value current-limit))
+                                          (> input-num-value (current-limit)))
             amount-text               (str @input-value " " token-symbol)
             native-currency-symbol    (when-not confirm-disabled?
                                         (get-in route [:from :native-currency-symbol]))
             native-token              (when native-currency-symbol
                                         (rf/sub [:wallet/token-by-symbol native-currency-symbol]))
-            fee-in-native-token       (when-not confirm-disabled? (send-utils/calculate-gas-fee route))
+            fee-in-native-token       (when-not confirm-disabled?
+                                        (send-utils/calculate-full-route-gas-fee route))
             fee-in-crypto-formatted   (when fee-in-native-token
                                         (utils/get-standard-crypto-format native-token
                                                                           fee-in-native-token))
@@ -245,7 +249,7 @@
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
         (rn/use-effect
-         #(fetch-routes input-num-value current-limit)
+         #(fetch-routes input-num-value (current-limit))
          [@input-value])
         [rn/view
          {:style               style/screen
@@ -266,7 +270,7 @@
            :show-keyboard?      false
            :value               @input-value
            :selection           @input-selection
-           :on-change-text      #(handle-on-change % current-limit)
+           :on-change-text      #(handle-on-change % (current-limit))
            :on-selection-change selection-change
            :on-swap             #(handle-swap
                                   {:crypto?      %
@@ -279,8 +283,8 @@
            :routes       suggested-routes
            :token        token
            :input-value  @input-value
-           :fetch-routes #(fetch-routes % current-limit)}]
-         (when (or loading-routes? route)
+           :fetch-routes #(fetch-routes % (current-limit))}]
+         (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
              :fees                      fee-formatted
@@ -296,8 +300,8 @@
           {:container-style      (style/keyboard-container bottom)
            :left-action          :dot
            :delete-key?          true
-           :on-press             #(handle-keyboard-press % loading-routes? current-limit)
-           :on-delete            #(handle-delete loading-routes? current-limit)
+           :on-press             #(handle-keyboard-press % loading-routes? (current-limit))
+           :on-delete            #(handle-delete loading-routes? (current-limit))
            :on-long-press-delete #(on-long-press-delete loading-routes?)}]]))))
 
 (defn- view-internal

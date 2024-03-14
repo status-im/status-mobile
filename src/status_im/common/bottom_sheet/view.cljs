@@ -9,7 +9,6 @@
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
     [status-im.common.bottom-sheet.style :as style]
     [utils.re-frame :as rf]))
 
@@ -57,83 +56,85 @@
            (show translate-y bg-opacity)
            (hide translate-y bg-opacity window-height on-close))))))
 
-(defn- f-view
-  [_ _]
-  (let [sheet-height (reagent/atom 0)
-        item-height  (reagent/atom 0)]
-    (fn [{:keys [hide? insets theme]}
-         {:keys [content selected-item padding-bottom-override border-radius on-close shell?
-                 gradient-cover? customization-color hide-handle? blur-radius]
-          :or   {border-radius 12}}]
-      (let [{window-height :height}           (rn/get-window)
-            bg-opacity                        (reanimated/use-shared-value 0)
-            translate-y                       (reanimated/use-shared-value window-height)
-            sheet-gesture                     (get-sheet-gesture translate-y
-                                                                 bg-opacity
-                                                                 window-height
-                                                                 on-close)
-            selected-item-smaller-than-sheet? (< @item-height
-                                                 (- window-height
-                                                    @sheet-height
-                                                    (:top insets)
-                                                    (:bottom insets)
-                                                    bottom-margin))
-            top                               (- window-height (:top insets) @sheet-height)
-            bottom                            (if selected-item-smaller-than-sheet?
-                                                (+ @sheet-height bottom-margin)
-                                                (:bottom insets))]
-        (rn/use-effect
-         #(if hide?
-            (hide translate-y bg-opacity window-height on-close)
-            (show translate-y bg-opacity))
-         [hide?])
-        (hooks/use-back-handler (fn []
-                                  (when (fn? on-close)
-                                    (on-close))
-                                  (rf/dispatch [:hide-bottom-sheet])
-                                  true))
-        [rn/view {:style {:flex 1}}
-         ;; backdrop
-         [rn/pressable
-          {:on-press #(rf/dispatch [:hide-bottom-sheet])
-           :style    {:flex 1}}
-          [reanimated/view
-           {:style (reanimated/apply-animations-to-style
-                    {:opacity bg-opacity}
-                    {:flex 1 :background-color colors/neutral-100-opa-70})}]]
-         ;; sheet
-         [gesture/gesture-detector {:gesture sheet-gesture}
-          [reanimated/view
-           {:style (reanimated/apply-animations-to-style
-                    {:transform [{:translateY translate-y}]}
-                    (style/sheet insets window-height selected-item))}
-           (when shell?
-             [blur/ios-view
-              {:style         style/shell-bg
-               :blur-radius   (or blur-radius 20)
-               :blur-type     :transparent
-               :overlay-color :transparent}])
-           (when selected-item
-             [rn/view
-              {:on-layout #(reset! item-height (.-nativeEvent.layout.height ^js %))
-               :style
-               (style/selected-item theme top bottom selected-item-smaller-than-sheet? border-radius)}
-              [selected-item]])
+(defn- get-layout-height
+  [event]
+  (oops/oget event "nativeEvent.layout.height"))
 
-           [rn/view
-            {:style     (style/sheet-content theme padding-bottom-override insets shell? bottom-margin)
-             :on-layout #(reset! sheet-height (.-nativeEvent.layout.height ^js %))}
-            (when (and gradient-cover? customization-color)
-              [rn/view {:style style/gradient-bg}
-               [quo/gradient-cover
-                {:customization-color customization-color
-                 :opacity             0.4}]])
-            (when-not hide-handle?
-              [quo/drawer-bar])
-            [content]]]]]))))
-
-(defn- internal-view
-  [args sheet]
-  [:f> f-view args sheet])
-
-(def view (quo.theme/with-theme internal-view))
+(defn view
+  [{:keys [hide? insets]}
+   {:keys [content selected-item padding-bottom-override border-radius on-close shell?
+           gradient-cover? customization-color hide-handle? blur-radius]
+    :or   {border-radius 12}}]
+  (let [theme                             (quo.theme/use-theme-value)
+        sheet-height                      (rn/use-ref-atom 0)
+        item-height                       (rn/use-ref-atom 0)
+        set-sheet-height                  (rn/use-callback #(reset! sheet-height (get-layout-height %)))
+        set-item-height                   (rn/use-callback #(reset! item-height (get-layout-height %)))
+        {window-height :height}           (rn/get-window)
+        bg-opacity                        (reanimated/use-shared-value 0)
+        translate-y                       (reanimated/use-shared-value window-height)
+        sheet-gesture                     (get-sheet-gesture translate-y
+                                                             bg-opacity
+                                                             window-height
+                                                             on-close)
+        selected-item-smaller-than-sheet? (< @item-height
+                                             (- window-height
+                                                @sheet-height
+                                                (:top insets)
+                                                (:bottom insets)
+                                                bottom-margin))
+        top                               (- window-height (:top insets) @sheet-height)
+        bottom                            (if selected-item-smaller-than-sheet?
+                                            (+ @sheet-height bottom-margin)
+                                            (:bottom insets))
+        sheet-max-height                  (- window-height (:top insets))
+        content-padding-bottom            (or padding-bottom-override
+                                              (+ (:bottom insets) bottom-margin))]
+    (rn/use-effect
+     #(if hide?
+        (hide translate-y bg-opacity window-height on-close)
+        (show translate-y bg-opacity))
+     [hide?])
+    (hooks/use-back-handler (fn []
+                              (when (fn? on-close)
+                                (on-close))
+                              (rf/dispatch [:hide-bottom-sheet])
+                              true))
+    [rn/view {:style {:flex 1}}
+     ;; backdrop
+     [rn/pressable
+      {:on-press #(rf/dispatch [:hide-bottom-sheet])
+       :style    {:flex 1}}
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:opacity bg-opacity}
+                {:flex 1 :background-color colors/neutral-100-opa-70})}]]
+     ;; sheet
+     [gesture/gesture-detector {:gesture sheet-gesture}
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style
+                {:transform [{:translateY translate-y}]}
+                (style/sheet {:max-height sheet-max-height}))}
+       (when shell?
+         [blur/ios-view
+          {:style         style/shell-bg
+           :blur-radius   (or blur-radius 20)
+           :blur-type     :transparent
+           :overlay-color :transparent}])
+       (when selected-item
+         [rn/view
+          {:on-layout set-item-height
+           :style (style/selected-item theme top bottom selected-item-smaller-than-sheet? border-radius)}
+          [selected-item]])
+       [rn/view
+        {:on-layout set-sheet-height
+         :style     (style/sheet-content {:theme          theme
+                                          :shell?         shell?
+                                          :padding-bottom content-padding-bottom})}
+        (when (and gradient-cover? customization-color)
+          [quo/gradient-cover
+           {:customization-color customization-color
+            :opacity             0.4}])
+        (when-not hide-handle?
+          [quo/drawer-bar])
+        [content]]]]]))

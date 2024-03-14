@@ -5,7 +5,6 @@
     legacy.status-im.subs.ens
     legacy.status-im.subs.keycard
     legacy.status-im.subs.mailservers
-    legacy.status-im.subs.networks
     legacy.status-im.subs.stickers
     [re-frame.core :as re-frame]))
 
@@ -23,6 +22,7 @@
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :peers-summary :peers-summary)
 (reg-root-key-sub :web3-node-version :web3-node-version)
+(reg-root-key-sub :alert-banners :alert-banners)
 
 ;;keycard
 (reg-root-key-sub :keycard :keycard)
@@ -100,6 +100,7 @@
 ;;; Link previews
 (reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
 (reg-root-key-sub :chat/link-previews :chat/link-previews)
+(reg-root-key-sub :chat/status-link-previews :chat/status-link-previews)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)

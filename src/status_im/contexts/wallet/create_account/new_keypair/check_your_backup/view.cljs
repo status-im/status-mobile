@@ -80,7 +80,7 @@
                                                 (reset! show-error? false)
                                                 (when (= @quiz-index questions-count)
                                                   (rf/dispatch [:navigate-to
-                                                                :wallet-keypair-name])))
+                                                                :screen/wallet.keypair-name])))
                                               (do
                                                 (when (> @incorrect-count 0)
                                                   (rf/dispatch [:show-bottom-sheet

@@ -3,7 +3,5 @@
     ["react-native-image-resizer" :default image-resizer]))
 
 (defn resize
-  [path max-width max-height quality on-resize on-error]
-  (-> (.createResizedImage image-resizer path max-width max-height "JPEG" quality 0 nil false)
-      (.then on-resize)
-      (.catch on-error)))
+  [{:keys [path max-width max-height quality]}]
+  (.createResizedImage image-resizer path max-width max-height "JPEG" quality 0 nil false))

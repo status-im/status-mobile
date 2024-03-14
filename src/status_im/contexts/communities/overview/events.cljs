@@ -1,37 +1,10 @@
 (ns status-im.contexts.communities.overview.events
   (:require
-    [legacy.status-im.data-store.communities :as data-store]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(rf/reg-event-fx :communities/check-all-community-channels-permissions-success
- (fn [{:keys [db]} [community-id response]]
-   {:db (-> db
-            (assoc-in [:community-channels-permissions community-id]
-                      (data-store/rpc->channel-permissions (:channels response)))
-            (assoc-in [:communities/channel-permissions-check community-id] false))}))
 
-(rf/reg-event-fx :communities/check-all-community-channels-permissions-failed
- (fn [{:keys [db]} [community-id]]
-   {:db (assoc-in db [:communities/channel-permissions-check community-id] false)}))
-
-(rf/reg-event-fx :communities/check-all-community-channels-permissions
- (fn [{:keys [db]} [community-id]]
-   (when (get-in db [:communities community-id])
-     {:db (assoc-in db [:communities/channel-permissions-check community-id] true)
-      :fx [[:json-rpc/call
-            [{:method     "wakuext_checkAllCommunityChannelsPermissions"
-              :params     [{:CommunityID community-id}]
-              :on-success [:communities/check-all-community-channels-permissions-success community-id]
-              :on-error   (fn [error]
-                            (rf/dispatch [:communities/check-all-community-channels-permissions-failed
-                                          community-id])
-                            (log/error "failed to check channels permissions"
-                                       {:error error
-                                        :community-id community-id
-                                        :event
-                                        :communities/check-all-community-channels-permissions}))}]]]})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-success
  (fn [{:keys [db]} [community-id based-on-client-selection? result]]

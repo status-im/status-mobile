@@ -183,7 +183,7 @@
              :color                     :blue
              :hidden                    false
              :prod-preferred-chain-ids  #{1 10 42161}
-             :network-preferences-names #{:ethereum :arbitrum :optimism}
+             :network-preferences-names #{:mainnet :arbitrum :optimism}
              :position                  0
              :clock                     1698945829328
              :created-at                1698928839000
@@ -205,7 +205,7 @@
              :color                     :purple
              :hidden                    false
              :prod-preferred-chain-ids  #{1 10 42161}
-             :network-preferences-names #{:ethereum :arbitrum :optimism}
+             :network-preferences-names #{:mainnet :arbitrum :optimism}
              :position                  1
              :clock                     1698945829328
              :created-at                1698928839000
@@ -269,7 +269,7 @@
            :color                     :blue
            :hidden                    false
            :prod-preferred-chain-ids  #{1 10 42161}
-           :network-preferences-names #{:ethereum :arbitrum :optimism}
+           :network-preferences-names #{:mainnet :arbitrum :optimism}
            :position                  0
            :clock                     1698945829328
            :created-at                1698928839000
@@ -296,12 +296,16 @@
     (is (nil? (rf/sub [sub-name]))))
 
   (testing "watch address activity state with no-activity value"
-    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :no-activity))
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :add-address-to-watch :activity-state] :no-activity))
     (is (match? :no-activity (rf/sub [sub-name]))))
 
   (testing "watch address activity state with has-activity value"
-    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :watch-address-activity-state] :has-activity))
-    (is (match? :has-activity (rf/sub [sub-name])))))
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :add-address-to-watch :activity-state] :has-activity))
+    (is (match? :has-activity (rf/sub [sub-name]))))
+
+  (testing "watch address activity state with invalid-ens value"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :ui :add-address-to-watch :activity-state] :invalid-ens))
+    (is (match? :invalid-ens (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/accounts-without-current-viewing-account
   [sub-name]
@@ -326,7 +330,7 @@
           :color                     :blue
           :hidden                    false
           :prod-preferred-chain-ids  #{1 10 42161}
-          :network-preferences-names #{:ethereum :arbitrum :optimism}
+          :network-preferences-names #{:mainnet :arbitrum :optimism}
           :position                  0
           :clock                     1698945829328
           :created-at                1698928839000
@@ -383,7 +387,7 @@
         :customization-color       :blue
         :hidden                    false
         :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:ethereum :arbitrum :optimism}
+        :network-preferences-names #{:mainnet :arbitrum :optimism}
         :position                  0
         :clock                     1698945829328
         :created-at                1698928839000
@@ -406,7 +410,7 @@
         :customization-color       :purple
         :hidden                    false
         :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:ethereum :arbitrum :optimism}
+        :network-preferences-names #{:mainnet :arbitrum :optimism}
         :position                  1
         :clock                     1698945829328
         :created-at                1698928839000
@@ -427,17 +431,20 @@
            (assoc-in [:wallet :networks] network-data)))
     (is
      (match? [{:short-name       "eth"
-               :network-name     :ethereum
+               :network-name     :mainnet
+               :abbreviated-name "Eth."
                :chain-id         1
                :related-chain-id nil
                :layer            1}
               {:short-name       "arb1"
                :network-name     :arbitrum
+               :abbreviated-name "Arb1."
                :chain-id         42161
                :related-chain-id nil
                :layer            2}
               {:short-name       "opt"
                :network-name     :optimism
+               :abbreviated-name "Opt."
                :chain-id         10
                :related-chain-id nil
                :layer            2}]
@@ -474,11 +481,11 @@
      (= [(-> accounts
              (get "0x1")
              (assoc :customization-color :blue)
-             (assoc :network-preferences-names #{:ethereum :arbitrum :optimism}))
+             (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
          (-> accounts
              (get "0x2")
              (assoc :customization-color :purple)
-             (assoc :network-preferences-names #{:ethereum :arbitrum :optimism}))
+             (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
          (-> accounts
              (get "0x3")
              (assoc :customization-color :magenta)
@@ -497,3 +504,34 @@
              (get "0x3")
              (assoc :network-preferences-names #{}))]
         (rf/sub [sub-name])))))
+
+(def keypairs
+  [{:key-uid "abc"}])
+
+(h/deftest-sub :wallet/keypairs
+  [sub-name]
+  (testing "returns all keypairs"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :keypairs] keypairs))
+    (is
+     (= keypairs
+        (rf/sub [sub-name])))))
+
+(def local-suggestions ["a" "b"])
+
+(h/deftest-sub :wallet/local-suggestions
+  [sub-name]
+  (testing "returns local suggestions:"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :search-address :local-suggestions] local-suggestions))
+    (is
+     (= local-suggestions
+        (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/valid-ens-or-address?
+  [sub-name]
+  (testing "returns local suggestions:"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :search-address :valid-ens-or-address?] true))
+    (is
+     (rf/sub [sub-name]))))

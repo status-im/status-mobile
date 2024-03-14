@@ -33,9 +33,10 @@
     [collectibles-tab/view
      {:collectibles         collectibles
       :filtered?            search-performed?
+      :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
       :on-collectible-press #(rf/dispatch [:wallet/send-select-collectible
                                            {:collectible %
-                                            :stack-id    :wallet-select-asset}])}]))
+                                            :stack-id    :screen/wallet.select-asset}])}]))
 (defn- tab-view
   [search-text selected-tab on-change-text]
   (let [unfiltered-collectibles (rf/sub [:wallet/current-viewing-account-collectibles])
@@ -45,7 +46,7 @@
         on-token-press          (fn [token]
                                   (rf/dispatch [:wallet/send-select-token
                                                 {:token    token
-                                                 :stack-id :wallet-select-asset}]))]
+                                                 :stack-id :screen/wallet.select-asset}]))]
     [:<>
      (when show-search-input?
        [search-input search-text on-change-text])
@@ -62,7 +63,7 @@
         search-text    (reagent/atom "")
         on-change-text #(reset! search-text %)
         on-change-tab  #(reset! selected-tab %)
-        on-close       #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])]
+        on-close       #(rf/dispatch [:navigate-back-within-stack :screen/wallet.select-asset])]
     (fn []
       [rn/safe-area-view {:style style/container}
        [account-switcher/view

@@ -2,7 +2,7 @@
   (:require-macros [legacy.status-im.utils.slurp :refer [slurp]])
   (:require
     [legacy.status-im.fleet.default-fleet :refer (default-fleets)])
-  (:require [legacy.status-im.utils.test :as utils.test]))
+  (:require [tests.test-utils :as utils.test]))
 
 ;; to generate a js Proxy at js/__STATUS_MOBILE_JS_IDENTITY_PROXY__ that accept any (.xxx) call and
 ;; return itself
@@ -53,7 +53,7 @@
     :FlatList                 {}
     :SectionList              {}
     :Text                     {}
-    :StatusBar                {}
+    :StatusBar                {:setBarStyle identity}
     :ScrollView               {}
     :SafeAreaView             {}
     :KeyboardAvoidingView     {}

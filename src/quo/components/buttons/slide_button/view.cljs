@@ -11,94 +11,33 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [react-native.reanimated :as reanimated]))
 
-(defn- f-slider
-  [{:keys [disabled?]}]
-  (let [track-width        (reagent/atom nil)
-        sliding-complete?  (reagent/atom false)
-        gestures-disabled? (reagent/atom disabled?)
-        on-track-layout    (fn [evt]
-                             (let [width (oops/oget evt "nativeEvent.layout.width")]
-                               (reset! track-width width)))]
-    (fn [{:keys [on-reset
-                 on-complete
-                 track-text
-                 track-icon
-                 disabled?
-                 customization-color
-                 size
-                 container-style
-                 theme
-                 type
-                 blur?]}]
-      (let [x-pos             (reanimated/use-shared-value 0)
-            dimensions        (partial utils/get-dimensions
-                                       (or @track-width constants/default-width)
-                                       size)
-            interpolate-track (partial animations/interpolate-track
-                                       x-pos
-                                       (dimensions :usable-track)
-                                       (dimensions :thumb))
-            custom-color      (if (= type :danger) :danger customization-color)]
-        (rn/use-effect (fn []
-                         (when @sliding-complete?
-                           (on-complete)))
-                       [@sliding-complete?])
-        (rn/use-effect (fn []
-                         (when on-reset
-                           (reset! sliding-complete? false)
-                           (reset! gestures-disabled? false)
-                           (animations/reset-track-position x-pos)
-                           (on-reset)))
-                       [on-reset])
-        [gesture/gesture-detector
-         {:gesture (animations/drag-gesture x-pos
-                                            gestures-disabled?
-                                            disabled?
-                                            (dimensions :usable-track)
-                                            sliding-complete?)}
-         [reanimated/view
-          {:test-ID   :slide-button-track
-           :style     (merge (style/track {:disabled?           disabled?
-                                           :customization-color custom-color
-                                           :height              (dimensions :track-height)
-                                           :blur?               blur?})
-                             container-style)
-           :on-layout (when-not (some? @track-width)
-                        on-track-layout)}
-          [reanimated/view {:style (style/track-cover interpolate-track)}
-           [rn/view {:style (style/track-cover-text-container @track-width)}
-            [icon/icon track-icon
-             {:color (utils/text-color custom-color theme blur?)
-              :size  20}]
-            [rn/view {:width 4}]
-            [text/text
-             {:weight :medium
-              :size   :paragraph-1
-              :style  (style/track-text custom-color theme blur?)}
-             track-text]]]
-          [reanimated/view
-           {:style (style/thumb-container {:interpolate-track   interpolate-track
-                                           :thumb-size          (dimensions :thumb)
-                                           :customization-color custom-color
-                                           :theme               theme
-                                           :blur?               blur?})}
-           [reanimated/view {:style (style/arrow-icon-container interpolate-track)}
-            [icon/icon :arrow-right
-             {:color colors/white
-              :size  20}]]
-           [reanimated/view
-            {:style (style/action-icon interpolate-track
-                                       (dimensions :thumb))}
-            [icon/icon track-icon
-             {:color colors/white
-              :size  20}]]]]]))))
+(defn drag-gesture
+  [x-pos disabled? track-width sliding-complete?
+   set-sliding-complete
+   on-complete reset-fn]
+  (-> (gesture/gesture-pan)
+      (gesture/with-test-ID :slide-button-gestures)
+      (gesture/enabled (not disabled?))
+      (gesture/min-distance 0)
+      (gesture/on-update (fn [event]
+                           (let [x-translation (oops/oget event "translationX")
+                                 clamped-x     (utils/clamp-value x-translation 0 track-width)
+                                 reached-end?  (>= clamped-x track-width)]
+                             (reanimated/set-shared-value x-pos clamped-x)
+                             (when (and reached-end? (not sliding-complete?))
+                               (set-sliding-complete true)
+                               (when on-complete (on-complete reset-fn))))))
+      (gesture/on-end (fn [event]
+                        (let [x-translation (oops/oget event "translationX")
+                              reached-end?  (>= x-translation track-width)]
+                          (when (not reached-end?)
+                            (animations/reset-track-position x-pos)))))))
 
-(defn- view-internal
+(defn view
   "Options
-  - `on-complete`         Callback called when the sliding is complete
+  - `on-complete`         Callback called when the sliding is complete, returns reset fn as a parameter
   - `disabled?`           Boolean that disables the button
                           (_and gestures_)
   - `size`                :size/s-40`/`:size/s-48`
@@ -106,9 +45,73 @@
   - `track-icon`          Key of the icon shown on the track
                           (e.g. `:face-id`)
   - `customization-color` Customization color
-  - `on-reset`            A callback which can be used to reset the component and run required functionality
   "
-  [props]
-  [:f> f-slider props])
-
-(def view (quo.theme/with-theme view-internal))
+  [{:keys [on-complete track-text track-icon disabled? customization-color size
+           container-style type blur?]}]
+  (let [theme                         (quo.theme/use-theme-value)
+        x-pos                         (reanimated/use-shared-value 0)
+        [track-width set-track-width] (rn/use-state nil)
+        [sliding-complete?
+         set-sliding-complete]        (rn/use-state false)
+        on-track-layout               (rn/use-callback
+                                       #(set-track-width (oops/oget % "nativeEvent.layout.width")))
+        reset-fn                      (rn/use-callback
+                                       (fn []
+                                         (set-sliding-complete false)
+                                         (animations/reset-track-position x-pos)))
+        dimensions                    (rn/use-callback
+                                       (partial utils/get-dimensions
+                                                (or track-width constants/default-width)
+                                                size)
+                                       [track-width])
+        interpolate-track             (rn/use-callback
+                                       (partial animations/interpolate-track
+                                                x-pos
+                                                (dimensions :usable-track)
+                                                (dimensions :thumb))
+                                       [dimensions])
+        custom-color                  (if (= type :danger) :danger customization-color)
+        gesture                       (rn/use-memo #(drag-gesture x-pos
+                                                                  disabled?
+                                                                  (dimensions :usable-track)
+                                                                  sliding-complete?
+                                                                  set-sliding-complete
+                                                                  on-complete
+                                                                  reset-fn)
+                                                   [sliding-complete? disabled?])]
+    [gesture/gesture-detector
+     {:gesture gesture}
+     [reanimated/view
+      {:test-ID   :slide-button-track
+       :style     (merge (style/track {:disabled?           disabled?
+                                       :customization-color custom-color
+                                       :height              (dimensions :track-height)
+                                       :blur?               blur?})
+                         container-style)
+       :on-layout on-track-layout}
+      [reanimated/view {:style (style/track-cover interpolate-track)}
+       [rn/view {:style (style/track-cover-text-container track-width)}
+        [icon/icon track-icon
+         {:color (utils/text-color custom-color theme blur?)
+          :size  20}]
+        [rn/view {:width 4}]
+        [text/text
+         {:weight :medium
+          :size   :paragraph-1
+          :style  (style/track-text custom-color theme blur?)}
+         track-text]]]
+      [reanimated/view
+       {:style (style/thumb-container {:interpolate-track   interpolate-track
+                                       :thumb-size          (dimensions :thumb)
+                                       :customization-color custom-color
+                                       :theme               theme
+                                       :blur?               blur?})}
+       [reanimated/view {:style (style/arrow-icon-container interpolate-track)}
+        [icon/icon :arrow-right
+         {:color colors/white
+          :size  20}]]
+       [reanimated/view
+        {:style (style/action-icon interpolate-track (dimensions :thumb))}
+        [icon/icon track-icon
+         {:color colors/white
+          :size  20}]]]]]))

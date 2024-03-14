@@ -44,8 +44,7 @@
         [rn/view {:style {:gap 22}}
          [quo/text-combinations {:title (i18n/label :t/bio)}]
          [quo/input
-          {:theme           :dark
-           :blur?           true
+          {:blur?           true
            :multiline?      true
            :error?          (not (string/blank? @error-msg))
            :container-style {:margin-bottom -11}
@@ -67,5 +66,8 @@
            :customization-color customization-color
            :on-press            (fn []
                                   (rf/dispatch [:profile/edit-bio @unsaved-bio]))
-           :disabled?           (boolean (or @typing? (not (string/blank? @error-msg))))}
+           :disabled?           (boolean (or @typing?
+                                             (and (string/blank? profile-bio)
+                                                  (string/blank? @unsaved-bio))
+                                             (not (string/blank? @error-msg))))}
           (i18n/label :t/save-bio)]]]])))

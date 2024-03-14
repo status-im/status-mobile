@@ -72,18 +72,3 @@
   {:events [:show-tooltip]}
   [_ tooltip-id]
   {:show-tooltip tooltip-id})
-
-(rf/defn show-profile
-  {:events [:chat.ui/show-profile]}
-  [{:keys [db]} identity ens-name]
-  (let [my-public-key (get-in db [:profile/profile :public-key])]
-    (if (not= my-public-key identity)
-      {:db       (-> db
-                     (assoc :contacts/identity identity)
-                     (assoc :contacts/ens-name ens-name))
-       :dispatch [:contacts/build-contact
-                  {:pubkey     identity
-                   :ens        ens-name
-                   :success-fn (fn [_]
-                                 {:dispatch [:open-modal :profile]})}]}
-      {:dispatch [:navigate-to :my-profile]})))

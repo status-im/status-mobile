@@ -106,7 +106,7 @@
 (def ^:const command-state-transaction-sent 7)
 
 (def ^:const profile-default-color :blue)
-(def ^:const profile-name-max-length 24)
+(def ^:const profile-name-max-length 20)
 (def ^:const profile-bio-max-length 240)
 (def ^:const profile-default-currency :usd)
 
@@ -425,11 +425,18 @@
 (def ^:const optimism-goerli-chain-id 420)
 (def ^:const optimism-sepolia-chain-id 11155420)
 
+(def ^:const mainnet-chain-ids
+  #{ethereum-mainnet-chain-id arbitrum-mainnet-chain-id optimism-mainnet-chain-id})
+
 (def ^:const mainnet-short-name "eth")
 (def ^:const optimism-short-name "opt")
 (def ^:const arbitrum-short-name "arb1")
 
-(def ^:const mainnet-network-name :ethereum)
+(def ^:const mainnet-abbreviated-name "Eth.")
+(def ^:const optimism-abbreviated-name "Opt.")
+(def ^:const arbitrum-abbreviated-name "Arb1.")
+
+(def ^:const mainnet-network-name :mainnet)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 
@@ -458,3 +465,7 @@
 
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
+
+(def ^:const alert-banner-height 40)
+
+(def ^:const status-hostname "status.app")

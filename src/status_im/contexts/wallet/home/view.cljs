@@ -4,9 +4,9 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.home.top-nav.view :as common.top-nav]
-    [status-im.contexts.wallet.common.sheets.network-filter.view :as network-filter]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
+    [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -18,12 +18,12 @@
       :accessibility-label :start-a-new-chat
       :label               (i18n/label :t/add-account)
       :sub-label           (i18n/label :t/add-account-description)
-      :on-press            #(rf/dispatch [:navigate-to :wallet-create-account])}
+      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.create-account])}
      {:icon                :i/reveal
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :add-address-to-watch])
+      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
       :add-divider?        true}]]])
 
 (defn- new-account-card-data

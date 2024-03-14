@@ -13,37 +13,21 @@
   (re-frame/dispatch event))
 
 (defn- normal-mode-settings-data
-  [{:keys [network-name
-           current-log-level
+  [{:keys [current-log-level
            light-client-enabled?
            transactions-management-enabled?
            current-fleet
            webview-debug
            test-networks-enabled?
-           is-goerli-enabled?]}]
+           is-goerli-enabled?
+           peer-syncing-enabled?]}]
   (keep
    identity
    [{:size :small
-     :title (i18n/label :t/network)
-     :accessibility-label :network-button
-     :container-margin-top 8
-     :on-press
-     #(re-frame/dispatch [:navigate-to :network-settings])
-     :accessory :text
-     :accessory-text network-name
-     :chevron true}
-    {:size :small
-     :title (i18n/label :t/network-info)
-     :accessibility-label :network-button
-     :container-margin-top 8
-     :on-press
-     #(re-frame/dispatch [:navigate-to :network-info])
-     :chevron true}
-    {:size :small
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
      :on-press
-     #(re-frame/dispatch [:navigate-to :log-level-settings])
+     #(re-frame/dispatch [:open-modal :log-level-settings])
      :accessory :text
      :accessory-text current-log-level
      :chevron true}
@@ -51,7 +35,7 @@
      :title (i18n/label :t/fleet)
      :accessibility-label :fleet-settings-button
      :on-press
-     #(re-frame/dispatch [:navigate-to :fleet-settings])
+     #(re-frame/dispatch [:open-modal :fleet-settings])
      :accessory :text
      :accessory-text current-fleet
      :chevron true}
@@ -66,14 +50,14 @@
      :accessibility-label :rpc-usage-info
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:navigate-to :rpc-usage-info])
+     #(re-frame/dispatch [:open-modal :rpc-usage-info])
      :chevron true}
     {:size :small
      :title (i18n/label :t/peers-stats)
      :accessibility-label :peers-stats
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:navigate-to :peers-stats])
+     #(re-frame/dispatch [:open-modal :peers-stats])
      :chevron true}
     {:size :small
      :title (i18n/label :t/light-client-enabled)
@@ -119,11 +103,19 @@
      #(re-frame/dispatch [:profile.settings/toggle-goerli-test-network])
      :accessory :switch
      :active is-goerli-enabled?}
+    {:size :small
+     :title "Peer syncing"
+     :accessibility-label :peer-syncing
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch [:profile.settings/toggle-peer-syncing])
+     :accessory :switch
+     :active peer-syncing-enabled?}
     {:size                :small
      :title               (i18n/label :t/set-currency)
      :accessibility-label :wallet-change-currency
      :on-press            #(hide-sheet-and-dispatch
-                            [:navigate-to :currency-settings])
+                            [:open-modal :currency-settings])
      :chevron             true}]))
 
 (defn- flat-list-data
@@ -142,20 +134,20 @@
                   is-goerli-enabled?               [:profile/is-goerli-enabled?]
                   light-client-enabled?            [:profile/light-client-enabled?]
                   webview-debug                    [:profile/webview-debug]
-                  network-name                     [:network-name]
                   transactions-management-enabled? [:wallet-legacy/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
-                  current-fleet                    [:fleets/current-fleet]]
+                  current-fleet                    [:fleets/current-fleet]
+                  peer-syncing-enabled?            [:profile/peer-syncing-enabled?]]
     [list/flat-list
      {:data      (flat-list-data
-                  {:network-name                     network-name
-                   :current-log-level                current-log-level
+                  {:current-log-level                current-log-level
                    :transactions-management-enabled? transactions-management-enabled?
                    :light-client-enabled?            light-client-enabled?
                    :current-fleet                    current-fleet
                    :dev-mode?                        false
                    :webview-debug                    webview-debug
                    :test-networks-enabled?           test-networks-enabled?
-                   :is-goerli-enabled?               is-goerli-enabled?})
+                   :is-goerli-enabled?               is-goerli-enabled?
+                   :peer-syncing-enabled?            peer-syncing-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

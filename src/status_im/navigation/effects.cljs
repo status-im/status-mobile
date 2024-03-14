@@ -1,5 +1,7 @@
 (ns status-im.navigation.effects
   (:require
+    [quo.theme]
+    [react-native.core :as rn]
     [react-native.navigation :as navigation]
     [status-im.navigation.options :as options]
     [status-im.navigation.roots :as roots]
@@ -8,10 +10,20 @@
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
+(defn- set-status-bar-color
+  [theme]
+  (rn/set-status-bar-style
+   (if (= theme :dark)
+     "light-content"
+     "dark-content")
+   true))
+
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
    (rf/dispatch [:screens/on-will-focus view-id])
-   (when-let [{:keys [on-focus]} (get views/screens view-id)]
+   (when-let [{:keys [on-focus options]} (get views/screens view-id)]
+     (set-status-bar-color (or (:theme options)
+                               (quo.theme/get-theme)))
      (when on-focus
        (rf/dispatch on-focus)))))
 
@@ -51,12 +63,8 @@
      (name @state/root-id)
      {:component {:id      component
                   :name    component
-                  :options (merge (options/default-root)
-                                  (options/statusbar-and-navbar)
-                                  options
-                                  (if (:topBar options)
-                                    (options/merge-top-bar (options/topbar-options) options)
-                                    {:topBar {:visible false}}))}})))
+                  :options (merge (options/root-options {:theme (:theme options)})
+                                  options)}})))
 
 (rf/reg-fx :navigate-to navigate)
 
@@ -69,11 +77,9 @@
      (name comp-id)
      {:component {:id      component
                   :name    component
-                  :options (merge (options/statusbar-and-navbar)
-                                  options
-                                  (if (:topBar options)
-                                    (options/merge-top-bar (options/topbar-options) options)
-                                    {:topBar {:visible false}}))}})))
+                  :options (merge
+                            (options/root-options {:theme (:theme options)})
+                            options)}})))
 
 (rf/reg-fx :navigate-to-within-stack navigate-to-within-stack)
 
@@ -128,8 +134,7 @@
          {:stack {:children [{:component
                               {:name    component
                                :id      component
-                               :options (merge (options/default-root)
-                                               (options/statusbar-and-navbar)
+                               :options (merge (options/root-options {:theme (:theme options)})
                                                options
                                                (when sheet?
                                                  options/sheet-options))}}]}})))))
@@ -145,7 +150,7 @@
    (navigation/show-overlay
     {:component {:name    component
                  :id      component
-                 :options (merge (options/statusbar)
+                 :options (merge (options/statusbar-and-navbar-options (:theme opts) nil nil)
                                  {:layout  {:componentBackgroundColor :transparent
                                             :orientation              ["portrait"]}
                                   :overlay {:interceptTouchOutside true}}
@@ -169,6 +174,13 @@
 (rf/reg-fx :hide-bottom-sheet
  (fn [] (navigation/dissmiss-overlay "bottom-sheet")))
 
+;;;; Alert Banner
+(rf/reg-fx :show-alert-banner
+ (fn [] (show-overlay "alert-banner" {:overlay {:interceptTouchOutside false}})))
+
+(rf/reg-fx :hide-alert-banner
+ (fn [] (navigation/dissmiss-overlay "alert-banner")))
+
 ;;;; Merge options
 
 (rf/reg-fx :merge-options
@@ -182,9 +194,8 @@
   (let [{:keys [options]} (get views/screens component)]
     {:component {:id      component
                  :name    component
-                 :options (merge (options/statusbar-and-navbar)
-                                 options
-                                 (options/merge-top-bar (options/topbar-options) options))}}))
+                 :options (merge (options/statusbar-and-navbar-options (:theme options) nil nil)
+                                 options)}}))
 
 (rf/reg-fx :set-stack-root-fx
  (fn [[stack component]]

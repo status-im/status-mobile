@@ -5,7 +5,6 @@
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.common.standard-authentication.core :as standard-authentication]
     [status-im.config :as config]
@@ -133,8 +132,8 @@
                                [:profile.login/login-with-biometric-if-available key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
-(defn- f-profiles-section
-  [{:keys [set-hide-profiles]}]
+(defn- profiles-section
+  [{:keys [hide-profiles]}]
   (let [profiles    (vals (rf/sub [:profile/profiles-overview]))
         translate-x (reanimated/use-shared-value @translate-x-atom)]
     (rn/use-mount (fn []
@@ -165,42 +164,37 @@
        :key-fn                  :key-uid
        :content-container-style {:padding-bottom 20}
        :render-data             {:last-index        (dec (count profiles))
-                                 :set-hide-profiles set-hide-profiles}
+                                 :set-hide-profiles hide-profiles}
        :render-fn               profile-card}]]))
-
-(defn profiles-section
-  [props]
-  [:f> f-profiles-section props])
 
 (defn password-input
   []
-  (let [password    (rf/sub [:profile/login-password])
-        auth-method (rf/sub [:auth-method])]
+  (let [auth-method         (rf/sub [:auth-method])
+        on-press-biometrics (fn []
+                              (rf/dispatch [:biometric/authenticate
+                                            {:on-success #(rf/dispatch
+                                                           [:profile.login/biometric-success])
+                                             :on-fail    #(rf/dispatch
+                                                           [:profile.login/biometric-auth-fail
+                                                            %])}]))
+       ]
     [standard-authentication/password-input
      {:shell?              true
       :blur?               true
-      :on-press-biometrics (when (= auth-method constants/auth-method-biometric)
-                             (fn []
-                               (rf/dispatch [:biometric/authenticate
-                                             {:on-success #(rf/dispatch
-                                                            [:profile.login/biometric-success])
-                                              :on-fail    #(rf/dispatch
-                                                            [:profile.login/biometric-auth-fail
-                                                             %])}])))
-      :default-password    password}]))
+      :on-press-biometrics (when (= auth-method constants/auth-method-biometric) on-press-biometrics)}]))
 
 (defn login-section
-  [{:keys [set-show-profiles]}]
-  (let [processing                                 (rf/sub [:profile/login-processing])
-        {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
-        sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
-        profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
-        login-multiaccount                         #(rf/dispatch [:profile.login/login])]
+  [{:keys [show-profiles]}]
+  (let [processing                    (rf/sub [:profile/login-processing])
+        {:keys [key-uid name
+                customization-color]} (rf/sub [:profile/login-profile])
+        sign-in-enabled?              (rf/sub [:sign-in-enabled?])
+        profile-picture               (rf/sub [:profile/login-profiles-picture key-uid])
+        login-multiaccount            (rn/use-callback #(rf/dispatch [:profile.login/login]))]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
-     [rn/view
-      {:style style/multi-profile-button-container}
+     [rn/view {:style style/multi-profile-button-container}
       (when config/quo-preview-enabled?
         [quo/button
          {:size                32
@@ -217,7 +211,7 @@
         :type                :grey
         :background          :blur
         :icon-only?          true
-        :on-press            set-show-profiles
+        :on-press            show-profiles
         :disabled?           processing
         :accessibility-label :show-profiles}
        :i/multi-profile]]
@@ -241,16 +235,13 @@
        :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
       (i18n/label :t/log-in)]]))
 
-;; we had to register it here, because of hotreload, overwise on hotreload it will be reseted
-(defonce show-profiles? (reagent/atom false))
-
 (defn view
   []
-  (let [set-show-profiles #(reset! show-profiles? true)
-        set-hide-profiles #(reset! show-profiles? false)]
-    (fn []
-      [:<>
-       [background/view true]
-       (if @show-profiles?
-         [profiles-section {:set-hide-profiles set-hide-profiles}]
-         [login-section {:set-show-profiles set-show-profiles}])])))
+  (let [[show-profiles? set-show-profiles] (rn/use-state false)
+        show-profiles                      (rn/use-callback #(set-show-profiles true))
+        hide-profiles                      (rn/use-callback #(set-show-profiles false))]
+    [:<>
+     [background/view true]
+     (if show-profiles?
+       [profiles-section {:hide-profiles hide-profiles}]
+       [login-section {:show-profiles show-profiles}])]))

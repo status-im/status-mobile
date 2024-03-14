@@ -142,7 +142,6 @@
   [color]
   {:padding          12
    :height           102
-   :flex             1
    :border-radius    16
    :background-color (colors/custom-color color 50 10)
    :justify-content  :space-between})

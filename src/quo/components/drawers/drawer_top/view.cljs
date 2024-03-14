@@ -76,7 +76,8 @@
    (str description " · " (i18n/label :t/on-device))])
 
 (defn- context-tag-subtitle
-  [{:keys [context-tag-type community-logo community-name account-name emoji customization-color]}]
+  [{:keys [context-tag-type community-logo community-name account-name emoji customization-color
+           full-name profile-picture]}]
   (let [tag-type (or context-tag-type :account)]
     [rn/view
      {:accessibility-label :context-tag-wrapper
@@ -88,7 +89,9 @@
        :community-name      community-name
        :community-logo      community-logo
        :size                24
-       :customization-color customization-color}]]))
+       :customization-color customization-color
+       :profile-picture     profile-picture
+       :full-name           full-name}]]))
 
 (defn- description-subtitle
   [{:keys [theme blur? description]}]
@@ -100,7 +103,7 @@
 
 (defn- subtitle
   [{:keys [type theme blur? keycard? networks description community-name community-logo
-           context-tag-type account-name emoji customization-color]}]
+           context-tag-type account-name emoji customization-color full-name profile-picture]}]
   (cond
     (= :keypair type)
     [keypair-subtitle
@@ -128,7 +131,9 @@
       :community-name      community-name
       :account-name        account-name
       :emoji               emoji
-      :customization-color customization-color}]
+      :customization-color customization-color
+      :profile-picture     profile-picture
+      :full-name           full-name}]
 
     (and (not= :label type) description)
     [description-subtitle
@@ -187,7 +192,7 @@
            on-button-press
            on-button-long-press
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
-           profile-picture keycard? networks label]}]
+           profile-picture keycard? networks label full-name]}]
   [rn/view {:style style/container}
    (when (left-image-supported-types type)
      [rn/view {:style style/left-container}
@@ -218,7 +223,9 @@
       :context-tag-type    context-tag-type
       :customization-color customization-color
       :account-name        account-name
-      :emoji               emoji}]]
+      :emoji               emoji
+      :full-name           full-name
+      :profile-picture     profile-picture}]]
    [right-icon
     {:theme                theme
      :type                 type

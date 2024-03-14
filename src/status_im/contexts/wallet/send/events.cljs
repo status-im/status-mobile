@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.send.events
   (:require
-    [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [native-module.core :as native-module]
@@ -11,7 +10,8 @@
     [utils.address :as address]
     [utils.money :as money]
     [utils.number]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
@@ -24,10 +24,8 @@
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes timestamp]]
    (when (= (get-in db [:wallet :ui :send :suggested-routes-call-timestamp]) timestamp)
-     (let [suggested-routes-data (cske/transform-keys csk/->kebab-case suggested-routes)
-           chosen-route          (->> suggested-routes-data
-                                      :best
-                                      first)]
+     (let [suggested-routes-data (cske/transform-keys transforms/->kebab-case-keyword suggested-routes)
+           chosen-route          (:best suggested-routes-data)]
        {:db (-> db
                 (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes-data)
                 (assoc-in [:wallet :ui :send :route] chosen-route)
@@ -47,20 +45,13 @@
             (update-in [:wallet :ui :send] dissoc :route)
             (update-in [:wallet :ui :send] dissoc :loading-suggested-routes?))}))
 
-(rf/reg-event-fx :wallet/select-send-account-address
- (fn [{:keys [db]} [{:keys [address stack-id]}]]
-   {:db (-> db
-            (assoc-in [:wallet :ui :send :send-account-address] address)
-            (update-in [:wallet :ui :send] dissoc :to-address))
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-select-asset stack-id]]]]}))
-
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
 
 (rf/reg-event-fx
  :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address token recipient stack-id]}]]
+ (fn [{:keys [db]} [{:keys [address token? recipient stack-id]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          test-net?           (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
@@ -75,9 +66,9 @@
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
       :fx [[:dispatch
             [:navigate-to-within-stack
-             (if token
-               [:wallet-send-input-amount stack-id]
-               [:wallet-select-asset stack-id])]]]})))
+             (if token?
+               [:screen/wallet.send-input-amount stack-id]
+               [:screen/wallet.select-asset stack-id])]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -90,7 +81,7 @@
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
-         [:dispatch [:navigate-to-within-stack [:wallet-send-input-amount stack-id]]]]}))
+         [:dispatch [:navigate-to-within-stack [:screen/wallet.send-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/send-select-token-drawer
@@ -101,6 +92,16 @@
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :token] nil)}))
 
+(rf/reg-event-fx :wallet/clean-selected-collectible
+ (fn [{:keys [db]}]
+   (let [type (get-in db [:wallet :ui :send :type])]
+     {:db (update-in db
+                     [:wallet :ui :send]
+                     dissoc
+                     :collectible
+                     :amount
+                     (when (= type :collecible) :type))})))
+
 (rf/reg-event-fx :wallet/send-select-collectible
  (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
    {:db (-> db
@@ -109,12 +110,12 @@
             (assoc-in [:wallet :ui :send :type] :collectible)
             (assoc-in [:wallet :ui :send :amount] 1))
     :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
-         [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]}))
+         [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch [:navigate-to-within-stack [:wallet-transaction-confirmation stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
@@ -184,11 +185,11 @@
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
             [:navigate-to-within-stack
-             [:wallet-transaction-progress :wallet-transaction-confirmation]]]]})))
+             [:screen/wallet.transaction-progress :screen/wallet.transaction-confirmation]]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
-   {:fx [[:dispatch [:dismiss-modal :wallet-transaction-progress]]]}))
+   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
 (defn- transaction-bridge
   [{:keys [from-address from-chain-id to-address token-id token-address route data eth-transfer?]}]
@@ -244,7 +245,7 @@
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
-   (let [route           (get-in db [:wallet :ui :send :route])
+   (let [route           (first (get-in db [:wallet :ui :send :route]))
          from-address    (get-in db [:wallet :current-viewing-account-address])
          token           (get-in db [:wallet :ui :send :token])
          collectible     (get-in db [:wallet :ui :send :collectible])

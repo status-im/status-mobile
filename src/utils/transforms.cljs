@@ -1,6 +1,7 @@
 (ns utils.transforms
   (:refer-clojure :exclude [js->clj])
   (:require
+    [camel-snake-kebab.core :as csk]
     [cljs-bean.core :as clj-bean]
     [oops.core :as oops]
     [reagent.impl.template :as reagent.template]
@@ -19,6 +20,9 @@
   (when-not (= json "undefined")
     (try (js->clj (.parse js/JSON json))
          (catch js/Error _ (when (string? json) json)))))
+
+(def ->kebab-case-keyword (memoize csk/->kebab-case-keyword))
+(def ->PascalCaseKeyword (memoize csk/->PascalCaseKeyword))
 
 (defn json->js
   [json]

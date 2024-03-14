@@ -181,14 +181,15 @@
        (chat.events/public-chat? current-chat)
        (assoc :able-to-send-message? true)
 
+       (and (chat.events/community-chat? current-chat)
+            (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
+       (assoc :able-to-send-message? true)
+
+
        (and (chat.events/group-chat? current-chat)
             (group-chats.db/member? my-public-key current-chat))
        (assoc :able-to-send-message? true
               :member?               true)
-
-       (and (chat.events/community-chat? current-chat)
-            (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
-       (assoc :able-to-send-message? true)
 
        (not group-chat)
        (assoc
@@ -424,10 +425,18 @@
    (get previews :unfurled)))
 
 (re-frame/reg-sub
+ :chats/status-link-previews-unfurled
+ :<- [:chat/status-link-previews]
+ (fn [previews]
+   (:unfurled previews)))
+
+(re-frame/reg-sub
  :chats/link-previews?
  :<- [:chats/link-previews-unfurled]
- (fn [previews]
-   (boolean (seq previews))))
+ :<- [:chats/status-link-previews-unfurled]
+ (fn [previews status-link-previews]
+   (boolean (or (seq status-link-previews)
+                (seq previews)))))
 
 (re-frame/reg-sub
  :chat/check-channel-muted?
