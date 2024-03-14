@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.content.view
   (:require
+    [clojure.string :as string]
     [legacy.status-im.ui.screens.chat.message.legacy-view :as old-message]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -27,8 +28,7 @@
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.address :as address]
     [utils.datetime :as datetime]
-    [utils.re-frame :as rf]
-    [clojure.string :as string]))
+    [utils.re-frame :as rf]))
 
 (def delivery-state-showing-time-ms 3000)
 

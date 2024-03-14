@@ -1,7 +1,6 @@
 (ns legacy.status-im.data-store.messages
   (:require
     [clojure.set :as set]
-    [clojure.string :as string]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
