@@ -187,6 +187,11 @@
 ; EIP1581 Chat Key 0, the default whisper key
 (def ^:const path-whisper (str path-eip1581 "/0'/0"))
 
+(def ^:const path-ropsten-testnet "m/44'/1'/0")
+(def ^:const path-ledger "m/44'/60'/0'")
+(def ^:const path-ledger-live "m/44'/60'")
+(def ^:const path-keepkey "m/44'/60'")
+
 (def ^:const path-default-wallet-keyword (keyword path-default-wallet))
 (def ^:const path-whisper-keyword (keyword path-whisper))
 (def ^:const path-wallet-root-keyword (keyword path-wallet-root))
