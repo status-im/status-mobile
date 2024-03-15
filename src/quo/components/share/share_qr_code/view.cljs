@@ -104,8 +104,8 @@
     [address-text/view
      {:address       qr-data
       :full-address? true
-      :weight :regular
-      :size :paragraph-1}]]
+      :weight        :regular
+      :size          :paragraph-1}]]
    [button/button
     {:icon-only?          true
      :type                :grey
