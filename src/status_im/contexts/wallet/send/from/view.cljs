@@ -19,7 +19,7 @@
   []
   (let [on-close (fn []
                    (rf/dispatch [:navigate-back]))
-        accounts (rf/sub [:wallet/account-cards-data])]
+        accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
@@ -36,16 +36,6 @@
        :data                              accounts
        :render-fn                         (fn [item]
                                             [quo/account-item
-                                             {:type          :balance-neutral
-                                              :on-press      #(on-press (:address item))
-                                              :token-props   {:symbol "SNT"
-                                                              :value  "1,000"}
-                                              :balance-props {:crypto-value      "0.00"
-                                                              :fiat-value        "€0.00"
-                                                              :percentage-change "0.0"
-                                                              :fiat-change       "€0.00"}
-                                              :title-icon?   (:watch-only? item)
-                                              :state         (if (:watch-only? item) :disabled :default)
-                                              :title-icon    (when (:watch-only? item) :i/reveal)
+                                             {:on-press      #(on-press (:address item))
                                               :account-props item}])
        :shows-horizontal-scroll-indicator false}]]))
