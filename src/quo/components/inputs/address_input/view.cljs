@@ -58,78 +58,77 @@
   [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan
            on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
            valid-ens-or-address? container-style]}]
-  (let [theme                    (quo.theme/use-theme-value)
-        [status set-status]      (rn/use-state :default)
-        value                    (rn/use-ref-atom nil)
-        [_ trigger-render-value] (rn/use-state @value)
-        [focused? set-focused]   (rn/use-state false)
-        on-change                (rn/use-callback
-                                  (fn [text]
-                                    (let [address? (when address-regex
-                                                     (boolean (re-matches address-regex text)))
-                                          ens?     (when ens-regex
-                                                     (boolean (re-matches ens-regex text)))]
-                                      (reset! value text)
-                                      (if (> (count text) 0)
-                                        (set-status :typing)
-                                        (set-status :active))
-                                      (when on-change-text
-                                        (on-change-text text))
-                                      (when (and on-detect-ens ens?)
-                                        (set-status :loading)
-                                        (on-detect-ens text #(set-status :typing)))
-                                      (when (and address? on-detect-address)
-                                        (set-status :loading)
-                                        (on-detect-address text))
-                                      (when (and (not address?)
-                                                 (not ens?)
-                                                 on-detect-unclassified)
-                                        (on-detect-unclassified text)))))
-        set-value                (rn/use-callback
-                                  (fn [new-value]
-                                    (reset! value new-value)
-                                    (on-change new-value)
-                                    (trigger-render-value new-value)))
-        on-paste                 (rn/use-callback
-                                  (fn []
-                                    (clipboard/get-string
-                                     (fn [clipboard]
-                                       (when-not (empty? clipboard)
-                                         (set-value clipboard))))))
-        on-clear                 (rn/use-callback
-                                  (fn []
-                                    (set-value "")
-                                    (set-status (if focused? :active :default))
-                                    (when on-change-text
-                                      (on-change-text ""))
-                                    (when on-clear
-                                      (on-clear)))
-                                  [focused?])
-        on-clear                 (rn/use-callback
-                                  (fn []
-                                    (set-value "")
-                                    (set-status (if focused? :active :default))
-                                    (when on-change-text
-                                      (on-change-text ""))
-                                    (when on-clear
-                                      (on-clear)))
-                                  [focused?])
-        on-scan                  (when on-scan (rn/use-callback #(on-scan set-value)))
-        on-focus                 (rn/use-callback
-                                  (fn []
-                                    (when (= (count @value) 0)
+  (let [theme                  (quo.theme/use-theme-value)
+        [status set-status]    (rn/use-state :default)
+        [value set-value]      (rn/use-state nil)
+        [focused? set-focused] (rn/use-state false)
+        on-change              (rn/use-callback
+                                (fn [text]
+                                  (let [address? (when address-regex
+                                                   (boolean (re-matches address-regex text)))
+                                        ens?     (when ens-regex
+                                                   (boolean (re-matches ens-regex text)))]
+                                    (set-value value text)
+                                    (if (> (count text) 0)
+                                      (set-status :typing)
                                       (set-status :active))
-                                    (set-focused true)
-                                    (when on-focus (on-focus))))
-        on-blur                  (rn/use-callback
-                                  (fn []
-                                    (when (= status :active)
-                                      (set-status :default))
-                                    (set-focused false)
-                                    (when on-blur (on-blur)))
-                                  [status])
-        placeholder-text-color   (rn/use-memo #(get-placeholder-text-color status theme blur?)
-                                              [status theme blur?])]
+                                    (when on-change-text
+                                      (on-change-text text))
+                                    (when (and on-detect-ens ens?)
+                                      (set-status :loading)
+                                      (on-detect-ens text #(set-status :typing)))
+                                    (when (and address? on-detect-address)
+                                      (set-status :loading)
+                                      (on-detect-address text))
+                                    (when (and (not address?)
+                                               (not ens?)
+                                               on-detect-unclassified)
+                                      (on-detect-unclassified text)))))
+        set-value              (rn/use-callback
+                                (fn [new-value]
+                                  (on-change new-value)
+                                  (set-value new-value)))
+        on-paste               (rn/use-callback
+                                (fn []
+                                  (clipboard/get-string
+                                   (fn [clipboard]
+                                     (when-not (empty? clipboard)
+                                       (set-value clipboard))))))
+        on-clear               (rn/use-callback
+                                (fn []
+                                  (set-value "")
+                                  (set-status (if focused? :active :default))
+                                  (when on-change-text
+                                    (on-change-text ""))
+                                  (when on-clear
+                                    (on-clear)))
+                                [focused?])
+        on-clear               (rn/use-callback
+                                (fn []
+                                  (set-value "")
+                                  (set-status (if focused? :active :default))
+                                  (when on-change-text
+                                    (on-change-text ""))
+                                  (when on-clear
+                                    (on-clear)))
+                                [focused?])
+        on-scan                (when on-scan
+                                 (rn/use-callback #(on-scan set-value)))
+        on-focus               (rn/use-callback
+                                (fn []
+                                  (when (= (count value) 0)
+                                    (set-status :active))
+                                  (set-focused true)
+                                  (when on-focus (on-focus))))
+        on-blur                (rn/use-callback
+                                (fn []
+                                  (when (= status :active)
+                                    (set-status :default))
+                                  (set-focused false)
+                                  (when on-blur (on-blur)))
+                                [status])
+        placeholder-text-color (rn/use-memo #(get-placeholder-text-color status theme blur?)
+                                            [status theme blur?])]
     (rn/use-mount #(on-change (or default-value "")))
     [rn/view {:style (style/container container-style)}
      [rn/text-input
@@ -137,7 +136,7 @@
        :style                  (style/input-text theme)
        :placeholder            (i18n/label :t/name-ens-or-address)
        :placeholder-text-color placeholder-text-color
-       :value                  @value
+       :value                  value
        :auto-complete          (when platform/ios? :off)
        :auto-capitalize        :none
        :auto-correct           false
