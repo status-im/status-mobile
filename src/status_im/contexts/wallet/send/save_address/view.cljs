@@ -44,54 +44,54 @@
   (let [[address-label set-address-label] (rn/use-state "")
         [address-color set-address-color] (rn/use-state :blue)
         placeholder                       (i18n/label :t/address-name)]
-     [floating-button-page/view
-      {:footer-container-padding 0
-       :header                   [quo/page-nav
-                                  {:type                :no-title
-                                   :background          :blur
-                                   :icon-name           :i/close
-                                   :on-press            (rn/use-callback #(rf/dispatch [:navigate-back]))
-                                   :accessibility-label :save-address-top-bar}]
-       :footer                   [quo/button
-                                  {:accessibility-label :save-address-button
-                                   :type                :primary
-                                   :container-style     style/save-address-button}
-                                  (i18n/label :t/save-address)]
+    [floating-button-page/view
+     {:footer-container-padding 0
+      :header                   [quo/page-nav
+                                 {:type                :no-title
+                                  :background          :blur
+                                  :icon-name           :i/close
+                                  :on-press            (rn/use-callback #(rf/dispatch [:navigate-back]))
+                                  :accessibility-label :save-address-top-bar}]
+      :footer                   [quo/button
+                                 {:accessibility-label :save-address-button
+                                  :type                :primary
+                                  :container-style     style/save-address-button}
+                                 (i18n/label :t/save-address)]
 
-       :customization-color      address-color
-       :gradient-cover?          true}
+      :customization-color      address-color
+      :gradient-cover?          true}
 
-      [rn/view
-       {:style style/account-avatar-container}
-       [quo/user-avatar
-        {:full-name           (if (string/blank? address-label)
-                                placeholder
-                                address-label)
-         :customization-color address-color
-         :size                :big}]]
-
-      [quo/title-input
-       {:blur?               true
-        :auto-focus          true
-        :max-length          24
-        :size                :heading-1
-        :placeholder         placeholder
-        :default-value       address-label
-        :on-change-text      set-address-label
+     [rn/view
+      {:style style/account-avatar-container}
+      [quo/user-avatar
+       {:full-name           (if (string/blank? address-label)
+                               placeholder
+                               address-label)
         :customization-color address-color
-        :container-style     style/title-input-container}]
+        :size                :big}]]
 
-      [quo/divider-line {:container-style style/color-picker-top-divider}]
+     [quo/title-input
+      {:blur?               true
+       :auto-focus          true
+       :max-length          24
+       :size                :heading-1
+       :placeholder         placeholder
+       :default-value       address-label
+       :on-change-text      set-address-label
+       :customization-color address-color
+       :container-style     style/title-input-container}]
 
-      [quo/section-label
-       {:section         (i18n/label :t/colour)
-        :container-style style/section-container}]
+     [quo/divider-line {:container-style style/color-picker-top-divider}]
 
-      [quo/color-picker
-       {:default-selected address-color
-        :on-change        set-address-color
-        :container-style  style/color-picker}]
+     [quo/section-label
+      {:section         (i18n/label :t/colour)
+       :container-style style/section-container}]
 
-      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
+     [quo/color-picker
+      {:default-selected address-color
+       :on-change        set-address-color
+       :container-style  style/color-picker}]
 
-      [address-view "0xshivek"]]))
+     [quo/divider-line {:container-style style/color-picker-bottom-divider}]
+
+     [address-view "0xshivek"]]))

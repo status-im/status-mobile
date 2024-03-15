@@ -1,16 +1,15 @@
 (ns status-im.common.bottom-sheet-screen.view
   (:require
-   [oops.core :as oops]
-   [quo.theme :as theme]
-   [react-native.core :as rn]
-   [react-native.gesture :as gesture]
-   [react-native.platform :as platform]
-   [react-native.reanimated :as reanimated]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.common.bottom-sheet-screen.style :as style]
-   [utils.re-frame :as rf]
-   [quo.core :as quo]))
+    [oops.core :as oops]
+    [quo.theme :as theme]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.common.bottom-sheet-screen.style :as style]
+    [utils.re-frame :as rf]))
 
 (def ^:const drag-threshold 200)
 
@@ -50,7 +49,7 @@
         set-animating-false (fn [ms]
                               (js/setTimeout #(reset! animating? false) ms))]
     (fn [{:keys [content skip-background? theme gradient-cover? customization-color]
-         :or   {customization-color :blue}}]
+          :or   {customization-color :blue}}]
       (let [{:keys [top] :as insets} (safe-area/get-insets)
             alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
             padding-top              (+ alert-banners-top-margin
