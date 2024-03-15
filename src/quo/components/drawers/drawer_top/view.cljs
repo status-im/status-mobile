@@ -172,6 +172,10 @@
              :size   :paragraph-2
              :style  (style/description theme blur?)}
             label]
+    :address [address-text/view {:address title
+                                 :full-address? true
+                                 :weight :semi-bold
+                                 :size :heading-2}]
     [rn/view {:style style/title-container}
      [text/text
       {:size   :heading-2

@@ -245,8 +245,11 @@
 ;;;; Networks
 (def ^:private networks
   {:ethereum "#758EEB"
+   :eth      "#758EEB"
    :optimism "#E76E6E"
+   :opt      "#E76E6E"
    :arbitrum "#6BD5F0"
+   :arb1     "#6BD5F0"
    :zkSync   "#9FA0FE"
    :hermez   "#EB8462"
    :xDai     "#3FC0BD"

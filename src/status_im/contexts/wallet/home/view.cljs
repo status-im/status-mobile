@@ -31,7 +31,7 @@
   [:<>
    [quo/drawer-top
     {:title address
-     :type :default}]
+     :type :address}]
    [quo/action-drawer
     [[{:icon                :i/send
        :accessibility-label :send-asset

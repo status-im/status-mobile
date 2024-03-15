@@ -9,30 +9,36 @@
             [utils.address :as utils]))
 
 (defn- colored-network-text
-  [theme network]
+  [{:keys [theme network size weight]}]
   (let [{:keys [network-name short-name]} network]
     [text/text
-     {:size  :paragraph-2
-      :style {:color (colors/resolve-color network-name theme)}}
-     (str short-name ":")]))
+     {:size  size
+      :weight weight
+      :style {:color (colors/resolve-color (or network-name (keyword network)) theme)}}
+     (str (or short-name network) ":")]))
 
 (defn- view-internal
-  [{:keys [networks address blur? theme format full-address?]}]
-  (let [network-text-xf (map #(colored-network-text theme %))
+  [{:keys [networks address blur? theme format full-address? size weight]
+    :or   {size :paragraph-2}}]
+  (let [network-text-xf (map #(colored-network-text {:theme theme 
+                                                     :network %
+                                                     :weight weight
+                                                     :size size}))
         [splitted-networks splitted-address] (and full-address? (as-> address $
                                                                   (string/split $ ":")
                                                                   [(butlast $) (last $)]))
-        address-interval (if full-address? splitted-address address)
+        address-internal (if full-address? splitted-address address)
+        networks-internal (if full-address? splitted-networks networks)
         address-text    [text/text
-                         {:size   :paragraph-2
+                         {:size   size
                           ;; TODO: monospace font
                           ;; https://github.com/status-im/status-mobile/issues/17009
-                          :weight :monospace
+                          :weight (or weight :monospace)
                           :style  (style/address-text format blur? theme)}
                          (if (= format :short)
-                           (utils/get-short-wallet-address address-interval)
-                           address-interval)]]
-    (as-> (if full-address? splitted-networks networks) $
+                           (utils/get-short-wallet-address address-internal)
+                           address-internal)]]
+    (as-> networks-internal $ 
       (into [text/text] network-text-xf $)
       (conj $ address-text))))
 
