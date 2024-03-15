@@ -245,16 +245,24 @@
 ;;;; Networks
 (def ^:private networks
   {:ethereum "#758EEB"
-   :eth      "#758EEB"
    :optimism "#E76E6E"
-   :opt      "#E76E6E"
    :arbitrum "#6BD5F0"
-   :arb1     "#6BD5F0"
    :zkSync   "#9FA0FE"
    :hermez   "#EB8462"
    :xDai     "#3FC0BD"
    :polygon  "#AD71F3"
    :unknown  "#EEF2F5"})
+
+(def ^:private get-network-full-name
+  {:eth  :ethereum
+   :opt  :optimism
+   :arb1 :arbitrum})
+
+(def ^:private short-name-map
+  (reduce (fn [acc [k v]]
+            (assoc acc k (get networks v)))
+          {}
+          get-network-full-name))
 
 (def socials
   {:social/link      "#647084"
@@ -296,6 +304,7 @@
                     60 warning-60}}
          customization
          networks
+         short-name-map
          socials))
 
 (defn hex-string?
