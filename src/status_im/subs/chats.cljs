@@ -212,7 +212,7 @@
  :chats/chat-type
  :<- [:chats/current-chat]
  (fn [current-chat]
-   (condp = #(apply % current-chat)
+   (condp apply [current-chat]
      chat.events/community-chat? :community-chat
      chat.events/group-chat?     :group-chat
      :chat)))
