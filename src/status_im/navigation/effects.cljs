@@ -100,7 +100,7 @@
 
 (defn navigate-back
   []
-  (let [{:keys [type parent id]} (last @state/navigation-state)]
+  (let [{:keys [type parent id]} (last (state/get-navigation-state))]
     (if (= type :modal)
       (dismiss-modal id)
       (do

@@ -6,6 +6,7 @@
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     status-im.contexts.shell.jump-to.effects
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im.navigation.state :as navigation.state]
     [utils.re-frame :as rf]))
 
 ;;;; Events
