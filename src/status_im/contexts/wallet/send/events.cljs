@@ -66,7 +66,7 @@
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
       :fx [[:dispatch
-            [:wallet/wizard.send-forward
+            [:wallet/send-flow-navigate-forward
              {:current-screen stack-id
               :start-flow?    start-flow?}]]]})))
 
@@ -82,7 +82,7 @@
             (assoc-in [:wallet :ui :send :token] token))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
          [:dispatch
-          [:wallet/wizard.send-forward
+          [:wallet/send-flow-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?}]]
         ]}))
@@ -115,7 +115,7 @@
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
     :fx [[:dispatch
-          [:wallet/wizard.send-forward
+          [:wallet/send-flow-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?}]]]}))
 
@@ -186,7 +186,7 @@
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:wallet/wizard.send-forward {:current-screen :screen/wallet.transaction-confirmation}]]]})))
+            [:wallet/send-flow-navigate-forward {:current-screen :screen/wallet.transaction-confirmation}]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
@@ -297,7 +297,7 @@
                                                  :params request-params}))}]})))
 
 (rf/reg-event-fx
- :wallet/wizard.send-forward
+ :wallet/send-flow-navigate-forward
  (fn [_ [{:keys [current-screen start-flow?]}]]
    {:fx [[:dispatch
           [:navigation/wizard-forward
