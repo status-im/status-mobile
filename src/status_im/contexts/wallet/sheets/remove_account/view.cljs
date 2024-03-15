@@ -13,19 +13,18 @@
 (defn- footer
   [{:keys [address submit-disabled? toast-message]}]
   [quo/bottom-actions
-   {:actions             :2-actions
-    :customization-color :danger
-    :button-one-label    (i18n/label :t/remove)
-    :button-one-props    {:on-press
-                          (fn []
-                            (rf/dispatch [:wallet/remove-account
-                                          {:address       address
-                                           :toast-message toast-message}]))
-                          :type :danger
-                          :disabled? submit-disabled?}
-    :button-two-label    (i18n/label :t/cancel)
-    :button-two-props    {:on-press #(rf/dispatch [:hide-bottom-sheet])
-                          :type     :grey}}])
+   {:actions          :two-actions
+    :button-one-label (i18n/label :t/remove)
+    :button-one-props {:on-press
+                       (fn []
+                         (rf/dispatch [:wallet/remove-account
+                                       {:address       address
+                                        :toast-message toast-message}]))
+                       :type :danger
+                       :disabled? submit-disabled?}
+    :button-two-label (i18n/label :t/cancel)
+    :button-two-props {:on-press #(rf/dispatch [:hide-bottom-sheet])
+                       :type     :grey}}])
 
 (defn- recovery-phase-flow
   []
