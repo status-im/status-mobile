@@ -142,8 +142,7 @@
                             :address             address
                             :emoji               emoji
                             :customization-color customization-color}
-      :token-details       (when-not share-all-addresses?
-                             (balances->components-props balances images-by-symbol))
+      :token-details       (balances->components-props balances images-by-symbol)
       :checked?            checked?
       :disabled?           share-all-addresses?
       :on-change           toggle-address
