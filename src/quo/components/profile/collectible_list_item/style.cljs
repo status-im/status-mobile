@@ -2,30 +2,19 @@
   (:require [quo.foundations.colors :as colors]
             [quo.foundations.shadows :as shadows]))
 
-(def type-card-image-height 150)
-(def type-card-image-height-and-border (+ type-card-image-height 2))
-(def type-image-height 160)
 (def container-border-radius 12)
-(def borders-width 2)
 (def card-image-padding-vertical 3)
 (def card-image-padding-horizontal 3)
 
 (defn fallback
-  [{:keys [theme width type]}]
+  [{:keys [theme]}]
   {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90 theme)
    :border-style     :dashed
    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :border-width     1
    :border-radius    container-border-radius
-  ;;  :height           (if (= type :image)
-  ;;                      width
-  ;;                      (- width borders-width (* 2 card-image-padding-horizontal)))
-  ;;  :width            (if (= type :image)
-  ;;                      width
-  ;;                      (- width borders-width (* 2 card-image-padding-horizontal)))
-  :width "100%"
-  :aspect-ratio 1
-            ;; :flex 1
+   :width            "100%"
+   :aspect-ratio     1
    :align-items      :center
    :justify-content  :center})
 
@@ -40,8 +29,7 @@
    :left     12})
 
 (def container
-  {:flex 1
-  })
+  {:flex 1})
 
 (defn card-view-container
   [theme]
@@ -56,22 +44,16 @@
     :border-color     (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)}
    (shadows/get 2)))
 
-(defn card-image
-  [width]
-  {:position :absolute
-                        :top 0
-                        :bottom 0
-                        :right 0
-                        :left 0
+(def image
+  {:width         "100%"
+   :flex          1
    :border-radius container-border-radius})
 
-(defn card-details-container
-  [status]
+(def card-details-container
   {:flex-direction :row
-        :height 24
-
-   :margin-top     (if (= :loading status) 4 3)
-   :margin-bottom  (if (= :loading status) 4 2)
+   :height         27
+   :margin-top     3
+   :margin-bottom  2
    :align-items    :center
    :padding-left   8
    :padding-right  0
@@ -80,7 +62,9 @@
 (def card-detail-text
   {:flex 1})
 
-(def image-view-container {:border-radius container-border-radius})
+(def image-view-container
+  {:aspect-ratio  1
+   :border-radius container-border-radius})
 
 (defn loading-square
   [theme]
@@ -101,11 +85,6 @@
 
 (defn loading-image
   [theme]
-  {:position         :absolute
-   :top              0
-   :bottom           0
-   :right            0
-   :left             0
-   :z-index          2
-   :border-radius    16
+  {:flex             1
+   :border-radius    container-border-radius
    :background-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)})

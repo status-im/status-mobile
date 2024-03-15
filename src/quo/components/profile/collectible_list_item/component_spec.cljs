@@ -10,7 +10,6 @@
         (h/render-with-theme-provider
          [collectible-list-item/view
           {:type     :card
-           :width    200
            :on-press on-press}])
         (h/fire-event :press (h/get-by-label-text :collectible-list-item))
         (h/was-called on-press)))
@@ -21,7 +20,6 @@
          [collectible-list-item/view
           {:type     :card
            :status   :loading
-           :width    200
            :on-press on-press}])
         (h/fire-event :press (h/get-by-label-text :collectible-list-item))
         (h/was-not-called on-press)
@@ -31,7 +29,6 @@
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type    :card
-         :width   200
          :counter "x500"}])
       (h/is-truthy (h/get-by-text "x500")))
 
@@ -39,7 +36,6 @@
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type             :card
-         :width            200
          :collectible-name "Doodle #6822"
          :counter          "x500"}])
       (h/is-truthy (h/get-by-text "x500"))
@@ -49,16 +45,14 @@
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type   :card
-         :status :cant-fetch
-         :width  200}])
+         :status :cant-fetch}])
       (h/is-truthy (h/get-by-translation-text :t/cant-fetch-info)))
 
     (h/test "Renders status unsupported"
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type   :card
-         :status :unsupported
-         :width  200}])
+         :status :unsupported}])
       (h/is-truthy (h/get-by-translation-text :t/unsupported-file)))
 
     (h/test "Renders status unsupported and counter"
@@ -66,8 +60,7 @@
        [collectible-list-item/view
         {:type    :card
          :status  :unsupported
-         :counter "x500"
-         :width   200}])
+         :counter "x500"}])
       (h/is-truthy (h/get-by-text "x500"))
       (h/is-truthy (h/get-by-translation-text :t/unsupported-file))))
 
@@ -77,7 +70,6 @@
         (h/render-with-theme-provider
          [collectible-list-item/view
           {:type     :image
-           :width    200
            :on-press on-press}])
         (h/fire-event :press (h/get-by-label-text :collectible-list-item))
         (h/was-called on-press)))
@@ -88,7 +80,6 @@
          [collectible-list-item/view
           {:type     :image
            :status   :loading
-           :width    200
            :on-press on-press}])
         (h/fire-event :press (h/get-by-label-text :collectible-list-item))
         (h/was-not-called on-press)
@@ -98,7 +89,6 @@
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type    :image
-         :width   200
          :counter "x500"}])
       (h/is-truthy (h/get-by-text "x500")))
 
@@ -106,16 +96,14 @@
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type   :image
-         :status :cant-fetch
-         :width  200}])
+         :status :cant-fetch}])
       (h/is-truthy (h/get-by-translation-text :t/cant-fetch-info)))
 
     (h/test "Renders status unsupported"
       (h/render-with-theme-provider
        [collectible-list-item/view
         {:type   :image
-         :status :unsupported
-         :width  200}])
+         :status :unsupported}])
       (h/is-truthy (h/get-by-translation-text :t/unsupported-file)))
 
     (h/test "Renders status unsupported and counter"
@@ -123,7 +111,6 @@
        [collectible-list-item/view
         {:type    :image
          :status  :unsupported
-         :counter "x500"
-         :width   200}])
+         :counter "x500"}])
       (h/get-by-text "x500")
       (h/is-truthy (h/get-by-translation-text :t/unsupported-file)))))

@@ -14,10 +14,9 @@
     [utils.i18n :as i18n]))
 
 (defn- fallback-view
-  [{:keys [label theme width type]}]
+  [{:keys [label theme type]}]
   [rn/view
    {:style (style/fallback {:type  type
-                            :width width
                             :theme theme})}
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
@@ -36,17 +35,15 @@
   [rn/view {:style (style/loading-message theme)}])
 
 (defn- loading-image
-  [{:keys [theme gradient-color-index height]}]
-  [:<>
-   [rn/view {:style (style/loading-image theme)}]
-   [gradients/view
-    {:theme           theme
-     :container-style {:height height}
-     :color-index     gradient-color-index}]])
+  [{:keys [theme gradient-color-index]}]
+  [gradients/view
+   {:theme           theme
+    :container-style (style/loading-image theme)
+    :color-index     gradient-color-index}])
 
 (defn- card-details
   [{:keys [status community? avatar-image-src collectible-name theme]}]
-  [rn/view {:style (style/card-details-container status)}
+  [rn/view {:style style/card-details-container}
 
    (cond (= :cant-fetch status)
          [quo/text
@@ -89,38 +86,33 @@
 
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter
-           gradient-color-index image-src status width type]}]
+           gradient-color-index image-src status type]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style (style/card-view-container theme)}
-     [rn/view
+     [rn/view {:style {:aspect-ratio 1}}
       (cond
         (= :loading status)
         [loading-image
          {:theme                theme
-          :gradient-color-index gradient-color-index
-          :height               style/type-card-image-height-and-border}]
+          :gradient-color-index gradient-color-index}]
 
         (= status :unsupported)
         [fallback-view
          {:theme theme
-          :width width
           :type  type
           :label (i18n/label :t/unsupported-file)}]
 
         (= status :cant-fetch)
         [fallback-view
          {:theme theme
-          :width width
           :type  type
           :label (i18n/label :t/cant-fetch-info)}]
 
-        :else 
+        :else
         [rn/view {:style {:aspect-ratio 1}}
-        [rn/image
-               {:style  {
-                  :width "100%"
-                  :flex 1}
-                :source image-src}]])]
+         [rn/image
+          {:style  style/image
+           :source image-src}]])]
      (when (and (not= status :loading) (not= status :cant-fetch) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -135,40 +127,31 @@
 
 (defn- image-view
   [{:keys [avatar-image-src community? counter
-           gradient-color-index image-src status width]}]
+           gradient-color-index image-src status]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style style/image-view-container}
      (cond
        (= :loading status)
        [loading-image
         {:theme                theme
-         :gradient-color-index gradient-color-index
-         :height               style/type-image-height}]
+         :gradient-color-index gradient-color-index}]
 
        (= status :unsupported)
        [fallback-view
         {:theme theme
-         :width width
          :type  type
          :label (i18n/label :t/unsupported-file)}]
 
        (= status :cant-fetch)
        [fallback-view
         {:theme theme
-         :width width
          :type  type
          :label (i18n/label :t/cant-fetch-info)}]
 
        :else [rn/view {:style {:aspect-ratio 1}}
-         [rn/image
-              {:style  {
-                        :position :absolute
-                        :top 0
-                        :bottom 0
-                        :right 0
-                        :left 0
-                        :border-radius style/container-border-radius}
-               :source image-src}]])
+              [rn/image
+               {:style  style/image
+                :source image-src}]])
      (when (and (not= status :loading) (not= status :cant-fetch) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -181,10 +164,6 @@
          :size            :size-24}
         [avatar-image-src]])]))
 
-"
-width is dynamic based on available space and has to be passed to the component.
-This will used in large lists, to avoid recalculating the same value it is easier to pass in the value. 
-"
 (defn- view-internal
   [{:keys [container-style type on-press status]
     :as   props}]
@@ -205,37 +184,12 @@ This will used in large lists, to avoid recalculating the same value it is easie
       [:collectible-name {:optional true} [:maybe string?]]
       [:community? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe string?]]
-      [:gradient-color-index {:optional true} [:maybe [:enum 1 2 3 4 5]]]
+      [:gradient-color-index {:optional true}
+       [:maybe [:enum :gradient-1 :gradient-2 :gradient-3 :gradient-4 :gradient-5]]]
       [:image-src {:optional true} [:maybe :schema.common/image-source]]
       [:on-press {:optional true} [:maybe fn?]]
       [:status {:optional true} [:maybe [:enum :default :loading :cant-fetch :unsupported]]]
-      [:width int?]
-      [:type [:enum :card :image]]
-     ]]]
+      [:type [:enum :card :image]]]]]
    :any])
 
 (def view (schema/instrument #'view-internal ?schema))
-
-#_(defn compe []
-[rn/view {:style {
-  :border-width 1
-  :border-color :red
-  :padding 4}} 
-
-    [rn/view {:style {
-      :aspect-ratio 1
-      :border-width 1
-      :border-color :green}}
-    
-    [rn/image 
-      {:source test-image
-       :style {
-            :width "100%"
-            :flex 1
-            :border-width 1
-            :border-color :blue}}]]
-  
-    [rn/view {:style {
-      :height 16
-      :border-width 1
-      :border-color :yellow}}]])

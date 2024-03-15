@@ -6,11 +6,11 @@
 (def ^:private descriptor
   [{:key     :color-index
     :type    :select
-    :options [{:key 1}
-              {:key 2}
-              {:key 3}
-              {:key 4}
-              {:key 5}]}])
+    :options [{:key :gradient-1}
+              {:key :gradient-2}
+              {:key :gradient-3}
+              {:key :gradient-4}
+              {:key :gradient-5}]}])
 
 (defn view
   []

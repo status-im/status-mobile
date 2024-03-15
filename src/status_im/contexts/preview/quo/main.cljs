@@ -204,8 +204,7 @@
 
 (def screens-categories
   {:foundations       [{:name      :gradients
-                        :component gradients/view
-                       }
+                        :component gradients/view}
                        {:name      :shadows
                         :component shadows/view}]
    :animated-list     [{:name      :animated-header-list
