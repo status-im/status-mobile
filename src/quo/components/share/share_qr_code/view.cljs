@@ -1,6 +1,5 @@
 (ns quo.components.share.share-qr-code.view
   (:require [clojure.set]
-            [clojure.string :as string]
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.avatars.user-avatar.view :as user-avatar]
@@ -13,6 +12,7 @@
             [quo.components.share.share-qr-code.schema :as component-schema]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
+            [quo.components.wallet.address-text.view :as address-text]
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
@@ -74,21 +74,6 @@
      :on-press            on-press}
     :i/share]])
 
-(defn- network-colored-text
-  [network-short-name]
-  [text/text {:style (style/network-short-name-text network-short-name)}
-   (str network-short-name ":")])
-
-(defn- wallet-multichain-colored-address
-  [full-address]
-  (let [[networks address]  (as-> full-address $
-                              (string/split $ ":")
-                              [(butlast $) (last $)])
-        ->network-hiccup-xf (map #(vector network-colored-text %))]
-    (as-> networks $
-      (into [:<>] ->network-hiccup-xf $)
-      (conj $ address))))
-
 (defn- profile-bottom
   [{:keys [component-width qr-data on-text-press on-text-long-press share-qr-type]}]
   [rn/view
@@ -116,7 +101,11 @@
     {:width         component-width
      :on-press      on-text-press
      :on-long-press on-text-long-press}
-    [wallet-multichain-colored-address qr-data]]
+    [address-text/view
+     {:address       qr-data
+      :full-address? true
+      :weight :regular
+      :size :paragraph-1}]]
    [button/button
     {:icon-only?          true
      :type                :grey
