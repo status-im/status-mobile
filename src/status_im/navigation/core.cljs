@@ -4,7 +4,6 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.navigation :as navigation]
-    [status-im.common.theme.core :as theme]
     [status-im.navigation.effects :as effects]
     [status-im.navigation.options :as options]
     [status-im.navigation.state :as state]
@@ -24,15 +23,9 @@
   (navigation/reg-app-launched-listener
    (fn []
      (navigation/set-default-options options/default-options)
-     (reset! state/curr-modal false)
+     (reset! state/modals [])
      (reset! state/dissmissing false)
      (re-frame/dispatch [:bottom-sheet-hidden])
-     (if (= @state/root-id :multiaccounts-stack)
-       (re-frame/dispatch-sync [:set-multiaccount-root])
-       (when @state/root-id
-         (reset! theme/device-theme (rn/get-color-scheme))
-         (re-frame/dispatch [:init-root @state/root-id])
-         (re-frame/dispatch [:chat/check-last-chat])))
      (rn/hide-splash-screen)))
 
   (navigation/reg-component-did-appear-listener
@@ -43,7 +36,7 @@
            view-id             (:name view)]
        (when view
          (effects/set-view-id view-id)
-         (when-not @state/curr-modal
+         (when-not (seq @state/modals)
            (reset! state/pushed-screen-id view-id))))))
 
   ;;;; Modal
@@ -62,13 +55,13 @@
 
   (navigation/reg-modal-dismissed-listener
    (fn []
+     (state/navigation-pop-from (last @state/modals))
      (if (> (count @state/modals) 1)
        (let [new-modals (butlast @state/modals)]
          (reset! state/modals (vec new-modals))
          (effects/set-view-id (last new-modals)))
        (do
          (reset! state/modals [])
-         (reset! state/curr-modal false)
          (effects/set-view-id @state/pushed-screen-id)))
 
      (let [component @state/dissmissing]

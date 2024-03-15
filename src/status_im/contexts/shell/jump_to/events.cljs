@@ -6,7 +6,6 @@
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     status-im.contexts.shell.jump-to.effects
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
-    [status-im.navigation.state :as navigation.state]
     [utils.re-frame :as rf]))
 
 ;;;; Events
@@ -149,9 +148,7 @@
                           (not hidden-screen?)
                           (:current-chat-id db))
                      (conj [:chat/close]))})
-    {:db          (-> db
-                      (assoc :view-id go-to-view-id)
-                      (dissoc :modal-view-ids))
+    {:db          (assoc db :view-id go-to-view-id)
      :navigate-to go-to-view-id}))
 
 (rf/defn shell-navigate-back
@@ -161,7 +158,7 @@
         current-view-id (:view-id db)
         community-id    (when current-chat-id
                           (get-in db [:chats current-chat-id :community-id]))]
-    (if (and (not @navigation.state/curr-modal)
+    (if (and (not (seq @navigation.state/modals))
              (shell.utils/shell-navigation? current-view-id)
              (seq (shell.utils/open-floating-screens)))
       (merge
@@ -176,8 +173,7 @@
                shell.constants/close-screen-with-slide-to-right-animation))}
        (when (and current-chat-id community-id)
          {:dispatch [:shell/add-switcher-card shell.constants/community-screen community-id]}))
-      {:navigate-back nil
-       :db            (dissoc db :modal-view-ids)})))
+      {:navigate-back nil})))
 
 (rf/defn floating-screen-opened
   {:events [:shell/floating-screen-opened]}
