@@ -850,19 +850,15 @@ class ChatView(BaseView):
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message_button = ProfileSendMessageButton(self.driver)
-        self.close_profile_button = Button(self.driver,
-                                           xpath="(//android.widget.ImageView[@content-desc='icon'])[last()-1]")
-        self.profile_options_button = Button(self.driver,
-                                             xpath="(//android.widget.ImageView[@content-desc='icon'])[last()]")
+        self.profile_options_button = Button(self.driver, accessibility_id="contact-actions")
         self.profile_block_contact_button = Button(self.driver, accessibility_id="block-user")
-        self.confirm_block_contact_button = Button(self.driver,
-                                                   xpath="//*[@content-desc='button-one']//*[@text='Block']")
+        self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact")
         self.unblock_contact_button = Button(self.driver, accessibility_id="icon, Unblock")
         self.profile_mute_contact = Button(self.driver, accessibility_id="Mute-item-button")
         self.profile_unmute_contact = Button(self.driver, accessibility_id="Unmute-item-button")
         self.profile_send_contact_request_button = Button(self.driver, accessibility_id="icon, Send contact request")
-        self.contact_request_message_input = EditBox(self.driver, accessibility_id="input")
-        self.confirm_send_contact_request_button = EditBox(self.driver, accessibility_id="button-one")
+        self.contact_request_message_input = EditBox(self.driver, accessibility_id="contact-request-message")
+        self.confirm_send_contact_request_button = EditBox(self.driver, accessibility_id="send-contact-request")
         self.profile_add_to_contacts_button = Button(self.driver, accessibility_id="Add to contacts-item-button")
         self.profile_remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
         self.profile_details = Button(self.driver, accessibility_id="share-button")

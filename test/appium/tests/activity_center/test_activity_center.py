@@ -53,7 +53,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         chat.profile_send_contact_request_button.click()
         chat.contact_request_message_input.send_keys("hi")
         chat.confirm_send_contact_request_button.click()
-        chat.confirm_send_contact_request_button.click()
+        chat.close_button.click()
         self.home_2.navigate_back_to_home_view()
 
         self.device_1.just_fyi("Device 1: check there is no PN when receiving new message to activity centre")
@@ -112,7 +112,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         chat.profile_send_contact_request_button.click()
         chat.contact_request_message_input.send_keys("hi")
         chat.confirm_send_contact_request_button.click()
-        chat.close_profile_button.click()
+        chat.close_button.click()
 
         self.device_1.just_fyi('Device1 accepts pending contact request by swiping')
         self.home_1.chats_tab.click()
@@ -195,7 +195,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         chat_1.profile_send_contact_request_button.click()
         chat_1.contact_request_message_input.send_keys("hi")
         chat_1.confirm_send_contact_request_button.click()
-        chat_1.close_profile_button.click()
+        chat_1.close_button.click()
 
         self.home_2.just_fyi("Device 2 accepts contact request")
         self.home_2.handle_contact_request(new_username_1)
