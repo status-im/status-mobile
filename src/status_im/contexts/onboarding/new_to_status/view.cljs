@@ -1,6 +1,5 @@
 (ns status-im.contexts.onboarding.new-to-status.view
   (:require
-    [legacy.status-im.keycard.recovery :as keycard]
     [quo.core :as quo]
     re-frame.db
     [react-native.core :as rn]
@@ -53,7 +52,7 @@
         :title    (i18n/label :t/use-keycard)
         :subtitle (i18n/label :t/use-keycard-subtitle)
         :image    (resources/get-image :use-keycard)
-        :on-press #(rf/dispatch [::keycard/recover-with-keycard-pressed])}]]]))
+        :on-press #(js/alert "TODO: to be implemented")}]]]))
 
 (defn getting-started-doc
   []
