@@ -153,6 +153,7 @@
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by
                     message-id chat-id]} message-data
+            {:keys [inside-chat?]}       context
             first-image                  (first (:album message-data))
             outgoing-status              (if (= content-type
                                                 constants/content-type-album)
@@ -204,7 +205,8 @@
                                      (reset! show-delivery-state? true)
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
-          :on-long-press       #(on-long-press message-data context keyboard-shown?)}
+          :on-long-press       (when inside-chat?
+                                 #(on-long-press message-data context keyboard-shown?))}
          [:<>
           (when pinned-by
             [pin/pinned-by-view pinned-by])

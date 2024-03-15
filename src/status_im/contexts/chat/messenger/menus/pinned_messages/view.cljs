@@ -33,7 +33,7 @@
      :description (i18n/label :t/no-pinned-messages-desc)}]])
 
 (defn f-pinned-messages
-  [{:keys [theme chat-id]}]
+  [{:keys [theme chat-id inside-chat?]}]
   (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
         current-chat           (rf/sub [:chats/chat-by-id chat-id])
@@ -60,7 +60,7 @@
      (if (pos? (count pinned))
        [rn/flat-list
         {:data        pinned
-         :render-data render-data
+         :render-data (assoc render-data :inside-chat? inside-chat?)
          :render-fn   message-render-fn
          :footer      [rn/view {:style style/list-footer}]
          :key-fn      list-key-fn

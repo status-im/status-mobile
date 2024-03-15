@@ -85,7 +85,7 @@
    :on-press            (fn []
                           (rf/dispatch [:pin-message/load-pin-messages chat-id])
                           (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                        chat-id]))
+                                        chat-id {:inside-chat? false}]))
    :label               (i18n/label :t/pinned-messages)})
 
 
