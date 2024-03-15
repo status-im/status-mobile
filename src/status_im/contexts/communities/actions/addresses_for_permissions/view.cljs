@@ -1,8 +1,8 @@
 (ns status-im.contexts.communities.actions.addresses-for-permissions.view
   (:require [quo.core :as quo]
             [react-native.gesture :as gesture]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.constants :as constants]
+            [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]
             [utils.i18n :as i18n]
             [utils.money :as money]
             [utils.re-frame :as rf]))
@@ -63,27 +63,34 @@
                                      (rf/dispatch [:hide-bottom-sheet]))
         reset-selected-addresses   (fn []
                                      (rf/dispatch [:communities/reset-selected-permission-addresses id])
-                                     (rf/dispatch [:hide-bottom-sheet]))]
+                                     (rf/dispatch [:hide-bottom-sheet]))
+        open-permission-drawer     (fn []
+                                     (rf/dispatch [:show-bottom-sheet
+                                                   {:content (fn [] [detail-token-gating/view id])}]))]
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
-      (let [{:keys [name color images]}       (rf/sub [:communities/community id])
+      (let [{:keys [name color images
+                    membership-permissions?]} (rf/sub [:communities/community id])
             {:keys [checking?
-                    highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+                    highest-permission-role
+                    no-member-permission?]}   (rf/sub [:community/token-gated-overview id])
             accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
             share-all-addresses?              (rf/sub [:communities/share-all-addresses? id])
             unsaved-address-changes?          (rf/sub [:communities/unsaved-address-changes? id])]
         [:<>
          [quo/drawer-top
-          {:type                :context-tag
-           :title               (i18n/label :t/addresses-for-permissions)
-           :context-tag-type    :community
-           :community-name      name
-           :button-icon         :i/info
-           :button-type         :grey
-           :on-button-press     not-implemented/alert
-           :community-logo      (get-in images [:thumbnail :uri])
-           :customization-color color}]
+          (cond-> {:type                :context-tag
+                   :title               (i18n/label :t/addresses-for-permissions)
+                   :context-tag-type    :community
+                   :community-name      name
+                   :community-logo      (get-in images [:thumbnail :uri])
+                   :customization-color color}
+            (or membership-permissions? (and highest-permission-role (not no-member-permission?)))
+            (assoc
+             :button-icon
+             :i/info
+             :on-button-press open-permission-drawer))]
 
          [gesture/flat-list
           {:render-fn               account-item

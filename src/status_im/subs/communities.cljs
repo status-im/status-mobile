@@ -258,8 +258,8 @@
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
                              :can-post?        can-post?
-                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false ->
-                             ;; has access
+                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false
+                             ;; -> has access
                              :locked?          (when token-gated?
                                                  (not can-post?))
                              :id               id}]
@@ -308,6 +308,12 @@
 (re-frame/reg-sub
  :communities/checking-permissions-by-id
  :<- [:communities/permissions-check]
+ (fn [permissions [_ id]]
+   (get permissions id)))
+
+(re-frame/reg-sub
+ :communities/checking-permissions-all-by-id
+ :<- [:communities/permissions-check-all]
  (fn [permissions [_ id]]
    (get permissions id)))
 
@@ -410,3 +416,25 @@
         (map (fn [{sym :symbol image :image}]
                {sym image}))
         (into {}))))
+
+(re-frame/reg-sub
+ :community/token-permissions
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-all-by-id community-id])])
+ (fn [[{:keys [token-images]}
+       {:keys [checking? check]}] _]
+   (let [roles                      (:roles check)
+         member-and-satisifed-roles (filter #(or (= (:type %) 2) (:satisfied %)) roles)]
+     (into []
+           (map (fn [role]
+                  {:role       (:type role)
+                   :satisfied? (:satisfied role)
+                   :tokens     (map (fn [{:keys [tokenRequirement]}]
+                                      (map
+                                       (partial token-requirement->token
+                                                checking?
+                                                token-images)
+                                       tokenRequirement))
+                                    (:criteria role))})
+                member-and-satisifed-roles)))))

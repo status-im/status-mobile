@@ -150,6 +150,7 @@
 (reg-root-key-sub :contract-communities :contract-communities)
 (reg-root-key-sub :communities/permissioned-balances :communities/permissioned-balances)
 (reg-root-key-sub :communities/permissions-check :communities/permissions-check)
+(reg-root-key-sub :communities/permissions-check-all :communities/permissions-check-all)
 (reg-root-key-sub :communities/channel-permissions-check :communities/channel-permissions-check)
 
 ;;activity center

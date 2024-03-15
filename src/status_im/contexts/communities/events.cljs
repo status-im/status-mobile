@@ -30,6 +30,7 @@
               [:communities id]
               (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
          :fx [[:dispatch [:communities/initialize-permission-addresses id]]
+              [:dispatch [:communities/check-permissions-to-join-community-with-all-addresses id]]
               (when (not joined)
                 [:dispatch [:chat.ui/spectate-community id]])
               (when (nil? token-permissions-check)

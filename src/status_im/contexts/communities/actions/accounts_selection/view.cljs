@@ -8,6 +8,7 @@
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
+    [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -32,21 +33,32 @@
                                                         #(rf/dispatch
                                                           [:communities/request-to-join-with-addresses
                                                            {:community-id id :password %}])}])
-                                         (navigate-back))]
+                                         (navigate-back))
+        open-permission-drawer         (fn []
+                                         (rf/dispatch [:show-bottom-sheet
+                                                       {:content (fn [] [detail-token-gating/view
+                                                                         id])}]))]
     (fn []
-      (let [{:keys [name color images]}       (rf/sub [:communities/community id])
+      (let [{:keys [name color images
+                    membership-permissions?]} (rf/sub [:communities/community id])
             airdrop-account                   (rf/sub [:communities/airdrop-account id])
             selected-accounts                 (rf/sub [:communities/selected-permission-accounts id])
-            {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+            {:keys [highest-permission-role
+                    no-member-permission?]}   (rf/sub [:community/token-gated-overview id])
             highest-role-text                 (i18n/label (communities.utils/role->translation-key
                                                            highest-permission-role
                                                            :t/member))]
         [rn/safe-area-view {:style style/container}
          [quo/page-nav
-          {:text-align          :left
-           :icon-name           :i/close
-           :on-press            navigate-back
-           :accessibility-label :back-button}]
+          (cond-> {:text-align          :left
+                   :icon-name           :i/close
+                   :on-press            navigate-back
+                   :accessibility-label :back-button}
+            (or membership-permissions? (and highest-permission-role (not no-member-permission?)))
+            (assoc :right-side
+                   [{:icon-left :i/unlocked
+                     :on-press  open-permission-drawer
+                     :label     (i18n/label :t/permissions)}]))]
          [quo/page-top
           {:title       (i18n/label :t/request-to-join)
            :description :context-tag
