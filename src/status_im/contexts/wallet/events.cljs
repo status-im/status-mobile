@@ -164,13 +164,13 @@
   {:db (update-in db [:wallet :ui] dissoc :scanned-address)})
 
 (rf/reg-event-fx :wallet/scan-qr-code-success
-                 (fn [{:keys [db]} [address]]
-                   {:db (assoc-in db [:wallet :qr-code] address)
-                    :dispatch [:navigate-back]}))
+ (fn [{:keys [db]} [address]]
+   {:db       (assoc-in db [:wallet :qr-code] address)
+    :dispatch [:navigate-back]}))
 
 (rf/reg-event-fx :wallet/clean-scanned-qr-code
-                 (fn [{:keys [db]}]
-                   {:db (update-in db [:wallet] dissoc :qr-code)}))
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet] dissoc :qr-code)}))
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [{:keys [sha3-pwd path]} on-success]]

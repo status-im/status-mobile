@@ -415,7 +415,7 @@
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top? true}}
      :component wallet-select-address/view}
-    
+
     {:name      :screen/wallet.select-from
      :options   {:modalPresentationStyle :overCurrentContext
                  :insets                 {:top? true}}

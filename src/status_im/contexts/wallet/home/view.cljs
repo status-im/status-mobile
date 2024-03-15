@@ -31,19 +31,16 @@
   [:<>
    [quo/drawer-top
     {:title address
-     :type :address}]
+     :type  :address}]
    [quo/action-drawer
     [[{:icon                :i/send
        :accessibility-label :send-asset
        :label               (i18n/label :t/send-to-this-address)
        :on-press            (fn []
                               (rf/dispatch [:wallet/select-send-address
-                                            {:address address
+                                            {:address   address
                                              :recipient address
-                                             :stack-id :wallet-select-address}])
-                              (rf/dispatch [:wallet/wizard-navigate-forward
-                                            {:start-flow? true
-                                             :flow-id     :wallet-flow}]))}
+                                             :stack-id :wallet-select-address}]))}
       {:icon                :i/save
        :accessibility-label :save-address
        :label               (i18n/label :t/save-address)

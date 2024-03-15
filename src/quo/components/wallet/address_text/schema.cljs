@@ -12,7 +12,9 @@
       [:networks {:optional true}
        [:maybe [:sequential [:map [:network-name :keyword] [:short-name :string]]]]]
       [:full-address? {:optional true} [:maybe :boolean]]
-      [:size {:optional true} [:maybe :keyword]] ;; TODO: it's text schema and should be implemented in its component and imported here
-      [:weight {:optional true} [:maybe :keyword]] ;; TODO: it's text schema and should be implemented in its component and imported here
-      ]]]
+      [:size {:optional true} [:maybe :keyword]] ;; TODO: it's text schema and should be implemented in
+                                                 ;; its component and imported here
+      [:weight {:optional true} [:maybe :keyword]] ;; TODO: it's text schema and should be implemented in
+                                                   ;; its component and imported here
+     ]]]
    :any])
