@@ -48,8 +48,7 @@
         set-animating-true  #(reset! animating? true)
         set-animating-false (fn [ms]
                               (js/setTimeout #(reset! animating? false) ms))]
-    (fn [{:keys [content skip-background? theme gradient-cover? customization-color]
-          :or   {customization-color :blue}}]
+    (fn [{:keys [content skip-background? theme]}]
       (let [{:keys [top] :as insets} (safe-area/get-insets)
             alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
             padding-top              (+ alert-banners-top-margin
@@ -87,8 +86,6 @@
                                    :reset-open-sheet   reset-open-sheet
                                    :set-animating-true set-animating-true})}
           [reanimated/view {:style (style/main-view translate-y theme)}
-           ;; (when (or gradient-cover? true)
-           ;;   [quo/gradient-cover {:customization-color customization-color}])
            [rn/view {:style style/handle-container}
             [rn/view {:style (style/handle theme)}]]
            [content
