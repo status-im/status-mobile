@@ -37,7 +37,7 @@
          :sub-label           constants/path-ledger-live
          :customization-color customization-color}
         {:accessibility-label :keepkey
-         :label               (i18n/label :t/keepkey)
+         :label               (i18n/label :t/keep-key)
          :sub-label           constants/path-keepkey
          :customization-color customization-color}
         {:icon                :i/customize
