@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.send.flow-config)
 
-(def send-asset
+(def steps
   [{:screen-id  :screen/wallet.select-address
     :skip-step? (fn [db] (some? (get-in db [:wallet :ui :send :recipient])))}
    {:screen-id  :screen/wallet.select-asset

@@ -303,4 +303,4 @@
           [:navigation/wizard-forward
            {:current-screen current-screen
             :start-flow?    start-flow?
-            :flow-config    flow-config/send-asset}]]]}))
+            :flow-config    flow-config/steps}]]]}))
