@@ -55,7 +55,7 @@
                                     (when ens-name false)}]
                     (assoc-in acc
                      [(keyword image-name) :config]
-                     {:kind    :contact
+                     {:type    :contact
                       :options options})))
                 images
                 (vals images))
@@ -63,7 +63,7 @@
         images (if (seq images)
                  images
                  {:thumbnail
-                  {:config {:kind    :initials
+                  {:config {:type    :initials
                             :options {:port            port
                                       :ratio           pixel-ratio/ratio
                                       :public-key      public-key

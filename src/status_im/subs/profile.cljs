@@ -39,7 +39,7 @@
  (fn [[port font-file] [_ profile-pic]]
    {:config
     (if profile-pic
-      {:kind    :account
+      {:type    :account
        :options {:port            port
                  :ratio           pixel-ratio/ratio
                  :image-name      profile-pic
@@ -47,7 +47,7 @@
                  :uppercase-ratio (:uppercase-ratio
                                    constants/initials-avatar-font-conf)
                  :theme           (theme/get-theme)}}
-      {:kind    :initials
+      {:type    :initials
        :options {:port            port
                  :ratio           pixel-ratio/ratio
                  :theme           (theme/get-theme)
@@ -68,14 +68,14 @@
      (when profile
        {:config
         (if image-name
-          {:kind    :account
+          {:type    :account
            :options {:port           port
                      :ratio          pixel-ratio/ratio
                      :image-name     image-name
                      :key-uid        target-key-uid
                      :theme          (theme/get-theme)
                      :override-ring? override-ring?}}
-          {:kind    :initials
+          {:type    :initials
            :options {:port            port
                      :ratio           pixel-ratio/ratio
                      :key-uid         target-key-uid
@@ -328,7 +328,7 @@
         images-with-uri                    (mapv (fn [{key-uid :keyUid image-name :type :as image}]
                                                    (assoc image
                                                           :config
-                                                          {:kind    :account
+                                                          {:type    :account
                                                            :options (merge
                                                                      {:port       port
                                                                       :ratio      pixel-ratio/ratio
@@ -339,7 +339,7 @@
                                                  images)
         new-images                         (if (seq images-with-uri)
                                              images-with-uri
-                                             [{:config {:kind    :initials
+                                             [{:config {:type    :initials
                                                         :options (merge
                                                                   {:port port
                                                                    :ratio pixel-ratio/ratio

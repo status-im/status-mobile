@@ -48,16 +48,18 @@
    [:override-ring? [:maybe :boolean]]])
 
 (def ^:private ?image-uri-config
-  [:or
-   [:map
-    [:kind [:enum :contact]]
-    [:options ?contact-image-uri-options]]
-   [:map
-    [:kind [:enum :account]]
-    [:options ?account-image-uri-options]]
-   [:map
-    [:kind [:enum :initials]]
-    [:options ?initials-image-uri-options]]])
+  [:merge
+   [:map [:type [:enum :account :contact :initials]]]
+   [:multi {:dispatch :type}
+    [:account
+     [:map
+      [:options ?account-image-uri-options]]]
+    [:contact
+     [:map
+      [:options ?contact-image-uri-options]]]
+    [:initials
+     [:map
+      [:options ?initials-image-uri-options]]]]])
 
 (def ^:private ?profile-picture-source
   [:or
@@ -67,10 +69,6 @@
 
 (defn register-schemas
   []
-  (registry/register ::profile-picture-options ?profile-picture-options)
   (registry/register ::image-uri-config ?image-uri-config)
   (registry/register ::profile-picture-source ?profile-picture-source)
-  (registry/register ::profile-picture-options ?profile-picture-options)
-  (registry/register ::account-image-uri-options ?account-image-uri-options)
-  (registry/register ::contact-image-uri-options ?contact-image-uri-options)
-  (registry/register ::initials-image-uri-options ?initials-image-uri-options))
+  (registry/register ::profile-picture-options ?profile-picture-options))
