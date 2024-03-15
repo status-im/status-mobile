@@ -8,21 +8,21 @@
     [quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
-    [reagent.core :as reagent]
     [schema.core :as schema]))
 
 (defn- view-internal
-  []
-  (let [container-width (reagent/atom 0)
-        on-layout       #(->> (oops/oget % :nativeEvent :layout :width)
-                              (reset! container-width))]
-    (fn [{:keys [options blur? theme collectible-img-src collectible-name collectible-id] :as props}]
+  [{:keys [options blur? collectible-img-src collectible-name collectible-id] :as props}]
+  (let [theme                 (quo.theme/use-theme-value)
+        [container-width
+         set-container-width] (rn/use-state 0)
+        on-layout             (rn/use-callback
+                               #(set-container-width (oops/oget % :nativeEvent :layout :width)))]
+    (fn []
       (let [size (or (:size props) :size-24)]
-        [rn/view
-         {:on-layout on-layout}
+        [rn/view {:on-layout on-layout}
          [hole-view/hole-view
           {:holes (if options
-                    [{:x            (- @container-width
+                    [{:x            (- container-width
                                        (case size
                                          :size-24 10
                                          :size-32 12
@@ -54,6 +54,4 @@
              {:size     20
               :no-color true}]])]))))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))
