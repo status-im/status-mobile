@@ -27,6 +27,7 @@
                                               theme
                                               20)
       :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-      :page-nav-props   {:right-side [{:icon-name :i/options
-                                       :on-press  on-action-press}]}}
+      :page-nav-props   {:right-side [{:icon-name           :i/options
+                                       :on-press            on-action-press
+                                       :accessibility-label :contact-actions}]}}
      [contact-header/view {:scroll-y scroll-y}]]))

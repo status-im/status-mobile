@@ -63,8 +63,10 @@
      [quo/bottom-actions
       {:actions          :two-actions
        :button-one-label (i18n/label :t/block)
-       :button-one-props {:type     :danger
-                          :on-press on-block-press}
+       :button-one-props {:type                :danger
+                          :accessibility-label :block-contact
+                          :on-press            on-block-press}
        :button-two-label (i18n/label :t/cancel)
-       :button-two-props {:type     :grey
-                          :on-press on-close}}]]))
+       :button-two-props {:type                :grey
+                          :accessibility-label :cancel
+                          :on-press            on-close}}]]))

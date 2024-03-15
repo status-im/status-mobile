@@ -65,10 +65,11 @@
            :status {:type :pending}
            :size   :large}]])]
      [quo/page-top
-      {:title            full-name
-       :description      :text
-       :description-text bio
-       :emoji-dash       emoji-hash}]
+      {:title                     full-name
+       :title-accessibility-label :contact-name
+       :description               :text
+       :description-text          bio
+       :emoji-dash                emoji-hash}]
 
      (when blocked?
        [quo/button
