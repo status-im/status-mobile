@@ -3,7 +3,6 @@
     [cljs.test :refer [deftest is use-fixtures]]
     legacy.status-im.events
     legacy.status-im.subs.root
-    [native-module.core :as native-module]
     [promesa.core :as p]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.constants :as constants]
@@ -12,8 +11,7 @@
     status-im.navigation.core
     status-im.subs.root
     [test-helpers.integration :as h]
-    [tests.contract-test.utils :as contract-utils]
-    [tests.integration-test.constants :as integration-constants]))
+    [tests.contract-test.utils :as contract-utils]))
 
 (use-fixtures :each (h/fixture-session))
 
@@ -67,31 +65,3 @@
     (fn []
       (p/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]
         (assert-ethereum-chains response)))))
-
-(defn get-main-account
-  [accounts]
-  (:address (first accounts)))
-
-(def test-password integration-constants/password)
-
-(defn assert-derived-account
-  [response]
-  (is (= (:address response) (:address response)))
-  (is (= (:public-key response) (:public-key response)))
-  (is (= "m/43'/60'/1581'/0'/0" (:path (first response)))))
-
-(deftest wallet-get-derived-addressess-contract-test
-  (h/test-async :wallet/create-derived-addresses
-    (fn []
-      (p/let [_ (h/enable-testnet!)
-              _ (h/recover-multiaccount!)
-              sha3-pwd        (native-module/sha3 test-password)
-              derivation-path ["m/43'/60'/1581'/0'/0"]
-              accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              main-account    (get-main-account accounts)
-              response        (contract-utils/call-rpc
-                               "wallet_getDerivedAddresses"
-                               sha3-pwd
-                               main-account
-                               derivation-path)]
-        (assert-derived-account response)))))
