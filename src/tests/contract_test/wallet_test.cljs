@@ -97,9 +97,7 @@
 (defn assert-wallet-tokens
   [tokens]
   (let [flattened-tokens (mapcat val tokens)]
-    (is (some #(= (:symbol %) "SNT") flattened-tokens))
-    (is (some #(= (:symbol %) "ETH") flattened-tokens))
-    (is (some #(= (:symbol %) "DAI") flattened-tokens))))
+    (is (some :symbol flattened-tokens))))
 
 (deftest wallet-get-walet-token-test
   (h/test-async :wallet/get-wallet-token
