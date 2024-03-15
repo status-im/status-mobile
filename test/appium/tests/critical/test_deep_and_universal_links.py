@@ -45,7 +45,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                     self.errors.append("Incorrect username is shown for profile url %s" % url)
             else:
                 self.errors.append("Profile was not opened by the profile url %s" % url)
-            self.home.navigate_back_to_chat_view()
+            self.profile_view.close_button.click()
 
         closed_community_urls = {
             "https://status.app/c/G8EAAMR_fz8tsCQ-aR2QrCS5sVAvvzc_N3mAA-En_Zxy4JA3j7Dl1A50Pd4DbooQOMbWf7E1_4wipgDyGe8XZEappDn-Qomf9l_xyXhSYBuSQic8InCEUBSRGR0oixSTh3iw5ZCxzkGSI95Iyu1EBpcIlFOEMPHpKUBIdkkoKBJglMDKko8O8dBvBtIYncOA8mwztwLpx3C0rK_u59PldFuXe4cx#zQ3shwQnEfMtcXpHXF4qJPyCGgw2F18N3nbGzYbzsVHnMq4yK":

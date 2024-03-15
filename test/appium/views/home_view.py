@@ -417,7 +417,7 @@ class HomeView(BaseView):
         chat.confirm_send_contact_request_button.click()
         if nickname:
             chat.set_nickname(nickname)
-        chat.close_button.click()
+        chat.close_button.click_until_absense_of_element(chat.close_button)
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
