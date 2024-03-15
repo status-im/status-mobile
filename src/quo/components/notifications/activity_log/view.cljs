@@ -152,17 +152,16 @@
     :blur?  blur?}])
 
 (defn- footer
-  [_]
+  [{:keys [replying? items] :as props}]
   (let [[reply-input set-reply-input] (rn/use-state "")]
-    (fn [{:keys [replying? items] :as props}]
-      [:<>
-       (when replying?
-         [activity-reply-text-input props reply-input set-reply-input])
-       (when items
-         [rn/view style/footer-container
-          (for [item items]
-            ^{:key (:key item)}
-            [footer-item-view item replying? reply-input])])])))
+    [:<>
+     (when replying?
+       [activity-reply-text-input props reply-input set-reply-input])
+     (when items
+       [rn/view style/footer-container
+        (for [item items]
+          ^{:key (:key item)}
+          [footer-item-view item replying? reply-input])])]))
 
 (defn view
   [{:keys [icon
