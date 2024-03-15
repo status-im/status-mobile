@@ -134,8 +134,6 @@
                            (let [new-addresses (if checked?
                                                  (disj addresses-to-reveal address)
                                                  (conj addresses-to-reveal address))]
-                             (rf/dispatch [:communities/check-permissions-to-join-during-selection
-                                           community-id new-addresses])
                              (set-addresses-to-reveal new-addresses)))]
     [quo/account-permissions
      {:account             {:name                name
@@ -258,8 +256,12 @@
 
     (rn/use-mount
      (fn []
-       (rf/dispatch [:communities/get-permissioned-balances id])
-       (rf/dispatch [:communities/check-permissions-to-join-during-selection id addresses-to-reveal])))
+       (rf/dispatch [:communities/get-permissioned-balances id])))
+
+    (rn/use-effect
+     (fn []
+       (rf/dispatch [:communities/check-permissions-to-join-during-selection id addresses-to-reveal]))
+     [id addresses-to-reveal])
 
     [:<>
      [page-top
