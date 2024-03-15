@@ -1,22 +1,22 @@
 (ns test-helpers.integration
   (:require
-   [cljs.test :refer [is] :as test]
-   legacy.status-im.events
-   [legacy.status-im.multiaccounts.logout.core :as logout]
-   legacy.status-im.subs.root
-   [native-module.core :as native-module]
-   [promesa.core :as p]
-   [re-frame.core :as rf]
-   [re-frame.interop :as rf.interop]
-   status-im.events
-   status-im.navigation.core
-   status-im.subs.root
-   [taoensso.timbre :as log]
-   [tests.integration-test.constants :as constants]
-   [tests.test-utils :as test-utils]
-   [utils.collection :as collection]
-   [utils.security.core :as security]
-   [utils.transforms :as transforms]))
+    [cljs.test :refer [is] :as test]
+    legacy.status-im.events
+    [legacy.status-im.multiaccounts.logout.core :as logout]
+    legacy.status-im.subs.root
+    [native-module.core :as native-module]
+    [promesa.core :as p]
+    [re-frame.core :as rf]
+    [re-frame.interop :as rf.interop]
+    status-im.events
+    status-im.navigation.core
+    status-im.subs.root
+    [taoensso.timbre :as log]
+    [tests.integration-test.constants :as constants]
+    [tests.test-utils :as test-utils]
+    [utils.collection :as collection]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (defn validate-mnemonic
   [mnemonic]
@@ -220,47 +220,47 @@
   "
   ([test-name f]
    (test-async
-    test-name
-    {:fail-fast? true
-     :timeout-ms default-integration-test-timeout-ms}
-    f))
+     test-name
+     {:fail-fast? true
+      :timeout-ms default-integration-test-timeout-ms}
+     f))
   ([test-name {:keys [fail-fast? timeout-ms]} f]
    (test/async
-    done
-    (let [restore-fn (rf/make-restore-fn)]
-      (log-headline test-name)
-      (-> (p/do (f done))
-          (p/timeout timeout-ms)
-          (p/catch (fn [error]
-                     (is (nil? error))
-                     (when fail-fast?
-                       (js/process.exit 1))))
-          (p/finally (fn []
-                       (restore-fn)
-                       (done))))))))
+     done
+     (let [restore-fn (rf/make-restore-fn)]
+       (log-headline test-name)
+       (-> (p/do (f done))
+           (p/timeout timeout-ms)
+           (p/catch (fn [error]
+                      (is (nil? error))
+                      (when fail-fast?
+                        (js/process.exit 1))))
+           (p/finally (fn []
+                        (restore-fn)
+                        (done))))))))
 
 (defn test-app-initialization
   []
   (test-async ::initialize-app
-              (fn []
-                (p/do
-                  (test-utils/init!)
-                  (rf/dispatch [:app-started])
+    (fn []
+      (p/do
+        (test-utils/init!)
+        (rf/dispatch [:app-started])
         ;; Use initialize-view because it has the longest avg. time and is
         ;; dispatched by initialize-multiaccounts (last non-view event).
-                  (wait-for [:profile/get-profiles-overview-success
-                             :font/init-font-file-for-initials-avatar])
-                  (assert-app-initialized)))))
+        (wait-for [:profile/get-profiles-overview-success
+                   :font/init-font-file-for-initials-avatar])
+        (assert-app-initialized)))))
 
 (defn test-account-creation
   []
   (test-async ::create-account
-              (fn []
-                (p/do
-                  (setup-app)
-                  (setup-account)
-                  (logout)
-                  (wait-for [::logout/logout-method])))))
+    (fn []
+      (p/do
+        (setup-app)
+        (setup-account)
+        (logout)
+        (wait-for [::logout/logout-method])))))
 
 ;;;; Fixtures
 
@@ -275,19 +275,19 @@
    {:before (if (= :recovered-account type)
               (fn []
                 (test/async done
-                            (p/do (setup-app)
-                                  (setup-recovered-account)
-                                  (done))))
+                  (p/do (setup-app)
+                        (setup-recovered-account)
+                        (done))))
               (fn []
                 (test/async done
-                            (p/do (setup-app)
-                                  (setup-account)
-                                  (done)))))
+                  (p/do (setup-app)
+                        (setup-account)
+                        (done)))))
     :after  (fn []
               (test/async done
-                          (p/do (logout)
-                                (wait-for [::logout/logout-method])
-                                (done))))})
+                (p/do (logout)
+                      (wait-for [::logout/logout-method])
+                      (done))))})
   ([] (fixture-session [:new-account])))
 
 (defn fixture-silence-reframe
