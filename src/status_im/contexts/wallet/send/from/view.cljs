@@ -18,6 +18,7 @@
 (defn view
   []
   (let [on-close (fn []
+                   (rf/dispatch [:wallet/remove-current-viewing-account])
                    (rf/dispatch [:navigate-back]))
         accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
     [floating-button-page/view

@@ -11,8 +11,7 @@
     [utils.debounce :as debounce]
     [utils.ethereum.eip.eip681 :as eip681]
     [utils.i18n :as i18n]
-    [utils.url :as url]
-    [quo.core :as quo]))
+    [utils.url :as url]))
 
 (def invalid-qr-toast
   {:type  :negative
@@ -122,12 +121,7 @@
        (rn/dismiss-keyboard!))
      [scan-qr-code/view
       {:title           (i18n/label :t/scan-qr)
-       :on-success-scan on-qr-code-scanned}]
-     [quo/button
-      {:container-style {:z-index 2000
-                         :margin-bottom 40}
-       :on-press #(on-qr-code-scanned "0x1f96d8cab99c2ddcb5ab3f44603c5f6a3f8b97b5")}
-      "press"]]))
+       :on-success-scan on-qr-code-scanned}]]))
 
 (defn view
   []
