@@ -73,9 +73,10 @@
 
      (when blocked?
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-unblock-press
-         :icon-left       :i/block}
+        {:container-style     style/button-wrapper
+         :on-press            on-unblock-press
+         :customization-color customization-color
+         :icon-left           :i/block}
         (i18n/label :t/unblock)])
 
      (cond
@@ -86,23 +87,26 @@
              (= contact-request-state constants/contact-request-state-dismissed)))
 
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-contact-request
-         :icon-left       :i/add-user}
+        {:container-style     style/button-wrapper
+         :on-press            on-contact-request
+         :customization-color customization-color
+         :icon-left           :i/add-user}
         (i18n/label :t/send-contact-request)]
 
        (= contact-request-state constants/contact-request-state-received)
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-contact-review
-         :icon-left       :i/add-user}
+        {:container-style     style/button-wrapper
+         :on-press            on-contact-review
+         :customization-color customization-color
+         :icon-left           :i/add-user}
         (i18n/label :t/contact-request-review)]
 
        (= contact-request-state constants/contact-request-state-mutual)
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-start-chat
-         :icon-left       :i/messages}
+        {:container-style     style/button-wrapper
+         :on-press            on-start-chat
+         :customization-color customization-color
+         :icon-left           :i/messages}
         (i18n/label :t/send-message)]
 
        :else nil)]))

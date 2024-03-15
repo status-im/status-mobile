@@ -73,9 +73,10 @@
      [quo/bottom-actions
       {:actions          :two-actions
        :button-one-label (i18n/label :t/add-nickname-title)
-       :button-one-props {:disabled? (or (string/blank? unsaved-nickname)
-                                         (not (string/blank? error-msg)))
-                          :on-press  on-nickname-submit}
+       :button-one-props {:disabled?           (or (string/blank? unsaved-nickname)
+                                                   (not (string/blank? error-msg)))
+                          :customization-color customization-color
+                          :on-press            on-nickname-submit}
        :button-two-label (i18n/label :t/cancel)
        :button-two-props {:type     :grey
                           :on-press on-cancel}}]]))

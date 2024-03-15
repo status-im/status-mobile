@@ -42,7 +42,10 @@
       [quo/input
        {:type                :text
         :multiline?          true
-        :char-limit          280
+        :char-limit          constants/contact-request-message-max-length
+        :max-length          constants/contact-request-message-max-length
+        :placeholder         (i18n/label :t/type-something)
+        :auto-focus          true
         :accessibility-label :contact-request-message
         :label               (i18n/label :t/message)
         :on-change-text      on-message-change}]]
@@ -50,6 +53,7 @@
       {:actions          :one-action
        :button-one-props {:disabled?           (string/blank? message)
                           :accessibility-label :send-contact-request
+                          :customization-color customization-color
                           :on-press            on-message-submit}
        :button-one-label (i18n/label :t/send-contact-request)}]]))
 
