@@ -25,10 +25,6 @@
     (some (fn [[_k v]] (= (:status v) :confirmed)) transaction-details)   :confirmed
     :else                                                                 nil))
 
-(defn show-save-address-modal
-  []
-  (rf/dispatch [:open-modal :screen/wallet.save-address] 1000))
-
 (defn- footer
   [{:keys [color leave-page]}]
   (let [save-address-visible? true]
@@ -38,7 +34,8 @@
       :button-two-props {:type                :grey
                          :icon-left           :i/contact-book
                          :accessibility-label :save-address
-                         :on-press            show-save-address-modal}
+                         :on-press            (rn/use-callback
+                                               #(rf/dispatch [:open-modal :screen/wallet.save-address]))}
       :button-one-label (i18n/label :t/done)
       :button-one-props {:customization-color color
                          :type                :primary

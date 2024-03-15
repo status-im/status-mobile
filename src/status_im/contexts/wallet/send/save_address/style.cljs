@@ -37,6 +37,3 @@
 (def address-container
   {:padding-top    8
    :padding-bottom 12})
-
-(def container
-  {:flex 1})

@@ -39,23 +39,18 @@
                                              {:on-save (fn [])}])}])))
        :container-style style/data-item}]]))
 
-(defn- navigate-back
-  []
-  (rf/dispatch [:navigate-back]))
-
 (defn view
   []
   (let [[address-label set-address-label] (rn/use-state "")
         [address-color set-address-color] (rn/use-state :blue)
         placeholder                       (i18n/label :t/address-name)]
-    [rn/view {:style style/container}
      [floating-button-page/view
       {:footer-container-padding 0
        :header                   [quo/page-nav
                                   {:type                :no-title
                                    :background          :blur
                                    :icon-name           :i/close
-                                   :on-press            navigate-back
+                                   :on-press            (rn/use-callback #(rf/dispatch [:navigate-back]))
                                    :accessibility-label :save-address-top-bar}]
        :footer                   [quo/button
                                   {:accessibility-label :save-address-button
@@ -99,4 +94,4 @@
 
       [quo/divider-line {:container-style style/color-picker-bottom-divider}]
 
-      [address-view "0xshivek"]]]))
+      [address-view "0xshivek"]]))
