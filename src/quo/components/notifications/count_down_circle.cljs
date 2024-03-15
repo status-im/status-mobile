@@ -4,8 +4,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.svg :as svg]
-    [reagent.core :as reagent]))
+    [react-native.svg :as svg]))
 
 (defn- get-path-props
   [size stroke-width rotation]
@@ -49,60 +48,61 @@
   {:color {:dark  colors/neutral-80-opa-40
            :light colors/white-opa-40}})
 
-(defn- circle-timer-internal
-  [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time theme]}]
-  (let [rotation                     (or rotation :clockwise)
-        duration                     (or duration 4)
-        stroke-width                 (or stroke-width 1)
-        size                         (or size 9)
-        max-stroke-width             (max stroke-width 0)
-        {:keys [path path-length]}   (get-path-props size max-stroke-width rotation)
-        start-at                     (get-start-at duration initial-remaining-time)
-        elapsed-time                 (reagent/atom 0)
-        prev-frame-time              (reagent/atom nil)
-        frame-request                (reagent/atom nil)
-        display-time                 (reagent/atom start-at)
-        ;; get elapsed frame time
-        swap-elapsed-time-each-frame (fn swap-elapsed-time-each-frame [frame-time]
-                                       (if (nil? @prev-frame-time)
-                                         (do (reset! prev-frame-time frame-time)
-                                             (reset! frame-request (js/requestAnimationFrame
-                                                                    swap-elapsed-time-each-frame)))
-                                         (let [delta                (- (/ frame-time 1000)
-                                                                       (/ @prev-frame-time 1000))
-                                               current-elapsed      (swap! elapsed-time + delta)
-                                               current-display-time (+ start-at current-elapsed)
-                                               completed?           (>= current-display-time duration)]
-                                           (reset! display-time (if completed?
-                                                                  duration
-                                                                  current-display-time))
-                                           (when-not completed?
-                                             (reset! prev-frame-time frame-time)
-                                             (reset! frame-request (js/requestAnimationFrame
-                                                                    swap-elapsed-time-each-frame))))))]
-    (reagent/create-class
-     {:component-will-unmount #(js/cancelAnimationFrame @frame-request)
-      :reagent-render
-      (fn []
-        (reset! frame-request (js/requestAnimationFrame swap-elapsed-time-each-frame))
-        [rn/view
-         {:style {:position :relative
-                  :width    size
-                  :height   size}}
-         [svg/svg
-          {:view-box (str "0 0 " size " " size)
-           :width    size
-           :height   size}
-          [svg/path
-           {:d path :fill :none :stroke (or trail-color :transparent) :stroke-width stroke-width}]
-          (when-not (= @display-time duration)
-            [svg/path
-             {:d                 path
-              :fill              :none
-              :stroke            (or color (get-in themes [:color theme]))
-              :stroke-linecap    :square
-              :stroke-width      stroke-width
-              :stroke-dasharray  path-length
-              :stroke-dashoffset (linear-ease @display-time 0 path-length duration)}])]])})))
+(defn circle-timer-internal
+  [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time]}]
+  (let [theme                           (quo.theme/use-theme-value)
+        rotation                        (or rotation :clockwise)
+        duration                        (or duration 4)
+        stroke-width                    (or stroke-width 1)
+        size                            (or size 9)
+        max-stroke-width                (max stroke-width 0)
+        {:keys [path path-length]}      (get-path-props size max-stroke-width rotation)
+        start-at                        (get-start-at duration initial-remaining-time)
+        elapsed-time                    (rn/use-ref-atom 0)
+        prev-frame-time                 (rn/use-ref-atom nil)
+        frame-request                   (rn/use-ref-atom nil)
+        [display-time set-display-time] (rn/use-state start-at)
+        swap-elapsed-time-each-frame    (fn swap-elapsed-time-each-frame [frame-time]
+                                          (if (nil? @prev-frame-time)
+                                            (do (reset! prev-frame-time frame-time)
+                                                (reset! frame-request (js/requestAnimationFrame
+                                                                       swap-elapsed-time-each-frame)))
+                                            (let [delta                (- (/ frame-time 1000)
+                                                                          (/ @prev-frame-time 1000))
+                                                  current-elapsed      (swap! elapsed-time + delta)
+                                                  current-display-time (+ start-at current-elapsed)
+                                                  completed?           (>= current-display-time
+                                                                           duration)]
+                                              (set-display-time
+                                               (if completed? duration current-display-time))
+                                              (when-not completed?
+                                                (reset! prev-frame-time frame-time)
+                                                (reset! frame-request
+                                                  (js/requestAnimationFrame
+                                                   swap-elapsed-time-each-frame))))))]
+    (rn/use-effect #(reset! frame-request (js/requestAnimationFrame swap-elapsed-time-each-frame)))
+    (rn/use-unmount #(js/cancelAnimationFrame @frame-request))
+    [rn/view
+     {:style {:position :relative
+              :width    size
+              :height   size}}
+     [svg/svg
+      {:view-box (str "0 0 " size " " size)
+       :width    size
+       :height   size}
+      [svg/path
+       {:d path :fill :none :stroke (or trail-color :transparent) :stroke-width stroke-width}]
+      (when-not (= display-time duration)
+        [svg/path
+         {:d                 path
+          :fill              :none
+          :stroke            (or color (get-in themes [:color theme]))
+          :stroke-linecap    :square
+          :stroke-width      stroke-width
+          :stroke-dasharray  path-length
+          :stroke-dashoffset (linear-ease display-time 0 path-length duration)}])]]))
 
-(def circle-timer (quo.theme/with-theme circle-timer-internal))
+;;NOTE: for some reason it doesn't work without :f>
+(defn circle-timer
+  [props]
+  [:f> circle-timer-internal props])
