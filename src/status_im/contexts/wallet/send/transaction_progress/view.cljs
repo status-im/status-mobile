@@ -27,7 +27,7 @@
 
 (defn- footer
   [{:keys [color leave-page]}]
-  (let [save-address-visible? true]
+  (let [save-address-visible? false]
     [quo/bottom-actions
      {:actions          (if save-address-visible? :two-actions :one-action)
       :button-two-label (i18n/label :t/save-address)
