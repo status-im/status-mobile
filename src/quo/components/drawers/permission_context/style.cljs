@@ -27,3 +27,7 @@
    :elevation               2
    :shadow-opacity          1
    :shadow-color            colors/shadow})
+
+(def token-group
+  {:flex-direction :row
+   :margin-left    3})
