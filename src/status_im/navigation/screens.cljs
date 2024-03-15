@@ -13,6 +13,7 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
+    [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -125,6 +126,10 @@
     {:name      :community-account-selection
      :options   {:sheet? true}
      :component communities.accounts-selection/view}
+
+    {:name      :detail-token-gating
+     :options   {:sheet? true}
+     :component detail-token-gating/view}
 
     {:name      :lightbox
      :options   options/lightbox

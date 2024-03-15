@@ -2,7 +2,8 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [re-frame.core :as re-frame]
+    [re-frame.core :as re-frame] ;; [re-frame.db :as rf-db]
+    [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
     [utils.i18n :as i18n]))
@@ -258,8 +259,8 @@
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
                              :can-post?        can-post?
-                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false ->
-                             ;; has access
+                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false
+                             ;; -> has access
                              :locked?          (when token-gated?
                                                  (not can-post?))
                              :id               id}]
@@ -410,3 +411,35 @@
         (map (fn [{sym :symbol image :image}]
                {sym image}))
         (into {}))))
+
+(re-frame/reg-sub :community/token-permissions
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+ (fn [[{:keys [token-permissions token-images]} permissions-check] _]
+   (let [mock-images (when (and (contains? token-permissions 5)
+                                (contains? token-permissions 6))
+                       (resources/mock-images :collectible))
+         permissions (get-in permissions-check [:check :permissions])]
+
+     (->> token-permissions
+          (map second)
+          (map
+           (fn [token-permission]
+             (let [token-id           (keyword (:id token-permission))
+                   token-requirements (get permissions token-id)
+                   satisfied-criteria (get token-requirements :tokenRequirement)]
+               (map-indexed (fn [idx criterion]
+                              (let [sym  (:symbol criterion)
+                                    type (:type token-permission)]
+                                {:symbol          sym
+                                 :permission-type type
+                                 :amount          (wallet.utils/remove-trailing-zeroes (:amount
+                                                                                        criterion))
+                                 :sufficient?     (get-in satisfied-criteria [idx :satisfied] false)
+                                 :img-src         (if (= type 2)
+                                                    (or (get mock-images sym)
+                                                        (get token-images sym))
+                                                    (get token-images sym))}))
+                            (:token_criteria token-permission)))))
+          (group-by (comp :permission-type first))))))
