@@ -6,14 +6,14 @@
 (def ^:private radius 20)
 
 (defn container
-  [background theme]
+  [blur? theme]
   {:flex-direction          :row
-   :background-color        (if (= background :blur)
+   :background-color        (if blur?
                               (colors/theme-colors colors/white-70-blur
-                                                   colors/neutral-90-opa-70-blur
+                                                   colors/neutral-95-opa-70-blur
                                                    theme)
                               (colors/theme-colors colors/white
-                                                   colors/neutral-90
+                                                   colors/neutral-95
                                                    theme))
    :padding-top             12
    :padding-bottom          (+ 12 (safe-area/get-bottom))
