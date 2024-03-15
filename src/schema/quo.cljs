@@ -17,7 +17,7 @@
    [:ring? :boolean]
    [:ring-width :int]])
 
-(def ^:private ?account-image-uri-opts
+(def ^:private ?account-image-uri-options
   [:map
    [:port :int]
    [:ratio :double]
@@ -26,7 +26,7 @@
    [:theme :schema.common/theme]
    [:override-ring? [:maybe :boolean]]])
 
-(def ^:private ?initials-image-uri-opts
+(def ^:private ?initials-image-uri-options
   [:map
    [:port :int]
    [:ratio :double]
@@ -37,7 +37,7 @@
    [:public-key {:optional true} [:maybe :string]]
    [:override-ring? {:optional true} [:maybe :boolean]]])
 
-(def ^:private ?contact-image-uri-opts
+(def ^:private ?contact-image-uri-options
   [:map
    [:port :int]
    [:clock :int]
@@ -47,17 +47,17 @@
    [:theme :schema.common/theme]
    [:override-ring? [:maybe :boolean]]])
 
-(def ?image-uri-config
+(def ^:private ?image-uri-config
   [:or
    [:map
     [:kind [:enum :contact]]
-    [:options ?contact-image-uri-opts]]
+    [:options ?contact-image-uri-options]]
    [:map
     [:kind [:enum :account]]
-    [:options ?account-image-uri-opts]]
+    [:options ?account-image-uri-options]]
    [:map
     [:kind [:enum :initials]]
-    [:options ?initials-image-uri-opts]]])
+    [:options ?initials-image-uri-options]]])
 
 (def ^:private ?profile-picture-source
   [:or
@@ -69,4 +69,8 @@
   []
   (registry/register ::profile-picture-options ?profile-picture-options)
   (registry/register ::image-uri-config ?image-uri-config)
-  (registry/register ::profile-picture-source ?profile-picture-source))
+  (registry/register ::profile-picture-source ?profile-picture-source)
+  (registry/register ::profile-picture-options ?profile-picture-options)
+  (registry/register ::account-image-uri-options ?account-image-uri-options)
+  (registry/register ::contact-image-uri-options ?contact-image-uri-options)
+  (registry/register ::initials-image-uri-options ?initials-image-uri-options))

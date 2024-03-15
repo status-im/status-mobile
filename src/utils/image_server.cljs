@@ -100,6 +100,14 @@
    "&ringWidth="
    (* ring-width ratio)))
 
+(schema/=> get-account-image-uri
+  [:=>
+   [:cat
+    [:union
+     :schema.quo/account-image-uri-options
+     :schema.quo/profile-picture-options]]
+   [:string]])
+
 (defn get-initials-avatar-uri
   "fn to get the avatar uri when account/contact/placeholder has no custom pic set
 
@@ -158,14 +166,9 @@
 (schema/=> get-initials-avatar-uri
   [:=>
    [:cat
-    [:map
-     [:color string?]
-     [:background-color string?]
-     [:size number?]
-     [:ratio float?]
-     [:uppercase-ratio number?]
-     [:font-size number?]
-     [:font-file string?]]]
+    [:union
+     :schema.quo/initials-image-uri-options
+     :schema.quo/profile-picture-options]]
    [:string]])
 
 (defn get-contact-image-uri
@@ -203,6 +206,14 @@
    (if ring? 1 0)
    "&ringWidth="
    (* ring-width ratio)))
+
+(schema/=> get-contact-image-uri
+  [:=>
+   [:cat
+    [:union
+     :schema.quo/contact-image-uri-options
+     :schema.quo/profile-picture-options]]
+   [:string]])
 
 (defn get-qr-image-uri-for-any-url
   [{:keys [url port qr-size error-level]}]
