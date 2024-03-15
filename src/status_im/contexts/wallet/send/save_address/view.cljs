@@ -57,10 +57,8 @@
                                   :type                :primary
                                   :container-style     style/save-address-button}
                                  (i18n/label :t/save-address)]
-
       :customization-color      address-color
       :gradient-cover?          true}
-
      [rn/view
       {:style style/account-avatar-container}
       [quo/user-avatar
@@ -69,7 +67,6 @@
                                address-label)
         :customization-color address-color
         :size                :big}]]
-
      [quo/title-input
       {:blur?               true
        :auto-focus          true
@@ -80,18 +77,13 @@
        :on-change-text      set-address-label
        :customization-color address-color
        :container-style     style/title-input-container}]
-
      [quo/divider-line {:container-style style/color-picker-top-divider}]
-
      [quo/section-label
       {:section         (i18n/label :t/colour)
        :container-style style/section-container}]
-
      [quo/color-picker
       {:default-selected address-color
        :on-change        set-address-color
        :container-style  style/color-picker}]
-
      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
-
      [address-view "0xshivek"]]))
