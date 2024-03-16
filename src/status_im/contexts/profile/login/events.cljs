@@ -177,7 +177,7 @@
  :profile.login/get-user-password-success
  (fn [{:keys [db]} [password]]
    (when password
-     (let [{:keys [key-uid password]} (:profile/login db)]
+     (let [{:keys [key-uid]} (:profile/login db)]
        {:db (-> db
                 (assoc-in [:profile/login :password] password)
                 (assoc-in [:profile/login :processing] true))
