@@ -4,8 +4,8 @@
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     legacy.status-im.communities.e2e
     [re-frame.core :as re-frame]
-    [status-im.navigation.events :as navigation]
     [status-im.contexts.shell.activity-center.events :as activity-center]
+    [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
