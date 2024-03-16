@@ -86,61 +86,48 @@
         (str "<" (remove-trailing-zeroes (.toFixed one-cent-value decimals-count)))
         (remove-trailing-zeroes (.toFixed token-units decimals-count))))))
 
-(defn total-token-units-in-all-chains
-  [{:keys [balances-per-chain decimals] :as _token}]
-  (-> balances-per-chain
-      (total-raw-balance-in-all-chains)
-      (money/token->unit decimals)))
+(defn get-market-value
+  [currency {:keys [market-values-per-currency]}]
+  (or (get-in market-values-per-currency
+              [currency :price])
+      (get-in market-values-per-currency
+              [constants/profile-default-currency :price])
+      ;; NOTE: adding fallback value (zero) in case prices are
+      ;; unavailable and to prevent crash on calculating fiat value
+      0))
+
+(defn- filter-chains
+  [balances-per-chain chain-ids]
+  (if chain-ids
+    (select-keys balances-per-chain chain-ids)
+    balances-per-chain))
+
+(defn calculate-total-token-balance
+  ([token]
+   (calculate-total-token-balance token nil))
+  ([{:keys [balances-per-chain decimals]} chain-ids]
+   (-> balances-per-chain
+       (filter-chains chain-ids)
+       (total-raw-balance-in-all-chains)
+       (money/token->unit decimals))))
 
 (defn get-account-by-address
   [accounts address]
   (some #(when (= (:address %) address) %) accounts))
 
-(defn total-token-fiat-value
-  "Returns the total token fiat value taking into account all token's chains."
-  [currency {:keys [market-values-per-currency] :as token}]
-  (let [price                     (or (get-in market-values-per-currency
-                                              [currency :price])
-                                      (get-in market-values-per-currency
-                                              [constants/profile-default-currency :price])
-                                      ;; NOTE: adding fallback value (zero) in case prices are
-                                      ;; unavailable and to prevent crash on calculating fiat value
-                                      0)
-        total-units-in-all-chains (total-token-units-in-all-chains token)]
-    (money/crypto->fiat total-units-in-all-chains price)))
-
-(defn token-fiat-value
-  "Returns the fiat value for a single token on a given network."
-  [currency raw-balance {:keys [market-values-per-currency]}]
-  (let [price (or (get-in market-values-per-currency
-                          [currency :price])
-                  (get-in market-values-per-currency
-                          [constants/profile-default-currency :price])
-                  0)]
-    (money/crypto->fiat raw-balance price)))
-
-(defn calculate-balance-for-account
-  [currency {:keys [tokens] :as _account}]
-  (->> tokens
-       (map #(total-token-fiat-value currency %))
-       (reduce money/add)))
-
-(defn calculate-balance-for-token
-  [token]
-  (money/bignumber
-   (money/mul (total-token-units-in-all-chains token)
-              (-> token :market-values-per-currency :usd :price))))
-
-(defn calculate-balance
-  [tokens-in-account]
-  (->> tokens-in-account
-       (map #(calculate-balance-for-token %))
-       (reduce +)))
+(defn calculate-token-fiat-value
+  "Returns the token fiat value for provided raw balance"
+  [{:keys [currency balance token]}]
+  (let [price (get-market-value currency token)]
+    (money/crypto->fiat balance price)))
 
 (defn calculate-balance-from-tokens
-  [{:keys [currency tokens]}]
+  [{:keys [currency tokens chain-ids]}]
   (->> tokens
-       (map #(total-token-fiat-value currency %))
+       (map #(calculate-token-fiat-value
+              {:currency currency
+               :balance  (calculate-total-token-balance % chain-ids)
+               :token    %}))
        (reduce money/add)))
 
 (defn- add-balances-per-chain
@@ -191,38 +178,54 @@
     address))
 
 (def id->network
-  {constants/ethereum-mainnet-chain-id :ethereum
-   constants/ethereum-goerli-chain-id  :ethereum
-   constants/ethereum-sepolia-chain-id :ethereum
-   constants/optimism-mainnet-chain-id :optimism
-   constants/optimism-goerli-chain-id  :optimism
-   constants/optimism-sepolia-chain-id :optimism
-   constants/arbitrum-mainnet-chain-id :arbitrum
-   constants/arbitrum-goerli-chain-id  :arbitrum
-   constants/arbitrum-sepolia-chain-id :arbitrum})
+  {constants/ethereum-mainnet-chain-id constants/mainnet-network-name
+   constants/ethereum-goerli-chain-id  constants/mainnet-network-name
+   constants/ethereum-sepolia-chain-id constants/mainnet-network-name
+   constants/optimism-mainnet-chain-id constants/optimism-network-name
+   constants/optimism-goerli-chain-id  constants/optimism-network-name
+   constants/optimism-sepolia-chain-id constants/optimism-network-name
+   constants/arbitrum-mainnet-chain-id constants/arbitrum-network-name
+   constants/arbitrum-goerli-chain-id  constants/arbitrum-network-name
+   constants/arbitrum-sepolia-chain-id constants/arbitrum-network-name})
 
 (defn- get-chain-id
-  [testnet-enabled? goerli-enabled?]
+  [{:keys [mainnet-chain-id sepolia-chain-id goerli-chain-id testnet-enabled? goerli-enabled?]}]
   (cond
     (and testnet-enabled? goerli-enabled?)
-    {:eth  constants/ethereum-goerli-chain-id
-     :opt  constants/optimism-goerli-chain-id
-     :arb1 constants/arbitrum-goerli-chain-id}
+    goerli-chain-id
 
     testnet-enabled?
-    {:eth  constants/ethereum-sepolia-chain-id
-     :opt  constants/optimism-sepolia-chain-id
-     :arb1 constants/arbitrum-sepolia-chain-id}
+    sepolia-chain-id
 
     :else
-    {:eth  constants/ethereum-mainnet-chain-id
-     :opt  constants/optimism-mainnet-chain-id
-     :arb1 constants/arbitrum-mainnet-chain-id}))
+    mainnet-chain-id))
 
-(defn short-name->id
-  [short-name testnet-enabled? goerli-enabled?]
-  (let [chain-id-map (get-chain-id testnet-enabled? goerli-enabled?)]
-    (get chain-id-map short-name)))
+(defn network->chain-id
+  [{:keys [network testnet-enabled? goerli-enabled?]}]
+  (condp contains? (keyword network)
+    #{constants/mainnet-network-name (keyword constants/mainnet-short-name)}
+    (get-chain-id
+     {:mainnet-chain-id constants/ethereum-mainnet-chain-id
+      :sepolia-chain-id constants/ethereum-sepolia-chain-id
+      :goerli-chain-id  constants/ethereum-goerli-chain-id
+      :testnet-enabled? testnet-enabled?
+      :goerli-enabled?  goerli-enabled?})
+
+    #{constants/optimism-network-name (keyword constants/optimism-short-name)}
+    (get-chain-id
+     {:mainnet-chain-id constants/optimism-mainnet-chain-id
+      :sepolia-chain-id constants/optimism-sepolia-chain-id
+      :goerli-chain-id  constants/optimism-goerli-chain-id
+      :testnet-enabled? testnet-enabled?
+      :goerli-enabled?  goerli-enabled?})
+
+    #{constants/arbitrum-network-name (keyword constants/arbitrum-short-name)}
+    (get-chain-id
+     {:mainnet-chain-id constants/arbitrum-mainnet-chain-id
+      :sepolia-chain-id constants/arbitrum-sepolia-chain-id
+      :goerli-chain-id  constants/arbitrum-goerli-chain-id
+      :testnet-enabled? testnet-enabled?
+      :goerli-enabled?  goerli-enabled?})))
 
 (defn get-standard-fiat-format
   [crypto-value currency-symbol fiat-value]
@@ -241,8 +244,11 @@
 (defn calculate-token-value
   "This function returns token values in the props of token-value (quo) component"
   [{:keys [token color currency currency-symbol]}]
-  (let [token-units                       (total-token-units-in-all-chains token)
-        fiat-value                        (total-token-fiat-value currency token)
+  (let [balance                           (calculate-total-token-balance token)
+        fiat-value                        (calculate-token-fiat-value
+                                           {:currency currency
+                                            :balance  balance
+                                            :token    token})
         market-values                     (or (get-in token [:market-values-per-currency currency])
                                               (get-in token
                                                       [:market-values-per-currency
@@ -250,7 +256,7 @@
         {:keys [price change-pct-24hour]} market-values
         formatted-token-price             (prettify-balance currency-symbol price)
         percentage-change                 (prettify-percentage-change change-pct-24hour)
-        crypto-value                      (get-standard-crypto-format token token-units)
+        crypto-value                      (get-standard-crypto-format token balance)
         fiat-value                        (get-standard-fiat-format crypto-value
                                                                     currency-symbol
                                                                     fiat-value)]
@@ -280,15 +286,10 @@
   (let [split-result (string/split input-string #"0x")]
     [(first split-result) (str "0x" (second split-result))]))
 
-(defn get-balance-for-chain
-  [data chain-id]
-  (some #(when (= chain-id (:chain-id %)) %) (vals data)))
-
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name] :as _network}
-   {:keys [title color on-change networks state label-props] :as _options}]
-  (cond-> {:title        (or title (string/capitalize (name network-name)))
+  [{:keys [network-name color on-change networks state label-props]}]
+  (cond-> {:title        (string/capitalize (name network-name))
            :image        :icon-avatar
            :image-props  {:icon (resources/get-network network-name)
                           :size :size-20}
@@ -315,3 +316,21 @@
 
     :else
     constants/mainnet-chain-ids))
+
+(defn filter-tokens-in-chains
+  [tokens chain-ids]
+  (map #(update % :balances-per-chain select-keys chain-ids) tokens))
+
+(defn calculate-balances-per-chain
+  [{:keys [tokens currency currency-symbol]}]
+  (->
+    (reduce (fn [acc {:keys [balances-per-chain decimals] :as token}]
+              (let [currency-value         (get-market-value currency token)
+                    fiat-balance-per-chain (update-vals balances-per-chain
+                                                        #(-> (money/token->unit (:raw-balance %)
+                                                                                decimals)
+                                                             (money/crypto->fiat currency-value)))]
+                (merge-with money/add acc fiat-balance-per-chain)))
+            {}
+            tokens)
+    (update-vals #(prettify-balance currency-symbol %))))

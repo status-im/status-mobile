@@ -14,20 +14,20 @@
 (defn- bridge-token-component
   []
   (fn [{:keys [chain-id network-name]} token]
-    (let [network           (rf/sub [:wallet/network-details-by-chain-id chain-id])
-          currency          (rf/sub [:profile/currency])
-          currency-symbol   (rf/sub [:profile/currency-symbol])
-          all-balances      (:balances-per-chain token)
-          balance-for-chain (utils/get-balance-for-chain all-balances chain-id)
-          crypto-formatted  (or (:balance balance-for-chain) "0.00")
-          fiat-value        (utils/token-fiat-value currency
-                                                    (or (:balance balance-for-chain) 0)
-                                                    token)
-          fiat-formatted    (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
+    (let [network         (rf/sub [:wallet/network-details-by-chain-id chain-id])
+          currency        (rf/sub [:profile/currency])
+          currency-symbol (rf/sub [:profile/currency-symbol])
+          balance         (utils/calculate-total-token-balance token [chain-id])
+          crypto-value    (utils/get-standard-crypto-format token balance)
+          fiat-value      (utils/calculate-token-fiat-value
+                           {:currency currency
+                            :balance  balance
+                            :token    token})
+          fiat-formatted  (utils/get-standard-fiat-format crypto-value currency-symbol fiat-value)]
       [quo/network-list
        {:label         (name network-name)
         :network-image (quo.resources/get-network (:network-name network))
-        :token-value   (str crypto-formatted " " (:symbol token))
+        :token-value   (str crypto-value " " (:symbol token))
         :fiat-value    fiat-formatted
         :on-press      #(rf/dispatch [:wallet/select-bridge-network
                                       {:network-chain-id chain-id

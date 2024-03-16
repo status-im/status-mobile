@@ -45,9 +45,30 @@
  :-> :create-account)
 
 (rf/reg-sub
+ :wallet/network-filter
+ :<- [:wallet/ui]
+ :-> :network-filter)
+
+(rf/reg-sub
+ :wallet/selected-networks
+ :<- [:wallet/network-filter]
+ :-> :selected-networks)
+
+(rf/reg-sub
+ :wallet/network-filter-selector-state
+ :<- [:wallet/network-filter]
+ :-> :selector-state)
+
+(rf/reg-sub
  :wallet/current-viewing-account-address
  :<- [:wallet]
  :-> :current-viewing-account-address)
+
+(rf/reg-sub
+ :wallet/viewing-account?
+ :<- [:wallet/current-viewing-account-address]
+ (fn [address]
+   (boolean address)))
 
 (rf/reg-sub
  :wallet/wallet-send-to-address
@@ -105,6 +126,18 @@
  :-> :selected-keypair-uid)
 
 (rf/reg-sub
+ :wallet/selected-networks->chain-ids
+ :<- [:wallet/selected-networks]
+ :<- [:profile/test-networks-enabled?]
+ :<- [:profile/is-goerli-enabled?]
+ (fn [[selected-networks testnet-enabled? goerli-enabled?]]
+   (set (map #(utils/network->chain-id
+               {:network          %
+                :testnet-enabled? testnet-enabled?
+                :goerli-enabled?  goerli-enabled?})
+             selected-networks))))
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]
@@ -131,17 +164,21 @@
            set))
 
 (rf/reg-sub
- :wallet/balances
+ :wallet/balances-in-selected-networks
  :<- [:wallet/accounts]
  :<- [:profile/currency]
- (fn [[accounts currency]]
+ :<- [:wallet/selected-networks->chain-ids]
+ (fn [[accounts currency chain-ids]]
    (zipmap (map :address accounts)
-           (map #(utils/calculate-balance-for-account currency %) accounts))))
+           (map #(utils/calculate-balance-from-tokens {:currency  currency
+                                                       :tokens    (:tokens %)
+                                                       :chain-ids chain-ids})
+                accounts))))
 
 (rf/reg-sub
  :wallet/account-cards-data
  :<- [:wallet/accounts]
- :<- [:wallet/balances]
+ :<- [:wallet/balances-in-selected-networks]
  :<- [:wallet/tokens-loading?]
  :<- [:profile/currency-symbol]
  (fn [[accounts balances tokens-loading? currency-symbol]]
@@ -158,7 +195,7 @@
  :wallet/current-viewing-account
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
- :<- [:wallet/balances]
+ :<- [:wallet/balances-in-selected-networks]
  :<- [:profile/currency-symbol]
  (fn [[accounts current-viewing-account-address balances currency-symbol]]
    (let [balance           (get balances current-viewing-account-address)
@@ -169,15 +206,21 @@
                 :formatted-balance formatted-balance)))))
 
 (rf/reg-sub
- :wallet/tokens-filtered
+ :wallet/current-viewing-account-tokens-in-selected-networks
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/selected-networks->chain-ids]
+ (fn [[{:keys [tokens]} chain-ids]]
+   (utils/filter-tokens-in-chains tokens chain-ids)))
+
+(rf/reg-sub
+ :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]
  (fn [[account networks] [_ query]]
    (let [tokens          (map (fn [token]
                                 (assoc token
-                                       :networks           (utils/network-list token networks)
-                                       :total-balance      (utils/total-token-units-in-all-chains token)
-                                       :total-balance-fiat (utils/calculate-balance-for-token token)))
+                                       :networks      (utils/network-list token networks)
+                                       :total-balance (utils/calculate-total-token-balance token)))
                               (:tokens account))
          sorted-tokens   (sort-by :name compare tokens)
          filtered-tokens (filter #(or (string/starts-with? (string/lower-case (:name %))
@@ -194,9 +237,8 @@
  (fn [[account networks] [_ token-symbol]]
    (let [tokens (map (fn [token]
                        (assoc token
-                              :networks           (utils/network-list token networks)
-                              :total-balance      (utils/total-token-units-in-all-chains token)
-                              :total-balance-fiat (utils/calculate-balance-for-token token)))
+                              :networks      (utils/network-list token networks)
+                              :total-balance (utils/calculate-total-token-balance token)))
                      (:tokens account))
          token  (first (filter #(= (string/lower-case (:symbol %))
                                    (string/lower-case token-symbol))
@@ -214,14 +256,15 @@
  :wallet/accounts-without-watched-accounts
  :<- [:wallet/accounts-with-customization-color]
  (fn [accounts]
-   (remove #(:watch-only? %) accounts)))
+   (remove :watch-only? accounts)))
 
 (rf/reg-sub
- :wallet/account-token-values
+ :wallet/current-viewing-account-token-values
  :<- [:wallet/current-viewing-account]
+ :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[{:keys [tokens color]} currency currency-symbol]]
+ (fn [[{:keys [color]} tokens currency currency-symbol]]
    (mapv #(utils/calculate-token-value {:token           %
                                         :color           color
                                         :currency        currency
@@ -235,8 +278,15 @@
    (utils/aggregate-tokens-for-all-accounts accounts)))
 
 (rf/reg-sub
- :wallet/aggregated-tokens-and-balance
+ :wallet/aggregated-tokens-in-selected-networks
  :<- [:wallet/aggregated-tokens]
+ :<- [:wallet/selected-networks->chain-ids]
+ (fn [[aggregated-tokens chain-ids]]
+   (utils/filter-tokens-in-chains aggregated-tokens chain-ids)))
+
+(rf/reg-sub
+ :wallet/aggregated-token-values-and-balance
+ :<- [:wallet/aggregated-tokens-in-selected-networks]
  :<- [:profile/customization-color]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
@@ -287,3 +337,25 @@
  :wallet/valid-ens-or-address?
  :<- [:wallet/search-address]
  :-> :valid-ens-or-address?)
+
+(rf/reg-sub
+ :wallet/aggregated-fiat-balance-per-chain
+ :<- [:wallet/aggregated-tokens]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[aggregated-tokens currency currency-symbol]]
+   (utils/calculate-balances-per-chain
+    {:tokens          aggregated-tokens
+     :currency        currency
+     :currency-symbol currency-symbol})))
+
+(rf/reg-sub
+ :wallet/current-viewing-account-fiat-balance-per-chain
+ :<- [:wallet/current-viewing-account]
+ :<- [:profile/currency]
+ :<- [:profile/currency-symbol]
+ (fn [[{:keys [tokens]} currency currency-symbol]]
+   (utils/calculate-balances-per-chain
+    {:tokens          tokens
+     :currency        currency
+     :currency-symbol currency-symbol})))

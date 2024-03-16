@@ -6,10 +6,12 @@
     [utils.re-frame :as rf]))
 
 (defn- asset-component
-  [token _ _ {:keys [currency currency-symbol on-token-press]}]
-  (let [token-units      (utils/total-token-units-in-all-chains token)
-        crypto-formatted (utils/get-standard-crypto-format token token-units)
-        fiat-value       (utils/total-token-fiat-value currency token)
+  [{:keys [total-balance] :as token} _ _ {:keys [currency currency-symbol on-token-press]}]
+  (let [fiat-value       (utils/calculate-token-fiat-value
+                          {:currency currency
+                           :balance  total-balance
+                           :token    token})
+        crypto-formatted (utils/get-standard-crypto-format token total-balance)
         fiat-formatted   (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
     [quo/token-network
      {:token       (:symbol token)
@@ -21,7 +23,7 @@
 
 (defn view
   [{:keys [search-text on-token-press]}]
-  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered search-text])
+  (let [filtered-tokens (rf/sub [:wallet/current-viewing-account-tokens-filtered search-text])
         currency        (rf/sub [:profile/currency])
         currency-symbol (rf/sub [:profile/currency-symbol])]
     [rn/flat-list
