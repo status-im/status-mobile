@@ -28,17 +28,6 @@
      (re-frame/dispatch [:bottom-sheet-hidden])
      (rn/hide-splash-screen)))
 
-  (navigation/reg-component-did-appear-listener
-   (fn [view-id]
-     (let [view-id-with-prefix (keyword (str "screen/" (name view-id)))
-           view                (or (get views/screens view-id)
-                                   (get views/screens view-id-with-prefix))
-           view-id             (:name view)]
-       (when view
-         (effects/set-view-id view-id)
-         (when-not (seq @state/modals)
-           (reset! state/pushed-screen-id view-id))))))
-
   ;;;; Modal
 
   (navigation/reg-button-pressed-listener
@@ -58,11 +47,8 @@
      (state/navigation-pop-from (last @state/modals))
      (if (> (count @state/modals) 1)
        (let [new-modals (butlast @state/modals)]
-         (reset! state/modals (vec new-modals))
-         (effects/set-view-id (last new-modals)))
-       (do
-         (reset! state/modals [])
-         (effects/set-view-id @state/pushed-screen-id)))
+         (reset! state/modals (vec new-modals)))
+       (reset! state/modals []))
 
      (let [component @state/dissmissing]
        (reset! state/dissmissing false)

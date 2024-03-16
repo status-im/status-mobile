@@ -134,6 +134,7 @@
 (rf/defn set-view-id
   {:events [:set-view-id]}
   [{:keys [db]} view-id]
-  (let [view-id (if (= view-id :shell-stack) (shell.utils/calculate-view-id) view-id)]
-    {:db             (assoc db :view-id view-id)
-     :set-view-id-fx view-id}))
+  (when-not (= view-id (:view-id db))
+    (let [view-id (if (= view-id :shell-stack) (shell.utils/calculate-view-id) view-id)]
+      {:db             (assoc db :view-id view-id)
+       :set-view-id-fx view-id})))

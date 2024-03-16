@@ -27,11 +27,6 @@
      (when on-focus
        (rf/dispatch on-focus)))))
 
-(defn set-view-id
-  [view-id]
-  (when (get views/screens view-id)
-    (rf/dispatch [:set-view-id view-id])))
-
 (defn- dismiss-all-modals
   []
   (when (seq @state/modals)
@@ -100,9 +95,11 @@
 
 (defn navigate-back
   []
-  (let [{:keys [type parent id]} (last (state/get-navigation-state))]
-    (if (= type :modal)
+  (when-let [{:keys [type parent id]} (last (state/get-navigation-state))]
+    (cond
+      (and (= type :modal) id)
       (dismiss-modal id)
+      (and (= type :stack) parent)
       (do
         (navigation/pop (name parent))
         (state/navigation-state-pop)))))
