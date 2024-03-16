@@ -8,6 +8,7 @@
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
     [react-native.utils :as utils]
+    [react-native.shadow :as react-native-shadow]
     [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
@@ -230,3 +231,5 @@
 (defn sharing
   [content]
   (.share (.-Share ^js react-native) (clj->js content)))
+
+(def shadow react-native-shadow/shadow)

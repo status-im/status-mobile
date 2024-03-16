@@ -20,13 +20,7 @@
    :justify-content         :center
    :padding-horizontal      20
    :border-top-left-radius  radius
-   :border-top-right-radius radius
-   :shadow-offset           {:width  0
-                             :height 2}
-   :shadow-radius           radius
-   :elevation               2
-   :shadow-opacity          1
-   :shadow-color            colors/shadow})
+   :border-top-right-radius radius})
 
 (def token-group
   {:flex-direction :row
