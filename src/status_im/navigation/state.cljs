@@ -11,7 +11,7 @@
   []
   @navigation-state)
 
-(defn update-view-id
+(defn- update-view-id
   []
   (when-let [view-id (:id (last (get-navigation-state)))]
     (rf/dispatch [:set-view-id view-id])))
