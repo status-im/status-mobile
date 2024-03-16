@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -447,16 +446,15 @@
  (fn [{:keys [db]} [{:keys [message]}]]
    (let [chains                  (-> (transforms/json->clj message)
                                      (update-keys (comp utils.number/parse-int name)))
-         down-chains             (-> (select-keys chains
+         down-chain-ids          (-> (select-keys chains
                                                   (for [[k v] chains :when (= v "down")] k))
                                      keys)
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         disabled-chain-id?      (fn [chain-id]
-                                   (let [mainnet-chain? (contains? constants/mainnet-chain-ids chain-id)]
-                                     (if test-networks-enabled?
-                                       mainnet-chain?
-                                       (not mainnet-chain?))))
-         chains-filtered-by-mode (remove disabled-chain-id? down-chains)
+         is-goerli-enabled?      (get-in db [:profile/profile :is-goerli-enabled?])
+         chain-ids-by-mode       (utils/get-default-chain-ids-by-mode
+                                  {:test-networks-enabled? test-networks-enabled?
+                                   :is-goerli-enabled?     is-goerli-enabled?})
+         chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
          chains-down?            (seq chains-filtered-by-mode)
          chain-names             (when chains-down?
                                    (->> (map #(-> (utils/id->network %)
@@ -465,9 +463,10 @@
                                              chains-filtered-by-mode)
                                         distinct
                                         (string/join ", ")))]
-     (when (seq down-chains)
-       (log/info "[wallet] Chain(s) down: " down-chains)
-       (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?)))
+     (when (seq down-chain-ids)
+       (log/info "[wallet] Chain(s) down: " down-chain-ids)
+       (log/info "[wallet] Test network enabled: " (boolean test-networks-enabled?))
+       (log/info "[wallet] Goerli network enabled: " (boolean is-goerli-enabled?)))
      {:db (assoc-in db [:wallet :statuses :blockchains] chains)
       :fx (when chains-down?
             [[:dispatch
