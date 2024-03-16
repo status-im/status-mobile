@@ -410,3 +410,10 @@
         (map (fn [{sym :symbol image :image}]
                {sym image}))
         (into {}))))
+
+(re-frame/reg-sub
+ :communities/token-gated?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [membership-permissions?]}] _]
+   membership-permissions?))

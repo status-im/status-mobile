@@ -15,7 +15,11 @@
                   community-icon        :icon
                   community-banner      :banner
                   community-name        :display-name
-                  members-count         :members-count} community]
+                  members-count         :members-count
+                  community-id          :community-id} community
+                 token-gated?                          (rf/sub
+                                                        [:communities/token-gated?
+                                                         community-id])]
              ^{:key url}
              [quo/internal-link-card
               {:type          :community
@@ -25,4 +29,5 @@
                :title         community-name
                :banner        (:url community-banner)
                :icon          (:url community-icon)
-               :on-press      #(rf/dispatch [:universal-links/handle-url url])}])))])))
+               :on-press      #(rf/dispatch [:universal-links/handle-url url])
+               :token-gated?  token-gated?}])))])))
