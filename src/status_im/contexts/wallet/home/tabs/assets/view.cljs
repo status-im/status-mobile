@@ -12,7 +12,7 @@
 (defn view
   []
   (let [tokens-loading?  (rf/sub [:wallet/tokens-loading?])
-        {:keys [tokens]} (rf/sub [:wallet/aggregated-tokens-and-balance])]
+        {:keys [tokens]} (rf/sub [:wallet/aggregated-token-values-and-balance])]
     (if tokens-loading?
       [quo/skeleton-list
        {:content       :assets

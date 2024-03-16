@@ -1,10 +1,13 @@
 (ns status-im.subs.wallet.wallet-test
-  (:require [cljs.test :refer [is testing use-fixtures]]
-            [re-frame.db :as rf-db]
-            [status-im.subs.root]
-            [test-helpers.unit :as h]
-            [utils.money :as money]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :refer [is testing use-fixtures]]
+    [re-frame.db :as rf-db]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.db :as db]
+    [status-im.subs.root]
+    [test-helpers.unit :as h]
+    [utils.money :as money]
+    [utils.re-frame :as rf]))
 
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
@@ -13,47 +16,75 @@
   [{:decimals                   1
     :symbol                     "ETH"
     :name                       "Ether"
-    :balances-per-chain         {1 {:raw-balance (money/bignumber "20") :has-error false}
-                                 2 {:raw-balance (money/bignumber "10") :has-error false}}
+    :balances-per-chain         {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber "20")
+                                                                      :has-error   false}
+                                 constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber "10")
+                                                                      :has-error   false}}
     :market-values-per-currency {:usd {:price 1000}}}
    {:decimals                   2
     :symbol                     "DAI"
     :name                       "Dai Stablecoin"
-    :balances-per-chain         {1 {:raw-balance (money/bignumber "100") :has-error false}
-                                 2 {:raw-balance (money/bignumber "150") :has-error false}
-                                 3 {:raw-balance nil :has-error false}}
+    :balances-per-chain         {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "100")
+                                                                      :has-error   false}
+                                 constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "150")
+                                                                      :has-error   false}
+                                 constants/arbitrum-mainnet-chain-id {:raw-balance nil :has-error false}}
     :market-values-per-currency {:usd {:price 100}}}])
 
 (def tokens-0x2
   [{:decimals                   3
     :symbol                     "ETH"
     :name                       "Ether"
-    :balances-per-chain         {1 {:raw-balance (money/bignumber "2500") :has-error false}
-                                 2 {:raw-balance (money/bignumber "3000") :has-error false}
-                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :balances-per-chain         {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "2500")
+                                                                      :has-error   false}
+                                 constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "3000")
+                                                                      :has-error   false}
+                                 constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "<nil>")
+                                                                      :has-error   false}}
     :market-values-per-currency {:usd {:price 200}}}
    {:decimals                   10
     :symbol                     "DAI"
     :name                       "Dai Stablecoin"
-    :balances-per-chain         {1 {:raw-balance (money/bignumber "10000000000") :has-error false}
-                                 2 {:raw-balance (money/bignumber "0") :has-error false}
-                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :balances-per-chain         {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "10000000000")
+                                                                      :has-error   false}
+                                 constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber "0")
+                                                                      :has-error   false}
+                                 constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "<nil>")
+                                                                      :has-error   false}}
     :market-values-per-currency {:usd {:price 1000}}}])
 
 (def tokens-0x3
   [{:decimals                   3
     :symbol                     "ETH"
     :name                       "Ether"
-    :balances-per-chain         {1 {:raw-balance (money/bignumber "5000") :has-error false}
-                                 2 {:raw-balance (money/bignumber "2000") :has-error false}
-                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :balances-per-chain         {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "5000")
+                                                                      :has-error   false}
+                                 constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "2000")
+                                                                      :has-error   false}
+                                 constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "<nil>")
+                                                                      :has-error   false}}
     :market-values-per-currency {:usd {:price 200}}}
    {:decimals                   10
     :symbol                     "DAI"
     :name                       "Dai Stablecoin"
-    :balances-per-chain         {1 {:raw-balance (money/bignumber "10000000000") :has-error false}
-                                 2 {:raw-balance (money/bignumber "0") :has-error false}
-                                 3 {:raw-balance (money/bignumber "<nil>") :has-error false}}
+    :balances-per-chain         {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "10000000000")
+                                                                      :has-error   false}
+                                 constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber "0")
+                                                                      :has-error   false}
+                                 constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
+                                                                                    "<nil>")
+                                                                      :has-error   false}}
     :market-values-per-currency {:usd {:price 1000}}}])
 
 (def accounts
@@ -148,10 +179,12 @@
            :chain-id   10
            :layer      2}]})
 
-(h/deftest-sub :wallet/balances
+(h/deftest-sub :wallet/balances-in-selected-networks
   [sub-name]
   (testing "a map: address->balance"
-    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+    (swap! rf-db/app-db #(-> %
+                             (assoc :wallet db/defaults)
+                             (assoc-in [:wallet :accounts] accounts)))
     (let [result      (rf/sub [sub-name])
           balance-0x1 (money/bignumber 3250)
           balance-0x2 (money/bignumber 2100)
@@ -166,6 +199,7 @@
   (testing "returns all accounts without balance"
     (swap! rf-db/app-db
       #(-> %
+           (assoc :wallet db/defaults)
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
     (is
@@ -250,6 +284,7 @@
   (testing "returns current account with balance base"
     (swap! rf-db/app-db
       #(-> %
+           (assoc :wallet db/defaults)
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :networks] network-data)))
@@ -462,10 +497,12 @@
       (is (match? 2 (count result)))
       (is (money/equal-to (money/bignumber 7520) eth-mainnet-raw-balance)))))
 
-(h/deftest-sub :wallet/aggregated-tokens-and-balance
+(h/deftest-sub :wallet/aggregated-token-values-and-balance
   [sub-name]
   (testing "returns aggregated tokens (in quo/token-value props) and balances from all accounts"
-    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+    (swap! rf-db/app-db #(-> %
+                             (assoc :wallet db/defaults)
+                             (assoc-in [:wallet :accounts] accounts)))
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
       (is (match? 2 (count tokens)))
       (is (match? "$4506.00" formatted-balance)))))
@@ -542,3 +579,99 @@
     (swap! rf-db/app-db
       #(assoc-in % [:wallet :ui :create-account :selected-keypair-uid] "key-uid"))
     (is (= "key-uid" (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/current-viewing-account-tokens-filtered
+  [sub-name]
+  (testing "current viewing tokens filtered"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :networks] network-data)
+           (assoc-in [:wallet :current-viewing-account-address] "0x2")
+           (assoc-in [:profile/profile :currency] :usd)))
+    (is (match? (count (rf/sub [sub-name ""])) 2))
+    (is (match? (count (rf/sub [sub-name "et"])) 1))))
+
+(h/deftest-sub :wallet/selected-networks->chain-ids
+  [sub-name]
+  (testing "selected networks -> chain-ids - All networks"
+    (swap! rf-db/app-db #(assoc % :wallet db/defaults))
+    (is
+     (match? (sort [constants/ethereum-mainnet-chain-id constants/arbitrum-mainnet-chain-id
+                    constants/optimism-mainnet-chain-id])
+             (sort (rf/sub [sub-name])))))
+  (testing "selected networks -> chain-ids - specific network"
+    (swap! rf-db/app-db #(assoc-in %
+                          [:wallet :ui :network-filter :selected-networks]
+                          #{constants/optimism-network-name}))
+    (is
+     (match? (sort [constants/optimism-mainnet-chain-id])
+             (sort (rf/sub [sub-name]))))))
+
+
+(h/deftest-sub :wallet/current-viewing-account-tokens-in-selected-networks
+  [sub-name]
+  (testing "current account tokens in selected networks"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :ui :network-filter :selected-networks] #{constants/arbitrum-network-name})
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")
+           (assoc-in [:wallet :networks] network-data)))
+
+    (let [result (rf/sub [sub-name])
+          token  (nth result 1)
+          chains (-> token
+                     :balances-per-chain
+                     keys)]
+      (is (match? (count chains) 1))
+      (is (match? (first chains) constants/arbitrum-mainnet-chain-id)))))
+
+(h/deftest-sub :wallet/aggregated-tokens-in-selected-networks
+  [sub-name]
+  (testing "aggregated tokens in selected networks"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :ui :network-filter :selected-networks] #{constants/optimism-network-name})
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :networks] network-data)))
+
+    (let [result (rf/sub [sub-name])
+          token  (first result)
+          chains (-> token
+                     :balances-per-chain
+                     keys)]
+      (is (match? (count chains) 1))
+      (is (match? (first chains) constants/optimism-mainnet-chain-id)))))
+
+(h/deftest-sub :wallet/aggregated-fiat-balance-per-chain
+  [sub-name]
+  (testing "aggregated fiat balance per chain"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :networks] network-data)
+           (assoc-in [:profile/profile :currency] :usd)))
+
+    (let [result (rf/sub [sub-name])
+          chains (keys result)]
+      (is (match? (count chains) 3))
+      (is (match? (get result constants/ethereum-mainnet-chain-id) "$3504.00"))
+      (is (match? (get result constants/optimism-mainnet-chain-id) "$1002.00")))))
+
+(h/deftest-sub :wallet/current-viewing-account-fiat-balance-per-chain
+  [sub-name]
+  (testing "current viewing account fiat balance per chain"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :networks] network-data)
+           (assoc-in [:wallet :current-viewing-account-address] "0x2")
+           (assoc-in [:profile/profile :currency] :usd)))
+
+    (let [result (rf/sub [sub-name])
+          chains (keys result)]
+      (is (match? (count chains) 3))
+      (is (match? (get result constants/ethereum-mainnet-chain-id) "$1500.00"))
+      (is (match? (get result constants/optimism-mainnet-chain-id) "$600.00"))
+      (is (match? (get result constants/arbitrum-mainnet-chain-id) "$0.00")))))

@@ -10,10 +10,10 @@
             [utils.re-frame :as rf]))
 
 (defn- view-internal
-  [{:keys [selected-networks watch-only?]}]
+  [{:keys [selected-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
-                network-preferences-names]} (rf/sub [:wallet/current-viewing-account])
+                network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
         initial-network-preferences-names   (or selected-networks network-preferences-names)
         network-preferences-names-state     (reagent/atom #{})
         toggle-network                      (fn [network-name]
@@ -70,29 +70,29 @@
          [quo/category
           {:list-type :settings
            :blur?     blur?
-           :data      [(utils/make-network-item mainnet
-                                                {:state     @state
-                                                 :title     (i18n/label :t/mainnet)
-                                                 :color     color
-                                                 :blur?     blur?
-                                                 :networks  (get-current-preferences-names)
-                                                 :on-change #(toggle-network (:network-name
-                                                                              mainnet))})]}]
+           :data      [(utils/make-network-item {:state        @state
+                                                 :network-name (:network-name mainnet)
+                                                 :color        color
+                                                 :blur?        blur?
+                                                 :networks     (get-current-preferences-names)
+                                                 :on-change    #(toggle-network (:network-name
+                                                                                 mainnet))})]}]
          [quo/category
           {:list-type :settings
            :blur?     blur?
            :label     (i18n/label :t/layer-2)
            :data      (mapv (fn [network]
-                              (utils/make-network-item network
-                                                       {:state     @state
-                                                        :color     color
-                                                        :blur?     blur?
-                                                        :networks  (get-current-preferences-names)
-                                                        :on-change #(toggle-network (:network-name
-                                                                                     network))}))
+                              (utils/make-network-item {:state        @state
+                                                        :network-name (:network-name network)
+                                                        :color        color
+                                                        :blur?        blur?
+                                                        :networks     (get-current-preferences-names)
+                                                        :on-change    #(toggle-network (:network-name
+                                                                                        network))}))
                             layer-2-networks)}]
          [quo/bottom-actions
           {:actions          :one-action
+           :blur?            blur?
            :button-one-label (i18n/label :t/display)
            :button-one-props {:disabled?           (= @state :default)
                               :on-press            (fn []

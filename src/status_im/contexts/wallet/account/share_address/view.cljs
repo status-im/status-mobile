@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [react-native.share :as share]
     [reagent.core :as reagent]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.account.share-address.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
@@ -53,7 +54,7 @@
         wallet-type         (reagent/atom :legacy)
         ;; Design team is yet to confirm the default selected networks here. Should be the current
         ;; selected for the account or all the networks always
-        selected-networks   (reagent/atom [:mainnet :optimism :arbitrum])
+        selected-networks   (reagent/atom constants/default-network-names)
         on-settings-press   #(open-preferences selected-networks)
         on-legacy-press     #(reset! wallet-type :legacy)
         on-multichain-press #(reset! wallet-type :multichain)]

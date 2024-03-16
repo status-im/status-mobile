@@ -35,17 +35,17 @@
 
 (defn get-network-details
   [chain-id]
-  (case chain-id
-    (constants/ethereum-mainnet-chain-id constants/ethereum-goerli-chain-id
-                                         constants/ethereum-sepolia-chain-id)
+  (condp contains? chain-id
+    #{constants/ethereum-mainnet-chain-id constants/ethereum-goerli-chain-id
+      constants/ethereum-sepolia-chain-id}
     mainnet-network-details
 
-    (constants/arbitrum-mainnet-chain-id constants/arbitrum-goerli-chain-id
-                                         constants/arbitrum-sepolia-chain-id)
+    #{constants/arbitrum-mainnet-chain-id constants/arbitrum-goerli-chain-id
+      constants/arbitrum-sepolia-chain-id}
     arbitrum-network-details
 
-    (constants/optimism-mainnet-chain-id constants/optimism-goerli-chain-id
-                                         constants/optimism-sepolia-chain-id)
+    #{constants/optimism-mainnet-chain-id constants/optimism-goerli-chain-id
+      constants/optimism-sepolia-chain-id}
     optimism-network-details
 
     nil))
@@ -55,13 +55,12 @@
  :<- [:wallet/networks-by-mode]
  (fn [networks]
    (->> networks
-        (keep
-         (fn [{:keys [chain-id related-chain-id layer test?]}]
-           (let [network-details (get-network-details (if test? related-chain-id chain-id))]
-             (assoc network-details
-                    :chain-id         chain-id
-                    :related-chain-id related-chain-id
-                    :layer            layer))))
+        (map
+         (fn [{:keys [chain-id related-chain-id layer]}]
+           (assoc (get-network-details chain-id)
+                  :chain-id         chain-id
+                  :related-chain-id related-chain-id
+                  :layer            layer)))
         (sort-by (juxt :layer :short-name)))))
 
 (re-frame/reg-sub
@@ -69,3 +68,12 @@
  :<- [:wallet/network-details]
  (fn [networks [_ chain-id]]
    (some #(when (= chain-id (:chain-id %)) %) networks)))
+
+(re-frame/reg-sub
+ :wallet/selected-network-details
+ :<- [:wallet/network-details]
+ :<- [:wallet/selected-networks]
+ (fn [[network-details selected-networks]]
+   (filter
+    #(contains? selected-networks (:network-name %))
+    network-details)))
