@@ -9,6 +9,7 @@
     [quo.components.tags.number-tag.view :as number-tag]
     [quo.components.tags.token-tag.view :as token-tag]
     [quo.theme]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -62,18 +63,23 @@
 (defn- view-internal
   [{:keys [on-press blur? type container-style] :as props}]
   (let [theme (quo.theme/use-theme-value)]
-    [rn/view {:style (merge (style/container blur? theme) container-style)}
-     [button/button
-      {:type      :ghost
-       :size      24
-       :on-press  on-press
-       :icon-left (when (= type :action)
-                    (:action-icon props))}
-      (condp = type
-        :action                (:action-label props)
-        :single-token-gating   [single-token-gating
-                                (select-keys props [:token-value :token-symbol :blur?])]
-        :multiple-token-gating [multiple-token-gating
-                                (select-keys props [:token-groups :blur?])])]]))
-
+    [rn/shadow
+     {:offset      [0 4]
+      :start-color (colors/theme-colors colors/neutral-100-opa-5 colors/neutral-100-opa-60)
+      :distance    30
+      :style       {:align-self :stretch}}
+     [rn/view {:style (merge (style/container blur? theme) container-style)}
+      [button/button
+       {:type      :ghost
+        :size      24
+        :on-press  on-press
+        :icon-left (when (= type :action)
+                     (:action-icon props))}
+       (condp = type
+         :action                (:action-label props)
+         :single-token-gating   [single-token-gating
+                                 (select-keys props [:token-value :token-symbol :blur?])]
+         :multiple-token-gating [multiple-token-gating
+                                 (select-keys props [:token-groups :blur?])])]]]))
 (def view (schema/instrument #'view-internal component-schema/?schema))
+
