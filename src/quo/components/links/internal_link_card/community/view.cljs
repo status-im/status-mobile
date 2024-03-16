@@ -9,26 +9,31 @@
     [schema.core :as schema]))
 
 (defn- description-comp
-  [description members-count active-members-count]
-  [rn/view
-   [text/text
-    {:size                :paragraph-2
-     :number-of-lines     3
-     :accessibility-label :description}
-    description]
-   [rn/view {:style style/stat-container}
-    [community-stat/view
-     {:value               members-count
-      :icon                :i/members
-      :accessibility-label :members-count
-      :style               {:margin-right 12}
-      :text-size           :paragraph-2}]
-    (when active-members-count
-      [community-stat/view
-       {:value               active-members-count
-        :icon                :i/active-members
-        :accessibility-label :active-members-count
-        :text-size           :paragraph-2}])]])
+  [description members-count active-members-count token-gated?]
+  (let [positive-members-count?        (pos? members-count)
+        positive-active-members-count? (pos? active-members-count)]
+    [rn/view
+     [text/text
+      {:size                :paragraph-2
+       :number-of-lines     3
+       :accessibility-label :description}
+      description]
+     (when-not token-gated?
+       [rn/view
+        {:style style/stat-container}
+        (when positive-members-count?
+          [community-stat/view
+           {:value               members-count
+            :icon                :i/members
+            :accessibility-label :members-count
+            :style               {:margin-right 12}
+            :text-size           :paragraph-2}])
+        (when positive-active-members-count?
+          [community-stat/view
+           {:value               active-members-count
+            :icon                :i/active-members
+            :accessibility-label :active-members-count
+            :text-size           :paragraph-2}])])]))
 
 (defn- title-comp
   [title]
@@ -74,7 +79,7 @@
 
 (defn- view-internal
   [{:keys [title description loading? icon banner members-count active-members-count
-           on-press size]}]
+           on-press size show-members-count?]}]
   (let [theme (quo.theme/use-theme)]
     [rn/pressable
      {:style               (style/container size theme)
@@ -88,7 +93,7 @@
            [logo-comp icon])
          [title-comp title]]
         (when description
-          [description-comp description members-count active-members-count])
+          [description-comp description members-count active-members-count show-members-count?])
         (when banner
           [thumbnail-comp banner size])])]))
 

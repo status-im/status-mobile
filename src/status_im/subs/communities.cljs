@@ -427,3 +427,10 @@
  (fn [[permissions] _]
    (let [all-tokens (apply concat (map :tokens permissions))]
      (boolean (some seq all-tokens)))))
+
+(re-frame/reg-sub
+ :communities/token-gated?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [membership-permissions?]}] _]
+   membership-permissions?))
