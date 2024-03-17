@@ -9,7 +9,7 @@
     [schema.core :as schema]))
 
 (defn- description-comp
-  [description members-count active-members-count token-gated?]
+  [description members-count active-members-count hide-members-count?]
   (let [positive-members-count?        (pos? members-count)
         positive-active-members-count? (pos? active-members-count)]
     [rn/view
@@ -18,7 +18,7 @@
        :number-of-lines     3
        :accessibility-label :description}
       description]
-     (when-not token-gated?
+     (when-not hide-members-count?
        [rn/view
         {:style style/stat-container}
         (when positive-members-count?

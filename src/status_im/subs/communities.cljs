@@ -429,8 +429,8 @@
      (boolean (some seq all-tokens)))))
 
 (re-frame/reg-sub
- :communities/token-gated?
+ :communities/token-gated-not-a-member?
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [membership-permissions?]}] _]
-   membership-permissions?))
+ (fn [[{:keys [token-permissions joined]}] _]
+   (and (not joined) (seq token-permissions))))
