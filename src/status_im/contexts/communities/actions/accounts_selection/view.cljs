@@ -71,6 +71,7 @@
                           :label             :preview
                           :label-props       {:type :accounts
                                               :data selected-accounts}
+                          :preview-size      :size-32
                           :description-props {:text (i18n/label :t/all-addresses)}}
                          {:title             (i18n/label :t/for-airdrops)
                           :on-press          show-airdrop-addresses
@@ -79,6 +80,7 @@
                           :label             :preview
                           :label-props       {:type :accounts
                                               :data [airdrop-account]}
+                          :preview-size      :size-32
                           :description-props {:text (:name airdrop-account)}}]}]
            [quo/text
             {:style               style/section-title
