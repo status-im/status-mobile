@@ -11,12 +11,13 @@
    :padding-bottom     8})
 
 (defn settings-items
-  [{:keys [label blur? theme]}]
+  [{:keys [label blur? theme background-color-override]}]
   {:margin-top       (if label 12 4)
    :border-radius    16
-   :background-color (if blur?
-                       colors/white-opa-5
-                       (colors/theme-colors colors/white colors/neutral-95 theme))
+   :background-color (or background-color-override
+                         (if blur?
+                           colors/white-opa-5
+                           (colors/theme-colors colors/white colors/neutral-95 theme)))
    :border-width     (if blur? 0 1)
    :border-color     (if blur?
                        colors/white-opa-5
