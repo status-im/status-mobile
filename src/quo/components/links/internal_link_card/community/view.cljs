@@ -9,7 +9,7 @@
     [schema.core :as schema]))
 
 (defn- description-comp
-  [description members-count active-members-count token-gated?]
+  [description members-count active-members-count hide-members-count?]
   (let [positive-members-count?        (pos? members-count)
         positive-active-members-count? (pos? active-members-count)]
     [rn/view
@@ -18,7 +18,7 @@
        :number-of-lines     3
        :accessibility-label :description}
       description]
-     (when-not token-gated?
+     (when-not hide-members-count?
        [rn/view
         {:style style/stat-container}
         (when positive-members-count?
@@ -79,7 +79,7 @@
 
 (defn- view-internal
   [{:keys [title description loading? icon banner members-count active-members-count
-           theme on-press size token-gated?]}]
+           theme on-press size hide-members-count?]}]
   [rn/pressable
    {:style               (style/container size theme)
     :accessibility-label :internal-link-card
@@ -93,7 +93,7 @@
        [title-comp title]]
       (when description
         [description-comp description members-count active-members-count
-         token-gated?])
+         hide-members-count?])
       (when banner
         [thumbnail-comp banner size])])])
 
