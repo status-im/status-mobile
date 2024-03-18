@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.navigation :as navigation]
+    [status-im.common.theme.core :as theme]
     [status-im.navigation.effects :as effects]
     [status-im.navigation.options :as options]
     [status-im.navigation.state :as state]
@@ -26,6 +27,10 @@
      (reset! state/modals [])
      (reset! state/dissmissing false)
      (re-frame/dispatch [:bottom-sheet-hidden])
+     (when @state/root-id
+       (reset! theme/device-theme (rn/get-color-scheme))
+       (re-frame/dispatch [:init-root @state/root-id])
+       (re-frame/dispatch [:chat/check-last-chat]))
      (rn/hide-splash-screen)))
 
   ;;;; Modal
