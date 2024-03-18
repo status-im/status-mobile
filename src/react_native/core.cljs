@@ -7,8 +7,8 @@
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
-    [react-native.utils :as utils]
     [react-native.shadow :as react-native-shadow]
+    [react-native.utils :as utils]
     [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
