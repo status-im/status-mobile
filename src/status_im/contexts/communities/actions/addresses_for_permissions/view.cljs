@@ -257,7 +257,8 @@
 
     (rn/use-mount
      (fn []
-       (rf/dispatch [:communities/get-permissioned-balances id])))
+       (when-not flag-share-all-addresses
+         (rf/dispatch [:communities/get-permissioned-balances id]))))
 
     (rn/use-effect
      (fn []
