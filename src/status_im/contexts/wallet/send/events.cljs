@@ -186,7 +186,8 @@
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:wallet/send-flow-navigate-forward {:current-screen :screen/wallet.transaction-confirmation}]]]})))
+            [:wallet/send-flow-navigate-forward
+             {:current-screen :screen/wallet.transaction-confirmation}]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
