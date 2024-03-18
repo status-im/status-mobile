@@ -344,7 +344,8 @@ By having an unstable reference, `Object.is` would always return `false` for ref
 ### Strategies for Creating Stable References
 
 How then do we create stable references? Well there are a number of ways, and there is no one size fits all way of doing it. But here are a few ways we could do it:
-- Using global variables: We can get stable references by declaring variables in a more global scope relative to the function's local scope. This essentially means if we can, we should declare the variables outside the functions scope. e.g:
+#### Using global variables: 
+We can get stable references by declaring variables in a more global scope relative to the function's local scope. This essentially means if we can, we should declare the variables outside the functions scope. e.g:
   ```clojure
   (def some-map {:name "John Snow"
                 :knowledge 0})
@@ -352,22 +353,38 @@ How then do we create stable references? Well there are a number of ways, and th
   (defn comp []
     [rn/view {:some-map some-map}])
   ```
+
+- Trade-offs: While global variables ensure reference stability, they can introduce side effects or global state management complexities. Overuse can make components harder to understand and test due to implicit dependencies.
+
+- Best Scenarios: Use for constants or configuration data that truly does not change over the application's lifetime and does not belong to any component's state.
   
-- Using `React.useRef`: This is also another way to create stable references between renders. e.g
+#### Using `React.useRef`: 
+Provides a mutable ref object that remains constant throughout the component's lifecycle. Ideal for holding onto a value that does not trigger re-renders.. e.g
   ```clojure
   (defn comp []
     (let [ref (rn/use-ref {:name "John Snow"
                            :knowledge 0})]
     [rn/view {:some-map (:current ref)}]))
   ```
-- Using `React.useState`: `useState` always returns a stable reference to non primitive values, and only changes this reference when the value is updated via `seState`. e.g
+- Trade-offs: It is not "reactive", meaning changes to its content do not cause the component to re-render. It's best used for values that are incidental to rendering.
+
+- Best Scenarios: Storing references to DOM elements, keeping track of previous props or state for comparison, or holding values that interact with imperative APIs.
+
+#### Using `React.useState`: 
+Returns a stable reference to a stateful value, with an updater function to change its value. The reference only changes when explicitly updated via the updater. e.g
   ```clojure
   (defn comp []
     (let [[state set-state] (rn/use-state {:name "John Snow"
                                            :knowledge 0})]
     [rn/view {:some-map state}]))
   ```
-- Using `React.useMemo` and `React.useCallback`: They both return stable references, but the catch here is that they also require stable references themselves as dependencies. e.g
+
+- Trade-offs: It triggers a component re-render when the state changes, which might not be necessary for all types of stored values. Managing large sets of stateful data here can make the component less efficient.
+
+- Best Scenarios: Managing local component state that directly influences the render output. Ideal for values that change over time and need to trigger updates.
+
+#### Using `React.useMemo` and `React.useCallback`: 
+They both return stable references, but the catch here is that they also require stable references themselves as dependencies. e.g
   ```clojure
   (defn comp []
     (let [[knowledge set-knowledge] (rn/use-state 0)
@@ -377,6 +394,10 @@ How then do we create stable references? Well there are a number of ways, and th
                                                   [knowledge])]
     [rn/view {:some-map derived-state}]))
   ```
+
+- Trade-offs: They depend on the stability of their dependency lists, which can lead to unnecessary recalculations if dependencies have unstable references. Overuse can lead to increased memory usage and complexity.
+
+- Best Scenarios: `React.useMemo` is best for expensive calculations that depend on specific props or state and do not change on every render. `React.useCallback` is ideal when passing callback functions to deeply nested child components that need stable references to prevent unnecessary renders.
 
 The list is not exhaustive, but these are the most common ways to get stable references to non-primitive values.
 
