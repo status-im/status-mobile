@@ -13,6 +13,7 @@
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
+    [react-native.shadow :as shadow]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
@@ -69,10 +70,10 @@
 (defn- view-internal
   [{:keys [on-press blur? type container-style] :as props}]
   (let [theme (quo.theme/use-theme-value)]
-    [rn/shadow
+    [shadow/view
      {:offset      [0 4]
-      :start-color (colors/theme-colors colors/neutral-100-opa-5 colors/neutral-100-opa-60)
-      :distance    30
+      :start-color (colors/theme-colors colors/neutral-100-opa-8 colors/neutral-100-opa-60)
+      :distance    25
       :style       {:align-self :stretch}}
      [rn/view {:style (merge (style/container blur? theme) container-style)}
       (when blur?
