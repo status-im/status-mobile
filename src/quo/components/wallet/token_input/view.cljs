@@ -130,7 +130,7 @@
         handle-on-swap                      (rn/use-callback
                                              (fn []
                                                (set-crypto (not crypto?))
-                                               (when on-swap (on-swap crypto?)))
+                                               (when on-swap (on-swap (not crypto?))))
                                              [crypto? on-swap])]
     [rn/view {:style (merge (style/main-container width) container-style)}
      [rn/view {:style style/amount-container}
@@ -150,6 +150,7 @@
      [divider-line/view {:container-style (style/divider theme)}]
      [data-info
       (assoc props
+             :theme   theme
              :crypto? crypto?
              :amount  (or value value-internal))]]))
 

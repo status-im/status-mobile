@@ -108,7 +108,7 @@
         on-press-in   (rn/use-callback #(set-pressed true))
         on-press-out  (rn/use-callback #(set-pressed false))]
     [rn/pressable
-     {:style               (style/wallet-activity-container {:pressed? @pressed?
+     {:style               (style/wallet-activity-container {:pressed? pressed?
                                                              :theme    theme
                                                              :blur?    blur?})
       :accessibility-label :wallet-activity

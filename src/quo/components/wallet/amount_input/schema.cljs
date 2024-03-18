@@ -10,7 +10,6 @@
     [:props
      [:map {:closed true}
       [:status {:optional true} [:maybe [:enum :default :error]]]
-      [:theme :schema.common/theme]
       [:on-change-text {:optional true} [:maybe fn?]]
       [:container-style {:optional true} [:maybe :map]]
       [:auto-focus? {:optional true} [:maybe :boolean]]
