@@ -37,14 +37,14 @@
 
   (navigation/reg-component-did-appear-listener
    (fn [view-id]
-     (when (get views/screens view-id)
-       ;;NOTE when back from the background on Android, this event happens for all screens, but we
-       ;;need only for active one
-       (when (and @state/curr-modal (= @state/curr-modal view-id))
-         (effects/set-view-id view-id))
-       (when-not @state/curr-modal
+     (let [view-id-with-prefix (keyword (str "screen/" (name view-id)))
+           view                (or (get views/screens view-id)
+                                   (get views/screens view-id-with-prefix))
+           view-id             (:name view)]
+       (when view
          (effects/set-view-id view-id)
-         (reset! state/pushed-screen-id view-id)))))
+         (when-not @state/curr-modal
+           (reset! state/pushed-screen-id view-id))))))
 
   ;;;; Modal
 
@@ -106,4 +106,9 @@
   (navigation/register-component
    "bottom-sheet-old"
    (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp-old))
-   (fn [] views/sheet-comp-old)))
+   (fn [] views/sheet-comp-old))
+
+  (navigation/register-component
+   "popover"
+   (fn [] (gesture/gesture-handler-root-hoc views/popover-comp))
+   (fn [] views/popover-comp)))

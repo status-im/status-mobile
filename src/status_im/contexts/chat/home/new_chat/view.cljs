@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -49,27 +49,54 @@
                                (rf/dispatch [:open-modal :new-contact]))}
       (i18n/label :t/add-a-contact)]]))
 
-(defn contact-item-render
-  [_]
-  (fn [{:keys [public-key] :as item}]
-    (let [user-selected? (rf/sub [:is-contact-selected? public-key])
-          on-toggle      #(if user-selected?
-                            (re-frame/dispatch [:deselect-contact public-key])
-                            (re-frame/dispatch [:select-contact public-key]))]
-      [contact-list-item/contact-list-item
-       {:on-press                on-toggle
-        :allow-multiple-presses? true
-        :accessory               {:type     :checkbox
-                                  :checked? user-selected?
-                                  :on-check on-toggle}}
-       item])))
+(def ^:private contacts-selection-limit (dec constants/max-group-chat-participants))
 
-(defn- view-internal
-  [{:keys [scroll-enabled? on-scroll close theme]}]
-  (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+(defn- toggle-selection
+  [public-key user-selected?]
+  (let [selected-contacts-count (rf/sub [:selected-contacts-count])]
+    (if user-selected?
+      (re-frame/dispatch [:deselect-contact public-key])
+      (if (= contacts-selection-limit
+             selected-contacts-count)
+        (do
+          (rf/dispatch
+           [:toasts/upsert
+            {:id   :remove-nickname
+             :type :negative
+             :text (i18n/label :t/new-group-limit
+                               {:max-contacts
+                                contacts-selection-limit})}])
+          true)
+        (re-frame/dispatch [:select-contact public-key])))))
+
+(defn contact-item-render
+  [{:keys [public-key] :as item} set-has-error]
+  (let [user-selected? (rf/sub [:is-contact-selected? public-key])
+        on-toggle      (fn []
+                         (-> public-key
+                             (toggle-selection user-selected?)
+                             boolean
+                             set-has-error))]
+    [contact-list-item/contact-list-item
+     {:on-press                on-toggle
+      :allow-multiple-presses? true
+      :accessory               {:type     :checkbox
+                                :checked? user-selected?
+                                :on-check on-toggle}}
+     item]))
+
+(defn view
+  [{:keys [scroll-enabled? on-scroll close]}]
+  (let [theme                             (quo.theme/use-theme-value)
+        contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
+        customization-color               (rf/sub [:profile/customization-color])
         one-contact-selected?             (= selected-contacts-count 1)
+        [has-error? set-has-error]        (rn/use-state false)
+        render-fn                         (rn/use-callback (fn [item]
+                                                             (contact-item-render item set-has-error))
+                                                           [set-has-error])
         contacts-selected?                (pos? selected-contacts-count)
         {:keys [primary-name public-key]} (when one-contact-selected?
                                             (rf/sub [:contacts/contact-by-identity
@@ -86,38 +113,42 @@
         {:weight :semi-bold
          :size   :heading-1
          :style  {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
-        (i18n/label :t/new-chat)]
+        (if (or (not contacts-selected?) one-contact-selected?)
+          (i18n/label :t/new-chat)
+          (i18n/label :t/new-group-chat))]
        (when (seq contacts)
          [quo/text
           {:size   :paragraph-2
            :weight :regular
            :style  {:margin-bottom 2
-                    :color         (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}}
+                    :color         (if has-error?
+                                     (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+                                     (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))}}
           (i18n/label :t/selected-count-from-max
                       {:selected selected-contacts-count
-                       :max      constants/max-group-chat-participants})])]]
+                       :max      contacts-selection-limit})])]]
      (if (empty? contacts)
        [no-contacts-view {:theme theme}]
        [gesture/section-list
-        {:key-fn                         :title
-         :sticky-section-headers-enabled false
-         :sections                       (rf/sub [:contacts/filtered-active-sections])
-         :render-section-header-fn       contact-list/contacts-section-header
-         :content-container-style        {:padding-bottom 70}
-         :render-fn                      contact-item-render
-         :scroll-enabled                 @scroll-enabled?
-         :on-scroll                      on-scroll}])
+        {:key-fn                   :title
+         :sections                 (rf/sub [:contacts/filtered-active-sections])
+         :render-section-header-fn contact-list/contacts-section-header
+         :render-section-footer-fn contact-list/contacts-section-footer
+         :content-container-style  {:padding-bottom 70}
+         :render-fn                render-fn
+         :scroll-enabled           @scroll-enabled?
+         :on-scroll                on-scroll}])
      (when contacts-selected?
-       [quo/button
-        {:type                :primary
-         :accessibility-label :next-button
-         :container-style     style/chat-button
-         :on-press            (fn []
-                                (if one-contact-selected?
-                                  (rf/dispatch [:chat.ui/start-chat public-key])
-                                  (rf/dispatch [:navigate-to :new-group])))}
-        (if one-contact-selected?
-          (i18n/label :t/chat-with {:selected-user primary-name})
-          (i18n/label :t/setup-group-chat))])]))
-
-(def view (quo.theme/with-theme view-internal))
+       [rn/view
+        {:style (style/chat-button-container theme)}
+        [quo/button
+         {:type                :primary
+          :customization-color customization-color
+          :accessibility-label :next-button
+          :on-press            (fn []
+                                 (if one-contact-selected?
+                                   (rf/dispatch [:chat.ui/start-chat public-key])
+                                   (rf/dispatch [:navigate-to :new-group])))}
+         (if one-contact-selected?
+           (i18n/label :t/chat-with {:selected-user primary-name})
+           (i18n/label :t/setup-group-chat))]])]))

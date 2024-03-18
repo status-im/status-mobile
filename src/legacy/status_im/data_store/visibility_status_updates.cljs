@@ -2,8 +2,8 @@
   (:require
     [clojure.set :as set]
     [re-frame.core :as re-frame]
-    [taoensso.timbre :as log]
-    [utils.re-frame :as rf]))
+    [status-im.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]))
 
 (defn <-rpc
   [visibility-status-update]
@@ -18,13 +18,13 @@
        {:current-user-status :current-user-visibility-status})
       (update :current-user-visibility-status <-rpc)))
 
-(rf/defn fetch-visibility-status-updates-rpc
-  [_]
-  {:json-rpc/call [{:method     "wakuext_statusUpdates"
-                    :params     []
-                    :on-success #(re-frame/dispatch
-                                  [:visibility-status-updates/visibility-status-updates-loaded
-                                   (:statusUpdates ^js %)])
-                    :on-error   #(log/error
-                                  "failed to fetch visibility-status-updates"
-                                  %)}]})
+(re-frame/reg-fx :visibility-status-updates/fetch
+ (fn []
+   (json-rpc/call {:method     "wakuext_statusUpdates"
+                   :params     []
+                   :on-success #(re-frame/dispatch
+                                 [:visibility-status-updates/visibility-status-updates-loaded
+                                  (:statusUpdates ^js %)])
+                   :on-error   #(log/error
+                                 "failed to fetch visibility-status-updates"
+                                 %)})))

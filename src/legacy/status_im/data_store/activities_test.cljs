@@ -44,6 +44,7 @@
                                                 :line-count  nil
                                                 :links       nil
                                                 :text        nil}
+                         :bridge-message       nil
                          :outgoing             false}
          :message       nil
          :reply-message {:quoted-message       nil
@@ -61,6 +62,7 @@
                                                 :line-count  nil
                                                 :links       nil
                                                 :text        nil}
+                         :bridge-message       nil
                          :outgoing             false}}
         (-> raw-notification
             store/<-rpc

@@ -1,6 +1,8 @@
 (ns status-im.contexts.chat.contacts.events
   (:require
     [oops.core :as oops]
+    [re-frame.core :as re-frame]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -64,18 +66,21 @@
      (when (> (count events) 1)
        {:dispatch-n events}))))
 
-(rf/defn initialize-contacts
-  [_]
-  {:json-rpc/call [{:method      "wakuext_contacts"
-                    :params      []
-                    :js-response true
-                    :on-success  #(rf/dispatch [:contacts/contacts-loaded (map <-rpc-js %)])
-                    :on-error    #(log/error "failed to fetch contacts" %)}]})
+(re-frame/reg-event-fx :contacts/contacts-loaded
+ (fn [{:keys [db]} [loaded-contacts]]
+   (let [contacts (->> loaded-contacts
+                       (map <-rpc-js)
+                       (mapv (fn [{:keys [public-key] :as contact}] [public-key contact]))
+                       (into {}))]
+     {:db (assoc db :contacts/contacts contacts)})))
 
-(rf/defn contacts-loaded
-  {:events [:contacts/contacts-loaded]}
-  [{:keys [db]} contacts]
-  {:db (assoc db :contacts/contacts (into {} (map #(vector (:public-key %) %) contacts)))})
+(re-frame/reg-fx :contacts/initialize-contacts
+ (fn []
+   (json-rpc/call {:method      "wakuext_contacts"
+                   :params      []
+                   :js-response true
+                   :on-success  [:contacts/contacts-loaded]
+                   :on-error    #(log/error "failed to fetch contacts" %)})))
 
 (defn send-contact-request
   [{:keys [db]} [id message]]

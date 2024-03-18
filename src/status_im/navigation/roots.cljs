@@ -14,7 +14,7 @@
    :profiles    constants/theme-type-dark
    :shell-stack nil})
 
-(defn roots
+(defn roots-internal
   []
   {:intro
    {:root
@@ -49,3 +49,19 @@
    {:root {:stack {:children [{:component {:name    :syncing-results
                                            :id      :syncing-results
                                            :options (options/dark-root-options)}}]}}}})
+
+(defn old-roots
+  []
+  {:progress
+   {:root {:stack {:children [{:component {:name    :progress
+                                           :id      :progress
+                                           :options (options/root-options nil)}}]
+                   :options  (assoc (options/root-options nil)
+                                    :topBar
+                                    {:visible false})}}}})
+
+(defn roots
+  []
+  (merge
+   (old-roots)
+   (roots-internal)))

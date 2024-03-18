@@ -148,7 +148,7 @@
       :actions         [{:accessibility-label :action-button-pinned
                          :big?                true
                          :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
-                         :color               cover-bg-color
+                         :customization-color cover-bg-color
                          :icon                :i/pin
                          :counter-value       pins-count
                          :on-press            (fn []
@@ -158,7 +158,7 @@
                          :label               (i18n/label (if muted
                                                             unmute-chat-label
                                                             mute-chat-label))
-                         :color               cover-bg-color
+                         :customization-color cover-bg-color
                          :icon                (if muted? :i/activity-center :i/muted)
                          :on-press            (fn []
                                                 (if muted?

@@ -5,6 +5,7 @@
     [legacy.status-im.node.core :as node]
     [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
     [re-frame.core :as re-frame]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -61,7 +62,7 @@
            (dissoc :mailserver/current-request :mailserver/fetching-gaps-in-progress))})
 
 (defn fetch-use-mailservers?
-  [{:keys [db]}]
+  [db]
   (get-in db [:profile/profile :use-mailservers?]))
 
 (defonce showing-connection-error-popup? (atom false))
@@ -117,24 +118,32 @@
   [{:keys [db] :as cofx}]
   {:db (dissoc db :mailserver/current-request)})
 
+(defn needs-to-fetch-historic-messages?
+  [db]
+  (and
+   (:messenger/started? db)
+   (mobile-network-utils/syncing-allowed? db)
+   (fetch-use-mailservers? db)
+   (not (:mailserver/current-request db))))
+
 (rf/defn process-next-messages-request
   {:events [::request-messages]}
-  [{:keys [db now] :as cofx}]
-  (when (and
-         (:messenger/started? db)
-         (mobile-network-utils/syncing-allowed? cofx)
-         (fetch-use-mailservers? cofx)
-         (not (:mailserver/current-request db)))
-    {:db            (assoc db :mailserver/current-request true)
-     :json-rpc/call [{:method      "wakuext_requestAllHistoricMessagesWithRetries"
-                      :params      [false]
-                      :js-response true
-                      :on-success  #(do
-                                      (log/info "fetched historical messages")
-                                      (re-frame/dispatch [::request-success %]))
-                      :on-error    #(do
-                                      (log/error "failed retrieve historical messages" %)
-                                      (re-frame/dispatch [::request-error]))}]}))
+  [{:keys [db]}]
+  (when (needs-to-fetch-historic-messages? db)
+    {:db                                       (assoc db :mailserver/current-request true)
+     :mailserver/request-all-historic-messages nil}))
+
+(re-frame/reg-fx :mailserver/request-all-historic-messages
+ (fn []
+   (json-rpc/call {:method      "wakuext_requestAllHistoricMessagesWithRetries"
+                   :params      [false]
+                   :js-response true
+                   :on-success  #(do
+                                   (log/info "fetched historical messages")
+                                   (re-frame/dispatch [::request-success %]))
+                   :on-error    #(do
+                                   (log/error "failed retrieve historical messages" %)
+                                   (re-frame/dispatch [::request-error]))})))
 
 (rf/defn handle-mailserver-changed
   [{:keys [db] :as cofx} ms]

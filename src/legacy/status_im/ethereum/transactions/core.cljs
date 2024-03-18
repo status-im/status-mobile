@@ -239,7 +239,7 @@
 
 (rf/defn tx-history-end-reached
   [{:keys [db] :as cofx} address]
-  (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? cofx)]
+  (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? db)]
     {:db (assoc-in db
           [:wallet-legacy :fetching address :all-fetched?]
           (if syncing-allowed?
@@ -327,7 +327,7 @@
       {:chain-tokens      (:wallet-legacy/all-tokens db)
        :addresses         [address]
        :before-block      min-known-block
-       :fetch-more?       (utils.mobile-sync/syncing-allowed? cofx)
+       :fetch-more?       (utils.mobile-sync/syncing-allowed? db)
        ;; Transfers are requested before and including `min-known-block` because there is no
        ;; guarantee that all transfers from that block are shown already. To make sure that we fetch
        ;; the whole `default-transfers-limit` of transfers the number of transfers already received

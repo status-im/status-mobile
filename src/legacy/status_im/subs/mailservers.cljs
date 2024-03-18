@@ -61,7 +61,7 @@
 (re-frame/reg-sub
  :mailserver/use-status-nodes?
  (fn [db _]
-   (boolean (mailserver/fetch-use-mailservers? {:db db}))))
+   (boolean (mailserver/fetch-use-mailservers? db))))
 
 (re-frame/reg-sub
  :mailserver.edit/validation-errors

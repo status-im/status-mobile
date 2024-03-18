@@ -1,10 +1,12 @@
 (ns status-im.contexts.chat.messenger.messages.content.view
   (:require
+    [clojure.string :as string]
     [legacy.status-im.ui.screens.chat.message.legacy-view :as old-message]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [reagent.core :as reagent]
@@ -112,6 +114,34 @@
 
       constants/content-type-system-message-mutual-event-sent
       [system-message-contact-request message-data :contact-request])))
+
+(defn bridge-message-content
+  [{:keys [bridge-message timestamp]}]
+  (let [{:keys [user-avatar user-name
+                bridge-name content]} bridge-message
+        user-name                     (when (string? user-name)
+                                        (-> user-name
+                                            (string/replace "<b>" "")
+                                            (string/replace "</b>" "")))]
+    [rn/view
+     {:style {:flex-direction     :row
+              :padding-horizontal 12
+              :padding-top        4}}
+     [fast-image/fast-image
+      {:source {:uri user-avatar}
+       :style  {:width         32
+                :margin-top    4
+                :border-radius 16
+                :height        32}}]
+     [rn/view {:margin-left 8 :flex 1}
+      [quo/author
+       {:primary-name   (str user-name)
+        :short-chat-key (str "Bridged from " bridge-name)
+        :time-str       (datetime/timestamp->time timestamp)}]
+      [quo/text
+       {:size  :paragraph-1
+        :style {:line-height 22.75}}
+       content]]]))
 
 (declare on-long-press)
 
@@ -290,9 +320,13 @@
                                keyboard-shown?))
         context]
 
-       :else
-       [user-message-content
-        {:message-data    message-data
-         :context         context
-         :keyboard-shown? keyboard-shown?
-         :show-reactions? true}])]))
+
+     (= content-type constants/content-type-bridge-message)
+     [bridge-message-content message-data]
+
+     :else
+     [user-message-content
+      {:message-data    message-data
+       :context         context
+       :keyboard-shown? keyboard-shown?
+       :show-reactions? true}])])

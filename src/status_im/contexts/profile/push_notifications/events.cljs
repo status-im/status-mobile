@@ -2,9 +2,11 @@
   (:require
     [cljs-bean.core :as bean]
     [native-module.push-notifications :as native-module.pn]
+    [re-frame.core :as re-frame]
     [react-native.async-storage :as async-storage]
     [react-native.platform :as platform]
     [react-native.push-notification-ios :as pn-ios]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.config :as config]
     status-im.contexts.profile.push-notifications.effects
     [taoensso.timbre :as log]
@@ -55,8 +57,8 @@
   [{:keys [db]} preferences]
   {:db (assoc db :push-notifications/preferences preferences)})
 
-(rf/defn load-preferences
-  [_]
-  {:json-rpc/call [{:method     "localnotifications_notificationPreferences"
-                    :params     []
-                    :on-success #(rf/dispatch [:push-notifications/preferences-loaded %])}]})
+(re-frame/reg-fx :push-notifications/load-preferences
+ (fn []
+   (json-rpc/call {:method     "localnotifications_notificationPreferences"
+                   :params     []
+                   :on-success [:push-notifications/preferences-loaded]})))

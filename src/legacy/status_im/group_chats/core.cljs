@@ -6,9 +6,9 @@
     [legacy.status-im.data-store.invitations :as data-store.invitations]
     [oops.core :as oops]
     [re-frame.core :as re-frame]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
-    [status-im.contexts.shell.activity-center.events :as activity-center]
     [status-im.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -19,15 +19,13 @@
   (when (get-in cofx [:db :chats chat-id])
     (chat.events/pop-to-root-and-navigate-to-chat cofx chat-id nil)))
 
-(rf/defn handle-chat-removed
-  {:events [:chat-removed]}
-  [cofx response chat-id]
-  (rf/merge cofx
-            {:db         (dissoc (:db cofx) :current-chat-id)
-             :dispatch-n [[:shell/close-switcher-card chat-id]
-                          [:sanitize-messages-and-process-response response]
-                          [:pop-to-root :shell-stack]]}
-            (activity-center/notifications-fetch-unread-count)))
+(re-frame/reg-event-fx :chat-removed
+ (fn [{:keys [db]} [response chat-id]]
+   {:db (dissoc db :current-chat-id)
+    :fx [[:dispatch [:shell/close-switcher-card chat-id]]
+         [:dispatch [:sanitize-messages-and-process-response response]]
+         [:dispatch [:pop-to-root :shell-stack]]
+         [:activity-center.notifications/fetch-unread-count]]}))
 
 (rf/defn handle-chat-update
   {:events [:chat-updated]}
@@ -264,8 +262,7 @@
                       {}
                       invitations))})
 
-(rf/defn get-group-chat-invitations
-  [_]
-  {:json-rpc/call
-   [{:method     "wakuext_getGroupChatInvitations"
-     :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
+(re-frame/reg-fx :group-chats/get-group-chat-invitations
+ (fn []
+   (json-rpc/call {:method     "wakuext_getGroupChatInvitations"
+                   :on-success [::initialize-invitations]})))

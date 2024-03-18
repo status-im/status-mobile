@@ -29,7 +29,8 @@
     quo.components.common.notification-dot.view
     quo.components.common.separator.view
     quo.components.community.banner.view
-    quo.components.community.channel-actions
+    quo.components.community.channel-action.view
+    quo.components.community.channel-actions.view
     quo.components.community.community-card-view
     quo.components.community.community-list-view
     quo.components.community.community-stat.view
@@ -55,7 +56,7 @@
     quo.components.dropdowns.network-dropdown.view
     quo.components.empty-state.empty-state.view
     quo.components.gradient.gradient-cover.view
-    [quo.components.graph.interactive-graph.view :as interactive-graph]
+    quo.components.graph.interactive-graph.view
     quo.components.graph.wallet-graph.view
     quo.components.header
     quo.components.icon
@@ -109,6 +110,7 @@
     quo.components.onboarding.small-option-card.view
     quo.components.overlay.view
     quo.components.password.tips.view
+    quo.components.profile.collectible-list-item.view
     quo.components.profile.collectible.view
     quo.components.profile.link-card.view
     quo.components.profile.profile-card.view
@@ -229,7 +231,8 @@
 (def discover-card quo.components.community.banner.view/view)
 (def community-icon quo.components.community.icon/community-icon)
 (def token-requirement-list quo.components.community.token-gating/token-requirement-list)
-(def channel-actions quo.components.community.channel-actions/channel-actions)
+(def channel-action quo.components.community.channel-action.view/view)
+(def channel-actions quo.components.community.channel-actions.view/view)
 
 ;;;; Counter
 (def collectible-counter quo.components.counter.collectible-counter.view/view)
@@ -350,6 +353,7 @@
 
 ;;;; Profile
 (def collectible quo.components.profile.collectible.view/collectible)
+(def collectible-list-item quo.components.profile.collectible-list-item.view/view)
 (def link-card quo.components.profile.link-card.view/view)
 (def profile-card quo.components.profile.profile-card.view/profile-card)
 (def select-profile quo.components.profile.select-profile.view/view)

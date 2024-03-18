@@ -33,6 +33,8 @@
     [status-im.contexts.preview.quo.colors.color :as color]
     [status-im.contexts.preview.quo.colors.color-picker :as color-picker]
     [status-im.contexts.preview.quo.common :as common]
+    [status-im.contexts.preview.quo.community.channel-action :as
+     channel-action]
     [status-im.contexts.preview.quo.community.channel-actions :as
      channel-actions]
     [status-im.contexts.preview.quo.community.community-card-view :as
@@ -66,6 +68,7 @@
     [status-im.contexts.preview.quo.dropdowns.network-dropdown :as
      network-dropdown]
     [status-im.contexts.preview.quo.empty-state.empty-state :as empty-state]
+    [status-im.contexts.preview.quo.foundations.gradients :as gradients]
     [status-im.contexts.preview.quo.foundations.shadows :as shadows]
     [status-im.contexts.preview.quo.gradient.gradient-cover :as gradient-cover]
     [status-im.contexts.preview.quo.graph.interactive-graph :as
@@ -131,6 +134,7 @@
      small-option-card]
     [status-im.contexts.preview.quo.password.tips :as tips]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
+    [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
     [status-im.contexts.preview.quo.profile.link-card :as link-card]
     [status-im.contexts.preview.quo.profile.profile-card :as profile-card]
     [status-im.contexts.preview.quo.profile.select-profile :as select-profile]
@@ -199,7 +203,9 @@
     [utils.re-frame :as rf]))
 
 (def screens-categories
-  {:foundations       [{:name      :shadows
+  {:foundations       [{:name      :gradients
+                        :component gradients/view}
+                       {:name      :shadows
                         :component shadows/view}]
    :animated-list     [{:name      :animated-header-list
                         :component animated-header-list/mock-screen}]
@@ -260,6 +266,9 @@
                        {:name      :token-gating
                         :options   {:insets {:bottom? true}}
                         :component token-gating/view}
+                       {:name      :channel-action
+                        :options   {:insets {:bottom? true}}
+                        :component channel-action/view}
                        {:name      :channel-actions
                         :options   {:insets {:bottom? true}}
                         :component channel-actions/view}]
@@ -409,6 +418,8 @@
                         :component tips/view}]
    :profile           [{:name      :collectible
                         :component collectible/view}
+                       {:name      :collectible-list-item
+                        :component collectible-list-item/view}
                        {:name      :link-card
                         :component link-card/view}
                        {:name      :profile-card

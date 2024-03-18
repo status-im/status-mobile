@@ -15,6 +15,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
+    [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.universal-links :as links]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
@@ -654,12 +655,11 @@
                           stored-bookmarks)]
     {:db (assoc db :bookmarks/bookmarks bookmarks)}))
 
-(rf/defn initialize-browser
-  [_]
-  {:json-rpc/call
-   [{:method     "wakuext_getBrowsers"
-     :on-success #(re-frame/dispatch [::initialize-browsers %])}
-    {:method     "browsers_getBookmarks"
-     :on-success #(re-frame/dispatch [::initialize-bookmarks %])}
-    {:method     "permissions_getDappPermissions"
-     :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})
+(re-frame/reg-fx :browser/initialize-browser
+ (fn []
+   (json-rpc/call {:method     "wakuext_getBrowsers"
+                   :on-success [::initialize-browsers]})
+   (json-rpc/call {:method     "browsers_getBookmarks"
+                   :on-success [::initialize-bookmarks]})
+   (json-rpc/call {:method     "permissions_getDappPermissions"
+                   :on-success [::initialize-dapp-permissions]})))
