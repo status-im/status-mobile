@@ -321,12 +321,12 @@
         context]
 
 
-     (= content-type constants/content-type-bridge-message)
-     [bridge-message-content message-data]
+       (= content-type constants/content-type-bridge-message)
+       [bridge-message-content message-data]
 
-     :else
-     [user-message-content
-      {:message-data    message-data
-       :context         context
-       :keyboard-shown? keyboard-shown?
-       :show-reactions? true}])])
+       :else
+       [user-message-content
+        {:message-data    message-data
+         :context         context
+         :keyboard-shown? keyboard-shown?
+         :show-reactions? true}])]))
