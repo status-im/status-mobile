@@ -37,8 +37,9 @@
       :border? true}]))
 
 (defn title-view
-  [{:keys [details action selected? type blur? customization-color on-options-press theme]}]
-  (let [{:keys [full-name]} details]
+  [{:keys [details action selected? type blur? customization-color on-options-press]}]
+  (let [theme               (quo.theme/use-theme-value)
+        {:keys [full-name]} details]
     [rn/view
      {:style               style/title-container
       :accessibility-label :title}
@@ -89,7 +90,7 @@
   [item & _rest]
   [account-list-card/view item])
 
-(defn- view-internal
+(defn view
   [{:keys [accounts action container-style selected? on-press] :as props}]
   [rn/pressable
    {:style    (style/container (merge props
@@ -108,5 +109,3 @@
      :render-fn acc-list-card
      :separator [rn/view {:style {:height 8}}]
      :style     {:padding-horizontal 8}}]])
-
-(def view (quo.theme/with-theme view-internal))
