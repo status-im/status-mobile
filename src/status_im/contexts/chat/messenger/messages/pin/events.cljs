@@ -132,5 +132,4 @@
    cofx
    {:content (fn [] [pinned-messages-menu/view
                      {:chat-id                     chat-id
-                      :disable-message-long-press? (not= :chat (get-in cofx [:db :view-id]))
-                     }])}))
+                      :disable-message-long-press? (not= :chat (get-in cofx [:db :view-id]))}])}))

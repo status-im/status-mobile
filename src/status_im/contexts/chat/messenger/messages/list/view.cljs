@@ -318,7 +318,7 @@
                                              :customization-color    customization-color}]
         :data                              messages
         :render-data                       {:theme           theme
-                                            :context         (assoc context :inside-chat? true)
+                                            :context         context
                                             :keyboard-shown? keyboard-shown
                                             :insets          insets}
         :render-fn                         render-fn

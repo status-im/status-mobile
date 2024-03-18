@@ -205,7 +205,7 @@
                                      (reset! show-delivery-state? true)
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
-          :on-long-press       (when disable-message-long-press?
+          :on-long-press       (when-not disable-message-long-press?
                                  #(on-long-press message-data context keyboard-shown?))}
          [:<>
           (when pinned-by
