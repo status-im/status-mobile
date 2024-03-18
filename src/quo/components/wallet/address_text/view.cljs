@@ -10,12 +10,11 @@
 
 (defn- colored-network-text
   [{:keys [theme network size weight]}]
-  (let [{:keys [network-name short-name]} network]
-    [text/text
-     {:size   size
-      :weight weight
-      :style  {:color (colors/resolve-color (or network-name (keyword network)) theme)}}
-     (str (or short-name network) ":")]))
+  [text/text
+   {:size   size
+    :weight weight
+    :style  {:color (colors/resolve-color (keyword network) theme)}}
+   (str network ":")])
 
 (defn- view-internal
   [{:keys [networks address blur? theme format full-address? size weight]
@@ -29,7 +28,7 @@
                                                     (string/split $ ":")
                                                     [(butlast $) (last $)]))
         address-internal                     (if full-address? splitted-address address)
-        networks-internal                    (if full-address? splitted-networks networks)
+        networks-internal                    (if full-address? splitted-networks (map :short-name networks))
         address-text                         [text/text
                                               {:size   size
                                                ;; TODO: monospace font
