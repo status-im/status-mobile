@@ -362,9 +362,9 @@ We can get stable references by declaring variables in a more global scope relat
 Provides a mutable ref object that remains constant throughout the component's lifecycle. Ideal for holding onto a value that does not trigger re-renders.. e.g
   ```clojure
   (defn comp []
-    (let [ref (rn/use-ref {:name "John Snow"
-                           :knowledge 0})]
-    [rn/view {:some-map (:current ref)}]))
+    (let [ref (rn/use-ref-atom {:name "John Snow"
+                                :knowledge 0})]
+    [rn/view {:some-map @ref}]))
   ```
 - Trade-offs: It is not "reactive", meaning changes to its content do not cause the component to re-render. It's best used for values that are incidental to rendering.
 
