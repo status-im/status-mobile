@@ -28,7 +28,6 @@
        slider-height-shared-value
        amount-shared-value amount-on-gesture-start width->amount
        slider-opacity-shared-value on-new-amount set-detecting-gesture]]
-     (println "NEW GESTURE")
      (-> (gesture/gesture-pan)
          (gesture/enabled detecting-gesture?)
          (gesture/on-begin
@@ -108,7 +107,6 @@
 
 (defn- network-routing-bars
   [{:keys [networks total-width total-amount requesting-data? on-amount-selected]}]
-  (println "RENDER" networks total-width total-amount requesting-data? on-amount-selected)
   (let [[selected-network-idx
          set-selected-network-idx] (rn/use-state nil)
         [press-locked?
@@ -151,7 +149,6 @@
                                     [on-amount-selected selected-network-idx])]
     (rn/use-effect
      #(when (and (not requesting-data?) selected-network-idx)
-        (println "EFFECT")
         (let [bar (nth network-bars selected-network-idx)]
           (animation/hide-pressed-bar bar amount->width))
         (animation/update-bar-values-and-reset-animations
@@ -162,7 +159,7 @@
           :lock-press-fn      lock-press
           :unlock-press-fn    unlock-press
           :add-new-timeout    add-new-timeout}))
-     [requesting-data? selected-network-idx])
+     [requesting-data?])
     [:<>
      (doall
       (for [[bar-idx bar] (map-indexed vector network-bars)
