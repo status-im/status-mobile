@@ -2,8 +2,8 @@
 
 ## Content
 - [Global State and Subscriptions](#global-state-and-subscriptions)
-  - [Regular Atoms](#regular-atoms)
-  - [Effects](#effects)
+- [Regular Atoms](#regular-atoms)
+- [Effects](#effects)
 - [Performance Tips](#performance-tips)
   - [Component Creation](#component-creation)
   - [Component Updates](#component-updates)
