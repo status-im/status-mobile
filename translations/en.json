@@ -2547,5 +2547,12 @@
     "provider-is-down": "The provider for the following chain(s) is down: {{chains}}",
     "unknown": "Unknown",
     "unsupported-file": "Unsupported file",
-    "cant-fetch-info": "Can't fetch info"
+    "cant-fetch-info": "Can't fetch info",
+    "default-ethereum-format": "Default Ethereum format",
+    "ropsten-testnet": "Ropsten Testnet",
+    "ledger": "Ledger",
+    "ledger-live": "Ledger live",
+    "keep-key": "KeepKey",
+    "type-your-path": "Type your own derivation path",
+    "default-format": "Default format"
 }
