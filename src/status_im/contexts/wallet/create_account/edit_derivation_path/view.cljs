@@ -6,45 +6,13 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.temp :as temp]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.create-account.edit-derivation-path.path-format-sheet.view :as
+     path-format-sheet]
     [status-im.contexts.wallet.create-account.edit-derivation-path.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-(defn path-format-sheet
-  []
-  (let [{:keys [customization-color]} (rf/sub [:get-screen-params])]
-    [rn/view
-     [quo/drawer-top {:title (i18n/label :t/path-format)}]
-     [quo/action-drawer
-      [[{:accessibility-label :default-ethereum-format
-         :label               (i18n/label :t/default-ethereum-format)
-         :state               :selected
-         :customization-color customization-color
-         :sub-label           constants/path-wallet-root}
-        {:accessibility-label :ropsten-testnet
-         :label               (i18n/label :t/ropsten-testnet)
-         :sub-label           constants/path-ropsten-testnet
-         :customization-color customization-color}
-        {:accessibility-label :ledger
-         :label               (i18n/label :t/ledger)
-         :sub-label           constants/path-ledger
-         :customization-color customization-color}
-        {:accessibility-label :ledger-live
-         :label               (i18n/label :t/ledger-live)
-         :sub-label           constants/path-ledger-live
-         :customization-color customization-color}
-        {:accessibility-label :keepkey
-         :label               (i18n/label :t/keep-key)
-         :sub-label           constants/path-keepkey
-         :customization-color customization-color}
-        {:icon                :i/customize
-         :accessibility-label :custom
-         :label               (i18n/label :t/custom)
-         :sub-label           (i18n/label :t/type-your-path)
-         :add-divider?        true}]]]]))
 
 (defn- view-internal
   "States:
@@ -77,7 +45,7 @@
             primary-name           (first (rf/sub [:contacts/contact-two-names-by-identity
                                                    public-key]))
             profile-picture        (rf/sub [:profile/image])
-            show-path-format-sheet #(rf/dispatch [:show-bottom-sheet {:content path-format-sheet}])]
+            show-path-format-sheet #(rf/dispatch [:show-bottom-sheet {:content path-format-sheet/view}])]
         [rn/view
          {:style (style/screen top)}
          [quo/page-nav
@@ -105,11 +73,13 @@
                               :icon-name :i/dropdown
                               :style-fn  (fn []
                                            {:color   (colors/theme-colors colors/neutral-20
-                                                                          colors/neutral-80)
+                                                                          colors/neutral-80
+                                                                          theme)
                                             :color-2 (colors/theme-colors colors/neutral-100
-                                                                          colors/white)})}
+                                                                          colors/white
+                                                                          theme)})}
             :label           (i18n/label :t/path-format)
-            :value           "Default format"
+            :value           (i18n/label :t/default-format)
             :container-style {:margin-horizontal 20}}]]
          [quo/input
           {:container-style style/input-container
@@ -124,8 +94,7 @@
          (case @state
            :default
            [quo/bottom-actions
-            {:theme            theme
-             :actions          :one-action
+            {:actions          :one-action
              :button-one-label (i18n/label :t/reveal-address)
              :button-one-props {:type      :outline
                                 :icon-left :i/keycard-card
@@ -133,8 +102,7 @@
 
            :empty
            [quo/bottom-actions
-            {:theme            theme
-             :actions          :one-action
+            {:actions          :one-action
              :button-one-label (i18n/label :t/derive-addresses)
              :button-one-props {:type      :outline
                                 :icon-left :i/keycard-card
@@ -158,13 +126,13 @@
             [quo/button
              {:on-press (fn [_]
                           (reset! path-value (utils/get-formatted-derivation-path 1))
-                          (choose-action))} "Choose"]]
+                          (choose-action))}
+             "Choose"]]
            nil)
 
          [rn/view {:style (style/save-button-container bottom)}
           [quo/bottom-actions
-           {:theme            theme
-            :actions          :one-action
+           {:actions          :one-action
             :button-one-label (i18n/label :t/save)
             :button-one-props {:type      :primary
                                :on-press  #(js/alert "Save!")
