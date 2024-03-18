@@ -3,10 +3,9 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]))
 
-(defn- filter-collectible?
-  [collectible chain-ids]
-  (let [chain-id (get-in collectible [:id :contract-id :chain-id])]
-    (contains? chain-ids chain-id)))
+(defn- filter-collectibles-in-chains
+  [collectibles chain-ids]
+  (filter #(contains? chain-ids (get-in % [:id :contract-id :chain-id])) collectibles))
 
 (defn- svg-animation?
   [url media-type]
@@ -54,7 +53,7 @@
  :<- [:wallet/current-viewing-account-collectibles]
  :<- [:wallet/selected-networks->chain-ids]
  (fn [[collectibles chain-ids]]
-   (filter #(filter-collectible? % chain-ids) collectibles)))
+   (filter-collectibles-in-chains collectibles chain-ids)))
 
 (re-frame/reg-sub
  :wallet/all-collectibles-list
@@ -78,7 +77,7 @@
  :<- [:wallet/all-collectibles-list]
  :<- [:wallet/selected-networks->chain-ids]
  (fn [[all-collectibles chain-ids]]
-   (filter #(filter-collectible? % chain-ids) all-collectibles)))
+   (filter-collectibles-in-chains all-collectibles chain-ids)))
 
 (re-frame/reg-sub
  :wallet/current-viewing-account-collectibles-filtered
