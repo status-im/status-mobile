@@ -10,7 +10,8 @@
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]))
 
 (defn view
   []
@@ -46,6 +47,11 @@
           {:text-align          :left
            :icon-name           :i/close
            :on-press            navigate-back
+           :right-side          [{:icon-left :i/unlocked
+                                  :on-press  #(rf/dispatch [:show-bottom-sheet
+                                                            {:community-id id
+                                                             :content      detail-token-gating/view}])
+                                  :label     (i18n/label :t/permissions)}]
            :accessibility-label :back-button}]
          [quo/page-top
           {:title       (i18n/label :t/request-to-join)
