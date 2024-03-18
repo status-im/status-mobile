@@ -66,7 +66,7 @@
   []
   @(rf/subscribe [:messenger/started?]))
 
-(defn wallet-loaded
+(defn wallet-loaded?
   []
   (not @(rf/subscribe [:wallet/tokens-loading?])))
 
@@ -76,7 +76,7 @@
 
 (defn assert-wallet-loaded
   []
-  (is (wallet-loaded)))
+  (is (wallet-loaded?)))
 
 (defn assert-community-created
   []
