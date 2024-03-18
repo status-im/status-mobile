@@ -9,18 +9,20 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn on-press
+(defn- on-press
   [address]
   (rf/dispatch [:wallet/select-from-account
                 {:address  address
                  :stack-id :screen/wallet.select-from}]))
 
+(defn- on-close
+  []
+  (rf/dispatch [:wallet/remove-current-viewing-account])
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
-  (let [on-close (fn []
-                   (rf/dispatch [:wallet/remove-current-viewing-account])
-                   (rf/dispatch [:navigate-back]))
-        accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
+  (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [account-switcher/view
