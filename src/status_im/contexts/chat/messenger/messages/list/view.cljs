@@ -221,7 +221,7 @@
          :number-of-lines 1}
         display-name]
        [contact-icon contact theme]]
-      (when bio
+      (when-not (empty? bio)
         [quo/text {:style style/bio}
          bio])
       [actions chat-id customization-color]]]))

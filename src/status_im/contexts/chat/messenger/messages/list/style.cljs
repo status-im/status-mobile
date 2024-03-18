@@ -1,8 +1,9 @@
 (ns status-im.contexts.chat.messenger.messages.list.style
   (:require
-    [quo.foundations.colors :as colors]
-    [react-native.reanimated :as reanimated]
-    [status-im.contexts.chat.messenger.messages.constants :as messages.constants]))
+   [quo.foundations.colors :as colors]
+   [react-native.reanimated :as reanimated]
+   [status-im.contexts.chat.messenger.messages.constants :as messages.constants]
+   [quo.foundations.shadows :as shadows]))
 
 (def keyboard-avoiding-container
   {:flex    1
@@ -27,9 +28,11 @@
   (reanimated/apply-animations-to-style
    {:border-top-left-radius  border-radius
     :border-top-right-radius border-radius}
-   {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
-    :padding-horizontal 20
-    :margin-top         top-margin}))
+   (merge
+    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
+     :padding-horizontal 20
+     :margin-top         top-margin}
+    (shadows/get 2 :inverted))))
 
 (defn header-image
   [scale top left theme]
