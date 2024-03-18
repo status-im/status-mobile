@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [quo.theme]
-            [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [status-im.common.scroll-page.view :as scroll-page]
             [status-im.constants :as constants]
