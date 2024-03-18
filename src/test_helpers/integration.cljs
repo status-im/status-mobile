@@ -149,18 +149,17 @@
   (test-utils/init!)
   (if (app-initialized)
     (p/resolved ::app-initialized)
-    (do
-      (rf/dispatch [:app-started])
-      (wait-for [:profile/get-profiles-overview-success]))))
+    (p/do!
+     (rf/dispatch [:app-started])
+     (wait-for [:profile/get-profiles-overview-success]))))
 
 (defn setup-account
   []
   (if (messenger-started)
     (p/resolved ::messenger-started)
-    (do
-      (create-multiaccount!)
-      (-> (wait-for [:profile.login/messenger-started])
-          (.then #(assert-messenger-started))))))
+    (p/do!
+     (create-multiaccount!)
+     (p/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started)))))
 
 (defn- recover-and-login
   [seed-phrase]
@@ -184,18 +183,15 @@
     (rf/dispatch [:profile/profile-selected key-uid])
     (recover-and-login mnemonic)))
 
-
 (defn setup-recovered-account
   []
   (if (messenger-started)
     (p/resolved ::messenger-started)
-    (do
-      (recover-multiaccount!)
-      (-> (wait-for [:profile.login/messenger-started])
-          (.then #(assert-messenger-started)))
-      (enable-testnet!)
-      (-> (wait-for [:wallet/store-wallet-token])
-          (.then #(assert-wallet-loaded))))))
+    (p/do!
+     (recover-multiaccount!)
+     (p/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started))
+     (enable-testnet!)
+     (p/then (wait-for [:wallet/store-wallet-token]) #(assert-wallet-loaded)))))
 
 (defn test-async
   "Runs `f` inside `cljs.test/async` macro in a restorable re-frame checkpoint.
@@ -310,4 +306,3 @@
              (set! rf.interop/debug-enabled? false))
    :after  (fn []
              (set! rf.interop/debug-enabled? true))})
-
