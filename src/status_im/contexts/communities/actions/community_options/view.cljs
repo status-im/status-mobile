@@ -39,7 +39,9 @@
    :right-icon          :i/chevron-right
    :accessibility-label :view-token-gating
    :on-press            #(rf/dispatch [:show-bottom-sheet
-                                       {:content (fn [] [token-gating/token-requirements id])}])
+                                       {:content                 (fn [] [token-gating/token-requirements
+                                                                         id])
+                                        :padding-bottom-override 16}])
    :label               (i18n/label :t/view-token-gating)})
 
 (defn edit-shared-addresses
