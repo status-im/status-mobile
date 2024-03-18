@@ -8,15 +8,17 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.number-tag.view :as number-tag]
     [quo.components.tags.token-tag.view :as token-tag]
-    [quo.theme]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
 (defn- single-token-gating
   [{:keys [blur? token-value token-symbol]}]
-  [rn/view {:style {:flex-direction :row}}
+  [rn/view
+   {:style               {:flex-direction :row}
+    :accessibility-label :permission-context-single-token}
    [text/text {:style {:margin-right 3}}
     (i18n/label :t/hold-to-post-1)]
    [token-tag/view
@@ -44,7 +46,9 @@
   [{:keys [token-groups blur?]}]
   (let [visible-token-groups (take 2 token-groups)
         extra-groups?        (-> token-groups count (> 2))]
-    [rn/view {:style {:flex-direction :row}}
+    [rn/view
+     {:style               {:flex-direction :row}
+      :accessibility-label :permission-context-multiple-token}
      [text/text (i18n/label :t/hold-to-post-1)]
      [rn/view {:style {:flex-direction :row}}
       (map-indexed (partial token-group blur?) visible-token-groups)]
