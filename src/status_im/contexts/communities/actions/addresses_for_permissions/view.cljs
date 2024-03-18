@@ -85,7 +85,9 @@
             (seq token-permissions)
             (assoc
              :button-icon     :i/info
-             :on-button-press #(rf/dispatch [:show-bottom-sheet {:content detail-token-gating/view}])))]
+             :on-button-press #(rf/dispatch [:show-bottom-sheet
+                                             {:community-id id
+                                              :content      detail-token-gating/view}])))]
 
          [gesture/flat-list
           {:render-fn               account-item
