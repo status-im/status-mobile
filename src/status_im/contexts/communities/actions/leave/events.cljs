@@ -29,10 +29,11 @@
              {:type :positive
               :text (i18n/label :t/left-community {:community community-name})}]]
            [:dispatch [:activity-center.notifications/fetch-unread-count]]
+           [:dispatch [:hide-bottom-sheet]]
            [:dispatch [:navigate-back]]]})))
 
 (rf/reg-event-fx :communities/leave
- (fn [{:keys [db]} [community-id]]
+ (fn [{:keys [db]} [community-id on-success]]
    (let [community-chat-ids (map #(str community-id %)
                                  (keys (get-in db [:communities community-id :chats])))]
      {:effects/push-notifications-clear-message-notifications community-chat-ids
@@ -41,5 +42,8 @@
       [{:method      "wakuext_leaveCommunity"
         :params      [community-id]
         :js-response true
-        :on-success  #(rf/dispatch [:communities/left %])
+        :on-success  (fn [^js response]
+                       (when (fn? on-success)
+                         (on-success))
+                       (rf/dispatch [:communities/left response]))
         :on-error    #(log/error "failed to leave community" community-id %)}]})))

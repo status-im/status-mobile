@@ -4,8 +4,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-
-
 (rf/reg-event-fx :communities/check-permissions-to-join-community-success
  (fn [{:keys [db]} [community-id based-on-client-selection? result]]
    (let [token-permissions-check (cond-> result
@@ -118,41 +116,19 @@
                                :category-id  category-id
                                :collapse?    collapse?})}]}))
 
-(defn request-to-join-with-signatures-and-addresses
-  [{:keys [db]} [community-id signatures]]
-  (let [{:keys [airdrop-address selected-permission-addresses]} (get-in db [:communities community-id])]
-    {:fx [[:json-rpc/call
-           [{:method      "wakuext_requestToJoinCommunity"
-             :params      [{:communityId       community-id
-                            :signatures        signatures
-                            :addressesToReveal selected-permission-addresses
-                            :airdropAddress    airdrop-address}]
-             :js-response true
-             :on-success  [:communities/requested-to-join]
-             :on-error    [:communities/requested-to-join-error community-id]}]]]}))
-
-(rf/reg-event-fx :communities/request-to-join-with-signatures-and-addresses
- request-to-join-with-signatures-and-addresses)
-
-(defn sign-data-with-addresses
-  [_ [community-id password sign-params]]
-  {:fx [[:json-rpc/call
-         [{:method     "wakuext_signData"
-           :params     [(map #(assoc % :password password) sign-params)]
-           :on-success [:communities/request-to-join-with-signatures-and-addresses community-id]
-           :on-error   [:communities/requested-to-join-error community-id]}]]]})
-
-(rf/reg-event-fx :communities/sign-data-with-addresses sign-data-with-addresses)
-
 (defn request-to-join-with-addresses
   [{:keys [db]}
    [{:keys [community-id password]}]]
   (let [pub-key             (get-in db [:profile/profile :public-key])
-        addresses-to-reveal (get-in db [:communities community-id :selected-permission-addresses])]
-    {:fx [[:json-rpc/call
-           [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
-             :params     [pub-key community-id addresses-to-reveal]
-             :on-success [:communities/sign-data-with-addresses community-id password]
-             :on-error   [:communities/requested-to-join-error community-id]}]]]}))
+        addresses-to-reveal (get-in db [:communities/all-addresses-to-reveal community-id])
+        airdrop-address     (get-in db [:communities/all-airdrop-addresses community-id])]
+    {:fx [[:effects.community/request-to-join
+           {:community-id        community-id
+            :password            password
+            :pub-key             pub-key
+            :addresses-to-reveal addresses-to-reveal
+            :airdrop-address     airdrop-address
+            :on-success          [:communities/requested-to-join]
+            :on-error            [:communities/requested-to-join-error community-id]}]]}))
 
 (rf/reg-event-fx :communities/request-to-join-with-addresses request-to-join-with-addresses)
