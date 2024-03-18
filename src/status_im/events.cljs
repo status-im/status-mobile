@@ -14,6 +14,7 @@
     status-im.common.theme.events
     [status-im.common.toasts.events]
     status-im.common.universal-links
+    status-im.common.wizard
     status-im.contexts.chat.contacts.events
     status-im.contexts.chat.events
     [status-im.contexts.chat.home.add-new-contact.events]
