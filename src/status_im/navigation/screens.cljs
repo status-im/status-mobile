@@ -73,6 +73,7 @@
     [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im.contexts.wallet.scan-account.view :as wallet-scan-address]
+    [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
@@ -398,6 +399,10 @@
 
     {:name      :screen/wallet.saved-addresses
      :component wallet-saved-addresses/view}
+
+    {:name      :screen/wallet.save-address
+     :options   {:sheet? true}
+     :component wallet-save-address/view}
 
     {:name      :screen/wallet.send-input-amount
      :options   {:modalPresentationStyle :overCurrentContext
