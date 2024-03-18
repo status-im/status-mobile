@@ -86,8 +86,7 @@
             (assoc
              :button-icon     :i/info
              :on-button-press #(rf/dispatch [:show-bottom-sheet
-                                             {:community-id id
-                                              :content      detail-token-gating/view}])))]
+                                             {:content (fn [] [detail-token-gating/view id])}])))]
 
          [gesture/flat-list
           {:render-fn               account-item

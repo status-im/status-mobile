@@ -22,9 +22,8 @@
        (reduce max)))
 
 (defn view
-  []
-  (let [{id :community-id} (rf/sub [:get-screen-params])
-        {:keys [highest-permission-role can-request-access?]}
+  [id]
+  (let [{:keys [highest-permission-role can-request-access?]}
         (rf/sub [:community/token-gated-overview id])
         token-permissions (rf/sub [:community/token-permissions id])
         tokens (filter-tokens token-permissions [1 2 3])

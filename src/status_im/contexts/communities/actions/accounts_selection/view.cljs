@@ -48,9 +48,9 @@
            :icon-name           :i/close
            :on-press            navigate-back
            :right-side          [{:icon-left :i/unlocked
-                                  :on-press  #(rf/dispatch [:show-bottom-sheet
-                                                            {:community-id id
-                                                             :content      detail-token-gating/view}])
+                                  :on-press  #(rf/dispatch
+                                               [:show-bottom-sheet
+                                                {:content (fn [] [detail-token-gating/view id])}])
                                   :label     (i18n/label :t/permissions)}]
            :accessibility-label :back-button}]
          [quo/page-top

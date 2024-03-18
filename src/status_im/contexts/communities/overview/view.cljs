@@ -153,8 +153,7 @@
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button
          #(rf/dispatch [:show-bottom-sheet
-                        {:community-id id
-                         :content      detail-token-gating/view}])]]
+                        {:content (fn [] [detail-token-gating/view id])}])]]
        [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
         (if can-request-access?
           (i18n/label :t/you-hodl)
