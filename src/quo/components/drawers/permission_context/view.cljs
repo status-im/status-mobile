@@ -10,7 +10,9 @@
     [quo.components.tags.token-tag.view :as token-tag]
     [quo.foundations.colors :as colors]
     [quo.theme]
+    [react-native.blur :as blur]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
@@ -73,6 +75,13 @@
       :distance    30
       :style       {:align-self :stretch}}
      [rn/view {:style (merge (style/container blur? theme) container-style)}
+      (when blur?
+        [blur/view
+         {:style         style/blur-container
+          :blur-amount   20
+          :blur-radius   (if platform/ios? 20 10)
+          :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur)
+          :blur-type     :transparent}])
       [button/button
        {:type      :ghost
         :size      24
@@ -85,5 +94,6 @@
                                  (select-keys props [:token-value :token-symbol :blur?])]
          :multiple-token-gating [multiple-token-gating
                                  (select-keys props [:token-groups :blur?])])]]]))
+
 (def view (schema/instrument #'view-internal component-schema/?schema))
 

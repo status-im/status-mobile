@@ -5,13 +5,19 @@
 
 (def ^:private radius 20)
 
+(def blur-container
+  {:background-color :transparent
+   :position         :absolute
+   :top              0
+   :left             0
+   :right            0
+   :bottom           0})
+
 (defn container
   [blur? theme]
   {:flex-direction          :row
-   :background-color        (if blur?
-                              (colors/theme-colors colors/white-70-blur
-                                                   colors/neutral-95-opa-70-blur
-                                                   theme)
+   :overflow                :hidden
+   :background-color        (when-not blur?
                               (colors/theme-colors colors/white
                                                    colors/neutral-95
                                                    theme))
