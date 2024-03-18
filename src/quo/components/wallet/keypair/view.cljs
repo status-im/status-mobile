@@ -11,7 +11,6 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (defn keypair-string
@@ -38,8 +37,9 @@
       :border? true}]))
 
 (defn title-view
-  [{:keys [details action selected? type blur? customization-color on-options-press theme]}]
-  (let [{:keys [full-name]} details]
+  [{:keys [details action selected? type blur? customization-color on-options-press]}]
+  (let [theme               (quo.theme/use-theme-value)
+        {:keys [full-name]} details]
     [rn/view
      {:style               style/title-container
       :accessibility-label :title}
@@ -90,24 +90,27 @@
   [item & _rest]
   [account-list-card/view item])
 
-(defn- view-internal
-  [{:keys [default-selected?]}]
-  (let [selected? (reagent/atom default-selected?)]
-    (fn [{:keys [accounts action container-style] :as props}]
-      [rn/pressable
-       {:style    (merge (style/container (merge props {:selected? @selected?})) container-style)
-        :on-press #(when (= action :selector) (reset! selected? (not @selected?)))}
-       [rn/view {:style style/header-container}
-        [avatar props]
-        [rn/view
-         {:style {:margin-left 8
-                  :flex        1}}
-         [title-view (assoc props :selected? @selected?)]
-         [details-view props]]]
-       [rn/flat-list
-        {:data      accounts
-         :render-fn acc-list-card
-         :separator [rn/view {:style {:height 8}}]
-         :style     {:padding-horizontal 8}}]])))
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [default-selected? accounts action container-style] :as props}]
+  (let [theme                    (quo.theme/use-theme-value)
+        [selected? set-selected] (rn/use-state default-selected?)
+        on-press                 (rn/use-callback
+                                  #(when (= action :selector)
+                                     (set-selected (not selected?)))
+                                  [selected? action])]
+    [rn/pressable
+     {:style    (merge (style/container (merge props {:selected? selected? :theme theme}))
+                       container-style)
+      :on-press on-press}
+     [rn/view {:style style/header-container}
+      [avatar props]
+      [rn/view
+       {:style {:margin-left 8
+                :flex        1}}
+       [title-view (assoc props :selected? selected?)]
+       [details-view props]]]
+     [rn/flat-list
+      {:data      accounts
+       :render-fn acc-list-card
+       :separator [rn/view {:style {:height 8}}]
+       :style     {:padding-horizontal 8}}]]))

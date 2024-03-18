@@ -20,10 +20,10 @@ export function navigationHeaderPosition(distanceFromListTop, isAllLoaded, topBa
 }
 
 export function navigationButtonsCompleteOpacity(isCalculationComplete) {
-    return useDerivedValue(function () {
-	'worklet'
-	return isCalculationComplete.value ? withTiming(1) : 0
-    })
+  return useDerivedValue(function () {
+    'worklet';
+    return isCalculationComplete.value ? withTiming(1) : 0;
+  });
 }
 
 export function interpolateNavigationViewOpacity(props) {
