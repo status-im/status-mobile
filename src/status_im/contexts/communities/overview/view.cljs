@@ -15,6 +15,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.chat.view :as chat-actions]
     [status-im.contexts.communities.actions.community-options.view :as options]
+    [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]
     [status-im.contexts.communities.overview.style :as style]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.debounce :as debounce]
@@ -97,20 +98,10 @@
     :unknown-access))
 
 (defn- info-button
-  []
+  [on-press]
   (let [theme (theme/use-theme)]
     [rn/pressable
-     {:on-press
-      #(rf/dispatch
-        [:show-bottom-sheet
-         {:content
-          (fn []
-            [quo/documentation-drawers
-             {:title        (i18n/label :t/token-gated-communities)
-              :show-button? true
-              :button-label (i18n/label :t/read-more)
-              :button-icon  :info}
-             [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+     {:on-press on-press}
      [rn/view
       [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
@@ -160,7 +151,10 @@
          (if (and can-request-access? highest-permission-role)
            (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
            (i18n/label :t/you-not-eligible-to-join))]
-        [info-button]]
+        [info-button
+         #(rf/dispatch [:show-bottom-sheet
+                        {:community-id id
+                         :content      detail-token-gating/view}])]]
        [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
         (if can-request-access?
           (i18n/label :t/you-hodl)
