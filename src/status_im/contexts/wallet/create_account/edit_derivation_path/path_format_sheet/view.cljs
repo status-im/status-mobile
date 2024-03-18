@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.create-account.edit-derivation-path.path-format-sheet.view
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -9,7 +8,7 @@
 (defn view
   []
   (let [{:keys [customization-color]} (rf/sub [:get-screen-params])]
-    [rn/view
+    [:<>
      [quo/drawer-top {:title (i18n/label :t/path-format)}]
      [quo/action-drawer
       [[{:accessibility-label :default-ethereum-format

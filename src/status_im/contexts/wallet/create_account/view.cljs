@@ -14,6 +14,7 @@
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.contexts.wallet.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
@@ -41,8 +42,13 @@
     :image             :icon
     :image-props       :i/derivated-path
     :action            :button
-    :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.edit-derivation-path
-                                                    {:customization-color account-color}])
+    :action-props      {:on-press    (fn []
+                                       (ff/alert ::ff/wallet.network-filter
+                                                 #(rf/dispatch [:navigate-to
+                                                                :screen/wallet.edit-derivation-path
+                                                                {:customization-color account-color}])))
+
+
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/placeholder
                         :alignment   :flex-start}
