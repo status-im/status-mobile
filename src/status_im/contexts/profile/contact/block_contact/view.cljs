@@ -12,29 +12,26 @@
 (defn view
   []
   (let [{:keys [customization-color contact-request-state public-key]
-         :as   contact}                       (rf/sub [:contacts/current-contact])
+         :as   contact}     (rf/sub [:contacts/current-contact])
         ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
-        customization-color                   (or customization-color constants/profile-default-color)
-        full-name                             (profile.utils/displayed-name contact)
-        profile-picture                       (profile.utils/photo contact)
-        [remove-contact? set-remove-contact?] (rn/use-state false)
-        on-remove-toggle                      (rn/use-callback #(set-remove-contact? not) [])
-        on-block-press                        (rn/use-callback
-                                               (fn []
-                                                 (rf/dispatch [:toasts/upsert
-                                                               {:id   :user-blocked
-                                                                :type :positive
-                                                                :text (i18n/label :t/user-blocked
-                                                                                  {:username
-                                                                                   full-name})}])
-                                                 (rf/dispatch [:contact.ui/block-contact-confirmed
-                                                               public-key
-                                                               {:handle-navigation? false}])
-                                                 (when remove-contact?
-                                                   (rf/dispatch [:contact.ui/remove-contact-pressed
-                                                                 {:public-key public-key}]))
-                                                 (on-close))
-                                               [remove-contact? public-key full-name])]
+        customization-color (or customization-color constants/profile-default-color)
+        full-name           (profile.utils/displayed-name contact)
+        profile-picture     (profile.utils/photo contact)
+        on-block-press      (rn/use-callback
+                             (fn []
+                               (rf/dispatch [:toasts/upsert
+                                             {:id   :user-blocked
+                                              :type :positive
+                                              :text (i18n/label :t/user-blocked
+                                                                {:username
+                                                                 full-name})}])
+                               (rf/dispatch [:contact.ui/block-contact-confirmed
+                                             public-key
+                                             {:handle-navigation? false}])
+                               (rf/dispatch [:contact.ui/remove-contact-pressed
+                                             {:public-key public-key}])
+                               (on-close))
+                             [public-key full-name])]
     [:<>
      [quo/drawer-top
       {:type                :context-tag
@@ -53,13 +50,13 @@
         :type :default}
        (i18n/label :t/blocking-a-user-message {:username full-name})]
       (when (= constants/contact-request-state-mutual contact-request-state)
-        [rn/pressable
-         {:style    style/checkbox-wrapper
-          :on-press on-remove-toggle}
+        [rn/view
+         {:style style/checkbox-wrapper}
          [quo/selectors
-          {:type      :checkbox
-           :checked?  remove-contact?
-           :on-change on-remove-toggle}]
+          {:type                :checkbox
+           :customization-color customization-color
+           :checked?            true
+           :disabled?           true}]
          [quo/text (i18n/label :t/remove-contact)]])]
      [quo/bottom-actions
       {:actions          :two-actions
