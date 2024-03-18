@@ -127,8 +127,10 @@
 
 (rf/defn show-pins-bottom-sheet
   {:events [:pin-message/show-pins-bottom-sheet]}
-  [cofx chat-id & {:keys [inside-chat?] :or {inside-chat? true}}]
-  (navigation/show-bottom-sheet cofx
-                                {:content (fn [] [pinned-messages-menu/view
-                                                  {:chat-id      chat-id
-                                                   :inside-chat? inside-chat?}])}))
+  [cofx chat-id]
+  (navigation/show-bottom-sheet
+   cofx
+   {:content (fn [] [pinned-messages-menu/view
+                     {:chat-id                     chat-id
+                      :disable-message-long-press? (not= :chat (get-in cofx [:db :view-id]))
+                     }])}))

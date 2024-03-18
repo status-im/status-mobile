@@ -152,36 +152,36 @@
                  show-user-info? preview? theme]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by
-                    message-id chat-id]} message-data
-            {:keys [inside-chat?]}       context
-            first-image                  (first (:album message-data))
-            outgoing-status              (if (= content-type
-                                                constants/content-type-album)
-                                           (:outgoing-status first-image)
-                                           outgoing-status)
-            outgoing                     (if (= content-type
-                                                constants/content-type-album)
-                                           (:outgoing first-image)
-                                           outgoing)
-            context                      (assoc context
-                                                :on-long-press
-                                                #(on-long-press message-data
-                                                                context
-                                                                keyboard-shown?))
-            response-to                  (:response-to content)
-            height                       (rf/sub [:dimensions/window-height])
+                    message-id chat-id]}          message-data
+            {:keys [disable-message-long-press?]} context
+            first-image                           (first (:album message-data))
+            outgoing-status                       (if (= content-type
+                                                         constants/content-type-album)
+                                                    (:outgoing-status first-image)
+                                                    outgoing-status)
+            outgoing                              (if (= content-type
+                                                         constants/content-type-album)
+                                                    (:outgoing first-image)
+                                                    outgoing)
+            context                               (assoc context
+                                                         :on-long-press
+                                                         #(on-long-press message-data
+                                                                         context
+                                                                         keyboard-shown?))
+            response-to                           (:response-to content)
+            height                                (rf/sub [:dimensions/window-height])
             {window-width :width
-             window-scale :scale}        (rn/get-window)
-            message-container-data       {:window-width           window-width
-                                          :padding-right          20
-                                          :padding-left           20
-                                          :avatar-container-width 32
-                                          :message-margin-left    8}
-            reactions                    (rf/sub [:chats/message-reactions message-id
-                                                  chat-id])
-            six-reactions?               (-> reactions
-                                             count
-                                             (= 6))]
+             window-scale :scale}                 (rn/get-window)
+            message-container-data                {:window-width           window-width
+                                                   :padding-right          20
+                                                   :padding-left           20
+                                                   :avatar-container-width 32
+                                                   :message-margin-left    8}
+            reactions                             (rf/sub [:chats/message-reactions message-id
+                                                           chat-id])
+            six-reactions?                        (-> reactions
+                                                      count
+                                                      (= 6))]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -205,7 +205,7 @@
                                      (reset! show-delivery-state? true)
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
-          :on-long-press       (when inside-chat?
+          :on-long-press       (when disable-message-long-press?
                                  #(on-long-press message-data context keyboard-shown?))}
          [:<>
           (when pinned-by

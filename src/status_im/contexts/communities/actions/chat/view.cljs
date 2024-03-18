@@ -84,8 +84,7 @@
    :accessibility-label :chat-pinned-messages
    :on-press            (fn []
                           (rf/dispatch [:pin-message/load-pin-messages chat-id])
-                          (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                        chat-id {:inside-chat? false}]))
+                          (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))
    :label               (i18n/label :t/pinned-messages)})
 
 
