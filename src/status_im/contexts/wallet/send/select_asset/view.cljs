@@ -63,7 +63,7 @@
         search-text    (reagent/atom "")
         on-change-text #(reset! search-text %)
         on-change-tab  #(reset! selected-tab %)
-        on-close       #(rf/dispatch [:navigation/wizard-backward])]
+        on-close       #(rf/dispatch [:navigate-back])]
     (fn []
       [rn/safe-area-view {:style style/container}
        [account-switcher/view

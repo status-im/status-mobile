@@ -13,6 +13,6 @@
     :on-navigate-back  (fn []
                          (rf/dispatch [:wallet/clean-selected-token])
                          (rf/dispatch [:wallet/clean-selected-collectible])
-                         (rf/dispatch [:navigation/wizard-backward]))}])
+                         (rf/dispatch [:navigate-back]))}])
 
 (def view (quo.theme/with-theme view-internal))

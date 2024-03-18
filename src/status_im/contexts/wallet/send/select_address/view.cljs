@@ -133,7 +133,7 @@
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
                          (rf/dispatch [:wallet/select-address-tab nil])
-                         (rf/dispatch [:navigation/wizard-backward]))
+                         (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]

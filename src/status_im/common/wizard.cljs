@@ -17,13 +17,3 @@
             (if start-flow?
               [:open-modal (:screen-id next-screen)]
               [:navigate-to-within-stack [(:screen-id next-screen) current-screen]])]]})))
-
-(rf/reg-event-fx
- :navigation/wizard-backward
- (fn [{:keys [db]}]
-   (let [stack          (:modal-view-ids db)
-         current-screen (last stack)]
-     {:fx [[:dispatch
-            (if (= (count stack) 1)
-              [:navigate-back]
-              [:navigate-back-within-stack current-screen])]]})))
