@@ -21,17 +21,14 @@
     (js/clearTimeout (k @timeouts))
     (swap! timeouts assoc k (js/setTimeout exec-fn-and-remove-timeout ms))))
 
-(defn- slider
-  [slider-shared-values]
-  [rn/view {:style style/slider-container}
-   [reanimated/view {:style (style/slider slider-shared-values)}]])
-
 (def get-gesture
   (memoize
    (fn
-     [[detecting-gesture? slider-width-shared-value slider-height-shared-value
-       amount-shared-value amount-on-gesture-start width->amount max-amount
+     [[detecting-gesture? slider-width-shared-value max-amount
+       slider-height-shared-value
+       amount-shared-value amount-on-gesture-start width->amount
        slider-opacity-shared-value on-new-amount set-detecting-gesture]]
+     (println "NEW GESTURE")
      (-> (gesture/gesture-pan)
          (gesture/enabled detecting-gesture?)
          (gesture/on-begin
@@ -87,10 +84,11 @@
       {:style               (style/network-bar props network-bar-shared-value)
        :accessibility-label :network-routing-bar}
       [gesture/gesture-detector {:gesture gesture}
-       [slider
-        {:width-shared-value   slider-width-shared-value
-         :height-shared-value  slider-height-shared-value
-         :opacity-shared-value slider-opacity-shared-value}]]]]))
+       [rn/view {:style style/slider-container}
+        [reanimated/view
+         {:style (style/slider {:width-shared-value   slider-width-shared-value
+                                :height-shared-value  slider-height-shared-value
+                                :opacity-shared-value slider-opacity-shared-value})}]]]]]))
 
 (defn- add-bar-shared-values
   [{:keys [amount] :as network}]
@@ -110,6 +108,7 @@
 
 (defn- network-routing-bars
   [{:keys [networks total-width total-amount requesting-data? on-amount-selected]}]
+  (println "RENDER" networks total-width total-amount requesting-data? on-amount-selected)
   (let [[selected-network-idx
          set-selected-network-idx] (rn/use-state nil)
         [press-locked?
@@ -152,6 +151,7 @@
                                     [on-amount-selected selected-network-idx])]
     (rn/use-effect
      #(when (and (not requesting-data?) selected-network-idx)
+        (println "EFFECT")
         (let [bar (nth network-bars selected-network-idx)]
           (animation/hide-pressed-bar bar amount->width))
         (animation/update-bar-values-and-reset-animations
@@ -203,7 +203,9 @@
   (let [theme             (quo.theme/use-theme-value)
         [total-width
          set-total-width] (rn/use-state nil)
-        on-layout         (rn/use-callback #(set-total-width (oops/oget % "nativeEvent.layout.width")))]
+        on-layout         (rn/use-callback #(let [width (oops/oget % "nativeEvent.layout.width")]
+                                              (when (not= width total-width)
+                                                (set-total-width width))))]
     (rn/use-unmount (fn []
                       (doseq [[_ living-timeout] @timeouts]
                         (js/clearTimeout living-timeout))))
