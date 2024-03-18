@@ -28,7 +28,8 @@
                                                                                   {:username
                                                                                    full-name})}])
                                                  (rf/dispatch [:contact.ui/block-contact-confirmed
-                                                               public-key])
+                                                               public-key
+                                                               {:handle-navigation? false}])
                                                  (when remove-contact?
                                                    (rf/dispatch [:contact.ui/remove-contact-pressed
                                                                  {:public-key public-key}]))
