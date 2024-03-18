@@ -286,18 +286,18 @@ Memoizes a component's render output based on its props. It can optionally take 
 
 - React.useMemo (or `rn/use-memo` in the case of our codebase):  Memoizes a computed value so that it does not need to be re-calculated on every render, given that its dependencies haven't changed. e.g:
   ```clojure
-  (defn component [props]
+  (defn component [{:keys [something] :as props}]
     (let [memoized-value (rn/use-memo (fn [] 
-                                      (compute-expensive-value prop)) 
-                                    [props])]
+                                      (compute-expensive-value something)) 
+                                    [something])]
     [view {:value memoized-value}]))
   ```
 - React.useCallback (or `rn/use-callback` in the case of our codebase): Similar to React.useMemo, but for callback functions, ensuring that a function's reference remains stable between renders unless its dependencies change. e.g:
   ```clojure
-  (defn component [props]
+  (defn component [{:keys [something] :as props}]
     (let [on-done (rn/use-callback (fn [] 
-                                      (do-some-thing prop)) 
-                                    [props])]
+                                      (do-some-thing something)) 
+                                    [something])]
     [view {:on-done on-done}]))
   ```
 
