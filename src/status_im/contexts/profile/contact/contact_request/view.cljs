@@ -36,7 +36,7 @@
        :full-name           full-name
        :profile-picture     profile-picture
        :customization-color customization-color}]
-     [rn/text {:style style/message-prompt-wrapper}
+     [quo/text {:style style/message-prompt-wrapper}
       (i18n/label :t/contact-request-message-prompt)]
      [rn/view {:style style/message-input-wrapper}
       [quo/input
