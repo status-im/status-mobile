@@ -46,8 +46,7 @@
    (fn []
      (state/navigation-pop-from (last @state/modals))
      (if (> (count @state/modals) 1)
-       (let [new-modals (butlast @state/modals)]
-         (reset! state/modals (vec new-modals)))
+       (reset! state/modals (vec (butlast @state/modals)))
        (reset! state/modals []))
 
      (let [component @state/dissmissing]
