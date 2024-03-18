@@ -7,7 +7,6 @@
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
-    [react-native.shadow :as react-native-shadow]
     [react-native.utils :as utils]
     [reagent.core :as reagent]))
 
@@ -231,5 +230,3 @@
 (defn sharing
   [content]
   (.share (.-Share ^js react-native) (clj->js content)))
-
-(def shadow react-native-shadow/shadow)
