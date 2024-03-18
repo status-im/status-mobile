@@ -144,11 +144,9 @@
                                      [4 50]
                                      messages.constants/default-extrapolation-option)]
     [reanimated/view
-     {:style (style/user-name top left)}
+     {:style (style/user-name-container top left)}
      [rn/view
-      {:style {:align-items    :center
-               :flex-direction :row
-               :margin-top     (if group-chat 94 52)}}
+      {:style (style/user-name group-chat)}
       [quo/text
        {:weight          :semi-bold
         :size            :heading-1

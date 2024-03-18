@@ -43,12 +43,18 @@
     :border-radius 50
     :border-color  (colors/theme-colors colors/white colors/neutral-95 theme)}))
 
-(defn user-name
+(defn user-name-container
   [top left]
   (reanimated/apply-animations-to-style
    {:top  top
     :left left}
    {:z-index -1}))
+
+(defn user-name
+  [group-chat]
+  {:align-items    :center
+   :flex-direction :row
+   :margin-top     (if group-chat 94 52)})
 
 (def bio
   {:margin-top 8})
