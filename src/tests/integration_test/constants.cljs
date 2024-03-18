@@ -6,6 +6,10 @@
 
 (def account-name "account-abc")
 
+(def derivation-path "m/43'/60'/1581'/0'/0")
+
+(def derived-address "0x542bf2d18e83ba176c151c949c53eee896fa5a3e")
+
 (def recovery-account
   {:name "wallet-abc"
    :seed-phrase "destroy end torch puzzle develop note wise island disease chaos kind bus"

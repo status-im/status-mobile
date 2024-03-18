@@ -18,20 +18,18 @@
   [accounts]
   (:address (first accounts)))
 
-(def derived-address "0x542bf2d18e83ba176c151c949c53eee896fa5a3e")
-
 (defn assert-derived-account
   [response]
   (let [{:keys [address public-key]} (first response)]
-    (is (= derived-address address))
+    (is (= integration-constants/derived-address address))
     (is (= (:public-key integration-constants/recovery-account) public-key))
-    (is (= "m/43'/60'/1581'/0'/0" (:path (first response))))))
+    (is (= integration-constants/derivation-path (:path (first response))))))
 
 (deftest wallet-get-derived-addressess-contract-test
   (h/test-async :wallet/create-derived-addresses
     (fn []
       (p/let [sha3-pwd        (native-module/sha3 integration-constants/password)
-              derivation-path ["m/43'/60'/1581'/0'/0"]
+              derivation-path [integration-constants/derivation-path]
               accounts        (contract-utils/call-rpc "accounts_getAccounts")
               main-account    (get-main-account accounts)
               response        (contract-utils/call-rpc
