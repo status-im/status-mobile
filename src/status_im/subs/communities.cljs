@@ -412,7 +412,7 @@
                {sym image}))
         (into {}))))
 
-(re-frame/reg-sub :community/token-permissions
+(re-frame/reg-sub :community/token-permissions-old
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
@@ -443,3 +443,25 @@
                                                     (get token-images sym))}))
                             (:token_criteria token-permission)))))
           (group-by (comp :permission-type first))))))
+
+(re-frame/reg-sub
+ :community/token-permissions
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-by-id community-id])])
+ (fn [[{:keys [token-images]}
+       {:keys [checking? check]}] _]
+   (let [roles                      (:roles check)
+         member-and-satisifed-roles (filter #(or (= (:type %) 2) (:satisfied %)) roles)]
+     (into []
+           (map (fn [role]
+                  {:role       (:type role)
+                   :satisfied? (:satisfied role)
+                   :tokens     (map (fn [{:keys [tokenRequirement]}]
+                                      (map
+                                       (partial token-requirement->token
+                                                checking?
+                                                token-images)
+                                       tokenRequirement))
+                                    (:criteria role))})
+                member-and-satisifed-roles)))))

@@ -63,8 +63,7 @@
                                      (rf/dispatch [:hide-bottom-sheet]))
         reset-selected-addresses   (fn []
                                      (rf/dispatch [:communities/reset-selected-permission-addresses id])
-                                     (rf/dispatch [:hide-bottom-sheet]))
-        token-permissions          (rf/sub [:community/token-permissions id])]
+                                     (rf/dispatch [:hide-bottom-sheet]))]
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
       (let [{:keys [name color images
