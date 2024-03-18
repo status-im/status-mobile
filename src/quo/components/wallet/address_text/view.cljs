@@ -28,7 +28,9 @@
                                                     (string/split $ ":")
                                                     [(butlast $) (last $)]))
         address-internal                     (if full-address? splitted-address address)
-        networks-internal                    (if full-address? splitted-networks (map :short-name networks))
+        networks-internal                    (if full-address?
+                                               splitted-networks
+                                               (map :short-name networks))
         address-text                         [text/text
                                               {:size   size
                                                ;; TODO: monospace font
