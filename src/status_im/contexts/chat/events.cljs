@@ -444,4 +444,4 @@
                     :ens        ens-name
                     :success-fn (fn [_]
                                   {:dispatch [:open-modal :contact-profile]})}]}
-       {:dispatch [:navigate-to :my-profile]}))))
+       {:dispatch [:open-modal :settings]}))))
