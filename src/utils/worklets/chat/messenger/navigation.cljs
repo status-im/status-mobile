@@ -18,6 +18,10 @@
                              top-bar-height
                              start-position))
 
+(defn navigation-buttons-complete-opacity
+  [chat-screen-layout-calculations-complete?]
+  (.navigationButtonsCompleteOpacity ^js worklets chat-screen-layout-calculations-complete?))
+
 (defn interpolate-navigation-view-opacity
   [props]
   (.interpolateNavigationViewOpacity ^js worklets (clj->js props)))
