@@ -81,7 +81,7 @@
         :name                secondary-name}]]
      [quo/page-top
       {:description      :text
-       :description-text bio
+       :description-text (when-not blocked? bio)
        :emoji-dash       emoji-hash}]
 
      (when blocked?
