@@ -1,8 +1,7 @@
 (ns status-im.contexts.communities.actions.detail-token-gating.style)
 
 (def container
-  {:flex             1
-   :background-color :white})
+  {:flex 1})
 
 (def role-container
   {:flex-direction     :row
