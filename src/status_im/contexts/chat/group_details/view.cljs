@@ -9,7 +9,6 @@
     [status-im.common.home.actions.view :as actions]
     [status-im.constants :as constants]
     [status-im.contexts.chat.group-details.style :as style]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -171,12 +170,7 @@
        :render-fn                      contact-item-render}]
      [quo/floating-shell-button
       {:key     :shell
-       :jump-to {:on-press            (fn []
-                                        (rf/dispatch [:navigate-back])
-                                        (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to]
-                                                                        500))
+       :jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color profile-color
-                 :label               (i18n/label :t/jump-to)}
-      }
-      style/floating-shell-button
-     ]]))
+                 :label               (i18n/label :t/jump-to)}}
+      style/floating-shell-button]]))

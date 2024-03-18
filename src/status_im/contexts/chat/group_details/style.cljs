@@ -43,4 +43,3 @@
 (def floating-shell-button
   {:position :absolute
    :bottom   21})
-
