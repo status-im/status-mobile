@@ -13,6 +13,7 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
+    [status-im.contexts.communities.actions.invite-contacts.view :as communities.invite]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -420,6 +421,10 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component scan-profile-qr-page/view}
+
+    {:name      :invite-people-community
+     :options   {:sheet? true}
+     :component communities.invite/view}
 
     ;; Settings
 

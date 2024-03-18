@@ -22,6 +22,7 @@
     status-im.contexts.chat.messenger.photo-selector.events
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events
+    status-im.contexts.communities.sharing.events
     status-im.contexts.onboarding.common.overlay.events
     status-im.contexts.onboarding.events
     status-im.contexts.profile.events
