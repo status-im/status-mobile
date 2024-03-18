@@ -6,8 +6,8 @@
   {:padding-top      inset
    :background-color (colors/resolve-color customization-color theme 40)})
 
-(def footer-container
-  {:margin-top         8
-   :margin-bottom      50
-   :padding-horizontal 20
-   :padding-vertical   12})
+(defn footer-container
+  [bottom]
+  {:padding-horizontal 20
+   :padding-top        20
+   :padding-bottom     (- 78 bottom)})
