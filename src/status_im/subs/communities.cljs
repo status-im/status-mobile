@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [re-frame.core :as re-frame] ;; [re-frame.db :as rf-db]
+    [re-frame.core :as re-frame]
     [status-im.common.resources :as resources]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet.utils]
