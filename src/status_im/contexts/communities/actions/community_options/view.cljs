@@ -7,6 +7,7 @@
     [status-im.contexts.communities.actions.leave.view :as leave-menu]
     [status-im.contexts.communities.actions.see-rules.view :as see-rules]
     [status-im.contexts.communities.actions.token-gating.view :as token-gating]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -40,6 +41,15 @@
    :on-press            #(rf/dispatch [:show-bottom-sheet
                                        {:content (fn [] [token-gating/token-requirements id])}])
    :label               (i18n/label :t/view-token-gating)})
+
+(defn edit-shared-addresses
+  [id]
+  {:icon                :i/wallet
+   :right-icon          :i/chevron-right
+   :accessibility-label :edit-shared-addresses
+   :on-press            (fn []
+                          (rf/dispatch [:open-modal :community-account-selection {:community-id id}]))
+   :label               (i18n/label :t/edit-shared-addresses)})
 
 (defn mark-as-read
   [id]
@@ -119,28 +129,33 @@
                                                          request-id])}])})
 
 (defn not-joined-options
-  [id token-gated?]
+  [id token-gated? pending?]
   [[(when-not token-gated? (view-members id))
     (when-not token-gated? (view-rules id))
     (invite-contacts id)
     (when token-gated? (view-token-gating id))
+    (when (and pending? (ff/enabled? ::ff/community.edit-account-selection))
+      (edit-shared-addresses id))
     (show-qr id)
     (share-community id)]])
 
 (defn join-request-sent-options
   [id token-gated? request-id]
-  [(conj (first (not-joined-options id token-gated?))
+  [(conj (first (not-joined-options id token-gated? request-id))
          (assoc (cancel-request-to-join id request-id) :add-divider? true))])
 
 (defn banned-options
   [id token-gated?]
-  (not-joined-options id token-gated?))
+  (let [pending? false]
+    (not-joined-options id token-gated? pending?)))
 
 (defn joined-options
   [id token-gated? muted? muted-till]
   [[(view-members id)
     (view-rules id)
     (when token-gated? (view-token-gating id))
+    (when (ff/enabled? ::ff/community.edit-account-selection)
+      (edit-shared-addresses id))
     (mark-as-read id)
     (mute-community id muted? muted-till)
     (community-notification-settings id)
@@ -171,7 +186,7 @@
       joined     (joined-options id token-permissions muted muted-till)
       request-id (join-request-sent-options id token-permissions request-id)
       banList    (banned-options id token-permissions)
-      :else      (not-joined-options id token-permissions))))
+      :else      (not-joined-options id token-permissions request-id))))
 
 (defn community-options-bottom-sheet
   [id]
