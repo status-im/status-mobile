@@ -43,5 +43,12 @@
     :border-radius 50
     :border-color  (colors/theme-colors colors/white colors/neutral-95 theme)}))
 
+(defn user-name
+  [top left]
+  (reanimated/apply-animations-to-style
+   {:top  top
+    :left left}
+   {:z-index -1}))
+
 (def bio
   {:margin-top 8})

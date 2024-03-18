@@ -64,8 +64,7 @@
   [{:keys [ens-verified added?]} theme]
   (when (or ens-verified added?)
     [rn/view
-     {:style {:margin-left 4
-              :margin-top  8}}
+     {:style {:margin-left 4}}
      (if ens-verified
        [quo/icon :i/verified
         {:no-color true
@@ -133,6 +132,30 @@
        :online?         online?
        :profile-picture profile-picture
        :size            :big}]]))
+
+(defn f-username
+  [{:keys [distance-from-list-top display-name group-chat contact theme]}]
+  (let [top  (reanimated/interpolate distance-from-list-top
+                                     [0 messages.constants/header-container-top-margin]
+                                     [10 -35]
+                                     messages.constants/default-extrapolation-option)
+        left (reanimated/interpolate distance-from-list-top
+                                     [0 messages.constants/header-container-top-margin]
+                                     [4 50]
+                                     messages.constants/default-extrapolation-option)]
+    [reanimated/view
+     {:style (style/user-name top left)}
+     [rn/view
+      {:style {:align-items    :center
+               :flex-direction :row
+               :margin-top     (if group-chat 94 52)}}
+      [quo/text
+       {:weight          :semi-bold
+        :size            :heading-1
+        :style           {:flex-shrink 1}
+        :number-of-lines 1}
+       display-name]
+      [contact-icon contact theme]]]))
 
 (defn actions
   [chat-id cover-bg-color]
@@ -212,17 +235,13 @@
           :online?                online?
           :theme                  theme
           :profile-picture        photo-path}])
-      [rn/view
-       {:style {:flex-direction :row
-                :margin-top     (if group-chat 94 52)}}
-       [quo/text
-        {:weight          :semi-bold
-         :size            :heading-1
-         :style           {:flex-shrink 1}
-         :number-of-lines 1}
-        display-name]
-       [contact-icon contact theme]]
-      (when (seq bio)
+      [:f> f-username
+       {:distance-from-list-top distance-from-list-top
+        :display-name           display-name
+        :theme                  theme
+        :contact                contact
+        :group-chat             group-chat}]
+      (when bio
         [quo/text {:style style/bio}
          bio])
       [actions chat-id customization-color]]]))
