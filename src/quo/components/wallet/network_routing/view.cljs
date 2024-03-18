@@ -127,24 +127,23 @@
                                     (fn [bar bar-idx bar-width bar-max-width]
                                       (when-not selected-network-idx
                                         (let [[previous-bars
-                                               [_ & next-bars]]    (split-at bar-idx network-bars)
-                                              number-previous-bars bar-idx]
+                                               [_ & next-bars]] (split-at bar-idx network-bars)]
                                           (animation/move-previous-bars
                                            {:bars                 previous-bars
                                             :bars-widths-negative bars-widths-negative})
                                           (animation/move-pressed-bar
                                            {:bar                  bar
                                             :bars-widths-negative bars-widths-negative
-                                            :number-previous-bars number-previous-bars})
+                                            :number-previous-bars bar-idx})
                                           (animation/move-next-bars
                                            {:bars                 next-bars
                                             :bars-widths-negative bars-widths-negative
-                                            :number-previous-bars (inc number-previous-bars)
+                                            :number-previous-bars (inc bar-idx)
                                             :extra-offset         (max 0 (- bar-max-width bar-width))
                                             :add-new-timeout      add-new-timeout}))
                                         (animation/show-max-limit-bar bar-opacity-shared-value)
                                         (set-selected-network-idx bar-idx)))
-                                    [selected-network-idx bars-widths-negative])
+                                    [selected-network-idx bars-widths-negative network-bars])
         on-new-amount              (rn/use-callback
                                     (fn [new-amount]
                                       (animation/hide-max-limit-bar bar-opacity-shared-value)
@@ -178,7 +177,7 @@
          {:bar           bar
           :bar-idx       bar-idx
           :bar-width     bar-width
-          :max-width     bar-max-width
+          :bar-max-width bar-max-width
           :total-width   total-width
           :total-amount  total-amount
           :bar-division? hide-division?
