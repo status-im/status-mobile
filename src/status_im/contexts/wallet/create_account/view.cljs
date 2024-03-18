@@ -6,6 +6,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
@@ -70,14 +71,14 @@
     :description-props {:text (string/replace derivation-path #"/" " / ")}}])
 
 (defn- f-view
-  []
-  (let [top                   (safe-area/get-top)
-        bottom                (safe-area/get-bottom)
-        {window-width :width} (rn/get-window)]
-    (fn [{:keys [theme]}]
-      (let [[account-color set-account-color]     (rn/use-state (rand-nth colors/account-colors))
-            [account-name set-account-name]       (rn/use-state "")
-            [emoji set-emoji]                     (rn/use-state (emoji-picker.utils/random-emoji))
+  [{:keys [theme]}]
+  (let [account-name  (reagent/atom "")
+        account-color (reagent/atom (rand-nth colors/account-colors))
+        emoji         (reagent/atom (emoji-picker.utils/random-emoji))]
+    (fn []
+      (let [top                                   (safe-area/get-top)
+            bottom                                (safe-area/get-bottom)
+            {window-width :width}                 (rn/get-window)
             number-of-accounts                    (count (rf/sub
                                                           [:wallet/accounts-without-watched-accounts]))
             {:keys [address customization-color]} (rf/sub [:profile/profile])
@@ -99,17 +100,17 @@
                                                       (create-account.utils/prepare-new-keypair
                                                        {:new-keypair new-keypair
                                                         :address address
-                                                        :account-name account-name
-                                                        :account-color account-color
-                                                        :emoji emoji
+                                                        :account-name @account-name
+                                                        :account-color @account-color
+                                                        :emoji @emoji
                                                         :derivation-path
                                                         derivation-path})}])
             create-existing-keypair-account       #(rf/dispatch [:wallet/derive-address-and-add-account
                                                                  {:sha3-pwd (security/safe-unmask-data %)
-                                                                  :emoji emoji
-                                                                  :color account-color
+                                                                  :emoji @emoji
+                                                                  :color @account-color
                                                                   :path derivation-path
-                                                                  :account-name account-name}])
+                                                                  :account-name @account-name}])
             keypair-title                         (or (:keypair-name new-keypair)
                                                       (if primary-keypair?
                                                         (i18n/label :t/keypair-title
@@ -125,14 +126,14 @@
            :icon-name  :i/close
            :on-press   #(rf/dispatch [:navigate-back])}]
          [quo/gradient-cover
-          {:customization-color account-color
+          {:customization-color @account-color
            :container-style     {:top (- top)}}]
          [rn/view
           {:style style/account-avatar-container}
           [quo/account-avatar
-           {:customization-color account-color
+           {:customization-color @account-color
             :size                80
-            :emoji               emoji
+            :emoji               @emoji
             :type                :default}]
           [quo/button
            {:size            32
@@ -141,16 +142,16 @@
             :icon-only?      true
             :on-press        #(rf/dispatch [:emoji-picker/open
                                             {:on-select (fn [selected-emoji]
-                                                          (set-emoji selected-emoji))}])
+                                                          (reset! emoji selected-emoji))}])
             :container-style style/reaction-button-container} :i/reaction]]
          [quo/title-input
-          {:customization-color account-color
+          {:customization-color @account-color
            :placeholder         placeholder
-           :on-change-text      #(set-account-name %)
+           :on-change-text      #(reset! account-name %)
            :max-length          constants/wallet-account-name-max-length
            :blur?               true
            :disabled?           false
-           :default-value       account-name
+           :default-value       @account-name
            :container-style     style/title-input-container}]
          [quo/divider-line]
          [rn/view
@@ -161,8 +162,8 @@
             :style  (style/color-label theme)}
            (i18n/label :t/colour)]
           [quo/color-picker
-           {:default-selected account-color
-            :on-change        #(set-account-color %)
+           {:default-selected @account-color
+            :on-change        #(reset! account-color %)
             :container-style  {:padding-vertical 12
                                :padding-left     (iphone-11-Pro-20-pixel-from-width window-width)}}]]
          [quo/divider-line]
@@ -177,13 +178,13 @@
          [standard-auth/slide-button
           {:size                :size-48
            :track-text          (i18n/label :t/slide-to-create-account)
-           :customization-color account-color
+           :customization-color @account-color
            :on-auth-success     (fn [password]
                                   (if new-keypair
                                     (create-new-keypair-account password)
                                     (create-existing-keypair-account password)))
            :auth-button-label   (i18n/label :t/confirm)
-           :disabled?           (empty? account-name)
+           :disabled?           (empty? @account-name)
            :container-style     (style/slide-button-container bottom)}]]))))
 
 (defn- view-internal
