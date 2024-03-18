@@ -8,10 +8,10 @@
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
+    [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.contexts.communities.actions.detail-token-gating.view :as detail-token-gating]))
+    [utils.re-frame :as rf]))
 
 (defn view
   []

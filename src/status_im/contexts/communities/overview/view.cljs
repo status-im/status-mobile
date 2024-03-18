@@ -3,6 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme :as theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -97,20 +98,21 @@
 
 (defn- info-button
   []
-  [rn/pressable
-   {:on-press
-    #(rf/dispatch
-      [:show-bottom-sheet
-       {:content
-        (fn []
-          [quo/documentation-drawers
-           {:title        (i18n/label :t/token-gated-communities)
-            :show-button? true
-            :button-label (i18n/label :t/read-more)
-            :button-icon  :info}
-           [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
-   [rn/view
-    [quo/icon :i/info {:no-color true}]]])
+  (let [theme (theme/use-theme)]
+    [rn/pressable
+     {:on-press
+      #(rf/dispatch
+        [:show-bottom-sheet
+         {:content
+          (fn []
+            [quo/documentation-drawers
+             {:title        (i18n/label :t/token-gated-communities)
+              :show-button? true
+              :button-label (i18n/label :t/read-more)
+              :button-icon  :info}
+             [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+     [rn/view
+      [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
 (defn- network-not-supported
   []
