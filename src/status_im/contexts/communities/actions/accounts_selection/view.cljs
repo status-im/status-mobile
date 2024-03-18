@@ -35,24 +35,29 @@
                                                            {:community-id id :password %}])}])
                                          (navigate-back))]
     (fn []
-      (let [{:keys [name color images]}       (rf/sub [:communities/community id])
+      (let [{:keys [name color images
+                    membership-permissions?]} (rf/sub [:communities/community id])
             airdrop-account                   (rf/sub [:communities/airdrop-account id])
             selected-accounts                 (rf/sub [:communities/selected-permission-accounts id])
-            {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+            {:keys [highest-permission-role
+                    no-member-permission?]}   (rf/sub [:community/token-gated-overview id])
             highest-role-text                 (i18n/label (communities.utils/role->translation-key
                                                            highest-permission-role
                                                            :t/member))]
         [rn/safe-area-view {:style style/container}
          [quo/page-nav
-          {:text-align          :left
-           :icon-name           :i/close
-           :on-press            navigate-back
-           :right-side          [{:icon-left :i/unlocked
-                                  :on-press  #(rf/dispatch
-                                               [:show-bottom-sheet
-                                                {:content (fn [] [detail-token-gating/view id])}])
-                                  :label     (i18n/label :t/permissions)}]
-           :accessibility-label :back-button}]
+          (cond-> {:text-align          :left
+                   :icon-name           :i/close
+                   :on-press            navigate-back
+                   :accessibility-label :back-button}
+            (or membership-permissions? (and highest-permission-role (not no-member-permission?)))
+            (assoc :right-side
+                   [{:icon-left :i/unlocked
+                     :on-press  #(rf/dispatch
+                                  [:show-bottom-sheet
+                                   {:content (fn [] [detail-token-gating/view
+                                                     id])}])
+                     :label     (i18n/label :t/permissions)}]))]
          [quo/page-top
           {:title       (i18n/label :t/request-to-join)
            :description :context-tag

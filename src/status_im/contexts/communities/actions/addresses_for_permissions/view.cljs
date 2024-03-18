@@ -67,9 +67,11 @@
         token-permissions          (rf/sub [:community/token-permissions id])]
     (rf/dispatch [:communities/get-permissioned-balances id])
     (fn []
-      (let [{:keys [name color images]}       (rf/sub [:communities/community id])
+      (let [{:keys [name color images
+                    membership-permissions?]} (rf/sub [:communities/community id])
             {:keys [checking?
-                    highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+                    highest-permission-role
+                    no-member-permission?]}   (rf/sub [:community/token-gated-overview id])
             accounts                          (rf/sub [:wallet/accounts-without-watched-accounts])
             selected-addresses                (rf/sub [:communities/selected-permission-addresses id])
             share-all-addresses?              (rf/sub [:communities/share-all-addresses? id])
@@ -82,7 +84,7 @@
                    :community-name      name
                    :community-logo      (get-in images [:thumbnail :uri])
                    :customization-color color}
-            (seq token-permissions)
+            (or membership-permissions? (and highest-permission-role (not no-member-permission?)))
             (assoc
              :button-icon     :i/info
              :on-button-press #(rf/dispatch [:show-bottom-sheet
