@@ -128,7 +128,7 @@
          [blur/ios-view
           {:style         style/shell-bg
            :blur-radius   (or blur-radius 20)
-           :blur-type     :transparent
+           :blur-type     :dark
            :overlay-color :transparent}])
        (when selected-item
          [rn/view
