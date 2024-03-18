@@ -61,7 +61,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_1.element_by_translation_id('everyone').click()
         self.profile_1.navigate_up_button.click()
 
-        self.device_1.just_fyi('Set show profile pictures to to none')
+        self.device_1.just_fyi('Set show profile pictures to none')
         self.profile_1.show_profile_pictures_to.scroll_and_click()
         self.profile_1.element_by_translation_id('none').click()
         self.profile_1.get_back_to_home_view()
@@ -140,7 +140,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.profile_2.element_by_translation_id('contacts').click()
         self.profile_2.navigate_up_button.click()
 
-        self.device_2.just_fyi('Set show profile pictures to to contacts')
+        self.device_2.just_fyi('Set show profile pictures to contacts')
         self.profile_2.show_profile_pictures_to.scroll_and_click()
         self.profile_2.element_by_translation_id('contacts').click()
         self.profile_2.get_back_to_home_view()
