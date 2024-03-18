@@ -2545,21 +2545,14 @@
     "bridged-to": "Bridged to {{network}}",
     "slide-to-bridge": "Slide to bridge",
     "provider-is-down": "The provider for the following chain(s) is down: {{chains}}",
-<<<<<<< HEAD
     "unknown": "Unknown",
     "unsupported-file": "Unsupported file",
-    "cant-fetch-info": "Can't fetch info"
-=======
+    "cant-fetch-info": "Can't fetch info",
     "default-ethereum-format": "Default Ethereum format",
     "ropsten-testnet": "Ropsten Testnet",
     "ledger": "Ledger",
     "ledger-live": "Ledger live",
     "keep-key": "KeepKey",
-<<<<<<< HEAD
-    "type-your-path": "Type your own derivation path"
->>>>>>> 85f9010d8 (derivation-path)
-=======
     "type-your-path": "Type your own derivation path",
     "default-format": "Default format"
->>>>>>> 70831b7fe (lint)
 }
