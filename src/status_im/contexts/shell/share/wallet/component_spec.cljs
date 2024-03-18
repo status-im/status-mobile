@@ -24,19 +24,19 @@
                                                :emoji   "😆"
                                                :color   :blue}]})))
 
-  (h/test "should display the the wallet tab"
+  (h/test "should display the wallet tab"
     (render-wallet-view)
     (-> (h/wait-for #(h/get-by-text "Wallet One"))
         (.then (fn [] (h/is-truthy (h/get-by-text "Wallet One"))))))
 
-  (h/test "should display the the legacy account"
+  (h/test "should display the legacy account"
     (render-wallet-view)
     (-> (h/wait-for #(h/get-by-label-text :share-qr-code-legacy-tab))
         (.then (fn []
                  (h/is-truthy (h/query-by-text "0x707f635951193ddafbb40971a0fcaab8a6415160"))
                  (h/is-falsy (h/query-by-text "eth:"))))))
 
-  (h/test "should display the the multichain account"
+  (h/test "should display the multichain account"
     (render-wallet-view)
     (-> (h/wait-for #(h/get-by-label-text :share-qr-code-multichain-tab))
         (.then (fn []
