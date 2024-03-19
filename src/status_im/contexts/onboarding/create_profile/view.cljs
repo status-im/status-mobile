@@ -111,7 +111,7 @@
         {:margin-top navigation-bar-top
          :background :blur
          :icon-name  :i/arrow-left
-         :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])}]
+         :on-press   #(rf/dispatch [:navigate-back])}]
        [rn/scroll-view
         {:on-layout               (fn [event]
                                     (let [height (oops/oget event "nativeEvent.layout.height")]
