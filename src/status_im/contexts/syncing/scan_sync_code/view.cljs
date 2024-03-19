@@ -301,8 +301,8 @@
                                          @camera-permission-granted?
                                          @preflight-check-passed?
                                          (some #{view-id}
-                                               [:sign-in-intro
-                                                :sign-in
+                                               [:screen/onboarding.sign-in-intro
+                                                :screen/onboarding.sign-in
                                                 :scan-sync-code-page])
                                          (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
@@ -326,7 +326,7 @@
         (when animated?
           (rn/use-effect
            (fn []
-             (when (= view-id :sign-in-intro)
+             (when (= view-id :screen/onboarding.sign-in-intro)
                (rn/hw-back-add-listener reset-animations-fn)
                #(rn/hw-back-remove-listener reset-animations-fn)))
            [view-id])

@@ -27,7 +27,8 @@
   {:events [:onboarding/profile-data-set]}
   [{:keys [db]} onboarding-data]
   {:db       (update db :onboarding/profile merge onboarding-data)
-   :dispatch [:navigate-to-within-stack [:create-profile-password :new-to-status]]})
+   :dispatch [:navigate-to-within-stack
+              [:screen/onboarding.create-profile-password :screen/onboarding.new-to-status]]})
 
 (rf/defn enable-biometrics
   {:events [:onboarding/enable-biometrics]}
@@ -42,7 +43,8 @@
   [{:keys [db]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:db       (dissoc db :onboarding/profile)
-     :dispatch [:navigate-to-within-stack [:enable-notifications :enable-biometrics]]}))
+     :dispatch [:navigate-to-within-stack
+                [:screen/onboarding.enable-notifications :screen/onboarding.enable-biometrics]]}))
 
 (rf/defn biometrics-done
   {:events [:onboarding/biometrics-done]}
@@ -64,7 +66,8 @@
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
         (:onboarding/profile db)]
     (rf/merge cofx
-              {:dispatch       [:navigate-to-within-stack [:generating-keys :new-to-status]]
+              {:dispatch       [:navigate-to-within-stack
+                                [:screen/onboarding.generating-keys :screen/onboarding.new-to-status]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
                                  :dispatch [:onboarding/navigate-to-identifiers]}]
                :db             (-> db
@@ -82,7 +85,7 @@
     (merge
      {:db (assoc db :profile/profiles-overview multiaccounts)}
      (when-not (seq multiaccounts)
-       {:set-root :intro}))))
+       {:set-root :screen/onboarding.intro}))))
 
 (rf/defn password-set
   {:events [:onboarding/password-set]}
@@ -92,7 +95,8 @@
                    (assoc-in [:onboarding/profile :password] password)
                    (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
      :dispatch (if supported-type
-                 [:navigate-to-within-stack [:enable-biometrics :new-to-status]]
+                 [:navigate-to-within-stack
+                  [:screen/onboarding.enable-biometrics :screen/onboarding.new-to-status]]
                  [:onboarding/create-account-and-login])}))
 
 (rf/defn navigate-to-enable-biometrics
@@ -100,8 +104,8 @@
   [{:keys [db]}]
   (let [supported-type (get-in db [:biometrics :supported-type])]
     {:dispatch (if supported-type
-                 [:open-modal :enable-biometrics]
-                 [:open-modal :enable-notifications])}))
+                 [:open-modal :screen/onboarding.enable-biometrics]
+                 [:open-modal :screen/onboarding.enable-notifications])}))
 
 (rf/defn seed-phrase-entered
   {:events [:onboarding/seed-phrase-entered]}
@@ -121,19 +125,21 @@
       :content             (i18n/label :t/multiaccount-exists-content)
       :confirm-button-text (i18n/label :t/unlock)
       :on-accept           (fn []
-                             (re-frame/dispatch [:pop-to-root :profiles])
+                             (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
                              (re-frame/dispatch
                               [:profile/profile-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding/profile :seed-phrase] seed-phrase)
-     :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]}))
+     :dispatch [:navigate-to-within-stack
+                [:screen/onboarding.create-profile :screen/onboarding.new-to-status]]}))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding/navigate-to-create-profile]}
   [{:keys [db]}]
   ;; Restart the flow
   {:db       (dissoc db :onboarding/profile)
-   :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]})
+   :dispatch [:navigate-to-within-stack
+              [:screen/onboarding.create-profile :screen/onboarding.new-to-status]]})
 
 (rf/reg-event-fx :onboarding/set-auth-method
  (fn [{:keys [db]} [auth-method]]
@@ -167,6 +173,7 @@
   {:events [:onboarding/navigate-to-identifiers]}
   [{:keys [db]}]
   (if (:onboarding/generated-keys? db)
-    {:dispatch [:navigate-to-within-stack [:identifiers :new-to-status]]}
+    {:dispatch [:navigate-to-within-stack
+                [:screen/onboarding.identifiers :screen/onboarding.new-to-status]]}
     {:dispatch-later [{:ms       constants/onboarding-generating-keys-navigation-retry-ms
                        :dispatch [:onboarding/navigate-to-identifiers]}]}))
