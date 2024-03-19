@@ -11,13 +11,10 @@
     status-im.navigation.core
     status-im.subs.root
     [test-helpers.integration :as h]
-    [tests.contract-test.utils :as contract-utils]))
+    [tests.contract-test.utils :as contract-utils]
+    [tests.integration-test.constants :as integration-constants]))
 
 (use-fixtures :each (h/fixture-session))
-
-(defn get-main-account
-  [accounts]
-  (:address (first accounts)))
 
 (defn assert-accounts-get-accounts
   [result]
@@ -31,13 +28,9 @@
       (p/let [result (contract-utils/call-rpc "accounts_getAccounts")]
         (assert-accounts-get-accounts result)))))
 
-(defn get-default-account
-  [accounts]
-  (first (filter :wallet accounts)))
-
 (defn check-emoji-is-updated
   [test-emoji accounts]
-  (let [default-account (get-default-account accounts)]
+  (let [default-account (contract-utils/get-default-account accounts)]
     (is (= (:emoji default-account) test-emoji))))
 
 (deftest accounts-save-accounts-contract
@@ -45,18 +38,16 @@
     (fn []
       (p/let [test-emoji      (emoji-picker.utils/random-emoji)
               account         (contract-utils/call-rpc "accounts_getAccounts")
-              default-account (get-default-account account)
+              default-account (contract-utils/get-default-account account)
               _ (contract-utils/call-rpc
                  "accounts_saveAccount"
                  (data-store/<-account (merge default-account {:emoji test-emoji})))
               accounts        (contract-utils/call-rpc "accounts_getAccounts")]
         (check-emoji-is-updated test-emoji accounts)))))
 
-(def number-of-networks 3)
-
 (defn assert-ethereum-chains
   [response]
-  (is (= number-of-networks (count response)))
+  (is (= integration-constants/number-of-networks (count response)))
   (is (some #(= constants/ethereum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/optimism-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/arbitrum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
@@ -79,7 +70,7 @@
   (h/test-async :wallet/get-wallet-token
     (fn []
       (p/let [accounts     (contract-utils/call-rpc "accounts_getAccounts")
-              main-account (get-main-account accounts)
+              main-account (contract-utils/get-main-account accounts)
               response     (contract-utils/call-rpc
                             "wallet_getWalletToken"
                             [main-account])]

@@ -14,10 +14,6 @@
 
 (use-fixtures :each (h/fixture-session :recovered-account))
 
-(defn get-main-account
-  [accounts]
-  (:address (first accounts)))
-
 (defn assert-derived-account
   [response]
   (let [{:keys [address public-key]} (first response)]
@@ -31,7 +27,7 @@
       (p/let [sha3-pwd        (native-module/sha3 integration-constants/password)
               derivation-path [integration-constants/derivation-path]
               accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              main-account    (get-main-account accounts)
+              main-account    (contract-utils/get-main-account accounts)
               response        (contract-utils/call-rpc
                                "wallet_getDerivedAddresses"
                                sha3-pwd
