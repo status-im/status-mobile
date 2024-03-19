@@ -33,7 +33,9 @@
 (rf/defn navigate-to-within-stack
   {:events [:navigate-to-within-stack]}
   [{:keys [db]} comp-id]
-  {:db (update db :modal-view-ids add-view-to-modals (first comp-id))
+  {:db (-> db
+           (update :modal-view-ids add-view-to-modals (first comp-id))
+           (assoc :view-id (first comp-id)))
    :fx [[:navigate-to-within-stack comp-id]]})
 
 (re-frame/reg-event-fx :open-modal

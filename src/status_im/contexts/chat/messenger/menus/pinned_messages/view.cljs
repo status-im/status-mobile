@@ -1,10 +1,8 @@
 (ns status-im.contexts.chat.messenger.menus.pinned-messages.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
-    [react-native.fast-image :as fast-image]
     [react-native.gesture :as gesture]
     [status-im.common.resources :as resources]
     [status-im.contexts.chat.messenger.menus.pinned-messages.style :as style]
@@ -35,7 +33,7 @@
      :description (i18n/label :t/no-pinned-messages-desc)}]])
 
 (defn f-pinned-messages
-  [{:keys [theme chat-id]}]
+  [{:keys [theme chat-id disable-message-long-press?]}]
   (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
         current-chat           (rf/sub [:chats/chat-by-id chat-id])
@@ -52,24 +50,17 @@
         :style  (style/heading community)}
        (i18n/label :t/pinned-messages)]
       (when community
-        [rn/view {:style (style/heading-container)}
-         [fast-image/fast-image
-          {:source (community-avatar community-images)
-           :style  {:width         20
-                    :height        20
-                    :border-radius 20}}]
-         [rn/text {:style (style/heading-text)} (:name community)]
-         [quo/icon
-          :i/chevron-right
-          {:color (colors/theme-colors colors/neutral-60 colors/neutral-30)
-           :size  12}]
-         [rn/text
-          {:style (style/chat-name-text)}
-          (str "# " (:chat-name current-chat))]])]
+        [quo/context-tag
+         {:type            :channel
+          :size            24
+          :container-style style/community-tag-container
+          :community-logo  (community-avatar community-images)
+          :community-name  (:name community)
+          :channel-name    (:chat-name current-chat)}])]
      (if (pos? (count pinned))
        [rn/flat-list
         {:data        pinned
-         :render-data render-data
+         :render-data (assoc render-data :disable-message-long-press? disable-message-long-press?)
          :render-fn   message-render-fn
          :footer      [rn/view {:style style/list-footer}]
          :key-fn      list-key-fn

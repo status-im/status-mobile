@@ -303,3 +303,15 @@
     label-props
     (assoc :label       :text
            :label-props label-props)))
+
+(defn get-default-chain-ids-by-mode
+  [{:keys [test-networks-enabled? is-goerli-enabled?]}]
+  (cond
+    (and test-networks-enabled? is-goerli-enabled?)
+    constants/goerli-chain-ids
+
+    test-networks-enabled?
+    constants/sepolia-chain-ids
+
+    :else
+    constants/mainnet-chain-ids))

@@ -12,7 +12,6 @@
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.account-options.style :as style]
             [status-im.contexts.wallet.sheets.remove-account.view :as remove-account]
-            [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -99,12 +98,8 @@
            :accessibility-label :remove-account
            :label               (i18n/label :t/remove-account)
            :danger?             true
-           :on-press            #(ff/alert ::ff/wallet.remove-account
-                                           (fn []
-                                             (rf/dispatch [:show-bottom-sheet
-                                                           {:content
-                                                            (fn []
-                                                              [remove-account/view])}])))})]]]
+           :on-press            #(rf/dispatch [:show-bottom-sheet
+                                               {:content remove-account/view}])})]]]
      (when show-account-selector?
        [:<>
         [quo/divider-line {:container-style style/divider-label}]

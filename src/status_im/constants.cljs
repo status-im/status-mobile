@@ -19,6 +19,7 @@
 (def ^:const content-type-system-message-mutual-event-sent 15)
 (def ^:const content-type-system-message-mutual-event-accepted 16)
 (def ^:const content-type-system-message-mutual-event-removed 17)
+(def ^:const content-type-bridge-message 18)
 
 ;; Not implemented in status-go, only used for testing/ui work
 (def ^:const content-type-gif 100)
@@ -185,6 +186,11 @@
 (def ^:const path-default-wallet (str path-wallet-root "/0"))
 ; EIP1581 Chat Key 0, the default whisper key
 (def ^:const path-whisper (str path-eip1581 "/0'/0"))
+
+(def ^:const path-ropsten-testnet "m/44'/1'/0")
+(def ^:const path-ledger "m/44'/60'/0'")
+(def ^:const path-ledger-live "m/44'/60'")
+(def ^:const path-keepkey "m/44'/60'")
 
 (def ^:const path-default-wallet-keyword (keyword path-default-wallet))
 (def ^:const path-whisper-keyword (keyword path-whisper))
@@ -427,6 +433,12 @@
 
 (def ^:const mainnet-chain-ids
   #{ethereum-mainnet-chain-id arbitrum-mainnet-chain-id optimism-mainnet-chain-id})
+
+(def ^:const goerli-chain-ids
+  #{ethereum-goerli-chain-id arbitrum-goerli-chain-id optimism-goerli-chain-id})
+
+(def ^:const sepolia-chain-ids
+  #{ethereum-sepolia-chain-id arbitrum-sepolia-chain-id optimism-sepolia-chain-id})
 
 (def ^:const mainnet-short-name "eth")
 (def ^:const optimism-short-name "opt")

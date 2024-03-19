@@ -62,6 +62,7 @@
        :sticky-section-headers-enabled false
        :sections                       (rf/sub [:contacts/grouped-by-first-letter])
        :render-section-header-fn       contact-list/contacts-section-header
+       :render-section-footer-fn       contact-list/contacts-section-footer
        :content-container-style        {:padding-bottom 20}
        :render-data                    {:group group}
        :render-fn                      add-member-contact-item-render}]

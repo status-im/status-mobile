@@ -106,6 +106,7 @@
         :sections                          items
         :sticky-section-headers-enabled    false
         :render-section-header-fn          contact-list/contacts-section-header
+        :render-section-footer-fn          contact-list/contacts-section-footer
         :render-fn                         (fn [data]
                                              (contact-item-render data theme))
         :scroll-event-throttle             8
@@ -126,48 +127,42 @@
     :title       (i18n/label :t/invite-friends-to-status)
     :description (i18n/label :t/share-invite-link)}})
 
-(defn- f-view-internal
-  [{:keys [theme]}]
-  (let [scroll-ref     (atom nil)
-        set-scroll-ref #(reset! scroll-ref %)]
-    (fn []
-      (let [{:keys [universal-profile-url]} (rf/sub [:profile/profile])
-            customization-color             (rf/sub [:profile/customization-color])
-            pending-contact-requests        (rf/sub [:activity-center/pending-contact-requests])
-            selected-tab                    (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
-            scroll-shared-value             (reanimated/use-shared-value 0)]
-        [:<>
-         (if (= selected-tab :tab/contacts)
-           [contacts
-            {:pending-contact-requests pending-contact-requests
-             :set-scroll-ref           set-scroll-ref
-             :scroll-shared-value      scroll-shared-value
-             :theme                    theme}]
-           [chats
-            {:selected-tab        selected-tab
-             :set-scroll-ref      set-scroll-ref
-             :scroll-shared-value scroll-shared-value
-             :theme               theme}])
-         [:f> common.banner/animated-banner
-          {:content             (banner-data universal-profile-url)
-           :customization-color customization-color
-           :scroll-ref          scroll-ref
-           :tabs                [{:id                  :tab/recent
-                                  :label               (i18n/label :t/recent)
-                                  :accessibility-label :tab-recent}
-                                 {:id                  :tab/groups
-                                  :label               (i18n/label :t/groups)
-                                  :accessibility-label :tab-groups}
-                                 {:id                  :tab/contacts
-                                  :label               (i18n/label :t/contacts)
-                                  :accessibility-label :tab-contacts
-                                  :notification-dot?   (pos? (count pending-contact-requests))}]
-           :selected-tab        selected-tab
-           :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
-           :scroll-shared-value scroll-shared-value}]]))))
-
-(defn- internal-chats-home-view
-  [params]
-  [:f> f-view-internal params])
-
-(def view (quo.theme/with-theme internal-chats-home-view))
+(defn view
+  []
+  (let [theme                           (quo.theme/use-theme-value)
+        scroll-ref                      (rn/use-ref-atom nil)
+        set-scroll-ref                  (rn/use-callback #(reset! scroll-ref %))
+        {:keys [universal-profile-url]} (rf/sub [:profile/profile])
+        customization-color             (rf/sub [:profile/customization-color])
+        pending-contact-requests        (rf/sub [:activity-center/pending-contact-requests])
+        selected-tab                    (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
+        scroll-shared-value             (reanimated/use-shared-value 0)]
+    [:<>
+     (if (= selected-tab :tab/contacts)
+       [contacts
+        {:pending-contact-requests pending-contact-requests
+         :set-scroll-ref           set-scroll-ref
+         :scroll-shared-value      scroll-shared-value
+         :theme                    theme}]
+       [chats
+        {:selected-tab        selected-tab
+         :set-scroll-ref      set-scroll-ref
+         :scroll-shared-value scroll-shared-value
+         :theme               theme}])
+     [common.banner/animated-banner
+      {:content             (banner-data universal-profile-url)
+       :customization-color customization-color
+       :scroll-ref          scroll-ref
+       :tabs                [{:id                  :tab/recent
+                              :label               (i18n/label :t/recent)
+                              :accessibility-label :tab-recent}
+                             {:id                  :tab/groups
+                              :label               (i18n/label :t/groups)
+                              :accessibility-label :tab-groups}
+                             {:id                  :tab/contacts
+                              :label               (i18n/label :t/contacts)
+                              :accessibility-label :tab-contacts
+                              :notification-dot?   (pos? (count pending-contact-requests))}]
+       :selected-tab        selected-tab
+       :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
+       :scroll-shared-value scroll-shared-value}]]))

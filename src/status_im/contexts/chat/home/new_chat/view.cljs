@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -85,11 +85,13 @@
                                 :on-check on-toggle}}
      item]))
 
-(defn- view-internal
-  [{:keys [scroll-enabled? on-scroll close theme]}]
-  (let [contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
+(defn view
+  [{:keys [scroll-enabled? on-scroll close]}]
+  (let [theme                             (quo.theme/use-theme-value)
+        contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])
+        customization-color               (rf/sub [:profile/customization-color])
         one-contact-selected?             (= selected-contacts-count 1)
         [has-error? set-has-error]        (rn/use-state false)
         render-fn                         (rn/use-callback (fn [item]
@@ -111,7 +113,9 @@
         {:weight :semi-bold
          :size   :heading-1
          :style  {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
-        (i18n/label :t/new-chat)]
+        (if (or (not contacts-selected?) one-contact-selected?)
+          (i18n/label :t/new-chat)
+          (i18n/label :t/new-group-chat))]
        (when (seq contacts)
          [quo/text
           {:size   :paragraph-2
@@ -126,25 +130,25 @@
      (if (empty? contacts)
        [no-contacts-view {:theme theme}]
        [gesture/section-list
-        {:key-fn                         :title
-         :sticky-section-headers-enabled false
-         :sections                       (rf/sub [:contacts/filtered-active-sections])
-         :render-section-header-fn       contact-list/contacts-section-header
-         :content-container-style        {:padding-bottom 70}
-         :render-fn                      render-fn
-         :scroll-enabled                 @scroll-enabled?
-         :on-scroll                      on-scroll}])
+        {:key-fn                   :title
+         :sections                 (rf/sub [:contacts/filtered-active-sections])
+         :render-section-header-fn contact-list/contacts-section-header
+         :render-section-footer-fn contact-list/contacts-section-footer
+         :content-container-style  {:padding-bottom 70}
+         :render-fn                render-fn
+         :scroll-enabled           @scroll-enabled?
+         :on-scroll                on-scroll}])
      (when contacts-selected?
-       [quo/button
-        {:type                :primary
-         :accessibility-label :next-button
-         :container-style     style/chat-button
-         :on-press            (fn []
-                                (if one-contact-selected?
-                                  (rf/dispatch [:chat.ui/start-chat public-key])
-                                  (rf/dispatch [:navigate-to :new-group])))}
-        (if one-contact-selected?
-          (i18n/label :t/chat-with {:selected-user primary-name})
-          (i18n/label :t/setup-group-chat))])]))
-
-(def view (quo.theme/with-theme view-internal))
+       [rn/view
+        {:style (style/chat-button-container theme)}
+        [quo/button
+         {:type                :primary
+          :customization-color customization-color
+          :accessibility-label :next-button
+          :on-press            (fn []
+                                 (if one-contact-selected?
+                                   (rf/dispatch [:chat.ui/start-chat public-key])
+                                   (rf/dispatch [:navigate-to :new-group])))}
+         (if one-contact-selected?
+           (i18n/label :t/chat-with {:selected-user primary-name})
+           (i18n/label :t/setup-group-chat))]])]))
