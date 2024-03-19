@@ -4,7 +4,7 @@
     [quo.components.counter.collectible-counter.view :as collectible-counter]
     [quo.components.icon :as icon]
     [quo.components.list-items.preview-list.view :as preview-list]
-    [quo.components.markdown.text :as quo]
+    [quo.components.markdown.text :as text]
     [quo.components.profile.collectible-list-item.style :as style]
     [quo.foundations.colors :as colors]
     [quo.foundations.gradients :as gradients]
@@ -14,14 +14,13 @@
     [utils.i18n :as i18n]))
 
 (defn- fallback-view
-  [{:keys [label theme type]}]
+  [{:keys [label theme]}]
   [rn/view
-   {:style (style/fallback {:type  type
-                            :theme theme})}
+   {:style (style/fallback {:theme theme})}
    [rn/view
     [icon/icon :i/sad {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}]]
    [rn/view {:style {:height 4}}]
-   [quo/text
+   [text/text
     {:size  :paragraph-2
      :style {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}}
     label]])
@@ -46,7 +45,7 @@
   [rn/view {:style style/card-details-container}
 
    (cond (= :cant-fetch status)
-         [quo/text
+         [text/text
           {:size   :paragraph-1
            :weight :medium
            :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
@@ -64,7 +63,7 @@
             :size :size-20}
            [avatar-image-src]]
           [rn/view {:style {:width 8}}]
-          [quo/text
+          [text/text
            {:size   :paragraph-1
             :weight :semi-bold
             :style  style/card-detail-text}
@@ -76,7 +75,7 @@
            {:size  :size-20
             :image avatar-image-src}]
           [rn/view {:style {:width 8}}]
-          [quo/text
+          [text/text
            {:size            :paragraph-1
             :weight          :semi-bold
             :ellipsize-mode  :tail
@@ -86,7 +85,7 @@
 
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter
-           gradient-color-index image-src status type]}]
+           gradient-color-index image-src status]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style (style/card-view-container theme)}
      [rn/view {:style {:aspect-ratio 1}}
@@ -99,13 +98,11 @@
         (= status :unsupported)
         [fallback-view
          {:theme theme
-          :type  type
           :label (i18n/label :t/unsupported-file)}]
 
         (= status :cant-fetch)
         [fallback-view
          {:theme theme
-          :type  type
           :label (i18n/label :t/cant-fetch-info)}]
 
         :else
@@ -139,13 +136,11 @@
        (= status :unsupported)
        [fallback-view
         {:theme theme
-         :type  type
          :label (i18n/label :t/unsupported-file)}]
 
        (= status :cant-fetch)
        [fallback-view
         {:theme theme
-         :type  type
          :label (i18n/label :t/cant-fetch-info)}]
 
        :else [rn/view {:style {:aspect-ratio 1}}
