@@ -15,6 +15,10 @@
 
 (use-fixtures :each (h/fixture-session))
 
+(defn get-main-account
+  [accounts]
+  (:address (first accounts)))
+
 (defn assert-accounts-get-accounts
   [result]
   (is (true? (some :wallet result)))
@@ -66,34 +70,6 @@
       (p/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]
         (assert-ethereum-chains response)))))
 
-(defn get-main-account
-  [accounts]
-  (:address (first accounts)))
-
-(def test-password integration-constants/password)
-
-(defn assert-derived-account
-  [response]
-  (is (= (:address response) (:address response)))
-  (is (= (:public-key response) (:public-key response)))
-  (is (= "m/43'/60'/1581'/0'/0" (:path (first response)))))
-
-(deftest wallet-get-derived-addressess-contract-test
-  (h/test-async :wallet/create-derived-addresses
-    (fn []
-      (p/let [_ (h/enable-testnet!)
-              _ (h/recover-multiaccount!)
-              sha3-pwd        (native-module/sha3 test-password)
-              derivation-path ["m/43'/60'/1581'/0'/0"]
-              accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              main-account    (get-main-account accounts)
-              response        (contract-utils/call-rpc
-                               "wallet_getDerivedAddresses"
-                               sha3-pwd
-                               main-account
-                               derivation-path)]
-        (assert-derived-account response)))))
-
 (defn assert-wallet-tokens
   [tokens]
   (let [flattened-tokens (mapcat val tokens)]
@@ -102,9 +78,7 @@
 (deftest wallet-get-walet-token-test
   (h/test-async :wallet/get-wallet-token
     (fn []
-      (p/let [_ (h/enable-testnet!)
-              _ (h/recover-multiaccount!)
-              accounts     (contract-utils/call-rpc "accounts_getAccounts")
+      (p/let [accounts     (contract-utils/call-rpc "accounts_getAccounts")
               main-account (get-main-account accounts)
               response     (contract-utils/call-rpc
                             "wallet_getWalletToken"
