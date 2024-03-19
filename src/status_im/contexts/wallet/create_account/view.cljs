@@ -14,6 +14,7 @@
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.contexts.wallet.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
@@ -32,7 +33,9 @@
                          :i/seed)
     :action            (when-not new-keypair? :button)
     :action-props      {:on-press    (fn []
-                                       (rf/dispatch [:navigate-to :screen/wallet.select-keypair]))
+                                       (ff/alert ::ff/wallet.bridge-token
+                                                 #(rf/dispatch [:navigate-to
+                                                                :screen/wallet.select-keypair])))
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
