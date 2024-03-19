@@ -235,9 +235,10 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:schema
-      [:map
-       [:community-id [:? :string]]
-       [:update-last-opened-at? [:maybe :boolean]]]]]]
+      [:vector
+       [:map {:closed true}
+        [:community-id {:optional true} :string]
+        [:update-last-opened-at? {:optional true} [:maybe :boolean]]]]]]]
    [:maybe
     [:map
      [:db map?]
