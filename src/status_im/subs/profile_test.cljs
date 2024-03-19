@@ -112,3 +112,9 @@
   (testing "returns the symbol of the user's selected currency"
     (swap! rf-db/app-db #(assoc % :profile/profile sample-profile))
     (is (match? "$" (rf/sub [sub-name])))))
+
+(h/deftest-sub :profile/public-key
+  [sub-name]
+  (testing "returns the user's public key"
+    (swap! rf-db/app-db #(assoc % :profile/profile sample-profile))
+    (is (match? (:public-key sample-profile) (rf/sub [sub-name])))))

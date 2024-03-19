@@ -24,7 +24,7 @@
     (testing "do nothing"
       (is (match?
            nil
-           (events/fetch-community {} []))))))
+           (events/fetch-community {} [{}]))))))
 
 (deftest community-failed-to-fetch
   (testing "given a community id"

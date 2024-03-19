@@ -82,8 +82,16 @@
             :override-ring?  override-ring?
             :font-file       font-file}))}))))
 
+;; DEPRECATED
+;; use `:profile/public-key` instead
 (re-frame/reg-sub
  :multiaccount/public-key
+ :<- [:profile/profile]
+ (fn [{:keys [public-key]}]
+   public-key))
+
+(re-frame/reg-sub
+ :profile/public-key
  :<- [:profile/profile]
  (fn [{:keys [public-key]}]
    public-key))
