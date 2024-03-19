@@ -11,10 +11,11 @@
     status-im.navigation.core
     status-im.subs.root
     [test-helpers.integration :as h]
-    [tests.contract-test.utils :as contract-utils]
-    [tests.integration-test.constants :as integration-constants]))
+    [tests.contract-test.utils :as contract-utils]))
 
 (use-fixtures :each (h/fixture-session))
+
+(def number-of-networks 3)
 
 (defn assert-accounts-get-accounts
   [result]
@@ -47,7 +48,7 @@
 
 (defn assert-ethereum-chains
   [response]
-  (is (= integration-constants/number-of-networks (count response)))
+  (is (= number-of-networks (count response)))
   (is (some #(= constants/ethereum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/optimism-mainnet-chain-id (get-in % [:Prod :chainId])) response))
   (is (some #(= constants/arbitrum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
