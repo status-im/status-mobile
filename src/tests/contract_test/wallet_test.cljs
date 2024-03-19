@@ -65,3 +65,21 @@
     (fn []
       (p/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]
         (assert-ethereum-chains response)))))
+
+
+(defn assert-search-ens
+  [response]
+  (is (= "0xeefb13c7d42efcc655e528da6d6f7bbcf9a2251d" response)))
+
+(deftest wallet-search-ens-test
+  (h/test-async :wallet/search-ens
+    (fn []
+      (p/let [accounts  (contract-utils/call-rpc "accounts_getAccounts")
+              input     "test.eth"
+              chain-id  constants/ethereum-mainnet-chain-id
+              addresses (contract-utils/call-rpc "ens_addressOf" chain-id input)]
+
+        (prn "MAIN_ACCOUNTS" accounts)
+        (prn "ADDRESSES" addresses)
+
+        (assert-search-ens addresses)))))
