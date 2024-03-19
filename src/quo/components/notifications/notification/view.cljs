@@ -16,10 +16,10 @@
   [into [rn/view {:accessibility-label :notification-body}] children])
 
 (defn avatar-container
-  [& children]
+  [{:keys [multiline?]} & children]
   [into
    [rn/view
-    {:style               style/avatar-container
+    {:style               (style/avatar-container {:multiline? multiline?})
      :accessibility-label :notification-avatar}]
    children])
 
@@ -69,7 +69,9 @@
         header        (when header [header-container header])
         body          (or body (when text [message text override-theme]))
         body          (when body [body-container body])
-        avatar        (when avatar [avatar-container avatar])]
+        avatar        (when avatar [avatar-container
+                         {:multiline? (and header body)}
+                         avatar])]
     [quo.theme/provider {:theme context-theme}
      [notification-container
       {:avatar          avatar
