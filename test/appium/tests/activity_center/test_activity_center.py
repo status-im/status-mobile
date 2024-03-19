@@ -86,7 +86,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.open_activity_center_button.click()
         self.home_2.activity_unread_filter_button.click()
         if not self.home_2.element_by_text_part(
-                self.home_2.get_translation_by_key("add-me-to-your-contacts")).is_element_displayed(30):
+                self.home_2.get_translation_by_key("contact-request-outgoing")).is_element_displayed(30):
             self.errors.append(
                 "Pending contact request is not shown on unread notification element on Activity center!")
         self.home_2.close_activity_centre.click()
