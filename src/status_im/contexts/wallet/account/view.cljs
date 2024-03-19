@@ -7,7 +7,6 @@
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.temp :as temp]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
