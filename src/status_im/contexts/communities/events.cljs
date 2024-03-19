@@ -235,10 +235,9 @@
     [:cofx :schema.re-frame/cofx]
     [:args
      [:schema
-      [:catn
-       [:map
-        [:community-id [:? :string]]
-        [:update-last-opened-at? [:? :boolean]]]]]]]
+      [:map
+       [:community-id [:? :string]]
+       [:update-last-opened-at? [:maybe :boolean]]]]]]
    [:maybe
     [:map
      [:db map?]
