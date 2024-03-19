@@ -9,8 +9,8 @@
    :z-index 2})
 
 (def chat-actions-container
-  {:margin-top    16
-   :margin-bottom 20})
+  {:margin-top     16
+   :padding-bottom 20})
 
 (defn background-container
   [background-color background-opacity top-margin]

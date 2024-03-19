@@ -120,11 +120,11 @@
                                       messages.constants/default-extrapolation-option)
         top   (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
-                                      [-40 -8]
+                                      [-44 -8]
                                       messages.constants/default-extrapolation-option)
         left  (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
-                                      [20 -4]
+                                      [16 -4]
                                       messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
@@ -222,7 +222,7 @@
          :number-of-lines 1}
         display-name]
        [contact-icon contact theme]]
-      (when bio
+      (when (seq bio)
         [quo/text {:style style/bio}
          bio])
       [actions chat-id customization-color]]]))
