@@ -32,10 +32,7 @@
                           :customization-color customization-color}
                          :i/seed)
     :action            (when-not new-keypair? :button)
-    :action-props      {:on-press    (fn []
-                                       (ff/alert ::ff/wallet.bridge-token
-                                                 #(rf/dispatch [:navigate-to
-                                                                :screen/wallet.select-keypair])))
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text

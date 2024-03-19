@@ -10,7 +10,11 @@
 
 (defonce ^:private feature-flags-config
   (reagent/atom
+<<<<<<< HEAD
    {::wallet.edit-default-keypair      (enabled-in-env? :FLAG_EDIT_DEFAULT_KEYPAIR)
+=======
+   {::wallet.bridge-token              (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
+>>>>>>> 2c98ea046 (remove feature flag keypair)
     ::wallet.edit-derivation-path      (enabled-in-env? :FLAG_EDIT_DERIVATION_PATH)
     ::wallet.remove-account            (enabled-in-env? :FLAG_REMOVE_ACCOUNT_ENABLED)
     ::wallet.network-filter            (enabled-in-env? :FLAG_NETWORK_FILTER_ENABLED)
