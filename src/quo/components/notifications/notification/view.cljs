@@ -37,6 +37,7 @@
   [text override-theme]
   [text/text
    {:size                :paragraph-2
+    :weight              :medium
     :style               (style/text override-theme)
     :accessibility-label :notification-content}
    text])
