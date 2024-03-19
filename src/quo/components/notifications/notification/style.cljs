@@ -31,12 +31,12 @@
    :justify-content :center})
 
 (defn title
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn text
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn avatar-container
   [{:keys [multiline?]}]

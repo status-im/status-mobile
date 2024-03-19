@@ -25,25 +25,25 @@
 
 (defn title
   ([text weight] (title text weight nil))
-  ([text weight override-theme]
+  ([text weight theme]
    [text/text
     {:size                :paragraph-1
      :weight              (or weight :semi-bold)
-     :style               (style/title override-theme)
+     :style               (style/title theme)
      :accessibility-label :notification-title}
     text]))
 
 (defn message
-  [text override-theme]
+  [text theme]
   [text/text
    {:size                :paragraph-2
     :weight              :medium
-    :style               (style/text override-theme)
+    :style               (style/text theme)
     :accessibility-label :notification-content}
    text])
 
 (defn- notification-container
-  [{:keys [avatar header body container-style override-theme]}]
+  [{:keys [avatar header body container-style theme]}]
   [rn/view
    {:style (merge style/box-container container-style)}
    [blur/view
@@ -53,7 +53,7 @@
      :blur-type     :transparent
      :overlay-color :transparent}]
    [rn/view
-    {:style (style/content-container override-theme)}
+    {:style (style/content-container theme)}
     avatar
     [rn/view
      {:style style/right-side-container}
@@ -61,13 +61,13 @@
      body]]])
 
 (defn notification
-  [{title-text :title :keys [avatar header title-weight text body container-style override-theme]}]
-  (let [context-theme (or override-theme (quo.theme/get-theme))
+  [{title-text :title :keys [avatar header title-weight text body container-style theme]}]
+  (let [context-theme (or theme (quo.theme/get-theme))
         header        (or header
                           (when title-text
-                            [title title-text title-weight override-theme]))
+                            [title title-text title-weight theme]))
         header        (when header [header-container header])
-        body          (or body (when text [message text override-theme]))
+        body          (or body (when text [message text theme]))
         body          (when body [body-container body])
         avatar        (when avatar [avatar-container
                          {:multiline? (and header body)}
@@ -78,4 +78,4 @@
        :header          header
        :body            body
        :container-style container-style
-       :override-theme  override-theme}]]))
+       :theme           theme}]]))
