@@ -2,6 +2,7 @@
   (:require
     [quo.components.markdown.text :as text]
     [quo.components.notifications.notification.style :as style]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]))
 
@@ -60,16 +61,18 @@
 
 (defn notification
   [{title-text :title :keys [avatar header title-weight text body container-style override-theme]}]
-  (let [header (or header
-                   (when title-text
-                     [title title-text title-weight override-theme]))
-        header (when header [header-container header])
-        body   (or body (when text [message text override-theme]))
-        body   (when body [body-container body])
-        avatar (when avatar [avatar-container avatar])]
-    [notification-container
-     {:avatar          avatar
-      :header          header
-      :body            body
-      :container-style container-style
-      :override-theme  override-theme}]))
+  (let [context-theme (or override-theme (quo.theme/get-theme))
+        header        (or header
+                          (when title-text
+                            [title title-text title-weight override-theme]))
+        header        (when header [header-container header])
+        body          (or body (when text [message text override-theme]))
+        body          (when body [body-container body])
+        avatar        (when avatar [avatar-container avatar])]
+    [quo.theme/provider {:theme context-theme}
+     [notification-container
+      {:avatar          avatar
+       :header          header
+       :body            body
+       :container-style container-style
+       :override-theme  override-theme}]]))
