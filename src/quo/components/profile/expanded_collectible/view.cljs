@@ -66,7 +66,7 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:image-src string?]
+      [:image-src {:optional true} string?]
       [:container-style {:optional true} [:maybe :map]]
       [:square? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe string?]]
