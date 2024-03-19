@@ -9,10 +9,11 @@
     [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
+    status-im.contexts.communities.actions.accounts-selection.events
     status-im.contexts.communities.actions.addresses-for-permissions.events
+    status-im.contexts.communities.actions.airdrop-addresses.events
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
-    [status-im.contexts.communities.utils :as utils]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -29,13 +30,10 @@
         {:db (assoc-in db
               [:communities id]
               (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
-         :fx [[:dispatch [:communities/initialize-permission-addresses id]]
-              (when (not joined)
+         :fx [(when (not joined)
                 [:dispatch [:chat.ui/spectate-community id]])
               (when (nil? token-permissions-check)
-                [:dispatch [:communities/check-permissions-to-join-community id]])
-              (when joined
-                [:dispatch [:communities/get-revealed-accounts id]])]}))))
+                [:dispatch [:communities/check-permissions-to-join-community id]])]}))))
 
 (rf/reg-event-fx :communities/handle-community handle-community)
 
@@ -157,97 +155,6 @@
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
-(defn initialize-permission-addresses
-  [{:keys [db]} [community-id]]
-  (when community-id
-    (let [accounts  (utils/sorted-non-watch-only-accounts db)
-          addresses (set (map :address accounts))]
-      {:db (update-in db
-                      [:communities community-id]
-                      assoc
-                      :previous-share-all-addresses? true
-                      :share-all-addresses?          true
-                      :previous-permission-addresses addresses
-                      :selected-permission-addresses addresses
-                      :airdrop-address               (:address (first accounts)))})))
-
-(rf/reg-event-fx :communities/initialize-permission-addresses
- initialize-permission-addresses)
-
-(defn update-previous-permission-addresses
-  [{:keys [db]} [community-id]]
-  (when community-id
-    (let [accounts                      (utils/sorted-non-watch-only-accounts db)
-          selected-permission-addresses (get-in db
-                                                [:communities community-id
-                                                 :selected-permission-addresses])
-          selected-accounts             (filter #(contains? selected-permission-addresses (:address %))
-                                                accounts)
-          current-airdrop-address       (get-in db [:communities community-id :airdrop-address])
-          share-all-addresses?          (get-in db [:communities community-id :share-all-addresses?])]
-      {:db (update-in db
-                      [:communities community-id]
-                      assoc
-                      :previous-share-all-addresses? share-all-addresses?
-                      :previous-permission-addresses selected-permission-addresses
-                      :airdrop-address               (if (contains? selected-permission-addresses
-                                                                    current-airdrop-address)
-                                                       current-airdrop-address
-                                                       (:address (first selected-accounts))))})))
-
-(rf/reg-event-fx :communities/update-previous-permission-addresses
- update-previous-permission-addresses)
-
-(defn toggle-selected-permission-address
-  [{:keys [db]} [address community-id]]
-  (let [selected-permission-addresses
-        (get-in db [:communities community-id :selected-permission-addresses])
-        updated-selected-permission-addresses
-        (if (contains? selected-permission-addresses address)
-          (disj selected-permission-addresses address)
-          (conj selected-permission-addresses address))]
-    {:db (assoc-in db
-          [:communities community-id :selected-permission-addresses]
-          updated-selected-permission-addresses)
-     :fx [(when community-id
-            [:dispatch
-             [:communities/check-permissions-to-join-community community-id
-              updated-selected-permission-addresses :based-on-client-selection]])]}))
-
-(rf/reg-event-fx :communities/toggle-selected-permission-address
- toggle-selected-permission-address)
-
-(defn toggle-share-all-addresses
-  [{:keys [db]} [community-id]]
-  (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
-        next-share-all-addresses? (not share-all-addresses?)
-        accounts                  (utils/sorted-non-watch-only-accounts db)
-        addresses                 (set (map :address accounts))]
-    {:db (update-in db
-                    [:communities community-id]
-                    assoc
-                    :share-all-addresses?          next-share-all-addresses?
-                    :selected-permission-addresses addresses)
-     :fx [(when (and community-id next-share-all-addresses?)
-            [:dispatch
-             [:communities/check-permissions-to-join-community community-id
-              addresses :based-on-client-selection]])]}))
-
-(rf/reg-event-fx :communities/toggle-share-all-addresses
- toggle-share-all-addresses)
-
-(rf/reg-event-fx :communities/reset-selected-permission-addresses
- (fn [{:keys [db]} [community-id]]
-   (when community-id
-     {:db (update-in db
-                     [:communities community-id]
-                     assoc
-                     :selected-permission-addresses
-                     (get-in db [:communities community-id :previous-permission-addresses])
-                     :share-all-addresses?
-                     (get-in db [:communities community-id :previous-share-all-addresses?]))
-      :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
-
 (rf/reg-event-fx :communities/get-community-channel-share-data
  (fn [_ [chat-id on-success]]
    (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
@@ -285,10 +192,6 @@
                                    {:chat-id chat-id
                                     :url     %}])]
      {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
-
-(rf/reg-event-fx :communities/set-airdrop-address
- (fn [{:keys [db]} [address community-id]]
-   {:db (assoc-in db [:communities community-id :airdrop-address] address)}))
 
 (defn community-fetched
   [{:keys [db]} [community-id community]]
@@ -425,16 +328,17 @@
              [:dispatch [:chat/navigate-to-chat chat-id]])]})))
 
 (defn get-revealed-accounts
-  [{:keys [db]} [community-id]]
+  [{:keys [db]} [community-id on-success]]
   (let [{:keys [joined fetching-revealed-accounts]
-         :as   community} (get-in db [:communities community-id])]
-    (when (and community joined (not fetching-revealed-accounts))
+         :as   community} (get-in db [:communities community-id])
+        pending?          (get-in db [:communities/my-pending-requests-to-join community-id])]
+    (when (and community (or pending? joined) (not fetching-revealed-accounts))
       {:db (assoc-in db [:communities community-id :fetching-revealed-accounts] true)
        :json-rpc/call
        [{:method      "wakuext_getRevealedAccounts"
          :params      [community-id (get-in db [:profile/profile :public-key])]
          :js-response true
-         :on-success  [:communities/get-revealed-accounts-success community-id]
+         :on-success  [:communities/get-revealed-accounts-success community-id on-success]
          :on-error    (fn [err]
                         (log/error {:message      "failed to fetch revealed accounts"
                                     :community-id community-id
@@ -448,19 +352,22 @@
    [:catn
     [:cofx :schema.re-frame/cofx]
     [:args
-     [:schema [:catn [:community-id [:? :string]]]]]]
+     [:schema
+      [:catn
+       [:community-id [:? :string]]
+       [:on-success [:? :schema.re-frame/event]]]]]]
    [:maybe
     [:map
      [:db map?]
      [:json-rpc/call :schema.common/rpc-call]]]])
 
 (rf/reg-event-fx :communities/get-revealed-accounts-success
- (fn [{:keys [db]} [community-id revealed-accounts-js]]
+ (fn [{:keys [db]} [community-id on-success revealed-accounts-js]]
    (when-let [community (get-in db [:communities community-id])]
      (let [revealed-accounts
            (reduce
             (fn [acc {:keys [address] :as revealed-account}]
-              (assoc acc address (dissoc revealed-account :address)))
+              (assoc acc address revealed-account))
             {}
             (data-store.communities/<-revealed-accounts-rpc revealed-accounts-js))
 
@@ -468,7 +375,9 @@
            (-> community
                (assoc :revealed-accounts revealed-accounts)
                (dissoc :fetching-revealed-accounts))]
-       {:db (assoc-in db [:communities community-id] community-with-revealed-accounts)}))))
+       {:db (assoc-in db [:communities community-id] community-with-revealed-accounts)
+        :fx [(when (vector? on-success)
+               [:dispatch (conj on-success revealed-accounts)])]}))))
 
 (rf/reg-event-fx :communities/get-revealed-accounts-failed
  (fn [{:keys [db]} [community-id]]

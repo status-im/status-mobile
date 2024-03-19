@@ -32,6 +32,12 @@
    :height             top-bar-height
    :align-items        :center})
 
+(defn button-animation-container
+  [opacity-value]
+  (reanimated/apply-animations-to-style
+   {:opacity opacity-value}
+   {}))
+
 ;;;; Content
 
 (defn header-content-container

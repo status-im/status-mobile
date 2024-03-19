@@ -7,7 +7,11 @@
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (def descriptor
-  [{:key     :image
+  [{:key     :size
+    :type    :select
+    :options [{:key :size-24}
+              {:key :size-20}]}
+   {:key     :image
     :type    :select
     :options [{:key   (resources/get-mock-image :bored-ape)
                :value "Bored ape"}

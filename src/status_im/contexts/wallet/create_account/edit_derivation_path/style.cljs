@@ -17,7 +17,7 @@
 
 (def input-container
   {:padding-horizontal 20
-   :padding-top        12})
+   :padding-top        20})
 
 (defn save-button-container
   [bottom]

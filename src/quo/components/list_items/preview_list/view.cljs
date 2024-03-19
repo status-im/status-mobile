@@ -76,12 +76,12 @@
     :blur?  overflow-label blur?}
    items    preview list items (only 4 items is required for preview)
   "
-  [{:keys [type size number blur?]} items]
+  [{:keys [type size number blur? container-style]} items]
   (let [size-key    (if (contains? properties/sizes size) size :size-24)
         number      (or number (count items))
         border-type (properties/border-type type)
         margin-left (get-in properties/sizes [size-key :margin-left])]
-    [rn/view {:style {:flex-direction :row}}
+    [rn/view {:style (assoc container-style :flex-direction :row)}
      (for [index (range (if (> number 4) 3 number))]
        ^{:key (str index number)}
        [list-item

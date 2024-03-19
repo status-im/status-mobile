@@ -8,6 +8,7 @@
      [:enum :default :multiuser :group :channel :community :token :network :multinetwork :account
       :collectible :address :icon :audio]]]
    [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
+   [:container-style {:optional true} [:maybe :map]]
    [:theme :schema.common/theme]
    [:blur? {:optional true} [:maybe :boolean]]
    [:state {:optional true} [:maybe [:enum :selected :default]]]])
@@ -38,6 +39,7 @@
 (def ^:private ?channel
   [:map
    [:community-name {:optional true} [:maybe :string]]
+   [:community-logo {:optional true} [:maybe :schema.common/image-source]]
    [:channel-name {:optional true} [:maybe :string]]])
 
 (def ^:private ?community

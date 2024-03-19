@@ -18,9 +18,9 @@
    :align-items        :center})
 
 (defn action-icon
-  [{:keys [type on-press on-check disabled? checked?]} theme]
+  [{:keys [type on-press on-check disabled? checked?]} customization-color theme]
   [rn/touchable-opacity
-   {:on-press (when on-press on-press)}
+   {:on-press on-press}
    (case type
      :options
      [icons/icon :i/options
@@ -30,6 +30,7 @@
      [selectors/view
       {:type                :checkbox
        :checked?            checked?
+       :customization-color customization-color
        :accessibility-label :user-list-toggle-check
        :disabled?           disabled?
        :on-change           (when on-check on-check)}]
@@ -68,4 +69,4 @@
          :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
         short-chat-key])]
     (when accessory
-      [action-icon accessory theme])]])
+      [action-icon accessory customization-color theme])]])

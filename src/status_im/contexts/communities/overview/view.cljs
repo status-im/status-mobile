@@ -120,7 +120,7 @@
   [id color]
   [quo/button
    {:on-press            (if config/community-accounts-selection-enabled?
-                           #(rf/dispatch [:open-modal :community-account-selection
+                           #(rf/dispatch [:open-modal :community-account-selection-sheet
                                           {:community-id id}])
                            #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
     :accessibility-label :show-request-to-join-screen-button
@@ -168,7 +168,7 @@
          :padding? true}]
        [quo/button
         {:on-press            (if config/community-accounts-selection-enabled?
-                                #(rf/dispatch [:open-modal :community-account-selection
+                                #(rf/dispatch [:open-modal :community-account-selection-sheet
                                                {:community-id id}])
                                 #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
          :accessibility-label :join-community-button

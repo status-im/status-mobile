@@ -58,14 +58,15 @@
      :on-press            on-press}
     [rn/view
      {:style (style/row-container sub-label)}
-     [rn/view
-      {:accessibility-label :left-icon-for-action
-       :accessible          true
-       :style               (style/left-icon sub-label)}
-      [icon/icon icon
-       {:color    (or icon-color (get-icon-color danger? theme))
-        :no-color no-icon-color?
-        :size     20}]]
+     (when icon
+       [rn/view
+        {:accessibility-label :left-icon-for-action
+         :accessible          true
+         :style               (style/left-icon sub-label)}
+        [icon/icon icon
+         {:color    (or icon-color (get-icon-color danger? theme))
+          :no-color no-icon-color?
+          :size     20}]])
      [rn/view
       {:style style/text-container}
       [text/text

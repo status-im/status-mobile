@@ -25,6 +25,23 @@
     (some (fn [[_k v]] (= (:status v) :confirmed)) transaction-details)   :confirmed
     :else                                                                 nil))
 
+(defn- footer
+  [{:keys [color leave-page]}]
+  (let [save-address-visible? false]
+    [quo/bottom-actions
+     {:actions          (if save-address-visible? :two-actions :one-action)
+      :button-two-label (i18n/label :t/save-address)
+      :button-two-props {:type                :grey
+                         :icon-left           :i/contact-book
+                         :accessibility-label :save-address
+                         :on-press            (rn/use-callback
+                                               #(rf/dispatch [:open-modal :screen/wallet.save-address]))}
+      :button-one-label (i18n/label :t/done)
+      :button-one-props {:customization-color color
+                         :type                :primary
+                         :accessibility-label :done
+                         :on-press            leave-page}}]))
+
 (defn view
   []
   (let [leave-page      #(rf/dispatch [:wallet/close-transaction-progress-page])
@@ -40,10 +57,9 @@
                                       :margin-top          (safe-area/get-top)
                                       :on-press            leave-page
                                       :accessibility-label :top-bar}]
-          :footer                   [quo/button
-                                     {:customization-color color
-                                      :on-press            leave-page}
-                                     (i18n/label :t/done)]
+          :footer                   [footer
+                                     {:color      color
+                                      :leave-page leave-page}]
           :customization-color      color
           :gradient-cover?          true}
          [rn/view {:style style/content-container}

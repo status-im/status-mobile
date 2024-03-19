@@ -63,6 +63,10 @@
              {:key :admin}
              {:key :member}]})
 
+(def description-top-descriptor
+  {:key  :description-top-text
+   :type :text})
+
 (def description-descriptor
   {:key  :description-text
    :type :text})
@@ -73,28 +77,32 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:actions          :two-actions
-                             :description      :bottom
-                             :description-text description
-                             :error-message    "Error message"
-                             :button-one-label button-one
-                             :button-two-label button-two
-                             :button-one-props {:on-press (button-press 1)
-                                                :type     :primary}
-                             :button-two-props {:on-press (button-press 2)
-                                                :type     :grey}
-                             :blur?            false
-                             :role             :owner
-                             :scroll?          false})]
+  (let [state (reagent/atom {:actions              :two-actions
+                             :description          :bottom
+                             :description-text     description
+                             :description-top-text "Eligible to join as"
+                             :error-message        "Error message"
+                             :button-one-label     button-one
+                             :button-two-label     button-two
+                             :button-one-props     {:on-press (button-press 1)
+                                                    :type     :primary}
+                             :button-two-props     {:on-press (button-press 2)
+                                                    :type     :grey}
+                             :blur?                false
+                             :role                 :owner
+                             :scroll?              false})]
     (fn []
       [preview/preview-container
        {:state                     state
-        :descriptor                (merge descriptor
-                                          (case (:description @state)
-                                            :top       role-descriptor
-                                            :bottom    description-descriptor
-                                            :top-error error-descriptor
-                                            nil))
+        :descriptor                (cond-> descriptor
+                                     (= (:description @state) :top)
+                                     (conj role-descriptor description-top-descriptor)
+
+                                     (= (:description @state) :bottom)
+                                     (conj description-descriptor)
+
+                                     (= (:description @state) :top-error)
+                                     (conj error-descriptor))
         :blur?                     (:blur? @state)
         :show-blur-background?     true
         :blur-dark-only?           true

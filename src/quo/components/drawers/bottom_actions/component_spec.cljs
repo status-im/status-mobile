@@ -59,4 +59,15 @@
               :button-one-label "Request to join"}])
     (h/is-truthy (h/get-by-text "Eligible to join as"))
     (h/is-truthy (h/get-by-text "Admin"))
+    (h/is-truthy (h/get-by-text "Request to join")))
+
+  (h/test "render with top description with custom text & 1 action"
+    (render [bottom-actions/view
+             {:description          :top
+              :role                 :admin
+              :actions              :one-action
+              :description-top-text "You'll be an"
+              :button-one-label     "Request to join"}])
+    (h/is-truthy (h/get-by-text "You'll be an"))
+    (h/is-truthy (h/get-by-text "Admin"))
     (h/is-truthy (h/get-by-text "Request to join"))))

@@ -95,13 +95,34 @@
             (into [{:title title :header? true}] data))
    sections))
 
+(defn- find-sticky-indices
+  [data]
+  (->> data
+       (map-indexed (fn [index item] (when (:header? item) index)))
+       (remove nil?)
+       (vec)))
+
+(defn- is-last-item-in-section
+  [data index]
+  (let [next-item (nth data (inc index) nil)]
+    (or (nil? next-item) (:header? next-item))))
+
 (defn section-list
-  [{:keys [sections render-section-header-fn render-fn] :as props}]
+  [{:keys [sections sticky-section-headers-enabled render-section-header-fn render-section-footer-fn
+           render-fn]
+    :or   {sticky-section-headers-enabled true}
+    :as   props}]
   (let [data (flatten-sections sections)]
     [flat-list
      (merge props
-            {:data      data
-             :render-fn (fn [p1 p2 p3 p4]
-                          (if (:header? p1)
-                            [render-section-header-fn p1 p2 p3 p4]
-                            [render-fn p1 p2 p3 p4]))})]))
+            {:data                  data
+             :render-fn             (fn [p1 p2 p3 p4]
+                                      [:<>
+                                       (if (:header? p1)
+                                         [render-section-header-fn p1 p2 p3 p4]
+                                         [render-fn p1 p2 p3 p4])
+                                       (when (and render-section-footer-fn
+                                                  (is-last-item-in-section data p2))
+                                         [render-section-footer-fn p1 p2 p3 p4])])
+             :sticky-header-indices (when sticky-section-headers-enabled
+                                      (find-sticky-indices data))})]))
