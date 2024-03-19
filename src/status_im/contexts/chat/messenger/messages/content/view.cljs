@@ -283,9 +283,9 @@
            {:message-data                 message-data
             :context                      context
             :keyboard-shown?              keyboard-shown?
-            :show-user-info?              true
             :in-reaction-and-action-menu? true
-            :preview?                     true}]]))}]))
+            :show-user-info?              false
+            :show-reactions?              true}]]))}]))
 
 (defn system-message?
   [content-type]

@@ -33,5 +33,5 @@
                          1)})
 
 (def drawer-message-container
-  {:padding-horizontal 4
-   :padding-vertical   8})
+  {:padding-top    4
+   :padding-bottom 8})
