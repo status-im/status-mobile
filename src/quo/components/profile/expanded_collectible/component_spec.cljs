@@ -21,6 +21,7 @@
       (h/render-with-theme-provider
        [expanded-collectible/view
         {:counter  "1200"
+         :status   :cant-fetch
          :on-press on-press}])
       (h/fire-event :press (h/get-by-label-text :expanded-collectible))
       (h/was-called on-press)

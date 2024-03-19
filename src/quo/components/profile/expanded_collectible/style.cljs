@@ -3,19 +3,17 @@
             [quo.foundations.shadows :as shadows]))
 
 (def container
-  {:flex            1
-   :align-items     :center
-   :justify-content :center
-   :border-radius   16})
+  (merge (shadows/get 2)
+         {:flex            1
+          :align-items     :center
+          :justify-content :center
+          :border-radius   16}))
 
 (defn image
   [square? aspect-ratio]
-  (merge (shadows/get 2)
-         {:width         "100%"
-          :border-width  1
-          :aspect-ratio  (if square? 1 aspect-ratio)
-          :border-radius 16}
-         (when false {:flex 1})))
+  {:width         "100%"
+   :aspect-ratio  (if square? 1 aspect-ratio)
+   :border-radius 16})
 
 (defn fallback
   [{:keys [theme]}]

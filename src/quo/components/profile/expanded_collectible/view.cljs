@@ -45,7 +45,7 @@
     [rn/pressable
      {:on-press            on-press
       :accessibility-label :expanded-collectible
-      :style               (merge container-style (style/container square?))}
+      :style               (merge container-style style/container)}
      (case status
        :unsupported [fallback-view
                      {:label   (i18n/label :t/unsupported-file)
