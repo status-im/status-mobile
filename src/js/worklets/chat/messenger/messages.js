@@ -1,5 +1,5 @@
 import { useAnimatedReaction, withTiming, runOnJS } from 'react-native-reanimated';
-import { useState } from "react"
+import { useState } from 'react';
 
 export function messagesListOnScroll(distanceFromListTop, chatListScrollY, callback) {
   return function (event) {
@@ -15,15 +15,19 @@ export function messagesListOnScroll(distanceFromListTop, chatListScrollY, callb
 }
 
 export function useMessagesScrolledToThreshold(distanceFromListTop, threshold) {
-    const [scrolledToThreshold, setScrolledToThreshold] = useState(false)
+  const [scrolledToThreshold, setScrolledToThreshold] = useState(false);
 
-    useAnimatedReaction(function () {
-	return distanceFromListTop.value <= threshold;
-    }, function (current) {
-	if(current !== scrolledToThreshold) {
-	    runOnJS(setScrolledToThreshold)(current)
-	}
-    }, [scrolledToThreshold])
+  useAnimatedReaction(
+    function () {
+      return distanceFromListTop.value <= threshold;
+    },
+    function (current) {
+      if (current !== scrolledToThreshold) {
+        runOnJS(setScrolledToThreshold)(current);
+      }
+    },
+    [scrolledToThreshold],
+  );
 
-    return scrolledToThreshold
+  return scrolledToThreshold;
 }

@@ -29,3 +29,7 @@
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
                          1)})
+
+(def drawer-message-container
+  {:padding-top    4
+   :padding-bottom 8})

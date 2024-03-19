@@ -9,6 +9,7 @@
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.address :as address]
     [utils.image-server :as image-server]
     [utils.security.core :as security]))
@@ -81,8 +82,16 @@
             :override-ring?  override-ring?
             :font-file       font-file}))}))))
 
+;; DEPRECATED
+;; use `:profile/public-key` instead
 (re-frame/reg-sub
  :multiaccount/public-key
+ :<- [:profile/profile]
+ (fn [{:keys [public-key]}]
+   public-key))
+
+(re-frame/reg-sub
+ :profile/public-key
  :<- [:profile/profile]
  (fn [{:keys [public-key]}]
    public-key))
@@ -128,6 +137,12 @@
  :<- [:profile/profile]
  (fn [{:keys [preferred-name]}]
    preferred-name))
+
+(re-frame/reg-sub
+ :profile/image
+ :<- [:profile/profile-with-image]
+ (fn [profile]
+   (profile.utils/photo profile)))
 
 (re-frame/reg-sub
  :multiaccount/default-account

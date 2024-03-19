@@ -177,12 +177,13 @@
  :profile.login/get-user-password-success
  (fn [{:keys [db]} [password]]
    (when password
-     (let [{:keys [key-uid password]} (:profile/login db)]
-       {:db (-> db
-                (assoc-in [:profile/login :password] password)
-                (assoc-in [:profile/login :processing] true))
-        :fx [[:set-root :progress]
-             [:effects.profile/login [key-uid (security/safe-unmask-data password)]]]}))))
+     {:db (-> db
+              (assoc-in [:profile/login :password] password)
+              (assoc-in [:profile/login :processing] true))
+      :fx [[:set-root :progress]
+           [:effects.profile/login
+            [(get-in db [:profile/login :key-uid])
+             (security/safe-unmask-data password)]]]})))
 
 (rf/reg-event-fx
  :profile.login/biometric-success
