@@ -433,13 +433,13 @@
 (re-frame/reg-sub
  :chats/link-previews?
  :<- [:chats/link-previews-unfurled]
- (fn [[previews]]
+ (fn [previews]
    (boolean (seq previews))))
 
 (re-frame/reg-sub
  :chats/status-link-previews?
  :<- [:chats/status-link-previews-unfurled]
- (fn [[status-link-previews]]
+ (fn [status-link-previews]
    (boolean (seq status-link-previews))))
 
 (re-frame/reg-sub
