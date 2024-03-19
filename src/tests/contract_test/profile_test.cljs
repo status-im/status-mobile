@@ -3,7 +3,7 @@
     [cljs.test :refer [deftest is use-fixtures]]
     legacy.status-im.events
     legacy.status-im.subs.root
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -16,4 +16,4 @@
   (h/test-async :contract/wakuext_setBio
     (fn []
       (-> (contract-utils/call-rpc "wakuext_setBio" "new bio")
-          (p/catch #(is (nil? %) "Set bio RPC call should have succeeded"))))))
+          (promesa/catch #(is (nil? %) "Set bio RPC call should have succeeded"))))))

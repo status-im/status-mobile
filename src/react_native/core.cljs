@@ -3,7 +3,7 @@
     ["react" :as react]
     ["react-native" :as react-native]
     [oops.core :as oops]
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [react-native.flat-list :as flat-list]
     [react-native.platform :as platform]
     [react-native.section-list :as section-list]
@@ -37,11 +37,11 @@
 
 (defn image-get-size
   [uri]
-  (p/create (fn [res rej]
-              (.getSize ^js (.-Image ^js react-native)
-                        uri
-                        (fn [width height] (res [width height]))
-                        rej))))
+  (promesa/create (fn [res rej]
+                    (.getSize ^js (.-Image ^js react-native)
+                              uri
+                              (fn [width height] (res [width height]))
+                              rej))))
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
 (def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
 

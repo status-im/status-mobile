@@ -5,7 +5,7 @@
     [legacy.status-im.multiaccounts.logout.core :as logout]
     legacy.status-im.subs.root
     [native-module.core :as native-module]
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [re-frame.core :as rf]
     [re-frame.interop :as rf.interop]
     status-im.events
@@ -20,7 +20,7 @@
 
 (defn validate-mnemonic
   [mnemonic]
-  (p/create
+  (promesa/create
    (fn [p-resolve p-reject]
      (native-module/validate-mnemonic
       (security/safe-unmask-data mnemonic)
@@ -111,7 +111,7 @@
    (wait-for event-ids default-re-frame-wait-for-timeout-ms))
   ([event-ids timeout-ms]
    (let [waiting-ids (atom event-ids)]
-     (p/create
+     (promesa/create
       (fn [promise-resolve promise-reject]
         (let [cb-id    (gensym "post-event-callback")
               timer-id (js/setTimeout (fn []
@@ -148,18 +148,18 @@
   []
   (test-utils/init!)
   (if (app-initialized)
-    (p/resolved ::app-initialized)
-    (p/do!
+    (promesa/resolved ::app-initialized)
+    (promesa/do!
      (rf/dispatch [:app-started])
      (wait-for [:profile/get-profiles-overview-success]))))
 
 (defn setup-account
   []
   (if (messenger-started)
-    (p/resolved ::messenger-started)
-    (p/do!
+    (promesa/resolved ::messenger-started)
+    (promesa/do!
      (create-multiaccount!)
-     (p/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started)))))
+     (promesa/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started)))))
 
 (defn- recover-and-login
   [seed-phrase]
@@ -176,8 +176,8 @@
 
 (defn- recover-multiaccount!
   []
-  (p/let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))
-          [mnemonic key-uid] (validate-mnemonic masked-seed-phrase)]
+  (promesa/let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))
+                [mnemonic key-uid] (validate-mnemonic masked-seed-phrase)]
     (rf/dispatch [:onboarding/seed-phrase-validated (security/mask-data mnemonic) key-uid])
     (rf/dispatch [:pop-to-root :profiles])
     (rf/dispatch [:profile/profile-selected key-uid])
@@ -186,12 +186,12 @@
 (defn setup-recovered-account
   []
   (if (messenger-started)
-    (p/resolved ::messenger-started)
-    (p/do!
+    (promesa/resolved ::messenger-started)
+    (promesa/do!
      (recover-multiaccount!)
-     (p/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started))
+     (promesa/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started))
      (enable-testnet!)
-     (p/then (wait-for [:wallet/store-wallet-token]) #(assert-wallet-loaded)))))
+     (promesa/then (wait-for [:wallet/store-wallet-token]) #(assert-wallet-loaded)))))
 
 (defn test-async
   "Runs `f` inside `cljs.test/async` macro in a restorable re-frame checkpoint.
@@ -225,21 +225,21 @@
      done
      (let [restore-fn (rf/make-restore-fn)]
        (log-headline test-name)
-       (-> (p/do (f done))
-           (p/timeout timeout-ms)
-           (p/catch (fn [error]
-                      (is (nil? error))
-                      (when fail-fast?
-                        (js/process.exit 1))))
-           (p/finally (fn []
-                        (restore-fn)
-                        (done))))))))
+       (-> (promesa/do (f done))
+           (promesa/timeout timeout-ms)
+           (promesa/catch (fn [error]
+                            (is (nil? error))
+                            (when fail-fast?
+                              (js/process.exit 1))))
+           (promesa/finally (fn []
+                              (restore-fn)
+                              (done))))))))
 
 (defn test-app-initialization
   []
   (test-async ::initialize-app
     (fn []
-      (p/do
+      (promesa/do
         (test-utils/init!)
         (rf/dispatch [:app-started])
         ;; Use initialize-view because it has the longest avg. time and is
@@ -252,7 +252,7 @@
   []
   (test-async ::create-account
     (fn []
-      (p/do
+      (promesa/do
         (setup-app)
         (setup-account)
         (logout)
@@ -271,19 +271,19 @@
    {:before (if (= :recovered-account type)
               (fn []
                 (test/async done
-                  (p/do (setup-app)
-                        (setup-recovered-account)
-                        (done))))
+                  (promesa/do (setup-app)
+                              (setup-recovered-account)
+                              (done))))
               (fn []
                 (test/async done
-                  (p/do (setup-app)
-                        (setup-account)
-                        (done)))))
+                  (promesa/do (setup-app)
+                              (setup-account)
+                              (done)))))
     :after  (fn []
               (test/async done
-                (p/do (logout)
-                      (wait-for [::logout/logout-method])
-                      (done))))})
+                (promesa/do (logout)
+                            (wait-for [::logout/logout-method])
+                            (done))))})
   ([] (fixture-session [:new-account])))
 
 (defn fixture-silence-reframe
