@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.contact.header.view
-  (:require [quo.core :as quo]
+  (:require [clojure.string :as string]
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
@@ -25,7 +26,7 @@
 
 (defn view
   [{:keys [scroll-y]}]
-  (let [{:keys [public-key customization-color ens-name
+  (let [{:keys [public-key customization-color ens-name nickname secondary-name
                 emoji-hash bio blocked? contact-request-state]
          :as   contact}     (rf/sub [:contacts/current-contact])
         ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
@@ -34,6 +35,13 @@
         profile-picture     (profile.utils/photo contact)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
         theme               (quo.theme/use-theme-value)
+        contact-status      (rn/use-memo (fn []
+                                           (cond
+                                             (= contact-request-state
+                                                constants/contact-request-state-mutual) :contact
+                                             blocked?                                   :blocked
+                                             :else                                      nil))
+                                         [blocked? contact-request-state])
         on-start-chat       (rn/use-callback #(rf/dispatch [:chat.ui/start-chat
                                                             public-key
                                                             ens-name])
@@ -64,17 +72,24 @@
           {:label  (i18n/label :t/contact-profile-request-pending)
            :status {:type :pending}
            :size   :large}]])]
+     [rn/view {:style style/username-wrapper}
+      [quo/username
+       {:name-type           (if-not (string/blank? nickname) :nickname :default)
+        :accessibility-label :contact-name
+        :username            full-name
+        :status              contact-status
+        :name                secondary-name}]]
      [quo/page-top
-      {:title            full-name
-       :description      :text
-       :description-text bio
+      {:description      :text
+       :description-text (when-not blocked? bio)
        :emoji-dash       emoji-hash}]
 
      (when blocked?
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-unblock-press
-         :icon-left       :i/block}
+        {:container-style     style/button-wrapper
+         :on-press            on-unblock-press
+         :customization-color customization-color
+         :icon-left           :i/block}
         (i18n/label :t/unblock)])
 
      (cond
@@ -85,23 +100,26 @@
              (= contact-request-state constants/contact-request-state-dismissed)))
 
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-contact-request
-         :icon-left       :i/add-user}
+        {:container-style     style/button-wrapper
+         :on-press            on-contact-request
+         :customization-color customization-color
+         :icon-left           :i/add-user}
         (i18n/label :t/send-contact-request)]
 
        (= contact-request-state constants/contact-request-state-received)
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-contact-review
-         :icon-left       :i/add-user}
+        {:container-style     style/button-wrapper
+         :on-press            on-contact-review
+         :customization-color customization-color
+         :icon-left           :i/add-user}
         (i18n/label :t/contact-request-review)]
 
        (= contact-request-state constants/contact-request-state-mutual)
        [quo/button
-        {:container-style style/button-wrapper
-         :on-press        on-start-chat
-         :icon-left       :i/messages}
+        {:container-style     style/button-wrapper
+         :on-press            on-start-chat
+         :customization-color customization-color
+         :icon-left           :i/messages}
         (i18n/label :t/send-message)]
 
        :else nil)]))

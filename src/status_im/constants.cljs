@@ -73,6 +73,7 @@
 (def ^:const contact-request-message-state-pending 1)
 (def ^:const contact-request-message-state-accepted 2)
 (def ^:const contact-request-message-state-declined 3)
+(def ^:const contact-request-message-max-length 280)
 
 (def request-to-join-pending-state 1)
 

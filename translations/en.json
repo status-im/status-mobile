@@ -1662,6 +1662,7 @@
     "add-nickname": "Add a nickname (optional)",
     "edit-nickname": "Edit nickname",
     "add-nickname-title": "Add nickname",
+    "update-nickname-title": "Update nickname",
     "nickname-visible-to-you": "Nickname will only be visible to you",
     "type-nickname": "Type nickname",
     "remove-nickname": "Remove nickname",
