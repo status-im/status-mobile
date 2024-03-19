@@ -44,6 +44,23 @@ subprojects {
                 defaultConfig {
                     targetSdkVersion rootProject.ext.targetSdkVersion
                 }
+
+                // Speed up Tests Stage
+                tasks.withType(Test).configureEach {
+                    // https://docs.gradle.org/current/userguide/performance.html#execute_tests_in_parallel
+                    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+                    // https://docs.gradle.org/current/userguide/performance.html#fork_tests_into_multiple_processes
+                    forkEvery = 100
+                    // https://docs.gradle.org/current/userguide/performance.html#disable_reports
+                    reports.html.required = false
+                    reports.junitXml.required = false
+                }
+                // Speed up Java Compile Stage
+                // https://docs.gradle.org/current/userguide/performance.html#run_the_compiler_as_a_separate_process
+                tasks.withType(JavaCompile).configureEach {
+                    options.fork = true
+                }
+
             }
         }
     }
