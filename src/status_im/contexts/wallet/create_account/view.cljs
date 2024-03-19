@@ -49,15 +49,15 @@
 
 (defn- f-view
   [_]
-  (let [top                 (safe-area/get-top)
-        bottom              (safe-area/get-bottom)
+  (let [top                   (safe-area/get-top)
+        bottom                (safe-area/get-bottom)
         {window-width :width} (rn/get-window)
-        account-color       (reagent/atom (rand-nth colors/account-colors))
-        emoji               (reagent/atom (emoji-picker.utils/random-emoji))
-        account-name        (reagent/atom "")
-        on-change-text      #(reset! account-name %)
-        show-account-origin #(rf/dispatch [:show-bottom-sheet
-                                           {:content account-origin/view}])]
+        account-color         (reagent/atom (rand-nth colors/account-colors))
+        emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
+        account-name          (reagent/atom "")
+        on-change-text        #(reset! account-name %)
+        show-account-origin   #(rf/dispatch [:show-bottom-sheet
+                                             {:content account-origin/view}])]
     (fn [{:keys [theme]}]
       (let [number-of-accounts                    (count (rf/sub
                                                           [:wallet/accounts-without-watched-accounts]))
@@ -115,7 +115,8 @@
                                       :on-auth-success     (fn [password]
                                                              (if new-keypair
                                                                (create-new-keypair-account password)
-                                                               (create-existing-keypair-account password)))
+                                                               (create-existing-keypair-account
+                                                                password)))
                                       :auth-button-label   (i18n/label :t/confirm)
                                       :disabled?           (empty? @account-name)
                                       :container-style     (style/slide-button-container bottom)
