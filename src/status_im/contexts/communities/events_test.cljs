@@ -144,38 +144,6 @@
            nil
            (events/spectate-community-success {} []))))))
 
-(deftest handle-community
-  (let [community {:id community-id :clock 2}]
-    (testing "given a unjoined community"
-      (let [effects (events/handle-community {} [community])]
-        (is (match? community-id
-                    (-> effects :db :communities (get community-id) :id)))
-        (is (match?
-             [[:dispatch [:chat.ui/spectate-community community-id]]
-              [:dispatch [:communities/check-permissions-to-join-community community-id]]]
-             (filter some? (:fx effects))))))
-
-    (testing "given a joined community"
-      (let [community (assoc community :joined true)
-            effects   (events/handle-community {} [community])]
-        (is (match?
-             [[:dispatch [:communities/check-permissions-to-join-community community-id]]]
-             (filter some? (:fx effects))))))
-
-    (testing "given a community with token-permissions-check"
-      (let [community (assoc community :token-permissions-check :fake-token-permissions-check)
-            effects   (events/handle-community {} [community])]
-        (is (match?
-             [[:dispatch [:chat.ui/spectate-community community-id]]]
-             (filter some? (:fx effects))))))
-    (testing "given a community with lower clock"
-      (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
-        (is (nil? effects))))
-    (testing "given a community without clock"
-      (let [community (dissoc community :clock)
-            effects   (events/handle-community {} [community])]
-        (is (nil? effects))))))
-
 (deftest get-revealed-accounts
   (let [community {:id community-id}]
     (testing "given a unjoined community"
@@ -219,3 +187,35 @@
                                                        community-id on-success]
                                          :on-error    fn?}]}]
         (is (match? expected actual))))))
+
+(deftest handle-community
+  (let [community {:id community-id :clock 2}]
+    (testing "given a unjoined community"
+      (let [effects (events/handle-community {} [community])]
+        (is (match? community-id
+                    (-> effects :db :communities (get community-id) :id)))
+        (is (match?
+             [[:dispatch [:chat.ui/spectate-community community-id]]
+              [:dispatch [:communities/check-permissions-to-join-community community-id]]]
+             (filter some? (:fx effects))))))
+
+    (testing "given a joined community"
+      (let [community (assoc community :joined true)
+            effects   (events/handle-community {} [community])]
+        (is (match?
+             [[:dispatch [:communities/check-permissions-to-join-community community-id]]]
+             (filter some? (:fx effects))))))
+
+    (testing "given a community with token-permissions-check"
+      (let [community (assoc community :token-permissions-check :fake-token-permissions-check)
+            effects   (events/handle-community {} [community])]
+        (is (match?
+             [[:dispatch [:chat.ui/spectate-community community-id]]]
+             (filter some? (:fx effects))))))
+    (testing "given a community with lower clock"
+      (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]
+        (is (nil? effects))))
+    (testing "given a community without clock"
+      (let [community (dissoc community :clock)
+            effects   (events/handle-community {} [community])]
+        (is (nil? effects))))))
