@@ -193,7 +193,11 @@
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
-   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
+   {:fx [[:dispatch [:wallet/clean-scanned-address]]
+         [:dispatch [:wallet/clean-local-suggestions]]
+         [:dispatch [:wallet/clean-send-address]]
+         [:dispatch [:wallet/select-address-tab nil]]
+         [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
 (defn- transaction-bridge
   [{:keys [from-address from-chain-id to-address token-id token-address route data eth-transfer?]}]
@@ -288,11 +292,7 @@
                        :params     request-params
                        :on-success (fn [result]
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (rf/dispatch [:wallet/add-authorized-transaction result])
-                                     (rf/dispatch [:wallet/clean-scanned-address])
-                                     (rf/dispatch [:wallet/clean-local-suggestions])
-                                     (rf/dispatch [:wallet/clean-send-address])
-                                     (rf/dispatch [:wallet/select-address-tab nil]))
+                                     (rf/dispatch [:wallet/add-authorized-transaction result]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction
