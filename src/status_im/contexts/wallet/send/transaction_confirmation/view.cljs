@@ -238,7 +238,7 @@
 (defn- view-internal
   [_]
   (let [on-close (fn []
-                   (rf/dispatch [:navigate-back-within-stack :screen/wallet.transaction-confirmation])
+                   (rf/dispatch [:navigate-back])
                    (rf/dispatch [:wallet/clean-suggested-routes])
                    (rf/dispatch [:wallet/clean-selected-collectible]))]
     (fn [{:keys [theme]}]

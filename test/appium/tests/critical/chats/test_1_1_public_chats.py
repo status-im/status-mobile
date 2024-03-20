@@ -34,7 +34,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         for home in (self.home_1, self.home_2):
             home.navigate_back_to_home_view()
             home.chats_tab.click()
-        self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
+        self.home_1.add_contact(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
         self.home_2.handle_contact_request(self.username_1)
@@ -538,7 +538,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         for home in (self.home_1, self.home_2):
             home.navigate_back_to_home_view()
             home.chats_tab.click()
-        self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
+        self.home_1.add_contact(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
         self.home_2.handle_contact_request(self.username_1)

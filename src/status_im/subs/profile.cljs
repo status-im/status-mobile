@@ -127,6 +127,12 @@
    (:peer-syncing-enabled? profile)))
 
 (re-frame/reg-sub
+ :profile/compressed-key
+ :<- [:profile/profile]
+ (fn [{:keys [compressed-key]}]
+   compressed-key))
+
+(re-frame/reg-sub
  :multiaccount/contact
  :<- [:profile/profile]
  (fn [current-account]
@@ -350,6 +356,12 @@
  :<- [:initials-avatar-font-file]
  (fn [[profile ens-names port font-file] [_ avatar-opts]]
    (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts)))
+
+(re-frame/reg-sub
+ :profile/image
+ :<- [:profile/profile-with-image]
+ (fn [profile]
+   (profile.utils/photo profile)))
 
 (re-frame/reg-sub
  :profile/login-profile
