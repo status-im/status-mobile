@@ -68,7 +68,7 @@
             [:wallet/wizard-navigate-forward
              {:current-screen stack-id
               :start-flow?    start-flow?
-              :flow-id :wallet-flow}]]]})))
+              :flow-id        :wallet-flow}]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -85,7 +85,7 @@
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?
-            :flow-id :wallet-flow}]]]}))
+            :flow-id        :wallet-flow}]]]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
@@ -118,7 +118,7 @@
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
             :start-flow?    start-flow?
-            :flow-id :wallet-flow}]]]}))
+            :flow-id        :wallet-flow}]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
