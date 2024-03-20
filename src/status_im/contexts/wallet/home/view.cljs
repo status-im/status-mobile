@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.home.top-nav.view :as common.top-nav]
-    [status-im.contexts.wallet.common.validation :as wallet-validation]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
@@ -26,27 +25,6 @@
       :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
       :add-divider?        true}]]])
 
-(defn share-qr-code
-  [address]
-  [:<>
-   [quo/drawer-top
-    {:title address
-     :type  :address}]
-   [quo/action-drawer
-    [[{:icon                :i/send
-       :accessibility-label :send-asset
-       :label               (i18n/label :t/send-to-this-address)
-       :on-press            (fn []
-                               (rf/dispatch [:wallet/select-send-address
-                                             {:address   address
-                                              :recipient address
-                                              :stack-id  :wallet-select-address
-                                              :start-flow? true}]))}
-      {:icon                :i/save
-       :accessibility-label :save-address
-       :label               (i18n/label :t/save-address)
-       :on-press            #(js/alert "feature not implemented")}]]]])
-
 (defn- new-account-card-data
   []
   {:customization-color (rf/sub [:profile/customization-color])
@@ -67,8 +45,7 @@
         account-cards-data              (rf/sub [:wallet/account-cards-data])
         cards                           (conj account-cards-data (new-account-card-data))
 
-        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-tokens-and-balance])
-        qr-code-scanned                 (rf/sub [:wallet/qr-code])]
+        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-tokens-and-balance])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
@@ -77,12 +54,6 @@
                                           :offset   0}
                        )))
                    [(count cards)])
-    (rn/use-effect
-     (fn []
-       (when (and qr-code-scanned (wallet-validation/eth-address? qr-code-scanned))
-         (rf/dispatch [:show-bottom-sheet {:content #(share-qr-code qr-code-scanned)}])
-         (rf/dispatch [:wallet/clean-scanned-qr-code])))
-     [qr-code-scanned])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
      [rn/view {:style style/overview-container}

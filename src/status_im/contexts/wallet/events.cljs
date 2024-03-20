@@ -8,6 +8,7 @@
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.sheets.scanned-address.view :as scanned_address]
     [taoensso.timbre :as log]
     [utils.collection]
     [utils.ethereum.eip.eip55 :as eip55]
@@ -168,9 +169,9 @@
   {:db (update-in db [:wallet :ui] dissoc :scanned-address)})
 
 (rf/reg-event-fx :wallet/scan-qr-code-success
- (fn [{:keys [db]} [address]]
-   {:db       (assoc-in db [:wallet :qr-code] address)
-    :dispatch [:navigate-back]}))
+ (fn [_ [address]]
+   {:fx [[:dispatch [:navigate-back]]
+         [:dispatch [:show-bottom-sheet {:content #(scanned_address/view address)}]]]}))
 
 (rf/reg-event-fx :wallet/clean-scanned-qr-code
  (fn [{:keys [db]}]
