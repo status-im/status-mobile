@@ -1,4 +1,4 @@
-(ns status-im.contexts.communities.auth.communities-auth
+(ns status-im.contexts.communities.auth.auth
   (:require [status-im.common.keychain.events :as keychain]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
