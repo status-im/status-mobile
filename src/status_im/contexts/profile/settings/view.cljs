@@ -70,7 +70,8 @@
        :on-scroll                       #(scroll-handler % scroll-y)
        :bounces                         false}]
      [quo/floating-shell-button
-      {:jump-to
+      {:key :shell
+       :jump-to
        {:on-press            (fn []
                                (rf/dispatch [:navigate-back])
                                (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to] 500))
