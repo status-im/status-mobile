@@ -7,7 +7,7 @@
     [react-native.core :as rn]))
 
 (defn- category-internal
-  [{:keys [label data container-style] :as props}]
+  [{:keys [label data container-style settings-type] :as props}]
   (let [settings-item (filter identity data)]
     [rn/view {:style (merge (style/container label) container-style)}
      (when label
@@ -16,7 +16,10 @@
          :size   :paragraph-2
          :style  (style/label props)}
         label])
-     [rn/view {:style (style/settings-items props)}
+     [rn/view
+      {:style (merge (style/settings-items props)
+                     (when (= settings-type :page-setting)
+                       style/page-setting))}
       (for [item settings-item]
         ^{:key item}
         [:<>

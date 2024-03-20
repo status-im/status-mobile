@@ -290,6 +290,7 @@
                                  flag-share-all-addresses]
        :header                  [quo/category
                                  {:list-type       :settings
+                                  :settings-type   :page-setting
                                   :data            [{:title
                                                      (i18n/label
                                                       :t/share-all-current-and-future-addresses)

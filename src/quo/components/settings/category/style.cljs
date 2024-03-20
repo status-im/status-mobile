@@ -11,13 +11,12 @@
    :padding-bottom     8})
 
 (defn settings-items
-  [{:keys [label blur? theme background-color-override]}]
+  [{:keys [label blur? theme]}]
   {:margin-top       (if label 12 4)
    :border-radius    16
-   :background-color (or background-color-override
-                         (if blur?
-                           colors/white-opa-5
-                           (colors/theme-colors colors/white colors/neutral-95 theme)))
+   :background-color (if blur?
+                       colors/white-opa-5
+                       (colors/theme-colors colors/white colors/neutral-95 theme))
    :border-width     (if blur? 0 1)
    :border-color     (if blur?
                        colors/white-opa-5
@@ -61,3 +60,6 @@
    :blur-radius 10
    :blur-type   (colors/theme-colors :light :dark)
    :blur-amount 20})
+
+(def page-setting
+  {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90)})
