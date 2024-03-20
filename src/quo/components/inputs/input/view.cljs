@@ -102,10 +102,11 @@
                                                   (.clear ^js @ref)
                                                   (when on-clear (on-clear)))
                                                 [on-clear])
-        right-icon             (when (and (not right-icon) clearable?)
-                                 {:style-fn  style/clear-icon
-                                  :icon-name :i/clear
-                                  :on-press  clear-on-press})
+        right-icon             (or right-icon
+                                   (when clearable?
+                                     {:style-fn  style/clear-icon
+                                      :icon-name :i/clear
+                                      :on-press  clear-on-press}))
         clean-props            (apply dissoc props custom-props)]
     [rn/view {:style container-style}
      (when (or label char-limit)
