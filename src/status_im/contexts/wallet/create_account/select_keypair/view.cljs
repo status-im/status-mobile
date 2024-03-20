@@ -46,12 +46,11 @@
                :action        :none}))))
 
 (defn- keypair
-  [item index _ {:keys [profile-picture compressed-key selected-key-uid set-selected-key-uid]}]
-  (let [main-account (first (:accounts item))
-        color        (:customization-color main-account)
-        accounts     (parse-accounts (:accounts item))]
+  [item index _
+   {:keys [profile-picture compressed-key selected-key-uid set-selected-key-uid customization-color]}]
+  (let [accounts (parse-accounts (:accounts item))]
     [quo/keypair
-     {:customization-color color
+     {:customization-color customization-color
       :profile-picture     (when (zero? index) profile-picture)
       :status-indicator    false
       :type                (if (zero? index) :default-keypair :other)
@@ -97,7 +96,8 @@
        :render-data             {:profile-picture      profile-picture
                                  :compressed-key       compressed-key
                                  :selected-key-uid     selected-key-uid
-                                 :set-selected-key-uid set-selected-key-uid}
+                                 :set-selected-key-uid set-selected-key-uid
+                                 :customization-color  customization-color}
        :initial-num-to-render   1
        :content-container-style {:padding-bottom 60}}]
      [quo/bottom-actions
