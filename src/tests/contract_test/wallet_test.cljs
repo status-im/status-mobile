@@ -79,9 +79,10 @@
 (deftest wallet-get-walet-token-test
   (h/test-async :wallet/get-wallet-token
     (fn []
-      (p/let [accounts     (contract-utils/call-rpc "accounts_getAccounts")
-              main-account (contract-utils/get-main-account accounts)
-              response     (contract-utils/call-rpc
-                            "wallet_getWalletToken"
-                            [main-account])]
+      (p/let [accounts        (contract-utils/call-rpc "accounts_getAccounts")
+              default-account (contract-utils/get-default-account accounts)
+              default-address (:address default-account)
+              response        (contract-utils/call-rpc
+                               "wallet_getWalletToken"
+                               [default-address])]
         (assert-wallet-tokens response)))))
