@@ -69,6 +69,8 @@
       (is (not-empty (:symbol token)))
       (is (:decimals token))
       (is (contains? token :balancesPerChain))
+      (is (contains? token :marketValuesPerCurrency))
+      (is (contains? (:marketValuesPerCurrency token) :usd))
       (let [balances-per-chain (:balancesPerChain token)]
         (doseq [[_ balance] balances-per-chain]
           (is (contains? balance :rawBalance))
