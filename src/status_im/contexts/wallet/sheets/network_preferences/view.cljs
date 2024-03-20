@@ -4,6 +4,7 @@
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.network-preferences.style :as style]
             [utils.i18n :as i18n]
@@ -18,12 +19,17 @@
         network-preferences-names-state     (reagent/atom #{})
         toggle-network                      (fn [network-name]
                                               (reset! state :changed)
-                                              (if (contains? @network-preferences-names-state
-                                                             network-name)
-                                                (swap! network-preferences-names-state disj
-                                                  network-name)
-                                                (swap! network-preferences-names-state conj
-                                                  network-name)))
+                                              (let [contains-network? (contains?
+                                                                       @network-preferences-names-state
+                                                                       network-name)
+                                                    update-fn         (if contains-network? disj conj)
+                                                    networks-count    (count
+                                                                       @network-preferences-names-state)]
+                                                (if (and (= networks-count 1) contains-network?)
+                                                  (reset! network-preferences-names-state
+                                                    (set constants/default-network-names))
+                                                  (swap! network-preferences-names-state update-fn
+                                                    network-name))))
         get-current-preferences-names       (fn []
                                               (if (= @state :default)
                                                 initial-network-preferences-names
