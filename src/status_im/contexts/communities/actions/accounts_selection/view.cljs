@@ -10,6 +10,7 @@
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
     [status-im.contexts.communities.utils :as communities.utils]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -58,14 +59,27 @@
         (rn/use-callback
          (fn []
            (rf/dispatch
-            [:password-authentication/show
-             {:content (fn [] [password-authentication/view])}
-             {:label    (i18n/label :t/join-open-community)
-              :on-press (fn [password]
-                          (rf/dispatch [:communities/request-to-join-with-addresses
-                                        {:community-id id :password password}]))}])
+            [:communities/login-with-biometric-if-available
+             {:key-uid    key-uid
+              :on-success (fn [password]
+                            [:dispatch
+                             [:communities/request-to-join-with-addresses
+                              {:community-id id
+                               :password     password}]])
+              :on-fail    (fn [err]
+                            (log/info "Biometric authentication failed" err)
+                            (rf/dispatch
+                             [:password-authentication/show
+                              {:content      (fn [] [password-authentication/view])
+                               :community-id id}
+                              {:label    (i18n/label :t/join-open-community)
+                               :on-press (fn [password]
+                                           (rf/dispatch
+                                            [:communities/request-to-join-with-addresses
+                                             {:community-id id
+                                              :password     password}]))}]))}])
            (navigate-back)))
-
+        
         open-permission-sheet
         (rn/use-callback (fn []
                            (rf/dispatch [:show-bottom-sheet

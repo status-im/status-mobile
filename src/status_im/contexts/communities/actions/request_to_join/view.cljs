@@ -8,23 +8,35 @@
     [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.community-rules-list.view :as community-rules]
     [status-im.contexts.communities.actions.request-to-join.style :as style]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn join-community-and-navigate-back
-  [id]
-  (rf/dispatch [:password-authentication/show
-                {:content (fn [] [password-authentication/view])}
-                {:label    (i18n/label :t/join-open-community)
-                 :on-press #(rf/dispatch [:communities/request-to-join
-                                          {:community-id id :password %}])}])
+  [id key-uid]
+  (rf/dispatch
+   [:communities/login-with-biometric-if-available
+    {:key-uid    key-uid
+     :on-success (fn [password]
+                   [:dispatch
+                    [:communities/request-to-join
+                     {:community-id id :password password}]])
+     :on-fail    (fn [err]
+                   (log/info "Biometric authentication failed" err)
+                   (rf/dispatch [:password-authentication/show
+                                 {:content (fn [] [password-authentication/view])}
+                                 {:label    (i18n/label :t/join-open-community)
+                                  :on-press #(rf/dispatch [:communities/request-to-join
+                                                           {:community-id id :password %}])}]))}])
+
   (rf/dispatch [:navigate-back]))
 
 (defn- view-internal
   [{:keys [theme]}]
   (fn []
     (let [{:keys [id]}                (rf/sub [:get-screen-params])
-          {:keys [color name images]} (rf/sub [:communities/community id])]
+          {:keys [color name images]} (rf/sub [:communities/community id])
+          key-uid                     (rf/sub [:profile/key-uid])]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style style/container}
         [rn/view style/page-container
@@ -56,7 +68,7 @@
          (i18n/label :t/cancel)]
         [quo/button
          {:accessibility-label :join-community-button
-          :on-press            #(join-community-and-navigate-back id)
+          :on-press            #(join-community-and-navigate-back id key-uid)
           :container-style     {:flex 1}
           :inner-style         {:background-color (colors/resolve-color color theme)}}
          (i18n/label :t/request-to-join)]]
