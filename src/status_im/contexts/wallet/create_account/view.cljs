@@ -40,7 +40,10 @@
     :image             :icon
     :image-props       :i/derivated-path
     :action            :button
-    :action-props      {:on-press    #(js/alert "Coming soon!")
+    :action-props      {:on-press    (fn []
+                                       (rf/dispatch [:navigate-to
+                                                     :screen/wallet.edit-derivation-path
+                                                     {:customization-color customization-color}]))
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/placeholder
                         :alignment   :flex-start}
