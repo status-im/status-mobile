@@ -9,8 +9,10 @@
     [status-im.contexts.communities.events]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
     [utils.debounce :as debounce]
+    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip681 :as eip681]
     [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
     [utils.url :as url]))
 
 (def invalid-qr-toast
@@ -68,6 +70,13 @@
    [:toasts/upsert invalid-qr-toast]
    300))
 
+(rf/reg-event-fx :on-scanned
+  (fn [{:keys [db]} [uri]]
+    {:router/handle-uri {:chain (chain/chain-keyword db)
+                         :chats (get db :chats)
+                         :uri   uri
+                         :cb    #(js/console.log "ALWX" (clj->js %))}}))
+
 (defn on-qr-code-scanned
   [scanned-text]
   (cond
@@ -78,8 +87,9 @@
     (text-for-url-path? scanned-text router/channel-path)
     ;; TODO: https://github.com/status-im/status-mobile/issues/18743
     ;; :serialization/deserialize-and-compress-key
-    ;; https://status.app/cc/30804ea7-bd66-4d5d-91eb-b2dcfe2515b3?d=G44BYCwKbLcVA5s5Bhs2lC8WIsbe1Ll70Kdv4FgHbWRTahsNE7FyJPCzCRkfQZmb4bJ3OjqVUh33_HvYgBqJydeBkE6OvwNbW5RYIBimLYEE85hyGwPHcepRaBelEHXmnEX3yVmaUcoIuLwEjUcQGxwNyGT88OJiMRjpkKZbz62rg0OjnnDuj5EHyxZaKh4NISR7Eg3GcmKIORmQG_svznCBNbWK1vxSPDyhV46c9cue2_5bgB6TrsKFS1NlHSn9HRAR3Nh3gj7ybhZ_bqKYhi3LGg==#zQ3shY7r4cAdg4eUF5dfcuCqCFzWmdjHW4SX5hspM9ucAarfUjdifgtuckin
-    (js/console.log "ALWX2" scanned-text)
+    ;; https://status.app/cc/G54AAKwObLdpiGjXnckYzRcOSq0QQAS_CURGfqVU42ceGHCObstUIknTTZDOKF3E8y2MSicncpO7fTskXnoACiPKeejvjtLTGWNxUhlT7fyQS7Jrr33UVHluxv_PLjV2ePGw5GQ33innzeK34pInIgUGs5RjdQifMVmURalxxQKwiuoY5zwIjixWWRHqjHM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11
+    ;; check status-im.common.router/match-uri function
+    (rf/dispatch [:on-scanned scanned-text])
 
     (text-for-url-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]
