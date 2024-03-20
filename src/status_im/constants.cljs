@@ -73,6 +73,7 @@
 (def ^:const contact-request-message-state-pending 1)
 (def ^:const contact-request-message-state-accepted 2)
 (def ^:const contact-request-message-state-declined 3)
+(def ^:const contact-request-message-max-length 280)
 
 (def request-to-join-pending-state 1)
 
@@ -477,6 +478,7 @@
 
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
+(def ^:const bridge-name-hop "Hop")
 
 (def ^:const alert-banner-height 40)
 

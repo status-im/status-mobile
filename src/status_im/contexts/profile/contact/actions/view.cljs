@@ -68,24 +68,24 @@
                                 (i18n/label :t/edit-nickname)
                                 (i18n/label :t/add-nickname-title))
          :on-press            on-add-nickname
-         :accessibility-label (if nickname :edit-nickname :add-nickname)}
-        {:icon                :i/qr-code
-         :label               (i18n/label :t/show-qr)
-         :on-press            on-show-qr
-         :accessibility-label :show-qr-code}
-        {:icon                :i/share
-         :label               (i18n/label :t/share-profile)
-         :on-press            on-share-profile
-         :accessibility-label :share-profile}
-        (when has-nickname?
-          {:icon                :i/delete
-           :label               (i18n/label :t/remove-nickname)
-           :on-press            on-remove-nickname
-           :add-divider?        true
-           :accessibility-label :remove-nickname
-           :danger?             true})]
+         :accessibility-label (if nickname :edit-nickname :add-nickname)}]
        (when-not blocked?
-         [{:icon                :i/untrustworthy
+         [{:icon                :i/qr-code
+           :label               (i18n/label :t/show-qr)
+           :on-press            on-show-qr
+           :accessibility-label :show-qr-code}
+          {:icon                :i/share
+           :label               (i18n/label :t/share-profile)
+           :on-press            on-share-profile
+           :accessibility-label :share-profile}
+          (when has-nickname?
+            {:icon                :i/delete
+             :label               (i18n/label :t/remove-nickname)
+             :on-press            on-remove-nickname
+             :add-divider?        true
+             :accessibility-label :remove-nickname
+             :danger?             true})
+          {:icon                :i/untrustworthy
            :label               (i18n/label :t/mark-untrustworthy)
            :on-press            not-implemented/alert
            :accessibility-label :mark-untrustworthy

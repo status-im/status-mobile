@@ -15,6 +15,6 @@
      :button-one-label  (i18n/label :t/confirm-bridge)
      :button-one-props  {:icon-left :i/bridge}
      :on-navigate-back  (fn []
-                          (rf/dispatch [:navigate-back-within-stack :screen/wallet.bridge-send]))}]])
+                          (rf/dispatch [:navigate-back]))}]])
 
 (def view (quo.theme/with-theme view-internal))
