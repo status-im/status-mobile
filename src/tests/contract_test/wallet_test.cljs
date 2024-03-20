@@ -65,7 +65,16 @@
 (defn assert-wallet-tokens
   [tokens]
   (let [flattened-tokens (mapcat val tokens)]
-    (is (some :symbol flattened-tokens))))
+    (doseq [token flattened-tokens]
+      (is (not-empty (:symbol token)))
+      (is (:decimals token))
+      (is (contains? token :balancesPerChain))
+      (let [balances-per-chain (:balancesPerChain token)]
+        (doseq [[_ balance] balances-per-chain]
+          (is (contains? balance :rawBalance))
+          (let [raw-balance (:rawBalance balance)]
+            (is (not-empty raw-balance))
+            (is (re-matches #"\d+" raw-balance))))))))
 
 (deftest wallet-get-walet-token-test
   (h/test-async :wallet/get-wallet-token
