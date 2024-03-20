@@ -35,19 +35,20 @@
 
 (defn- open-preferences
   [selected-networks account]
-  (rf/dispatch [:show-bottom-sheet
-                {:theme :dark
-                 :shell? true
-                 :content
-                 (fn []
-                   [network-preferences/view
-                    {:blur?             true
-                     :selected-networks (set @selected-networks)
-                     :account           account
-                     :on-save           (fn [chain-ids]
-                                          (rf/dispatch [:hide-bottom-sheet])
-                                          (reset! selected-networks (map #(get utils/id->network %)
-                                                                         chain-ids)))}])}]))
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:theme   :dark
+     :shell?  true
+     :content (fn []
+                [network-preferences/view
+                 {:blur?             true
+                  :selected-networks (set @selected-networks)
+                  :account           account
+                  :on-save           (fn [chain-ids]
+                                       (rf/dispatch [:hide-bottom-sheet])
+                                       (reset! selected-networks (map #(get utils/id->network %)
+                                                                      chain-ids)))}])}]))
+
 (defn- wallet-qr-code-item
   [{:keys [account index]}]
   (let [{window-width :width} (rn/get-window)
