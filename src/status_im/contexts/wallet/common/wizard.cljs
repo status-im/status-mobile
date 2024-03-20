@@ -10,7 +10,7 @@
        first))
 
 (rf/reg-event-fx
- :common.wizard/navigate-forward
+ :wallet/wizard-navigate-forward
  (fn [{:keys [db]} [{:keys [current-screen flow-config start-flow?]}]]
    (let [next-screen (wizard-find-next-screen db flow-config current-screen)]
      {:fx [[:dispatch

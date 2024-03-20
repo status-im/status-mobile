@@ -84,8 +84,7 @@
          [:dispatch
           [:wallet/send-flow-navigate-forward
            {:current-screen stack-id
-            :start-flow?    start-flow?}]]
-        ]}))
+            :start-flow?    start-flow?}]]]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
@@ -301,7 +300,7 @@
  :wallet/send-flow-navigate-forward
  (fn [_ [{:keys [current-screen start-flow?]}]]
    {:fx [[:dispatch
-          [:common.wizard/navigate-forward
+          [:wallet/wizard-navigate-forward
            {:current-screen current-screen
             :start-flow?    start-flow?
             :flow-config    flow-config/steps}]]]}))
