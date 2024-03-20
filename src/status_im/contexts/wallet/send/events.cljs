@@ -90,24 +90,24 @@
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :token] nil)}))
+   {:db (update-in db [:wallet :ui :send] dissoc :token :tx-type)}))
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]}]
-   (let [type (get-in db [:wallet :ui :send :type])]
+   (let [transaction-type (get-in db [:wallet :ui :send :tx-type])]
      {:db (update-in db
                      [:wallet :ui :send]
                      dissoc
                      :collectible
                      :amount
-                     (when (= type :collecible) :type))})))
+                     (when (= transaction-type :collecible) :tx-type))})))
 
 (rf/reg-event-fx :wallet/send-select-collectible
  (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :token)
             (assoc-in [:wallet :ui :send :collectible] collectible)
-            (assoc-in [:wallet :ui :send :type] :collectible)
+            (assoc-in [:wallet :ui :send :tx-type] :collectible)
             (assoc-in [:wallet :ui :send :amount] 1))
     :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
          [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
@@ -121,7 +121,7 @@
  (fn [{:keys [db now]} [{:keys [amount]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
          token                   (get-in db [:wallet :ui :send :token])
-         transaction-type        (get-in db [:wallet :ui :send :type])
+         transaction-type        (get-in db [:wallet :ui :send :tx-type])
          collectible             (get-in db [:wallet :ui :send :collectible])
          to-address              (get-in db [:wallet :ui :send :to-address])
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
@@ -191,47 +191,81 @@
  (fn [_]
    {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
-(defn- transaction-bridge
-  [{:keys [from-address from-chain-id to-address token-id token-address route data eth-transfer?]}]
-  (let [{:keys [bridge-name amount-out gas-amount
-                gas-fees]}                 route
-        eip-1559-enabled?                  (:eip-1559-enabled gas-fees)
+(defn- transaction-data
+  [{:keys [from-address to-address token-address route data eth-transfer?]}]
+  (let [{:keys [amount-in gas-amount gas-fees]} route
+        eip-1559-enabled?                       (:eip-1559-enabled gas-fees)
         {:keys [gas-price max-fee-per-gas-medium
-                max-priority-fee-per-gas]} gas-fees
-        transfer-tx                        (cond-> {:From  from-address
-                                                    :To    (or token-address to-address)
-                                                    :Gas   (money/to-hex gas-amount)
-                                                    :Value (when eth-transfer? amount-out)
-                                                    :Nonce nil
-                                                    :Input ""
-                                                    :Data  (or data "0x")}
-                                             eip-1559-enabled?       (assoc :TxType "0x02"
-                                                                            :MaxFeePerGas
-                                                                            (money/to-hex
-                                                                             (money/->wei
-                                                                              :gwei
-                                                                              max-fee-per-gas-medium))
-                                                                            :MaxPriorityFeePerGas
-                                                                            (money/to-hex
-                                                                             (money/->wei
-                                                                              :gwei
-                                                                              max-priority-fee-per-gas)))
-                                             (not eip-1559-enabled?) (assoc :TxType   "0x00"
-                                                                            :GasPrice (money/to-hex
-                                                                                       (money/->wei
-                                                                                        :gwei
-                                                                                        gas-price))))]
-    [(cond-> {:BridgeName bridge-name
-              :ChainID    from-chain-id}
+                max-priority-fee-per-gas]}      gas-fees]
+    (cond-> {:From  from-address
+             :To    (or token-address to-address)
+             :Gas   (money/to-hex gas-amount)
+             :Value (when eth-transfer? amount-in)
+             :Nonce nil
+             :Input ""
+             :Data  (or data "0x")}
+      eip-1559-enabled?       (assoc
+                               :TxType "0x02"
+                               :MaxFeePerGas
+                               (money/to-hex
+                                (money/->wei
+                                 :gwei
+                                 max-fee-per-gas-medium))
+                               :MaxPriorityFeePerGas
+                               (money/to-hex
+                                (money/->wei
+                                 :gwei
+                                 max-priority-fee-per-gas)))
+      (not eip-1559-enabled?) (assoc :TxType "0x00"
+                                     :GasPrice
+                                     (money/to-hex
+                                      (money/->wei
+                                       :gwei
+                                       gas-price))))))
 
-       (= bridge-name constants/bridge-name-erc-721-transfer)
-       (assoc :ERC721TransferTx
-              (assoc transfer-tx
-                     :Recipient to-address
-                     :TokenID   token-id))
+(defn- transaction-path
+  [{:keys [from-address to-address token-id token-address route data eth-transfer?]}]
+  (let [{:keys [bridge-name amount-in bonder-fees from
+                to]}  route
+        tx-data       (transaction-data {:from-address  from-address
+                                         :to-address    to-address
+                                         :token-address token-address
+                                         :route         route
+                                         :data          data
+                                         :eth-transfer? eth-transfer?})
+        to-chain-id   (:chain-id to)
+        from-chain-id (:chain-id from)]
+    (cond-> {:BridgeName bridge-name
+             :ChainID    from-chain-id}
 
-       (= bridge-name constants/bridge-name-transfer)
-       (assoc :TransferTx transfer-tx))]))
+      (= bridge-name constants/bridge-name-erc-721-transfer)
+      (assoc :ERC721TransferTx
+             (assoc tx-data
+                    :Recipient to-address
+                    :TokenID   token-id
+                    :ChainID   to-chain-id))
+
+      (= bridge-name constants/bridge-name-transfer)
+      (assoc :TransferTx tx-data)
+
+      (= bridge-name constants/bridge-name-hop)
+      (assoc :HopTx
+             (assoc tx-data
+                    :ChainID   to-chain-id
+                    :Symbol    token-id
+                    :Recipient to-address
+                    :Amount    amount-in
+                    :BonderFee bonder-fees))
+
+      (not (or (= bridge-name constants/bridge-name-erc-721-transfer)
+               (= bridge-name constants/bridge-name-transfer)
+               (= bridge-name constants/bridge-name-hop)))
+      (assoc :CbridgeTx
+             (assoc tx-data
+                    :ChainID   to-chain-id
+                    :Symbol    token-id
+                    :Recipient to-address
+                    :Amount    amount-in)))))
 
 (defn- multi-transaction-command
   [{:keys [from-address to-address from-asset to-asset amount-out transfer-type]
@@ -245,41 +279,54 @@
 
 (rf/reg-event-fx :wallet/send-transaction
  (fn [{:keys [db]} [sha3-pwd]]
-   (let [route           (first (get-in db [:wallet :ui :send :route]))
-         from-address    (get-in db [:wallet :current-viewing-account-address])
-         token           (get-in db [:wallet :ui :send :token])
-         collectible     (get-in db [:wallet :ui :send :collectible])
-         from-chain-id   (get-in route [:from :chain-id])
-         token-id        (if token
-                           (:symbol token)
-                           (get-in collectible [:id :token-id]))
+   (let [routes (get-in db [:wallet :ui :send :route])
+         first-route (first routes)
+         from-address (get-in db [:wallet :current-viewing-account-address])
+         transaction-type (get-in db [:wallet :ui :send :tx-type])
+         transaction-type-param (case transaction-type
+                                  :collectible constants/send-type-erc-721-transfer
+                                  :bridge      constants/send-type-bridge
+                                  constants/send-type-transfer)
+         token (get-in db [:wallet :ui :send :token])
+         collectible (get-in db [:wallet :ui :send :collectible])
+         first-route-from-chain-id (get-in first-route [:from :chain-id])
+         token-id (if token
+                    (:symbol token)
+                    (get-in collectible [:id :token-id]))
          erc20-transfer? (and token (not= token-id "ETH"))
-         eth-transfer?   (and token (not erc20-transfer?))
-         token-address   (cond collectible
-                               (get-in collectible
-                                       [:id :contract-id :address])
-                               erc20-transfer?
-                               (get-in token [:balances-per-chain from-chain-id :address]))
-         to-address      (get-in db [:wallet :ui :send :to-address])
-         data            (when erc20-transfer?
-                           (native-module/encode-transfer (address/normalized-hex to-address)
-                                                          (:amount-out route)))
-         request-params  [(multi-transaction-command
-                           {:from-address from-address
-                            :to-address   to-address
-                            :from-asset   token-id
-                            :to-asset     token-id
-                            :amount-out   (if eth-transfer? (:amount-out route) "0x0")})
-                          (transaction-bridge {:to-address    to-address
-                                               :from-address  from-address
-                                               :route         route
-                                               :from-chain-id from-chain-id
-                                               :token-address token-address
-                                               :token-id      (when collectible
-                                                                (money/to-hex (js/parseInt token-id)))
-                                               :data          data
-                                               :eth-transfer? eth-transfer?})
-                          sha3-pwd]]
+         eth-transfer? (and token (not erc20-transfer?))
+         token-address (cond collectible
+                             (get-in collectible
+                                     [:id :contract-id :address])
+                             erc20-transfer?
+                             (get-in token [:balances-per-chain first-route-from-chain-id :address]))
+         to-address (get-in db [:wallet :ui :send :to-address])
+         transaction-paths (mapv (fn [route]
+                                   (let [data (when erc20-transfer?
+                                                (native-module/encode-transfer
+                                                 (address/normalized-hex to-address)
+                                                 (:amount-in route)))]
+                                     (transaction-path {:to-address    to-address
+                                                        :from-address  from-address
+                                                        :route         route
+                                                        :token-address token-address
+                                                        :token-id      (if collectible
+                                                                         (money/to-hex (js/parseInt
+                                                                                        token-id))
+                                                                         token-id)
+                                                        :data          data
+                                                        :eth-transfer? eth-transfer?})))
+                                 routes)
+         request-params
+         [(multi-transaction-command
+           {:from-address  from-address
+            :to-address    to-address
+            :from-asset    token-id
+            :to-asset      token-id
+            :amount-out    (if eth-transfer? (:amount-out first-route) "0x0")
+            :transfer-type transaction-type-param})
+          transaction-paths
+          sha3-pwd]]
      {:json-rpc/call [{:method     "wallet_createMultiTransaction"
                        :params     request-params
                        :on-success (fn [result]
@@ -293,4 +340,8 @@
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction
                                                  :error  error
-                                                 :params request-params}))}]})))
+                                                 :params request-params})
+                                     (rf/dispatch [:toasts/upsert
+                                                   {:id   :send-transaction-error
+                                                    :type :negative
+                                                    :text (:message error)}]))}]})))
