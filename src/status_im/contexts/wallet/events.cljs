@@ -42,13 +42,13 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
 
-(rf/reg-event-fx :wallet/remove-current-viewing-account
+(rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]}]
    {:db (update db :wallet dissoc :current-viewing-account-address)}))
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [_]
-   {:fx [[:dispatch [:wallet/remove-current-viewing-account]]
+   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
          [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx

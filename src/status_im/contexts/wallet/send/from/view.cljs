@@ -17,7 +17,7 @@
 
 (defn- on-close
   []
-  (rf/dispatch [:wallet/remove-current-viewing-account])
+  (rf/dispatch [:wallet/clean-current-viewing-account])
   (rf/dispatch [:navigate-back]))
 
 (defn view

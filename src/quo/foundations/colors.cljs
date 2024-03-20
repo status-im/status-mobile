@@ -258,7 +258,7 @@
    :opt  :optimism
    :arb1 :arbitrum})
 
-(def ^:private short-name-map
+(def ^:private networks-short-name
   (reduce (fn [acc [k v]]
             (assoc acc k (get networks v)))
           {}
@@ -304,7 +304,7 @@
                     60 warning-60}}
          customization
          networks
-         short-name-map
+         networks-short-name
          socials))
 
 (defn hex-string?
