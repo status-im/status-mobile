@@ -20,6 +20,7 @@
     status-im.contexts.chat.messenger.composer.events
     status-im.contexts.chat.messenger.messages.link-preview.events
     status-im.contexts.chat.messenger.photo-selector.events
+    status-im.contexts.communities.auth.auth
     status-im.contexts.communities.events
     status-im.contexts.communities.overview.events
     status-im.contexts.onboarding.common.overlay.events
