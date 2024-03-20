@@ -354,7 +354,8 @@
  :wallet/select-from-account
  (fn [_ [{:keys [address stack-id start-flow?]}]]
    {:fx [[:dispatch [:wallet/switch-current-viewing-account address]]
-         [:dispatch [:wallet/wizard-navigate-forward
-                     {:current-screen stack-id
-                      :start-flow?    start-flow?
-                      :flow-id        :wallet-flow}]]]}))
+         [:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-flow}]]]}))

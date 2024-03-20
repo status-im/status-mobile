@@ -75,7 +75,7 @@
     [status-im.contexts.wallet.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
-    [status-im.contexts.wallet.send.select-address.view :as wallet-select-address] 
+    [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]

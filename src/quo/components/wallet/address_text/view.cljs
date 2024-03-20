@@ -19,7 +19,7 @@
 (defn- view-internal
   [{:keys [networks address blur? theme format full-address? size weight]
     :or   {size :paragraph-2}}]
-  (let [network-colored-text                      (map #(colored-network-text {:theme   theme
+  (let [network-colored-text                 (map #(colored-network-text {:theme   theme
                                                                           :network %
                                                                           :weight  weight
                                                                           :size    size}))

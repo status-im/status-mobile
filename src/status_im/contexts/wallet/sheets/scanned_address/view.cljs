@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.sheets.scanned-address.view
   (:require
-   [quo.core :as quo]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   [address]
@@ -16,9 +16,9 @@
        :label               (i18n/label :t/send-to-this-address)
        :on-press            (fn []
                               (rf/dispatch [:wallet/select-send-address
-                                            {:address   address
-                                             :recipient address
-                                             :stack-id  :wallet-select-address
+                                            {:address     address
+                                             :recipient   address
+                                             :stack-id    :wallet-select-address
                                              :start-flow? true}]))}
       {:icon                :i/save
        :accessibility-label :save-address
