@@ -365,4 +365,4 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [[{:keys [token-permissions joined]}] _]
-   (and (not joined) (seq token-permissions))))
+   (and (not joined) (some? token-permissions))))

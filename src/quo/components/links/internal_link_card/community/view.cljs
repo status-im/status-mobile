@@ -10,8 +10,8 @@
 
 (defn- description-comp
   [description members-count active-members-count hide-members-count?]
-  (let [positive-members-count?        (pos? members-count)
-        positive-active-members-count? (pos? active-members-count)]
+  (let [has-members?        (pos? members-count)
+        has-active-members? (pos? active-members-count)]
     [rn/view
      [text/text
       {:size                :paragraph-2
@@ -21,14 +21,14 @@
      (when-not hide-members-count?
        [rn/view
         {:style style/stat-container}
-        (when positive-members-count?
+        (when has-members?
           [community-stat/view
            {:value               members-count
             :icon                :i/members
             :accessibility-label :members-count
             :style               {:margin-right 12}
             :text-size           :paragraph-2}])
-        (when positive-active-members-count?
+        (when has-active-members?
           [community-stat/view
            {:value               active-members-count
             :icon                :i/active-members
