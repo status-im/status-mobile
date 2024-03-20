@@ -301,7 +301,7 @@
  :wallet/send-flow-navigate-forward
  (fn [_ [{:keys [current-screen start-flow?]}]]
    {:fx [[:dispatch
-          [:navigation/wizard-forward
+          [:common.wizard/navigate-forward
            {:current-screen current-screen
             :start-flow?    start-flow?
             :flow-config    flow-config/steps}]]]}))

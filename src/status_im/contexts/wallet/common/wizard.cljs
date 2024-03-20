@@ -1,4 +1,4 @@
-(ns status-im.common.wizard
+(ns status-im.contexts.wallet.common.wizard
   (:require [utils.re-frame :as rf]))
 
 (defn- wizard-find-next-screen
@@ -10,7 +10,7 @@
        first))
 
 (rf/reg-event-fx
- :navigation/wizard-forward
+ :common.wizard/navigate-forward
  (fn [{:keys [db]} [{:keys [current-screen flow-config start-flow?]}]]
    (let [next-screen (wizard-find-next-screen db flow-config current-screen)]
      {:fx [[:dispatch
