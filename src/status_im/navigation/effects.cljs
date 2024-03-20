@@ -27,18 +27,13 @@
      (when on-focus
        (rf/dispatch on-focus)))))
 
-(defn set-view-id
-  [view-id]
-  (when (get views/screens view-id)
-    (rf/dispatch [:set-view-id view-id])))
-
 (defn- dismiss-all-modals
   []
-  (when @state/curr-modal
-    (reset! state/curr-modal false)
+  (when (seq @state/modals)
     (reset! state/dissmissing true)
     (doseq [modal @state/modals]
       (navigation/dismiss-modal (name modal)))
+    (state/navigation-pop-from (first @state/modals))
     (reset! state/modals [])))
 
 ;;;; Root
@@ -51,7 +46,9 @@
                    (get roots/themes root-id)
                    root-id])
      (reset! state/root-id (or (get-in root [:root :stack :id]) root-id))
-     (navigation/set-root root))))
+     (navigation/set-root root)
+     (state/navigation-state-reset [{:id   root-id
+                                     :type :root}]))))
 
 ;;;; Navigate to
 
@@ -64,7 +61,10 @@
      {:component {:id      component
                   :name    component
                   :options (merge (options/root-options {:theme (:theme options)})
-                                  options)}})))
+                                  options)}})
+    (state/navigation-state-push {:id     component
+                                  :type   :stack
+                                  :parent @state/root-id})))
 
 (rf/reg-fx :navigate-to navigate)
 
@@ -79,43 +79,52 @@
                   :name    component
                   :options (merge
                             (options/root-options {:theme (:theme options)})
-                            options)}})))
+                            options)}})
+    (state/navigation-state-push {:id     component
+                                  :type   :stack
+                                  :parent comp-id})))
 
 (rf/reg-fx :navigate-to-within-stack navigate-to-within-stack)
-
-(rf/reg-fx :navigate-replace-fx
- (fn [view-id]
-   (navigation/pop (name @state/root-id))
-   (navigate view-id)))
 
 (defn dismiss-modal
   ([] (dismiss-modal nil))
   ([comp-id]
    (reset! state/dissmissing true)
-   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))))
+   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))
+   (state/navigation-pop-from comp-id)))
 
-(rf/reg-fx :navigate-back
- (fn []
-   (if @state/curr-modal
-     (dismiss-modal)
-     (navigation/pop (name @state/root-id)))))
+(defn navigate-back
+  []
+  (when-let [{:keys [type parent id]} (last (state/get-navigation-state))]
+    (cond
+      (and (= type :modal) id)
+      (dismiss-modal id)
+      (and (= type :stack) parent)
+      (do
+        (navigation/pop (name parent))
+        (state/navigation-state-pop)))))
 
-(rf/reg-fx :navigate-back-within-stack
- (fn [comp-id]
-   (navigation/pop (name comp-id))))
+(rf/reg-fx :navigate-back navigate-back)
+
+(rf/reg-fx :navigate-replace-fx
+ (fn [view-id]
+   (navigate-back)
+   (navigate view-id)))
 
 (rf/reg-fx :navigate-back-to
  (fn [comp-id]
-   (navigation/pop-to (name comp-id))))
+   (navigation/pop-to (name comp-id))
+   (state/navigation-pop-after comp-id)))
 
 (rf/reg-fx :dismiss-modal
  (fn [comp-id]
-   (dismiss-modal (name comp-id))))
+   (dismiss-modal comp-id)))
 
 (defn- pop-to-root
   [root-id]
+  (dismiss-all-modals)
   (navigation/pop-to-root root-id)
-  (dismiss-all-modals))
+  (state/navigation-pop-after root-id))
 
 (rf/reg-fx :pop-to-root-fx pop-to-root)
 
@@ -128,7 +137,6 @@
     (if @state/dissmissing
       (reset! state/dissmissing component)
       (do
-        (reset! state/curr-modal true)
         (swap! state/modals conj component)
         (navigation/show-modal
          {:stack {:children [{:component
@@ -137,7 +145,9 @@
                                :options (merge (options/root-options {:theme (:theme options)})
                                                options
                                                (when sheet?
-                                                 options/sheet-options))}}]}})))))
+                                                 options/sheet-options))}}]}})))
+    (state/navigation-state-push {:id   component
+                                  :type :modal})))
 
 (rf/reg-fx :open-modal-fx open-modal)
 

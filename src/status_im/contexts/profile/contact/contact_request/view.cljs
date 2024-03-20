@@ -36,18 +36,24 @@
        :full-name           full-name
        :profile-picture     profile-picture
        :customization-color customization-color}]
-     [rn/text {:style style/message-prompt-wrapper}
+     [quo/text {:style style/message-prompt-wrapper}
       (i18n/label :t/contact-request-message-prompt)]
      [rn/view {:style style/message-input-wrapper}
       [quo/input
-       {:type           :text
-        :multiline?     true
-        :char-limit     280
-        :label          (i18n/label :t/message)
-        :on-change-text on-message-change}]]
+       {:type                :text
+        :multiline?          true
+        :char-limit          constants/contact-request-message-max-length
+        :max-length          constants/contact-request-message-max-length
+        :placeholder         (i18n/label :t/type-something)
+        :auto-focus          true
+        :accessibility-label :contact-request-message
+        :label               (i18n/label :t/message)
+        :on-change-text      on-message-change}]]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:disabled? (string/blank? message)
-                          :on-press  on-message-submit}
+       :button-one-props {:disabled?           (string/blank? message)
+                          :accessibility-label :send-contact-request
+                          :customization-color customization-color
+                          :on-press            on-message-submit}
        :button-one-label (i18n/label :t/send-contact-request)}]]))
 

@@ -62,15 +62,6 @@ class GroupInfoButton(Button):
         return self.navigate()
 
 
-class UnblockContactButton(Button):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="Unblock-item-button")
-
-    def click(self):
-        self.scroll_to_element()
-        self.wait_for_element().click()
-
-
 class OpenInStatusButton(Button):
     def __init__(self, driver):
         super().__init__(driver, translation_id="browsing-open-in-status")
@@ -101,19 +92,10 @@ class ChatOptionsButton(Button):
 
 class ProfileSendMessageButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, accessibility_id="Chat-item-button")
+        super().__init__(driver, accessibility_id="icon, Send message")
 
     def navigate(self):
         return ChatView(self.driver)
-
-
-class ProfileBlockContactButton(Button):
-    def __init__(self, driver):
-        super(ProfileBlockContactButton, self).__init__(driver, accessibility_id="Block-item-button")
-
-    def click(self):
-        self.scroll_to_element()
-        self.wait_for_element().click()
 
 
 class ChatElementByText(Text):
@@ -868,11 +850,15 @@ class ChatView(BaseView):
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message_button = ProfileSendMessageButton(self.driver)
-        self.profile_block_contact_button = ProfileBlockContactButton(self.driver)
-        self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact-confirm")
-        self.unblock_contact_button = UnblockContactButton(self.driver)
+        self.profile_options_button = Button(self.driver, accessibility_id="contact-actions")
+        self.profile_block_contact_button = Button(self.driver, accessibility_id="block-user")
+        self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact")
+        self.unblock_contact_button = Button(self.driver, accessibility_id="icon, Unblock")
         self.profile_mute_contact = Button(self.driver, accessibility_id="Mute-item-button")
         self.profile_unmute_contact = Button(self.driver, accessibility_id="Unmute-item-button")
+        self.profile_send_contact_request_button = Button(self.driver, accessibility_id="icon, Send contact request")
+        self.contact_request_message_input = EditBox(self.driver, accessibility_id="contact-request-message")
+        self.confirm_send_contact_request_button = EditBox(self.driver, accessibility_id="send-contact-request")
         self.profile_add_to_contacts_button = Button(self.driver, accessibility_id="Add to contacts-item-button")
         self.profile_remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
         self.profile_details = Button(self.driver, accessibility_id="share-button")
@@ -1172,6 +1158,7 @@ class ChatView(BaseView):
 
     def block_contact(self):
         self.driver.info("Block contact from other user profile")
+        self.profile_options_button.click()
         self.profile_block_contact_button.click()
         self.confirm_block_contact_button.click()
 

@@ -535,3 +535,10 @@
       #(assoc-in % [:wallet :ui :search-address :valid-ens-or-address?] true))
     (is
      (rf/sub [sub-name]))))
+
+(h/deftest-sub :wallet/selected-keypair-uid
+  [sub-name]
+  (testing "returns selected keypair uid"
+    (swap! rf-db/app-db
+      #(assoc-in % [:wallet :ui :create-account :selected-keypair-uid] "key-uid"))
+    (is (= "key-uid" (rf/sub [sub-name])))))

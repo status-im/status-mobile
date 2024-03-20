@@ -219,7 +219,7 @@
          {:margin-top top
           :background :blur
           :icon-name  :i/arrow-left
-          :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])
+          :on-press   #(rf/dispatch [:navigate-back])
           :right-side [{:icon-name :i/info
                         :on-press  on-press-info}]}]
         [password-form]

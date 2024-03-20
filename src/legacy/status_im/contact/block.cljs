@@ -58,7 +58,9 @@
 
 (rf/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}
-  [{:keys [db] :as cofx} public-key]
+  [{:keys [db] :as cofx} public-key
+   {:keys [handle-navigation?]
+    :or   {handle-navigation? true}}]
   (let [contact               (-> (contact.db/public-key->contact
                                    (:contacts/contacts db)
                                    public-key)
@@ -75,9 +77,10 @@
                  (re-frame/dispatch [:sanitize-messages-and-process-response block-contact])
                  (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
-              (if from-one-to-one-chat?
-                (navigation/pop-to-root :shell-stack)
-                (navigation/navigate-back)))))
+              (when handle-navigation?
+                (if from-one-to-one-chat?
+                  (navigation/pop-to-root :shell-stack)
+                  (navigation/navigate-back))))))
 
 (rf/defn contact-unblocked
   {:events [:contacts/unblocked]}
