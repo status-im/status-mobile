@@ -187,7 +187,6 @@
                                                               @search-text))))
                                    constants/search-debounce-ms)
         on-change-text            (fn [text]
-                                    (println "on change" text)
                                     (if (string/blank? text)
                                       (clear-states)
                                       (do
