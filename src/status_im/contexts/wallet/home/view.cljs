@@ -37,10 +37,11 @@
        :accessibility-label :send-asset
        :label               (i18n/label :t/send-to-this-address)
        :on-press            (fn []
-                              (rf/dispatch [:wallet/select-send-address
-                                            {:address   address
-                                             :recipient address
-                                             :stack-id :wallet-select-address}]))}
+                               (rf/dispatch [:wallet/select-send-address
+                                             {:address   address
+                                              :recipient address
+                                              :stack-id  :wallet-select-address
+                                              :start-flow? true}]))}
       {:icon                :i/save
        :accessibility-label :save-address
        :label               (i18n/label :t/save-address)
@@ -57,7 +58,7 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
-(defn f-view
+(defn view
   []
   (let [[selected-tab set-selected-tab] (rn/use-state (:id (first tabs-data)))
         account-list-ref                (rn/use-ref-atom nil)
