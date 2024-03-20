@@ -433,10 +433,14 @@
 (re-frame/reg-sub
  :chats/link-previews?
  :<- [:chats/link-previews-unfurled]
+ (fn [previews]
+   (boolean (seq previews))))
+
+(re-frame/reg-sub
+ :chats/status-link-previews?
  :<- [:chats/status-link-previews-unfurled]
- (fn [previews status-link-previews]
-   (boolean (or (seq status-link-previews)
-                (seq previews)))))
+ (fn [status-link-previews]
+   (boolean (seq status-link-previews))))
 
 (re-frame/reg-sub
  :chat/check-channel-muted?

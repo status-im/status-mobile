@@ -14,85 +14,112 @@
 
 (defn view
   []
-  (let [{id :community-id}             (rf/sub [:get-screen-params])
-        show-addresses-for-permissions (fn []
-                                         (rf/dispatch [:show-bottom-sheet
-                                                       {:community-id id
-                                                        :content      addresses-for-permissions/view}]))
-        show-airdrop-addresses         (fn []
-                                         (rf/dispatch [:show-bottom-sheet
-                                                       {:community-id id
-                                                        :content      airdrop-addresses/view}]))
-        navigate-back                  #(rf/dispatch [:navigate-back])
-        join-and-go-back               (fn []
-                                         (rf/dispatch [:password-authentication/show
-                                                       {:content (fn [] [password-authentication/view])}
-                                                       {:label (i18n/label :t/join-open-community)
-                                                        :on-press
-                                                        #(rf/dispatch
-                                                          [:communities/request-to-join-with-addresses
-                                                           {:community-id id :password %}])}])
-                                         (navigate-back))]
-    (fn []
-      (let [{:keys [name color images]}       (rf/sub [:communities/community id])
-            airdrop-account                   (rf/sub [:communities/airdrop-account id])
-            selected-accounts                 (rf/sub [:communities/selected-permission-accounts id])
-            {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
-            highest-role-text                 (i18n/label (communities.utils/role->translation-key
-                                                           highest-permission-role
-                                                           :t/member))]
-        [rn/safe-area-view {:style style/container}
-         [quo/page-nav
-          {:text-align          :left
-           :icon-name           :i/close
-           :on-press            navigate-back
-           :accessibility-label :back-button}]
-         [quo/page-top
-          {:title       (i18n/label :t/request-to-join)
-           :description :context-tag
-           :context-tag {:type           :community
-                         :size           24
-                         :community-logo (get-in images [:thumbnail :uri])
-                         :community-name name}}]
-         [gesture/scroll-view
-          [:<>
-           [quo/text
-            {:style               style/section-title
-             :accessibility-label :community-rules-title
-             :weight              :semi-bold
-             :size                :paragraph-1}
-            (i18n/label :t/address-to-share)]
-           [quo/category
-            {:list-type :settings
-             :data      [{:title             (i18n/label :t/join-as-a {:role highest-role-text})
-                          :on-press          show-addresses-for-permissions
-                          :description       :text
-                          :action            :arrow
-                          :label             :preview
-                          :label-props       {:type :accounts
-                                              :data selected-accounts}
-                          :preview-size      :size-32
-                          :description-props {:text (i18n/label :t/all-addresses)}}
-                         {:title             (i18n/label :t/for-airdrops)
-                          :on-press          show-airdrop-addresses
-                          :description       :text
-                          :action            :arrow
-                          :label             :preview
-                          :label-props       {:type :accounts
-                                              :data [airdrop-account]}
-                          :preview-size      :size-32
-                          :description-props {:text (:name airdrop-account)}}]}]
-           [quo/text
-            {:style               style/section-title
-             :accessibility-label :community-rules-title
-             :weight              :semi-bold
-             :size                :paragraph-1}
-            (i18n/label :t/community-rules)]
-           [community-rules/view id]]]
-         [rn/view {:style (style/bottom-actions)}
-          [quo/slide-button
-           {:size                :size-48
-            :track-text          (i18n/label :t/slide-to-request-to-join)
-            :track-icon          :i/face-id
-            :customization-color color
-            :on-complete         join-and-go-back}]]]))))
+  (let [{id :community-id} (rf/sub [:get-screen-params])
+        {:keys [name color images joined]} (rf/sub [:communities/community id])
+        airdrop-account (rf/sub [:communities/airdrop-account id])
+        revealed-accounts (rf/sub [:communities/accounts-to-reveal id])
+        {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
+        highest-role-text (i18n/label (communities.utils/role->translation-key
+                                       highest-permission-role
+                                       :t/member))
+        can-edit-addresses? (rf/sub [:communities/can-edit-shared-addresses? id])
+        navigate-back (rn/use-callback #(rf/dispatch [:navigate-back]))
+
+        show-addresses-for-permissions
+        (rn/use-callback
+         (fn []
+           (if can-edit-addresses?
+             (rf/dispatch [:open-modal :addresses-for-permissions {:community-id id}])
+             (rf/dispatch [:show-bottom-sheet
+                           {:community-id id
+                            :content      (fn [] [addresses-for-permissions/view])}])))
+         [can-edit-addresses?])
+
+        show-airdrop-addresses
+        (rn/use-callback
+         (fn []
+           (if can-edit-addresses?
+             (rf/dispatch [:open-modal :address-for-airdrop {:community-id id}])
+             (rf/dispatch [:show-bottom-sheet
+                           {:community-id id
+                            :content      (fn [] [airdrop-addresses/view])}])))
+         [can-edit-addresses?])
+
+        confirm-choices
+        (rn/use-callback
+         (fn []
+           (rf/dispatch
+            [:password-authentication/show
+             {:content (fn [] [password-authentication/view])}
+             {:label    (i18n/label :t/join-open-community)
+              :on-press (fn [password]
+                          (rf/dispatch [:communities/request-to-join-with-addresses
+                                        {:community-id id :password password}]))}])
+           (navigate-back)))]
+    (rn/use-mount
+     (fn []
+       (rf/dispatch [:communities/initialize-permission-addresses id])))
+
+    [rn/safe-area-view {:style style/container}
+     [quo/page-nav
+      {:text-align          :left
+       :icon-name           :i/close
+       :on-press            navigate-back
+       :accessibility-label :back-button}]
+     [quo/page-top
+      {:title       (if can-edit-addresses?
+                      (i18n/label :t/edit-shared-addresses)
+                      (i18n/label :t/request-to-join))
+       :description :context-tag
+       :context-tag {:type           :community
+                     :size           24
+                     :community-logo (get-in images [:thumbnail :uri])
+                     :community-name name}}]
+     [gesture/scroll-view
+      [:<>
+       (when-not can-edit-addresses?
+         [quo/text
+          {:style               style/section-title
+           :accessibility-label :community-rules-title
+           :weight              :semi-bold
+           :size                :paragraph-1}
+          (i18n/label :t/address-to-share)])
+       [quo/category
+        {:list-type :settings
+         :data      [{:title             (if joined
+                                           (i18n/label :t/you-are-a-role {:role highest-role-text})
+                                           (i18n/label :t/join-as-a {:role highest-role-text}))
+                      :on-press          show-addresses-for-permissions
+                      :description       :text
+                      :action            :arrow
+                      :label             :preview
+                      :label-props       {:type :accounts
+                                          :data revealed-accounts}
+                      :preview-size      :size-32
+                      :description-props {:text (i18n/label :t/all-addresses)}}
+                     {:title             (i18n/label :t/for-airdrops)
+                      :on-press          show-airdrop-addresses
+                      :description       :text
+                      :action            :arrow
+                      :label             :preview
+                      :label-props       {:type :accounts
+                                          :data [airdrop-account]}
+                      :preview-size      :size-32
+                      :description-props {:text (:name airdrop-account)}}]}]
+       (when-not can-edit-addresses?
+         [quo/text
+          {:style               style/section-title
+           :accessibility-label :community-rules-title
+           :weight              :semi-bold
+           :size                :paragraph-1}
+          (i18n/label :t/community-rules)])
+       (when-not can-edit-addresses?
+         [community-rules/view id])]]
+     (when-not can-edit-addresses?
+       [rn/view {:style (style/bottom-actions)}
+        [quo/slide-button
+         {:size                :size-48
+          :track-text          (i18n/label :t/slide-to-request-to-join)
+          :track-icon          :i/face-id
+          :customization-color color
+          :on-complete         confirm-choices}]])]))

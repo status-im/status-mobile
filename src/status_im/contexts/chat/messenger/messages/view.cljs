@@ -24,7 +24,7 @@
     [rn/keyboard-avoiding-view
      {:style                    style/keyboard-avoiding-container
       :keyboard-vertical-offset (- (:bottom insets))}
-     [:f> messages.navigation/f-view
+     [messages.navigation/view
       {:distance-from-list-top                    distance-from-list-top
        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?}]
      [:f> list.view/f-messages-list-content
