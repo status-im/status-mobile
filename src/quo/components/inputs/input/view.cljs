@@ -62,7 +62,7 @@
 (defn- base-input
   [{:keys [blur? error? right-icon left-icon disabled? small? button
            label char-limit multiline? clearable? on-focus on-blur container-style
-           on-change-text on-char-limit-reach weight default-value on-clear]
+           on-change-text on-char-limit-reach weight default-value auto-focus]
     :as   props}]
   (let [theme                  (quo.theme/use-theme-value)
         ref                    (rn/use-ref-atom nil)
@@ -134,7 +134,8 @@
                                           (internal-on-focus))
                 :on-blur                (fn []
                                           (when on-blur (on-blur))
-                                          (internal-on-blur))}
+                                          (internal-on-blur))
+                :auto-focus             auto-focus}
          :always    (merge clean-props)
          multiline? (assoc :multiline              true
                            :on-content-size-change on-content-size-change)
