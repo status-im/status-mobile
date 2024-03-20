@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.data-store.activities :as activities]
     [legacy.status-im.data-store.chats :as data-store.chats]
-    [quo.core :as quo]
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.toasts.events :as toasts]
@@ -545,7 +544,7 @@
                        (not dismissed))
                   (toasts/upsert cofx
                                  {:type            :notification
-                                  :avatar          [quo/user-avatar user-avatar]
+                                  :user            user-avatar
                                   :user-public-key author
                                   :title           (i18n/label :t/contact-request-sent-toast
                                                                {:name name})
@@ -557,7 +556,7 @@
                        (not dismissed))
                   (toasts/upsert cofx
                                  {:type            :notification
-                                  :avatar          [quo/user-avatar user-avatar]
+                                  :user            user-avatar
                                   ;; user public key who accepted the request
                                   :user-public-key chat-id
                                   :text            (i18n/label :t/contact-request-accepted-toast

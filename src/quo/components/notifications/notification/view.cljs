@@ -1,5 +1,6 @@
 (ns quo.components.notifications.notification.view
   (:require
+    [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.markdown.text :as text]
     [quo.components.notifications.notification.style :as style]
     [quo.theme]
@@ -61,7 +62,7 @@
      body]]])
 
 (defn notification
-  [{title-text :title :keys [avatar header title-weight text body container-style theme]}]
+  [{title-text :title :keys [user header title-weight text body container-style theme]}]
   (let [context-theme (or theme (quo.theme/get-theme))
         header        (or header
                           (when title-text
@@ -69,9 +70,11 @@
         header        (when header [header-container header])
         body          (or body (when text [message text theme]))
         body          (when body [body-container body])
-        avatar        (when avatar [avatar-container
+        user-avatar   (when user (user-avatar/user-avatar user))
+        avatar        (when user-avatar
+                        [avatar-container
                          {:multiline? (and header body)}
-                         avatar])]
+                         user-avatar])]
     [quo.theme/provider {:theme context-theme}
      [notification-container
       {:avatar          avatar
