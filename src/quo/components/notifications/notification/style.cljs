@@ -41,4 +41,5 @@
 (defn avatar-container
   [{:keys [multiline?]}]
   {:margin-right 8
+   :align-self   (when-not multiline? :center)
    :margin-top   (if multiline? 4 0)})
