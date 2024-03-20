@@ -73,11 +73,13 @@
   (cond
     (text-for-url-path? scanned-text router/community-with-data-path)
     ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
+    (js/console.log "ALWX1" scanned-text)
 
     (text-for-url-path? scanned-text router/channel-path)
     ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
+    ;; :serialization/deserialize-and-compress-key
+    ;; https://status.app/cc/30804ea7-bd66-4d5d-91eb-b2dcfe2515b3?d=G44BYCwKbLcVA5s5Bhs2lC8WIsbe1Ll70Kdv4FgHbWRTahsNE7FyJPCzCRkfQZmb4bJ3OjqVUh33_HvYgBqJydeBkE6OvwNbW5RYIBimLYEE85hyGwPHcepRaBelEHXmnEX3yVmaUcoIuLwEjUcQGxwNyGT88OJiMRjpkKZbz62rg0OjnnDuj5EHyxZaKh4NISR7Eg3GcmKIORmQG_svznCBNbWK1vxSPDyhV46c9cue2_5bgB6TrsKFS1NlHSn9HRAR3Nh3gj7ybhZ_bqKYhi3LGg==#zQ3shY7r4cAdg4eUF5dfcuCqCFzWmdjHW4SX5hspM9ucAarfUjdifgtuckin
+    (js/console.log "ALWX2" scanned-text)
 
     (text-for-url-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]
