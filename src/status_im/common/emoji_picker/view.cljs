@@ -148,28 +148,26 @@
   (reset! search-text ""))
 
 (defn f-view
-  [{:keys [search-text on-change-text clear-states active-category scroll-ref theme]
+  [{:keys [search-active? on-change-text clear-states active-category scroll-ref theme]
     :as   sheet-opts}]
-  (let [search-active? (pos? (count @search-text))]
-    [rn/keyboard-avoiding-view
-     {:style                    style/flex-spacer
-      :keyboard-vertical-offset 8}
-     [rn/view {:style style/flex-spacer}
-      [rn/view {:style style/search-input-container}
-       [quo/input
-        {:small?         true
-         :placeholder    (i18n/label :t/emoji-search-placeholder)
-         :icon-name      :i/search
-         :value          @search-text
-         :on-change-text on-change-text
-         :clearable?     search-active?
-         :on-clear       clear-states}]]
-      [render-list sheet-opts]
-      (when-not search-active?
-        [footer
-         {:theme           theme
-          :active-category active-category
-          :scroll-ref      scroll-ref}])]]))
+  [rn/keyboard-avoiding-view
+   {:style                    style/flex-spacer
+    :keyboard-vertical-offset 8}
+   [rn/view {:style style/flex-spacer}
+    [rn/view {:style style/search-input-container}
+     [quo/input
+      {:small?         true
+       :placeholder    (i18n/label :t/emoji-search-placeholder)
+       :icon-name      :i/search
+       :on-change-text on-change-text
+       :clearable?     search-active?
+       :on-clear       clear-states}]]
+    [render-list sheet-opts]
+    (when-not search-active?
+      [footer
+       {:theme           theme
+        :active-category active-category
+        :scroll-ref      scroll-ref}])]])
 
 (defn- view-internal
   [_]
@@ -189,6 +187,7 @@
                                                               @search-text))))
                                    constants/search-debounce-ms)
         on-change-text            (fn [text]
+                                    (println "on change" text)
                                     (if (string/blank? text)
                                       (clear-states)
                                       (do
@@ -202,7 +201,7 @@
     (fn [sheet-opts]
       [:f> f-view
        (assoc sheet-opts
-              :search-text               search-text
+              :search-active?            (pos? (count @search-text))
               :on-change-text            on-change-text
               :clear-states              clear-states
               :filtered-data             @filtered-data

@@ -35,10 +35,11 @@
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
-        :on-scan               (fn []
+        :on-scan               (fn [on-result]
                                  (rn/dismiss-keyboard!)
                                  (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:open-modal :screen/wallet.scan-address]))
+                                 (rf/dispatch [:open-modal :screen/wallet.scan-address
+                                               {:on-result on-result}]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :address-regex         constants/regx-multichain-address
