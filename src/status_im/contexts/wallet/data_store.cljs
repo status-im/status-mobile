@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.data-store
   (:require
+    [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.set :as set]
     [clojure.string :as string]
@@ -104,22 +105,33 @@
         :nativeCurrencySymbol   :native-currency-symbol
         :nativeCurrencyName     :native-currency-symbol})))
 
-(defn rename-color-id-in-data
-  [data]
-  (map (fn [item]
-         (update item
-                 :accounts
-                 (fn [accounts]
-                   (map (fn [account]
-                          (let [renamed-account (set/rename-keys account
-                                                                 {:colorId :customization-color})]
-                            (if (contains? account :colorId)
-                              renamed-account
-                              (assoc renamed-account :customization-color :blue))))
-                        accounts))))
-       data))
+(defn sort-keypairs
+  [keypairs]
+  (sort-by #(if (some (fn [account]
+                        (string/starts-with? (:path account) constants/path-eip1581))
+                      (:accounts %))
+              0
+              1)
+           keypairs))
+
+(defn sort-and-rename-keypairs
+  [keypairs]
+  (let [sorted-keypairs (sort-keypairs keypairs)]
+    (map (fn [item]
+           (update item
+                   :accounts
+                   (fn [accounts]
+                     (map
+                      (fn [{:keys [colorId] :as account}]
+                        (assoc account
+                               :customization-color
+                               (if (seq colorId)
+                                 (keyword colorId)
+                                 :blue)))
+                      accounts))))
+         sorted-keypairs)))
 
 (defn parse-keypairs
   [keypairs]
-  (let [renamed-data (rename-color-id-in-data keypairs)]
-    (cske/transform-keys transforms/->kebab-case-keyword renamed-data)))
+  (let [renamed-data (sort-and-rename-keypairs keypairs)]
+    (cske/transform-keys csk/->kebab-case-keyword renamed-data)))
