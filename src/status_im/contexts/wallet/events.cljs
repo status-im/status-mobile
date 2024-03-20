@@ -244,7 +244,7 @@
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :type] :bridge)
+   {:db (assoc-in db [:wallet :ui :send :tx-type] :bridge)
     :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network

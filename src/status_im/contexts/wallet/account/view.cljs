@@ -7,7 +7,6 @@
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.temp :as temp]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -57,8 +56,7 @@
              :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])
-             :bridge-action  #(ff/alert ::ff/wallet.bridge-token
-                                        (fn [] (rf/dispatch [:wallet/start-bridge])))}])
+             :bridge-action  #(rf/dispatch [:wallet/start-bridge])}])
          [quo/tabs
           {:style            style/tabs
            :size             32
