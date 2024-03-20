@@ -52,24 +52,22 @@
     :description-props {:text (string/replace derivation-path #"/" " / ")}}])
 
 (defn- f-view
-  [{:keys [theme]}]
+  [_]
   (let [account-name  (reagent/atom "")
         account-color (reagent/atom (rand-nth colors/account-colors))
         emoji         (reagent/atom (emoji-picker.utils/random-emoji))]
-    (fn []
+    (fn [{:keys [theme]}]
       (let [top                                   (safe-area/get-top)
             bottom                                (safe-area/get-bottom)
             {window-width :width}                 (rn/get-window)
-            number-of-accounts                    (count (rf/sub
-                                                          [:wallet/accounts-without-watched-accounts]))
+            number-of-accounts                    (count (rf/sub [:wallet/accounts-without-watched-accounts]))
             {:keys [address customization-color]} (rf/sub [:profile/profile])
             {:keys [new-keypair]}                 (rf/sub [:wallet/create-account])
             keypairs                              (rf/sub [:wallet/keypairs])
             selected-keypair-uid                  (rf/sub [:wallet/selected-keypair-uid])
             placeholder                           (i18n/label :t/default-account-placeholder
                                                               {:number (inc number-of-accounts)})
-            derivation-path                       (utils/get-derivation-path
-                                                   number-of-accounts)
+            derivation-path                       (utils/get-derivation-path number-of-accounts)
             keypair                               (some #(when (= (:key-uid %) selected-keypair-uid)
                                                            %)
                                                         keypairs)
@@ -109,8 +107,7 @@
          [quo/gradient-cover
           {:customization-color @account-color
            :container-style     {:top (- top)}}]
-         [rn/view
-          {:style style/account-avatar-container}
+         [rn/view {:style style/account-avatar-container}
           [quo/account-avatar
            {:customization-color @account-color
             :size                80
@@ -124,7 +121,8 @@
             :on-press        #(rf/dispatch [:emoji-picker/open
                                             {:on-select (fn [selected-emoji]
                                                           (reset! emoji selected-emoji))}])
-            :container-style style/reaction-button-container} :i/reaction]]
+            :container-style style/reaction-button-container}
+           :i/reaction]]
          [quo/title-input
           {:customization-color @account-color
            :placeholder         placeholder
@@ -135,8 +133,7 @@
            :default-value       @account-name
            :container-style     style/title-input-container}]
          [quo/divider-line]
-         [rn/view
-          {:style style/color-picker-container}
+         [rn/view {:style style/color-picker-container}
           [quo/text
            {:size   :paragraph-2
             :weight :medium

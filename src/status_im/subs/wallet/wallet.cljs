@@ -216,6 +216,12 @@
  (fn [accounts]
    (remove #(:watch-only? %) accounts)))
 
+#_(rf/reg-sub
+ :wallet/accounts-without-watched-accounts
+ :<- [:wallet/accounts-with-customization-color]
+ (fn [accounts]
+   (remove #(:watch-only? %) accounts)))
+
 (rf/reg-sub
  :wallet/account-token-values
  :<- [:wallet/current-viewing-account]
