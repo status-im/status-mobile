@@ -6,10 +6,10 @@
     status-im.subs.biometrics
     status-im.subs.chats
     status-im.subs.communities
+    status-im.subs.community.account-selection
     status-im.subs.contact
     status-im.subs.general
     status-im.subs.messages
-    status-im.subs.navigation
     status-im.subs.onboarding
     status-im.subs.pairing
     status-im.subs.profile
@@ -25,7 +25,6 @@
 
 ;;view
 (reg-root-key-sub :view-id :view-id)
-(reg-root-key-sub :modal-view-ids :modal-view-ids)
 (reg-root-key-sub :screen-params :navigation/screen-params)
 (reg-root-key-sub :animation-shared-element-id :animation-shared-element-id)
 
@@ -150,6 +149,11 @@
 (reg-root-key-sub :contract-communities :contract-communities)
 (reg-root-key-sub :communities/permissioned-balances :communities/permissioned-balances)
 (reg-root-key-sub :communities/permissions-check :communities/permissions-check)
+(reg-root-key-sub :communities/all-addresses-to-reveal :communities/all-addresses-to-reveal)
+(reg-root-key-sub :communities/all-airdrop-addresses :communities/all-airdrop-addresses)
+(reg-root-key-sub :communities/selected-share-all-addresses :communities/selected-share-all-addresses)
+(reg-root-key-sub :communities/permissions-checks-for-selection
+                  :communities/permissions-checks-for-selection)
 (reg-root-key-sub :communities/channel-permissions-check :communities/channel-permissions-check)
 
 ;;activity center

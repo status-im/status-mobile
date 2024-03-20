@@ -14,7 +14,6 @@
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
     [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
     [status-im.contexts.chat.messenger.messages.list.state :as chat.state]
-    [status-im.feature-flags :as ff]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
@@ -244,18 +243,6 @@
                  (update :chats-home-list conj chat-id))
      :dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]}))
 
-(rf/defn decrease-unviewed-count
-  {:events [:chat/decrease-unviewed-count]}
-  [{:keys [db]} chat-id {:keys [count countWithMentions]}]
-  {:db (-> db
-           ;; There might be some other requests being fired, so we need to make sure the count has
-           ;; not been set to
-           ;; 0 in the meantime
-           (update-in [:chats chat-id :unviewed-messages-count]
-                      #(max (- % count) 0))
-           (update-in [:chats chat-id :unviewed-mentions-count]
-                      #(max (- % countWithMentions) 0)))})
-
 (rf/defn start-chat
   "Start a chat, making sure it exists"
   {:events [:chat.ui/start-chat]}
@@ -444,8 +431,5 @@
                    {:pubkey     public-key
                     :ens        ens-name
                     :success-fn (fn [_]
-                                  {:dispatch [:open-modal
-                                              (if (ff/enabled? ::ff/profile.new-contact-ui)
-                                                :contact-profile
-                                                :profile)]})}]}
-       {:dispatch [:navigate-to :my-profile]}))))
+                                  {:dispatch [:open-modal :contact-profile]})}]}
+       {:dispatch [:open-modal :settings]}))))

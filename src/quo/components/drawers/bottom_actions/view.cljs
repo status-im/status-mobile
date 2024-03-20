@@ -19,6 +19,7 @@
       [:actions [:maybe [:enum :one-action :two-actions]]]
       [:description {:optional true} [:maybe [:enum :top :bottom :top-error]]]
       [:description-text {:optional true} [:maybe :string]]
+      [:description-top-text {:optional true} [:maybe :string]]
       [:error-message {:optional true} [:maybe :string]]
       [:role {:optional true} [:maybe [:enum :admin :member :token-master :owner]]]
       [:button-one-label {:optional true} [:maybe :string]]
@@ -38,8 +39,8 @@
    :owner        :i/crown})
 
 (defn- view-internal
-  [{:keys [actions description description-text error-message role button-one-label button-two-label
-           blur? button-one-props button-two-props theme scroll? container-style]}]
+  [{:keys [actions description description-text description-top-text error-message role button-one-label
+           button-two-label blur? button-one-props button-two-props theme scroll? container-style]}]
   [rn/view
    {:style (merge (style/container scroll? blur? theme) container-style)}
    (when (= description :top-error)
@@ -54,12 +55,11 @@
        error-message]])
 
    (when (and (= description :top) role)
-     [rn/view
-      {:style style/description-top}
+     [rn/view {:style style/description-top}
       [text/text
        {:size  :paragraph-2
         :style (style/description-top-text scroll? blur? theme)}
-       (i18n/label :t/eligible-to-join-as)]
+       (or description-top-text (i18n/label :t/eligible-to-join-as))]
       [context-tag/view
        {:type    :icon
         :size    24

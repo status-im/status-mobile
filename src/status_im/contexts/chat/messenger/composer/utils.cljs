@@ -200,7 +200,8 @@
   []
   (let [chat-input (rf/sub [:chats/current-chat-input])]
     {:images               (seq (rf/sub [:chats/sending-image]))
-     :link-previews?       (rf/sub [:chats/link-previews?])
+     :link-previews?       (or (rf/sub [:chats/link-previews?])
+                               (rf/sub [:chats/status-link-previews?]))
      :audio                (rf/sub [:chats/sending-audio])
      :reply                (rf/sub [:chats/reply-message])
      :edit                 (rf/sub [:chats/edit-message])

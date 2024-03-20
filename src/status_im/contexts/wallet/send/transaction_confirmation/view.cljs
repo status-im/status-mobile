@@ -153,7 +153,14 @@
           (reduce-kv (fn [acc k v]
                        (assoc acc k {:amount v :token-symbol token-symbol}))
                      {}
-                     network-amounts)]
+                     network-amounts)
+          network-values-sanitized (into {}
+                                         (map (fn [[k v]]
+                                                [k
+                                                 (if (money/equal-to (v :amount) 0)
+                                                   (assoc v :amount "<0.01")
+                                                   v)])
+                                              network-values))]
       [rn/view
        {:style {:padding-horizontal 20
                 :padding-bottom     16}}
@@ -166,7 +173,7 @@
        [quo/summary-info
         {:type          summary-type
          :networks?     true
-         :values        network-values
+         :values        network-values-sanitized
          :account-props account-props}]])))
 
 (defn- transaction-details
@@ -238,7 +245,7 @@
 (defn- view-internal
   [_]
   (let [on-close (fn []
-                   (rf/dispatch [:navigate-back-within-stack :screen/wallet.transaction-confirmation])
+                   (rf/dispatch [:navigate-back])
                    (rf/dispatch [:wallet/clean-suggested-routes])
                    (rf/dispatch [:wallet/clean-selected-collectible]))]
     (fn [{:keys [theme]}]
@@ -258,7 +265,7 @@
             image-url             (when collectible (:image-url collectible-data))
             amount                (:amount send-transaction-data)
             route                 (:route send-transaction-data)
-            transaction-type      (:type send-transaction-data)
+            transaction-type      (:tx-type send-transaction-data)
             estimated-time-min    (reduce + (map :estimated-time route))
             max-fees              "-"
             to-address            (:to-address send-transaction-data)

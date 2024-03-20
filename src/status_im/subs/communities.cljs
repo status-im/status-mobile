@@ -350,57 +350,6 @@
  (fn [communities [_ community-id]]
    (get-in communities [community-id :intro-message])))
 
-(re-frame/reg-sub :communities/permissioned-balances-by-address
- :<- [:communities/permissioned-balances]
- (fn [balances [_ community-id account-address]]
-   (get-in balances [community-id (keyword account-address)])))
-
-(re-frame/reg-sub
- :communities/selected-permission-addresses
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [selected-permission-addresses]}] _]
-   selected-permission-addresses))
-
-(re-frame/reg-sub
- :communities/share-all-addresses?
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [share-all-addresses?]}] _]
-   share-all-addresses?))
-
-(re-frame/reg-sub
- :communities/unsaved-address-changes?
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [share-all-addresses? previous-share-all-addresses?
-               selected-permission-addresses previous-permission-addresses]}] _]
-   (or (not= share-all-addresses? previous-share-all-addresses?)
-       (not= selected-permission-addresses previous-permission-addresses))))
-
-(re-frame/reg-sub
- :communities/selected-permission-accounts
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/accounts-without-watched-accounts])
-    (re-frame/subscribe [:communities/selected-permission-addresses community-id])])
- (fn [[accounts selected-permission-addresses]]
-   (filter #(contains? selected-permission-addresses (:address %)) accounts)))
-
-(re-frame/reg-sub
- :communities/airdrop-address
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [airdrop-address]}] _]
-   airdrop-address))
-
-(re-frame/reg-sub
- :communities/airdrop-account
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:wallet/accounts-with-customization-color])
-    (re-frame/subscribe [:communities/airdrop-address community-id])])
- (fn [[accounts airdrop-address]]
-   (first (filter #(= (:address %) airdrop-address) accounts))))
-
 (re-frame/reg-sub
  :communities/token-images-by-symbol
  (fn [[_ community-id]]

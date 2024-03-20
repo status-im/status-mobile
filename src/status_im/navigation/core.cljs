@@ -24,27 +24,14 @@
   (navigation/reg-app-launched-listener
    (fn []
      (navigation/set-default-options options/default-options)
-     (reset! state/curr-modal false)
+     (reset! state/modals [])
      (reset! state/dissmissing false)
      (re-frame/dispatch [:bottom-sheet-hidden])
-     (if (= @state/root-id :multiaccounts-stack)
-       (re-frame/dispatch-sync [:set-multiaccount-root])
-       (when @state/root-id
-         (reset! theme/device-theme (rn/get-color-scheme))
-         (re-frame/dispatch [:init-root @state/root-id])
-         (re-frame/dispatch [:chat/check-last-chat])))
+     (when @state/root-id
+       (reset! theme/device-theme (rn/get-color-scheme))
+       (re-frame/dispatch [:init-root @state/root-id])
+       (re-frame/dispatch [:chat/check-last-chat]))
      (rn/hide-splash-screen)))
-
-  (navigation/reg-component-did-appear-listener
-   (fn [view-id]
-     (let [view-id-with-prefix (keyword (str "screen/" (name view-id)))
-           view                (or (get views/screens view-id)
-                                   (get views/screens view-id-with-prefix))
-           view-id             (:name view)]
-       (when view
-         (effects/set-view-id view-id)
-         (when-not @state/curr-modal
-           (reset! state/pushed-screen-id view-id))))))
 
   ;;;; Modal
 
@@ -62,14 +49,10 @@
 
   (navigation/reg-modal-dismissed-listener
    (fn []
+     (state/navigation-pop-from (last @state/modals))
      (if (> (count @state/modals) 1)
-       (let [new-modals (butlast @state/modals)]
-         (reset! state/modals (vec new-modals))
-         (effects/set-view-id (last new-modals)))
-       (do
-         (reset! state/modals [])
-         (reset! state/curr-modal false)
-         (effects/set-view-id @state/pushed-screen-id)))
+       (reset! state/modals (vec (butlast @state/modals)))
+       (reset! state/modals []))
 
      (let [component @state/dissmissing]
        (reset! state/dissmissing false)

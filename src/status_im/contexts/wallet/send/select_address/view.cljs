@@ -24,7 +24,7 @@
 (defn- address-input
   [input-value input-focused?]
   (fn []
-    (let [current-screen-id        (rf/sub [:navigation/current-screen-id])
+    (let [current-screen-id        (rf/sub [:view-id])
           scanned-address          (rf/sub [:wallet/scanned-address])
           send-address             (rf/sub [:wallet/wallet-send-to-address])
           recipient                (rf/sub [:wallet/wallet-send-recipient])

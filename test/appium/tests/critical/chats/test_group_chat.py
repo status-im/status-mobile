@@ -143,7 +143,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].just_fyi("Admin opens member_2 profile")
         self.chats[0].user_list_element_by_name(self.usernames[2]).click()
         try:
-            username_shown = self.chats[0].get_profile_view().default_username_text.text
+            username_shown = self.chats[0].get_profile_view().contact_name_text.text
             if username_shown != self.usernames[2]:
                 self.errors.append(
                     "Incorrect profile is opened from the list of reactions, username is %s but expected to be %s" % (

@@ -5,3 +5,9 @@
 (defn messages-list-on-scroll
   [distance-from-list-top chat-list-scroll-y callback]
   (.messagesListOnScroll ^js worklets distance-from-list-top chat-list-scroll-y callback))
+
+(defn use-messages-scrolled-to-threshold
+  [distance-from-list-top threshold]
+  (.useMessagesScrolledToThreshold ^js worklets
+                                   distance-from-list-top
+                                   threshold))

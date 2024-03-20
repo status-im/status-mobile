@@ -36,6 +36,7 @@
                           (colors/custom-color customization-color 60)
                           theme)]
     (cond-> {:padding          2
+             :padding-right    8
              :flex-direction   :row
              :align-items      :center
              :height           size
