@@ -3,6 +3,7 @@
             [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [status-im.common.not-implemented :as not-implemented]
@@ -76,8 +77,7 @@
                                (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to] 500))
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
-      {:position :absolute
-       :bottom   20}]]))
+      (style/floating-shell-button-style insets)]]))
 
 (defn- internal-view
   [props]
