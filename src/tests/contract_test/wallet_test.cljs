@@ -87,3 +87,19 @@
                                "wallet_getWalletToken"
                                [default-address])]
         (assert-wallet-tokens response)))))
+
+(defn assert-address-details
+  [result]
+  (is (contains? result :address))
+  (is (contains? result :path))
+  (is (boolean? (:hasActivity result)))
+  (is (false? (:alreadyCreated result))))
+
+(deftest wallet-get-address-details-contract-test
+  (h/test-async :wallet/get-address-details
+    (fn []
+      (p/let [input       "test.eth"
+              chain-id    constants/ethereum-mainnet-chain-id
+              ens-address (contract-utils/call-rpc "ens_addressOf" chain-id input)
+              response    (contract-utils/call-rpc "wallet_getAddressDetails" chain-id ens-address)]
+        (assert-address-details response)))))
