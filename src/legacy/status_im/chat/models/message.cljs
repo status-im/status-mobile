@@ -4,7 +4,6 @@
     [legacy.status-im.chat.models.loading :as chat.loading]
     [legacy.status-im.data-store.messages :as data-store.messages]
     [legacy.status-im.utils.deprecated-types :as types]
-    [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.contexts.chat.messenger.messages.delete-message.events :as delete-message]
     [status-im.contexts.chat.messenger.messages.list.events :as message-list]
@@ -135,9 +134,7 @@
                                     message-id (:messageId removed-message)]
                                 (data-store.messages/mark-messages-seen chat-id
                                                                         [message-id]
-                                                                        #(re-frame/dispatch
-                                                                          [:chat/decrease-unviewed-count
-                                                                           chat-id %3]))))
+                                                                        nil)))
                             removed-messages)
         remove-messages-fx (fn [{:keys [db]}]
                              {:dispatch [:activity-center.notifications/fetch-unread-count]})]
