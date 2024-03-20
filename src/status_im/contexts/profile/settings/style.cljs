@@ -19,8 +19,9 @@
                           footer-padding
                           (if platform/ios? ios-bottom-offset bottom))})
 
-(defn floating-shell-button-style [{:keys [bottom]}]
-  {:position         :absolute
-   :bottom           (if platform/ios?
-                       (+ bottom ios-bottom-offset)
-                       0)})
+(defn floating-shell-button-style
+  [{:keys [bottom]}]
+  {:position :absolute
+   :bottom   (if platform/ios?
+               (+ bottom ios-bottom-offset)
+               0)})

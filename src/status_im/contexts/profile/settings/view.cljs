@@ -3,7 +3,6 @@
             [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [status-im.common.not-implemented :as not-implemented]
