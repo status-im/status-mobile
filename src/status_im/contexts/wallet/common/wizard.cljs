@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.wizard
-  (:require [utils.re-frame :as rf]))
+  (:require [status-im.contexts.wallet.send.flow-config :as wallet-flow]
+            [utils.re-frame :as rf]))
 
 (defn- wizard-find-next-screen
   [db flow-config current-screen]
@@ -11,8 +12,11 @@
 
 (rf/reg-event-fx
  :wallet/wizard-navigate-forward
- (fn [{:keys [db]} [{:keys [current-screen flow-config start-flow?]}]]
-   (let [next-screen (wizard-find-next-screen db flow-config current-screen)]
+ (fn [{:keys [db]} [{:keys [current-screen flow-id start-flow?]}]]
+   (let [flow-config (case flow-id
+                       :wallet-flow wallet-flow/steps
+                       nil)
+         next-screen (wizard-find-next-screen db flow-config current-screen)]
      {:fx [[:dispatch
             (if start-flow?
               [:open-modal (:screen-id next-screen)]
