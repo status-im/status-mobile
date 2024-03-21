@@ -6,7 +6,4 @@
    :margin-bottom     20})
 
 (def bottom-action
-  {:position :absolute
-   :bottom   12
-   :left     0
-   :right    0})
+  {:margin-horizontal -20})
