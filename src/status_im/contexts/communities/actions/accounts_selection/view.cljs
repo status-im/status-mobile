@@ -101,7 +101,7 @@
         {:list-type :settings
          :data      [{:title             (if joined
                                            (i18n/label :t/you-are-a-role {:role highest-role-text})
-                                           (i18n/label :t/join-as-a {:role highest-role-text}))
+                                           (i18n/label :t/join-as {:role highest-role-text}))
                       :on-press          show-addresses-for-permissions
                       :description       :text
                       :action            :arrow

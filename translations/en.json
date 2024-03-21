@@ -191,7 +191,7 @@
     "no-addresses-selected": "At least 1 address must be shared with community",
     "confirm-changes": "Confirm changes",
     "airdrop-addresses": "Address for airdrops",
-    "join-as-a": "Join as a {{role}}",
+    "join-as": "Join as {{role}}",
     "all-addresses": "All addresses",
     "for-airdrops": "For airdrops",
     "members-label": "Members",
