@@ -3,20 +3,19 @@
             [utils.re-frame :as rf]))
 
 (defn- wizard-find-next-screen
-  [db flow-config current-screen]
-  (->> flow-config
-       (filter (fn [{:keys [skip-step? screen-id]}]
-                 (and (not= screen-id current-screen)
-                      (not (and (fn? skip-step?) (skip-step? db))))))
-       first))
+  [db flow-id current-screen]
+  (let [flow-config (case flow-id
+                      :wallet-flow wallet-flow/steps
+                      nil)]
+    (first (filter (fn [{:keys [skip-step? screen-id]}]
+                     (and (not= screen-id current-screen)
+                          (not (and (fn? skip-step?) (skip-step? db)))))
+                   flow-config))))
 
 (rf/reg-event-fx
  :wallet/wizard-navigate-forward
  (fn [{:keys [db]} [{:keys [current-screen flow-id start-flow?]}]]
-   (let [flow-config (case flow-id
-                       :wallet-flow wallet-flow/steps
-                       nil)
-         next-screen (wizard-find-next-screen db flow-config current-screen)]
+   (let [next-screen (wizard-find-next-screen db flow-id current-screen)]
      {:fx [[:dispatch
             (if start-flow?
               [:open-modal (:screen-id next-screen)]
