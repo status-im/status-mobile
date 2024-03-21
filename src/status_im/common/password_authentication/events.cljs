@@ -5,7 +5,7 @@
 
 (rf/defn close
   {:events [:password-authentication/show]}
-  [{:keys [db]} {:keys [community-id] :as content} button]
+  [{:keys [db]} content button]
   (rf/merge {:db (assoc db
                         :password-authentication
                         {:error  nil
