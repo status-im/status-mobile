@@ -178,13 +178,14 @@
       [:avatar-image-src {:optional true} [:maybe :schema.common/image-source]]
       [:collectible-name {:optional true} [:maybe string?]]
       [:community? {:optional true} [:maybe boolean?]]
-      [:counter {:optional true} [:maybe string?]]
+      [:counter {:optional true} [:maybe [:or :string :int]]]
       [:gradient-color-index {:optional true}
        [:maybe [:enum :gradient-1 :gradient-2 :gradient-3 :gradient-4 :gradient-5]]]
       [:image-src {:optional true} [:maybe :schema.common/image-source]]
       [:on-press {:optional true} [:maybe fn?]]
       [:status {:optional true} [:maybe [:enum :default :loading :cant-fetch :unsupported]]]
-      [:type [:enum :card :image]]]]]
+      [:type [:enum :card :image]]
+      [:container-style {:optional true} [:maybe :map]]]]]
    :any])
 
 (def view (schema/instrument #'view-internal ?schema))

@@ -315,3 +315,16 @@
 
     :else
     constants/mainnet-chain-ids))
+
+(defn total-owned-collectible
+  [ownership]
+  (reduce (fn [acc item] (+ acc (js/parseInt (:balance item)))) 0 ownership))
+
+(defn total-owned-collectible-by-address
+  [ownership address]
+  (reduce (fn [acc item]
+            (if (= (:address item) address)
+              (+ acc (js/parseInt (:balance item)))
+              acc))
+          0
+          ownership))
