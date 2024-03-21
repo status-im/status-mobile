@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
+    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]))
 
 (defn- view-internal
@@ -28,16 +29,23 @@
       [rn/flat-list
        {:data                     collectibles
         :style                    {:flex 1}
-        :content-container-style  {:align-items :center}
+        :content-container-style {:margin-horizontal 12}
         :window-size              11
         :num-columns              2
-        :render-fn                (fn [{:keys [preview-url] :as collectible}]
-                                    [quo/collectible
-                                     {:images        [preview-url]
-                                      :on-press      #(when on-collectible-press
-                                                        (on-collectible-press collectible))
-                                      :on-long-press #(when on-collectible-long-press
-                                                        (on-collectible-long-press collectible))}])
+        :render-fn                (fn [{:keys [preview-url collection-data ownership] :as collectible}]
+                                    (let [total (utils/total-owned-collectible ownership)]
+                                      [quo/collectible-list-item
+                                       {:type      :card
+                                        :image-src (:uri preview-url)
+                                        :avatar-image-src (:image-url collection-data)
+                                        :collectible-name (:name collection-data)
+                                        :status :default
+                                        :counter (when (> total 1) total)
+                                        :container-style {:padding 8}
+                                        :on-press #(when on-collectible-press
+                                                     (on-collectible-press collectible))
+                                        :on-long-press #(when on-collectible-long-press
+                                                          (on-collectible-long-press collectible))}]))
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
 
