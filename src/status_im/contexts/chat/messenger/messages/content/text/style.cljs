@@ -14,18 +14,18 @@
 
 (defn mention-tag-wrapper
   [first-child-mention]
-  {:flex-direction :row
-   :align-items    :center
-   :height         (if platform/ios? 22 21)
-   :border-radius  6
-   :transform      [{:translateY (if platform/ios? (if first-child-mention 4.5 3) 4.5)}]})
+  {:flex-direction     :row
+   :align-items        :center
+   :height             (if platform/ios? 22 21)
+   :background-color   colors/primary-50-opa-10
+   :padding-horizontal 3
+   :border-radius      6
+   :transform          [{:translateY (if platform/ios? (if first-child-mention 4.5 3) 4.5)}]})
 
 (def mention-tag-text
   {:color                 (colors/theme-colors colors/primary-50
                                                colors/primary-60)
    :selection-color       :transparent
-   :background-color      colors/primary-50-opa-10
-   :padding-horizontal    3
    :suppress-highlighting true})
 
 (defn code

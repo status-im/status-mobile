@@ -235,7 +235,15 @@
    collapsed-categories
    full-chats-data]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji can-post? token-gated?]}]]
+       [_
+        {:keys [name
+                categoryID
+                position
+                id
+                emoji
+                can-view?
+                can-post?
+                token-gated?]}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -261,7 +269,8 @@
                              ;; NOTE: this is a troolean nil->no permissions, true->no access, false ->
                              ;; has access
                              :locked?          (when token-gated?
-                                                 (not can-post?))
+                                                 (and (not can-view?)
+                                                      (not can-post?)))
                              :id               id}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
