@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Increment a version string using Semantic Versioning (SemVer) terminology.
 
