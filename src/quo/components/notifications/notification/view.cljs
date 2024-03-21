@@ -62,7 +62,7 @@
      body]]])
 
 (defn notification
-  [{title-text :title :keys [user header title-weight text body container-style theme]}]
+  [{title-text :title :keys [avatar user header title-weight text body container-style theme]}]
   (let [context-theme (or theme (quo.theme/get-theme))
         header        (or header
                           (when title-text
@@ -70,7 +70,7 @@
         header        (when header [header-container header])
         body          (or body (when text [message text theme]))
         body          (when body [body-container body])
-        user-avatar   (when user (user-avatar/user-avatar user))
+        user-avatar   (or avatar (when user (user-avatar/user-avatar user)))
         avatar        (when user-avatar
                         [avatar-container
                          {:multiline? (and header body)}
