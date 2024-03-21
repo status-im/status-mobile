@@ -277,7 +277,7 @@ run-android: export ORG_GRADLE_PROJECT_hermesEnabled := false
 run-android: ##@run Build Android APK and start it on the device
 	@scripts/run-android.sh
 
-SIMULATOR=iPhone 13
+SIMULATOR=iPhone 15
 # TODO: fix IOS_STATUS_GO_TARGETS to be either amd64 or arm64 when RN is upgraded
 run-ios: export TARGET := ios
 run-ios: export IOS_STATUS_GO_TARGETS := ios/arm64;iossimulator/amd64
