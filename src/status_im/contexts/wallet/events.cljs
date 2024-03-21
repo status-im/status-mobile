@@ -439,3 +439,37 @@
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
+
+(rf/reg-event-fx
+ :wallet/save-address
+ (fn [_ [{:keys [address name color on-success on-error chain-short-names]
+         :or   {on-success        (fn [])
+                on-error          (fn [])
+                name              ""
+                chain-short-names "eth"}}]]
+   (let [address-to-save {:address           address
+                          :name              name
+                          :color             color
+                          :chain-short-names chain-short-names}]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_addSavedAddress"
+              :params     [address-to-save]
+              :on-success on-success
+              :on-error   on-error}]]]})))
+
+(rf/reg-event-fx
+ :wallet/get-saved-addresses
+ (fn [_ {:keys [on-success on-error]}]
+   {:json-rpc/call
+    [{:method     "wallet_getSavedAddresses"
+      :on-success on-success
+      :on-error   on-error}]}))
+
+(comment
+  (rf/dispatch [:wallet/get-saved-addresses
+                {:on-success (partial prn :success)
+                 :on-error   (partial prn :error)}])
+
+  (rf/dispatch [:wallet/save-address
+                {:on-error (partial prn :error--->)}])
+  ,)
