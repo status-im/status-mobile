@@ -40,16 +40,17 @@
                                                                          (rf/dispatch
                                                                           [:hide-bottom-sheet]))}]))}]))
                  :on-auth-success (fn [password]
-                                    [:dispatch
-                                     [:communities/edit-shared-addresses
-                                      {:community-id    community-id
-                                       :password        password
-                                       :airdrop-address address
-                                       :on-success      (fn []
-                                                          (rf/dispatch [:dismiss-modal
-                                                                        :address-for-airdrop])
-                                                          (rf/dispatch
-                                                           [:hide-bottom-sheet]))}]])}])
+                                    (rf/dispatch [:dispatch
+                                                  [:communities/edit-shared-addresses
+                                                   {:community-id    community-id
+                                                    :password        password
+                                                    :airdrop-address address
+                                                    :on-success      (fn []
+                                                                       (rf/dispatch
+                                                                        [:dismiss-modal
+                                                                         :address-for-airdrop])
+                                                                       (rf/dispatch
+                                                                        [:hide-bottom-sheet]))}]]))}])
               (do
                 (rf/dispatch [:communities/set-airdrop-address community-id address])
                 (rf/dispatch [:hide-bottom-sheet])))))]

@@ -61,10 +61,10 @@
            (rf/dispatch
             [:standard-auth/authorize
              {:on-auth-success (fn [password]
-                                 [:dispatch
-                                  [:communities/request-to-join-with-addresses
-                                   {:community-id id
-                                    :password     password}]])
+                                 (rf/dispatch [:dispatch
+                                               [:communities/request-to-join-with-addresses
+                                                {:community-id id
+                                                 :password     password}]]))
               :on-auth-fail    (fn [err]
                                  (log/info "Biometric authentication failed" err)
                                  (rf/dispatch
