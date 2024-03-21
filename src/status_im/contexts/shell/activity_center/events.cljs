@@ -559,7 +559,7 @@
                                   :user            user-avatar
                                   ;; user public key who accepted the request
                                   :user-public-key chat-id
-                                  :text            (i18n/label :t/contact-request-accepted-toast
+                                  :title           (i18n/label :t/contact-request-accepted-toast
                                                                {:name (or name (:alias message))})})
                   :else
                   cofx)))
