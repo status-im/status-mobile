@@ -2,6 +2,7 @@
 
 (def title-container
   {:flex-direction :row
+   :flex           1
    :align-items    :center})
 
 (def avatar-container
