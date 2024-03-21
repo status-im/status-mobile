@@ -13,21 +13,20 @@
     [utils.re-frame :as rf]))
 
 (defn join-community-and-navigate-back
-  [id key-uid]
+  [id]
   (rf/dispatch
-   [:communities/login-with-biometric-if-available
-    {:key-uid    key-uid
-     :on-success (fn [password]
-                   [:dispatch
-                    [:communities/request-to-join
-                     {:community-id id :password password}]])
-     :on-fail    (fn [err]
-                   (log/info "Biometric authentication failed" err)
-                   (rf/dispatch [:password-authentication/show
-                                 {:content (fn [] [password-authentication/view])}
-                                 {:label    (i18n/label :t/join-open-community)
-                                  :on-press #(rf/dispatch [:communities/request-to-join
-                                                           {:community-id id :password %}])}]))}])
+   [:standard-auth/authorize
+    {:on-auth-success (fn [password]
+                        [:dispatch
+                         [:communities/request-to-join
+                          {:community-id id :password password}]])
+     :on-auth-fail    (fn [err]
+                        (log/info "Biometric authentication failed" err)
+                        (rf/dispatch [:password-authentication/show
+                                      {:content (fn [] [password-authentication/view])}
+                                      {:label    (i18n/label :t/join-open-community)
+                                       :on-press #(rf/dispatch [:communities/request-to-join
+                                                                {:community-id id :password %}])}]))}])
 
   (rf/dispatch [:navigate-back]))
 
@@ -35,8 +34,7 @@
   [{:keys [theme]}]
   (fn []
     (let [{:keys [id]}                (rf/sub [:get-screen-params])
-          {:keys [color name images]} (rf/sub [:communities/community id])
-          key-uid                     (rf/sub [:profile/key-uid])]
+          {:keys [color name images]} (rf/sub [:communities/community id])]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style style/container}
         [rn/view style/page-container
@@ -68,7 +66,7 @@
          (i18n/label :t/cancel)]
         [quo/button
          {:accessibility-label :join-community-button
-          :on-press            #(join-community-and-navigate-back id key-uid)
+          :on-press            #(join-community-and-navigate-back id)
           :container-style     {:flex 1}
           :inner-style         {:background-color (colors/resolve-color color theme)}}
          (i18n/label :t/request-to-join)]]

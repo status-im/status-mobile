@@ -59,32 +59,25 @@
         (rn/use-callback
          (fn []
            (rf/dispatch
-            [:communities/login-with-biometric-if-available
-             {:key-uid    key-uid
-              :on-success (fn [password]
-                            [:dispatch
-                             [:communities/request-to-join-with-addresses
-                              {:community-id id
-                               :password     password}]])
-              :on-fail    (fn [err]
-                            (log/info "Biometric authentication failed" err)
-                            (rf/dispatch
-                             [:password-authentication/show
-                              {:content      (fn [] [password-authentication/view])
-                               :community-id id}
-                              {:label    (i18n/label :t/join-open-community)
-                               :on-press (fn [password]
-                                           (rf/dispatch
-                                            [:communities/request-to-join-with-addresses
-                                             {:community-id id
-                                              :password     password}]))}]))}])
-           (navigate-back)))
-        
-        open-permission-sheet
-        (rn/use-callback (fn []
-                           (rf/dispatch [:show-bottom-sheet
-                                         {:content (fn [] [permissions-sheet/view id])}]))
-                         [id])]
+            [:standard-auth/authorize
+             {:on-auth-success (fn [password]
+                                 [:dispatch
+                                  [:communities/request-to-join-with-addresses
+                                   {:community-id id
+                                    :password     password}]])
+              :on-auth-fail    (fn [err]
+                                 (log/info "Biometric authentication failed" err)
+                                 (rf/dispatch
+                                  [:password-authentication/show
+                                   {:content      (fn [] [password-authentication/view])
+                                    :community-id id}
+                                   {:label    (i18n/label :t/join-open-community)
+                                    :on-press (fn [password]
+                                                (rf/dispatch
+                                                 [:communities/request-to-join-with-addresses
+                                                  {:community-id id
+                                                   :password     password}]))}]))}])
+           (navigate-back)))]
     (rn/use-mount
      (fn []
        (rf/dispatch [:communities/initialize-permission-addresses id])))
