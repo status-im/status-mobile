@@ -30,7 +30,8 @@
         clear-action       #(reset! state :empty)
         derive-action      #(js/alert "To be implemented")
         choose-action      #(reset! state :show)
-        path-value         (reagent/atom (utils/get-formatted-derivation-path 3))
+        number-of-accounts (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        path-value         (reagent/atom (utils/get-formatted-derivation-path number-of-accounts))
         handle-path-change (fn [v]
                              (reset! path-value v)
                              (when (empty? v)
@@ -41,7 +42,7 @@
                              (when on-reset
                                (on-reset)))]
     (fn [{:keys [theme]}]
-      (let [{:keys [public-key]}   (rf/sub [:profile/profile])
+      (let [{:keys [public-key]} (rf/sub [:profile/profile])
             primary-name           (first (rf/sub [:contacts/contact-two-names-by-identity
                                                    public-key]))
             profile-picture        (rf/sub [:profile/image])
@@ -82,14 +83,16 @@
             :value           (i18n/label :t/default-format)
             :container-style {:margin-horizontal 20}}]]
          [quo/input
-          {:container-style style/input-container
-           :value           @path-value
-           :editable        false
-           :label           (i18n/label :t/derivation-path)
-           :placeholder     (utils/get-formatted-derivation-path 3)
-           :button          {:on-press reset-path-value
-                             :text     (i18n/label :t/reset)}
-           :on-change-text  handle-path-change}]
+          {:container-style          style/input-container
+           :value                    @path-value
+           :on-focus                 #(reset! state :default)
+           :show-soft-input-on-focus false
+           :editable                 true
+           :label                    (i18n/label :t/derivation-path)
+           :placeholder              (utils/get-formatted-derivation-path 3)
+           :button                   {:on-press reset-path-value
+                                      :text     (i18n/label :t/reset)}
+           :on-change-text           handle-path-change}]
 
          (case @state
            :default
@@ -140,6 +143,14 @@
          (when-not (= @state :show)
            [quo/numbered-keyboard
             {:left-action :dot
-             :delete-key? true}])]))))
+             :delete-key? true
+             :on-press    #(reset! path-value (str @path-value %))
+             :on-delete   #(reset! path-value (subs @path-value 0 (dec (count @path-value))))}])]))))
 
 (def view (quo.theme/with-theme view-internal))
+<<<<<<< HEAD
+=======
+
+;; 1. Need to ask how to check for address activity on status-go
+;; 2. what does this list of addresses mean, for example I see selecting 2 addresses with activity what does that mean
+>>>>>>> 301f62ffb (dp)

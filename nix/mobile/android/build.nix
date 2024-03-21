@@ -29,7 +29,11 @@ let
   notDebug = (buildType != "debug");
 
   # Pass secretsFile for POKT_TOKEN to jsbundle build
+<<<<<<< HEAD
   builtJsBundle = lib.optionals notDebug jsbundle { inherit secretsFile; };
+=======
+  builtJsBundle =  lib.optionals (buildType != "debug") jsbundle { inherit secretsFile; };
+>>>>>>> 0bbb3a834 (dp)
 
   # Map ANDROID_ABI_INCLUDE to status-go targets
   androidAbiIncludeSplit = lib.splitString ";" androidAbiInclude;
@@ -120,7 +124,11 @@ in stdenv.mkDerivation rec {
     # Export all vars from .env file
     export $(cut -d= -f1 .env)
 
+<<<<<<< HEAD
     ${lib.optionalString notDebug ''
+=======
+    ${lib.optionalString (buildType != "debug") ''
+>>>>>>> 0bbb3a834 (dp)
     # Symlink React Native entrypoint.
     cp -Lr ${builtJsBundle} ./result
     ''}
