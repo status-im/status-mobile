@@ -1,5 +1,6 @@
 (ns status-im.subs.communities
   (:require
+    [clojure.set :as set]
     [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
@@ -54,6 +55,37 @@
  :<- [:communities]
  (fn [[{:keys [community-id]} communities]]
    (get-in communities [community-id :members])))
+
+(re-frame/reg-sub
+ :communities/current-channel-contacts
+ :<- [:communities]
+ :<- [:contacts/contacts]
+ :<- [:profile/profile]
+ (fn [[communities contacts {:keys [public-key preferred-name name display-name] :as current-account}]
+      [_ community-id channel-id]]
+   (let [current-contact (some->
+                           current-account
+                           (select-keys [:name :preferred-name :public-key :images :compressed-key])
+                           (set/rename-keys {:name :alias :preferred-name :name})
+                           (assoc :primary-name (or display-name preferred-name name)))
+         all-contacts    (cond-> contacts
+                           current-contact
+                           (assoc public-key current-contact))]
+     (->> (get-in communities [community-id :chats channel-id :members])
+          (map #(or (get all-contacts (key %))
+                    {:public-key %}))
+          ((fn [contacts]
+             (let [online  (filter
+                            #(= 0 (visibility-status-utils/visibility-status-order (get % :public-key)))
+                            contacts)
+                   offline (filter
+                            #(= 1 (visibility-status-utils/visibility-status-order (get % :public-key)))
+                            contacts)]
+               (vals (cond-> {}
+                       (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})
+                       (seq offline) (assoc :offline
+                                            {:title (i18n/label :t/offline) :data offline}))))))))
+ ))
 
 (re-frame/reg-sub
  :communities/sorted-community-members

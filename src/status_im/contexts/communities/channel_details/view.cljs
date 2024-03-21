@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.channel-details.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -147,12 +148,10 @@
         {:keys [admins chat-id community-id chat-name emoji color]
          :as   channel} (rf/sub [:chats/chat-by-id chat-id])
         display-name    (str (when emoji (str emoji " ")) "# " chat-name)
-        members         (rf/sub [:contacts/group-members-sections chat-id])
         current-pk      (rf/sub [:multiaccount/public-key])
         admin?          (get admins current-pk)
-        sorted-members  (rf/sub [:communities/sorted-community-members
-                                 community-id])]
-    (println sorted-members)
+        contacts        (rf/sub [:communities/current-channel-contacts community-id
+                                 (string/replace chat-id community-id "")])]
     [:<>
      [quo/gradient-cover
       {:height              286
@@ -176,9 +175,10 @@
      [rn/section-list
       {:key-fn                         :title
        :sticky-section-headers-enabled false
-       :sections                       members
+       :sections                       contacts
        :render-section-header-fn       contacts-section-header
        :render-section-footer-fn       contacts-section-footer
        :render-data                    {:chat-id chat-id
                                         :admin?  admin?}
-       :render-fn                      contact-item-render}]]))
+       :render-fn                      contact-item-render}]
+    ]))
