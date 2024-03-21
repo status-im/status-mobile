@@ -82,8 +82,7 @@
   (h/test-async :wallet/get-wallet-token
     (fn []
       (p/let [accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              default-account (contract-utils/get-default-account accounts)
-              default-address (:address default-account)
+              default-address (contract-utils/get-default-address accounts)
               response        (contract-utils/call-rpc
                                "wallet_getWalletToken"
                                [default-address])]

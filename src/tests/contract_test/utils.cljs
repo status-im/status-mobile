@@ -13,10 +13,10 @@
                        :on-success p-resolve
                        :on-error   p-reject}))))
 
-(defn get-main-account
-  [accounts]
-  (:address (first accounts)))
-
 (defn get-default-account
   [accounts]
   (first (filter :wallet accounts)))
+
+(defn get-default-address
+  [accounts]
+  (:address (get-default-account accounts)))

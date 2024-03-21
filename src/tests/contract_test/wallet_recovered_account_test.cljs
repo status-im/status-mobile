@@ -24,13 +24,13 @@
 (deftest wallet-get-derived-addressess-contract-test
   (h/test-async :wallet/create-derived-addresses
     (fn []
-      (p/let [sha3-pwd        (native-module/sha3 integration-constants/password)
+      (p/let [sha3-pwd-hash   (native-module/sha3 integration-constants/password)
               derivation-path [integration-constants/derivation-path]
               accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              main-account    (contract-utils/get-main-account accounts)
+              default-address (contract-utils/get-default-address accounts)
               response        (contract-utils/call-rpc
                                "wallet_getDerivedAddresses"
-                               sha3-pwd
-                               main-account
+                               sha3-pwd-hash
+                               default-address
                                derivation-path)]
         (assert-derived-account response)))))
