@@ -2297,6 +2297,7 @@
     "you-eligible-to-join-as": "You’re eligible to join as {{role}}",
     "eligible-to-join-as": "Eligible to join as",
     "you-not-eligible-to-join": "You’re not eligible to join",
+    "you-not-eligible-to-join-as": "You’re not eligible to join as {{role}}",
     "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
     "addresses-dont-contain-tokens-needed": "These addresses don’t contain tokens needed to join",
     "you-hodl": "You hodl:",
