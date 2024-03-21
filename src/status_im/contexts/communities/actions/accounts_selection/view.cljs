@@ -8,6 +8,7 @@
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
+    [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -16,6 +17,7 @@
   []
   (let [{id :community-id} (rf/sub [:get-screen-params])
         {:keys [name color images joined]} (rf/sub [:communities/community id])
+        has-permissions? (rf/sub [:communities/has-permissions? id])
         airdrop-account (rf/sub [:communities/airdrop-account id])
         revealed-accounts (rf/sub [:communities/accounts-to-reveal id])
         {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
@@ -55,17 +57,28 @@
               :on-press (fn [password]
                           (rf/dispatch [:communities/request-to-join-with-addresses
                                         {:community-id id :password password}]))}])
-           (navigate-back)))]
+           (navigate-back)))
+
+        open-permission-sheet
+        (rn/use-callback (fn []
+                           (rf/dispatch [:show-bottom-sheet
+                                         {:content (fn [] [permissions-sheet/view id])}]))
+                         [id])]
     (rn/use-mount
      (fn []
        (rf/dispatch [:communities/initialize-permission-addresses id])))
 
     [rn/safe-area-view {:style style/container}
      [quo/page-nav
-      {:text-align          :left
-       :icon-name           :i/close
-       :on-press            navigate-back
-       :accessibility-label :back-button}]
+      (cond-> {:text-align          :left
+               :icon-name           :i/close
+               :on-press            navigate-back
+               :accessibility-label :back-button}
+        has-permissions?
+        (assoc :right-side
+               [{:icon-left :i/unlocked
+                 :on-press  open-permission-sheet
+                 :label     (i18n/label :t/permissions)}]))]
      [quo/page-top
       {:title       (if can-edit-addresses?
                       (i18n/label :t/edit-shared-addresses)
@@ -88,7 +101,7 @@
         {:list-type :settings
          :data      [{:title             (if joined
                                            (i18n/label :t/you-are-a-role {:role highest-role-text})
-                                           (i18n/label :t/join-as-a {:role highest-role-text}))
+                                           (i18n/label :t/join-as {:role highest-role-text}))
                       :on-press          show-addresses-for-permissions
                       :description       :text
                       :action            :arrow
