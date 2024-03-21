@@ -30,7 +30,9 @@
         {:db (assoc-in db
               [:communities id]
               (assoc community :last-opened-at (max last-opened-at previous-last-opened-at)))
-         :fx [(when (not joined)
+         :fx [[:dispatch
+               [:communities/check-permissions-to-join-community-with-all-addresses id]]
+              (when (not joined)
                 [:dispatch [:chat.ui/spectate-community id]])
               (when (nil? token-permissions-check)
                 [:dispatch [:communities/check-permissions-to-join-community id]])]}))))

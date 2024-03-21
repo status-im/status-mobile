@@ -12,3 +12,11 @@
                        :params     args
                        :on-success p-resolve
                        :on-error   p-reject}))))
+
+(defn get-default-account
+  [accounts]
+  (first (filter :wallet accounts)))
+
+(defn get-default-address
+  [accounts]
+  (:address (get-default-account accounts)))
