@@ -8,9 +8,27 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]))
 
+(defn- render-fn
+  [{:keys [preview-url collection-data ownership] :as collectible} address on-press on-long-press]
+  (let [total (if address
+                (utils/total-owned-collectible-by-address ownership address)
+                (utils/total-owned-collectible ownership))]
+    [quo/collectible-list-item
+     {:type      :card
+      :image-src (:uri preview-url)
+      :avatar-image-src (:image-url collection-data)
+      :collectible-name (:name collection-data)
+      :status :default
+      :counter (when (> total 1) total)
+      :container-style {:padding 8}
+      :on-press #(when on-press
+                   (on-press collectible))
+      :on-long-press #(when on-long-press
+                   (on-long-press collectible))}]))
+
 (defn- view-internal
-  [{:keys [theme collectibles filtered? on-collectible-press on-collectible-long-press on-end-reached]}]
-  (let [no-results-match-query? (and filtered? (empty? collectibles))]
+  [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address on-collectible-long-press]}]
+  (let [no-results-match-query? (and filtered? (empty? collectibles))] 
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
@@ -32,20 +50,7 @@
         :content-container-style {:margin-horizontal 12}
         :window-size              11
         :num-columns              2
-        :render-fn                (fn [{:keys [preview-url collection-data ownership] :as collectible}]
-                                    (let [total (utils/total-owned-collectible ownership)]
-                                      [quo/collectible-list-item
-                                       {:type      :card
-                                        :image-src (:uri preview-url)
-                                        :avatar-image-src (:image-url collection-data)
-                                        :collectible-name (:name collection-data)
-                                        :status :default
-                                        :counter (when (> total 1) total)
-                                        :container-style {:padding 8}
-                                        :on-press #(when on-collectible-press
-                                                     (on-collectible-press collectible))
-                                        :on-long-press #(when on-collectible-long-press
-                                                          (on-collectible-long-press collectible))}]))
+        :render-fn                #(render-fn % current-account-address on-collectible-press on-collectible-long-press)
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
 
