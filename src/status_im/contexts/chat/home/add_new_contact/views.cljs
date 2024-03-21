@@ -61,9 +61,10 @@
                                         (reset! input-value clipboard-text)
                                         (rf/dispatch [:contacts/set-new-identity
                                                       {:input clipboard-text}])))]
-    (let [{:keys [scanned]} (rf/sub [:contacts/new-identity])
-          empty-input?      (and (string/blank? @input-value)
-                                 (string/blank? scanned))]
+    (let [{:keys [scanned] contact-public-key :id} (rf/sub [:contacts/new-identity])
+          contact-public-key-or-scanned            (or contact-public-key scanned)
+          empty-input?                             (and (string/blank? @input-value)
+                                                        (string/blank? contact-public-key-or-scanned))]
       [rn/view {:style style/input-and-scan-container}
        [quo/input
         {:accessibility-label :enter-contact-code-input
@@ -80,15 +81,16 @@
          :button              (when empty-input?
                                 {:on-press paste-on-input
                                  :text     (i18n/label :t/paste)})
-         ;; NOTE: `scanned` has priority over `@input-value`, we clean it when the input is updated
-         ;; so that it's `nil` and `@input-value` is shown. To fastly clean it, we use
-         ;; `dispatch-sync`. This call could be avoided if `::qr-scanner/scan-code` were able to
+         ;; NOTE: `contact-public-key-or-scanned` has priority over `@input-value`,
+         ;; we clean it when the input is updated so that it's `nil` and
+         ;; `@input-value`is shown. To fastly clean it, we use `dispatch-sync`.
+         ;; This call could be avoided if `::qr-scanner/scan-code` were able to
          ;; receive a callback function, not only a re-frame event as callback.
-         :value               (or scanned @input-value)
+         :value               (or contact-public-key-or-scanned @input-value)
          :on-change-text      (fn [new-text]
                                 (reset! input-value new-text)
                                 (as-> [:contacts/set-new-identity {:input new-text}] $
-                                  (if (string/blank? scanned)
+                                  (if (string/blank? contact-public-key-or-scanned)
                                     (debounce/debounce-and-dispatch $ 600)
                                     (rf/dispatch-sync $))))}]
        [rn/view {:style style/scan-button-container}
