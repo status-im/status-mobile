@@ -14,43 +14,42 @@
   [{:keys [address emoji] :as account}
    _ _
    [community-id airdrop-address can-edit-addresses?]]
-  (let [key-uid (rf/sub [:profile/key-uid])
-        airdrop-address? (= address airdrop-address)
+  (let [airdrop-address? (= address airdrop-address)
         on-press
         (when-not airdrop-address?
           (fn []
             (if can-edit-addresses?
               (rf/dispatch
-               [:communities/login-with-biometric-if-available
-                {:key-uid    key-uid
-                 :on-fail    (fn [err]
-                               (log/info "Biometric authentication failed" err)
-                               (rf/dispatch
-                                [:password-authentication/show
-                                 {:content (fn [] [password-authentication/view])}
-                                 {:label    (i18n/label :t/enter-password)
-                                  :on-press (fn [password]
-                                              (rf/dispatch
-                                               [:communities/edit-shared-addresses
-                                                {:community-id    community-id
-                                                 :password        password
-                                                 :airdrop-address address
-                                                 :on-success      (fn []
-                                                                    (rf/dispatch [:dismiss-modal
-                                                                                  :address-for-airdrop])
-                                                                    (rf/dispatch
-                                                                     [:hide-bottom-sheet]))}]))}]))
-                 :on-success (fn [password]
-                               [:dispatch
-                                [:communities/edit-shared-addresses
-                                 {:community-id    community-id
-                                  :password        password
-                                  :airdrop-address address
-                                  :on-success      (fn []
-                                                     (rf/dispatch [:dismiss-modal
-                                                                   :address-for-airdrop])
-                                                     (rf/dispatch
-                                                      [:hide-bottom-sheet]))}]])}])
+               [:standard-auth/authorize
+                {:on-auth-fail    (fn [err]
+                                    (log/info "Biometric authentication failed" err)
+                                    (rf/dispatch
+                                     [:password-authentication/show
+                                      {:content (fn [] [password-authentication/view])}
+                                      {:label    (i18n/label :t/enter-password)
+                                       :on-press (fn [password]
+                                                   (rf/dispatch
+                                                    [:communities/edit-shared-addresses
+                                                     {:community-id    community-id
+                                                      :password        password
+                                                      :airdrop-address address
+                                                      :on-success      (fn []
+                                                                         (rf/dispatch
+                                                                          [:dismiss-modal
+                                                                           :address-for-airdrop])
+                                                                         (rf/dispatch
+                                                                          [:hide-bottom-sheet]))}]))}]))
+                 :on-auth-success (fn [password]
+                                    [:dispatch
+                                     [:communities/edit-shared-addresses
+                                      {:community-id    community-id
+                                       :password        password
+                                       :airdrop-address address
+                                       :on-success      (fn []
+                                                          (rf/dispatch [:dismiss-modal
+                                                                        :address-for-airdrop])
+                                                          (rf/dispatch
+                                                           [:hide-bottom-sheet]))}]])}])
               (do
                 (rf/dispatch [:communities/set-airdrop-address community-id address])
                 (rf/dispatch [:hide-bottom-sheet])))))]
