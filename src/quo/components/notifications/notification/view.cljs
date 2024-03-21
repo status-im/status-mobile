@@ -25,11 +25,10 @@
    children])
 
 (defn title
-  ([text weight] (title text weight nil))
-  ([text weight theme]
+  ([{:keys [text weight theme multiline?]}]
    [text/text
     {:size                :paragraph-1
-     :weight              (or weight :semi-bold)
+     :weight              (or weight (if multiline? :semi-bold :medium))
      :style               (style/title theme)
      :accessibility-label :notification-title}
     text]))
@@ -63,19 +62,22 @@
 
 (defn notification
   [{title-text :title :keys [avatar user header title-weight text body container-style theme]}]
-  (let [context-theme (or theme (quo.theme/get-theme))
+  (let [theme         (or theme (quo.theme/get-theme))
+        body          (or body (when text [message text theme]))
         header        (or header
                           (when title-text
-                            [title title-text title-weight theme]))
+                            [title {:text title-text
+                                    :weight title-weight 
+                                    :theme theme
+                                    :multiline? (some? body)}]))
         header        (when header [header-container header])
-        body          (or body (when text [message text theme]))
         body          (when body [body-container body])
         user-avatar   (or avatar (when user (user-avatar/user-avatar user)))
         avatar        (when user-avatar
                         [avatar-container
                          {:multiline? (and header body)}
                          user-avatar])]
-    [quo.theme/provider {:theme context-theme}
+    [quo.theme/provider {:theme theme}
      [notification-container
       {:avatar          avatar
        :header          header
