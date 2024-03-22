@@ -834,7 +834,7 @@ class ChatView(BaseView):
         self.edit_group_chat_name_button = Button(self.driver, accessibility_id="edit-button")
         self.edit_group_chat_name_edit_box = EditBox(self.driver, accessibility_id="new-chat-name")
         self.done_button = Button(self.driver, accessibility_id="done")
-        self.create_button = Button(self.driver, accessibility_id="create-group-chat-button")
+        self.create_group_chat_button = Button(self.driver, accessibility_id="Create group chat")
         ## Group invites
         self.group_invite_button = Button(self.driver, accessibility_id="invite-chat-button")
         self.group_invite_link_text = Text(self.driver,
