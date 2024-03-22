@@ -200,7 +200,7 @@
                                                                           chat-type
                                                                           muted?)))}]}]]))
 
-(defn f-list-footer
+(defn footer-component
   [{:keys [chat distance-from-list-top theme customization-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat color]} chat
@@ -271,7 +271,7 @@
     [:<>
      (if (or loading-messages? (not all-loaded?))
        [loading-view chat-id props]
-       [f-list-footer props])]))
+       [footer-component props])]))
 
 (defn list-group-chat-header
   [{:keys [chat-id invitation-admin]}]
