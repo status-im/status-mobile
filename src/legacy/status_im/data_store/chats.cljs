@@ -1,6 +1,7 @@
 (ns legacy.status-im.data-store.chats
   (:require
     [clojure.set :as set]
+    [clojure.string :as string]
     [legacy.status-im.data-store.messages :as messages]
     [legacy.status-im.utils.deprecated-types :as types]
     [re-frame.core :as re-frame]
@@ -59,6 +60,10 @@
            :admins         #{}
            :members-joined #{})))
 
+(defn <-color
+  [value]
+  (if (string/starts-with? value "#") value (keyword value)))
+
 (defn <-rpc
   [chat]
   (-> chat
@@ -79,13 +84,14 @@
       rpc->type
       unmarshal-members
       (update :last-message #(when % (messages/<-rpc %)))
+      (update :color <-color)
       (dissoc :members)))
 
 (defn <-rpc-js
   [^js chat]
   (-> {:name                    (.-name chat)
        :description             (.-description chat)
-       :color                   (.-color chat)
+       :color                   (<-color (.-color chat))
        :emoji                   (.-emoji chat)
        :timestamp               (.-timestamp chat)
        :alias                   (.-alias chat)

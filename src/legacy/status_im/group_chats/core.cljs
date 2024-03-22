@@ -64,16 +64,6 @@
                     :js-response true
                     :on-success  #(re-frame/dispatch [:chat-updated %])}]})
 
-(rf/defn create
-  {:events       [:group-chats.ui/create-pressed]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [db] :as cofx} group-name]
-  (let [selected-contacts (:group/selected-contacts db)]
-    {:json-rpc/call [{:method      "wakuext_createGroupChatWithMembers"
-                      :params      [nil group-name (into [] selected-contacts)]
-                      :js-response true
-                      :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
-
 (rf/defn create-from-link
   {:events [:group-chats/create-from-link]}
   [cofx {:keys [chat-id invitation-admin chat-name]}]

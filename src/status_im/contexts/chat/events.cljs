@@ -9,6 +9,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.chat.contacts.events :as contacts-store]
     status-im.contexts.chat.effects
+    status-im.contexts.chat.group-create.events
     [status-im.contexts.chat.messenger.composer.link-preview.events :as link-preview]
     status-im.contexts.chat.messenger.messages.content.reactions.events
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events :as delete-for-me]
@@ -78,17 +79,10 @@
              :invitation-admin
              (:invitation-admin chat)))))
 
-(rf/defn leave-removed-chat
-  {:events [:chat/leave-removed-chat]}
-  [{{:keys [view-id current-chat-id chats]} :db
-    :as                                     cofx}]
-  (when (and (= view-id :chat)
-             (not (contains? chats current-chat-id)))
-    (navigation/navigate-back cofx)))
-
 (defn ensure-chats
   [{:keys [db] :as cofx} [chats]]
-  (let [{:keys [all-chats chats-home-list removed-chats]}
+  (let [{:keys [view-id current-chat-id]} db
+        {:keys [all-chats chats-home-list removed-chats]}
         (reduce
          (fn [acc {:keys [chat-id profile-public-key timeline? community-id active muted] :as chat}]
            (if (not (or active muted))
@@ -109,7 +103,8 @@
              (update :chats-home-list set/difference removed-chats))
      :fx [(when (not-empty removed-chats)
             [:effects/push-notifications-clear-message-notifications removed-chats])
-          [:dispatch [:chat/leave-removed-chat]]]}))
+          (when (and (= view-id :chat) (removed-chats current-chat-id))
+            [:dispatch [:navigate-back]])]}))
 
 (re-frame/reg-event-fx :chat/ensure-chats ensure-chats)
 
