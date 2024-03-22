@@ -74,6 +74,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Status uses camera to take pictures and scan QR codes.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+        <string>Status needs access to the local network to give you the ability to connect with peers.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

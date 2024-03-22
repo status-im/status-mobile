@@ -57,6 +57,7 @@
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (universal-links/initialize)
   (interceptors/register-global-interceptors)
+;  (native-module/request-local-network-access (fn [response] (log/info "request-local-network-access ->" response)))
 
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))

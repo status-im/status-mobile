@@ -4,9 +4,24 @@
 #import "Statusgo.h"
 #import "Utils.h"
 
+@interface NetworkManager() <NSNetServiceBrowserDelegate>
+
+@property (nonatomic, strong) NSNetServiceBrowser *serviceBrowser;
+@property (nonatomic, copy) RCTResponseSenderBlock callback;
+
+@end
+
 @implementation NetworkManager
 
 RCT_EXPORT_MODULE();
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    self.serviceBrowser = [[NSNetServiceBrowser alloc] init];
+    self.serviceBrowser.delegate = self;
+  }
+  return self;
+}
 
 RCT_EXPORT_METHOD(startSearchForLocalPairingPeers:(RCTResponseSenderBlock)callback) {
     NSString *result = StatusgoStartSearchForLocalPairingPeers();
@@ -93,6 +108,39 @@ RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload
             callback(@[result]);
         });
     });
+}
+
+RCT_EXPORT_METHOD(requestLocalNetworkAccess:(RCTResponseSenderBlock)callback) {
+  self.callback = callback;
+
+  // Start browsing for services using TCP on the local network.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self.serviceBrowser searchForServicesOfType:@"_http._tcp." inDomain:@""];
+  });
+}
+
+// NSNetServiceBrowser delegate method
+- (void)netServiceBrowser:(NSNetServiceBrowser *)browser didNotSearch:(NSDictionary<NSString *,NSNumber *> *)errorDict {
+  RCTLogInfo(@"Failed to search for services: %@", errorDict);
+  if (self.callback) {
+    self.callback(@[@"Failed to search for services"]);
+  }
+}
+
+// NSNetServiceBrowser delegate method
+- (void)netServiceBrowser:(NSNetServiceBrowser *)browser didFindService:(NSNetService *)service moreComing:(BOOL)moreComing {
+  RCTLogInfo(@"Found service: %@", service);
+  // we stop the search after finding the first service or wait until the search is finished.
+  [browser stop];
+
+  if (self.callback) {
+    self.callback(@[[NSNull null], @"Requested local network access and found service"]);
+  }
+}
+
+// NSNetServiceBrowser delegate method
+- (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser {
+  RCTLogInfo(@"Stopped searching for services");
 }
 
 #pragma mark - Recover

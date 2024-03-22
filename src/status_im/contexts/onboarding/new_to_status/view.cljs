@@ -10,6 +10,7 @@
     [status-im.contexts.onboarding.new-to-status.style :as style]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
+    [native-module.core :as native-module]
     [utils.re-frame :as rf]))
 
 (defn sign-in-options
@@ -95,7 +96,8 @@
 
 (defn new-to-status
   []
-  (let [{:keys [top]} (safe-area/get-insets)]
+  (let [{:keys [top]} (safe-area/get-insets)
+        _ (native-module/request-local-network-access (fn [response] (log/info "request-local-network-access ->" response)))]
     [rn/view {:style style/content-container}
      [quo/page-nav
       {:margin-top top

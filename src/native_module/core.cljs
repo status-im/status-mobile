@@ -258,6 +258,11 @@
   (log/debug "[native-module]  set-soft-input-mode")
   (.setSoftInputMode ^js (ui-helper) mode))
 
+(defn request-local-network-access
+  [callback]
+  (log/debug "[native-module] request-local-network-access")
+  (.requestLocalNetworkAccess ^js (network) callback))
+
 (defn call-rpc
   [payload callback]
   (log/debug "[native-module] call-rpc")
