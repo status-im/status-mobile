@@ -5,14 +5,15 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "xcbeautify";
-  version = "1.1.1";
+  version = "1.4.0";
   arch = if stdenv.hostPlatform.isAarch64 then "arm64" else "x86_64";
 
+
   src = fetchurl {
-    url = "https://github.com/tuist/xcbeautify/releases/download/${version}/xcbeautify-${version}-${arch}-apple-macosx.zip";
+    url = "https://github.com/cpisciotta/xcbeautify/releases/download/${version}/xcbeautify-${version}-${arch}-apple-macosx.zip";
     sha256 = getAttr arch {
-            arm64 = "sha256-VaZBWZNx5iZxjpsVbKQA4wVsigjlhArDCsQXY/RBDx4=";
-            x86_64 = "sha256-Q1t4nHQu05mPqNRmL0KQukGRAHdkQHM7H24ar0isQTo=";
+            arm64 = "sha256-4b4mXT5IfNOS8iOrZASDhTrmOehG4mePcoiKxR+IdZk=";
+            x86_64 = "sha256-adEfAK7n3Q/Yd1deyJx7htX7hZaGDztEeBv4z2A0wzg=";
         };
     };
 
@@ -28,7 +29,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "A little beautifier tool for xcodebuild";
-    homepage = "https://github.com/tuist/xcbeautify";
+    homepage = "https://github.com/cpisciotta/xcbeautify";
     license = licenses.mit;
     platforms = platforms.darwin;
   };
