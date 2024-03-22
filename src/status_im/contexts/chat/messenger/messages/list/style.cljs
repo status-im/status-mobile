@@ -24,13 +24,13 @@
     :height           (+ top-margin messages.constants/header-container-radius)}))
 
 (defn header-bottom-part
-  [border-radius theme top-margin]
+  [border-radius bottom theme top-margin]
   (reanimated/apply-animations-to-style
    {:border-top-left-radius  border-radius
-    :border-top-right-radius border-radius}
+    :border-top-right-radius border-radius
+    :bottom                  bottom}
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
-    ;; :row-gap            100
     :margin-top         top-margin}))
 
 (defn header-image
@@ -59,3 +59,9 @@
 
 (def bio
   {:margin-top 8})
+
+(defn actions
+  [margin-top]
+  (reanimated/apply-animations-to-style
+   {:top margin-top}
+   {}))

@@ -119,11 +119,11 @@
                                       messages.constants/default-extrapolation-option)
         top   (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
-                                      [-44 -8]
+                                      [-44 -12]
                                       messages.constants/default-extrapolation-option)
         left  (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
-                                      [16 -4]
+                                      [16 -8]
                                       messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
@@ -143,11 +143,11 @@
   [{:keys [distance-from-list-top display-name group-chat contact theme]}]
   (let [top  (reanimated/interpolate distance-from-list-top
                                      [0 messages.constants/header-container-top-margin]
-                                     [10 -35]
+                                     [0 -35]
                                      messages.constants/default-extrapolation-option)
         left (reanimated/interpolate distance-from-list-top
                                      [0 messages.constants/header-container-top-margin]
-                                     [4 50]
+                                     [0 40]
                                      messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/user-name-container top left)}
@@ -162,37 +162,43 @@
       [contact-icon contact theme]]]))
 
 (defn actions
-  [chat-id cover-bg-color]
+  [distance-from-list-top chat-id cover-bg-color]
   (let [latest-pin-text                      (rf/sub [:chats/last-pinned-message-text chat-id])
         pins-count                           (rf/sub [:chats/pin-messages-count chat-id])
         {:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])
         community-channel?                   (= constants/community-chat-type chat-type)
         muted?                               (and muted (some? muted-till))
         mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
-        unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
-    [quo/channel-actions
-     {:container-style style/chat-actions-container
-      :actions         [{:accessibility-label :action-button-pinned
-                         :big?                true
-                         :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
-                         :customization-color cover-bg-color
-                         :icon                :i/pin
-                         :counter-value       pins-count
-                         :on-press            (fn []
-                                                (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                                              chat-id]))}
-                        {:accessibility-label :action-button-mute
-                         :label               (i18n/label (if muted
-                                                            unmute-chat-label
-                                                            mute-chat-label))
-                         :customization-color cover-bg-color
-                         :icon                (if muted? :i/activity-center :i/muted)
-                         :on-press            (fn []
-                                                (if muted?
-                                                  (home.actions/unmute-chat-action chat-id)
-                                                  (home.actions/mute-chat-action chat-id
-                                                                                 chat-type
-                                                                                 muted?)))}]}]))
+        unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)
+        top                                  (reanimated/interpolate
+                                              distance-from-list-top
+                                              [0 messages.constants/header-container-top-margin]
+                                              [16 -20]
+                                              messages.constants/default-extrapolation-option)]
+    [reanimated/view
+     {:style (style/actions top)}
+     [quo/channel-actions
+      {:actions [{:accessibility-label :action-button-pinned
+                  :big?                true
+                  :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
+                  :customization-color cover-bg-color
+                  :icon                :i/pin
+                  :counter-value       pins-count
+                  :on-press            (fn []
+                                         (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                                       chat-id]))}
+                 {:accessibility-label :action-button-mute
+                  :label               (i18n/label (if muted
+                                                     unmute-chat-label
+                                                     mute-chat-label))
+                  :customization-color cover-bg-color
+                  :icon                (if muted? :i/activity-center :i/muted)
+                  :on-press            (fn []
+                                         (if muted?
+                                           (home.actions/unmute-chat-action chat-id)
+                                           (home.actions/mute-chat-action chat-id
+                                                                          chat-type
+                                                                          muted?)))}]}]]))
 
 (defn f-list-footer
   [{:keys [chat distance-from-list-top theme customization-color]}]
@@ -211,7 +217,8 @@
         photo-path                 (rf/sub [:chats/photo-path chat-id])
         top-margin                 (+ (safe-area/get-top)
                                       messages.constants/top-bar-height
-                                      messages.constants/header-container-top-margin)
+                                      messages.constants/header-container-top-margin
+                                      32)
         background-color           (colors/theme-colors
                                     (colors/resolve-color customization-color theme 20)
                                     (colors/resolve-color customization-color theme 40)
@@ -220,6 +227,11 @@
                                     distance-from-list-top
                                     [0 messages.constants/header-container-top-margin]
                                     [20 0]
+                                    messages.constants/default-extrapolation-option)
+        bottom                     (reanimated/interpolate
+                                    distance-from-list-top
+                                    [0 messages.constants/header-container-top-margin]
+                                    [32 -4]
                                     messages.constants/default-extrapolation-option)
         background-opacity         (reanimated/interpolate
                                     distance-from-list-top
@@ -231,7 +243,7 @@
     [:<>
      [reanimated/view
       {:style (style/background-container background-color background-opacity top-margin)}]
-     [reanimated/view {:style (style/header-bottom-part border-radius theme top-margin)}
+     [reanimated/view {:style (style/header-bottom-part border-radius bottom theme top-margin)}
       [list-footer-avatar
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name
@@ -246,10 +258,10 @@
         :theme                  theme
         :contact                contact
         :group-chat             group-chat}]
-      (when bio
+      (when (seq bio)
         [quo/text {:style style/bio}
          bio])
-      [actions chat-id customization-color]]]))
+      [actions distance-from-list-top chat-id customization-color]]]))
 
 (defn list-footer
   [props]
