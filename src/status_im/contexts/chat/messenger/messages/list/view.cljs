@@ -111,7 +111,7 @@
                  (- 70 (:bottom insets)))]
     [rn/view {:style {:height height}}]))
 
-(defn f-list-footer-avatar
+(defn list-footer-avatar
   [{:keys [distance-from-list-top display-name online? profile-picture theme]}]
   (let [scale (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
@@ -133,7 +133,7 @@
        :profile-picture profile-picture
        :size            :big}]]))
 
-(defn f-username
+(defn username
   [{:keys [distance-from-list-top display-name group-chat contact theme]}]
   (let [top  (reanimated/interpolate distance-from-list-top
                                      [0 messages.constants/header-container-top-margin]
@@ -227,13 +227,13 @@
       {:style (style/background-container background-color background-opacity top-margin)}]
      [reanimated/view {:style (style/header-bottom-part border-radius theme top-margin)}
       (when-not group-chat
-        [:f> f-list-footer-avatar
+        [list-footer-avatar
          {:distance-from-list-top distance-from-list-top
           :display-name           display-name
           :online?                online?
           :theme                  theme
           :profile-picture        photo-path}])
-      [:f> f-username
+      [username
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name
         :theme                  theme
@@ -252,7 +252,7 @@
     [:<>
      (if (or loading-messages? (not all-loaded?))
        [loading-view chat-id props]
-       [:f> f-list-footer props])]))
+       [f-list-footer props])]))
 
 (defn list-group-chat-header
   [{:keys [chat-id invitation-admin]}]
