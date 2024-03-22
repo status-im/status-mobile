@@ -122,7 +122,7 @@
                          :big?                true
                          :label               (or latest-pin-text
                                                   (i18n/label :t/no-pinned-messages))
-                         :color               cover-bg-color
+                         :customization-color cover-bg-color
                          :icon                :i/pin
                          :counter-value       pins-count
                          :on-press            (fn []
@@ -132,7 +132,7 @@
                          :label               (i18n/label (if muted
                                                             unmute-chat-label
                                                             mute-chat-label))
-                         :color               cover-bg-color
+                         :customization-color cover-bg-color
                          :icon                (if muted? :i/activity-center :i/muted)
                          :on-press            (fn []
                                                 (if muted?
@@ -145,7 +145,7 @@
 (defn channel-details
   []
   (let [chat-id         (rf/sub [:get-screen-params :channel-chat-profile])
-        {:keys [admins chat-id community-id chat-name emoji color]
+        {:keys [admins chat-id community-id chat-name emoji color description]
          :as   channel} (rf/sub [:chats/chat-by-id chat-id])
         display-name    (str (when emoji (str emoji " ")) "# " chat-name)
         current-pk      (rf/sub [:multiaccount/public-key])
@@ -153,22 +153,21 @@
         contacts        (rf/sub [:communities/current-channel-contacts community-id
                                  (string/replace chat-id community-id "")])]
     [:<>
-     [quo/gradient-cover
-      {:height              286
-       :customization-color color}]
      [quo/page-nav
       {:type       :no-title
        :background :photo
        :right-side [{:icon-name :i/options
                      :on-press  #(rf/dispatch [:show-bottom-sheet
-                                               {:content (fn [] [actions/group-details-actions
+                                               {:content (fn [] [actions/chat-actions
                                                                  channel])}])}]
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])}]
 
      [quo/page-top
-      {:title  display-name
-       :avatar {:customization-color color}}]
+      {:title            display-name
+       :description      :text
+       :description-text description
+       :avatar           {:customization-color color}}]
 
      [actions chat-id color]
 
