@@ -18,7 +18,7 @@
     [utils.worklets.chat.messenger.messages :as messages.worklets]
     [utils.worklets.chat.messenger.navigation :as worklets]))
 
-(defn f-header-content-container
+(defn header-content-container
   [{:keys [chat distance-from-list-top all-loaded? chat-screen-layout-calculations-complete?]}]
   (let [{:keys [chat-id group-chat chat-type chat-name
                 emoji color]} chat
@@ -75,7 +75,7 @@
          (i18n/label
           (if online? :t/online :t/offline))])]]))
 
-(defn f-animated-background-and-pinned-banner
+(defn animated-background-and-pinned-banner
   [{:keys [chat-id navigation-view-height distance-from-list-top all-loaded?]}]
   (let [animation-distance messages.constants/header-animation-distance
         props              {:distance-from-list-top distance-from-list-top
@@ -127,7 +127,7 @@
                    [all-loaded-sub])
     [rn/view
      {:style (style/navigation-view navigation-view-height messages.constants/pinned-banner-height)}
-     [:f> f-animated-background-and-pinned-banner
+     [animated-background-and-pinned-banner
       {:chat-id                chat-id
        :navigation-view-height navigation-view-height
        :distance-from-list-top distance-from-list-top
@@ -142,7 +142,7 @@
          :accessibility-label :back-button
          :on-press            #(rf/dispatch [:navigate-back])}
         (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]]
-      [:f> f-header-content-container
+      [header-content-container
        {:chat                                      chat
         :distance-from-list-top                    distance-from-list-top
         :all-loaded?                               all-loaded?

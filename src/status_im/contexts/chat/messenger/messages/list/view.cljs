@@ -321,7 +321,7 @@
       (reset! layout-height-atom layout-height))
     (reset! distance-atom new-distance)))
 
-(defn f-messages-list-content
+(defn messages-list-content
   [{:keys [insets distance-from-list-top content-height layout-height distance-atom
            chat-screen-layout-calculations-complete? chat-list-scroll-y]}]
   (let [theme                    (quo.theme/use-theme-value)
