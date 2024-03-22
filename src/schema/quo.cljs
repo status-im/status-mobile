@@ -10,7 +10,7 @@
    [:indicator-size {:optional true} [:maybe :int]]
    [:indicator-color {:optional true} [:maybe :string]]
    [:indicator-center-to-edge {:optional true} [:maybe :int]]
-   [:theme {:optional true} [:maybe :schema.common/theme]]
+   [:theme :schema.common/theme]
    [:background-color :string]
    [:color :string]
    [:size :int]
