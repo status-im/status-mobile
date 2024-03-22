@@ -92,19 +92,21 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
-           sheet                  (last sheets)
-           {:keys [theme]}        sheet
-           insets                 (safe-area/get-insets)
-           user-theme             (theme/get-theme)]
+     (let [{:keys [sheets hide?]}   (rf/sub [:bottom-sheet])
+           sheet                    (last sheets)
+           {:keys [theme]}          sheet
+           insets                   (safe-area/get-insets)
+           user-theme               (theme/get-theme)
+           keyboard-vertical-offset (- (max 20 (:bottom insets)))]
        ^{:key (str "sheet" @reloader/cnt)}
        [theme/provider {:theme (or theme user-theme)}
         [inactive]
         [rn/keyboard-avoiding-view
          {:style                    {:position :relative :flex 1}
-          :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
+          :keyboard-vertical-offset keyboard-vertical-offset}
          (when sheet
-           [bottom-sheet/view {:insets insets :hide? hide?}
+           [bottom-sheet/view
+            {:insets insets :hide? hide? :keyboard-vertical-offset keyboard-vertical-offset}
             sheet])]]))
    functional-compiler))
 
