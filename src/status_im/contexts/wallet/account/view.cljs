@@ -50,7 +50,9 @@
            [quo/wallet-ctas
             {:send-action    (fn []
                                (rf/dispatch [:wallet/clean-send-data])
-                               (rf/dispatch [:open-modal :screen/wallet.select-address]))
+                               (rf/dispatch [:wallet/wizard-navigate-forward
+                                             {:start-flow? true
+                                              :flow-id     :wallet-flow}]))
              :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
                                             {:content buy-drawer}])

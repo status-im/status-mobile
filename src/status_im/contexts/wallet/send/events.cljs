@@ -51,7 +51,7 @@
 
 (rf/reg-event-fx
  :wallet/select-send-address
- (fn [{:keys [db]} [{:keys [address token? recipient stack-id]}]]
+ (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          test-net?           (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
@@ -65,10 +65,10 @@
               (assoc-in [:wallet :ui :send :address-prefix] prefix)
               (assoc-in [:wallet :ui :send :selected-networks] selected-networks))
       :fx [[:dispatch
-            [:navigate-to-within-stack
-             (if token?
-               [:screen/wallet.send-input-amount stack-id]
-               [:screen/wallet.select-asset stack-id])]]]})))
+            [:wallet/wizard-navigate-forward
+             {:current-screen stack-id
+              :start-flow?    start-flow?
+              :flow-id        :wallet-flow}]]]})))
 
 (rf/reg-event-fx
  :wallet/update-receiver-networks
@@ -76,17 +76,16 @@
    {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
 
 (rf/reg-event-fx :wallet/send-select-token
- (fn [{:keys [db]} [{:keys [token stack-id]}]]
+ (fn [{:keys [db]} [{:keys [token stack-id start-flow?]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
             (assoc-in [:wallet :ui :send :token] token))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
-         [:dispatch [:navigate-to-within-stack [:screen/wallet.send-input-amount stack-id]]]]}))
-
-(rf/reg-event-fx
- :wallet/send-select-token-drawer
- (fn [{:keys [db]} [{:keys [token]}]]
-   {:db (assoc-in db [:wallet :ui :send :token] token)}))
+         [:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-flow}]]]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
@@ -113,9 +112,13 @@
          [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
- (fn [{:keys [db]} [{:keys [amount stack-id]}]]
+ (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
    {:db (assoc-in db [:wallet :ui :send :amount] amount)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]]}))
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-flow}]]]}))
 
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
@@ -184,12 +187,17 @@
               (assoc-in [:wallet :transactions] transaction-details)
               (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids))
       :fx [[:dispatch
-            [:navigate-to-within-stack
-             [:screen/wallet.transaction-progress :screen/wallet.transaction-confirmation]]]]})))
+            [:wallet/wizard-navigate-forward
+             {:current-screen :screen/wallet.transaction-confirmation
+              :flow-id        :wallet-flow}]]]})))
 
 (rf/reg-event-fx :wallet/close-transaction-progress-page
  (fn [_]
-   {:fx [[:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
+   {:fx [[:dispatch [:wallet/clean-scanned-address]]
+         [:dispatch [:wallet/clean-local-suggestions]]
+         [:dispatch [:wallet/clean-send-address]]
+         [:dispatch [:wallet/select-address-tab nil]]
+         [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
 (defn- transaction-data
   [{:keys [from-address to-address token-address route data eth-transfer?]}]
@@ -331,11 +339,7 @@
                        :params     request-params
                        :on-success (fn [result]
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (rf/dispatch [:wallet/add-authorized-transaction result])
-                                     (rf/dispatch [:wallet/clean-scanned-address])
-                                     (rf/dispatch [:wallet/clean-local-suggestions])
-                                     (rf/dispatch [:wallet/clean-send-address])
-                                     (rf/dispatch [:wallet/select-address-tab nil]))
+                                     (rf/dispatch [:wallet/add-authorized-transaction result]))
                        :on-error   (fn [error]
                                      (log/error "failed to send transaction"
                                                 {:event  :wallet/send-transaction

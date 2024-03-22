@@ -63,7 +63,10 @@
         search-text    (reagent/atom "")
         on-change-text #(reset! search-text %)
         on-change-tab  #(reset! selected-tab %)
-        on-close       #(rf/dispatch [:navigate-back])]
+        on-close       (fn []
+                         (rf/dispatch [:wallet/clean-selected-token])
+                         (rf/dispatch [:wallet/clean-selected-collectible])
+                         (rf/dispatch [:navigate-back]))]
     (fn []
       [rn/safe-area-view {:style style/container}
        [account-switcher/view
