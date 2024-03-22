@@ -178,7 +178,7 @@
          :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
          :disabled?           (not can-request-access?)
          :icon-left           (if can-request-access? :i/unlocked :i/locked)}
-        (i18n/label :t/join-open-community)]])))
+        (i18n/label :t/request-to-join)]])))
 
 (defn- join-community
   [{:keys [id joined permissions] :as community}]
