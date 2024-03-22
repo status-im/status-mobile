@@ -21,34 +21,39 @@
 (defn f-header-content-container
   [{:keys [chat distance-from-list-top all-loaded? chat-screen-layout-calculations-complete?]}]
   (let [{:keys [chat-id group-chat chat-type chat-name
-                emoji]} chat
-        display-name    (cond
-                          (= chat-type constants/one-to-one-chat-type)
-                          (first (rf/sub
-                                  [:contacts/contact-two-names-by-identity
-                                   chat-id]))
-                          (= chat-type constants/community-chat-type)
-                          (str (when emoji (str emoji " ")) "# " chat-name)
-                          :else (str emoji chat-name))
-        online?         (when-not group-chat (rf/sub [:visibility-status-updates/online? chat-id]))
-        photo-path      (when-not group-chat (rf/sub [:chats/photo-path chat-id]))
-        header-opacity  (worklets/navigation-header-opacity
-                         distance-from-list-top
-                         all-loaded?
-                         chat-screen-layout-calculations-complete?
-                         (if platform/ios?
-                           messages.constants/content-animation-start-position-ios
-                           messages.constants/content-animation-start-position-android))
-        header-position (worklets/navigation-header-position
-                         distance-from-list-top
-                         all-loaded?
-                         messages.constants/top-bar-height
-                         (if platform/ios?
-                           messages.constants/content-animation-start-position-ios
-                           messages.constants/content-animation-start-position-android))]
+                emoji color]} chat
+        display-name          (cond
+                                (= chat-type constants/one-to-one-chat-type)
+                                (first (rf/sub
+                                        [:contacts/contact-two-names-by-identity
+                                         chat-id]))
+                                (= chat-type constants/community-chat-type)
+                                (str (when emoji (str emoji " ")) "# " chat-name)
+                                :else (str emoji chat-name))
+        online?               (when-not group-chat (rf/sub [:visibility-status-updates/online? chat-id]))
+        photo-path            (when-not group-chat (rf/sub [:chats/photo-path chat-id]))
+        header-opacity        (worklets/navigation-header-opacity
+                               distance-from-list-top
+                               all-loaded?
+                               chat-screen-layout-calculations-complete?
+                               (if platform/ios?
+                                 messages.constants/content-animation-start-position-ios
+                                 messages.constants/content-animation-start-position-android))
+        header-position       (worklets/navigation-header-position
+                               distance-from-list-top
+                               all-loaded?
+                               messages.constants/top-bar-height
+                               (if platform/ios?
+                                 messages.constants/content-animation-start-position-ios
+                                 messages.constants/content-animation-start-position-android))]
     [reanimated/view
      {:style (style/header-content-container header-opacity header-position)}
-     (when-not group-chat
+     (if group-chat
+       [quo/group-avatar
+        {:customization-color color
+         :size                :size-32
+         :picture             photo-path
+         :override-theme      :dark}]
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?
