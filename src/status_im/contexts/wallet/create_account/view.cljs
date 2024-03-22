@@ -14,7 +14,6 @@
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.contexts.wallet.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
@@ -32,10 +31,7 @@
                           :customization-color customization-color}
                          :i/seed)
     :action            (when-not new-keypair? :button)
-    :action-props      {:on-press    (fn []
-                                       (ff/alert ::ff/wallet.bridge-token
-                                                 #(rf/dispatch [:navigate-to
-                                                                :screen/wallet.select-keypair])))
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
@@ -97,6 +93,7 @@
                                                         (i18n/label :t/keypair-title
                                                                     {:name (:name keypair)})
                                                         (:name keypair)))]
+        (rn/use-unmount #(rf/dispatch [:wallet/clear-new-keypair]))
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type       :no-title
@@ -166,7 +163,8 @@
                                     (create-existing-keypair-account password)))
            :auth-button-label   (i18n/label :t/confirm)
            :disabled?           (empty? @account-name)
-           :container-style     (style/slide-button-container bottom)}]]))))
+           :container-style     (style/slide-button-container bottom)
+           :dependencies        [new-keypair]}]]))))
 
 (defn- view-internal
   []
