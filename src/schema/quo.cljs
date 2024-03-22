@@ -48,18 +48,19 @@
    [:override-ring? [:maybe :boolean]]])
 
 (def ^:private ?image-uri-config
-  [:merge
-   [:map [:type [:enum :account :contact :initials]]]
-   [:multi {:dispatch :type}
-    [:account
-     [:map
-      [:options ?account-image-uri-options]]]
-    [:contact
-     [:map
-      [:options ?contact-image-uri-options]]]
-    [:initials
-     [:map
-      [:options ?initials-image-uri-options]]]]])
+  [:multi {:dispatch :type}
+   [:account
+    [:map
+     [:type [:= :account]]
+     [:options ?account-image-uri-options]]]
+   [:contact
+    [:map
+     [:type [:= :contact]]
+     [:options ?contact-image-uri-options]]]
+   [:initials
+    [:map
+     [:type [:= :initials]]
+     [:options ?initials-image-uri-options]]]])
 
 (def ^:private ?profile-picture-source
   [:or
