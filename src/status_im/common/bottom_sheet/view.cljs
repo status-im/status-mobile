@@ -4,12 +4,15 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
+    [react-native.async-storage :as async-storage]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im.common.bottom-sheet.style :as style]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (def duration 450)
@@ -61,12 +64,15 @@
   (oops/oget event "nativeEvent.layout.height"))
 
 (defn view
-  [{:keys [hide? insets]}
+  [{:keys [hide? insets keyboard-vertical-offset]}
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
            gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme-value)
         [sheet-height set-sheet-height]   (rn/use-state 0)
+        [kb-height set-kb-height]         (rn/use-state 0)
+        keyboard-show-listener            (rn/use-ref-atom nil)
+        keyboard-layout-listener          (rn/use-ref-atom nil)
         handle-sheet-height               (rn/use-callback (fn [e]
                                                              (when (= sheet-height 0)
                                                                (set-sheet-height
@@ -96,9 +102,45 @@
         bottom                            (if selected-item-smaller-than-sheet?
                                             (+ sheet-height bottom-margin)
                                             (:bottom insets))
-        sheet-max-height                  (- window-height (:top insets))
+        sheet-max-height                  (- window-height
+                                             (:top insets)
+                                             kb-height
+                                             (when platform/ios?
+                                               keyboard-vertical-offset))
         content-padding-bottom            (or padding-bottom-override
                                               (+ (:bottom insets) bottom-margin))]
+    (rn/use-mount
+     (fn []
+       (when (zero? kb-height)
+         (async-storage/get-item :kb-default-height
+                                 (fn [height]
+                                   (set-kb-height (utils.number/parse-int height 0)))))
+       (when (nil? @keyboard-show-listener)
+         (reset! keyboard-show-listener
+           (.addListener rn/keyboard
+                         "keyboardDidShow"
+                         (fn [event]
+                           (let [height (oops/oget event "endCoordinates.height")]
+                             (set-kb-height height)
+                             (when (zero? kb-height)
+                               (async-storage/set-item! :kb-default-height (str height))))))))
+       (when (nil? @keyboard-layout-listener)
+         (reset! keyboard-layout-listener
+           (.addListener
+            rn/keyboard
+            "keyboardWillChangeFrame"
+            (fn [event]
+              (let [height (oops/oget event "endCoordinates.height")]
+                (set-kb-height height)
+                (async-storage/set-item! :kb-default-height (str height)))))))))
+    (rn/use-unmount
+     (fn []
+       (when @keyboard-show-listener
+         (.remove ^js @keyboard-show-listener)
+         (reset! keyboard-show-listener nil))
+       (when @keyboard-layout-listener
+         (.remove ^js @keyboard-layout-listener)
+         (reset! keyboard-layout-listener nil))))
     (rn/use-effect
      #(if hide?
         (hide translate-y bg-opacity window-height on-close)
