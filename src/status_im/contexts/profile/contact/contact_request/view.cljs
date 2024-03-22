@@ -39,20 +39,25 @@
       (i18n/label :t/contact-request-message-prompt)]
      [rn/view {:style style/message-input-wrapper}
       [quo/input
-       {:type                :text
-        :multiline?          true
-        :char-limit          constants/contact-request-message-max-length
-        :max-length          constants/contact-request-message-max-length
-        :placeholder         (i18n/label :t/type-something)
-        :auto-focus          true
-        :accessibility-label :contact-request-message
-        :label               (i18n/label :t/message)
-        :on-change-text      on-message-change}]]
-     [quo/bottom-actions
-      {:actions          :one-action
-       :button-one-props {:disabled?           (string/blank? message)
-                          :accessibility-label :send-contact-request
-                          :customization-color customization-color
-                          :on-press            on-message-submit}
-       :button-one-label (i18n/label :t/send-contact-request)}]]))
+       {:type                  :text
+        :multiline?            true
+        :char-limit            constants/contact-request-message-max-length
+        :max-length            constants/contact-request-message-max-length
+        :placeholder           (i18n/label :t/type-something)
+        :auto-focus            true
+        :accessibility-label   :contact-request-message
+        :label                 (i18n/label :t/message)
+        :on-change-text        on-message-change
+        :input-style           {:flex       1
+                                :min-height "100%"}
+        :container-style       {:flex-shrink 1}
+        :input-container-style {:flex-shrink 1}}]]
+     [rn/view {:style {:flex 1}}
+      [quo/bottom-actions
+       {:actions          :one-action
+        :button-one-props {:disabled?           (string/blank? message)
+                           :accessibility-label :send-contact-request
+                           :customization-color customization-color
+                           :on-press            on-message-submit}
+        :button-one-label (i18n/label :t/send-contact-request)}]]]))
 

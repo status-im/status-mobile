@@ -7,4 +7,6 @@
 
 (def message-input-wrapper
   {:padding-vertical   8
+   :flex-shrink        1
+   :flex-direction     :column
    :padding-horizontal 20})
