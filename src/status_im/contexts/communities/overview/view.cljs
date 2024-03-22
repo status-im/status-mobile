@@ -181,20 +181,13 @@
         (i18n/label :t/join-open-community)]])))
 
 (defn- join-community
-  [{:keys [id joined permissions can-request-access?] :as community}]
+  [{:keys [id joined permissions] :as community}]
   (let [pending?        (rf/sub [:communities/my-pending-request-to-join id])
         access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
         invite-only?    (= access-type :invite-only)]
-    [:<>
-     (when-not (or joined pending? invite-only? unknown-access?)
-       [token-requirements community])
-     (when (and can-request-access? (not joined))
-       [quo/text
-        {:size   :paragraph-2
-         :weight :regular
-         :style  style/review-notice}
-        (i18n/label :t/community-admins-will-review-your-request)])]))
+    (when-not (or joined pending? invite-only? unknown-access?)
+      [token-requirements community])))
 
 (defn- status-tag
   [community-id joined]
