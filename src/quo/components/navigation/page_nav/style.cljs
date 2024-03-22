@@ -1,6 +1,7 @@
 (ns quo.components.navigation.page-nav.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defn container
   [margin-top]
@@ -20,6 +21,16 @@
    :align-items       :center
    :justify-content   (if centered? :center :flex-start)
    :opacity           center-opacity})
+
+(defn center-content-container-animation
+  [{:keys [centered? center-opacity has-animations? translate-animation opacity-animation]}]
+  (if has-animations?
+    (reanimated/apply-animations-to-style
+     {:transform [{:translate-y translate-animation}]
+      :opacity   opacity-animation}
+     (center-content-container centered? center-opacity))
+    (center-content-container centered? center-opacity)))
+
 
 (def right-actions-container
   {:flex-direction :row})
