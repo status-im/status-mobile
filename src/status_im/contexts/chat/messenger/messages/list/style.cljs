@@ -51,11 +51,10 @@
     :left left}
    {:z-index -1}))
 
-(defn user-name
-  [group-chat]
+(def user-name
   {:align-items    :center
    :flex-direction :row
-   :margin-top     (if group-chat 52 52)})
+   :margin-top     52})
 
 (def bio
   {:margin-top 8})

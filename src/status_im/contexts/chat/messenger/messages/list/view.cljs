@@ -140,7 +140,7 @@
          :size            :big}])]))
 
 (defn chat-display-name
-  [{:keys [distance-from-list-top display-name group-chat contact theme]}]
+  [{:keys [distance-from-list-top display-name contact theme]}]
   (let [top  (reanimated/interpolate distance-from-list-top
                                      [0 messages.constants/header-container-top-margin]
                                      [0 -35]
@@ -152,7 +152,7 @@
     [reanimated/view
      {:style (style/user-name-container top left)}
      [rn/view
-      {:style (style/user-name group-chat)}
+      {:style style/user-name}
       [quo/text
        {:weight          :semi-bold
         :size            :heading-1
