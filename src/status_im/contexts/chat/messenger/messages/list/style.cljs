@@ -30,6 +30,7 @@
     :border-top-right-radius border-radius}
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
+    ;; :row-gap            100
     :margin-top         top-margin}))
 
 (defn header-image
@@ -54,7 +55,7 @@
   [group-chat]
   {:align-items    :center
    :flex-direction :row
-   :margin-top     (if group-chat 94 52)})
+   :margin-top     (if group-chat 52 52)})
 
 (def bio
   {:margin-top 8})

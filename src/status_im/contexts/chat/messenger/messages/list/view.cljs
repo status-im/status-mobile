@@ -112,7 +112,7 @@
     [rn/view {:style {:height height}}]))
 
 (defn list-footer-avatar
-  [{:keys [distance-from-list-top display-name online? profile-picture theme]}]
+  [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color]}]
   (let [scale (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
                                       [1 0.4]
@@ -127,13 +127,19 @@
                                       messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
-     [quo/user-avatar
-      {:full-name       display-name
-       :online?         online?
-       :profile-picture profile-picture
-       :size            :big}]]))
+     (if group-chat
+       [quo/group-avatar
+        {:customization-color color
+         :size                :size-80
+         :picture             profile-picture
+         :override-theme      :dark}]
+       [quo/user-avatar
+        {:full-name       display-name
+         :online?         online?
+         :profile-picture profile-picture
+         :size            :big}])]))
 
-(defn username
+(defn chat-display-name
   [{:keys [distance-from-list-top display-name group-chat contact theme]}]
   (let [top  (reanimated/interpolate distance-from-list-top
                                      [0 messages.constants/header-container-top-margin]
@@ -191,49 +197,50 @@
 (defn f-list-footer
   [{:keys [chat distance-from-list-top theme customization-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
-                group-chat]} chat
-        display-name         (cond
-                               (= chat-type constants/one-to-one-chat-type)
-                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                               (= chat-type constants/community-chat-type)
-                               (str (when emoji (str emoji " ")) "# " chat-name)
-                               :else (str emoji chat-name))
-        {:keys [bio]}        (rf/sub [:contacts/contact-by-identity chat-id])
-        online?              (rf/sub [:visibility-status-updates/online? chat-id])
-        contact              (when-not group-chat
-                               (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path           (rf/sub [:chats/photo-path chat-id])
-        top-margin           (+ (safe-area/get-top)
-                                messages.constants/top-bar-height
-                                messages.constants/header-container-top-margin)
-        background-color     (colors/theme-colors
-                              (colors/resolve-color customization-color theme 20)
-                              (colors/resolve-color customization-color theme 40)
-                              theme)
-        border-radius        (reanimated/interpolate
-                              distance-from-list-top
-                              [0 messages.constants/header-container-top-margin]
-                              [20 0]
-                              messages.constants/default-extrapolation-option)
-        background-opacity   (reanimated/interpolate
-                              distance-from-list-top
-                              [messages.constants/header-container-top-margin
-                               (+ messages.constants/header-animation-distance
-                                  messages.constants/header-container-top-margin)]
-                              [1 0]
-                              messages.constants/default-extrapolation-option)]
+                group-chat color]} chat
+        display-name               (cond
+                                     (= chat-type constants/one-to-one-chat-type)
+                                     (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                                     (= chat-type constants/community-chat-type)
+                                     (str (when emoji (str emoji " ")) "# " chat-name)
+                                     :else (str emoji chat-name))
+        {:keys [bio]}              (rf/sub [:contacts/contact-by-identity chat-id])
+        online?                    (rf/sub [:visibility-status-updates/online? chat-id])
+        contact                    (when-not group-chat
+                                     (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path                 (rf/sub [:chats/photo-path chat-id])
+        top-margin                 (+ (safe-area/get-top)
+                                      messages.constants/top-bar-height
+                                      messages.constants/header-container-top-margin)
+        background-color           (colors/theme-colors
+                                    (colors/resolve-color customization-color theme 20)
+                                    (colors/resolve-color customization-color theme 40)
+                                    theme)
+        border-radius              (reanimated/interpolate
+                                    distance-from-list-top
+                                    [0 messages.constants/header-container-top-margin]
+                                    [20 0]
+                                    messages.constants/default-extrapolation-option)
+        background-opacity         (reanimated/interpolate
+                                    distance-from-list-top
+                                    [messages.constants/header-container-top-margin
+                                     (+ messages.constants/header-animation-distance
+                                        messages.constants/header-container-top-margin)]
+                                    [1 0]
+                                    messages.constants/default-extrapolation-option)]
     [:<>
      [reanimated/view
       {:style (style/background-container background-color background-opacity top-margin)}]
      [reanimated/view {:style (style/header-bottom-part border-radius theme top-margin)}
-      (when-not group-chat
-        [list-footer-avatar
-         {:distance-from-list-top distance-from-list-top
-          :display-name           display-name
-          :online?                online?
-          :theme                  theme
-          :profile-picture        photo-path}])
-      [username
+      [list-footer-avatar
+       {:distance-from-list-top distance-from-list-top
+        :display-name           display-name
+        :online?                online?
+        :theme                  theme
+        :profile-picture        photo-path
+        :group-chat             group-chat
+        :color                  color}]
+      [chat-display-name
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name
         :theme                  theme
