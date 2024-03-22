@@ -56,8 +56,7 @@
 (rf/defn redirect-to-ens-summary
   {:events [::redirect-to-ens-summary]}
   [cofx]
-  ;; we reset navigation so that navigate back doesn't return
-  ;; into the registration flow
+  ;; we reset navigation so that navigate back doesn't return into the registration flow
   (rf/merge cofx
             (navigation/navigate-back-to :my-profile)
             (navigation/navigate-to :ens-confirmation {})))
@@ -161,8 +160,8 @@
       (and (= response utils.ens/default-address) (not custom-domain?))
       (re-frame/dispatch [::name-resolved username :available])
 
-      ;; if we get an address back, we try to get the public key associated
-      ;; with the username as well
+      ;; if we get an address back, we try to get the public key associated with the username as
+      ;; well
       (get addresses (eip55/address->checksum response))
       (ens/pubkey
        chain-id
@@ -271,8 +270,7 @@
   (rf/merge cofx
             ;; clear registration data
             {:db (dissoc db :ens/registration)}
-            ;; we reset navigation so that navigate back doesn't return
-            ;; into the registration flow
+            ;; we reset navigation so that navigate back doesn't return into the registration flow
             (navigation/navigate-back-to :my-profile)
             (navigation/navigate-to :ens-main {})))
 

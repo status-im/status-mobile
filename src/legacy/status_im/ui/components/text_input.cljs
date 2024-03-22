@@ -188,8 +188,8 @@
                              :on-press #(reset! visible true)}
 
                             :else after)
-            secure        (boolean (and secure-text-entry (not @visible))) ; must be a boolean to work on
-                                                                           ; iOS
+            secure        (boolean (and secure-text-entry (not @visible))) ; must be a boolean to
+                                                                           ; work on iOS
             auto-complete (cond
                             (= keyboard-type :visible-password)
                             :off
@@ -211,8 +211,7 @@
                             :default
 
                             ; the correct approach on Android would be keep secure-text-entry on set
-                            ; keyboard type
-                            ; to visible-password. But until
+                            ; keyboard type to visible-password. But until
                             ; https://github.com/facebook/react-native/issues/27946
                             ; is solved that's the second best way.
                             (and platform/android? secure-text-entry)

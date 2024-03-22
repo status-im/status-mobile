@@ -15,8 +15,8 @@
 
 (defn- prepare-options
   [title message options]
-  (let [destructive-opt-index (utils/first-index :destructive? options)] ;; TODO Can only be a single
-                                                                         ;; destructive?
+  (let [destructive-opt-index (utils/first-index :destructive? options)] ;; TODO Can only be a
+                                                                         ;; single destructive?
     (clj->js (merge {:options           (conj (mapv :label options) (i18n/label :t/cancel))
                      :cancelButtonIndex (count options)}
                     (when destructive-opt-index

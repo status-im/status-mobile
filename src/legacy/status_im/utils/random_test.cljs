@@ -49,9 +49,8 @@
     (is (empty? (filter #(< % 0) sample)))
     ;no result should be larger than n
     (is (empty? (filter #(>= % n) sample)))
-    ;and while there is a very small probability
-    ;it is very unlikely and probably wrong if all 1000 calls
-    ;got us the same number.
+    ;and while there is a very small probability it is very unlikely and probably wrong if all 1000
+    ;calls got us the same number.
     (is (> (count sample) 1))))
 
 (deftest test-seeded-rand-nth

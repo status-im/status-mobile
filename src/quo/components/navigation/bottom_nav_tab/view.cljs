@@ -55,12 +55,10 @@
       :accessibility-label     accessibility-label}
      [reanimated/view {:style background-animated-style}
       ;; In android animations are not working for the animated components which are nested by
-      ;; hole-view,
-      ;; Interestingly this only happens when hole view and blur view are used together
+      ;; hole-view,. Interestingly this only happens when hole view and blur view are used together
       ;; Similar behavior is also seen while removing holes, and to fix that we used key and
-      ;; force-rendered view
-      ;; But we need animations faster for tab clicks, so we can't rely on reagent atoms,
-      ;; so for now only using hole view for the ios tab icon notification boundary
+      ;; force-rendered view. But we need animations faster for tab clicks, so we can't rely on
+      ;; reagent atoms, so for now only using hole view for the ios tab icon notification boundary
       (if platform/ios?
         [hole-view/hole-view
          {:key   new-notifications? ;; Key is required to force removal of holes
