@@ -48,6 +48,21 @@ jest.mock('react-native-static-safe-area-insets', () => ({
 
 jest.mock('react-native-permissions', () => require('react-native-permissions/mock'));
 
+jest.mock('@react-native-clipboard/clipboard', () => ({
+  getString: jest.fn().mockResolvedValue('mockString'),
+  getImagePNG: jest.fn(),
+  getImageJPG: jest.fn(),
+  setImage: jest.fn(),
+  setString: jest.fn(),
+  hasString: jest.fn().mockResolvedValue(true),
+  hasImage: jest.fn().mockResolvedValue(true),
+  hasURL: jest.fn().mockResolvedValue(true),
+  addListener: jest.fn(),
+  removeAllListeners: jest.fn(),
+  getEnforcing: jest.fn(),
+  useClipboard: jest.fn(() => ['mockString', jest.fn()]),
+}));
+
 jest.mock('@react-native-community/audio-toolkit', () => ({
   Recorder: jest.fn().mockImplementation(() => ({
     prepare: jest.fn(),
