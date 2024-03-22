@@ -62,21 +62,22 @@
 
 (defn notification
   [{title-text :title :keys [avatar user header title-weight text body container-style theme]}]
-  (let [theme         (or theme (quo.theme/get-theme))
-        body          (or body (when text [message text theme]))
-        header        (or header
-                          (when title-text
-                            [title {:text title-text
-                                    :weight title-weight 
-                                    :theme theme
-                                    :multiline? (some? body)}]))
-        header        (when header [header-container header])
-        body          (when body [body-container body])
-        user-avatar   (or avatar (when user (user-avatar/user-avatar user)))
-        avatar        (when user-avatar
-                        [avatar-container
-                         {:multiline? (and header body)}
-                         user-avatar])]
+  (let [theme       (or theme (quo.theme/get-theme))
+        body        (or body (when text [message text theme]))
+        header      (or header
+                        (when title-text
+                          [title
+                           {:text       title-text
+                            :weight     title-weight
+                            :theme      theme
+                            :multiline? (some? body)}]))
+        header      (when header [header-container header])
+        body        (when body [body-container body])
+        user-avatar (or avatar (when user (user-avatar/user-avatar user)))
+        avatar      (when user-avatar
+                      [avatar-container
+                       {:multiline? (and header body)}
+                       user-avatar])]
     [quo.theme/provider {:theme theme}
      [notification-container
       {:avatar          avatar
