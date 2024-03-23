@@ -70,20 +70,21 @@
 (defn <-rpc
   [chat]
   (-> chat
-      (set/rename-keys {:id                     :chat-id
-                        :communityId            :community-id
-                        :syncedFrom             :synced-from
-                        :syncedTo               :synced-to
-                        :membershipUpdateEvents :membership-update-events
-                        :deletedAtClockValue    :deleted-at-clock-value
-                        :chatType               :chat-type
-                        :unviewedMessagesCount  :unviewed-messages-count
-                        :unviewedMentionsCount  :unviewed-mentions-count
-                        :lastMessage            :last-message
-                        :lastClockValue         :last-clock-value
-                        :invitationAdmin        :invitation-admin
-                        :profile                :profile-public-key
-                        :muteTill               :muted-till})
+      (set/rename-keys {:id                      :chat-id
+                        :communityId             :community-id
+                        :syncedFrom              :synced-from
+                        :syncedTo                :synced-to
+                        :membershipUpdateEvents  :membership-update-events
+                        :deletedAtClockValue     :deleted-at-clock-value
+                        :chatType                :chat-type
+                        :unviewedMessagesCount   :unviewed-messages-count
+                        :unviewedMentionsCount   :unviewed-mentions-count
+                        :lastMessage             :last-message
+                        :lastClockValue          :last-clock-value
+                        :invitationAdmin         :invitation-admin
+                        :profile                 :profile-public-key
+                        :muteTill                :muted-till
+                        :hideIfPermissionsNotMet :hide-if-permissions-not-met?})
       rpc->type
       unmarshal-members
       (update :last-message #(when % (messages/<-rpc %)))
@@ -92,38 +93,40 @@
 
 (defn <-rpc-js
   [^js chat]
-  (-> {:name                    (.-name chat)
-       :description             (.-description chat)
-       :color                   (<-color (.-color chat))
-       :emoji                   (.-emoji chat)
-       :timestamp               (.-timestamp chat)
-       :alias                   (.-alias chat)
-       :muted                   (.-muted chat)
-       :joined                  (.-joined chat)
-       :muted-till              (.-muteTill chat)
-       :chat-id                 (.-id chat)
-       :community-id            (.-communityId chat)
-       :synced-from             (.-syncedFrom chat)
-       :synced-to               (.-syncedTo chat)
-       :deleted-at-clock-value  (.-deletedAtClockValue chat)
-       :chat-type               (.-chatType chat)
-       :unviewed-messages-count (.-unviewedMessagesCount chat)
-       :unviewed-mentions-count (.-unviewedMentionsCount chat)
-       :last-message            {:content            {:text        (.-text chat)
-                                                      :parsed-text (types/js->clj (.-parsedText chat))
-                                                      :response-to (.-responseTo chat)}
-                                 :content-type       (.-contentType chat)
-                                 :community-id       (.-contentCommunityId chat)
-                                 :outgoing           (boolean (.-outgoingStatus chat))
-                                 :album-images-count (.-albumImagesCount chat)
-                                 :from               (.-from chat)
-                                 :deleted?           (.-deleted chat)
-                                 :deleted-for-me?    (.-deletedForMe chat)}
-       :last-clock-value        (.-lastClockValue chat)
-       :profile-public-key      (.-profile chat)
-       :highlight               (.-highlight chat)
-       :active                  (.-active chat)
-       :members                 (types/js->clj (.-members chat))}
+  (-> {:name                        (.-name chat)
+       :description                 (.-description chat)
+       :color                       (<-color (.-color chat))
+       :emoji                       (.-emoji chat)
+       :timestamp                   (.-timestamp chat)
+       :alias                       (.-alias chat)
+       :muted                       (.-muted chat)
+       :joined                      (.-joined chat)
+       :muted-till                  (.-muteTill chat)
+       :chat-id                     (.-id chat)
+       :community-id                (.-communityId chat)
+       :synced-from                 (.-syncedFrom chat)
+       :synced-to                   (.-syncedTo chat)
+       :deleted-at-clock-value      (.-deletedAtClockValue chat)
+       :chat-type                   (.-chatType chat)
+       :unviewed-messages-count     (.-unviewedMessagesCount chat)
+       :unviewed-mentions-count     (.-unviewedMentionsCount chat)
+       :last-message                {:content            {:text        (.-text chat)
+                                                          :parsed-text (types/js->clj (.-parsedText
+                                                                                       chat))
+                                                          :response-to (.-responseTo chat)}
+                                     :content-type       (.-contentType chat)
+                                     :community-id       (.-contentCommunityId chat)
+                                     :outgoing           (boolean (.-outgoingStatus chat))
+                                     :album-images-count (.-albumImagesCount chat)
+                                     :from               (.-from chat)
+                                     :deleted?           (.-deleted chat)
+                                     :deleted-for-me?    (.-deletedForMe chat)}
+       :last-clock-value            (.-lastClockValue chat)
+       :profile-public-key          (.-profile chat)
+       :highlight                   (.-highlight chat)
+       :active                      (.-active chat)
+       :members                     (types/js->clj (.-members chat))
+       :hide-if-permissions-not-met (.-hideIfPermissionsNotMet chat)}
       rpc->type
       unmarshal-members))
 

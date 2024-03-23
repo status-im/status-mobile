@@ -27,10 +27,11 @@
                (assoc acc
                       (name k)
                       (-> v
-                          (assoc :token-gated? (:tokenGated v)
-                                 :can-post?    (:canPost v)
-                                 :can-view?    (:canView v))
-                          (dissoc :canPost :tokenGated :canView)
+                          (assoc :token-gated?                 (:tokenGated v)
+                                 :can-post?                    (:canPost v)
+                                 :can-view?                    (:canView v)
+                                 :hide-if-permissions-not-met? (:hideIfPermissionsNotMet v))
+                          (dissoc :canPost :tokenGated :canView :hideIfPermissionsNotMet)
                           (update :members walk/stringify-keys))))
              {}
              chats))
