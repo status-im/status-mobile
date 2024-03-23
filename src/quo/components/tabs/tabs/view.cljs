@@ -53,7 +53,7 @@
                            :max-fade-percentage fade-end-percentage})]
       ;; Avoid unnecessary re-rendering.
       (when (not= new-percentage (get fading :fade-end-percentage))
-        (set-fading (assoc fading :fade-end-percentage new-percentage)))))
+        (set-fading new-percentage))))
   (when on-scroll
     (on-scroll e)))
 
@@ -61,13 +61,10 @@
   [{:keys [id label notification-dot? accessibility-label]}
    index _
    {:keys [active-tab-id
-           set-active-tab-id
            blur?
            customization-color
-           flat-list-ref
            number-of-items
-           on-change
-           scroll-on-press?
+           on-press
            size
            style]}]
   [rn/view
@@ -84,16 +81,7 @@
      :size                size
      :blur?               blur?
      :active              (= id active-tab-id)
-     :on-press            (fn [id]
-                            (set-active-tab-id id)
-                            (when (and scroll-on-press? @flat-list-ref)
-                              (.scrollToIndex ^js @flat-list-ref
-                                              #js
-                                               {:animated     true
-                                                :index        index
-                                                :viewPosition 0.5}))
-                            (when on-change
-                              (on-change id)))}
+     :on-press            #(on-press % index)}
     label]])
 
 (defn view
@@ -125,42 +113,63 @@
            size                default-tab-size}
     :as   props}]
   (let [[active-tab-id
-         set-active-tab-id] (rn/use-state default-active)
-        [fading set-fading] (rn/use-state {:fade-end-percentage fade-end-percentage})
-        flat-list-ref       (rn/use-ref-atom nil)
-        clean-props         (dissoc props
-                             :default-active
-                             :fade-end-percentage
-                             :fade-end?
-                             :on-change
-                             :scroll-on-press?
-                             :size)
-        on-scroll           (rn/use-callback
-                             (partial on-scroll-handler
-                                      {:fade-end-percentage fade-end-percentage
-                                       :fade-end?           fade-end?
-                                       :fading              fading
-                                       :set-fading          set-fading
-                                       :on-scroll           on-scroll})
-                             [fade-end? fading])]
+         set-active-tab-id]          (rn/use-state default-active)
+        [fading set-fading]          (rn/use-state fade-end-percentage)
+        flat-list-ref                (rn/use-ref-atom nil)
+        clean-props                  (dissoc props
+                                      :default-active
+                                      :fade-end-percentage
+                                      :fade-end?
+                                      :on-change
+                                      :scroll-on-press?
+                                      :size)
+        on-scroll                    (rn/use-callback
+                                      (partial on-scroll-handler
+                                               {:fade-end-percentage fade-end-percentage
+                                                :fade-end?           fade-end?
+                                                :fading              fading
+                                                :set-fading          set-fading
+                                                :on-scroll           on-scroll})
+                                      [fade-end? fading])
+        set-initial-scroll-poisition (rn/use-callback
+                                      (fn []
+                                        (reagent/next-tick
+                                         (fn []
+                                           (.scrollToIndex
+                                            @flat-list-ref
+                                            #js
+                                             {:animated false
+                                              :index
+                                              (utils.collection/first-index
+                                               #(= active-tab-id (:id %))
+                                               data)}))))
+                                      [active-tab-id data])
+        on-tab-press                 (rn/use-callback (fn [id index]
+                                                        (set-active-tab-id id)
+                                                        (when (and scroll-on-press? @flat-list-ref)
+                                                          (.scrollToIndex ^js @flat-list-ref
+                                                                          #js
+                                                                           {:animated     true
+                                                                            :index        index
+                                                                            :viewPosition 0.5}))
+                                                        (when on-change
+                                                          (on-change id)))
+                                                      [set-active-tab-id scroll-on-press? on-change])]
     (if scrollable?
       [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
        [masked-view-wrapper
-        {:fade-end-percentage (get fading :fade-end-percentage) :fade-end? fade-end?}
+        {:fade-end-percentage fading :fade-end? fade-end?}
         [(if in-scroll-view?
            gesture/flat-list
            rn/flat-list)
          (merge
           clean-props
-          (when scroll-on-press?
-            {:initial-scroll-index (utils.collection/first-index #(= active-tab-id (:id %)) data)})
           {:ref #(reset! flat-list-ref %)
            :style style
            ;; The padding-top workaround is needed because on Android
            ;; {:overflow :visible} doesn't work on components inheriting
-           ;; from ScrollView (e.g. FlatList). There are open issues, here's
-           ;; just one about this topic:
-           ;; https://github.com/facebook/react-native/issues/31218
+           ;; from ScrollView (e.g. FlatList). There are open issues, here's just one about this
+           ;; topic: Https://github.com/facebook/react-native/issues/31218
            :content-container-style
            (assoc container-style :padding-top (dec unread-count-offset))
            :horizontal true
@@ -170,27 +179,24 @@
            :key-fn (comp str :id)
            :on-scroll-to-index-failed identity
            :on-scroll on-scroll
+           :on-layout set-initial-scroll-poisition
            :render-fn tab-view
            :render-data {:active-tab-id       active-tab-id
-                         :set-active-tab-id   set-active-tab-id
                          :blur?               blur?
                          :customization-color customization-color
-                         :flat-list-ref       flat-list-ref
                          :number-of-items     (count data)
-                         :on-change           on-change
-                         :scroll-on-press?    scroll-on-press?
                          :size                size
+                         :on-press            on-tab-press
                          :style               style}})]]]
       [rn/view (merge style {:flex-direction :row})
        (map-indexed (fn [index item]
                       ^{:key (:id item)}
                       [tab-view item index nil
                        {:active-tab-id       active-tab-id
-                        :set-active-tab-id   set-active-tab-id
                         :blur?               blur?
                         :customization-color customization-color
                         :number-of-items     (count data)
-                        :on-change           on-change
                         :size                size
+                        :on-press            on-tab-press
                         :style               style}])
                     data)])))

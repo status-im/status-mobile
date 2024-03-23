@@ -28,11 +28,12 @@
     :scroll-enabled false}])
 
 (defn- step-item
-  [item index _ checked?]
+  [item index _ {:keys [checked? customization-color]}]
   [rn/view {:style style/step-item}
    [quo/selectors
-    {:type      :checkbox
-     :on-change #(swap! checked? assoc (keyword (str index)) %)}]
+    {:type                :checkbox
+     :customization-color customization-color
+     :on-change           #(swap! checked? assoc (keyword (str index)) %)}]
    [quo/text {:style {:margin-left 12}} (i18n/label item)]])
 
 (defn- f-view
@@ -61,7 +62,8 @@
        [quo/page-top
         {:title            (i18n/label :t/backup-recovery-phrase)
          :description      :text
-         :description-text (i18n/label :t/backup-recovery-phrase-description)}]
+         :description-text (i18n/label :t/backup-recovery-phrase-description)
+         :container-style  {:padding-bottom 8}}]
        [rn/view {:style (style/seed-phrase-container theme)}
         (when (pos? (count @secret-phrase))
           [:<>
@@ -86,7 +88,8 @@
           [rn/flat-list
            {:data           step-labels
             :render-fn      step-item
-            :render-data    checked?
+            :render-data    {:checked?            checked?
+                             :customization-color customization-color}
             :scroll-enabled false}]])
        (if @revealed?
          [rn/view {:style style/slide-button}

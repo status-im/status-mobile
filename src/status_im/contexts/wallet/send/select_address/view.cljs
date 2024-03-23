@@ -24,7 +24,7 @@
 (defn- address-input
   [input-value input-focused?]
   (fn []
-    (let [current-screen-id        (rf/sub [:navigation/current-screen-id])
+    (let [current-screen-id        (rf/sub [:view-id])
           scanned-address          (rf/sub [:wallet/scanned-address])
           send-address             (rf/sub [:wallet/wallet-send-to-address])
           recipient                (rf/sub [:wallet/wallet-send-recipient])
@@ -93,7 +93,6 @@
                                     (when-not ens
                                       (rf/dispatch [:wallet/select-send-address
                                                     {:address   address
-                                                     :token?    false
                                                      :recipient local-suggestion
                                                      :stack-id  :screen/wallet.select-address}]))))
                  :active-state? false}]
@@ -140,7 +139,6 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            token                 (rf/sub [:wallet/wallet-send-token])
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
         [floating-button-page/view
@@ -157,7 +155,6 @@
                                         :on-press            #(rf/dispatch
                                                                [:wallet/select-send-address
                                                                 {:address @input-value
-                                                                 :token? (some? token)
                                                                  :stack-id
                                                                  :screen/wallet.select-address}])
                                         :customization-color color}

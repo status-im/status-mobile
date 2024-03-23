@@ -12,6 +12,10 @@
    :margin-bottom      16
    :padding-horizontal 20})
 
+(def username-wrapper
+  {:margin-top         12
+   :padding-horizontal 20})
+
 (defn header-container
   [border-radius theme margin-top]
   (reanimated/apply-animations-to-style

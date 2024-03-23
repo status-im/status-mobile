@@ -138,11 +138,16 @@ def getEnvOrConfig = { varName ->
 android {
     ndkVersion rootProject.ext.ndkVersion
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     namespace "im.status.ethereum"
@@ -193,10 +198,6 @@ android {
         */
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
-    }
-    dexOptions {
-        jumboMode true
-        javaMaxHeapSize "8g"
     }
     splits {
         abi {
@@ -286,6 +287,7 @@ dependencies {
     implementation("com.facebook.fresco:animated-gif:2.5.0")
     implementation("com.squareup.okhttp3:okhttp-tls:4.9.2")
     implementation("com.google.prefab:cli:2.0.0")
+    implementation("com.android.tools.build:aapt2:8.1.1-10154469")
 }
 
 

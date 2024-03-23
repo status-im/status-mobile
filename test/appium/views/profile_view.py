@@ -194,6 +194,7 @@ class ProfileView(BaseView):
         # Header
         self.public_key_text = Text(self.driver, accessibility_id="chat-key")
         self.default_username_text = Text(self.driver, accessibility_id="default-username")
+        self.contact_name_text = Text(self.driver, accessibility_id="contact-name")
         self.share_my_profile_button = Button(self.driver, accessibility_id="share-header-button")
         self.profile_picture = ProfilePictureElement(self.driver)
         self.online_indicator = Button(self.driver, accessibility_id="online-profile-photo-dot")

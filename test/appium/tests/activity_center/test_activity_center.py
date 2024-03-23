@@ -49,8 +49,11 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             self.errors.append("User is not found on 'Add contact' page after entering valid public key")
         chat = self.home_2.get_chat_view()
 
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
-        chat.profile_add_to_contacts_button.click()
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_send_contact_request_button)
+        chat.profile_send_contact_request_button.click()
+        chat.contact_request_message_input.send_keys("hi")
+        chat.confirm_send_contact_request_button.click()
+        chat.close_button.click_until_absense_of_element(chat.close_button)
         self.home_2.navigate_back_to_home_view()
 
         self.device_1.just_fyi("Device 1: check there is no PN when receiving new message to activity centre")
@@ -82,8 +85,9 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.navigate_back_to_home_view()
         self.home_2.open_activity_center_button.click()
         self.home_2.activity_unread_filter_button.click()
-        if not self.home_2.element_by_text_part(
-                self.home_2.get_translation_by_key("add-me-to-your-contacts")).is_element_displayed(30):
+        element = self.home_2.get_activity_center_element_by_text('connect')
+        if element.title.text != 'Contact request' or element.context_tag_text != self.username_1 \
+                or not element.pending_status_tag.is_element_displayed():
             self.errors.append(
                 "Pending contact request is not shown on unread notification element on Activity center!")
         self.home_2.close_activity_centre.click()
@@ -105,8 +109,11 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.element_by_translation_id("paste").click()
         self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
         chat = self.home_2.get_chat_view()
-        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
-        chat.profile_add_to_contacts_button.click()
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_send_contact_request_button)
+        chat.profile_send_contact_request_button.click()
+        chat.contact_request_message_input.send_keys("hi")
+        chat.confirm_send_contact_request_button.click()
+        chat.close_button.click_until_absense_of_element(chat.close_button)
 
         self.device_1.just_fyi('Device1 accepts pending contact request by swiping')
         self.home_1.chats_tab.click()
@@ -184,8 +191,12 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         else:
             self.errors.append("User is not found on 'Add contact' page after entering valid public key")
         chat_1 = self.home_1.get_chat_view()
-        chat_1.view_profile_new_contact_button.click_until_presence_of_element(chat_1.profile_block_contact_button)
-        chat_1.profile_add_to_contacts_button.click()
+        chat_1.view_profile_new_contact_button.click_until_presence_of_element(
+            chat_1.profile_send_contact_request_button)
+        chat_1.profile_send_contact_request_button.click()
+        chat_1.contact_request_message_input.send_keys("hi")
+        chat_1.confirm_send_contact_request_button.click()
+        chat_1.close_button.click_until_absense_of_element(chat_1.close_button)
 
         self.home_2.just_fyi("Device 2 accepts contact request")
         self.home_2.handle_contact_request(new_username_1)

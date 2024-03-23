@@ -7,12 +7,13 @@
             [react-native.core :as rn]))
 
 (defn- username-text
-  [{:keys     [theme name-type username blur?]
+  [{:keys     [theme name-type username accessibility-label blur?]
     real-name :name}]
   [rn/view {:style style/username-text-container}
    [text/text
-    {:size   :heading-1
-     :weight :semi-bold}
+    {:size                :heading-1
+     :accessibility-label accessibility-label
+     :weight              :semi-bold}
     username]
    (when (= name-type :nickname)
      [:<>
@@ -22,9 +23,10 @@
         :weight :medium}
        "∙"]
       [text/text
-       {:style  (style/real-name-text theme blur?)
-        :size   :paragraph-1
-        :weight :medium}
+       {:style               (style/real-name-text theme blur?)
+        :size                :paragraph-1
+        :accessibility-label :real-name
+        :weight              :medium}
        real-name]])])
 
 (defn- icon-20

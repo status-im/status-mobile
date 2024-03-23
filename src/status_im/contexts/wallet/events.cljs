@@ -178,14 +178,15 @@
                 :wallet              assoc
                 :navigate-to-account address
                 :new-account?        true)
-    :fx [[:dispatch [:wallet/get-accounts]]]}))
+    :fx [[:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/clear-new-keypair]]]}))
 
 (rf/reg-event-fx :wallet/add-account
  (fn [{:keys [db]}
       [{:keys [sha3-pwd emoji account-name color type] :or {type :generated}}
        {:keys [public-key address path]}]]
    (let [lowercase-address (if address (string/lower-case address) address)
-         key-uid           (get-in db [:profile/profile :key-uid])
+         key-uid           (get-in db [:wallet :ui :create-account :selected-keypair-uid])
          account-config    {:key-uid    (when (= type :generated) key-uid)
                             :wallet     false
                             :chat       false
@@ -233,12 +234,6 @@
 
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
-(defn get-keypairs-success
-  [{:keys [db]} [keypairs]]
-  {:db (assoc-in db [:wallet :keypairs] (data-store/parse-keypairs keypairs))})
-
-(rf/reg-event-fx :wallet/get-keypairs-success get-keypairs-success)
-
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]} [{:keys [token stack-id]}]]
    (let [to-address (get-in db [:wallet :current-viewing-account-address])]
@@ -249,7 +244,7 @@
 
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :type] :bridge)
+   {:db (assoc-in db [:wallet :ui :send :tx-type] :bridge)
     :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
@@ -409,37 +404,6 @@
             {:title   title
              :subject title
              :message content})]]}))
-
-(defn store-secret-phrase
-  [{:keys [db]} [{:keys [secret-phrase random-phrase]}]]
-  {:db (-> db
-           (assoc-in [:wallet :ui :create-account :secret-phrase] secret-phrase)
-           (assoc-in [:wallet :ui :create-account :random-phrase] random-phrase))
-   :fx [[:dispatch-later [{:ms 20 :dispatch [:navigate-to :screens/wallet.check-your-backup]}]]]})
-
-(rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
-
-(defn new-keypair-created
-  [{:keys [db]} [{:keys [new-keypair]}]]
-  {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
-   :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]})
-
-(rf/reg-event-fx :wallet/new-keypair-created new-keypair-created)
-
-(defn new-keypair-continue
-  [{:keys [db]} [{:keys [keypair-name]}]]
-  (let [secret-phrase (get-in db [:wallet :ui :create-account :secret-phrase])]
-    {:fx [[:effects.wallet/create-account-from-mnemonic
-           {:secret-phrase secret-phrase
-            :keypair-name  keypair-name}]]}))
-
-(rf/reg-event-fx :wallet/new-keypair-continue new-keypair-continue)
-
-(defn clear-new-keypair
-  [{:keys [db]}]
-  {:db (update-in db [:wallet :ui :create-account] dissoc :new-keypair)})
-
-(rf/reg-event-fx :wallet/clear-new-keypair clear-new-keypair)
 
 (rf/reg-event-fx
  :wallet/blockchain-status-changed

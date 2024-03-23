@@ -5,7 +5,7 @@
 
 (deftest normalize-chat-test
   (let [chat          {:id                     "chat-id"
-                       :color                  "color"
+                       :color                  "yellow"
                        :name                   "name"
                        :chatType               3
                        :members                [{:id     "a"
@@ -26,7 +26,7 @@
                        :timestamp              2}
         expected-chat {:public?                  false
                        :group-chat               true
-                       :color                    "color"
+                       :color                    :yellow
                        :chat-name                "name"
                        :contacts                 #{"a" "b" "c" "d"}
                        :chat-type                3
