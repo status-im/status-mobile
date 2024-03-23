@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.actions.accounts-selection.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -20,6 +21,16 @@
         has-permissions? (rf/sub [:communities/has-permissions? id])
         airdrop-account (rf/sub [:communities/airdrop-account id])
         revealed-accounts (rf/sub [:communities/accounts-to-reveal id])
+        revealed-accounts-count (count revealed-accounts)
+        wallet-accounts-count (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        addresses-shared-text (condp = revealed-accounts-count
+                                1                     (str "1 "
+                                                           (string/lower-case (i18n/label :t/address)))
+                                wallet-accounts-count (i18n/label :t/all-addresses)
+                                (str revealed-accounts-count
+                                     " "
+                                     (string/lower-case (i18n/label
+                                                         :t/addresses))))
         {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
         highest-role-text (i18n/label (communities.utils/role->translation-key
                                        highest-permission-role
@@ -108,7 +119,7 @@
                       :label             :preview
                       :label-props       {:type :accounts
                                           :data revealed-accounts}
-                      :description-props {:text (i18n/label :t/all-addresses)}}
+                      :description-props {:text addresses-shared-text}}
                      {:title             (i18n/label :t/for-airdrops)
                       :on-press          show-airdrop-addresses
                       :description       :text
