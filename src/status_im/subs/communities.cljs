@@ -243,7 +243,8 @@
                 emoji
                 can-view?
                 can-post?
-                token-gated?]}]]
+                token-gated?
+                hide-if-permissions-not-met?]}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -259,19 +260,21 @@
                                       :collapsed? (get collapsed-categories
                                                        category-id)
                                       :chats      [])))
-          categorized-chat  {:name             name
-                             :emoji            emoji
-                             :muted?           muted
-                             :unread-messages? (pos? unviewed-messages-count)
-                             :position         position
-                             :mentions-count   (or unviewed-mentions-count 0)
-                             :can-post?        can-post?
+          locked?           (when token-gated?
+                              (and (not can-view?)
+                                   (not can-post?)))
+          categorized-chat  {:name                         name
+                             :emoji                        emoji
+                             :muted?                       muted
+                             :unread-messages?             (pos? unviewed-messages-count)
+                             :position                     position
+                             :mentions-count               (or unviewed-mentions-count 0)
+                             :can-post?                    can-post?
                              ;; NOTE: this is a troolean nil->no permissions, true->no access, false
                              ;; -> has access
-                             :locked?          (when token-gated?
-                                                 (and (not can-view?)
-                                                      (not can-post?)))
-                             :id               id}]
+                             :locked?                      locked?
+                             :hide-if-permissions-not-met? (and hide-if-permissions-not-met? locked?)
+                             :id                           id}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
 (re-frame/reg-sub
@@ -292,7 +295,12 @@
               (reduce reduce-fn {})
               (sort-by (comp :position second))
               (map (fn [[k v]]
-                     [k (update v :chats #(sort-by :position %))])))]
+                     [k
+                      (-> v
+                          (update :chats #(sort-by :position %))
+                          (update :chats
+                                  #(filter (comp not :hide-if-permissions-not-met?)
+                                           %)))])))]
      categories-and-chats)))
 
 (re-frame/reg-sub
