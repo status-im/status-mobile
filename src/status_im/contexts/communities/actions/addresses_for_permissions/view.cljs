@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.constants :as constants]
@@ -227,17 +226,16 @@
             (rf/dispatch
              [:standard-auth/authorize
               {:auth-button-label (i18n/label :t/confirm-changes)
-               :theme             (quo.theme/use-theme-value)
-               :on-auth-success   (fn [password]
-                                    (rf/dispatch
-                                     [:communities/edit-shared-addresses
-                                      {:community-id id
-                                       :password     (security/safe-unmask-data password)
-                                       :addresses    addresses-to-reveal
-                                       :on-success   (fn []
-                                                       (rf/dispatch [:dismiss-modal
-                                                                     :addresses-for-permissions])
-                                                       (rf/dispatch [:hide-bottom-sheet]))}]))
+               :on-auth-success (fn [password]
+                                  (rf/dispatch
+                                   [:communities/edit-shared-addresses
+                                    {:community-id id
+                                     :password     (security/safe-unmask-data password)
+                                     :addresses    addresses-to-reveal
+                                     :on-success   (fn []
+                                                     (rf/dispatch [:dismiss-modal
+                                                                   :addresses-for-permissions])
+                                                     (rf/dispatch [:hide-bottom-sheet]))}]))
                :on-auth-fail      (fn [err]
                                     (log/info "Biometric authentication failed" err))}])
             (do
