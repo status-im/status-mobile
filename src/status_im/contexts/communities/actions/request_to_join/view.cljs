@@ -16,12 +16,13 @@
   [id]
   (rf/dispatch
    [:standard-auth/authorize
-    {:on-auth-success (fn [password]
-                        (rf/dispatch
-                         [:communities/request-to-join
-                          {:community-id id :password (security/safe-unmask-data password)}]))
-     :on-auth-fail    (fn [err]
-                        (log/info "Biometric authentication failed" err))}])
+    {:auth-button-label (i18n/label :t/confirm-changes)
+     :on-auth-success   (fn [password]
+                          (rf/dispatch
+                           [:communities/request-to-join
+                            {:community-id id :password (security/safe-unmask-data password)}]))
+     :on-auth-fail      (fn [err]
+                          (log/info "Biometric authentication failed" err))}])
 
   (rf/dispatch [:navigate-back]))
 
