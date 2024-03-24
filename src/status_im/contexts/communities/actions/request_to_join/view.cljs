@@ -16,7 +16,7 @@
   [id]
   (rf/dispatch
    [:standard-auth/authorize
-    {:auth-button-label (i18n/label :t/confirm-changes)
+    {:auth-button-label (i18n/label :t/request-to-join)
      :on-auth-success   (fn [password]
                           (rf/dispatch
                            [:communities/request-to-join
