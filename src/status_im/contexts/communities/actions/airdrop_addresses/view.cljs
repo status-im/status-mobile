@@ -7,7 +7,8 @@
     [status-im.contexts.communities.actions.airdrop-addresses.style :as style]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn- account-item
   [{:keys [address emoji] :as account}
@@ -24,7 +25,7 @@
                                     (rf/dispatch
                                      [:communities/edit-shared-addresses
                                       {:community-id    community-id
-                                       :password        password
+                                       :password        (security/safe-unmask-data password)
                                        :airdrop-address address
                                        :on-success      (fn []
                                                           (rf/dispatch

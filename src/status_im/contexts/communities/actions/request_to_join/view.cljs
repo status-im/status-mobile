@@ -9,7 +9,8 @@
     [status-im.contexts.communities.actions.request-to-join.style :as style]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn join-community-and-navigate-back
   [id]
@@ -18,7 +19,7 @@
     {:on-auth-success (fn [password]
                         (rf/dispatch
                          [:communities/request-to-join
-                          {:community-id id :password password}]))
+                          {:community-id id :password (security/safe-unmask-data password)}]))
      :on-auth-fail    (fn [err]
                         (log/info "Biometric authentication failed" err))}])
 
