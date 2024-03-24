@@ -77,7 +77,13 @@
                                                  [:communities/request-to-join-with-addresses
                                                   {:community-id id
                                                    :password     password}]))}]))}])
-           (navigate-back)))]
+           (navigate-back)))
+
+        open-permission-sheet
+        (rn/use-callback (fn []
+                           (rf/dispatch [:show-bottom-sheet
+                                         {:content (fn [] [permissions-sheet/view id])}]))
+                         [id])]
     (rn/use-mount
      (fn []
        (rf/dispatch [:communities/initialize-permission-addresses id])))
