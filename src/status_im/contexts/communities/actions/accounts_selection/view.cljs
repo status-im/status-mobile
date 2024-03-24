@@ -1,6 +1,7 @@
 (ns status-im.contexts.communities.actions.accounts-selection.view
   (:require
     [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
@@ -60,7 +61,8 @@
          (fn []
            (rf/dispatch
             [:standard-auth/authorize
-             {:auth-button-label (if can-edit-addresses?
+             {:theme             (quo.theme/use-theme-value)
+              :auth-button-label (if can-edit-addresses?
                                    (i18n/label :t/edit-shared-addresses)
                                    (i18n/label :t/request-to-join))
               :on-auth-success   (fn [password]

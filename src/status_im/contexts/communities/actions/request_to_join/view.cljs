@@ -17,6 +17,7 @@
   (rf/dispatch
    [:standard-auth/authorize
     {:auth-button-label (i18n/label :t/request-to-join)
+     :theme             (quo.theme/use-theme-value)
      :on-auth-success   (fn [password]
                           (rf/dispatch
                            [:communities/request-to-join
