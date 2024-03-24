@@ -4,13 +4,14 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
+    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn- role-keyword
   [role]
@@ -223,18 +224,20 @@
         (fn []
           (if can-edit-addresses?
             (rf/dispatch
-             [:password-authentication/show
-              {:content (fn [] [password-authentication/view])}
-              {:label    (i18n/label :t/enter-password)
-               :on-press (fn [password]
-                           (rf/dispatch
-                            [:communities/edit-shared-addresses
-                             {:community-id id
-                              :password     password
-                              :addresses    addresses-to-reveal
-                              :on-success   (fn []
-                                              (rf/dispatch [:dismiss-modal :addresses-for-permissions])
-                                              (rf/dispatch [:hide-bottom-sheet]))}]))}])
+             [:standard-auth/authorize
+              {:auth-button-label (i18n/label :t/confirm-changes)
+               :on-auth-success (fn [password]
+                                  (rf/dispatch
+                                   [:communities/edit-shared-addresses
+                                    {:community-id id
+                                     :password     (security/safe-unmask-data password)
+                                     :addresses    addresses-to-reveal
+                                     :on-success   (fn []
+                                                     (rf/dispatch [:dismiss-modal
+                                                                   :addresses-for-permissions])
+                                                     (rf/dispatch [:hide-bottom-sheet]))}]))
+               :on-auth-fail      (fn [err]
+                                    (log/info "Biometric authentication failed" err))}])
             (do
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])
               (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))
