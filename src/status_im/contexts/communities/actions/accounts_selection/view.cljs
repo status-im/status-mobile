@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
@@ -61,22 +60,12 @@
            (rf/dispatch
             [:standard-auth/authorize
              {:on-auth-success (fn [password]
-                                 (rf/dispatch [:dispatch
-                                               [:communities/request-to-join-with-addresses
-                                                {:community-id id
-                                                 :password     password}]]))
-              :on-auth-fail    (fn [err]
-                                 (log/info "Biometric authentication failed" err)
                                  (rf/dispatch
-                                  [:password-authentication/show
-                                   {:content      (fn [] [password-authentication/view])
-                                    :community-id id}
-                                   {:label    (i18n/label :t/join-open-community)
-                                    :on-press (fn [password]
-                                                (rf/dispatch
-                                                 [:communities/request-to-join-with-addresses
-                                                  {:community-id id
-                                                   :password     password}]))}]))}])
+                                  [:communities/request-to-join-with-addresses
+                                   {:community-id id
+                                    :password     password}]))
+              :on-auth-fail    (fn [err]
+                                 (log/info "Biometric authentication failed" err))}])
            (navigate-back)))
 
         open-permission-sheet
