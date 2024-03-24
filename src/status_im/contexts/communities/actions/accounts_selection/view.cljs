@@ -11,7 +11,8 @@
     [status-im.contexts.communities.utils :as communities.utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn view
   []
@@ -63,7 +64,7 @@
                                  (rf/dispatch
                                   [:communities/request-to-join-with-addresses
                                    {:community-id id
-                                    :password     password}]))
+                                    :password     (security/safe-unmask-data password)}]))
               :on-auth-fail    (fn [err]
                                  (log/info "Biometric authentication failed" err))}])
            (navigate-back)))
