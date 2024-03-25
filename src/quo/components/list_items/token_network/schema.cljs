@@ -4,12 +4,12 @@
   [:=>
    [:cat
     [:map
-     [:token :keyword]
+     [:token [:or :keyword :string]]
      [:label :string]
      [:token-value :string]
      [:fiat-value :string]
      [:networks [:* [:map [:source :schema.common/image-source]]]]
      [:on-press {:optional true} [:maybe fn?]]
      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-     [:state {:optional true} [:enum :default :active :selected]]]]
+     [:state {:optional true} [:maybe [:enum :default :active :selected]]]]]
    :any])
