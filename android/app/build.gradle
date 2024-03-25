@@ -199,10 +199,6 @@ android {
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
     }
-    dexOptions {
-        jumboMode true
-        javaMaxHeapSize "8g"
-    }
     splits {
         abi {
             reset()

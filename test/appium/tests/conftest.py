@@ -265,7 +265,7 @@ def pytest_configure(config):
     test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
                                              if '.apk' in i]])[0]
     global run_name
-    if is_master(config):
+    if is_master(config) and config.getoption('testrail_report'):
         run_name = get_run_name(config, new_one=True)
         testrail_report.add_run(run_name)
     else:
