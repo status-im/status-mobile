@@ -12,8 +12,9 @@
    :padding-horizontal 20})
 
 (def content
-  {:margin-top    8
-   :margin-bottom (+ (safe-area/get-bottom) 8)})
+  {:align-items   :flex-start
+   :margin-top    8
+   :margin-bottom (+ (safe-area/get-bottom) 12)})
 
 (defn title
   [theme]
