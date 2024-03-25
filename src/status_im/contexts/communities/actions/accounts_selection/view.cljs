@@ -1,6 +1,5 @@
 (ns status-im.contexts.communities.actions.accounts-selection.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -23,14 +22,11 @@
         revealed-accounts (rf/sub [:communities/accounts-to-reveal id])
         revealed-accounts-count (count revealed-accounts)
         wallet-accounts-count (count (rf/sub [:wallet/accounts-without-watched-accounts]))
-        addresses-shared-text (condp = revealed-accounts-count
-                                1                     (str "1 "
-                                                           (string/lower-case (i18n/label :t/address)))
-                                wallet-accounts-count (i18n/label :t/all-addresses)
-                                (str revealed-accounts-count
-                                     " "
-                                     (string/lower-case (i18n/label
-                                                         :t/addresses))))
+        addresses-shared-text (if (= revealed-accounts-count wallet-accounts-count)
+                                (i18n/label :t/all-addresses)
+                                (i18n/label-pluralize
+                                 revealed-accounts-count
+                                 :t/address-count))
         {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
         highest-role-text (i18n/label (communities.utils/role->translation-key
                                        highest-permission-role
