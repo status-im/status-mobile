@@ -59,8 +59,6 @@
         :accessibility-label   :contact-request-message
         :label                 (i18n/label :t/message)
         :on-change-text        on-message-change
-        :input-style           {:flex       1
-                                :min-height "100%"}
         :container-style       {:flex-shrink 1}
         :input-container-style {:flex-shrink 1}}]]
      [rn/view {:style {:flex 1}}

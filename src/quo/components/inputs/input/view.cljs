@@ -60,12 +60,12 @@
   "Custom properties that must be removed from properties map passed to InputText."
   [:type :blur? :error? :right-icon :left-icon :disabled? :small? :button
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur
-   :container-style :input-container-style :input-style :ref])
+   :container-style :input-container-style :ref])
 
 (defn- base-input
   [{:keys [blur? error? right-icon left-icon disabled? small? button
            label char-limit multiline? clearable? on-focus on-blur container-style input-container-style
-           input-style on-change-text on-char-limit-reach weight default-value on-clear]
+           on-change-text on-char-limit-reach weight default-value on-clear]
     :as   props}]
   (let [theme                  (quo.theme/use-theme-value)
         ref                    (rn/use-ref-atom nil)
@@ -128,9 +128,7 @@
           :icon-name      icon-name}])
       [rn/text-input
        (cond-> {:ref                    on-ref
-                :style                  (merge
-                                         (style/input colors-by-status small? multiple-lines? weight)
-                                         input-style)
+                :style                  (style/input colors-by-status small? multiple-lines? weight)
                 :accessibility-label    :input
                 :placeholder-text-color (:placeholder colors-by-status)
                 :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
