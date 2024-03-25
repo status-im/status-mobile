@@ -5,10 +5,8 @@
     [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.contexts.communities.actions.airdrop-addresses.style :as style]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn- account-item
   [{:keys [address emoji] :as account}
@@ -26,16 +24,14 @@
                                       (rf/dispatch
                                        [:communities/edit-shared-addresses
                                         {:community-id    community-id
-                                         :password        (security/safe-unmask-data password)
+                                         :password        password
                                          :airdrop-address address
                                          :on-success      (fn []
                                                             (rf/dispatch
                                                              [:dismiss-modal
                                                               :address-for-airdrop])
                                                             (rf/dispatch
-                                                             [:hide-bottom-sheet]))}]))
-                 :on-auth-fail      (fn [err]
-                                      (log/info "Biometric authentication failed" err))}])
+                                                             [:hide-bottom-sheet]))}]))}])
               (do
                 (rf/dispatch [:communities/set-airdrop-address community-id address])
                 (rf/dispatch [:hide-bottom-sheet])))))]

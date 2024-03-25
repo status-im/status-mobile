@@ -7,11 +7,9 @@
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn- role-keyword
   [role]
@@ -230,14 +228,12 @@
                                     (rf/dispatch
                                      [:communities/edit-shared-addresses
                                       {:community-id id
-                                       :password     (security/safe-unmask-data password)
+                                       :password     password
                                        :addresses    addresses-to-reveal
                                        :on-success   (fn []
                                                        (rf/dispatch [:dismiss-modal
                                                                      :addresses-for-permissions])
-                                                       (rf/dispatch [:hide-bottom-sheet]))}]))
-               :on-auth-fail      (fn [err]
-                                    (log/info "Biometric authentication failed" err))}])
+                                                       (rf/dispatch [:hide-bottom-sheet]))}]))}])
             (do
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])
               (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))

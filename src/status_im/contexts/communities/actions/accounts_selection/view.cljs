@@ -9,10 +9,8 @@
     [status-im.contexts.communities.actions.community-rules.view :as community-rules]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
     [status-im.contexts.communities.utils :as communities.utils]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -67,9 +65,7 @@
                                    (rf/dispatch
                                     [:communities/request-to-join-with-addresses
                                      {:community-id id
-                                      :password     (security/safe-unmask-data password)}]))
-              :on-auth-fail      (fn [err]
-                                   (log/info "Biometric authentication failed" err))}])
+                                      :password     password}]))}])
            (navigate-back)))
 
         open-permission-sheet

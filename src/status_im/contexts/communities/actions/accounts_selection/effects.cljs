@@ -3,7 +3,8 @@
     [promesa.core :as promesa]
     [schema.core :as schema]
     [status-im.common.json-rpc.events :as rpc]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn- generate-requests-for-signing
   [pub-key community-id addresses-to-reveal]
@@ -21,7 +22,7 @@
    (fn [p-resolve p-reject]
      (rpc/call
       {:method     :wakuext_signData
-       :params     [(map #(assoc % :password password) sign-params)]
+       :params     [(map #(assoc % :password (security/safe-unmask-data password)) sign-params)]
        :on-success p-resolve
        :on-error   #(p-reject (str "failed to sign data\n" %))}))))
 
