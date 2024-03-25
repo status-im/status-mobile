@@ -19,7 +19,7 @@ from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global, transl
-from tests.conftest import sauce_username, sauce_access_key, apibase, github_report
+from tests.conftest import sauce_username, sauce_access_key, apibase, github_report, run_name
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
 
@@ -84,7 +84,7 @@ def get_capabilities_sauce_lab():
     caps['sauce:options']['appiumVersion'] = '2.0.0'
     caps['sauce:options']['username'] = sauce_username
     caps['sauce:options']['accessKey'] = sauce_access_key
-    caps['sauce:options']['build'] = pytest_config_global['build']
+    caps['sauce:options']['build'] = run_name
     caps['sauce:options']['name'] = test_suite_data.current_test.name
     caps['sauce:options']['maxDuration'] = 3600
     caps['sauce:options']['idleTimeout'] = 1000
@@ -124,8 +124,7 @@ class AbstractTestCase:
 
     def print_sauce_lab_info(self, driver):
         sys.stdout = sys.stderr
-        print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id,
-                                                         pytest_config_global['build']))
+        print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id, run_name))
 
     def get_translation_by_key(self, key):
         return transl[key]
@@ -312,14 +311,20 @@ def create_shared_drivers(quantity):
                                                             drivers,
                                                             command_executor=executor_sauce_lab,
                                                             options=get_capabilities_sauce_lab()))
+            if len(drivers) < quantity:
+                test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
+
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
-            if len(drivers) < quantity:
-                test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
             return drivers, loop
         except (MaxRetryError, AttributeError) as e:
             test_suite_data.current_test.testruns[-1].error = str(e)
+            for _, driver in drivers.items():
+                try:
+                    driver.quit()
+                except (WebDriverException, AttributeError):
+                    pass
             raise e
 
 

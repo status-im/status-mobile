@@ -122,6 +122,7 @@
 
 (def ^:const min-password-length 6)
 (def ^:const max-group-chat-participants 20)
+(def ^:const max-group-chat-name-length 24)
 (def ^:const default-number-of-messages 20)
 (def ^:const default-number-of-pin-messages 3)
 
@@ -478,6 +479,7 @@
 
 (def ^:const bridge-name-transfer "Transfer")
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
+(def ^:const bridge-name-hop "Hop")
 
 (def ^:const alert-banner-height 40)
 

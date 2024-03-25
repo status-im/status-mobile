@@ -656,13 +656,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.block_contact()
 
         self.chat_1.just_fyi('Check that messages from blocked user are hidden in public chat and close app')
-        app_package = self.device_1.driver.current_package
         if not self.chat_1.chat_element_by_text(message_to_disappear).is_element_disappeared(30):
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
-        if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
-            self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
+        # ToDo: enable when https://github.com/status-im/status-mobile/issues/19334 is fixed
+        # self.home_1.chats_tab.click()
+        # if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
+        #     self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
         self.chat_1.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')

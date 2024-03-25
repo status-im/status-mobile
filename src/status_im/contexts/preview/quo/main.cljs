@@ -135,6 +135,7 @@
     [status-im.contexts.preview.quo.password.tips :as tips]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
     [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
+    [status-im.contexts.preview.quo.profile.expanded-collectible :as expanded-collectible]
     [status-im.contexts.preview.quo.profile.link-card :as link-card]
     [status-im.contexts.preview.quo.profile.profile-card :as profile-card]
     [status-im.contexts.preview.quo.profile.select-profile :as select-profile]
@@ -420,6 +421,8 @@
                         :component collectible/view}
                        {:name      :collectible-list-item
                         :component collectible-list-item/view}
+                       {:name      :expanded-collectible
+                        :component expanded-collectible/view}
                        {:name      :link-card
                         :component link-card/view}
                        {:name      :profile-card

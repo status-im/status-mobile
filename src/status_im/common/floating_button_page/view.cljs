@@ -3,6 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -90,7 +91,7 @@
          {:on-layout set-header-height
           :style     header-container-style}
          header]
-        [rn/scroll-view
+        [gesture/scroll-view
          {:on-scroll               set-content-y-scroll
           :scroll-event-throttle   64
           :content-container-style {:flex-grow 1}}

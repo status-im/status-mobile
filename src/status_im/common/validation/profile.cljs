@@ -1,20 +1,18 @@
 (ns status-im.common.validation.profile
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
+            utils.emojilib
             [utils.i18n :as i18n]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
 (def min-length 5)
 
-(def emoji-regex
-  #"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])")
-
 (def status-regex #"^[a-zA-Z0-9\-_ ]+$")
 
 (def common-names ["Ethereum" "Bitcoin"])
 
-(defn has-emojis? [s] (boolean (re-find emoji-regex s)))
+(defn has-emojis? [s] (boolean (re-find utils.emojilib/emoji-regex s)))
 
 (defn has-common-names? [s] (pos? (count (filter #(string/includes? s %) common-names))))
 

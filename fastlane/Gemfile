@@ -1,3 +1,4 @@
 source 'https://rubygems.org'
 
+gem 'activesupport', '>= 6.1.7.3', '< 7.1.0'
 gem 'fastlane', '>= 2.131.0'

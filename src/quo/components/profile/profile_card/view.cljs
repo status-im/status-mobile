@@ -33,7 +33,7 @@
                                show-emoji-hash? 12
                                :else            10)
         border-bottom-radius (if (or (not login-card?) last-item?) 16 0)]
-    [rn/touchable-without-feedback
+    [rn/pressable
      {:on-press            on-card-press
       :accessibility-label :profile-card}
      [hole-view/hole-view

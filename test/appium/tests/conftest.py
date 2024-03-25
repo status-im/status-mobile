@@ -148,6 +148,7 @@ testrail_report = None
 github_report = None
 apibase = None
 sauce = None
+run_name = None
 
 
 def is_master(config):
@@ -218,6 +219,21 @@ def _download_apk(url):
     return apk_path
 
 
+def get_run_name(config, new_one=False):
+    pr_number = config.getoption('pr_number')
+    if config.getoption('testrail_report'):
+        if pr_number:
+            if new_one:
+                run_number = len(testrail_report.get_runs(pr_number)) + 1
+            else:
+                run_number = len(testrail_report.get_runs(pr_number))
+            return 'PR-%s run #%s (%s)' % (pr_number, run_number, test_suite_data.apk_name.split('-')[4])
+        else:
+            return test_suite_data.apk_name
+    else:
+        return config.getoption('build')
+
+
 def pytest_configure(config):
     global option
     option = config.option
@@ -248,18 +264,17 @@ def pytest_configure(config):
 
     test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
                                              if '.apk' in i]])[0]
+    global run_name
+    if is_master(config) and config.getoption('testrail_report'):
+        run_name = get_run_name(config, new_one=True)
+        testrail_report.add_run(run_name)
+    else:
+        run_name = get_run_name(config, new_one=False)
+
     if not is_master(config):
         return
 
     pr_number = config.getoption('pr_number')
-    if config.getoption('testrail_report'):
-        if pr_number:
-            run_number = len(testrail_report.get_runs(pr_number)) + 1
-            run_name = 'PR-%s run #%s' % (pr_number, run_number)
-        else:
-            run_name = test_suite_data.apk_name
-        testrail_report.add_run(run_name)
-
     if pr_number:
         from github import Github
         repo = Github(github_token).get_user('status-im').get_repo('status-mobile')

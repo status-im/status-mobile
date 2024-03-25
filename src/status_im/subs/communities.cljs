@@ -235,7 +235,15 @@
    collapsed-categories
    full-chats-data]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji can-post? token-gated?]}]]
+       [_
+        {:keys [name
+                categoryID
+                position
+                id
+                emoji
+                can-view?
+                can-post?
+                token-gated?]}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -258,10 +266,11 @@
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
                              :can-post?        can-post?
-                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false ->
-                             ;; has access
+                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false
+                             ;; -> has access
                              :locked?          (when token-gated?
-                                                 (not can-post?))
+                                                 (and (not can-view?)
+                                                      (not can-post?)))
                              :id               id}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
@@ -308,6 +317,12 @@
 (re-frame/reg-sub
  :communities/checking-permissions-by-id
  :<- [:communities/permissions-check]
+ (fn [permissions [_ id]]
+   (get permissions id)))
+
+(re-frame/reg-sub
+ :communities/checking-permissions-all-by-id
+ :<- [:communities/permissions-check-all]
  (fn [permissions [_ id]]
    (get permissions id)))
 
@@ -359,3 +374,35 @@
         (map (fn [{sym :symbol image :image}]
                {sym image}))
         (into {}))))
+
+(re-frame/reg-sub
+ :community/token-permissions
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-all-by-id community-id])])
+ (fn [[{:keys [token-images]}
+       {:keys [checking? check]}] _]
+   (let [roles                      (:roles check)
+         member-and-satisifed-roles (filter #(or (= (:type %)
+                                                    constants/community-token-permission-become-member)
+                                                 (:satisfied %))
+                                            roles)]
+     (mapv (fn [role]
+             {:role       (:type role)
+              :satisfied? (:satisfied role)
+              :tokens     (map (fn [{:keys [tokenRequirement]}]
+                                 (map
+                                  (partial token-requirement->token
+                                           checking?
+                                           token-images)
+                                  tokenRequirement))
+                               (:criteria role))})
+           member-and-satisifed-roles))))
+
+(re-frame/reg-sub
+ :communities/has-permissions?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:community/token-permissions community-id])])
+ (fn [[permissions] _]
+   (let [all-tokens (apply concat (map :tokens permissions))]
+     (boolean (some seq all-tokens)))))

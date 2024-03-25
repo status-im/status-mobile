@@ -99,7 +99,7 @@ class MainActivity : NavigationActivity(), ActivityCompat.OnRequestPermissionsRe
 
     private fun tryToEmit(eventName: String, event: WritableMap) {
         try {
-                (getApplication() as MainApplication).getReactNativeHost()
+                (getApplication() as MainApplication).reactNativeHost
                 .getReactInstanceManager()
                 .getCurrentReactContext()
                 ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
