@@ -10,6 +10,8 @@
   [input-amount/view
    {:current-screen-id :screen/wallet.send-input-amount
     :button-one-label  (i18n/label :t/confirm)
-    :on-navigate-back  #(rf/dispatch [:navigate-back])}])
+    :on-navigate-back  (fn []
+                         (rf/dispatch [:wallet/clean-disabled-from-networks])
+                         (rf/dispatch [:navigate-back]))}])
 
 (def view (quo.theme/with-theme view-internal))

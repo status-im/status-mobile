@@ -15,6 +15,7 @@
      :button-one-label  (i18n/label :t/confirm-bridge)
      :button-one-props  {:icon-left :i/bridge}
      :on-navigate-back  (fn []
+                          (rf/dispatch [:wallet/clean-disabled-from-networks])
                           (rf/dispatch [:navigate-back]))}]])
 
 (def view (quo.theme/with-theme view-internal))
