@@ -7,10 +7,8 @@
     [react-native.gesture :as gesture]
     [status-im.contexts.communities.actions.community-rules-list.view :as community-rules]
     [status-im.contexts.communities.actions.request-to-join.style :as style]
-    [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (defn join-community-and-navigate-back
   [id theme]
@@ -21,9 +19,7 @@
      :on-auth-success   (fn [password]
                           (rf/dispatch
                            [:communities/request-to-join
-                            {:community-id id :password (security/safe-unmask-data password)}]))
-     :on-auth-fail      (fn [err]
-                          (log/info "Biometric authentication failed" err))}])
+                            {:community-id id :password password}]))}])
 
   (rf/dispatch [:navigate-back]))
 
