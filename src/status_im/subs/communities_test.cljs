@@ -289,19 +289,23 @@
      checks                {:checking? checking-permissions?
                             :check
                             {:satisfied true
-                             :highestRole {:type     constants/community-token-permission-become-admin
-                                           :criteria [{:tokenRequirement [{:satisfied true
-                                                                           :criteria {:contract_addresses
-                                                                                      {:5 "0x0"}
-                                                                                      :type 1
-                                                                                      :symbol "DAI"
-                                                                                      :amount "5.0"
-                                                                                      :decimals 18}}]}
-                                                      {:tokenRequirement [{:satisfied false
-                                                                           :criteria  {:type     1
-                                                                                       :symbol   "ETH"
-                                                                                       :amount   "0.002"
-                                                                                       :decimals 18}}]}]}
+                             :highestRole
+                             {:type     constants/community-token-permission-become-admin
+                              :criteria [{:tokenRequirement [{:satisfied true
+                                                              :criteria  {:contract_addresses
+                                                                          {:5 "0x0"}
+                                                                          :type 1
+                                                                          :symbol "DAI"
+                                                                          :amountInWei
+                                                                          "5000000000000000000"
+                                                                          :amount "5.0"
+                                                                          :decimals 18}}]}
+                                         {:tokenRequirement [{:satisfied false
+                                                              :criteria  {:type        1
+                                                                          :symbol      "ETH"
+                                                                          :amountInWei "2000000000000000"
+                                                                          :amount      "0.002"
+                                                                          :decimals    18}}]}]}
 
                              :permissions
                              {:a3dd5b6b-d93b-452c-b22a-09a8f42ec566 {:criteria [true false
