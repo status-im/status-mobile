@@ -280,11 +280,15 @@
                                    :limit-fiat   fiat-limit
                                    :limit-crypto crypto-limit})}]
          [routes/view
-          {:amount       amount-text
-           :routes       best-routes
-           :token        token
-           :input-value  @input-value
-           :fetch-routes #(fetch-routes % (current-limit))}]
+          {:amount                amount-text
+           :routes                best-routes
+           :token                 token
+           :input-value           @input-value
+           :fetch-routes          #(fetch-routes % (current-limit))
+           :on-press-from-network (fn [network amount]
+                                    (println "FROM NETWORK PRESSED: " network amount))
+           :on-press-to-network   (fn [network amount]
+                                    (println "TO NETWORK PRESSED: " network amount))}]
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
