@@ -4,8 +4,8 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.utils :as wallet.utils]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (re-frame/reg-sub
  :communities/fetching-community
@@ -306,12 +306,13 @@
   [checking-permissions?
    token-images
    {:keys [satisfied criteria]}]
-  (let [sym    (:symbol criteria)
-        amount (:amount criteria)]
+  (let [sym           (:symbol criteria)
+        amount-in-wei (:amountInWei criteria)
+        decimals      (:decimals criteria)]
     {:symbol      sym
      :sufficient? satisfied
      :loading?    checking-permissions?
-     :amount      (wallet.utils/remove-trailing-zeroes amount)
+     :amount      (money/to-fixed (money/token->unit amount-in-wei decimals))
      :img-src     (get token-images sym)}))
 
 (re-frame/reg-sub
