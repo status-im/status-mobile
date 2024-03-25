@@ -64,19 +64,22 @@
   (oops/oget event "nativeEvent.layout.height"))
 
 (defn view
-  [{:keys [hide? insets keyboard-vertical-offset]}
+  [{:keys [hide? insets]}
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
            gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme-value)
         [sheet-height set-sheet-height]   (rn/use-state 0)
+        [layout-height set-layout-height] (rn/use-state 0)
         handle-sheet-height               (rn/use-callback (fn [e]
                                                              (when (= sheet-height 0)
                                                                (set-sheet-height
                                                                 (get-layout-height e))))
                                                            [sheet-height])
+        handle-layout-height              (rn/use-callback (fn [e]
+                                                             (-> (get-layout-height e)
+                                                                 (set-layout-height))))
         [item-height set-item-height]     (rn/use-state 0)
-        {:keys [keyboard-height]}         (hooks/use-keyboard)
         handle-item-height                (rn/use-callback (fn [e]
                                                              (when (= item-height 0)
                                                                (set-item-height
@@ -100,11 +103,8 @@
         bottom                            (if selected-item-smaller-than-sheet?
                                             (+ sheet-height bottom-margin)
                                             (:bottom insets))
-        sheet-max-height                  (- window-height
-                                             (:top insets)
-                                             keyboard-height
-                                             (when platform/ios?
-                                               keyboard-vertical-offset))
+        sheet-max-height                  (- layout-height
+                                             (:top insets))
         content-padding-bottom            (or padding-bottom-override
                                               (+ (:bottom insets) bottom-margin))]
     (rn/use-effect
@@ -117,7 +117,8 @@
                                 (on-close))
                               (rf/dispatch [:hide-bottom-sheet])
                               true))
-    [rn/view {:style {:flex 1}}
+    [rn/view {:style {:flex 1}
+              :on-layout handle-layout-height}
      ;; backdrop
      [rn/pressable
       {:on-press #(rf/dispatch [:hide-bottom-sheet])
