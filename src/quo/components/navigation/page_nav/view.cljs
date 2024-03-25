@@ -100,7 +100,7 @@
         opacity-animation   (when scroll-y
                               (header-worklet/header-content-opacity scroll-y threshold))]
     [reanimated/view
-     {:style (style/center-content-container-animation {:has-animations?     (not (nil? scroll-y))
+     {:style (style/center-content-container-animation {:has-animations?     (some? scroll-y)
                                                         :centered?           centered?
                                                         :center-opacity      center-opacity
                                                         :translate-animation translate-animation
