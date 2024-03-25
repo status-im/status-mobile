@@ -62,7 +62,8 @@
 
 (defn <-color
   [value]
-  (if (string/starts-with? value "#") value (keyword value)))
+  (if (and (some? value)
+           (string/starts-with? value "#")) value (keyword value)))
 
 (defn <-rpc
   [chat]
