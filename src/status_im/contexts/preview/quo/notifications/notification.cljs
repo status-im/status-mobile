@@ -30,12 +30,11 @@
   []
   [notification-button
    "Notification: with title(header)"
-   {:avatar       [quo/user-avatar
-                   {:full-name           "A Y"
-                    :status-indicator?   true
-                    :online?             true
-                    :size                :small
-                    :customization-color :blue}]
+   {:user         {:full-name           "A Y"
+                   :status-indicator?   true
+                   :online?             true
+                   :size                :small
+                   :customization-color :blue}
     :title        "Alisher Yakupov accepted your contact request"
     :duration     4000
     :title-weight :medium
@@ -45,12 +44,11 @@
   []
   [notification-button
    "with title and body"
-   {:avatar   [quo/user-avatar
-               {:full-name           "A Y"
-                :status-indicator?   true
-                :online?             true
-                :size                :small
-                :customization-color :blue}]
+   {:user     {:full-name           "A Y"
+               :status-indicator?   true
+               :online?             true
+               :size                :small
+               :customization-color :blue}
     :title    "Default to semibold title"
     :text     "The quick brown fox jumped over the lazy dog and ate a potatoe."
     :duration 4000
@@ -60,12 +58,11 @@
   []
   [notification-button
    "with anything as header & body"
-   {:avatar   [quo/user-avatar
-               {:full-name           "A Y"
-                :status-indicator?   true
-                :online?             true
-                :size                :small
-                :customization-color :blue}]
+   {:user     {:full-name           "A Y"
+               :status-indicator?   true
+               :online?             true
+               :size                :small
+               :customization-color :blue}
     :header   [rn/view
                [quo/info-message
                 {:type :success
