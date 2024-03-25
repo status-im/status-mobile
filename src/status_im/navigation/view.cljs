@@ -106,7 +106,7 @@
           :keyboard-vertical-offset keyboard-vertical-offset}
          (when sheet
            [bottom-sheet/view
-            {:insets insets :hide? hide? :keyboard-vertical-offset keyboard-vertical-offset}
+            {:insets insets :hide? hide?}
             sheet])]]))
    functional-compiler))
 
