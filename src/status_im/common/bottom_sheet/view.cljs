@@ -70,15 +70,13 @@
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme-value)
         [sheet-height set-sheet-height]   (rn/use-state 0)
-        [kb-height set-kb-height]         (rn/use-state 0)
-        keyboard-show-listener            (rn/use-ref-atom nil)
-        keyboard-layout-listener          (rn/use-ref-atom nil)
         handle-sheet-height               (rn/use-callback (fn [e]
                                                              (when (= sheet-height 0)
                                                                (set-sheet-height
                                                                 (get-layout-height e))))
                                                            [sheet-height])
         [item-height set-item-height]     (rn/use-state 0)
+        {:keys [keyboard-height]}         (hooks/use-keyboard)
         handle-item-height                (rn/use-callback (fn [e]
                                                              (when (= item-height 0)
                                                                (set-item-height
@@ -104,43 +102,11 @@
                                             (:bottom insets))
         sheet-max-height                  (- window-height
                                              (:top insets)
-                                             kb-height
+                                             keyboard-height
                                              (when platform/ios?
                                                keyboard-vertical-offset))
         content-padding-bottom            (or padding-bottom-override
                                               (+ (:bottom insets) bottom-margin))]
-    (rn/use-mount
-     (fn []
-       (when (zero? kb-height)
-         (async-storage/get-item :kb-default-height
-                                 (fn [height]
-                                   (set-kb-height (utils.number/parse-int height 0)))))
-       (when (nil? @keyboard-show-listener)
-         (reset! keyboard-show-listener
-           (.addListener rn/keyboard
-                         "keyboardDidShow"
-                         (fn [event]
-                           (let [height (oops/oget event "endCoordinates.height")]
-                             (set-kb-height height)
-                             (when (zero? kb-height)
-                               (async-storage/set-item! :kb-default-height (str height))))))))
-       (when (nil? @keyboard-layout-listener)
-         (reset! keyboard-layout-listener
-           (.addListener
-            rn/keyboard
-            "keyboardWillChangeFrame"
-            (fn [event]
-              (let [height (oops/oget event "endCoordinates.height")]
-                (set-kb-height height)
-                (async-storage/set-item! :kb-default-height (str height)))))))))
-    (rn/use-unmount
-     (fn []
-       (when @keyboard-show-listener
-         (.remove ^js @keyboard-show-listener)
-         (reset! keyboard-show-listener nil))
-       (when @keyboard-layout-listener
-         (.remove ^js @keyboard-layout-listener)
-         (reset! keyboard-layout-listener nil))))
     (rn/use-effect
      #(if hide?
         (hide translate-y bg-opacity window-height on-close)
