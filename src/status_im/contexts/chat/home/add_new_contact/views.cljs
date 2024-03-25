@@ -3,7 +3,6 @@
             [quo.core :as quo]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
             [status-im.contexts.chat.home.add-new-contact.style :as style]
             [utils.address :as address]
             [utils.debounce :as debounce]
