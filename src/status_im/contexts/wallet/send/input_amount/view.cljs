@@ -7,6 +7,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.send :as send-utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
@@ -119,6 +120,20 @@
      :size            :small
      :title           (i18n/label :t/user-gets {:name receiver})
      :subtitle        amount}]])
+
+(defn select-asset-bottom-sheet
+  []
+  (let [{preselected-token-symbol :symbol} (rf/sub [:wallet/wallet-send-token])]
+    [:<> ;; Need to be a `:<>` to keep `asset-list` scrollable.
+     [quo/drawer-top
+      {:title           "Select asset"
+       :container-style {:padding-bottom 8}}]
+     [asset-list/view
+      {:content-container-style  {:padding-horizontal 8
+                                  :padding-bottom     8}
+       :preselected-token-symbol preselected-token-symbol
+       :on-token-press           (fn [token]
+                                   (rf/dispatch-sync [:wallet/edit-token-to-send token]))}]]))
 
 (defn- f-view-internal
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -244,7 +259,9 @@
             fee-formatted             (when fee-in-fiat
                                         (utils/get-standard-fiat-format fee-in-crypto-formatted
                                                                         currency-symbol
-                                                                        fee-in-fiat))]
+                                                                        fee-in-fiat))
+            show-select-asset-sheet   #(rf/dispatch
+                                        [:show-bottom-sheet {:content select-asset-bottom-sheet}])]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
@@ -279,7 +296,8 @@
                                    :currency     current-currency
                                    :token-symbol token-symbol
                                    :limit-fiat   fiat-limit
-                                   :limit-crypto crypto-limit})}]
+                                   :limit-crypto crypto-limit})
+           :on-token-press      show-select-asset-sheet}]
          [routes/view
           {:amount       amount-text
            :routes       best-routes
