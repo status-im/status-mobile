@@ -1,8 +1,12 @@
 (ns status-im.navigation.effects
   (:require
+    [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
+    [react-native.platform :as platform]
+    [status-im.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im.contexts.shell.jump-to.utils :as jump-to.utils]
     [status-im.navigation.options :as options]
     [status-im.navigation.roots :as roots]
     [status-im.navigation.state :as state]
@@ -10,20 +14,48 @@
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
-(defn- set-status-bar-color
-  [theme]
-  (rn/set-status-bar-style
-   (if (= theme :dark)
-     "light-content"
-     "dark-content")
-   true))
+(defn get-status-nav-color
+  [view-id]
+  (let [theme (or (get-in views/screens [view-id :options :theme])
+                  (quo.theme/get-theme))
+        [rnn-status-bar rn-status-bar]
+        (if (or (= theme :dark)
+                @state/alert-banner-shown?
+                (and (= view-id :shell-stack) (not (jump-to.utils/home-stack-open?))))
+          [:light "light-content"]
+          [:dark "dark-content"])
+        home-stack? (some #(= view-id %) shell.constants/stacks-ids)
+        ;; Home screen nav bar always dark due to bottom tabs
+        nav-bar-color (if (or home-stack?
+                              (= view-id :shell-stack)
+                              (= theme :dark))
+                        colors/neutral-100
+                        colors/white)
+        comp-id (if (or home-stack?
+                        (jump-to.utils/shell-navigation? view-id)
+                        (= view-id :shell))
+                  :shell-stack
+                  view-id)]
+    [rnn-status-bar rn-status-bar nav-bar-color comp-id]))
+
+(defn reload-status-nav-color-fx
+  [view-id]
+  (when (and (= @state/root-id :shell-stack) view-id)
+    (let [[rnn-status-bar rn-status-bar nav-bar-color comp-id] (get-status-nav-color view-id)]
+      (if platform/ios?
+        (rn/set-status-bar-style rn-status-bar true)
+        (navigation/merge-options
+         (name comp-id)
+         {:statusBar     {:style rnn-status-bar}
+          :navigationBar {:backgroundColor nav-bar-color}})))))
+
+(rf/reg-fx :reload-status-nav-color-fx reload-status-nav-color-fx)
 
 (rf/reg-fx :set-view-id-fx
  (fn [view-id]
+   (reload-status-nav-color-fx view-id)
    (rf/dispatch [:screens/on-will-focus view-id])
-   (when-let [{:keys [on-focus options]} (get views/screens view-id)]
-     (set-status-bar-color (or (:theme options)
-                               (quo.theme/get-theme)))
+   (when-let [{:keys [on-focus]} (get views/screens view-id)]
      (when on-focus
        (rf/dispatch on-focus)))))
 
@@ -167,11 +199,12 @@
                                  opts)}})))
 
 (rf/reg-fx :show-toasts
- (fn []
-   (show-overlay "toasts"
-                 {:overlay {:interceptTouchOutside false}
-                  :layout  {:componentBackgroundColor :transparent
-                            :orientation              ["portrait"]}})))
+ (fn [view-id]
+   (let [[rnn-status-bar nav-bar-color] (get-status-nav-color view-id)]
+     (show-overlay "toasts"
+                   (assoc (options/statusbar-and-navbar-options nil rnn-status-bar nav-bar-color)
+                          :overlay
+                          {:interceptTouchOutside false})))))
 
 (rf/reg-fx :hide-toasts
  (fn [] (navigation/dissmiss-overlay "toasts")))
@@ -186,10 +219,16 @@
 
 ;;;; Alert Banner
 (rf/reg-fx :show-alert-banner
- (fn [] (show-overlay "alert-banner" {:overlay {:interceptTouchOutside false}})))
+ (fn [view-id]
+   (show-overlay "alert-banner" {:overlay {:interceptTouchOutside false}})
+   (reset! state/alert-banner-shown? true)
+   (reload-status-nav-color-fx view-id)))
 
 (rf/reg-fx :hide-alert-banner
- (fn [] (navigation/dissmiss-overlay "alert-banner")))
+ (fn [view-id]
+   (navigation/dissmiss-overlay "alert-banner")
+   (reset! state/alert-banner-shown? false)
+   (reload-status-nav-color-fx view-id)))
 
 ;;;; Merge options
 

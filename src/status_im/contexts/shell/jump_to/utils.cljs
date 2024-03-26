@@ -1,6 +1,5 @@
 (ns status-im.contexts.shell.jump-to.utils
   (:require
-    [quo.theme :as quo.theme]
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -136,12 +135,3 @@
 (defn update-view-id
   [view-id]
   (rf/dispatch [:set-view-id view-id]))
-
-;;; Misc
-(defn change-shell-status-bar-style
-  []
-  (rf/dispatch [:change-shell-status-bar-style
-                (if (or (= :dark (quo.theme/get-theme))
-                        (not (home-stack-open?)))
-                  :light
-                  :dark)]))
