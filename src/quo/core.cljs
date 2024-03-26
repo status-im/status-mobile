@@ -112,6 +112,7 @@
     quo.components.password.tips.view
     quo.components.profile.collectible-list-item.view
     quo.components.profile.collectible.view
+    quo.components.profile.expanded-collectible.view
     quo.components.profile.link-card.view
     quo.components.profile.profile-card.view
     quo.components.profile.select-profile.view
@@ -354,6 +355,7 @@
 ;;;; Profile
 (def collectible quo.components.profile.collectible.view/collectible)
 (def collectible-list-item quo.components.profile.collectible-list-item.view/view)
+(def expanded-collectible quo.components.profile.expanded-collectible.view/view)
 (def link-card quo.components.profile.link-card.view/view)
 (def profile-card quo.components.profile.profile-card.view/profile-card)
 (def select-profile quo.components.profile.select-profile.view/view)

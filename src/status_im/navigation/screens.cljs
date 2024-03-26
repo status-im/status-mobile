@@ -5,6 +5,7 @@
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
+    [status-im.contexts.chat.group-create.view :as group-create]
     [status-im.contexts.chat.group-details.view :as group-details]
     [status-im.contexts.chat.home.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
     [status-im.contexts.chat.home.add-new-contact.views :as add-new-contact]
@@ -116,6 +117,11 @@
     {:name      :group-add-manage-members
      :options   {:sheet? true}
      :component group-details/add-manage-members}
+
+    {:name      :group-create
+     :options   {:sheet?           true
+                 :skip-background? true}
+     :component group-create/view}
 
     {:name      :community-requests-to-join
      :options   {:sheet? true}

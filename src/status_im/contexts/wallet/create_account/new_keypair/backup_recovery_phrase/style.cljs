@@ -44,7 +44,7 @@
 (defn blur
   [theme]
   {:style       {:flex 1}
-   :blur-radius 20
+   :blur-radius 25
    :blur-type   (quo.theme/theme-value :light :dark theme)
    :blur-amount 20})
 

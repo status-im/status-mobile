@@ -7,7 +7,7 @@
    :flex-direction   :row
    :justify-content  :space-between
    :align-items      :center
-   :max-height       56
+   :height           56
    :padding          12
    :border-radius    12
    :opacity          (if (= state :disabled) 0.3 1)
