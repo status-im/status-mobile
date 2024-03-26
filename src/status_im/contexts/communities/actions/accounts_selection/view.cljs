@@ -20,6 +20,13 @@
         has-permissions? (rf/sub [:communities/has-permissions? id])
         airdrop-account (rf/sub [:communities/airdrop-account id])
         revealed-accounts (rf/sub [:communities/accounts-to-reveal id])
+        revealed-accounts-count (count revealed-accounts)
+        wallet-accounts-count (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        addresses-shared-text (if (= revealed-accounts-count wallet-accounts-count)
+                                (i18n/label :t/all-addresses)
+                                (i18n/label-pluralize
+                                 revealed-accounts-count
+                                 :t/address-count))
         {:keys [highest-permission-role]} (rf/sub [:community/token-gated-overview id])
         highest-role-text (i18n/label (communities.utils/role->translation-key
                                        highest-permission-role
@@ -108,7 +115,7 @@
                       :label             :preview
                       :label-props       {:type :accounts
                                           :data revealed-accounts}
-                      :description-props {:text (i18n/label :t/all-addresses)}}
+                      :description-props {:text addresses-shared-text}}
                      {:title             (i18n/label :t/for-airdrops)
                       :on-press          show-airdrop-addresses
                       :description       :text
