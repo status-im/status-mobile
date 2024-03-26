@@ -8,10 +8,6 @@
   {:flex    1
    :z-index 2})
 
-(def chat-actions-container
-  {:margin-top     16
-   :padding-bottom 20})
-
 (defn background-container
   [background-color background-opacity top-margin]
   (reanimated/apply-animations-to-style
@@ -56,11 +52,8 @@
    :flex-direction :row
    :margin-top     52})
 
-(def bio
-  {:margin-top 8})
-
-(defn actions
-  [margin-top]
+(defn bio-and-actions
+  [top]
   (reanimated/apply-animations-to-style
-   {:top margin-top}
-   {}))
+   {:top top}
+   {:row-gap 16}))
