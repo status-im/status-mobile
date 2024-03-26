@@ -14,11 +14,11 @@
   [{:keys [on-press allow-multiple-presses? throttle-duration]} throttle-id]
   (if allow-multiple-presses?
     on-press
-    (fn []
+    (fn [event]
       (let [id @throttle-id]
         (when (and id (not (get @throttle id)))
           (swap! throttle assoc id true)
-          (on-press)
+          (on-press event)
           (js/setTimeout
            #(swap! throttle dissoc id)
            (or throttle-duration 500)))))))
