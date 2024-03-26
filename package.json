@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "_comment": "This also prevents 'yarn install' from running outside of nix.",
-    "preinstall": "scripts/check-nix-shell.sh && make status-go-library"
+    "preinstall": "make status-go-library"
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",

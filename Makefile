@@ -259,7 +259,7 @@ status-go-library: ##@status-go Compile status-go for node-js
 
 run-clojure: export TARGET := clojure
 run-clojure: ##@run Watch for and build Clojure changes for mobile
-	yarn shadow-cljs watch mobile
+	bun shadow-cljs watch mobile
 
 run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
@@ -267,7 +267,7 @@ run-metro: ##@run Start Metro to build React Native changes
 
 run-re-frisk: export TARGET := clojure
 run-re-frisk: ##@run Start re-frisk server
-	yarn shadow-cljs run re-frisk-remote.core/start
+	bun shadow-cljs run re-frisk-remote.core/start
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
@@ -327,20 +327,20 @@ lint-fix: ##@test Run code style checks and fix issues
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
-	yarn shadow-cljs server
+	bun shadow-cljs server
 
 _test-clojure: export TARGET := clojure
 _test-clojure: export WATCH ?= false
 _test-clojure: status-go-library
 _test-clojure:
 ifeq ($(WATCH), true)
-	yarn node-pre-gyp rebuild && \
-	yarn shadow-cljs compile mocks && \
-	nodemon --exec "yarn shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
+	bun node-pre-gyp rebuild && \
+	bun shadow-cljs compile mocks && \
+	nodemon --exec "bun shadow-cljs compile test && node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO" -e cljs
 else
-	yarn node-pre-gyp rebuild && \
-	yarn shadow-cljs compile mocks && \
-	yarn shadow-cljs compile test && \
+	bun node-pre-gyp rebuild && \
+	bun shadow-cljs compile mocks && \
+	bun shadow-cljs compile test && \
 	node --require ./test-resources/override.js "$$SHADOW_OUTPUT_TO"
 endif
 
@@ -353,11 +353,11 @@ test-watch-for-repl: export SHADOW_OUTPUT_TO := target/test/test.js
 test-watch-for-repl: export SHADOW_NS_REGEXP := .*-test$$
 test-watch-for-repl: status-go-library
 test-watch-for-repl: ##@test Watch all Clojure tests and support REPL connections
-	yarn node-pre-gyp rebuild
+	bun node-pre-gyp rebuild
 	rm -f target/test/test.js
-	yarn shadow-cljs compile mocks && \
+	bun shadow-cljs compile mocks && \
 	concurrently --kill-others --prefix-colors 'auto' --names 'build,repl' \
-		'yarn shadow-cljs watch test --verbose' \
+		'bun shadow-cljs watch test --verbose' \
 		"until [ -f $$SHADOW_OUTPUT_TO ] ; do sleep 1 ; done ; node --require ./test-resources/override.js $$SHADOW_OUTPUT_TO --repl"
 
 test-unit: export SHADOW_OUTPUT_TO := target/unit_test/test.js
@@ -387,7 +387,7 @@ component-test-watch: export JEST_USE_SILENT_REPORTER := false
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
-	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
+	nodemon --exec 'bun shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
 
 component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
@@ -396,7 +396,7 @@ component-test: export JEST_USE_SILENT_REPORTER := false
 component-test: ##@test Run component tests once in NodeJS
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
-	yarn shadow-cljs compile component-test && \
+	bun shadow-cljs compile component-test && \
 	jest --clearCache && jest --config=test/jest/jest.config.js --testEnvironment node
 
 #--------------
@@ -447,7 +447,7 @@ _list:
 
 repl-clojure: export TARGET := clojure
 repl-clojure: ##@repl Start Clojure repl for mobile App
-	yarn shadow-cljs cljs-repl mobile
+	bun shadow-cljs cljs-repl mobile
 
 repl-nix: nix-repl ##@repl Start an interactive Nix REPL
 
