@@ -128,8 +128,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
         community_url = "https://status.app/c/Ow==#zQ3shbmfT3hvh4mKa1v6uAjjyztQEroh8Mfn6Ckegjd7LT3XK"
         self.home.open_link_from_google_search_app(community_url, app_package)
         self.sign_in.sign_in()
-        if not self.home.element_by_translation_id(
-                "community-admins-will-review-your-request").is_element_displayed(10):
+        if not self.community_view.join_button.is_element_displayed(10):
             self.errors.append("Closed community was not requested to join by the url %s" % community_url)
 
         # ToDo: enable when https://github.com/status-im/status-mobile/issues/18074 is fixed
