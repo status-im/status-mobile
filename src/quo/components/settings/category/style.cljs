@@ -60,6 +60,3 @@
    :blur-radius 10
    :blur-type   (colors/theme-colors :light :dark)
    :blur-amount 20})
-
-(def page-setting
-  {:background-color (colors/theme-colors colors/neutral-2_5 colors/neutral-90)})

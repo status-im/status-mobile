@@ -282,27 +282,23 @@
        :can-edit-addresses? can-edit-addresses?}]
 
      [gesture/flat-list
-      {:render-fn               account-item
-       :render-data             [addresses-to-reveal
-                                 set-addresses-to-reveal
-                                 id
-                                 color
-                                 flag-share-all-addresses]
-       :header                  [quo/category
-                                 {:list-type       :settings
-                                  :settings-type   :page-setting
-                                  :data            [{:title
-                                                     (i18n/label
-                                                      :t/share-all-current-and-future-addresses)
-                                                     :action :selector
-                                                     :action-props
-                                                     {:on-change toggle-flag-share-all-addresses
-                                                      :customization-color color
-                                                      :checked? flag-share-all-addresses}}]
-                                  :container-style {:padding-bottom 16 :padding-horizontal 0}}]
+      {:render-fn account-item
+       :render-data [addresses-to-reveal
+                     set-addresses-to-reveal
+                     id
+                     color
+                     flag-share-all-addresses]
+       :header
+       [quo/page-setting
+        {:checked?            flag-share-all-addresses
+         :customization-color color
+         :on-change           toggle-flag-share-all-addresses
+         :setting-text        (i18n/label
+                               :t/share-all-current-and-future-addresses)
+         :container-style     {:margin-bottom 16}}]
        :content-container-style {:padding-horizontal 20}
-       :key-fn                  :address
-       :data                    wallet-accounts}]
+       :key-fn :address
+       :data wallet-accounts}]
 
      [quo/bottom-actions
       (cond-> {:role             (role-keyword highest-role)
