@@ -11,35 +11,56 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn make-callback
+(defn make-callback-sub
   [state-ratom]
   (let [state-ref (atom nil)]
     (js/console.log "init make-callback")
-    @(reagent.ratom/make-reaction
-      (fn []
-        (js/console.log "init reagent reaction")
-        (let [state @state-ratom]
-          (js/console.log
-           (if (nil? @state-ref)
-             "state init"
-             "state update")
-           (clj->js state))
-          (reset! state-ref state)))
-      :auto-run true)
-    (memoize
-     (fn [callback]
-       (js/console.log "init callback")
-       (fn [event]
-         (callback @state-ref event))))))
+    (let [reaction-sub (reagent.ratom/track!
+                        (fn [state-ratom]
+                          (js/console.log "reagent reaction")
+                          (let [state @state-ratom]
+                            (js/console.log
+                             (if (nil? @state-ref)
+                               "state init"
+                               "state update")
+                             (clj->js state))
+                            (reset! state-ref state)))
+                        state-ratom)]
+      @reaction-sub
+      {:sub reaction-sub
+       :factory (memoize
+                 (fn [callback]
+                   (js/console.log "init callback")
+                   (fn [event]
+                     (callback @state-ref event))))})))
 
 (def bind
-  (memoize make-callback))
+  (memoize make-callback-sub))
+
+(defn use-bind [state-ratom]
+  (let [{:keys [factory]} (bind state-ratom)] 
+    factory))
+
+(defonce contact-request-message-store
+  (reagent.ratom/atom {}))
+
+(defn access-message-store
+  ([k] (get-in @contact-request-message-store k ""))
+  ([k v] (swap! contact-request-message-store assoc-in k v)))
+
+(defn get-message-sub [public-key]
+  (reagent.ratom/cursor access-message-store public-key))
 
 (defn on-press-test
   [state event]
   (js/console.log "on-press state" (clj->js state))
   (js/console.log "on-press event" #js{:target (.-target event)})
+  (access-message-store (:public-key state) "")
   (rf/dispatch [:hide-bottom-sheet]))
+
+(defn combine-subs [message-sub profile-sub]
+  {:message @message-sub
+   :public-key @(reagent.ratom/cursor profile-sub [:public-key])})
 
 (defn view
   []
@@ -50,9 +71,13 @@
         full-name             (profile.utils/displayed-name profile)
         profile-picture       (profile.utils/photo profile)
         input-ref             (rn/use-ref-atom nil)
+        message-sub           (get-message-sub public-key)
         [message set-message] (rn/use-state "")
-        on-message-change     (rn/use-callback #(set-message %))
-        act                   (bind profile-sub)
+        on-message-change     (rn/use-callback #(do
+                                                  (reset! message-sub %)
+                                                  (set-message %)))
+        callback-state-sub    (reagent.ratom/track combine-subs message-sub profile-sub)
+        act                   (use-bind callback-state-sub)
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:contact.ui/send-contact-request
@@ -92,6 +117,7 @@
         :auto-focus            true
         :accessibility-label   :contact-request-message
         :label                 (i18n/label :t/message)
+        :value                 @message-sub
         :on-change-text        on-message-change
         :container-style       {:flex-shrink 1}
         :input-container-style {:flex-shrink 1}}]]
