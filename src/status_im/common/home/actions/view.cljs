@@ -349,7 +349,11 @@
   [chat-id]
   (entry {:icon                :i/members
           :label               (i18n/label :t/group-details)
-          :on-press            #(hide-sheet-and-dispatch [:navigate-to :group-chat-profile chat-id])
+          :on-press            (fn []
+                                 (rf/dispatch [:chats-list/load-chat chat-id])
+                                 (rf/dispatch [:pin-message/load-pin-messages chat-id])
+                                 (rf/dispatch [:hide-bottom-sheet])
+                                 (rf/dispatch [:navigate-to :group-details chat-id]))
           :danger?             false
           :accessibility-label :group-details
           :sub-label           nil
@@ -441,7 +445,7 @@
 (defn private-group-chat-actions
   [item inside-chat?]
   [quo/action-drawer
-   (let [show-group-actions? (:group-chat-member? item)]
+   (let [show-group-actions? (:group-chat item)]
      [(when show-group-actions?
         (group-actions item inside-chat?))
       (notification-actions item inside-chat? show-group-actions?)
