@@ -16,6 +16,7 @@
     quo.components.calendar.calendar.component-spec
     quo.components.calendar.calendar.month-picker.component-spec
     quo.components.colors.color-picker.component-spec
+    quo.components.community.community-detail-token-gating.component-spec
     quo.components.community.community-stat.component-spec
     quo.components.counter.collectible-counter.component-spec
     quo.components.counter.counter.component-spec
