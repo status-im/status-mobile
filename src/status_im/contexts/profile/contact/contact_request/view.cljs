@@ -1,23 +1,57 @@
 (ns status-im.contexts.profile.contact.contact-request.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
+            [re-frame.core :as re-frame]
             [react-native.core :as rn]
+            [reagent.ratom]
             [status-im.constants :as constants]
             [status-im.contexts.profile.contact.contact-request.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn make-callback
+  [state-ratom]
+  (let [state-ref (atom nil)]
+    (js/console.log "init make-callback")
+    @(reagent.ratom/make-reaction
+      (fn []
+        (js/console.log "init reagent reaction")
+        (let [state @state-ratom]
+          (js/console.log
+           (if (nil? @state-ref)
+             "state init"
+             "state update")
+           (clj->js state))
+          (reset! state-ref state)))
+      :auto-run true)
+    (memoize
+     (fn [callback]
+       (js/console.log "init callback")
+       (fn [event]
+         (callback @state-ref event))))))
+
+(def bind
+  (memoize make-callback))
+
+(defn on-press-test
+  [state event]
+  (js/console.log "on-press state" (clj->js state))
+  (js/console.log "on-press event" #js{:target (.-target event)})
+  (rf/dispatch [:hide-bottom-sheet]))
+
 (defn view
   []
-  (let [{:keys [public-key customization-color]
-         :as   profile}       (rf/sub [:contacts/current-contact])
+  (let [profile-sub           (re-frame/subscribe [:contacts/current-contact])
+        {:keys [public-key customization-color]
+         :as   profile}       (deref profile-sub)
         ;; TODO: remove default color when #18733 merged.
         customization-color   (or customization-color constants/profile-default-color)
         full-name             (profile.utils/displayed-name profile)
         profile-picture       (profile.utils/photo profile)
         [message set-message] (rn/use-state "")
         on-message-change     (rn/use-callback #(set-message %))
+        act                   (bind profile-sub)
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:contact.ui/send-contact-request
@@ -50,10 +84,14 @@
         :label               (i18n/label :t/message)
         :on-change-text      on-message-change}]]
      [quo/bottom-actions
-      {:actions          :one-action
+      {:actions          :two-actions
        :button-one-props {:disabled?           (string/blank? message)
                           :accessibility-label :send-contact-request
                           :customization-color customization-color
                           :on-press            on-message-submit}
-       :button-one-label (i18n/label :t/send-contact-request)}]]))
+       :button-one-label (i18n/label :t/send-contact-request)
+       :button-two-props {:accessibility-label :test-button
+                          :customization-color :danger
+                          :on-press            (act on-press-test)}
+       :button-two-label "test"}]]))
 
