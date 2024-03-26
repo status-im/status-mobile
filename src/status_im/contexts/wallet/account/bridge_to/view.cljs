@@ -31,7 +31,7 @@
         :fiat-value    fiat-formatted
         :on-press      #(rf/dispatch [:wallet/select-bridge-network
                                       {:network-chain-id chain-id
-                                       :stack-id         :wallet-bridge}])}])))
+                                       :stack-id         :screen/wallet.bridge-to}])}])))
 
 (defn- view-internal
   []
@@ -48,7 +48,7 @@
                                      {:name (string/upper-case (str (:name token)))})]
     [rn/view
      [account-switcher/view
-      {:on-press            #(rf/dispatch [:navigate-back-within-stack :screen/wallet.bridge-to])
+      {:on-press            #(rf/dispatch [:navigate-back])
        :icon-name           :i/arrow-left
        :accessibility-label :top-bar}]
      [quo/page-top {:title bridge-to-title}]

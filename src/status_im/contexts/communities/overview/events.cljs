@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.overview.events
   (:require
+    [status-im.contexts.communities.utils :as utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -35,6 +36,38 @@
                                        (log/error "failed to request to join community"
                                                   community-id
                                                   err))}]}))))
+
+(rf/reg-event-fx :communities/check-permissions-to-join-community-with-all-addresses-success
+ (fn [{:keys [db]} [community-id result]]
+   {:db (assoc-in db
+         [:communities/permissions-check-all community-id]
+         {:checking? false
+          :check     result})}))
+
+(rf/reg-event-fx :communities/check-permissions-to-join-community-with-all-addresses-failed
+ (fn [{:keys [db]} [community-id]]
+   {:db (assoc-in db [:communities/permissions-check-all community-id :checking?] false)}))
+
+(rf/reg-event-fx :communities/check-permissions-to-join-community-with-all-addresses
+ (fn [{:keys [db]} [community-id]]
+   (let [accounts  (utils/sorted-non-watch-only-accounts db)
+         addresses (set (map :address accounts))]
+     {:db            (assoc-in db [:communities/permissions-check community-id :checking?] true)
+      :json-rpc/call [{:method "wakuext_checkPermissionsToJoinCommunity"
+                       :params [(cond-> {:communityId community-id}
+                                  (seq addresses)
+                                  (assoc :addresses addresses))]
+                       :on-success
+                       [:communities/check-permissions-to-join-community-with-all-addresses-success
+                        community-id]
+                       :on-error
+                       (fn [err]
+                         (rf/dispatch
+                          [:communities/check-permissions-to-join-community-with-all-addresses-failed
+                           community-id])
+                         (log/error "failed to check permissions for all addresses"
+                                    community-id
+                                    err))}]})))
 
 (defn request-to-join
   [{:keys [db]}

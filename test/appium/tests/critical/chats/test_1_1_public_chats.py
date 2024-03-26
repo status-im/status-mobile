@@ -34,7 +34,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         for home in (self.home_1, self.home_2):
             home.navigate_back_to_home_view()
             home.chats_tab.click()
-        self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
+        self.home_1.add_contact(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
         self.home_2.handle_contact_request(self.username_1)
@@ -268,12 +268,15 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        self.home_1.jump_to_messages_home()
+        self.home_1.navigate_back_to_home_view()
         self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture(image_index=2)
 
         self.chat_2.just_fyi("Send messages with non-latin symbols")
-        self.home_1.jump_to_card_by_text(self.username_2)
+        # self.home_1.jump_to_card_by_text(self.username_2)
+        self.home_1.click_system_back_button()
+        self.home_1.chats_tab.click()
+        self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message("just a text")  # Sending a message here so the next ones will be in a separate line
 
         self.home_2.navigate_back_to_home_view()
@@ -538,7 +541,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         for home in (self.home_1, self.home_2):
             home.navigate_back_to_home_view()
             home.chats_tab.click()
-        self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
+        self.home_1.add_contact(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
         self.home_2.handle_contact_request(self.username_1)

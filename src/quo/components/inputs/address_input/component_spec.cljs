@@ -61,7 +61,7 @@
                    (h/fire-event :on-blur (h/get-by-label-text :address-text-input))
                    (h/has-prop (h/get-by-label-text :address-text-input)
                                :placeholder-text-color
-                               colors/neutral-30))))))
+                               colors/neutral-40))))))
 
   (h/test "on blur with text blur? true"
     (with-redefs [clipboard/get-string #(% "")]
@@ -75,7 +75,7 @@
                    (h/fire-event :on-blur (h/get-by-label-text :address-text-input))
                    (h/has-prop (h/get-by-label-text :address-text-input)
                                :placeholder-text-color
-                               colors/neutral-80-opa-20))))))
+                               colors/neutral-80-opa-40))))))
 
   (h/test "on blur with no text and blur? false"
     (with-redefs [clipboard/get-string #(% "")]

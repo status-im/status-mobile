@@ -3,6 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme :as theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -97,20 +98,21 @@
 
 (defn- info-button
   []
-  [rn/pressable
-   {:on-press
-    #(rf/dispatch
-      [:show-bottom-sheet
-       {:content
-        (fn []
-          [quo/documentation-drawers
-           {:title        (i18n/label :t/token-gated-communities)
-            :show-button? true
-            :button-label (i18n/label :t/read-more)
-            :button-icon  :info}
-           [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
-   [rn/view
-    [quo/icon :i/info {:no-color true}]]])
+  (let [theme (theme/use-theme)]
+    [rn/pressable
+     {:on-press
+      #(rf/dispatch
+        [:show-bottom-sheet
+         {:content
+          (fn []
+            [quo/documentation-drawers
+             {:title        (i18n/label :t/token-gated-communities)
+              :show-button? true
+              :button-label (i18n/label :t/read-more)
+              :button-icon  :info}
+             [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+     [rn/view
+      [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
 (defn- network-not-supported
   []
@@ -179,7 +181,7 @@
         (i18n/label :t/join-open-community)]])))
 
 (defn- join-community
-  [{:keys [id joined permissions role-permissions? can-join?] :as community}]
+  [{:keys [id joined permissions can-request-access?] :as community}]
   (let [pending?        (rf/sub [:communities/my-pending-request-to-join id])
         access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
@@ -187,7 +189,7 @@
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
        [token-requirements community])
-     (when (not (or pending? role-permissions? can-join?))
+     (when (and can-request-access? (not joined))
        [quo/text
         {:size   :paragraph-2
          :weight :regular

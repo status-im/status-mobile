@@ -26,14 +26,20 @@
     :padding-vertical   8
     :padding-horizontal 12}))
 
-(def right-side-container {:flex 1})
+(def right-side-container
+  {:flex            1
+   :justify-content :center})
 
 (defn title
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn text
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
-(def avatar-container {:margin-right 8 :margin-top 4})
+(defn avatar-container
+  [{:keys [multiline?]}]
+  {:margin-right 8
+   :align-self   (when-not multiline? :center)
+   :margin-top   (if multiline? 4 0)})

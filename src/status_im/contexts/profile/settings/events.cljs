@@ -32,11 +32,6 @@
                 :params     [(or preferred-name display-name name) ""]
                 :on-success #(log/debug "sent contact update")}]]))]}))
 
-(rf/reg-event-fx :profile.settings/change-preview-privacy
- (fn [{:keys [db]}]
-   (let [private? (get-in db [:profile/profile :preview-privacy?])]
-     {:fx [[:profile.settings/blank-preview-flag-changed private?]]})))
-
 (rf/reg-event-fx :profile.settings/change-webview-debug
  (fn [_ [value]]
    (let [value' (boolean value)]

@@ -42,7 +42,7 @@
       {:type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-notifications])}]
+       :on-press   #(rf/dispatch [:navigate-back])}]
      [page-title]
      [rn/image
       {:style         (style/page-illustration (:width window))

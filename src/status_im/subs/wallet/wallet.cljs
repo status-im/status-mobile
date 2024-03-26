@@ -100,6 +100,11 @@
  :-> :keypairs)
 
 (rf/reg-sub
+ :wallet/selected-keypair-uid
+ :<- [:wallet/create-account]
+ :-> :selected-keypair-uid)
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]

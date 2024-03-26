@@ -140,6 +140,9 @@
                     (reset! push-animation-fn-atom #(push-animation translate-x))
                     (reset! pop-animation-fn-atom #(pop-animation translate-x))
                     (fn []
+                      (when-let [pop-animation-fn @pop-animation-fn-atom]
+                        (when (not= translate-x 0)
+                          (pop-animation-fn)))
                       (reset! push-animation-fn-atom nil)
                       (reset! pop-animation-fn-atom nil))))
     [reanimated/view

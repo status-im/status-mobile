@@ -8,7 +8,7 @@
 
 (defn view
   [{:keys [track-text customization-color auth-button-label on-auth-success on-auth-fail
-           auth-button-icon-left size blur? container-style disabled?]
+           auth-button-icon-left size blur? container-style disabled? dependencies]
     :or   {container-style {:flex 1}}}]
   (let [theme           (quo.theme/use-theme-value)
         auth-method     (rf/sub [:auth-method])
@@ -24,7 +24,7 @@
                                           :on-auth-success       on-auth-success
                                           :on-auth-fail          on-auth-fail
                                           :auth-button-label     auth-button-label}]))
-                         [theme])]
+                         (into [] (concat [theme] dependencies)))]
     [quo/slide-button
      {:container-style     container-style
       :size                size

@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.data-store.activities :as activities]
     [legacy.status-im.data-store.chats :as data-store.chats]
-    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.toasts.events :as toasts]
@@ -544,9 +543,9 @@
                        (not accepted)
                        (not dismissed))
                   (toasts/upsert cofx
-                                 {:user            user-avatar
+                                 {:type            :notification
+                                  :user            user-avatar
                                   :user-public-key author
-                                  :icon-color      colors/primary-50-opa-40
                                   :title           (i18n/label :t/contact-request-sent-toast
                                                                {:name name})
                                   :text            (get-in message [:content :text])})
@@ -556,10 +555,10 @@
                        accepted
                        (not dismissed))
                   (toasts/upsert cofx
-                                 {:user            user-avatar
+                                 {:type            :notification
+                                  :user            user-avatar
                                   ;; user public key who accepted the request
                                   :user-public-key chat-id
-                                  :icon-color      colors/success-50-opa-40
                                   :title           (i18n/label :t/contact-request-accepted-toast
                                                                {:name (or name (:alias message))})})
                   :else

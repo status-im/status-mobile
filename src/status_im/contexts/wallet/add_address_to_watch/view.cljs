@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.add-address-to-watch.style :as style]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
@@ -21,6 +22,10 @@
     (not
      (or (validation/eth-address? user-input)
          (validation/ens-name? user-input))) (i18n/label :t/invalid-address)))
+
+(defn- extract-address
+  [scanned-text]
+  (re-find constants/regx-address-contains scanned-text))
 
 (defn- address-input
   [{:keys [input-value validation-msg validate clear-input]}]
@@ -138,7 +143,8 @@
                      :on-press            (fn []
                                             (rf/dispatch [:navigate-to
                                                           :screen/wallet.confirm-address-to-watch
-                                                          {:address validated-address}])
+                                                          {:address (extract-address
+                                                                     validated-address)}])
                                             (clear-input))
                      :container-style     {:z-index 2}}
                     (i18n/label :t/continue)]}

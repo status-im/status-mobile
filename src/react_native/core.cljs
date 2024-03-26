@@ -156,17 +156,19 @@
 (defn get-js-deps
   [deps]
   (if deps
-    (let [prev-state (use-ref-atom {:value false :deps nil})
-          prev-deps  (:deps @prev-state)
-          prev-value (:value @prev-state)]
-      (if (and (not (nil? prev-deps)) (not= (count deps) (count prev-deps)))
-        (throw (js/Error. "Hooks can't have a different number of dependencies across re-renders"))
-        (if (not= deps prev-deps)
-          (let [new-value (not prev-value)]
-            (reset! prev-state {:value new-value
-                                :deps  deps})
-            #js [new-value])
-          #js [prev-value])))
+    (if (empty? deps)
+      #js [true]
+      (let [prev-state (use-ref-atom {:value false :deps nil})
+            prev-deps  (:deps @prev-state)
+            prev-value (:value @prev-state)]
+        (if (and (not (nil? prev-deps)) (not= (count deps) (count prev-deps)))
+          (throw (js/Error. "Hooks can't have a different number of dependencies across re-renders"))
+          (if (not= deps prev-deps)
+            (let [new-value (not prev-value)]
+              (reset! prev-state {:value new-value
+                                  :deps  deps})
+              #js [new-value])
+            #js [prev-value]))))
     js/undefined))
 
 (defn use-effect

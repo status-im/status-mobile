@@ -24,5 +24,5 @@
 
 (def cheat-description
   {:padding-horizontal 20
-   :padding-top        4
+   :padding-top        8
    :padding-bottom     8})

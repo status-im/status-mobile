@@ -1,7 +1,7 @@
 (ns legacy.status-im.ui.components.react
   (:require
+    ["@react-native-clipboard/clipboard" :default Clipboard]
     ["@react-native-community/blur" :as blur]
-    ["@react-native-community/clipboard" :default Clipboard]
     ["@react-native-community/masked-view" :default MaskedView]
     ["react" :as reactjs]
     ["react-native" :as react-native :refer (Keyboard BackHandler)]

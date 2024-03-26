@@ -28,8 +28,9 @@
                       (name k)
                       (-> v
                           (assoc :token-gated? (:tokenGated v)
-                                 :can-post?    (:canPost v))
-                          (dissoc :canPost :tokenGated)
+                                 :can-post?    (:canPost v)
+                                 :can-view?    (:canView v))
+                          (dissoc :canPost :tokenGated :canView)
                           (update :members walk/stringify-keys))))
              {}
              chats))

@@ -113,6 +113,7 @@
         members         (rf/sub [:contacts/group-members-sections chat-id])
         pinned-messages (rf/sub [:chats/pinned chat-id])
         current-pk      (rf/sub [:multiaccount/public-key])
+        profile-color   (rf/sub [:profile/customization-color])
         admin?          (get admins current-pk)]
     [:<>
      [quo/gradient-cover
@@ -127,7 +128,6 @@
                                                                  group])}])}]
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])}]
-
      [quo/page-top
       {:title  chat-name
        :avatar {:customization-color color}}]
@@ -135,7 +135,7 @@
       {:container-style style/actions-view
        :actions         [{:accessibility-label :pinned-messages
                           :label               (i18n/label :t/pinned-messages)
-                          :color               color
+                          :customization-color color
                           :icon                :i/pin
                           :counter-value       (count pinned-messages)
                           :on-press            (fn []
@@ -143,14 +143,14 @@
                                                  (rf/dispatch [:pin-message/show-pins-bottom-sheet
                                                                chat-id]))}
                          {:accessibility-label :toggle-mute
-                          :color               color
+                          :customization-color color
                           :icon                (if muted :i/muted :i/activity-center)
                           :label               (i18n/label (if muted :unmute-group :mute-group))
                           :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)
                                                               (when-not muted
                                                                 constants/mute-till-unmuted)])}
                          {:accessibility-label :manage-members
-                          :color               color
+                          :customization-color color
                           :icon                :i/add-user
                           :label               (i18n/label (if admin? :t/manage-members :t/add-members))
                           :counter-value       (count contacts)
@@ -167,4 +167,12 @@
        :render-section-footer-fn       contacts-section-footer
        :render-data                    {:chat-id chat-id
                                         :admin?  admin?}
-       :render-fn                      contact-item-render}]]))
+       :render-fn                      contact-item-render}]
+     [quo/floating-shell-button
+      {:jump-to {:on-press            (fn []
+                                        (rf/dispatch [:navigate-back])
+                                        (rf/dispatch [:shell/navigate-to-jump-to])
+                                      )
+                 :customization-color profile-color
+                 :label               (i18n/label :t/jump-to)}}
+      style/floating-shell-button]]))

@@ -1,5 +1,5 @@
 { lib, stdenv, callPackage, mkShell,
-  bundlerEnv, cocoapods, bundler, ruby, curl }:
+  bundlerEnv, cocoapods, bundler, ruby, curl, clang }:
 
 let
   inherit (lib) optionals optionalString unique;
@@ -14,7 +14,7 @@ let
 
   inherit (fastlane) shellHook;
 
-  buildInputs = [ ruby bundler fastlane curl ]
+  buildInputs = [ ruby bundler fastlane curl clang ]
     ++ optionals stdenv.isDarwin [ cocoapods ];
 in {
   # HELPERS

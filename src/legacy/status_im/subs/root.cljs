@@ -22,7 +22,6 @@
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :peers-summary :peers-summary)
 (reg-root-key-sub :web3-node-version :web3-node-version)
-(reg-root-key-sub :alert-banners :alert-banners)
 
 ;;keycard
 (reg-root-key-sub :keycard :keycard)

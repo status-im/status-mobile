@@ -122,9 +122,8 @@
   (let [selected-networks         (rf/sub [:wallet/wallet-send-selected-networks])
         loading-networks          (find-affordable-networks token input-value selected-networks)
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-        best-routes               (:best routes)
-        data                      (if loading-suggested-routes? loading-networks best-routes)]
-    (if (or (and (not-empty loading-networks) loading-suggested-routes?) (not-empty best-routes))
+        data                      (if loading-suggested-routes? loading-networks routes)]
+    (if (or (and (not-empty loading-networks) loading-suggested-routes?) (not-empty routes))
       [rn/flat-list
        {:data                    (if (and (< (count data) 3) (pos? (count data)))
                                    (concat data [{:status :add}])
@@ -154,7 +153,7 @@
                                                      (utils/id->network (get-in item
                                                                                 [:to :chain-id])))}])}]
       [rn/view {:style style/empty-container}
-       (when (and (not (nil? best-routes)) (not loading-suggested-routes?))
+       (when (and (not (nil? routes)) (not loading-suggested-routes?))
          [quo/text (i18n/label :t/no-routes-found)])])))
 
 (def view (quo.theme/with-theme view-internal))

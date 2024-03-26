@@ -3,7 +3,6 @@
     [cljs.test :refer [deftest is use-fixtures]]
     legacy.status-im.events
     legacy.status-im.subs.root
-    [native-module.core :as native-module]
     [promesa.core :as p]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.constants :as constants]
@@ -12,10 +11,11 @@
     status-im.navigation.core
     status-im.subs.root
     [test-helpers.integration :as h]
-    [tests.contract-test.utils :as contract-utils]
-    [tests.integration-test.constants :as integration-constants]))
+    [tests.contract-test.utils :as contract-utils]))
 
 (use-fixtures :each (h/fixture-session))
+
+(def number-of-networks 3)
 
 (defn assert-accounts-get-accounts
   [result]
@@ -29,13 +29,9 @@
       (p/let [result (contract-utils/call-rpc "accounts_getAccounts")]
         (assert-accounts-get-accounts result)))))
 
-(defn get-default-account
-  [accounts]
-  (first (filter :wallet accounts)))
-
 (defn check-emoji-is-updated
   [test-emoji accounts]
-  (let [default-account (get-default-account accounts)]
+  (let [default-account (contract-utils/get-default-account accounts)]
     (is (= (:emoji default-account) test-emoji))))
 
 (deftest accounts-save-accounts-contract
@@ -43,14 +39,12 @@
     (fn []
       (p/let [test-emoji      (emoji-picker.utils/random-emoji)
               account         (contract-utils/call-rpc "accounts_getAccounts")
-              default-account (get-default-account account)
+              default-account (contract-utils/get-default-account account)
               _ (contract-utils/call-rpc
                  "accounts_saveAccount"
                  (data-store/<-account (merge default-account {:emoji test-emoji})))
               accounts        (contract-utils/call-rpc "accounts_getAccounts")]
         (check-emoji-is-updated test-emoji accounts)))))
-
-(def number-of-networks 3)
 
 (defn assert-ethereum-chains
   [response]
@@ -68,30 +62,44 @@
       (p/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]
         (assert-ethereum-chains response)))))
 
-(defn get-main-account
-  [accounts]
-  (:address (first accounts)))
+(defn assert-wallet-tokens
+  [tokens]
+  (let [flattened-tokens (mapcat val tokens)]
+    (doseq [token flattened-tokens]
+      (is (not-empty (:symbol token)))
+      (is (:decimals token))
+      (is (contains? token :balancesPerChain))
+      (is (contains? token :marketValuesPerCurrency))
+      (is (contains? (:marketValuesPerCurrency token) :usd))
+      (let [balances-per-chain (:balancesPerChain token)]
+        (doseq [[_ balance] balances-per-chain]
+          (is (contains? balance :rawBalance))
+          (let [raw-balance (:rawBalance balance)]
+            (is (not-empty raw-balance))
+            (is (re-matches #"\d+" raw-balance))))))))
 
-(def test-password integration-constants/password)
-
-(defn assert-derived-account
-  [response]
-  (is (= (:address response) (:address response)))
-  (is (= (:public-key response) (:public-key response)))
-  (is (= "m/43'/60'/1581'/0'/0" (:path (first response)))))
-
-(deftest wallet-get-derived-addressess-contract-test
-  (h/test-async :wallet/create-derived-addresses
+(deftest wallet-get-walet-token-test
+  (h/test-async :wallet/get-wallet-token
     (fn []
-      (p/let [_ (h/enable-testnet!)
-              _ (h/recover-multiaccount!)
-              sha3-pwd        (native-module/sha3 test-password)
-              derivation-path ["m/43'/60'/1581'/0'/0"]
-              accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              main-account    (get-main-account accounts)
+      (p/let [accounts        (contract-utils/call-rpc "accounts_getAccounts")
+              default-address (contract-utils/get-default-address accounts)
               response        (contract-utils/call-rpc
-                               "wallet_getDerivedAddresses"
-                               sha3-pwd
-                               main-account
-                               derivation-path)]
-        (assert-derived-account response)))))
+                               "wallet_getWalletToken"
+                               [default-address])]
+        (assert-wallet-tokens response)))))
+
+(defn assert-address-details
+  [result]
+  (is (contains? result :address))
+  (is (contains? result :path))
+  (is (boolean? (:hasActivity result)))
+  (is (false? (:alreadyCreated result))))
+
+(deftest wallet-get-address-details-contract-test
+  (h/test-async :wallet/get-address-details
+    (fn []
+      (p/let [input       "test.eth"
+              chain-id    constants/ethereum-mainnet-chain-id
+              ens-address (contract-utils/call-rpc "ens_addressOf" chain-id input)
+              response    (contract-utils/call-rpc "wallet_getAddressDetails" chain-id ens-address)]
+        (assert-address-details response)))))

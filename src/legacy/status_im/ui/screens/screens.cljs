@@ -91,11 +91,6 @@
     :options   {:insets {:top? true}}
     :component stickers/pack}
 
-   {:name      :new-group
-    :options   {:insets {:top? true}}
-    ;;TODO custom subtitle
-    :component group-chat/new-group}
-
    {:name      :currency-settings
     :options   {:topBar (topbar-options :t/main-currency)
                 :insets {:top? true}}

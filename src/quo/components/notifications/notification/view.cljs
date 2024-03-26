@@ -1,7 +1,9 @@
 (ns quo.components.notifications.notification.view
   (:require
+    [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.markdown.text :as text]
     [quo.components.notifications.notification.style :as style]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]))
 
@@ -15,33 +17,33 @@
   [into [rn/view {:accessibility-label :notification-body}] children])
 
 (defn avatar-container
-  [& children]
+  [{:keys [multiline?]} & children]
   [into
    [rn/view
-    {:style               style/avatar-container
+    {:style               (style/avatar-container {:multiline? multiline?})
      :accessibility-label :notification-avatar}]
    children])
 
 (defn title
-  ([text weight] (title text weight nil))
-  ([text weight override-theme]
+  ([{:keys [text weight theme multiline?]}]
    [text/text
     {:size                :paragraph-1
-     :weight              (or weight :semi-bold)
-     :style               (style/title override-theme)
+     :weight              (or weight (if multiline? :semi-bold :medium))
+     :style               (style/title theme)
      :accessibility-label :notification-title}
     text]))
 
 (defn message
-  [text override-theme]
+  [text theme]
   [text/text
    {:size                :paragraph-2
-    :style               (style/text override-theme)
+    :weight              :medium
+    :style               (style/text theme)
     :accessibility-label :notification-content}
    text])
 
 (defn- notification-container
-  [{:keys [avatar header body container-style override-theme]}]
+  [{:keys [avatar header body container-style theme]}]
   [rn/view
    {:style (merge style/box-container container-style)}
    [blur/view
@@ -51,7 +53,7 @@
      :blur-type     :transparent
      :overlay-color :transparent}]
    [rn/view
-    {:style (style/content-container override-theme)}
+    {:style (style/content-container theme)}
     avatar
     [rn/view
      {:style style/right-side-container}
@@ -59,17 +61,27 @@
      body]]])
 
 (defn notification
-  [{title-text :title :keys [avatar header title-weight text body container-style override-theme]}]
-  (let [header (or header
-                   (when title-text
-                     [title title-text title-weight override-theme]))
-        header (when header [header-container header])
-        body   (or body (when text [message text override-theme]))
-        body   (when body [body-container body])
-        avatar (when avatar [avatar-container avatar])]
-    [notification-container
-     {:avatar          avatar
-      :header          header
-      :body            body
-      :container-style container-style
-      :override-theme  override-theme}]))
+  [{title-text :title :keys [avatar user header title-weight text body container-style theme]}]
+  (let [theme       (or theme (quo.theme/get-theme))
+        body        (or body (when text [message text theme]))
+        header      (or header
+                        (when title-text
+                          [title
+                           {:text       title-text
+                            :weight     title-weight
+                            :theme      theme
+                            :multiline? (some? body)}]))
+        header      (when header [header-container header])
+        body        (when body [body-container body])
+        user-avatar (or avatar (when user (user-avatar/user-avatar user)))
+        avatar      (when user-avatar
+                      [avatar-container
+                       {:multiline? (and header body)}
+                       user-avatar])]
+    [quo.theme/provider {:theme theme}
+     [notification-container
+      {:avatar          avatar
+       :header          header
+       :body            body
+       :container-style container-style
+       :theme           theme}]]))

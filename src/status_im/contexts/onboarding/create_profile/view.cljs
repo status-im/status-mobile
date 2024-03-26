@@ -111,7 +111,7 @@
         {:margin-top navigation-bar-top
          :background :blur
          :icon-name  :i/arrow-left
-         :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])}]
+         :on-press   #(rf/dispatch [:navigate-back])}]
        [rn/scroll-view
         {:on-layout               (fn [event]
                                     (let [height (oops/oget event "nativeEvent.layout.height")]
@@ -153,7 +153,7 @@
                                                            @full-name
                                                            (i18n/label :t/your-name))
                                     :customization-color @custom-color}
-              :title-input-props   {:default-value  @full-name
+              :title-input-props   {:default-value  display-name
                                     :auto-focus     true
                                     :max-length     c/profile-name-max-length
                                     :on-change-text on-change-text}}]]

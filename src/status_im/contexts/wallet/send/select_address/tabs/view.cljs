@@ -14,7 +14,6 @@
    {:account-props (assoc account :customization-color color)
     :on-press      #(rf/dispatch [:wallet/select-send-address
                                   {:address   address
-                                   :token?    false
                                    :recipient account
                                    :stack-id  :screen/wallet.select-address}])}])
 

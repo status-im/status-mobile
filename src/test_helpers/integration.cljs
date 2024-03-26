@@ -66,9 +66,17 @@
   []
   @(rf/subscribe [:messenger/started?]))
 
+(defn wallet-loaded?
+  []
+  (not @(rf/subscribe [:wallet/tokens-loading?])))
+
 (defn assert-messenger-started
   []
   (is (messenger-started)))
+
+(defn assert-wallet-loaded
+  []
+  (is (wallet-loaded?)))
 
 (defn assert-community-created
   []
@@ -141,18 +149,49 @@
   (test-utils/init!)
   (if (app-initialized)
     (p/resolved ::app-initialized)
-    (do
-      (rf/dispatch [:app-started])
-      (wait-for [:profile/get-profiles-overview-success]))))
+    (p/do!
+     (rf/dispatch [:app-started])
+     (wait-for [:profile/get-profiles-overview-success]))))
 
 (defn setup-account
   []
   (if (messenger-started)
     (p/resolved ::messenger-started)
-    (do
-      (create-multiaccount!)
-      (-> (wait-for [:profile.login/messenger-started])
-          (.then #(assert-messenger-started))))))
+    (p/do!
+     (create-multiaccount!)
+     (p/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started)))))
+
+(defn- recover-and-login
+  [seed-phrase]
+  (rf/dispatch [:profile.recover/recover-and-login
+                {:display-name (:name constants/recovery-account)
+                 :seed-phrase  seed-phrase
+                 :password     constants/password
+                 :color        "blue"}]))
+
+(defn- enable-testnet!
+  []
+  (rf/dispatch [:profile.settings/profile-update :test-networks-enabled? true {}])
+  (rf/dispatch [:wallet/initialize]))
+
+(defn- recover-multiaccount!
+  []
+  (p/let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))
+          [mnemonic key-uid] (validate-mnemonic masked-seed-phrase)]
+    (rf/dispatch [:onboarding/seed-phrase-validated (security/mask-data mnemonic) key-uid])
+    (rf/dispatch [:pop-to-root :profiles])
+    (rf/dispatch [:profile/profile-selected key-uid])
+    (recover-and-login mnemonic)))
+
+(defn setup-recovered-account
+  []
+  (if (messenger-started)
+    (p/resolved ::messenger-started)
+    (p/do!
+     (recover-multiaccount!)
+     (p/then (wait-for [:profile.login/messenger-started]) #(assert-messenger-started))
+     (enable-testnet!)
+     (p/then (wait-for [:wallet/store-wallet-token]) #(assert-wallet-loaded)))))
 
 (defn test-async
   "Runs `f` inside `cljs.test/async` macro in a restorable re-frame checkpoint.
@@ -228,17 +267,24 @@
   Usage:
 
       (use-fixtures :each (h/fixture-logged))"
-  []
-  {:before (fn []
-             (test/async done
-               (p/do (setup-app)
-                     (setup-account)
-                     (done))))
-   :after  (fn []
-             (test/async done
-               (p/do (logout)
-                     (wait-for [::logout/logout-method])
-                     (done))))})
+  ([type]
+   {:before (if (= :recovered-account type)
+              (fn []
+                (test/async done
+                  (p/do (setup-app)
+                        (setup-recovered-account)
+                        (done))))
+              (fn []
+                (test/async done
+                  (p/do (setup-app)
+                        (setup-account)
+                        (done)))))
+    :after  (fn []
+              (test/async done
+                (p/do (logout)
+                      (wait-for [::logout/logout-method])
+                      (done))))})
+  ([] (fixture-session [:new-account])))
 
 (defn fixture-silence-reframe
   "Fixture to disable most re-frame messages.
@@ -260,25 +306,3 @@
              (set! rf.interop/debug-enabled? false))
    :after  (fn []
              (set! rf.interop/debug-enabled? true))})
-
-(defn recover-and-login
-  [seed-phrase]
-  (rf/dispatch [:profile.recover/recover-and-login
-                {:display-name (:name constants/recovery-account)
-                 :seed-phrase  seed-phrase
-                 :password     constants/password
-                 :color        "blue"}]))
-
-(defn enable-testnet!
-  []
-  (rf/dispatch [:profile.settings/profile-update :test-networks-enabled? true {}])
-  (rf/dispatch [:wallet/initialize]))
-
-(defn recover-multiaccount!
-  []
-  (p/let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))
-          [mnemonic key-uid] (validate-mnemonic masked-seed-phrase)]
-    (rf/dispatch [:onboarding/seed-phrase-validated (security/mask-data mnemonic) key-uid])
-    (rf/dispatch [:pop-to-root :profiles])
-    (rf/dispatch [:profile/profile-selected key-uid])
-    (recover-and-login mnemonic)))

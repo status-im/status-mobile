@@ -76,7 +76,7 @@
       [quo/page-nav
        {:background :blur
         :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-biometrics])}]
+        :on-press   #(rf/dispatch [:navigate-back])}]
       [page-title]]
      (if blacklist/blacklisted?
        [enable-notifications-simple]

@@ -77,11 +77,11 @@
 
 (defn system-message-contact-request
   [{:keys [chat-id timestamp-str from]} type]
-  (let [[primary-name _]     (rf/sub [:contacts/contact-two-names-by-identity chat-id])
-        contact              (rf/sub [:contacts/contact-by-address chat-id])
-        photo-path           (when (seq (:images contact)) (rf/sub [:chats/photo-path chat-id]))
-        customization-color  (rf/sub [:profile/customization-color])
-        {:keys [public-key]} (rf/sub [:profile/profile])]
+  (let [[primary-name _]    (rf/sub [:contacts/contact-two-names-by-identity chat-id])
+        contact             (rf/sub [:contacts/contact-by-address chat-id])
+        photo-path          (when (seq (:images contact)) (rf/sub [:chats/photo-path chat-id]))
+        customization-color (rf/sub [:profile/customization-color])
+        public-key          (rf/sub [:profile/public-key])]
     [quo/system-message
      {:type                type
       :timestamp           timestamp-str
@@ -278,14 +278,14 @@
        (fn []
          [rn/view
           {:pointer-events :none
-           :padding-top    4}
+           :style          style/drawer-message-container}
           [user-message-content
-           {:message-data    message-data
-            :context         context
-            :keyboard-shown? keyboard-shown?
-            :show-reactions? true
-            :show-user-info? true
-            :preview?        true}]]))}]))
+           {:message-data                 message-data
+            :context                      context
+            :keyboard-shown?              keyboard-shown?
+            :in-reaction-and-action-menu? true
+            :show-user-info?              false
+            :show-reactions?              true}]]))}]))
 
 (defn system-message?
   [content-type]

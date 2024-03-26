@@ -68,8 +68,9 @@
                   :right-side     page-nav-right-section-buttons
                   :center-opacity (reanimated/get-shared-value opacity-animation)
                   :overlay-shown? overlay-shown?}
-           navigate-back? (assoc :icon-name :i/close
-                                 :on-press  #(rf/dispatch [:navigate-back]))
+           navigate-back? (assoc :icon-name           :i/close
+                                 :accessibility-label :back-button
+                                 :on-press            #(rf/dispatch [:navigate-back]))
            page-nav-props (merge page-nav-props))])
       (when title-colum
         title-colum)
