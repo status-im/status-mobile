@@ -17,10 +17,12 @@
     [status-im.contexts.chat.messenger.messages.content.album.view :as album]
     [status-im.contexts.chat.messenger.messages.content.audio.view :as audio]
     [status-im.contexts.chat.messenger.messages.content.deleted.view :as content.deleted]
+    [status-im.contexts.chat.messenger.messages.content.emoji-message.view :as emoji-message]
     [status-im.contexts.chat.messenger.messages.content.image.view :as image]
     [status-im.contexts.chat.messenger.messages.content.pin.view :as pin]
     [status-im.contexts.chat.messenger.messages.content.reactions.view :as reactions]
     [status-im.contexts.chat.messenger.messages.content.status.view :as status]
+    [status-im.contexts.chat.messenger.messages.content.sticker-message.view :as sticker-message]
     [status-im.contexts.chat.messenger.messages.content.style :as style]
     [status-im.contexts.chat.messenger.messages.content.system.text.view :as system.text]
     [status-im.contexts.chat.messenger.messages.content.text.view :as content.text]
@@ -150,38 +152,37 @@
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
                  show-user-info? preview? theme]}]
-      (let [{:keys [content-type quoted-message content
-                    outgoing outgoing-status pinned-by
-                    message-id chat-id]}          message-data
-            {:keys [disable-message-long-press?]} context
-            first-image                           (first (:album message-data))
-            outgoing-status                       (if (= content-type
-                                                         constants/content-type-album)
-                                                    (:outgoing-status first-image)
-                                                    outgoing-status)
-            outgoing                              (if (= content-type
-                                                         constants/content-type-album)
-                                                    (:outgoing first-image)
-                                                    outgoing)
-            context                               (assoc context
-                                                         :on-long-press
-                                                         #(on-long-press message-data
-                                                                         context
-                                                                         keyboard-shown?))
-            response-to                           (:response-to content)
-            height                                (rf/sub [:dimensions/window-height])
+      (let [{:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
+                    last-in-group? message-id chat-id]} message-data
+            {:keys [disable-message-long-press?]}       context
+            first-image                                 (first (:album message-data))
+            outgoing-status                             (if (= content-type
+                                                               constants/content-type-album)
+                                                          (:outgoing-status first-image)
+                                                          outgoing-status)
+            outgoing                                    (if (= content-type
+                                                               constants/content-type-album)
+                                                          (:outgoing first-image)
+                                                          outgoing)
+            context                                     (assoc context
+                                                               :on-long-press
+                                                               #(on-long-press message-data
+                                                                               context
+                                                                               keyboard-shown?))
+            response-to                                 (:response-to content)
+            height                                      (rf/sub [:dimensions/window-height])
             {window-width :width
-             window-scale :scale}                 (rn/get-window)
-            message-container-data                {:window-width           window-width
-                                                   :padding-right          20
-                                                   :padding-left           20
-                                                   :avatar-container-width 32
-                                                   :message-margin-left    8}
-            reactions                             (rf/sub [:chats/message-reactions message-id
-                                                           chat-id])
-            six-reactions?                        (-> reactions
-                                                      count
-                                                      (= 6))]
+             window-scale :scale}                       (rn/get-window)
+            message-container-data                      {:window-width           window-width
+                                                         :padding-right          20
+                                                         :padding-left           20
+                                                         :avatar-container-width 32
+                                                         :message-margin-left    8}
+            reactions                                   (rf/sub [:chats/message-reactions message-id
+                                                                 chat-id])
+            six-reactions?                              (-> reactions
+                                                            count
+                                                            (= 6))]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -231,10 +232,14 @@
                [content.text/text-content message-data context]
 
                constants/content-type-emoji
-               [not-implemented/not-implemented [old-message/emoji message-data]]
+               [emoji-message/view
+                {:content         content
+                 :last-in-group?  last-in-group?
+                 :pinned          pinned
+                 :in-pinned-view? (:in-pinned-view? context)}]
 
                constants/content-type-sticker
-               [not-implemented/not-implemented [old-message/sticker message-data]]
+               [sticker-message/view {:url (-> message-data :content :sticker :url)}]
 
                constants/content-type-audio
                [audio/audio-message message-data context]
