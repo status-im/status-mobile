@@ -32,21 +32,38 @@
 
 (re-frame/reg-sub
  :communities/community-chats
- :<- [:communities]
- (fn [communities [_ id]]
-   (get-in communities [id :chats])))
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [chats]}] _]
+   chats))
 
 (re-frame/reg-sub
  :communities/community-color
- :<- [:communities]
- (fn [communities [_ id]]
-   (get-in communities [id :color])))
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [color]}] _]
+   color))
+
+(re-frame/reg-sub
+ :communities/community-outro-message
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [outro-message]}] _]
+   outro-message))
+
+(re-frame/reg-sub
+ :communities/community-joined
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [joined]}] _]
+   joined))
 
 (re-frame/reg-sub
  :communities/community-members
- :<- [:communities]
- (fn [communities [_ id]]
-   (get-in communities [id :members])))
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [members]}] _]
+   members))
 
 (re-frame/reg-sub
  :communities/current-community-members
@@ -159,6 +176,13 @@
  :<- [:communities/my-pending-requests-to-join]
  (fn [requests [_ community-id]]
    (:id (get requests community-id))))
+
+(re-frame/reg-sub
+ :communities/has-pending-request-to-join?
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/my-pending-request-to-join community-id]))
+ (fn [request]
+   (boolean request)))
 
 (re-frame/reg-sub
  :communities/edited-community
@@ -328,6 +352,7 @@
  :<- [:communities/permissions-check]
  (fn [permissions [_ id]]
    (get permissions id)))
+
 
 (re-frame/reg-sub
  :communities/checking-permissions-all-by-id

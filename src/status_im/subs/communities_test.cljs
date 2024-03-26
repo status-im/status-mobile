@@ -345,7 +345,7 @@
                                                        :members {"0x04" {"roles" [1]}}}}
                             :members                 {"0x04" {"roles" [1]}}
                             :can-request-access?     false
-                            :outroMessage            "bla"
+                            :outro-message           "bla"
                             :verified                false}]
     (swap! rf-db/app-db assoc-in [:communities community-id] community)
     (swap! rf-db/app-db assoc-in [:communities/permissions-check community-id] checks)
@@ -439,7 +439,7 @@
                   :token-images          {"ETH" token-image-eth}
                   :name                  "Community super name"
                   :can-request-access?   false
-                  :outroMessage          "bla"
+                  :outro-message         "bla"
                   :verified              false}]
       (swap! rf-db/app-db assoc-in [:communities community-id] community)
       (swap! rf-db/app-db assoc-in [:communities/permissions-check-all community-id] checks)
@@ -475,7 +475,7 @@
                   :token-images          {"ETH" token-image-eth}
                   :name                  "Community super name"
                   :can-request-access?   false
-                  :outroMessage          "bla"
+                  :outro-message         "bla"
                   :verified              false}]
       (swap! rf-db/app-db assoc-in [:communities community-id] community)
       (swap! rf-db/app-db assoc-in [:communities/permissions-check-all community-id] checks)

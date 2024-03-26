@@ -195,55 +195,29 @@
                  :button-type     :grey
                  :on-button-press open-permission-sheet))])]))
 
-(defn view
-  []
-  (let [{id :community-id} (rf/sub [:get-screen-params])
-        {:keys [color joined] outro-message :outroMessage} (rf/sub [:communities/community id])
-
-        highest-role (rf/sub [:communities/highest-role-for-selection id])
-        [unmodified-role _] (rn/use-state highest-role)
-
-        can-edit-addresses? (rf/sub [:communities/can-edit-shared-addresses? id])
-        pending? (boolean (rf/sub [:communities/my-pending-request-to-join id]))
-
-        wallet-accounts (rf/sub [:wallet/accounts-without-watched-accounts])
-        unmodified-addresses-to-reveal (rf/sub [:communities/addresses-to-reveal id])
-        [addresses-to-reveal set-addresses-to-reveal] (rn/use-state unmodified-addresses-to-reveal)
-
-        unmodified-flag-share-all-addresses (rf/sub [:communities/share-all-addresses? id])
-        [flag-share-all-addresses
-         set-flag-share-all-addresses] (rn/use-state unmodified-flag-share-all-addresses)
-
-        identical-choices? (and (= unmodified-addresses-to-reveal addresses-to-reveal)
-                                (= unmodified-flag-share-all-addresses flag-share-all-addresses))
-
-        toggle-flag-share-all-addresses
-        (fn []
-          (let [new-value (not flag-share-all-addresses)]
-            (set-flag-share-all-addresses new-value)
-            (when new-value
-              (set-addresses-to-reveal (set (map :address wallet-accounts))))))
+(defn selection-bottom-actions
+  [id
+   {:keys [flag-share-all-addresses
+           addresses-to-reveal
+           cancel-selection
+           can-edit-addresses?
+           identical-choices?]}]
+  (let [color (rf/sub [:communities/community-color id])
+        outro-message (rf/sub [:communities/community-outro-message id])
+        joined (rf/sub [:communities/community-joined id])
+        checking? (rf/sub [:communities/permissions-check-for-selection-checking? id])
 
         cancel-join-request
         (rn/use-callback
          (fn []
            (rf/dispatch [:show-bottom-sheet
                          {:content (fn [] [cancel-join-request-drawer id])}])))
-
         leave-community
         (rn/use-callback
          (fn []
            (rf/dispatch [:show-bottom-sheet
                          {:content (fn [] [leave-community-drawer id outro-message])}]))
          [outro-message])
-
-        cancel-selection
-        (fn []
-          (rf/dispatch [:communities/check-permissions-to-join-community
-                        id
-                        unmodified-addresses-to-reveal
-                        :based-on-client-selection])
-          (rf/dispatch [:hide-bottom-sheet]))
 
         confirm-changes
         (fn []
@@ -263,7 +237,107 @@
                                               (rf/dispatch [:hide-bottom-sheet]))}]))}])
             (do
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])
-              (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))]
+              (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))
+        pending? (rf/sub [:communities/has-pending-request-to-join? id])
+        highest-role (rf/sub [:communities/highest-role-for-selection id])
+        [unmodified-role _] (rn/use-state highest-role)]
+
+    [quo/bottom-actions
+     (cond-> {:role             (role-keyword highest-role)
+              :description      (if highest-role
+                                  :top
+                                  :top-error)
+              :button-one-props {:customization-color color
+                                 :on-press            confirm-changes
+                                 :disabled?           (or checking?
+                                                          (empty? addresses-to-reveal)
+                                                          (not highest-role)
+                                                          identical-choices?)}}
+       can-edit-addresses?
+       (->
+         (assoc :actions              :one-action
+                :button-one-label     (cond
+                                        (and pending? (not highest-role))
+                                        (i18n/label :t/cancel-request)
+
+                                        (and joined (not highest-role))
+                                        (i18n/label :t/leave-community)
+
+                                        :else
+                                        (i18n/label :t/confirm-changes))
+                :description-top-text (cond
+                                        (and pending? highest-role)
+                                        (i18n/label :t/eligible-to-join-as)
+
+                                        (and joined (= highest-role unmodified-role))
+                                        (i18n/label :t/you-are-a)
+
+                                        (and joined (not= highest-role unmodified-role))
+                                        (i18n/label :t/you-will-be-a))
+                :error-message        (cond
+                                        (and pending? (not highest-role))
+                                        (i18n/label :t/community-join-requirements-not-met)
+
+                                        (and joined (not highest-role))
+                                        (i18n/label :t/membership-requirements-not-met)))
+         (update :button-one-props
+                 merge
+                 (cond (and pending? (not highest-role))
+                       {:type      :danger
+                        :disabled? false
+                        :on-press  cancel-join-request}
+
+                       (and joined (not highest-role))
+                       {:type      :danger
+                        :disabled? false
+                        :on-press  leave-community})))
+
+       (not can-edit-addresses?)
+       (assoc :actions          :two-actions
+              :button-one-label (i18n/label :t/confirm-changes)
+              :button-two-label (i18n/label :t/cancel)
+              :button-two-props {:type     :grey
+                                 :on-press cancel-selection}
+              :error-message    (cond
+                                  (empty? addresses-to-reveal)
+                                  (i18n/label :t/no-addresses-selected)
+
+                                  (not highest-role)
+                                  (i18n/label :t/addresses-dont-contain-tokens-needed))))]))
+
+(defn view
+  []
+  (let [{id :community-id} (rf/sub [:get-screen-params])
+
+        color (rf/sub [:communities/community-color id])
+
+        can-edit-addresses? (rf/sub [:communities/can-edit-shared-addresses? id])
+
+        wallet-accounts (rf/sub [:wallet/accounts-without-watched-accounts])
+        unmodified-addresses-to-reveal (rf/sub [:communities/addresses-to-reveal id])
+        [addresses-to-reveal set-addresses-to-reveal] (rn/use-state unmodified-addresses-to-reveal)
+
+        unmodified-flag-share-all-addresses (rf/sub [:communities/share-all-addresses? id])
+        [flag-share-all-addresses
+         set-flag-share-all-addresses] (rn/use-state unmodified-flag-share-all-addresses)
+
+        identical-choices? (and (= unmodified-addresses-to-reveal addresses-to-reveal)
+                                (= unmodified-flag-share-all-addresses flag-share-all-addresses))
+
+        cancel-selection
+        (fn []
+          (rf/dispatch [:communities/check-permissions-to-join-community
+                        id
+                        unmodified-addresses-to-reveal
+                        :based-on-client-selection])
+          (rf/dispatch [:hide-bottom-sheet]))
+
+        toggle-flag-share-all-addresses
+        (fn []
+          (let [new-value (not flag-share-all-addresses)]
+            (set-flag-share-all-addresses new-value)
+            (when new-value
+              (set-addresses-to-reveal (set (map :address wallet-accounts))))))]
 
     (rn/use-mount
      (fn []
@@ -274,7 +348,6 @@
      (fn []
        (rf/dispatch [:communities/check-permissions-to-join-during-selection id addresses-to-reveal]))
      [id addresses-to-reveal])
-
     [:<>
      [page-top
       {:community-id        id
@@ -299,64 +372,14 @@
        :key-fn                  :address
        :data                    wallet-accounts}]
 
-     [quo/bottom-actions
-      (cond-> {:role             (role-keyword highest-role)
-               :description      (if highest-role
-                                   :top
-                                   :top-error)
-               :button-one-props {:customization-color color
-                                  :on-press            confirm-changes
-                                  :disabled?           (or (empty? addresses-to-reveal)
-                                                           (not highest-role)
-                                                           identical-choices?)}}
-        can-edit-addresses?
-        (->
-          (assoc :actions              :one-action
-                 :button-one-label     (cond
-                                         (and pending? (not highest-role))
-                                         (i18n/label :t/cancel-request)
-
-                                         (and joined (not highest-role))
-                                         (i18n/label :t/leave-community)
-
-                                         :else
-                                         (i18n/label :t/confirm-changes))
-                 :description-top-text (cond
-                                         (and pending? highest-role)
-                                         (i18n/label :t/eligible-to-join-as)
-
-                                         (and joined (= highest-role unmodified-role))
-                                         (i18n/label :t/you-are-a)
-
-                                         (and joined (not= highest-role unmodified-role))
-                                         (i18n/label :t/you-will-be-a))
-                 :error-message        (cond
-                                         (and pending? (not highest-role))
-                                         (i18n/label :t/community-join-requirements-not-met)
-
-                                         (and joined (not highest-role))
-                                         (i18n/label :t/membership-requirements-not-met)))
-          (update :button-one-props
-                  merge
-                  (cond (and pending? (not highest-role))
-                        {:type      :danger
-                         :disabled? false
-                         :on-press  cancel-join-request}
-
-                        (and joined (not highest-role))
-                        {:type      :danger
-                         :disabled? false
-                         :on-press  leave-community})))
-
-        (not can-edit-addresses?)
-        (assoc :actions          :two-actions
-               :button-one-label (i18n/label :t/confirm-changes)
-               :button-two-label (i18n/label :t/cancel)
-               :button-two-props {:type     :grey
-                                  :on-press cancel-selection}
-               :error-message    (cond
-                                   (empty? addresses-to-reveal)
-                                   (i18n/label :t/no-addresses-selected)
-
-                                   (not highest-role)
-                                   (i18n/label :t/addresses-dont-contain-tokens-needed))))]]))
+     [selection-bottom-actions id
+      {:flag-share-all-addresses
+       flag-share-all-addresses
+       :addresses-to-reveal
+       addresses-to-reveal
+       :cancel-selection
+       cancel-selection
+       :can-edit-addresses?
+       can-edit-addresses?
+       :identical-choices?
+       identical-choices?}]]))
