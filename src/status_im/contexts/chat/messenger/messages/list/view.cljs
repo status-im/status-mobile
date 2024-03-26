@@ -231,11 +231,6 @@
                                     (colors/resolve-color customization-color theme 20)
                                     (colors/resolve-color customization-color theme 40)
                                     theme)
-        border-radius              (reanimated/interpolate
-                                    distance-from-list-top
-                                    [0 messages.constants/header-container-top-margin]
-                                    [20 0]
-                                    messages.constants/default-extrapolation-option)
         bottom                     (reanimated/interpolate
                                     distance-from-list-top
                                     [0 messages.constants/header-container-top-margin]
@@ -251,7 +246,7 @@
     [:<>
      [reanimated/view
       {:style (style/background-container background-color background-opacity top-margin)}]
-     [reanimated/view {:style (style/header-bottom-part border-radius bottom theme top-margin)}
+     [reanimated/view {:style (style/header-bottom-part bottom theme top-margin)}
       [list-footer-avatar
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name

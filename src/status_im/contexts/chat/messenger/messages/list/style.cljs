@@ -20,13 +20,12 @@
     :height           (+ top-margin messages.constants/header-container-radius)}))
 
 (defn header-bottom-part
-  [border-radius bottom theme top-margin]
+  [bottom theme top-margin]
   (reanimated/apply-animations-to-style
-   {:border-top-left-radius  border-radius
-    :border-top-right-radius border-radius
-    :bottom                  bottom}
+   {:bottom bottom}
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
+    :border-radius      20
     :margin-top         top-margin}))
 
 (defn header-image
