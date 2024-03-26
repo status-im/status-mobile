@@ -25,7 +25,7 @@
         :or   {size                :size-20
                customization-color :blue
                picture             nil
-               icon-name           :i/group}}]
+               icon-name           :i/members}}]
     (let [container-size (get-in sizes [size :container])
           icon-size      (get-in sizes [size :icon])]
       [rn/view

@@ -289,19 +289,23 @@
      checks                {:checking? checking-permissions?
                             :check
                             {:satisfied true
-                             :highestRole {:type     constants/community-token-permission-become-admin
-                                           :criteria [{:tokenRequirement [{:satisfied true
-                                                                           :criteria {:contract_addresses
-                                                                                      {:5 "0x0"}
-                                                                                      :type 1
-                                                                                      :symbol "DAI"
-                                                                                      :amount "5.0"
-                                                                                      :decimals 18}}]}
-                                                      {:tokenRequirement [{:satisfied false
-                                                                           :criteria  {:type     1
-                                                                                       :symbol   "ETH"
-                                                                                       :amount   "0.002"
-                                                                                       :decimals 18}}]}]}
+                             :highestRole
+                             {:type     constants/community-token-permission-become-admin
+                              :criteria [{:tokenRequirement [{:satisfied true
+                                                              :criteria  {:contract_addresses
+                                                                          {:5 "0x0"}
+                                                                          :type 1
+                                                                          :symbol "DAI"
+                                                                          :amountInWei
+                                                                          "5000000000000000000"
+                                                                          :amount "5.0"
+                                                                          :decimals 18}}]}
+                                         {:tokenRequirement [{:satisfied false
+                                                              :criteria  {:type        1
+                                                                          :symbol      "ETH"
+                                                                          :amountInWei "2000000000000000"
+                                                                          :amount      "0.002"
+                                                                          :decimals    18}}]}]}
 
                              :permissions
                              {:a3dd5b6b-d93b-452c-b22a-09a8f42ec566 {:criteria [true false
@@ -387,3 +391,94 @@
     (is (match? {"DOGE" "data:image/jpeg;base64,/9j/2wCEAAYEBQYFBAYGBQYH"
                  "BTC"  "data:image/jpeg;base64,/9j/2wCEAAYEBQYFBAYGBQYH"}
                 (rf/sub [sub-name community-id])))))
+
+(h/deftest-sub :community/token-permissions
+  [sub-name]
+  (testing
+    "with visible permissions"
+    (let
+      [checking? false
+       token-image-eth "data:image/jpeg;base64,/9j/2w"
+       checks
+       {:checking? checking?
+        :check
+        {:roles
+         [{:type      1
+           :satisfied true
+           :criteria  [{:roles            1
+                        :tokenRequirement [{:satisfied true
+                                            :criteria  {:contract_addresses
+                                                        {:421614
+                                                         0x0000000000000000000000000000000000000000
+                                                         :11155111
+                                                         0x0000000000000000000000000000000000000000
+                                                         :11155420
+                                                         0x0000000000000000000000000000000000000000}
+                                                        :type 1
+                                                        :symbol "ETH"
+                                                        :amount 1
+                                                        :decimals 18
+                                                        :amountInWei 1000000000000000000}}]
+                        :criteria         [true]}]}
+          {:type      2
+           :satisfied false
+           :criteria  [{:roles            2
+                        :tokenRequirement [{:satisfied false
+                                            :criteria  {:contract_addresses
+                                                        {:11155111
+                                                         0x3e622317f8c93f7328350cf0b56d9ed4c620c5d6}
+                                                        :type 1
+                                                        :symbol "DAI"
+                                                        :amount 10
+                                                        :decimals 18
+                                                        :amountInWei 10000000000000000000}}]
+                        :criteria         [false]}]}]}
+       }
+       community {:id                    community-id
+                  :checking-permissions? checking?
+                  :token-images          {"ETH" token-image-eth}
+                  :name                  "Community super name"
+                  :can-request-access?   false
+                  :outroMessage          "bla"
+                  :verified              false}]
+      (swap! rf-db/app-db assoc-in [:communities community-id] community)
+      (swap! rf-db/app-db assoc-in [:communities/permissions-check-all community-id] checks)
+      (is
+       (match? [{:role 1
+                 :satisfied? true
+                 :tokens
+                 [[{:symbol      "ETH"
+                    :sufficient? true
+                    :loading?    false
+                    :amount      "1"
+                    :img-src     token-image-eth}]]}
+                {:role       2
+                 :satisfied? false
+                 :tokens     [[{:symbol      "DAI"
+                                :sufficient? false
+                                :loading?    false
+                                :amount      "10"
+                                :img-src     nil}]]}]
+               (rf/sub [sub-name community-id])))))
+  (testing
+    "without any visible permissions"
+    (let
+      [checking? false
+       token-image-eth "data:image/jpeg;base64,/9j/2w"
+       checks
+       {:checking? checking?
+        :check
+        {:roles []}
+       }
+       community {:id                    community-id
+                  :checking-permissions? checking?
+                  :token-images          {"ETH" token-image-eth}
+                  :name                  "Community super name"
+                  :can-request-access?   false
+                  :outroMessage          "bla"
+                  :verified              false}]
+      (swap! rf-db/app-db assoc-in [:communities community-id] community)
+      (swap! rf-db/app-db assoc-in [:communities/permissions-check-all community-id] checks)
+      (is
+       (match? []
+               (rf/sub [sub-name community-id]))))))

@@ -62,23 +62,26 @@
   ([server username password]
    (save-credentials server username password identity))
   ([server username password callback]
-   (-> (.setInternetCredentials ^js react-native-keychain
-                                (string/lower-case server)
-                                username
-                                password
-                                keychain-secure-hardware
-                                keychain-restricted-availability)
-       (.then callback))))
+   (when-not (empty? server)
+     (-> (.setInternetCredentials ^js react-native-keychain
+                                  (string/lower-case server)
+                                  username
+                                  password
+                                  keychain-secure-hardware
+                                  keychain-restricted-availability)
+         (.then callback)))))
 
 (defn get-credentials
   "Gets the credentials for a specified server from the Keychain"
   ([server]
    (get-credentials server identity))
   ([server callback]
-   (-> (.getInternetCredentials ^js react-native-keychain (string/lower-case server))
-       (.then callback))))
+   (when-not (empty? server)
+     (-> (.getInternetCredentials ^js react-native-keychain (string/lower-case server))
+         (.then callback)))))
 
 (defn reset-credentials
   [server]
-  (-> (.resetInternetCredentials ^js react-native-keychain (string/lower-case server))
-      (.then #(when-not % (log/error (str "Error while clearing saved password."))))))
+  (when-not (empty? server)
+    (-> (.resetInternetCredentials ^js react-native-keychain (string/lower-case server))
+        (.then #(when-not % (log/error (str "Error while clearing saved password.")))))))

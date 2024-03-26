@@ -148,7 +148,7 @@
           :on-press            (fn []
                                  (if one-contact-selected?
                                    (rf/dispatch [:chat.ui/start-chat public-key])
-                                   (rf/dispatch [:navigate-to :new-group])))}
+                                   (rf/dispatch [:open-modal :group-create])))}
          (if one-contact-selected?
            (i18n/label :t/chat-with {:selected-user primary-name})
            (i18n/label :t/setup-group-chat))]])]))

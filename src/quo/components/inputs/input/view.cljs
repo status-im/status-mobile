@@ -57,14 +57,19 @@
   "Custom properties that must be removed from properties map passed to InputText."
   [:type :blur? :error? :right-icon :left-icon :disabled? :small? :button
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur
-   :container-style])
+   :container-style :ref])
 
 (defn- base-input
   [{:keys [blur? error? right-icon left-icon disabled? small? button
            label char-limit multiline? clearable? on-focus on-blur container-style
-           on-change-text on-char-limit-reach weight default-value]
+           on-change-text on-char-limit-reach weight default-value on-clear]
     :as   props}]
   (let [theme                  (quo.theme/use-theme-value)
+        ref                    (rn/use-ref-atom nil)
+        on-ref                 (rn/use-callback (fn [value]
+                                                  (when (:ref props)
+                                                    ((:ref props) value))
+                                                  (reset! ref value)))
         [status set-status]    (rn/use-state :default)
         internal-on-focus      (rn/use-callback #(set-status :focus))
         internal-on-blur       (rn/use-callback #(set-status :default))
@@ -93,6 +98,15 @@
                                  :else     status)
         colors-by-status       (style/status-colors status-kw blur? theme)
         variant-colors         (style/variants-colors blur? theme)
+        clear-on-press         (rn/use-callback (fn []
+                                                  (.clear ^js @ref)
+                                                  (when on-clear (on-clear)))
+                                                [on-clear])
+        right-icon             (or right-icon
+                                   (when clearable?
+                                     {:style-fn  style/clear-icon
+                                      :icon-name :i/clear
+                                      :on-press  clear-on-press}))
         clean-props            (apply dissoc props custom-props)]
     [rn/view {:style container-style}
      (when (or label char-limit)
@@ -108,7 +122,8 @@
           :small?         small?
           :icon-name      icon-name}])
       [rn/text-input
-       (cond-> {:style                  (style/input colors-by-status small? multiple-lines? weight)
+       (cond-> {:ref                    on-ref
+                :style                  (style/input colors-by-status small? multiple-lines? weight)
                 :accessibility-label    :input
                 :placeholder-text-color (:placeholder colors-by-status)
                 :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
@@ -147,7 +162,10 @@
   [{:keys [default-shown?]
     :or   {default-shown? false}
     :as   props}]
-  (let [[password-shown? set-password-shown] (rn/use-state default-shown?)]
+  (let [[password-shown?
+         set-password-shown] (rn/use-state default-shown?)
+        on-press             (rn/use-callback #(set-password-shown (not password-shown?))
+                                              [password-shown?])]
     [base-input
      (assoc props
             :accessibility-label :password-input
@@ -156,7 +174,7 @@
             :secure-text-entry   (not password-shown?)
             :right-icon          {:style-fn  style/password-icon
                                   :icon-name (if password-shown? :i/hide-password :i/reveal)
-                                  :on-press  #(set-password-shown (not password-shown?))})]))
+                                  :on-press  on-press})]))
 
 (defn input
   "This input supports the following properties:
@@ -182,15 +200,11 @@
   - :on-change-text
   ...
   "
-  [{:keys [type clearable? on-clear icon-name]
+  [{:keys [type icon-name]
     :or   {type :text}
     :as   props}]
   (let [base-props (cond-> props
-                     icon-name  (assoc-in [:left-icon :icon-name] icon-name)
-                     clearable? (assoc :right-icon
-                                       {:style-fn  style/clear-icon
-                                        :icon-name :i/clear
-                                        :on-press  #(when on-clear (on-clear))}))]
+                     icon-name (assoc-in [:left-icon :icon-name] icon-name))]
     (if (= type :password)
       [password-input base-props]
       [base-input base-props])))

@@ -191,7 +191,7 @@
     "no-addresses-selected": "At least 1 address must be shared with community",
     "confirm-changes": "Confirm changes",
     "airdrop-addresses": "Address for airdrops",
-    "join-as-a": "Join as a {{role}}",
+    "join-as": "Join as {{role}}",
     "all-addresses": "All addresses",
     "for-airdrops": "For airdrops",
     "members-label": "Members",
@@ -312,6 +312,7 @@
     "create-a-pin": "Create a 6-digit passcode",
     "create-a-puk": "Create a 12-digit PUK",
     "create-group-chat": "Create group chat",
+    "name-your-group": "Name your group",
     "create-multiaccount": "Generate keys",
     "create-new-key": "Get new keys",
     "create-pin": "Create 6-digit passcode",
@@ -449,8 +450,8 @@
     "decline": "Decline",
     "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",
     "default": "Default",
-    "default-account-placeholder": "Account {{number}}",
-    "default-watched-address-placeholder": "Watched address {{number}}",
+    "default-account-placeholder": "Account Name",
+    "default-watched-address-placeholder": "Watched address",
     "delete": "Delete",
     "delete-and-leave-group": "Delete and leave group",
     "delete-bootnode": "Delete bootnode",
@@ -2297,6 +2298,7 @@
     "you-eligible-to-join-as": "You’re eligible to join as {{role}}",
     "eligible-to-join-as": "Eligible to join as",
     "you-not-eligible-to-join": "You’re not eligible to join",
+    "you-not-eligible-to-join-as": "You’re not eligible to join as {{role}}",
     "you-hold-number-of-hold-tokens-of-these": "You hold {{number-of-hold-tokens}} of these:",
     "addresses-dont-contain-tokens-needed": "These addresses don’t contain tokens needed to join",
     "you-hodl": "You hodl:",
@@ -2410,6 +2412,7 @@
     "no-other-accounts": "No other accounts",
     "here-is-a-cat-in-a-box-instead": "Here’s a cat in a box instead",
     "accounts-count": "{{count}} accounts",
+    "n-m-people": "{{n}}/{{m}} people",
     "enter-eth": "Enter any ETH address or ENS name.",
     "eth-or-ens": "ETH address or ENS name.",
     "type-pairing-code": "Type or paste pairing code",
@@ -2555,5 +2558,9 @@
     "ledger-live": "Ledger live",
     "keep-key": "KeepKey",
     "type-your-path": "Type your own derivation path",
-    "default-format": "Default format"
+    "default-format": "Default format",
+    "address-count": {
+        "one": "1 address",
+        "other": "{{count}} addresses"
+    }
 }

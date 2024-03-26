@@ -5,8 +5,8 @@ pipeline {
   agent { label 'linux' }
 
   triggers {
-    // Nightly at 2am
-    cron 'H 2 * * *'
+    // Nightly at 0am
+    cron 'H 0 * * *'
   }
 
   parameters {

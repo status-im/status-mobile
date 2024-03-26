@@ -31,7 +31,7 @@
         :fiat-value    fiat-formatted
         :on-press      #(rf/dispatch [:wallet/select-bridge-network
                                       {:network-chain-id chain-id
-                                       :stack-id         :wallet-bridge}])}])))
+                                       :stack-id         :screen/wallet.bridge-to}])}])))
 
 (defn- view-internal
   []

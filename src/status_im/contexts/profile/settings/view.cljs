@@ -9,7 +9,6 @@
             [status-im.contexts.profile.settings.header.view :as settings.header]
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
-            [status-im.contexts.shell.jump-to.constants :as jump-to.constants]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -29,9 +28,9 @@
     (reanimated/set-shared-value scroll-y current-y)))
 
 (defn- footer
-  [logout-press]
+  [{:keys [bottom]} logout-press]
   [rf/delay-render
-   [rn/view {:style style/footer-container}
+   [rn/view {:style (style/footer-container bottom)}
     [quo/logout-button {:on-press logout-press}]]])
 
 (defn- get-item-layout
@@ -65,19 +64,19 @@
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-item-view
        :get-item-layout                 get-item-layout
-       :footer                          [footer logout-press]
+       :footer                          [footer insets logout-press]
        :scroll-event-throttle           16
        :on-scroll                       #(scroll-handler % scroll-y)
        :bounces                         false}]
      [quo/floating-shell-button
-      {:jump-to
+      {:key :shell
+       :jump-to
        {:on-press            (fn []
                                (rf/dispatch [:navigate-back])
                                (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to] 500))
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
-      {:position :absolute
-       :bottom   jump-to.constants/floating-shell-button-height}]]))
+      (style/floating-shell-button-style insets)]]))
 
 (defn- internal-view
   [props]
