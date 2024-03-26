@@ -122,7 +122,9 @@
   []
   (let [{:keys [public-key ens state msg]} (rf/sub [:contacts/new-identity])
         customization-color                (rf/sub [:profile/customization-color])]
-    [rn/keyboard-avoiding-view {:style {:flex 1}}
+    [rn/keyboard-avoiding-view
+     {:style                    {:flex 1}
+      :keyboard-vertical-offset 12}
      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
       [rn/view {:style (style/container-outer)}
        [rn/view {:style style/container-inner}
