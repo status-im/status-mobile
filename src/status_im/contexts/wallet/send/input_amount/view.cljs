@@ -209,6 +209,7 @@
             best-routes               (when suggested-routes (or (:best suggested-routes) []))
             route                     (rf/sub [:wallet/wallet-send-route])
             to-address                (rf/sub [:wallet/wallet-send-to-address])
+            disabled-from-chain-ids   [11155420] ;;(rf/sub [:wallet/wallet-disabled-from-chain-ids])
             on-confirm                (or default-on-confirm handle-on-confirm)
             crypto-decimals           (or default-crypto-decimals
                                           (utils/get-crypto-decimals-count token))
@@ -280,15 +281,16 @@
                                    :limit-fiat   fiat-limit
                                    :limit-crypto crypto-limit})}]
          [routes/view
-          {:amount                amount-text
-           :routes                best-routes
-           :token                 token
-           :input-value           @input-value
-           :fetch-routes          #(fetch-routes % (current-limit))
-           :on-press-from-network (fn [network amount]
-                                    (println "FROM NETWORK PRESSED: " network amount))
-           :on-press-to-network   (fn [network amount]
-                                    (println "TO NETWORK PRESSED: " network amount))}]
+          {:amount                 amount-text
+           :routes                 best-routes
+           :token                  token
+           :input-value            @input-value
+           :fetch-routes           #(fetch-routes % (current-limit))
+           :disabled-from-networks disabled-from-chain-ids
+           :on-press-from-network  (fn [network amount]
+                                     (println "FROM NETWORK PRESSED: " network amount))
+           :on-press-to-network    (fn [network amount]
+                                     (println "TO NETWORK PRESSED: " network amount))}]
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?

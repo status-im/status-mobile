@@ -80,6 +80,11 @@
  :-> :amount)
 
 (rf/reg-sub
+ :wallet/wallet-disabled-from-chain-ids
+ :<- [:wallet/wallet-send]
+ :-> :disabled-from-chain-ids)
+
+(rf/reg-sub
  :wallet/wallet-send-loading-suggested-routes?
  :<- [:wallet/wallet-send]
  :-> :loading-suggested-routes?)

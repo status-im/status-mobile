@@ -24,8 +24,9 @@
    :margin-left margin-left})
 
 (def network-link
-  {:right   6
-   :z-index 1})
+  {:margin-horizontal -4.5
+   :z-index           1
+   :flex              1})
 
 (def empty-container
   {:flex-grow       1
@@ -34,8 +35,7 @@
 
 (def add-network
   {:margin-top 8
-   :align-self :flex-end
-   :right      12})
+   :align-self :flex-end})
 
 (defn warning-container
   [color theme]
