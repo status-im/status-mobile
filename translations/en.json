@@ -450,8 +450,8 @@
     "decline": "Decline",
     "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",
     "default": "Default",
-    "default-account-placeholder": "Account {{number}}",
-    "default-watched-address-placeholder": "Watched address {{number}}",
+    "default-account-placeholder": "Account Name",
+    "default-watched-address-placeholder": "Watched address",
     "delete": "Delete",
     "delete-and-leave-group": "Delete and leave group",
     "delete-bootnode": "Delete bootnode",
@@ -2558,5 +2558,9 @@
     "ledger-live": "Ledger live",
     "keep-key": "KeepKey",
     "type-your-path": "Type your own derivation path",
-    "default-format": "Default format"
+    "default-format": "Default format",
+    "address-count": {
+        "one": "1 address",
+        "other": "{{count}} addresses"
+    }
 }
