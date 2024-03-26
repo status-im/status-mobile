@@ -3,7 +3,7 @@
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
 
-(def commmunity-keys-renamed
+(def community-keys-renamed
   {:requestedAccessAt           :requested-access-at
    :fileSize                    :file-size
    :communityTokensMetadata     :community-tokens-metadata
@@ -35,7 +35,7 @@
   [k]
   (let [s                  (name k)
         starts-with-digit? (re-matches #"^\d.*" s)
-        existing-rename    (k commmunity-keys-renamed)]
+        existing-rename    (k community-keys-renamed)]
     (cond starts-with-digit? s
           existing-rename    existing-rename
           :else              (keyword s))))
