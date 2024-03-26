@@ -115,8 +115,9 @@
                                 (on-close))
                               (rf/dispatch [:hide-bottom-sheet])
                               true))
-    [rn/view {:style {:flex 1}
-              :on-layout handle-layout-height}
+    [rn/view
+     {:style     {:flex 1}
+      :on-layout handle-layout-height}
      ;; backdrop
      [rn/pressable
       {:on-press #(rf/dispatch [:hide-bottom-sheet])
