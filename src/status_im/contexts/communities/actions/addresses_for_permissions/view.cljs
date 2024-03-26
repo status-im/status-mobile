@@ -311,42 +311,42 @@
                                                            identical-choices?)}}
         can-edit-addresses?
         (->
-         (assoc :actions              :one-action
-                :button-one-label     (cond
-                                        (and pending? (not highest-role))
-                                        (i18n/label :t/cancel-request)
+          (assoc :actions              :one-action
+                 :button-one-label     (cond
+                                         (and pending? (not highest-role))
+                                         (i18n/label :t/cancel-request)
 
-                                        (and joined (not highest-role))
-                                        (i18n/label :t/leave-community)
+                                         (and joined (not highest-role))
+                                         (i18n/label :t/leave-community)
 
-                                        :else
-                                        (i18n/label :t/confirm-changes))
-                :description-top-text (cond
-                                        (and pending? highest-role)
-                                        (i18n/label :t/eligible-to-join-as)
+                                         :else
+                                         (i18n/label :t/confirm-changes))
+                 :description-top-text (cond
+                                         (and pending? highest-role)
+                                         (i18n/label :t/eligible-to-join-as)
 
-                                        (and joined (= highest-role unmodified-role))
-                                        (i18n/label :t/you-are-a)
+                                         (and joined (= highest-role unmodified-role))
+                                         (i18n/label :t/you-are-a)
 
-                                        (and joined (not= highest-role unmodified-role))
-                                        (i18n/label :t/you-will-be-a))
-                :error-message        (cond
-                                        (and pending? (not highest-role))
-                                        (i18n/label :t/community-join-requirements-not-met)
+                                         (and joined (not= highest-role unmodified-role))
+                                         (i18n/label :t/you-will-be-a))
+                 :error-message        (cond
+                                         (and pending? (not highest-role))
+                                         (i18n/label :t/community-join-requirements-not-met)
 
-                                        (and joined (not highest-role))
-                                        (i18n/label :t/membership-requirements-not-met)))
-         (update :button-one-props
-                 merge
-                 (cond (and pending? (not highest-role))
-                       {:type      :danger
-                        :disabled? false
-                        :on-press  cancel-join-request}
+                                         (and joined (not highest-role))
+                                         (i18n/label :t/membership-requirements-not-met)))
+          (update :button-one-props
+                  merge
+                  (cond (and pending? (not highest-role))
+                        {:type      :danger
+                         :disabled? false
+                         :on-press  cancel-join-request}
 
-                       (and joined (not highest-role))
-                       {:type      :danger
-                        :disabled? false
-                        :on-press  leave-community})))
+                        (and joined (not highest-role))
+                        {:type      :danger
+                         :disabled? false
+                         :on-press  leave-community})))
 
         (not can-edit-addresses?)
         (assoc :actions          :two-actions
