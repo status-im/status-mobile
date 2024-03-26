@@ -185,7 +185,7 @@
  :my-profile/recovery
  :<- [:my-profile/seed]
  (fn [seed]
-   (or seed {:step :intro})))
+   (or seed {:step :screen/onboarding.intro})))
 
 (re-frame/reg-sub
  :bottom-sheet-old

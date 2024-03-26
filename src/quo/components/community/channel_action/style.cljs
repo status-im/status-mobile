@@ -13,6 +13,7 @@
   [{:keys [color pressed? theme]}]
   {:height           102
    :padding          12
+   :padding-bottom   10
    :border-radius    16
    :background-color (colors/resolve-color color theme (if pressed? 20 10))
    :justify-content  :space-between})
@@ -20,4 +21,5 @@
 (def channel-action-row
   {:flex-direction  :row
    :justify-content :space-between
-   :align-items     :center})
+   :align-items     :center
+   :padding-right   2})

@@ -179,7 +179,7 @@
   (p/let [masked-seed-phrase (security/mask-data (:seed-phrase constants/recovery-account))
           [mnemonic key-uid] (validate-mnemonic masked-seed-phrase)]
     (rf/dispatch [:onboarding/seed-phrase-validated (security/mask-data mnemonic) key-uid])
-    (rf/dispatch [:pop-to-root :profiles])
+    (rf/dispatch [:pop-to-root :screen/profile.profiles])
     (rf/dispatch [:profile/profile-selected key-uid])
     (recover-and-login mnemonic)))
 

@@ -71,7 +71,7 @@
 
                 (cond
                   pairing-completed?
-                  [[:set-root :syncing-results]]
+                  [[:set-root :screen/onboarding.syncing-results]]
 
                   (get db :onboarding/new-account?)
                   [[:dispatch [:onboarding/finalize-setup]]]

@@ -31,7 +31,7 @@
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
   {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
-   :fx [[:dispatch [:navigate-back-to :wallet-create-account]]]})
+   :fx [[:dispatch [:navigate-back-to :screen/wallet.create-account]]]})
 
 (rf/reg-event-fx :wallet/new-keypair-created new-keypair-created)
 

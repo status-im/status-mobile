@@ -149,6 +149,7 @@
 (reg-root-key-sub :contract-communities :contract-communities)
 (reg-root-key-sub :communities/permissioned-balances :communities/permissioned-balances)
 (reg-root-key-sub :communities/permissions-check :communities/permissions-check)
+(reg-root-key-sub :communities/permissions-check-all :communities/permissions-check-all)
 (reg-root-key-sub :communities/all-addresses-to-reveal :communities/all-addresses-to-reveal)
 (reg-root-key-sub :communities/all-airdrop-addresses :communities/all-airdrop-addresses)
 (reg-root-key-sub :communities/selected-share-all-addresses :communities/selected-share-all-addresses)

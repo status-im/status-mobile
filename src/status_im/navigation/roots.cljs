@@ -10,17 +10,17 @@
 ;;    [:db :profile/profile :appearance] will be used (for mulitaccounts)
 ;; 3). Fallback theme - Dark
 (def themes
-  {:intro       constants/theme-type-dark
-   :profiles    constants/theme-type-dark
-   :shell-stack nil})
+  {:screen/onboarding.intro constants/theme-type-dark
+   :screen/profile.profiles constants/theme-type-dark
+   :shell-stack             nil})
 
 (defn roots-internal
   []
-  {:intro
+  {:screen/onboarding.intro
    {:root
-    {:stack {:id       :intro
-             :children [{:component {:name    :intro
-                                     :id      :intro
+    {:stack {:id       :screen/onboarding.intro
+             :children [{:component {:name    :screen/onboarding.intro
+                                     :id      :screen/onboarding.intro
                                      :options (options/dark-root-options)}}]}}}
    :shell-stack
    {:root
@@ -29,25 +29,25 @@
                                      :id      :shell-stack
                                      :options (options/root-options
                                                {:nav-bar-color colors/neutral-100})}}]}}}
-   :profiles
+   :screen/profile.profiles
    {:root
-    {:stack {:id       :profiles
-             :children [{:component {:name    :profiles
-                                     :id      :profiles
+    {:stack {:id       :screen/profile.profiles
+             :children [{:component {:name    :screen/profile.profiles
+                                     :id      :screen/profile.profiles
                                      :options (options/dark-root-options)}}]}}}
 
-   :enable-notifications
-   {:root {:stack {:children [{:component {:name    :enable-notifications
-                                           :id      :enable-notifications
+   :screen/onboarding.enable-notifications
+   {:root {:stack {:children [{:component {:name    :screen/onboarding.enable-notifications
+                                           :id      :screen/onboarding.enable-notifications
                                            :options (options/dark-root-options)}}]}}}
 
-   :welcome
-   {:root {:stack {:children [{:component {:name    :welcome
-                                           :id      :welcome
+   :screen/onboarding.welcome
+   {:root {:stack {:children [{:component {:name    :screen/onboarding.welcome
+                                           :id      :screen/onboarding.welcome
                                            :options (options/dark-root-options)}}]}}}
-   :syncing-results
-   {:root {:stack {:children [{:component {:name    :syncing-results
-                                           :id      :syncing-results
+   :screen/onboarding.syncing-results
+   {:root {:stack {:children [{:component {:name    :screen/onboarding.syncing-results
+                                           :id      :screen/onboarding.syncing-results
                                            :options (options/dark-root-options)}}]}}}})
 
 (defn old-roots

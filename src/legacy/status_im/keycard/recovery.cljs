@@ -74,7 +74,8 @@
                  (assoc :recovered-account? true))
              :keycard/check-nfc-enabled nil}
             (bottom-sheet/hide-bottom-sheet-old)
-            (navigation/navigate-to-within-stack [:keycard-recovery-intro :new-to-status])))
+            (navigation/navigate-to-within-stack [:keycard-recovery-intro
+                                                  :screen/onboarding.new-to-status])))
 
 (rf/defn access-key-pressed
   {:events [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]}
@@ -127,7 +128,7 @@
                          :multiaccount-whisper-public-key)}
             (navigation/navigate-to (if platform/android?
                                       :notifications-settings
-                                      :welcome)
+                                      :screen/onboarding.welcome)
                                     nil)))
 
 (rf/defn intro-wizard

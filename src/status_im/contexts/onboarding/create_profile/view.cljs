@@ -153,7 +153,7 @@
                                                            @full-name
                                                            (i18n/label :t/your-name))
                                     :customization-color @custom-color}
-              :title-input-props   {:default-value  @full-name
+              :title-input-props   {:default-value  display-name
                                     :auto-focus     true
                                     :max-length     c/profile-name-max-length
                                     :on-change-text on-change-text}}]]

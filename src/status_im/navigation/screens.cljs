@@ -5,6 +5,7 @@
     [status-im.common.emoji-picker.view :as emoji-picker]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
+    [status-im.contexts.chat.group-create.view :as group-create]
     [status-im.contexts.chat.group-details.view :as group-details]
     [status-im.contexts.chat.home.add-new-contact.scan.scan-profile-qr-page :as scan-profile-qr-page]
     [status-im.contexts.chat.home.add-new-contact.views :as add-new-contact]
@@ -116,6 +117,11 @@
      :options   {:sheet? true}
      :component group-details/add-manage-members}
 
+    {:name      :group-create
+     :options   {:sheet?           true
+                 :skip-background? true}
+     :component group-create/view}
+
     {:name      :community-requests-to-join
      :options   {:sheet? true}
      :component join-menu/view}
@@ -186,12 +192,12 @@
      :component settings-setup-syncing/view}
 
     ;; Onboarding
-    {:name      :intro
+    {:name      :screen/onboarding.intro
      :options   {:theme :dark}
      :on-focus  [:onboarding/overlay-dismiss]
      :component intro/view}
 
-    {:name      :profiles
+    {:name      :screen/profile.profiles
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
@@ -221,7 +227,7 @@
      :options   options/transparent-screen-options
      :component share-contact/view}
 
-    {:name      :new-to-status
+    {:name      :screen/onboarding.new-to-status
      :options   {:theme                  :dark
                  :layout                 options/onboarding-transparent-layout
                  :animations             (merge
@@ -231,14 +237,14 @@
                  :modalPresentationStyle :overCurrentContext}
      :component new-to-status/new-to-status}
 
-    {:name      :create-profile
+    {:name      :screen/onboarding.create-profile
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
      :component create-profile/create-profile}
 
-    {:name      :create-profile-password
+    {:name      :screen/onboarding.create-profile-password
      :options   {:theme      :dark
                  :insets     {:top false}
                  :layout     options/onboarding-transparent-layout
@@ -246,7 +252,7 @@
                  :popGesture false}
      :component create-password/create-password}
 
-    {:name      :enable-biometrics
+    {:name      :screen/onboarding.enable-biometrics
      :options   {:theme                  :dark
                  :layout                 options/onboarding-transparent-layout
                  :animations             (merge
@@ -258,7 +264,7 @@
                                           :popStackOnPress     false}}
      :component enable-biometrics/view}
 
-    {:name      :generating-keys
+    {:name      :screen/onboarding.generating-keys
      :options   {:theme              :dark
                  :layout             options/onboarding-transparent-layout
                  :animations         transitions/push-animations-for-transparent-background
@@ -267,14 +273,14 @@
                                       :popStackOnPress     false}}
      :component generating-keys/generating-keys}
 
-    {:name      :enter-seed-phrase
+    {:name      :screen/onboarding.enter-seed-phrase
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
      :component enter-seed-phrase/enter-seed-phrase}
 
-    {:name      :enable-notifications
+    {:name      :screen/onboarding.enable-notifications
      :options   {:theme                  :dark
                  :layout                 options/onboarding-transparent-layout
                  :animations             (merge
@@ -283,7 +289,7 @@
                  :modalPresentationStyle :overCurrentContext}
      :component enable-notifications/view}
 
-    {:name      :identifiers
+    {:name      :screen/onboarding.identifiers
      :component identifiers/view
      :options   {:theme              :dark
                  :layout             options/onboarding-transparent-layout
@@ -296,7 +302,7 @@
      :options   options/dark-screen
      :component scan-sync-code-page/view}
 
-    {:name      :sign-in-intro
+    {:name      :screen/onboarding.sign-in-intro
      :options   {:layout                 options/onboarding-transparent-layout
                  :animations             (merge
                                           transitions/sign-in-modal-animations
@@ -304,30 +310,30 @@
                  :modalPresentationStyle :overCurrentContext}
      :component sign-in/animated-view}
 
-    {:name      :sign-in
+    {:name      :screen/onboarding.sign-in
      :options   {:theme                  :dark
                  :modalPresentationStyle :overCurrentContext
                  :layout                 options/onboarding-layout}
      :component sign-in/view}
 
-    {:name      :syncing-progress
+    {:name      :screen/onboarding.syncing-progress
      :options   {:theme      :dark
                  :layout     options/onboarding-layout
                  :popGesture false}
      :component syncing-devices/view}
 
-    {:name      :syncing-progress-intro
+    {:name      :screen/onboarding.syncing-progress-intro
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
      :component syncing-devices/view-onboarding}
 
-    {:name      :syncing-results
+    {:name      :screen/onboarding.syncing-results
      :options   {:theme :dark}
      :component syncing-results/view}
 
-    {:name      :welcome
+    {:name      :screen/onboarding.welcome
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background}

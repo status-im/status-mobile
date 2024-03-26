@@ -195,7 +195,9 @@
         (is (match? community-id
                     (-> effects :db :communities (get community-id) :id)))
         (is (match?
-             [[:dispatch [:chat.ui/spectate-community community-id]]
+             [[:dispatch
+               [:communities/check-permissions-to-join-community-with-all-addresses community-id]]
+              [:dispatch [:chat.ui/spectate-community community-id]]
               [:dispatch [:communities/check-permissions-to-join-community community-id]]]
              (filter some? (:fx effects))))))
 
@@ -203,14 +205,18 @@
       (let [community (assoc community :joined true)
             effects   (events/handle-community {} [community])]
         (is (match?
-             [[:dispatch [:communities/check-permissions-to-join-community community-id]]]
+             [[:dispatch
+               [:communities/check-permissions-to-join-community-with-all-addresses community-id]]
+              [:dispatch [:communities/check-permissions-to-join-community community-id]]]
              (filter some? (:fx effects))))))
 
     (testing "given a community with token-permissions-check"
       (let [community (assoc community :token-permissions-check :fake-token-permissions-check)
             effects   (events/handle-community {} [community])]
         (is (match?
-             [[:dispatch [:chat.ui/spectate-community community-id]]]
+             [[:dispatch
+               [:communities/check-permissions-to-join-community-with-all-addresses community-id]]
+              [:dispatch [:chat.ui/spectate-community community-id]]]
              (filter some? (:fx effects))))))
     (testing "given a community with lower clock"
       (let [effects (events/handle-community {:db {:communities {community-id {:clock 3}}}} [community])]

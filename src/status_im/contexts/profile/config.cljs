@@ -44,7 +44,8 @@
             :networkId                config/default-network-id
             :currentNetwork           config/default-network
             :wakuV2LightClient        false
-            :previewPrivacy           config/blank-preview?})))
+            :previewPrivacy           config/blank-preview?
+            :testNetworksEnabled      config/test-networks-enabled?})))
 
 (defn strip-file-prefix
   [path]

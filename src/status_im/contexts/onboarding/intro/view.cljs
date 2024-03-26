@@ -19,9 +19,10 @@
                             (reset! scan-sync-code/dismiss-animations reset-top-animation-fn))
      :animations-duration constants/onboarding-modal-animation-duration
      :animations-delay    constants/onboarding-modal-animation-delay
-     :top-card            {:on-press            #(debounce/throttle-and-dispatch [:open-modal
-                                                                                  :sign-in-intro]
-                                                                                 2000)
+     :top-card            {:on-press            #(debounce/throttle-and-dispatch
+                                                  [:open-modal
+                                                   :screen/onboarding.sign-in-intro]
+                                                  2000)
                            :heading             (i18n/label :t/sign-in)
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
@@ -29,7 +30,7 @@
                                                   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
                                                     (blur-show-fn))
                                                   (debounce/throttle-and-dispatch
-                                                   [:open-modal :new-to-status]
+                                                   [:open-modal :screen/onboarding.new-to-status]
                                                    1000))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}

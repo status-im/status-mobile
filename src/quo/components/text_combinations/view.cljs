@@ -43,6 +43,7 @@
       {:accessibility-label title-accessibility-label
        :weight              :semi-bold
        :ellipsize-mode      :tail
+       :style               {:flex 1}
        :number-of-lines     title-number-of-lines
        :size                :heading-1}
       title]]

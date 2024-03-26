@@ -89,4 +89,3 @@
          :i/face-id])]
      (when error?
        [error-info error-message processing shell?])]))
-

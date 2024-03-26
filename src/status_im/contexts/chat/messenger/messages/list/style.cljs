@@ -8,8 +8,9 @@
   {:flex    1
    :z-index 2})
 
-(def list-container
-  {:padding-vertical 16})
+(def chat-actions-container
+  {:margin-top     16
+   :padding-bottom 20})
 
 (defn background-container
   [background-color background-opacity top-margin]

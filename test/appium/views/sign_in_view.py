@@ -187,7 +187,7 @@ class SignInView(BaseView):
 
         # New onboarding
         self.generate_keys_button = Button(self.driver, translation_id="lets-go")
-        self.profile_your_name_edit_box = EditBox(self.driver, accessibility_id="profile-title-input")
+        self.profile_title_input = EditBox(self.driver, accessibility_id="profile-title-input")
         self.profile_continue_button = Button(self.driver, accessibility_id="submit-create-profile-button")
         self.profile_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-1")
         self.profile_repeat_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-2")
@@ -213,7 +213,7 @@ class SignInView(BaseView):
         self.profile_confirm_password_button.click()
 
     def set_profile(self, username: str, set_image=False):
-        self.profile_your_name_edit_box.send_keys(username)
+        self.profile_title_input.send_keys(username)
         self.profile_continue_button.click_until_presence_of_element(self.profile_password_edit_box)
         if set_image:
             pass
@@ -231,7 +231,7 @@ class SignInView(BaseView):
                 self.show_profiles_button.click()
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
-        self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
+        self.generate_keys_button.click_until_presence_of_element(self.profile_title_input)
         self.set_profile(username)
         self.set_password(password)
         if self.enable_biometric_maybe_later_button.is_element_displayed(10):
@@ -270,7 +270,7 @@ class SignInView(BaseView):
             self.create_new_profile_button.click()
         self.use_recovery_phrase_button.click()
         self.passphrase_edit_box.send_keys(passphrase)
-        self.continue_button.click_until_presence_of_element(self.profile_your_name_edit_box)
+        self.continue_button.click_until_presence_of_element(self.profile_title_input)
         self.set_profile(username, set_image)
         self.set_password(password)
         if self.enable_biometric_maybe_later_button.is_element_displayed(10):

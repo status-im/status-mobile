@@ -15,6 +15,8 @@
 
 (use-fixtures :each (h/fixture-session))
 
+(def number-of-networks 3)
+
 (defn assert-accounts-get-accounts
   [result]
   (is (true? (some :wallet result)))
@@ -27,13 +29,9 @@
       (p/let [result (contract-utils/call-rpc "accounts_getAccounts")]
         (assert-accounts-get-accounts result)))))
 
-(defn get-default-account
-  [accounts]
-  (first (filter :wallet accounts)))
-
 (defn check-emoji-is-updated
   [test-emoji accounts]
-  (let [default-account (get-default-account accounts)]
+  (let [default-account (contract-utils/get-default-account accounts)]
     (is (= (:emoji default-account) test-emoji))))
 
 (deftest accounts-save-accounts-contract
@@ -41,14 +39,12 @@
     (fn []
       (p/let [test-emoji      (emoji-picker.utils/random-emoji)
               account         (contract-utils/call-rpc "accounts_getAccounts")
-              default-account (get-default-account account)
+              default-account (contract-utils/get-default-account account)
               _ (contract-utils/call-rpc
                  "accounts_saveAccount"
                  (data-store/<-account (merge default-account {:emoji test-emoji})))
               accounts        (contract-utils/call-rpc "accounts_getAccounts")]
         (check-emoji-is-updated test-emoji accounts)))))
-
-(def number-of-networks 3)
 
 (defn assert-ethereum-chains
   [response]
@@ -65,3 +61,45 @@
     (fn []
       (p/let [response (contract-utils/call-rpc "wallet_getEthereumChains")]
         (assert-ethereum-chains response)))))
+
+(defn assert-wallet-tokens
+  [tokens]
+  (let [flattened-tokens (mapcat val tokens)]
+    (doseq [token flattened-tokens]
+      (is (not-empty (:symbol token)))
+      (is (:decimals token))
+      (is (contains? token :balancesPerChain))
+      (is (contains? token :marketValuesPerCurrency))
+      (is (contains? (:marketValuesPerCurrency token) :usd))
+      (let [balances-per-chain (:balancesPerChain token)]
+        (doseq [[_ balance] balances-per-chain]
+          (is (contains? balance :rawBalance))
+          (let [raw-balance (:rawBalance balance)]
+            (is (not-empty raw-balance))
+            (is (re-matches #"\d+" raw-balance))))))))
+
+(deftest wallet-get-walet-token-test
+  (h/test-async :wallet/get-wallet-token
+    (fn []
+      (p/let [accounts        (contract-utils/call-rpc "accounts_getAccounts")
+              default-address (contract-utils/get-default-address accounts)
+              response        (contract-utils/call-rpc
+                               "wallet_getWalletToken"
+                               [default-address])]
+        (assert-wallet-tokens response)))))
+
+(defn assert-address-details
+  [result]
+  (is (contains? result :address))
+  (is (contains? result :path))
+  (is (boolean? (:hasActivity result)))
+  (is (false? (:alreadyCreated result))))
+
+(deftest wallet-get-address-details-contract-test
+  (h/test-async :wallet/get-address-details
+    (fn []
+      (p/let [input       "test.eth"
+              chain-id    constants/ethereum-mainnet-chain-id
+              ens-address (contract-utils/call-rpc "ens_addressOf" chain-id input)
+              response    (contract-utils/call-rpc "wallet_getAddressDetails" chain-id ens-address)]
+        (assert-address-details response)))))

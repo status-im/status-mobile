@@ -14,19 +14,16 @@
            on-change-name
            on-change-color
            on-change-emoji section-label
-           hide-bottom-action?
            bottom-action-label bottom-action-props
            custom-bottom-action watch-only?]} & children]
   (let [{window-width :width} (rn/get-window)
-        footer                (when-not hide-bottom-action?
-                                (if custom-bottom-action
-                                  custom-bottom-action
-                                  [quo/button
-                                   (merge
-                                    {:size 40
-                                     :type :primary}
-                                    bottom-action-props)
-                                   (i18n/label bottom-action-label)]))]
+        footer                (if custom-bottom-action
+                                custom-bottom-action
+                                [quo/button
+                                 (merge {:size 40
+                                         :type :primary}
+                                        bottom-action-props)
+                                 (i18n/label bottom-action-label)])]
     [floating-button-page/view
      {:header                   [quo/page-nav
                                  {:type       :no-title

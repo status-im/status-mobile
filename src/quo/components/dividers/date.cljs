@@ -8,9 +8,10 @@
 (defn date
   [value]
   [rn/view
-   {:margin-vertical 12
-    :padding-right   20
-    :padding-left    60}
+   {:padding-top    8
+    :padding-bottom 12
+    :padding-right  20
+    :padding-left   60}
    [text/text
     {:weight              :medium
      :accessibility-label :divider-date-text

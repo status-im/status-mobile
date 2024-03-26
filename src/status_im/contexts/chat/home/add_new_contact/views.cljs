@@ -3,7 +3,6 @@
             [quo.core :as quo]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
             [status-im.contexts.chat.home.add-new-contact.style :as style]
             [utils.address :as address]
             [utils.debounce :as debounce]
@@ -51,55 +50,66 @@
 
 (defn- search-input
   []
-  (reagent/with-let [input-value    (reagent/atom nil)
-                     input-ref      (atom nil)
-                     clear-input    (fn []
-                                      (reset! input-value nil)
-                                      (rf/dispatch [:contacts/clear-new-identity]))
-                     paste-on-input #(clipboard/get-string
-                                      (fn [clipboard-text]
-                                        (reset! input-value clipboard-text)
-                                        (rf/dispatch [:contacts/set-new-identity
-                                                      {:input clipboard-text}])))]
-    (let [{:keys [scanned]} (rf/sub [:contacts/new-identity])
-          empty-input?      (and (string/blank? @input-value)
-                                 (string/blank? scanned))]
-      [rn/view {:style style/input-and-scan-container}
-       [quo/input
-        {:accessibility-label :enter-contact-code-input
-         :ref                 #(reset! input-ref %)
-         :container-style     {:flex 1}
-         :auto-capitalize     :none
-         :multiline?          true
-         :blur-on-submit      true
-         :return-key-type     :done
-         :label               (i18n/label :t/ens-or-chat-key)
-         :placeholder         (i18n/label :t/type-some-chat-key)
-         :clearable?          (not empty-input?)
-         :on-clear            clear-input
-         :button              (when empty-input?
-                                {:on-press paste-on-input
-                                 :text     (i18n/label :t/paste)})
-         ;; NOTE: `scanned` has priority over `@input-value`, we clean it when the input is updated
-         ;; so that it's `nil` and `@input-value` is shown. To fastly clean it, we use
-         ;; `dispatch-sync`. This call could be avoided if `::qr-scanner/scan-code` were able to
-         ;; receive a callback function, not only a re-frame event as callback.
-         :value               (or scanned @input-value)
-         :on-change-text      (fn [new-text]
-                                (reset! input-value new-text)
-                                (as-> [:contacts/set-new-identity {:input new-text}] $
-                                  (if (string/blank? scanned)
-                                    (debounce/debounce-and-dispatch $ 600)
-                                    (rf/dispatch-sync $))))}]
-       [rn/view {:style style/scan-button-container}
-        [quo/button
-         {:type       :outline
-          :icon-only? true
-          :size       40
-          :on-press   #(rf/dispatch [:open-modal :scan-profile-qr-code])}
-         :i/scan]]])
-    (finally
-     (rf/dispatch [:contacts/clear-new-identity]))))
+  (let [[input-value set-input-value] (rn/use-state nil)
+        input-ref                     (rn/use-ref-atom nil)
+        on-ref                        (rn/use-callback #(reset! input-ref %))
+        {:keys              [scanned]
+         contact-public-key :id}      (rf/sub [:contacts/new-identity])
+        contact-public-key-or-scanned (or contact-public-key scanned)
+        empty-input?                  (and (string/blank? input-value)
+                                           (string/blank? contact-public-key-or-scanned))
+        clear-input                   (rn/use-callback
+                                       (fn []
+                                         (set-input-value nil)
+                                         (rf/dispatch [:contacts/clear-new-identity])))
+        paste-on-input                (rn/use-callback
+                                       (fn []
+                                         (clipboard/get-string
+                                          (fn [clipboard-text]
+                                            (set-input-value clipboard-text)
+                                            (rf/dispatch [:contacts/set-new-identity
+                                                          {:input clipboard-text}])))))
+        on-change-text                (rn/use-callback
+                                       (fn [new-text]
+                                         (set-input-value new-text)
+                                         (if (string/blank? contact-public-key-or-scanned)
+                                           (debounce/debounce-and-dispatch [:contacts/set-new-identity
+                                                                            {:input new-text}]
+                                                                           600)
+                                           (rf/dispatch-sync [:contacts/set-new-identity
+                                                              {:input new-text}])))
+                                       [contact-public-key-or-scanned])]
+    (rn/use-unmount #(rf/dispatch [:contacts/clear-new-identity]))
+    [rn/view {:style style/input-and-scan-container}
+     [quo/input
+      {:accessibility-label :enter-contact-code-input
+       :ref                 on-ref
+       :container-style     {:flex 1}
+       :auto-capitalize     :none
+       :multiline?          true
+       :blur-on-submit      true
+       :return-key-type     :done
+       :label               (i18n/label :t/ens-or-chat-key)
+       :placeholder         (i18n/label :t/type-some-chat-key)
+       :clearable?          (not empty-input?)
+       :on-clear            clear-input
+       :button              (when empty-input?
+                              {:on-press paste-on-input
+                               :text     (i18n/label :t/paste)})
+       ;; NOTE: `contact-public-key-or-scanned` has priority over `input-value`,
+       ;; we clean it when the input is updated so that it's `nil` and
+       ;; `input-value`is shown. To fastly clean it, we use `dispatch-sync`.
+       ;; This call could be avoided if `::qr-scanner/scan-code` were able to
+       ;; receive a callback function, not only a re-frame event as callback.
+       :value               (or contact-public-key-or-scanned input-value)
+       :on-change-text      on-change-text}]
+     [rn/view {:style style/scan-button-container}
+      [quo/button
+       {:type       :outline
+        :icon-only? true
+        :size       40
+        :on-press   #(rf/dispatch [:open-modal :scan-profile-qr-code])}
+       :i/scan]]]))
 
 (defn- invalid-text
   [message]

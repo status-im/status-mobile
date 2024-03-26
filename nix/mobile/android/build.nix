@@ -26,9 +26,10 @@
 
 let
   inherit (lib) toLower optionalString stringLength makeLibraryPath elem;
+  notDebug = (buildType != "debug");
 
   # Pass secretsFile for POKT_TOKEN to jsbundle build
-  builtJsBundle = jsbundle { inherit secretsFile; };
+  builtJsBundle = lib.optionals notDebug jsbundle { inherit secretsFile; };
 
   # Map ANDROID_ABI_INCLUDE to status-go targets
   androidAbiIncludeSplit = lib.splitString ";" androidAbiInclude;
@@ -119,8 +120,10 @@ in stdenv.mkDerivation rec {
     # Export all vars from .env file
     export $(cut -d= -f1 .env)
 
+    ${lib.optionalString notDebug ''
     # Symlink React Native entrypoint.
     cp -Lr ${builtJsBundle} ./result
+    ''}
 
     # Copy android/ directory
     mkdir -p ./android/build
@@ -153,6 +156,7 @@ in stdenv.mkDerivation rec {
       --no-scan \
       --no-watch-fs \
       --no-build-cache \
+      --parallel \
       -Dmaven.repo.local='${deps.gradle}' \
       assemble${gradleBuildType}
     '';

@@ -1,11 +1,11 @@
 (ns status-im.contexts.shell.activity-center.notification.reply.view
   (:require
     [clojure.string :as string]
-    [legacy.status-im.ui.screens.chat.message.legacy-view :as old-message]
     [quo.core :as quo]
     [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.constants :as constants]
+    [status-im.contexts.chat.messenger.messages.content.sticker-message.view :as sticker-message]
     [status-im.contexts.shell.activity-center.notification.common.view :as common]
     [status-im.contexts.shell.activity-center.notification.reply.style :as style]
     [utils.datetime :as datetime]
@@ -34,7 +34,7 @@
         :message-text (get-in message [:content :text])}])
 
     constants/content-type-sticker
-    [old-message/sticker message]
+    [sticker-message/view {:url (-> message :content :sticker :url)}]
 
     constants/content-type-system-pinned-message
     [not-implemented/not-implemented

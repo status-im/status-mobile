@@ -69,9 +69,9 @@
 
     (rn/use-effect
      (fn []
-       (reanimated/set-shared-value @paused? (not= view-id :intro))
+       (reanimated/set-shared-value @paused? (not= view-id :screen/onboarding.intro))
        (fn []
-         (when (= view-id :generating-keys)
+         (when (= view-id :screen/onboarding.generating-keys)
            (carousel.animation/cleanup-animation progress paused?))))
      [view-id])
 

@@ -3,7 +3,8 @@
     [quo.components.colors.color.constants :as constants]
     [quo.components.colors.color.view :as color]
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]))
 
 (defn get-item-layout
   [_ index]
@@ -52,7 +53,7 @@
                                         :index        index
                                         :viewPosition 0.5})))))
         50)))
-    [rn/flat-list
+    [gesture/flat-list
      {:ref                               on-ref
       ;; TODO: using :feng-shui? temporarily while b & w is being developed.
       ;; https://github.com/status-im/status-mobile/discussions/16676

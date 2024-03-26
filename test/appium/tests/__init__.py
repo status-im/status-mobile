@@ -28,6 +28,14 @@ async def start_threads(test_name: str, quantity: int, func: type, returns: dict
             except MaxRetryError:
                 print("MaxRetryError when creating a driver for %s" % test_name)
                 time.sleep(10)
+    # for k in returns:
+    #     for _ in range(30):
+    #         try:
+    #             k.session_id
+    #             break
+    #         except AttributeError:
+    #             print("AttributeError when creating a driver for %s" % test_name)
+    #             time.sleep(3)
     return returns
 
 

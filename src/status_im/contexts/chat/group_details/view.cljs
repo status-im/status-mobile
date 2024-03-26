@@ -135,7 +135,7 @@
       {:container-style style/actions-view
        :actions         [{:accessibility-label :pinned-messages
                           :label               (i18n/label :t/pinned-messages)
-                          :color               color
+                          :customization-color color
                           :icon                :i/pin
                           :counter-value       (count pinned-messages)
                           :on-press            (fn []
@@ -143,14 +143,14 @@
                                                  (rf/dispatch [:pin-message/show-pins-bottom-sheet
                                                                chat-id]))}
                          {:accessibility-label :toggle-mute
-                          :color               color
+                          :customization-color color
                           :icon                (if muted :i/muted :i/activity-center)
                           :label               (i18n/label (if muted :unmute-group :mute-group))
                           :on-press            #(rf/dispatch [:chat.ui/mute chat-id (not muted)
                                                               (when-not muted
                                                                 constants/mute-till-unmuted)])}
                          {:accessibility-label :manage-members
-                          :color               color
+                          :customization-color color
                           :icon                :i/add-user
                           :label               (i18n/label (if admin? :t/manage-members :t/add-members))
                           :counter-value       (count contacts)

@@ -8,6 +8,7 @@
     [quo.theme :as quo.theme]
     [re-frame.core :as rf]
     [react-native.blur :as blur]
+    [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -340,29 +341,38 @@
       {:style                           (style/panel-basic)
        :shows-vertical-scroll-indicator false
        :content-container-style         (when full-screen? {:flex 1})}
-      [rn/pressable
-       {:style    (when full-screen? {:flex 1})
-        :on-press rn/dismiss-keyboard!}
-       (when descriptor
-         [rn/view {:style style/customizer-container}
-          [customizer state descriptor]])
-       (if blur?
-         [rn/view {:style (merge style/component-container component-container-style)}
-          (into [blur-view
-                 {:theme                 theme
-                  :show-blur-background? show-blur-background?
-                  :height                blur-height
-                  :style                 (merge {:width     "100%"
-                                                 :flex-grow 1}
-                                                (when-not show-blur-background?
-                                                  {:padding-horizontal 0
-                                                   :top                0})
-                                                blur-container-style)
-                  :blur-view-props       (merge {:blur-type theme}
-                                                blur-view-props)}]
-                children)]
-         (into [rn/view {:style (merge style/component-container component-container-style)}]
-               children))]]]))
+      [:<>
+       [rn/pressable
+        {:style    (when full-screen? {:flex 1})
+         :on-press rn/dismiss-keyboard!}
+        (when descriptor
+          [rn/view {:style style/customizer-container}
+           [customizer state descriptor]])
+        (if blur?
+          [rn/view {:style (merge style/component-container component-container-style)}
+           (into [blur-view
+                  {:theme                 theme
+                   :show-blur-background? show-blur-background?
+                   :height                blur-height
+                   :style                 (merge {:width     "100%"
+                                                  :flex-grow 1}
+                                                 (when-not show-blur-background?
+                                                   {:padding-horizontal 0
+                                                    :top                0})
+                                                 blur-container-style)
+                   :blur-view-props       (merge {:blur-type theme}
+                                                 blur-view-props)}]
+                 children)]
+          (into [rn/view {:style (merge style/component-container component-container-style)}]
+                children))]
+       (when state
+         (let [decr-state (if descriptor (select-keys @state (mapv :key (flatten descriptor))) @state)
+               state-str  (with-out-str (cljs.pprint/pprint decr-state))]
+           [rn/view {:style {:margin 50}}
+            [quo/text {:style {:margin-bottom 10}} "State map (click on map to copy)"]
+            [rn/pressable
+             {:on-press #(clipboard/set-string state-str)}
+             [quo/text state-str]]]))]]]))
 
 (defn preview-container
   [& args]
