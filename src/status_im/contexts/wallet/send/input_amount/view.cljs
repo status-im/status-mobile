@@ -261,11 +261,11 @@
            :switcher-type :select-account}]
          [quo/token-input
           {:container-style     style/input-container
-           :token               token-symbol
-           :currency            current-currency
+           :token               (keyword token-symbol)
+           :currency            (keyword current-currency)
            :crypto-decimals     crypto-decimals
            :error?              @input-error
-           :networks            token-networks
+           :networks            (seq token-networks)
            :title               (i18n/label :t/send-limit {:limit limit-label})
            :conversion          conversion-rate
            :show-keyboard?      false
