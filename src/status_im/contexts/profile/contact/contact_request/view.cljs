@@ -61,12 +61,12 @@
         :on-change-text        on-message-change
         :container-style       {:flex-shrink 1}
         :input-container-style {:flex-shrink 1}}]]
-     [rn/view {:style {:flex 1}}
-      [quo/bottom-actions
-       {:actions          :one-action
-        :button-one-props {:disabled?           (string/blank? message)
-                           :accessibility-label :send-contact-request
-                           :customization-color customization-color
-                           :on-press            on-message-submit}
-        :button-one-label (i18n/label :t/send-contact-request)}]]]))
+     [quo/bottom-actions
+      {:container-style  {:style {:flex 1}}
+       :actions          :one-action
+       :button-one-props {:disabled?           (string/blank? message)
+                          :accessibility-label :send-contact-request
+                          :customization-color customization-color
+                          :on-press            on-message-submit}
+       :button-one-label (i18n/label :t/send-contact-request)}]]))
 
