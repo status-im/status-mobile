@@ -23,6 +23,7 @@
     [utils.re-frame :as rf]
     [utils.worklets.chat.messenger.messages :as worklets]))
 
+(defonce ^:const distance-from-last-message 4)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const min-message-height 32)
@@ -119,11 +120,11 @@
                                       messages.constants/default-extrapolation-option)
         top   (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
-                                      [-40 -8]
+                                      [-44 -8]
                                       messages.constants/default-extrapolation-option)
         left  (reanimated/interpolate distance-from-list-top
                                       [0 messages.constants/header-container-top-margin]
-                                      [20 -4]
+                                      [16 -4]
                                       messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
@@ -143,7 +144,7 @@
         mute-chat-label                      (if community-channel? :t/mute-channel :t/mute-chat)
         unmute-chat-label                    (if community-channel? :t/unmute-channel :t/unmute-chat)]
     [quo/channel-actions
-     {:container-style {:margin-top 16}
+     {:container-style style/chat-actions-container
       :actions         [{:accessibility-label :action-button-pinned
                          :big?                true
                          :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
@@ -221,7 +222,7 @@
          :number-of-lines 1}
         display-name]
        [contact-icon contact theme]]
-      (when bio
+      (when (seq bio)
         [quo/text {:style style/bio}
          bio])
       [actions chat-id customization-color]]]))
@@ -348,6 +349,7 @@
         :style                             {:background-color (colors/theme-colors colors/white
                                                                                    colors/neutral-95
                                                                                    theme)}
+        :content-container-style           {:padding-top distance-from-last-message}
         :inverted                          true
         :on-layout                         #(on-layout
                                              {:event %
