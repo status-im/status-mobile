@@ -16,8 +16,7 @@
          :size   :paragraph-2
          :style  (style/label props)}
         label])
-     [rn/view
-      {:style (style/settings-items props)}
+     [rn/view {:style (style/settings-items props)}
       (for [item settings-item]
         ^{:key item}
         [:<>

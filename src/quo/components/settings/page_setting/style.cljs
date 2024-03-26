@@ -12,4 +12,3 @@
    :border-width       1
    :border-color       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :border-radius      16})
-
