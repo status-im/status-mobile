@@ -9,7 +9,7 @@
   [{:keys [theme title]}]
   (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
         has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
-        root          (if has-profiles? :profiles :intro)
+        root          (if has-profiles? :screen/profile.profiles :screen/onboarding.intro)
         light?        (= theme :light)]
     [quo/page-nav
      {:type       :title

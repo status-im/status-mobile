@@ -45,14 +45,14 @@
                   (assoc :profile/profiles-overview profiles)
                   (update :profile/login #(select-profile % key-uid)))
               db)
-        :fx [[:set-root :profiles]
+        :fx [[:set-root :screen/profile.profiles]
              (when key-uid
                [:effects.biometric/check-if-available
                 {:key-uid    key-uid
                  :on-success (fn [auth-method]
                                (rf/dispatch [:profile.login/check-biometric-success key-uid
                                              auth-method]))}])]})
-     {:fx [[:set-root :intro]]})))
+     {:fx [[:set-root :screen/onboarding.intro]]})))
 
 (rf/reg-event-fx
  :profile/update-setting-from-backup
