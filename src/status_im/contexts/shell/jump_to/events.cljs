@@ -108,16 +108,6 @@
      :dispatch [:set-view-id :shell]
      :effects.shell/navigate-to-jump-to nil}))
 
-(rf/defn change-shell-status-bar-style
-  {:events [:change-shell-status-bar-style]}
-  [_ style]
-  {:merge-options {:id "shell-stack" :options {:statusBar {:style style}}}})
-
-(rf/defn change-shell-nav-bar-color
-  {:events [:change-shell-nav-bar-color]}
-  [_ color]
-  {:merge-options {:id "shell-stack" :options {:navigationBar {:backgroundColor color}}}})
-
 (rf/defn shell-navigate-to
   {:events [:shell/navigate-to]}
   [{:keys [db now]} go-to-view-id screen-params animation hidden-screen?]
