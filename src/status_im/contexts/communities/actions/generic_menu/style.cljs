@@ -1,9 +1,16 @@
 (ns status-im.contexts.communities.actions.generic-menu.style)
 
-(def container
+(defn container
+  [max-height]
   {:flex         1
+   :max-height   max-height
    :margin-left  20
    :margin-right 20})
+
+(defn scroll-view-style
+  [max-height]
+  {:margin-bottom 12
+   :max-height    max-height})
 
 (def inner-container
   {:display         :flex

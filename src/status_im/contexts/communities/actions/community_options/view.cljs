@@ -181,8 +181,9 @@
 (defn get-context-drawers
   [{:keys [id]}]
   (let [{:keys [token-permissions admin joined
-                muted banList muted-till color intro-message]} (rf/sub [:communities/community id])
-        request-id                               (rf/sub [:communities/my-pending-request-to-join id])]
+                muted banList muted-till color
+                intro-message]} (rf/sub [:communities/community id])
+        request-id              (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
       admin      (owner-options id token-permissions muted muted-till intro-message)
       joined     (joined-options id token-permissions muted muted-till color intro-message)
