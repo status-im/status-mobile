@@ -13,7 +13,7 @@
     [quo.theme :as theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [utils.worklets.header :as header-worklet]))
+    [utils.worklets.profile-header :as header-worklet]))
 
 (def ^:private button-type
   {:white       :grey
@@ -93,18 +93,13 @@
 
 (defn- title-center
   [{:keys [centered? title center-opacity scroll-y]}]
-  (let [translate-animation (when scroll-y
-                              (header-worklet/header-content-position scroll-y
-                                                                      threshold
-                                                                      page-nav-height))
-        opacity-animation   (when scroll-y
-                              (header-worklet/header-content-opacity scroll-y threshold))]
+  (let [animated-style (when scroll-y
+                         (header-worklet/profile-header-animation scroll-y
+                                                                  threshold
+                                                                  page-nav-height))]
     [reanimated/view
-     {:style (style/center-content-container-animation {:has-animations?     (some? scroll-y)
-                                                        :centered?           centered?
-                                                        :center-opacity      center-opacity
-                                                        :translate-animation translate-animation
-                                                        :opacity-animation   opacity-animation})}
+     {:style [(style/center-content-container centered? center-opacity)
+              animated-style]}
      [text/text
       {:weight          :medium
        :size            :paragraph-1
