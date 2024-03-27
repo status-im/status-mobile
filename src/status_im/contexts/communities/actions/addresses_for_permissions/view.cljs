@@ -221,22 +221,22 @@
         confirm-changes
         (fn []
           (if can-edit-addresses?
-            (rf/dispatch
-             [:standard-auth/authorize
-              {:auth-button-label (i18n/label :t/confirm-changes)
-               :on-auth-success   (fn [password]
-                                    (rf/dispatch
-                                     [:communities/edit-shared-addresses
-                                      {:community-id id
-                                       :password     password
-                                       :addresses    addresses-to-reveal
-                                       :on-success   (fn []
-                                                       (rf/dispatch [:dismiss-modal
-                                                                     :addresses-for-permissions])
-                                                       (rf/dispatch [:hide-bottom-sheet]))}]))}])
             (do
-              (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])
-              (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))
+              (rf/dispatch
+               [:standard-auth/authorize
+                {:auth-button-label (i18n/label :t/confirm-changes)
+                 :on-auth-success   (fn [password]
+                                      (rf/dispatch
+                                       [:communities/edit-shared-addresses
+                                        {:community-id id
+                                         :password     password
+                                         :addresses    addresses-to-reveal
+                                         :on-success   (fn []
+                                                         (rf/dispatch [:dismiss-modal
+                                                                       :addresses-for-permissions])
+                                                         (rf/dispatch [:hide-bottom-sheet]))}]))}])
+              (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
+            (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal])) )
         pending? (rf/sub [:communities/has-pending-request-to-join? id])
         highest-role (rf/sub [:communities/highest-role-for-selection id])
         [unmodified-role _] (rn/use-state highest-role)]
@@ -360,13 +360,17 @@
                                  id
                                  color
                                  flag-share-all-addresses]
-       :header                  [quo/page-setting
-                                 {:checked?            flag-share-all-addresses
-                                  :customization-color color
-                                  :on-change           toggle-flag-share-all-addresses
-                                  :setting-text        (i18n/label
-                                                        :t/share-all-current-and-future-addresses)
-                                  :container-style     {:margin-bottom 16}}]
+       :header                  [quo/category
+                                 {:list-type       :settings
+                                  :data            [{:title
+                                                     (i18n/label
+                                                      :t/share-all-current-and-future-addresses)
+                                                     :action :selector
+                                                     :action-props
+                                                     {:on-change toggle-flag-share-all-addresses
+                                                      :customization-color color
+                                                      :checked? flag-share-all-addresses}}]
+                                  :container-style {:padding-bottom 16 :padding-horizontal 0}}]
        :content-container-style {:padding-horizontal 20}
        :key-fn                  :address
        :data                    wallet-accounts}]
