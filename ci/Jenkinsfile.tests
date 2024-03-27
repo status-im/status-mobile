@@ -29,6 +29,11 @@ pipeline {
       description: 'Specify build type. Values: pr / e2e / nightly / release',
       defaultValue: 'pr',
     )
+    booleanParam(
+      name: 'RUN_CONTRACT_TESTS',
+      description: 'Whether to run optional and slow contract tests.',
+      defaultValue: false,
+    )
   }
 
   environment {
@@ -39,51 +44,32 @@ pipeline {
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     LOG_FILE = utils.pkgFilename(ext: 'log', arch: 'tests')
+    CLJ_LINTER_PRINT_WARNINGS = 'true'
   }
 
   stages {
-    stage('Checks') {
+    stage('Test') {
       parallel {
         stage('Lint') {
-          steps {
-            sh """#!/bin/bash
-              set -eo pipefail
-              make lint CLJ_LINTER_PRINT_WARNINGS=true 2>&1 | tee ${LOG_FILE}
-            """
-          }
+          steps { make('lint') }
         }
-        stage('Unit Tests') {
-          steps {
-            sh """#!/bin/bash
-              set -eo pipefail
-              make test-unit 2>&1 | tee -a ${LOG_FILE}
-            """
-          }
+        stage('Unit') {
+          steps { make('test-unit') }
+        }
+        stage('Component') {
+          steps { make('test-component') }
         }
       }
     }
-    stage('Contract Tests') {
-      steps {
-        sh """#!/bin/bash
-          set -eo pipefail
-          make test-contract 2>&1 | tee -a ${LOG_FILE}
-        """
-      }
-    }
-    stage('Integration Tests') {
-      steps {
-        sh """#!/bin/bash
-          set -eo pipefail
-          make test-integration 2>&1 | tee -a ${LOG_FILE}
-        """
-      }
-    }
-    stage('Component Tests') {
-      steps {
-        sh """#!/bin/bash
-          set -eo pipefail
-          make component-test 2>&1 | tee -a ${LOG_FILE}
-        """
+    stage('Heavy Test') {
+      parallel {
+        stage('Contract') {
+          when { expression { params.RUN_CONTRACT_TESTS } }
+          steps { make('test-contract') }
+        }
+        stage('Integration') {
+          steps { make('test-integration') }
+        }
       }
     }
     stage('Upload') {
@@ -99,4 +85,11 @@ pipeline {
     failure { script { github.notifyPR(false) } }
     always  { sh 'make purge' }
   }
+}
+
+def make(target) {
+  sh """#!/bin/bash
+    set -eo pipefail
+    make ${target} 2>&1 | tee -a ${LOG_FILE}
+  """
 }
