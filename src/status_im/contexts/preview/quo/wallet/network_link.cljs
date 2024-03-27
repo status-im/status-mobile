@@ -38,5 +38,5 @@
         :component-container-style {:padding-top 40
                                     :align-items :center}}
        [rn/view
-        {:style {:width 100}}
+        {:style {:width 73}}
         [quo/network-link @state]]])))

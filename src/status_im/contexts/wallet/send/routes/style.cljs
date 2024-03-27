@@ -24,7 +24,7 @@
    :margin-left margin-left})
 
 (def network-link
-  {:margin-horizontal -4.5
+  {:margin-horizontal -1.5
    :z-index           1
    :flex              1})
 
