@@ -38,7 +38,7 @@
     (js/console.log "contact request view render")
     [:<>
      [quo/button {} "Example static button"]
-     [example-component {}]
+     [example-component {:on-test on-press-test}]
      [quo/drawer-top
       {:type                :context-tag
        :context-tag-type    :default
