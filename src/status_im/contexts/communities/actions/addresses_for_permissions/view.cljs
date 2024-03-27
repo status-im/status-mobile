@@ -360,16 +360,13 @@
                                  id
                                  color
                                  flag-share-all-addresses]
-       :header                  [quo/category
-                                 {:list-type       :settings
-                                  :data            [{:title
-                                                     (i18n/label
-                                                      :t/share-all-current-and-future-addresses)
-                                                     :action :selector
-                                                     :action-props
-                                                     {:on-change toggle-flag-share-all-addresses
-                                                      :customization-color color
-                                                      :checked? flag-share-all-addresses}}]
+       :header                  [quo/page-setting
+                                 {:checked?            flag-share-all-addresses
+                                  :customization-color color
+                                  :on-change           toggle-flag-share-all-addresses
+                                  :setting-text        (i18n/label
+                                                        :t/share-all-current-and-future-addresses)
+                                  :container-style     {:margin-bottom 16}}]
                                   :container-style {:padding-bottom 16 :padding-horizontal 0}}]
        :content-container-style {:padding-horizontal 20}
        :key-fn                  :address
