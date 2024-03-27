@@ -38,7 +38,12 @@
   (memoize make-callback-sub))
 
 (defn use-bind [state-ratom]
-  (let [{:keys [factory]} (bind state-ratom)] 
+  (let [{:keys [factory sub]} (rn/use-memo (fn []
+                                         (make-callback-sub state-ratom))
+                                       [state-ratom])] 
+    (rn/use-unmount (fn []
+                      (js/console.log "unmount sub")
+                      (reagent.ratom/dispose! sub)))
     factory))
 
 (defonce contact-request-message-store
