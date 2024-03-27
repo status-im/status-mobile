@@ -35,6 +35,7 @@
            size                40
            customization-color (if (= type :primary) :blue nil)}}
    children]
+  (js/console.log "button - " children)
   (let [[pressed-state? set-pressed-state] (rn/use-state false)
         theme (quo.theme/use-theme)
         {:keys [icon-color background-color label-color border-color blur-type
