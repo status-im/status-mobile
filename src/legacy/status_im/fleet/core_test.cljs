@@ -9,8 +9,7 @@
       (testing "it returns the default fleets"
         (is (=
              #{:eth.prod
-               :eth.staging
-               :eth.test}
+               :eth.staging}
              (into #{}
                    (keys (node/fleets {})))))))
     (testing "passing a custom fleet"
