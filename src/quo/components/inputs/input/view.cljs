@@ -62,7 +62,7 @@
 (defn- base-input
   [{:keys [blur? error? right-icon left-icon disabled? small? button
            label char-limit multiline? clearable? on-focus on-blur container-style
-           on-change-text on-char-limit-reach weight default-value]
+           on-change-text on-char-limit-reach weight default-value on-clear]
     :as   props}]
   (let [theme                  (quo.theme/use-theme-value)
         ref                    (rn/use-ref-atom nil)
