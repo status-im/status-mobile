@@ -128,6 +128,7 @@
     quo.components.settings.accounts.view
     quo.components.settings.category.view
     quo.components.settings.data-item.view
+    quo.components.settings.page-setting.view
     quo.components.settings.privacy-option.view
     quo.components.settings.reorder-item.view
     quo.components.settings.section-label.view
@@ -377,6 +378,7 @@
 (def account quo.components.settings.accounts.view/account)
 (def category quo.components.settings.category.view/category)
 (def data-item quo.components.settings.data-item.view/view)
+(def page-setting quo.components.settings.page-setting.view/page-setting)
 (def privacy-option quo.components.settings.privacy-option.view/view)
 (def reorder-item quo.components.settings.reorder-item.view/reorder-item)
 (def section-label quo.components.settings.section-label.view/view)

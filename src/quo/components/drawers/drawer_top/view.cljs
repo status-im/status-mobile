@@ -81,7 +81,8 @@
   (let [tag-type (or context-tag-type :account)]
     [rn/view
      {:accessibility-label :context-tag-wrapper
-      :style               {:flex-wrap :wrap}}
+      :style               {:flex-wrap  :wrap
+                            :margin-top 4}}
      [context-tag/view
       {:type                tag-type
        :account-name        account-name
