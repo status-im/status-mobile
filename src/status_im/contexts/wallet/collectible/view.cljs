@@ -7,6 +7,7 @@
     [react-native.svg :as svg]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
+    [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
@@ -54,51 +55,6 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(defn collectible-actions-sheet
-  []
-  [quo/action-drawer
-   [[{:icon                :i/messages
-      :accessibility-label :share-opensea-link
-      :label               (i18n/label :t/share-opensea-link)}
-     {:icon                :i/link
-      :accessibility-label :view-on-eth
-      :label               (i18n/label :t/view-on-eth)}
-     {:icon                :i/download
-      :accessibility-label :save-image-to-photos
-      :label               (i18n/label :t/save-image-to-photos)}
-     {:icon                :i/copy
-      :accessibility-label :copy-all-details
-      :label               (i18n/label :t/copy-all-details)}
-     {:icon                :i/share
-      :accessibility-label :share-details
-      :label               (i18n/label :t/share-details)}]]])
-
-(defn options-drawer
-  [images index]
-  (let [{:keys [image]} (nth images index)
-        uri             (url/replace-port image (rf/sub [:mediaserver/port]))]
-    [quo/action-drawer
-     [[{:icon                :i/link
-        :accessibility-label :view-on-etherscan
-        :label               (i18n/label :t/view-on-eth)}]
-      [{:icon                :i/save
-        :accessibility-label :save-image
-        :label               (i18n/label :t/save-image-to-photos)
-        :on-press            (fn []
-                               (rf/dispatch [:hide-bottom-sheet])
-                               (rf/dispatch
-                                [:lightbox/save-image-to-gallery
-                                 uri
-                                 #(rf/dispatch [:toasts/upsert
-                                                {:id              :random-id
-                                                 :type            :positive
-                                                 :container-style {:bottom (when platform/android? 20)}
-                                                 :text            (i18n/label :t/photo-saved)}])]))}]
-      [{:icon                :i/share
-        :accessibility-label :share-collectible
-        :label               (i18n/label :t/share-collectible)
-        :right-icon          :i/external}]]]))
-
 (defn f-view-internal
   [{:keys [theme] :as _props}]
   (let [selected-tab  (reagent/atom :overview)
@@ -115,7 +71,20 @@
             token-id                    (:token-id id)
             {collection-image :image-url
              collection-name  :name}    collection-data
-            {collectible-name :name}    collectible-data]
+            {collectible-name :name}    collectible-data
+            image {:image        preview-uri
+                                                        :image-width  300 ; collectibles don't have
+                                                                          ; width/height but we need
+                                                                          ; to pass something
+                                                        :image-height 300 ; without it animation
+                                                                          ; doesn't work smoothly
+                                                                          ; and :border-radius not
+                                                                          ; applied
+                                                        :id           token-id
+                                                        :header       collectible-name
+                                                        :description  collection-name}
+
+            ]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -126,7 +95,8 @@
                            :right-side  [{:icon-name :i/options
                                           :on-press  #(rf/dispatch
                                                        [:show-bottom-sheet
-                                                        {:content collectible-actions-sheet
+                                                        {:content (fn [] [options-drawer/view 
+                                                                                   image])
                                                          :theme   theme}])}]
                            :picture     preview-uri}}
          [rn/view {:style style/container}
@@ -139,24 +109,12 @@
                                  (rf/dispatch
                                   [:lightbox/navigate-to-lightbox
                                    token-id
-                                   {:images           [{:image        preview-uri
-                                                        :image-width  300 ; collectibles don't have
-                                                                          ; width/height but we need
-                                                                          ; to pass something
-                                                        :image-height 300 ; without it animation
-                                                                          ; doesn't work smoothly
-                                                                          ; and :border-radius not
-                                                                          ; applied
-                                                        :id           token-id
-                                                        :header       collectible-name
-                                                        :description  collection-name}]
+                                   {:images           [image]
                                     :index            0
-                                    :on-options-press (fn [images index]
-                                                        (rf/dispatch [:show-bottom-sheet
+                                    :on-options-press #(rf/dispatch [:show-bottom-sheet
                                                                       {:content (fn []
-                                                                                  [options-drawer
-                                                                                   images
-                                                                                   index])}]))}])))}
+                                                                                  [options-drawer/view
+                                                                                   image])}]))}])))}
             (if svg?
               [rn/view
                {:style     (assoc style/preview :overflow :hidden)
