@@ -24,7 +24,7 @@
         [message set-message] (rn/use-state "")
         on-message-change     (rn/use-callback #(do
                                                   (set-message %)))
-        on-press-test         #(rf/dispatch [:contacts/update-nickname public-key "Example nickname"])
+        on-press-test         (rn/use-callback #(rf/dispatch [:contacts/update-nickname public-key "Example nickname"]))
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:contact.ui/send-contact-request
