@@ -2566,5 +2566,6 @@
     "key-name-error-length": "Key name too long",
     "key-name-error-emoji": "Emojis are not allowed",
     "key-name-error-special-char": "Special characters are not allowed",
-    "display": "Display"
+    "display": "Display",
+    "testnet-mode-enabled": "Testnet mode enabled"
 }
