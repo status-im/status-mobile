@@ -11,10 +11,10 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn make-callback-sub
+(defn make-stateful-callbacks
   [state-ratom]
   (let [state-ref (atom nil)]
-    (js/console.log "init make-callback")
+    (js/console.log "init make-stateful-callbacks")
     (let [reaction-sub (reagent.ratom/track!
                         (fn [state-ratom]
                           (js/console.log "reagent reaction")
@@ -34,12 +34,9 @@
                    (fn [event]
                      (callback @state-ref event))))})))
 
-(def bind
-  (memoize make-callback-sub))
-
 (defn use-bind [state-ratom]
   (let [{:keys [factory sub]} (rn/use-memo (fn []
-                                         (make-callback-sub state-ratom))
+                                         (make-stateful-callbacks state-ratom))
                                        [state-ratom])] 
     (rn/use-unmount (fn []
                       (js/console.log "unmount sub")
@@ -82,7 +79,7 @@
                                                   (reset! message-sub %)
                                                   (set-message %)))
         callback-state-sub    (reagent.ratom/track combine-subs message-sub profile-sub)
-        act                   (use-bind callback-state-sub)
+        bind                  (use-bind callback-state-sub)
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:contact.ui/send-contact-request
@@ -136,6 +133,6 @@
        :button-one-label (i18n/label :t/send-contact-request)
        :button-two-props {:accessibility-label :test-button
                           :customization-color :danger
-                          :on-press            (act on-press-test)}
+                          :on-press            (bind on-press-test)}
        :button-two-label "test"}]]))
 
