@@ -81,7 +81,7 @@
    [:cat
     [:map {:closed true}
      [:community-id string?]
-     [:password string?]
+     [:password [:maybe [:or string? object?]]]
      [:pub-key string?]
      [:addresses-to-reveal
       [:or [:set string?]
