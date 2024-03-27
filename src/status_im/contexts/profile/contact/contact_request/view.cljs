@@ -130,9 +130,9 @@
                           :accessibility-label :send-contact-request
                           :customization-color customization-color
                           :on-press            on-message-submit}
-       :button-one-label (i18n/label :t/send-contact-request)
+       :button-one-label "Test Button One"
        :button-two-props {:accessibility-label :test-button
                           :customization-color :danger
                           :on-press            (bind on-press-test)}
-       :button-two-label "test"}]]))
+       :button-two-label "Test Button Two"}]]))
 
