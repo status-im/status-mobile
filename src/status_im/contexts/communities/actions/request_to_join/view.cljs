@@ -11,11 +11,10 @@
     [utils.re-frame :as rf]))
 
 (defn join-community-and-navigate-back
-  [id theme]
+  [id]
   (rf/dispatch
    [:standard-auth/authorize
     {:auth-button-label (i18n/label :t/request-to-join)
-     :theme             theme
      :on-auth-success   (fn [password]
                           (rf/dispatch
                            [:communities/request-to-join
@@ -59,7 +58,7 @@
          (i18n/label :t/cancel)]
         [quo/button
          {:accessibility-label :join-community-button
-          :on-press            #(join-community-and-navigate-back id theme)
+          :on-press            #(join-community-and-navigate-back id)
           :container-style     {:flex 1}
           :inner-style         {:background-color (colors/resolve-color color theme)}}
          (i18n/label :t/request-to-join)]]
