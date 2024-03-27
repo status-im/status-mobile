@@ -100,8 +100,7 @@
     :or   {customization-color :blue}}]
   (let [time-frame-string (time-string time-frame time-frame-string)
         up?               (= metrics :positive)]
-    [rn/view
-     {:style style/account-overview-wrapper}
+    [rn/view {:style style/account-overview-wrapper}
      (if (= :loading state)
        [loading-state (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)]
        [rn/view
