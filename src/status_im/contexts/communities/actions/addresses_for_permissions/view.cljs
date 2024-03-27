@@ -367,7 +367,6 @@
                                   :setting-text        (i18n/label
                                                         :t/share-all-current-and-future-addresses)
                                   :container-style     {:margin-bottom 16}}]
-                                  :container-style {:padding-bottom 16 :padding-horizontal 0}}]
        :content-container-style {:padding-horizontal 20}
        :key-fn                  :address
        :data                    wallet-accounts}]
