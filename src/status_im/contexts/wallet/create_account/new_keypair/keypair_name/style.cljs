@@ -2,10 +2,8 @@
 
 (def header-container
   {:margin-horizontal 20
-   :margin-vertical   12})
+   :margin-top        12
+   :margin-bottom     20})
 
 (def bottom-action
-  {:position :absolute
-   :bottom   12
-   :left     0
-   :right    0})
+  {:margin-horizontal -20})

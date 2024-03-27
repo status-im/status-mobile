@@ -3,6 +3,7 @@ package im.status.ethereum.pushnotifications;
 import android.content.Context;
 import android.content.Intent;
 import android.app.Service;
+import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -78,10 +79,10 @@ public class ForegroundService extends Service {
         
 
       
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         Intent stopIntent = new Intent(PushNotificationHelper.ACTION_TAP_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE);
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_notify_status)
@@ -95,8 +96,14 @@ public class ForegroundService extends Service {
                        context.getResources().getString(R.string.stop),
                        stopPendingIntent)
             .build();
+
         // the id of the foreground notification MUST NOT be 0
-        startForeground(1, notification);
+        if (Build.VERSION.SDK_INT >= 33) {
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        } else {
+            startForeground(1, notification);
+        }
+
         return START_STICKY;
     }
 }

@@ -35,10 +35,11 @@
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
-        :on-scan               (fn []
+        :on-scan               (fn [on-result]
                                  (rn/dismiss-keyboard!)
                                  (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:open-modal :screen/wallet.scan-address]))
+                                 (rf/dispatch [:open-modal :screen/wallet.scan-address
+                                               {:on-result on-result}]))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
         :address-regex         constants/regx-multichain-address
@@ -93,7 +94,6 @@
                                     (when-not ens
                                       (rf/dispatch [:wallet/select-send-address
                                                     {:address   address
-                                                     :token?    false
                                                      :recipient local-suggestion
                                                      :stack-id  :screen/wallet.select-address}]))))
                  :active-state? false}]
@@ -140,7 +140,6 @@
         input-focused? (reagent/atom false)]
     (fn []
       (let [selected-tab          (or (rf/sub [:wallet/send-tab]) (:id (first tabs-data)))
-            token                 (rf/sub [:wallet/wallet-send-token])
             valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))
             {:keys [color]}       (rf/sub [:wallet/current-viewing-account])]
         [floating-button-page/view
@@ -157,7 +156,6 @@
                                         :on-press            #(rf/dispatch
                                                                [:wallet/select-send-address
                                                                 {:address @input-value
-                                                                 :token? (some? token)
                                                                  :stack-id
                                                                  :screen/wallet.select-address}])
                                         :customization-color color}

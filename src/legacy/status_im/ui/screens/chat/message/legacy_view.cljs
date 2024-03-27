@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.react-native.resources :as resources]
     [legacy.status-im.ui.components.colors :as quo.colors]
-    [legacy.status-im.ui.components.fast-image :as fast-image]
     [legacy.status-im.ui.screens.chat.message.legacy-style :as style]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -144,23 +143,6 @@
      (fn [acc e] (render-inline (:text content) content-type acc e nil))
      [rn/text {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
-
-;; EMOJI
-(defn emoji
-  []
-  (fn [{:keys [content] :as message}]
-    [rn/view (style/message-view message)
-     [rn/view {:style (style/message-view-content)}
-      [rn/view {:style (style/style-message-text)}
-       [rn/text {:style (style/emoji-message message)}
-        (:text content)]]]]))
-
-;; STICKER
-(defn sticker
-  [{:keys [content]}]
-  [fast-image/fast-image
-   {:style  {:margin 10 :width 140 :height 140}
-    :source {:uri (str (-> content :sticker :url) "&download=true")}}])
 
 (defn contact-request-status-pending
   []

@@ -100,8 +100,7 @@
     :or   {customization-color :blue}}]
   (let [time-frame-string (time-string time-frame time-frame-string)
         up?               (= metrics :positive)]
-    [rn/view
-     {:style style/account-overview-wrapper}
+    [rn/view {:style style/account-overview-wrapper}
      (if (= :loading state)
        [loading-state (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)]
        [rn/view
@@ -113,19 +112,17 @@
           :size   :heading-1
           :style  style/current-value}
          current-value]
-        [rn/view
-         {:style style/row-centered}
-         [:<>
-          (when (seq time-frame-string)
-            [text/text
-             {:weight :medium
-              :size   :paragraph-2
-              :style  (style/bottom-time-text (and (not= :custom time-frame)
-                                                   (seq time-frame-to-string)))}
-             time-frame-string])
-          (when (and (= :custom time-frame)
-                     (seq time-frame-to-string))
-            [custom-time-frame time-frame-to-string])]
+        [rn/view {:style style/row-centered}
+         (when (seq time-frame-string)
+           [text/text
+            {:weight :medium
+             :size   :paragraph-2
+             :style  (style/bottom-time-text (and (not= :custom time-frame)
+                                                  (seq time-frame-to-string)))}
+            time-frame-string])
+         (when (and (= :custom time-frame)
+                    (seq time-frame-to-string))
+           [custom-time-frame time-frame-to-string])
          (when (and (seq percentage-change)
                     (seq currency-change))
            [numeric-changes percentage-change currency-change customization-color theme up?])]])]))

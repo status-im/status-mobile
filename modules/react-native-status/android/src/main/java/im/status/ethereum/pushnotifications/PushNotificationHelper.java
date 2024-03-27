@@ -68,7 +68,7 @@ public class PushNotificationHelper {
     private static final String CHANNEL_ID = "status-im-notifications";
     public static final String ACTION_DELETE_NOTIFICATION = "im.status.ethereum.module.DELETE_NOTIFICATION";
     public static final String ACTION_TAP_STOP = "im.status.ethereum.module.TAP_STOP";
-    final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_CANCEL_CURRENT;
+    final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_CANCEL_CURRENT;
 
     private NotificationManager notificationManager;
 
@@ -139,7 +139,7 @@ public class PushNotificationHelper {
     public void registerBroadcastReceiver() {
         this.intentFilter.addAction(ACTION_DELETE_NOTIFICATION);
         this.intentFilter.addAction(ACTION_TAP_STOP);
-        context.registerReceiver(notificationActionReceiver, this.intentFilter);
+        context.registerReceiver(notificationActionReceiver, this.intentFilter, Context.RECEIVER_EXPORTED);
         Log.e(LOG_TAG, "Broadcast Receiver registered");
     }
 
@@ -518,7 +518,7 @@ public class PushNotificationHelper {
                     actionIntent.setPackage(packageName);
 
                     PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                       notification.addAction(new NotificationCompat.Action.Builder(icon, action, pendingActionIntent).build());
@@ -684,7 +684,7 @@ public class PushNotificationHelper {
 
         return output;
     }
-    
+
     private Person getPerson(Bundle bundle) {
      String name = bundle.getString("name");
 

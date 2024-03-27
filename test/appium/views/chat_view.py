@@ -834,7 +834,7 @@ class ChatView(BaseView):
         self.edit_group_chat_name_button = Button(self.driver, accessibility_id="edit-button")
         self.edit_group_chat_name_edit_box = EditBox(self.driver, accessibility_id="new-chat-name")
         self.done_button = Button(self.driver, accessibility_id="done")
-        self.create_button = Button(self.driver, accessibility_id="create-group-chat-button")
+        self.create_group_chat_button = Button(self.driver, accessibility_id="Create group chat")
         ## Group invites
         self.group_invite_button = Button(self.driver, accessibility_id="invite-chat-button")
         self.group_invite_link_text = Text(self.driver,
@@ -1229,13 +1229,8 @@ class ChatView(BaseView):
         self.show_images_button.click()
         self.allow_button.click_if_shown()
         self.allow_all_button.click_if_shown()
-        confirm_button = self.images_confirm_selection_button
-        for i in indexes:
-            # ToDo: should be changed to just 1 click when https://github.com/status-im/status-mobile/issues/18872 when is fixed
-            self.get_image_by_index(i).click()
-            if not confirm_button.is_element_displayed(sec=3):
-                self.get_image_by_index(i).click()
-        confirm_button.click()
+        [self.get_image_by_index(i).click() for i in indexes]
+        self.images_confirm_selection_button.click()
         self.chat_message_input.send_keys(description)
         self.send_message_button.click()
 

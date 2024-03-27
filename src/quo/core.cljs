@@ -112,6 +112,7 @@
     quo.components.password.tips.view
     quo.components.profile.collectible-list-item.view
     quo.components.profile.collectible.view
+    quo.components.profile.expanded-collectible.view
     quo.components.profile.link-card.view
     quo.components.profile.profile-card.view
     quo.components.profile.select-profile.view
@@ -127,6 +128,7 @@
     quo.components.settings.accounts.view
     quo.components.settings.category.view
     quo.components.settings.data-item.view
+    quo.components.settings.page-setting.view
     quo.components.settings.privacy-option.view
     quo.components.settings.reorder-item.view
     quo.components.settings.section-label.view
@@ -354,6 +356,7 @@
 ;;;; Profile
 (def collectible quo.components.profile.collectible.view/collectible)
 (def collectible-list-item quo.components.profile.collectible-list-item.view/view)
+(def expanded-collectible quo.components.profile.expanded-collectible.view/view)
 (def link-card quo.components.profile.link-card.view/view)
 (def profile-card quo.components.profile.profile-card.view/profile-card)
 (def select-profile quo.components.profile.select-profile.view/view)
@@ -375,6 +378,7 @@
 (def account quo.components.settings.accounts.view/account)
 (def category quo.components.settings.category.view/category)
 (def data-item quo.components.settings.data-item.view/view)
+(def page-setting quo.components.settings.page-setting.view/page-setting)
 (def privacy-option quo.components.settings.privacy-option.view/view)
 (def reorder-item quo.components.settings.reorder-item.view/reorder-item)
 (def section-label quo.components.settings.section-label.view/view)

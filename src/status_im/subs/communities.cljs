@@ -4,8 +4,8 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.common.utils :as wallet.utils]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (re-frame/reg-sub
  :communities/fetching-community
@@ -235,7 +235,16 @@
    collapsed-categories
    full-chats-data]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji can-post? token-gated?]}]]
+       [_
+        {:keys [name
+                categoryID
+                position
+                id
+                emoji
+                can-view?
+                can-post?
+                token-gated?
+                hide-if-permissions-not-met?]}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -251,18 +260,21 @@
                                       :collapsed? (get collapsed-categories
                                                        category-id)
                                       :chats      [])))
-          categorized-chat  {:name             name
-                             :emoji            emoji
-                             :muted?           muted
-                             :unread-messages? (pos? unviewed-messages-count)
-                             :position         position
-                             :mentions-count   (or unviewed-mentions-count 0)
-                             :can-post?        can-post?
-                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false ->
-                             ;; has access
-                             :locked?          (when token-gated?
-                                                 (not can-post?))
-                             :id               id}]
+          locked?           (when token-gated?
+                              (and (not can-view?)
+                                   (not can-post?)))
+          categorized-chat  {:name                         name
+                             :emoji                        emoji
+                             :muted?                       muted
+                             :unread-messages?             (pos? unviewed-messages-count)
+                             :position                     position
+                             :mentions-count               (or unviewed-mentions-count 0)
+                             :can-post?                    can-post?
+                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false
+                             ;; -> has access
+                             :locked?                      locked?
+                             :hide-if-permissions-not-met? (and hide-if-permissions-not-met? locked?)
+                             :id                           id}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
 (re-frame/reg-sub
@@ -283,7 +295,12 @@
               (reduce reduce-fn {})
               (sort-by (comp :position second))
               (map (fn [[k v]]
-                     [k (update v :chats #(sort-by :position %))])))]
+                     [k
+                      (-> v
+                          (update :chats #(sort-by :position %))
+                          (update :chats
+                                  #(filter (comp not :hide-if-permissions-not-met?)
+                                           %)))])))]
      categories-and-chats)))
 
 (re-frame/reg-sub
@@ -297,17 +314,24 @@
   [checking-permissions?
    token-images
    {:keys [satisfied criteria]}]
-  (let [sym    (:symbol criteria)
-        amount (:amount criteria)]
+  (let [sym           (:symbol criteria)
+        amount-in-wei (:amountInWei criteria)
+        decimals      (:decimals criteria)]
     {:symbol      sym
      :sufficient? satisfied
      :loading?    checking-permissions?
-     :amount      (wallet.utils/remove-trailing-zeroes amount)
+     :amount      (money/to-fixed (money/token->unit amount-in-wei decimals))
      :img-src     (get token-images sym)}))
 
 (re-frame/reg-sub
  :communities/checking-permissions-by-id
  :<- [:communities/permissions-check]
+ (fn [permissions [_ id]]
+   (get permissions id)))
+
+(re-frame/reg-sub
+ :communities/checking-permissions-all-by-id
+ :<- [:communities/permissions-check-all]
  (fn [permissions [_ id]]
    (get permissions id)))
 
@@ -359,3 +383,35 @@
         (map (fn [{sym :symbol image :image}]
                {sym image}))
         (into {}))))
+
+(re-frame/reg-sub
+ :community/token-permissions
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:communities/community community-id])
+    (re-frame/subscribe [:communities/checking-permissions-all-by-id community-id])])
+ (fn [[{:keys [token-images]}
+       {:keys [checking? check]}] _]
+   (let [roles                      (:roles check)
+         member-and-satisifed-roles (filter #(or (= (:type %)
+                                                    constants/community-token-permission-become-member)
+                                                 (:satisfied %))
+                                            roles)]
+     (mapv (fn [role]
+             {:role       (:type role)
+              :satisfied? (:satisfied role)
+              :tokens     (map (fn [{:keys [tokenRequirement]}]
+                                 (map
+                                  (partial token-requirement->token
+                                           checking?
+                                           token-images)
+                                  tokenRequirement))
+                               (:criteria role))})
+           member-and-satisifed-roles))))
+
+(re-frame/reg-sub
+ :communities/has-permissions?
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:community/token-permissions community-id])])
+ (fn [[permissions] _]
+   (let [all-tokens (apply concat (map :tokens permissions))]
+     (boolean (some seq all-tokens)))))

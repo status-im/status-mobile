@@ -36,7 +36,8 @@
                                  :on-denied   #(log/error "user denied push notification permissions")}])
                               (rf/dispatch [:push-notifications/switch true platform/ios?])
                               (rf/dispatch [:navigate-to-within-stack
-                                            [:welcome :enable-notifications]]))
+                                            [:screen/onboarding.welcome
+                                             :screen/onboarding.enable-notifications]]))
        :type                :primary
        :icon-left           :i/notifications
        :accessibility-label :enable-notifications-button
@@ -46,7 +47,8 @@
       {:on-press            (fn []
                               (shell.utils/change-selected-stack-id :communities-stack true nil)
                               (rf/dispatch [:navigate-to-within-stack
-                                            [:welcome :enable-notifications]]))
+                                            [:screen/onboarding.welcome
+                                             :screen/onboarding.enable-notifications]]))
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur

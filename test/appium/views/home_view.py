@@ -130,7 +130,7 @@ class ActivityCenterElement(SilentButton):
 
     @property
     def title(self):
-        return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-title"]')
+        return Text(self.driver, xpath=self.locator + '//*[@content-desc="activity-title"]')
 
     @property
     def unread_indicator(self):
@@ -139,6 +139,14 @@ class ActivityCenterElement(SilentButton):
     @property
     def message_body(self):
         return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-message-body"]')
+
+    @property
+    def context_tag_text(self):
+        return Text(self.driver, xpath=self.locator + '//*[@content-desc="context-tag"]/android.widget.TextView').text
+
+    @property
+    def pending_status_tag(self):
+        return Text(self.driver, xpath=self.locator + '//*[@content-desc="status-tag-pending"]')
 
     def handle_cr(self, element_accessibility: str):
         Button(
@@ -338,6 +346,9 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
+    def get_activity_center_element_by_text(self, text_part):
+        return ActivityCenterElement(self.driver, text_part)
+
     def get_chat(self, username, community=False, community_channel=False, wait_time=10):
         if community:
             self.driver.info("Looking for community: '%s'" % username)
@@ -346,7 +357,7 @@ class HomeView(BaseView):
         chat_element = ChatElement(self.driver, username[:25], community=community, community_channel=community_channel)
         if not chat_element.is_element_displayed(wait_time) and community is False and community_channel is False:
             if self.notifications_unread_badge.is_element_displayed(30):
-                chat_in_ac = ActivityCenterElement(self.driver, username[:25])
+                chat_in_ac = self.get_activity_center_element_by_text(username[:25])
                 self.open_activity_center_button.click_until_presence_of_element(chat_in_ac)
                 chat_in_ac.wait_for_element(20)
                 chat_in_ac.click()
@@ -364,7 +375,7 @@ class HomeView(BaseView):
 
     def get_element_from_activity_center_view(self, message_body):
         self.driver.info("Looking for activity center element: '%s'" % message_body)
-        chat_element = ActivityCenterElement(self.driver, message_body)
+        chat_element = self.get_activity_center_element_by_text(message_body)
         return chat_element
 
     def handle_contact_request(self, username: str, action='accept'):
@@ -375,7 +386,7 @@ class HomeView(BaseView):
         except TimeoutException:
             pass
         self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
-        chat_element = ActivityCenterElement(self.driver, username[:25])
+        chat_element = self.get_activity_center_element_by_text(username[:25])
         try:
             if action == 'accept':
                 self.driver.info("Accepting incoming CR for %s" % username)
@@ -431,8 +442,8 @@ class HomeView(BaseView):
                     "User with the name '%s' is not in contacts list so can't create a group chat" % user_name)
             check_box.click_until_presence_of_element(chat.get_username_checkbox(user_name, state_on=True))
         self.setup_chat_button.click()
-        chat.chat_name_editbox.send_keys(group_chat_name)
-        chat.create_button.click()
+        self.get_sign_in_view().profile_title_input.send_keys(group_chat_name)
+        chat.create_group_chat_button.click()
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat
 

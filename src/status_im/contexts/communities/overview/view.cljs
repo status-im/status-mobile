@@ -3,6 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme :as theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -97,20 +98,21 @@
 
 (defn- info-button
   []
-  [rn/pressable
-   {:on-press
-    #(rf/dispatch
-      [:show-bottom-sheet
-       {:content
-        (fn []
-          [quo/documentation-drawers
-           {:title        (i18n/label :t/token-gated-communities)
-            :show-button? true
-            :button-label (i18n/label :t/read-more)
-            :button-icon  :info}
-           [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
-   [rn/view
-    [quo/icon :i/info {:no-color true}]]])
+  (let [theme (theme/use-theme)]
+    [rn/pressable
+     {:on-press
+      #(rf/dispatch
+        [:show-bottom-sheet
+         {:content
+          (fn []
+            [quo/documentation-drawers
+             {:title        (i18n/label :t/token-gated-communities)
+              :show-button? true
+              :button-label (i18n/label :t/read-more)
+              :button-icon  :info}
+             [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+     [rn/view
+      [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
 (defn- network-not-supported
   []
@@ -176,23 +178,16 @@
          :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
          :disabled?           (not can-request-access?)
          :icon-left           (if can-request-access? :i/unlocked :i/locked)}
-        (i18n/label :t/join-open-community)]])))
+        (i18n/label :t/request-to-join)]])))
 
 (defn- join-community
-  [{:keys [id joined permissions role-permissions? can-join?] :as community}]
+  [{:keys [id joined permissions] :as community}]
   (let [pending?        (rf/sub [:communities/my-pending-request-to-join id])
         access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
         invite-only?    (= access-type :invite-only)]
-    [:<>
-     (when-not (or joined pending? invite-only? unknown-access?)
-       [token-requirements community])
-     (when (not (or pending? role-permissions? can-join?))
-       [quo/text
-        {:size   :paragraph-2
-         :weight :regular
-         :style  style/review-notice}
-        (i18n/label :t/community-admins-will-review-your-request)])]))
+    (when-not (or joined pending? invite-only? unknown-access?)
+      [token-requirements community])))
 
 (defn- status-tag
   [community-id joined]

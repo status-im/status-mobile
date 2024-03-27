@@ -83,7 +83,9 @@
             :on-press            #(rf/dispatch [:navigate-back])
             :background          :blur
             :right-side          [{:icon-name :i/scan
-                                   :on-press  #(js/alert "To be implemented")}]
+                                   :on-press  (fn []
+                                                (rf/dispatch [:navigate-back])
+                                                (rf/dispatch [:open-modal :shell-qr-reader]))}]
             :accessibility-label :top-bar}]
           [quo/page-top
            {:title           title

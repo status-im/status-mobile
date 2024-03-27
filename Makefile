@@ -375,25 +375,25 @@ test-contract: export SHADOW_NS_REGEXP := ^tests\.contract-test.*$$
 test-contract: ##@test Run contract tests
 test-contract: _test-clojure
 
-android-test: jsbundle
-android-test: export TARGET := android
-android-test:
+test-android: jsbundle
+test-android: export TARGET := android
+test-android: ##@test Android Gradle test
 	cd android && ./gradlew test
 
-component-test-watch: export TARGET := clojure
-component-test-watch: export COMPONENT_TEST := true
-component-test-watch: export BABEL_ENV := test
-component-test-watch: export JEST_USE_SILENT_REPORTER := false
-component-test-watch: ##@ Watch tests and re-run no changes to cljs files
+test-component-watch: export TARGET := clojure
+test-component-watch: export COMPONENT_TEST := true
+test-component-watch: export BABEL_ENV := test
+test-component-watch: export JEST_USE_SILENT_REPORTER := false
+test-component-watch: ##@ Watch tests and re-run no changes to cljs files
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
 	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
 
-component-test: export TARGET := clojure
-component-test: export COMPONENT_TEST := true
-component-test: export BABEL_ENV := test
-component-test: export JEST_USE_SILENT_REPORTER := false
-component-test: ##@test Run component tests once in NodeJS
+test-component: export TARGET := clojure
+test-component: export COMPONENT_TEST := true
+test-component: export BABEL_ENV := test
+test-component: export JEST_USE_SILENT_REPORTER := false
+test-component: ##@test Run component tests once in NodeJS
 	@scripts/check-metro-shadow-process.sh
 	rm -rf ./component-spec
 	yarn shadow-cljs compile component-test && \

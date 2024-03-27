@@ -4,10 +4,10 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.not-implemented :as not-implemented]
     [status-im.common.password-authentication.view :as password-authentication]
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
+    [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]))
@@ -151,14 +151,23 @@
 (defn- page-top
   [{:keys [community-id identical-choices? can-edit-addresses?]}]
   (let [{:keys [name logo color]} (rf/sub [:communities/for-context-tag community-id])
-        confirm-discard-changes   (rn/use-callback
-                                   (fn []
-                                     (if identical-choices?
-                                       (rf/dispatch [:dismiss-modal :addresses-for-permissions])
-                                       (rf/dispatch [:show-bottom-sheet
-                                                     {:content (fn [] [confirm-discard-drawer
-                                                                       community-id])}])))
-                                   [identical-choices?])]
+        has-permissions? (rf/sub [:communities/has-permissions? community-id])
+        confirm-discard-changes
+        (rn/use-callback
+         (fn []
+           (if identical-choices?
+             (rf/dispatch [:dismiss-modal :addresses-for-permissions])
+             (rf/dispatch [:show-bottom-sheet
+                           {:content (fn [] [confirm-discard-drawer
+                                             community-id])}])))
+         [identical-choices? community-id])
+
+        open-permission-sheet
+        (rn/use-callback (fn []
+                           (rf/dispatch [:show-bottom-sheet
+                                         {:content (fn [] [permissions-sheet/view
+                                                           community-id])}]))
+                         [community-id])]
     [:<>
      (when can-edit-addresses?
        [quo/page-nav
@@ -175,15 +184,16 @@
                                      :community-logo logo
                                      :community-name name}}]
        [quo/drawer-top
-        {:type                :context-tag
-         :title               (i18n/label :t/addresses-for-permissions)
-         :context-tag-type    :community
-         :community-name      name
-         :button-icon         :i/info
-         :button-type         :grey
-         :on-button-press     not-implemented/alert
-         :community-logo      logo
-         :customization-color color}])]))
+        (cond-> {:type                :context-tag
+                 :title               (i18n/label :t/addresses-for-permissions)
+                 :context-tag-type    :community
+                 :community-name      name
+                 :community-logo      logo
+                 :customization-color color}
+          has-permissions?
+          (assoc :button-icon     :i/info
+                 :button-type     :grey
+                 :on-button-press open-permission-sheet))])]))
 
 (defn view
   []
@@ -278,17 +288,13 @@
                                  id
                                  color
                                  flag-share-all-addresses]
-       :header                  [quo/category
-                                 {:list-type       :settings
-                                  :data            [{:title
-                                                     (i18n/label
-                                                      :t/share-all-current-and-future-addresses)
-                                                     :action :selector
-                                                     :action-props
-                                                     {:on-change toggle-flag-share-all-addresses
-                                                      :customization-color color
-                                                      :checked? flag-share-all-addresses}}]
-                                  :container-style {:padding-bottom 16 :padding-horizontal 0}}]
+       :header                  [quo/page-setting
+                                 {:checked?            flag-share-all-addresses
+                                  :customization-color color
+                                  :on-change           toggle-flag-share-all-addresses
+                                  :setting-text        (i18n/label
+                                                        :t/share-all-current-and-future-addresses)
+                                  :container-style     {:margin-bottom 16}}]
        :content-container-style {:padding-horizontal 20}
        :key-fn                  :address
        :data                    wallet-accounts}]

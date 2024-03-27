@@ -63,7 +63,8 @@
          :type                :grey
          :background          :blur
          :on-press            #(rf/dispatch [:navigate-to-within-stack
-                                             [:enable-notifications :new-to-status]])
+                                             [:screen/onboarding.enable-notifications
+                                              :screen/onboarding.new-to-status]])
          :container-style     style/button}
         (i18n/label :t/continue)]]]]))
 

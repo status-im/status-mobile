@@ -45,7 +45,9 @@
         :title    (i18n/label :t/use-recovery-phrase)
         :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
         :image    (resources/get-image :ethereum-address)
-        :on-press #(rf/dispatch [:navigate-to-within-stack [:enter-seed-phrase :new-to-status]])}]
+        :on-press #(rf/dispatch [:navigate-to-within-stack
+                                 [:screen/onboarding.enter-seed-phrase
+                                  :screen/onboarding.new-to-status]])}]
       [rn/view {:style style/space-between-suboptions}]
       [quo/small-option-card
        {:variant  :icon

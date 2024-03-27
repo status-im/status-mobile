@@ -135,6 +135,7 @@
     [status-im.contexts.preview.quo.password.tips :as tips]
     [status-im.contexts.preview.quo.profile.collectible :as collectible]
     [status-im.contexts.preview.quo.profile.collectible-list-item :as collectible-list-item]
+    [status-im.contexts.preview.quo.profile.expanded-collectible :as expanded-collectible]
     [status-im.contexts.preview.quo.profile.link-card :as link-card]
     [status-im.contexts.preview.quo.profile.profile-card :as profile-card]
     [status-im.contexts.preview.quo.profile.select-profile :as select-profile]
@@ -149,6 +150,7 @@
     [status-im.contexts.preview.quo.settings.accounts :as accounts]
     [status-im.contexts.preview.quo.settings.category :as category]
     [status-im.contexts.preview.quo.settings.data-item :as data-item]
+    [status-im.contexts.preview.quo.settings.page-setting :as page-setting]
     [status-im.contexts.preview.quo.settings.privacy-option :as privacy-option]
     [status-im.contexts.preview.quo.settings.reorder-item :as reorder-item]
     [status-im.contexts.preview.quo.settings.section-label :as section-label]
@@ -420,6 +422,8 @@
                         :component collectible/view}
                        {:name      :collectible-list-item
                         :component collectible-list-item/view}
+                       {:name      :expanded-collectible
+                        :component expanded-collectible/view}
                        {:name      :link-card
                         :component link-card/view}
                        {:name      :profile-card
@@ -444,6 +448,8 @@
                         :component react/preview-react}]
    :settings          [{:name      :privacy-option
                         :component privacy-option/view}
+                       {:name      :page-setting
+                        :component page-setting/view}
                        {:name      :accounts
                         :component accounts/view}
                        {:name      :settings-item

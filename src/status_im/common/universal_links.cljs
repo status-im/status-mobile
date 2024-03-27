@@ -75,7 +75,7 @@
     (and public-key (own-public-key? db public-key))
     (rf/merge cofx
               {:pop-to-root-fx :shell-stack}
-              (navigation/navigate-to :my-profile nil))
+              (navigation/navigate-to :settings nil))
 
     public-key
     {:dispatch [:chat.ui/show-profile public-key ens-name]}))
