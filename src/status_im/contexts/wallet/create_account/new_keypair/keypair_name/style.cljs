@@ -7,3 +7,11 @@
 
 (def bottom-action
   {:margin-horizontal -20})
+
+(defn error-container
+  {:flex-direction  :row
+   :justify-content :center
+   :align-items     :center
+   :align-self      :flex-start
+   :margin-left     20
+   :margin-vertical 8})
