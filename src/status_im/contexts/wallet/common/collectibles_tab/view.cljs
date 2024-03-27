@@ -10,16 +10,14 @@
 
 (defn- render-fn
   [{:keys [preview-url collection-data ownership] :as collectible} address on-press on-long-press]
-  (let [total (if address
-                (utils/total-owned-collectible-by-address ownership address)
-                (utils/total-owned-collectible ownership))]
+  (let [total-owned (utils/calculate-owned-collectible ownership address)]
     [quo/collectible-list-item
      {:type      :card
       :image-src (:uri preview-url)
       :avatar-image-src (:image-url collection-data)
       :collectible-name (:name collection-data)
       :status :default
-      :counter (when (> total 1) total)
+      :counter (utils/collectible-owned-counter total-owned)
       :container-style {:padding 8}
       :on-press #(when on-press
                    (on-press collectible))
