@@ -9,6 +9,10 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn example-component []
+  (js/console.log "example component render")
+  [rn/text "Hello"])
+
 (defn view
   []
   (let [{:keys [public-key customization-color]
@@ -34,6 +38,7 @@
     (js/console.log "contact request view render")
     [:<>
      [quo/button {} "Example static button"]
+     [example-component]
      [quo/drawer-top
       {:type                :context-tag
        :context-tag-type    :default
