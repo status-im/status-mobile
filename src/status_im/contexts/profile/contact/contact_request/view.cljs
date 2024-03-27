@@ -9,11 +9,6 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn on-press-test
-  [event]
-  (js/console.log "on-press event" #js{:target (.-target event)})
-  (rf/dispatch [:hide-bottom-sheet]))
-
 (defn view
   []
   (let [{:keys [public-key customization-color]
@@ -25,6 +20,7 @@
         [message set-message] (rn/use-state "")
         on-message-change     (rn/use-callback #(do
                                                   (set-message %)))
+        on-press-test         #(rf/dispatch [:contacts/update-nickname public-key "Example nickname"])
         on-message-submit     (rn/use-callback (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:contact.ui/send-contact-request
@@ -35,7 +31,9 @@
                                                                 :text (i18n/label
                                                                        :t/contact-request-was-sent)}]))
                                                [public-key message])]
+    (js/console.log "contact request view render")
     [:<>
+     [quo/button {} "Example static button"]
      [quo/drawer-top
       {:type                :context-tag
        :context-tag-type    :default
