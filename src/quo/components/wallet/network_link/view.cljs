@@ -48,20 +48,22 @@
       [circle fill-color stroke-color]]]))
 
 (defn link-1x
-  [{:keys [source destination theme]}]
-  (let [container-width   (reagent/atom 100)
-        source-color      (colors/resolve-color source theme)
-        destination-color (colors/resolve-color destination theme)
-        fill-color        (colors/theme-colors colors/white colors/neutral-90 theme)
-        stroke-color      "url(#gradient)"]
-    (fn []
-      (let [view-box          (str "0 0 " @container-width " 58")
+  []
+  (let [container-width (reagent/atom 100)
+        stroke-color    "url(#gradient)"]
+    (fn [{:keys [source destination theme]}]
+      (let [source-color      (colors/resolve-color source theme)
+            destination-color (colors/resolve-color destination theme)
+            fill-color        (colors/theme-colors colors/white colors/neutral-90 theme)
+            view-box          (str "0 0 " @container-width " 58")
             side-lines-path   (utils/calculate-side-lines-path-1x @container-width)
             central-transform (utils/calculate-transform @container-width)]
         [rn/view
          {:style     style/link-1x-container
-          :on-layout #(reset! container-width
-                        (oget % :nativeEvent :layout :width))}
+          :on-layout (fn [e]
+                       (println "dsadasdasd")
+                       (reset! container-width
+                         (oget e :nativeEvent :layout :width)))}
          [svg/svg
           {:xmlns    "http://www.w3.org/2000/svg"
            :height   "100%"
@@ -95,14 +97,14 @@
           [circle fill-color destination-color]]]))))
 
 (defn link-2x
-  [{:keys [source destination theme]}]
-  (let [container-width   (reagent/atom 100)
-        source-color      (colors/resolve-color source theme)
-        destination-color (colors/resolve-color destination theme)
-        fill-color        (colors/theme-colors colors/white colors/neutral-90 theme)
-        stroke-color      "url(#gradient)"]
-    (fn []
-      (let [view-box          (str "0 0 " @container-width " 114")
+  []
+  (let [container-width (reagent/atom 100)
+        stroke-color    "url(#gradient)"]
+    (fn [{:keys [source destination theme]}]
+      (let [source-color      (colors/resolve-color source theme)
+            destination-color (colors/resolve-color destination theme)
+            fill-color        (colors/theme-colors colors/white colors/neutral-90 theme)
+            view-box          (str "0 0 " @container-width " 114")
             side-lines-path   (utils/calculate-side-lines-path-2x @container-width)
             central-transform (utils/calculate-transform @container-width)]
         [rn/view
