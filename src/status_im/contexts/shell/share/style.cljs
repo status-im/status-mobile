@@ -5,7 +5,6 @@
 
 (def screen-padding 20)
 
-
 (def header-row
   {:flex-direction     :row
    :justify-content    :space-between
