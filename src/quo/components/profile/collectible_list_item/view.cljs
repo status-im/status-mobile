@@ -10,6 +10,7 @@
     [quo.foundations.gradients :as gradients]
     [quo.theme]
     [react-native.core :as rn]
+    [reagent.core :as reagent]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
@@ -85,31 +86,25 @@
 
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter
-           gradient-color-index image-src status]}]
+           gradient-color-index image-src status image-loading? image-error?]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style (style/card-view-container theme)}
-     [rn/view {:style {:aspect-ratio 1}}
-      (cond
-        (= :loading status)
-        [loading-image
-         {:theme                theme
-          :gradient-color-index gradient-color-index}]
-
-        (= status :unsupported)
-        [fallback-view
-         {:theme theme
-          :label (i18n/label :t/unsupported-file)}]
-
-        (= status :cant-fetch)
-        [fallback-view
-         {:theme theme
-          :label (i18n/label :t/cant-fetch-info)}]
-
-        :else
-        [rn/view {:style {:aspect-ratio 1}}
-         [rn/image
-          {:style  style/image
-           :source image-src}]])]
+     [rn/view {:style {:aspect-ratio 1}} 
+       (cond
+         @image-error?  [fallback-view
+                         {:theme theme
+                          :label (i18n/label :t/cant-fetch-info)}]
+         @image-loading? [loading-image
+                          {:theme                theme
+                           :gradient-color-index gradient-color-index}])
+      [rn/view {:style {:aspect-ratio 1}}
+       [rn/image
+        {:style  style/image
+         :on-load (fn [e] 
+                    (println e))
+         :on-load-end #(reset! image-loading? false)
+         :on-error #(reset! image-error? true)
+         :source image-src}]]]
      (when (and (not= status :loading) (not= status :cant-fetch) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -124,29 +119,22 @@
 
 (defn- image-view
   [{:keys [avatar-image-src community? counter
-           gradient-color-index image-src status]}]
+           gradient-color-index image-src status image-loading? image-error?]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style style/image-view-container}
      (cond
-       (= :loading status)
-       [loading-image
-        {:theme                theme
-         :gradient-color-index gradient-color-index}]
-
-       (= status :unsupported)
-       [fallback-view
-        {:theme theme
-         :label (i18n/label :t/unsupported-file)}]
-
-       (= status :cant-fetch)
-       [fallback-view
-        {:theme theme
-         :label (i18n/label :t/cant-fetch-info)}]
-
-       :else [rn/view {:style {:aspect-ratio 1}}
-              [rn/image
-               {:style  style/image
-                :source image-src}]])
+       @image-error?  [fallback-view
+                       {:theme theme
+                        :label (i18n/label :t/cant-fetch-info)}]
+       @image-loading? [loading-image
+                        {:theme                theme
+                         :gradient-color-index gradient-color-index}])
+     [rn/view {:style {:aspect-ratio 1}}
+      [rn/image
+       {:style  style/image
+        :on-load-end #(reset! image-loading? false)
+        :on-error #(reset! image-error? true)
+        :source image-src}]]
      (when (and (not= status :loading) (not= status :cant-fetch) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -162,13 +150,16 @@
 (defn- view-internal
   [{:keys [container-style type on-press status]
     :as   props}]
-  [rn/pressable
-   {:on-press            (when-not (= status :loading) on-press)
-    :accessibility-label :collectible-list-item
-    :style               (merge container-style style/container)}
-   (if (= type :card)
-     [card-view props]
-     [image-view props])])
+  (let [image-loading? (reagent/atom true)
+        image-error?   (reagent/atom false)]
+    (fn []
+      [rn/pressable
+       {:on-press            (when-not (= status :loading) on-press)
+        :accessibility-label :collectible-list-item
+        :style               (merge container-style style/container)}
+       (if (= type :card)
+         [card-view (assoc props :image-loading? image-loading? :image-error? image-error?)]
+         [image-view (assoc props :image-loading? image-loading? :image-error? image-error?)])])))
 
 (def ?schema
   [:=>

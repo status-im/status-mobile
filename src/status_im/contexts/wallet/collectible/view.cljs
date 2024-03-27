@@ -4,14 +4,14 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.svg :as svg]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.url :as url]))
+    [utils.url :as url]
+    [status-im.contexts.wallet.common.utils :as utils]))
 
 (defn header
   [collectible-name collection-name collection-image-url]
@@ -106,6 +106,7 @@
     (fn []
       (let [collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
+            wallet-address  (rf/sub [:wallet/current-viewing-account-address])
             {:keys [id
                     preview-url
                     collection-data
@@ -115,7 +116,10 @@
             token-id                    (:token-id id)
             {collection-image :image-url
              collection-name  :name}    collection-data
-            {collectible-name :name}    collectible-data]
+            {collectible-name :name}    collectible-data
+            
+            total-owned (utils/calculate-owned-collectible (:ownership collectible) wallet-address)]
+        (println total-owned "total-owned" collectible wallet-address)
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -130,9 +134,11 @@
                                                          :theme   theme}])}]
                            :picture     preview-uri}}
          [rn/view {:style style/container}
-          [rn/view {:style style/preview-container}
-           [rn/touchable-opacity
-            {:active-opacity 1
+           [quo/expanded-collectible
+            {:image-src preview-uri
+             :container-style style/preview-container
+             :status (if svg? :unsupported :default)
+             :counter (utils/collectible-owned-counter total-owned)
              :on-press       (fn []
                                (if svg?
                                  (js/alert "Can't visualize SVG images in lightbox")
@@ -157,16 +163,17 @@
                                                                                   [options-drawer
                                                                                    images
                                                                                    index])}]))}])))}
-            (if svg?
-              [rn/view
-               {:style     (assoc style/preview :overflow :hidden)
-                :native-ID (when (= animation-shared-element-id token-id)
-                             :shared-element)}
-               [svg/svg-uri (assoc style/preview :uri preview-uri)]]
-              [rn/image
-               {:source    preview-uri
-                :style     style/preview
-                :native-ID (when (= animation-shared-element-id token-id) :shared-element)}])]]
+            ;; (if svg?
+            ;;   [rn/view
+            ;;    {:style     (assoc style/preview :overflow :hidden)
+            ;;     :native-ID (when (= animation-shared-element-id token-id)
+            ;;                  :shared-element)}
+            ;;    [svg/svg-uri (assoc style/preview :uri preview-uri)]]
+            ;;   [rn/image
+            ;;    {:source    preview-uri
+            ;;     :style     style/preview
+            ;;     :native-ID (when (= animation-shared-element-id token-id) :shared-element)}])
+            ]
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs

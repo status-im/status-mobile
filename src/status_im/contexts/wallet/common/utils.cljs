@@ -328,3 +328,13 @@
               acc))
           0
           ownership))
+
+(defn calculate-owned-collectible
+  [ownership address]
+  (if address
+    (total-owned-collectible-by-address ownership address)
+    (total-owned-collectible ownership)))
+
+(defn collectible-owned-counter
+  [total]
+  (when (> total 1) total))
