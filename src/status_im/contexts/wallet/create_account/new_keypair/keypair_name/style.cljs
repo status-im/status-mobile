@@ -8,7 +8,7 @@
 (def bottom-action
   {:margin-horizontal -20})
 
-(defn error-container
+(def error-container
   {:flex-direction  :row
    :justify-content :center
    :align-items     :center
