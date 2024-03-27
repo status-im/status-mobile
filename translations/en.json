@@ -2562,5 +2562,11 @@
         "one": "1 address",
         "other": "{{count}} addresses"
     },
+<<<<<<< HEAD
     "max": "Max: {{number}}"
+=======
+    "key-name-error-1": "Key name too long",
+    "key-name-error-2": "Emojis are not allowed",
+    "key-name-error-3": "Special characters are not allowed",
+>>>>>>> ed9f1cb22 (feat: keypair name handling)
 }
