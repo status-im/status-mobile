@@ -9,8 +9,8 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn example-component []
-  (js/console.log "example component render")
+(defn example-component [props]
+  (js/console.log "example component render" (clj->js props))
   [rn/text "Hello"])
 
 (defn view
@@ -38,7 +38,7 @@
     (js/console.log "contact request view render")
     [:<>
      [quo/button {} "Example static button"]
-     [example-component]
+     [example-component {}]
      [quo/drawer-top
       {:type                :context-tag
        :context-tag-type    :default
