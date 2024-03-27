@@ -16,10 +16,10 @@ Both of these links are showing it for React-Testing-Library (not Native) howeve
 ## Running the tests
 To run these tests there are two methods.
 
-`make component-test` 
+`make test-component`
 setups and runs the test suite once.
 
-`make component-test-watch` 
+`make test-component-watch`
 setups and runs the test suite and watches for code changes will then retrigger the test suite.
 
 ## Writing Tests
@@ -38,7 +38,7 @@ There is a file of utility functions defined in "src/test_helpers/component.cljs
 ## Configuration
 Status Mobile has a bespoke tech stack, as such there is more complexities to configuring the tests.
 
-### Shadow-CLJS 
+### Shadow-CLJS
 the configuration for compiling our tests are defined in the "shadow-cljs.edn" file.
 The three main parts of this are
 `:target :npm-module`
@@ -47,9 +47,9 @@ Needed for the configuration we are using
 a vector of entry points for the test files.
 and the `ns-regexp` to specify what tests to find. Since we have multiple forms of tests we decided that "component-spec" is the least likely to detect the wrong file type.
 
-It's worth knowing that our tests are compiled to JS and then run in the temporary folder `component-tests`. 
+It's worth knowing that our tests are compiled to JS and then run in the temporary folder `component-tests`.
 
 ### Jest
 There is also further configuration for Jest in "test/jest". There is a jest config file which has some mostly standard configuration pieces, where the tests live, what environment variables are set etc. This is documented by Jest here: https://jestjs.io/docs/configuration
 
-There is also a setup file which is used to set some global and default values. Additionally this file is used to mock some of the react native (among other) dependencies 
+There is also a setup file which is used to set some global and default values. Additionally this file is used to mock some of the react native (among other) dependencies.

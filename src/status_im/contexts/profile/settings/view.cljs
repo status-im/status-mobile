@@ -53,7 +53,8 @@
        {:background :blur
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
-        :right-side [{:icon-name :i/multi-profile :on-press #(rf/dispatch [:open-modal :sign-in])}
+        :right-side [{:icon-name :i/multi-profile
+                      :on-press  #(rf/dispatch [:open-modal :screen/onboarding.sign-in])}
                      {:icon-name :i/qr-code
                       :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
                      {:icon-name :i/share :on-press not-implemented/alert}]}]]
@@ -67,7 +68,8 @@
        :footer                          [footer insets logout-press]
        :scroll-event-throttle           16
        :on-scroll                       #(scroll-handler % scroll-y)
-       :bounces                         false}]
+       :bounces                         false
+       :over-scroll-mode                :never}]
      [quo/floating-shell-button
       {:key :shell
        :jump-to

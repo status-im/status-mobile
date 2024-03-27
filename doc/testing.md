@@ -54,13 +54,13 @@ Here I'm showing a terminal-only experience using Tmux (left pane Emacs, right p
 To run tests:
 
 ```
-make component-test
+make test-component
 ```
 
 Also test watcher can be launched. It will re-run the entire test suite when any file is modified
 
 ```
-make component-test-watch
+make test-component-watch
 ```
 
 Check [component tests doc](./component-tests-overview.md) for more.

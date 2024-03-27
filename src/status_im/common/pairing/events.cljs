@@ -32,10 +32,10 @@
         multiaccount-data               (when received-account?
                                           (merge account {:password password}))
         navigate-to-syncing-devices?    (and (or connection-success? connection-error?) receiver?)
-        user-in-syncing-devices-screen? (or (= (:view-id db) :syncing-progress)
-                                            (= (:view-id db) :profiles)
-                                            (= (:view-id db) :syncing-progress-intro))
-        user-in-sign-in-intro-screen?   (= (:view-id db) :sign-in-intro)]
+        user-in-syncing-devices-screen? (or (= (:view-id db) :screen/onboarding.syncing-progress)
+                                            (= (:view-id db) :screen/profile.profiles)
+                                            (= (:view-id db) :screen/onboarding.syncing-progress-intro))
+        user-in-sign-in-intro-screen?   (= (:view-id db) :screen/onboarding.sign-in-intro)]
     (merge {:db (cond-> db
                   connection-success?
                   (assoc-in [:syncing :pairing-status] :connected)
@@ -51,8 +51,9 @@
            (cond
              (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
              {:dispatch (if user-in-sign-in-intro-screen?
-                          [:navigate-to-within-stack [:syncing-progress-intro :sign-in-intro]]
-                          [:navigate-to :syncing-progress])}
+                          [:navigate-to-within-stack
+                           [:screen/onboarding.syncing-progress-intro :screen/onboarding.sign-in-intro]]
+                          [:navigate-to :screen/onboarding.syncing-progress])}
 
              (and completed-pairing? sender?)
              {:dispatch [:syncing/clear-states]}
