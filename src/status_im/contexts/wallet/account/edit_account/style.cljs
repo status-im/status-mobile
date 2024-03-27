@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.edit-account.style)
+(ns status-im.contexts.wallet.account.edit-account.style)
 
 (def data-item
   {:margin-horizontal 20
