@@ -57,6 +57,9 @@
 
 [Troubleshooting for known errors](troubleshooting.md)
 
+## Articles
+
+[Notes on memoization](notes-on-memoization.md) 
 
 
 ## Outdated:
