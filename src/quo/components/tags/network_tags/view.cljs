@@ -7,11 +7,12 @@
     [react-native.core :as rn]))
 
 (defn- view-internal
-  [{:keys [title networks status theme blur?] :or {status :default}}]
+  [{:keys [title networks status theme blur? container-style] :or {status :default}}]
   [rn/view
-   {:style (style/container {:status status
-                             :theme  theme
-                             :blur?  blur?})}
+   {:style (merge (style/container {:status status
+                                    :theme  theme
+                                    :blur?  blur?})
+                  container-style)}
    [preview-list/view
     {:type   :network
      :number (count networks)
