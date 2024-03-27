@@ -60,12 +60,7 @@
             :error?          error?}]
           (when error?
             [rn/view
-             {:style {:flex-direction  :row
-                      :justify-content :center
-                      :align-items     :center
-                      :align-self      :flex-start
-                      :margin-left     20
-                      :margin-vertical 8}}
+             {:style style/error-container}
              [quo/icon :i/info {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}]
              [quo/text
               {:style {:margin-left 4
