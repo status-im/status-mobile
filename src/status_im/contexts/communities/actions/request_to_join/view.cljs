@@ -5,7 +5,6 @@
     [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.community-rules-list.view :as community-rules]
     [status-im.contexts.communities.actions.request-to-join.style :as style]
     [utils.i18n :as i18n]
@@ -13,11 +12,14 @@
 
 (defn join-community-and-navigate-back
   [id]
-  (rf/dispatch [:password-authentication/show
-                {:content (fn [] [password-authentication/view])}
-                {:label    (i18n/label :t/join-open-community)
-                 :on-press #(rf/dispatch [:communities/request-to-join
-                                          {:community-id id :password %}])}])
+  (rf/dispatch
+   [:standard-auth/authorize
+    {:auth-button-label (i18n/label :t/request-to-join)
+     :on-auth-success   (fn [password]
+                          (rf/dispatch
+                           [:communities/request-to-join
+                            {:community-id id :password password}]))}])
+
   (rf/dispatch [:navigate-back]))
 
 (defn- view-internal
