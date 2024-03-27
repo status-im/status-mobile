@@ -3,7 +3,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.selectors.selectors.view :as selectors]
     [quo.components.settings.page-setting.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn page-setting
