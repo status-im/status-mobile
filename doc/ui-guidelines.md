@@ -94,7 +94,7 @@ Note that this should be done for only components that re-renders more frequentl
 
 Note that this should be done for only components that re-renders more frequently. Therefore, it's advisable to conduct profiling to identify these type of components beforehand. This is because the benefits of employing this technique may not be substantial in cases where the component re-renders sparingly.
 
-When in doubt refer to the [notes on memoization](./notes-on-memoization.md) to get some clarification.
+When in doubt refer to the [notes on memoization](notes-on-memoization.md) to get some clarification.
 
 ## Global State and Subscriptions
 
