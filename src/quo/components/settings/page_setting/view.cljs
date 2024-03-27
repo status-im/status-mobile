@@ -16,7 +16,7 @@
       {:weight          :medium
        :number-of-lines 1} setting-text]
      [selectors/view
-      {:type                :checkbox
+      {:type                :toggle
        :checked?            checked?
        :customization-color customization-color
        :accessibility-label :user-list-toggle-check
