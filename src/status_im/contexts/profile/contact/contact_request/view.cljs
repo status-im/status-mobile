@@ -180,7 +180,8 @@
         :on-change-text      on-message-change}]]
      [quo/bottom-actions
       {:actions          :two-actions
-       :button-one-props {:accessibility-label :send-contact-request
+       :button-one-props {:disabled? (string/blank? message)
+                          :accessibility-label :send-contact-request
                           :customization-color customization-color
                           :on-press            (bind-state on-message-submit)}
        :button-one-label "Test Button One"
