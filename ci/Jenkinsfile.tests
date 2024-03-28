@@ -31,7 +31,12 @@ pipeline {
     )
     booleanParam(
       name: 'RUN_CONTRACT_TESTS',
-      description: 'Whether to run optional and slow contract tests.',
+      description: 'Whether to run optional and sometimes flaky contract tests.',
+      defaultValue: false,
+    )
+    booleanParam(
+      name: 'RUN_INTEGRATION_TESTS',
+      description: 'Whether to run optional and sometimes flaky integration tests.',
       defaultValue: false,
     )
   }
@@ -68,6 +73,7 @@ pipeline {
           steps { make('test-contract') }
         }
         stage('Integration') {
+          when { expression { params.RUN_INTEGRATION_TESTS } }
           steps { make('test-integration') }
         }
       }
