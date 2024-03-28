@@ -9,11 +9,10 @@
     [quo.components.tags.status-tags :as status-tags]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
 (defn- activity-reply-text-input
-  [{:keys [on-update-reply max-reply-length valid-reply?]} reply-input]
+  [{:keys [on-update-reply max-reply-length valid-reply?]} reply-input set-reply-input]
   [rn/view
    [rn/view
     {:style {:margin-top     16
@@ -26,12 +25,12 @@
      (i18n/label :t/your-answer)]
     [text/text
      {:style {:flex-shrink 1
-              :color       (if (valid-reply? @reply-input)
+              :color       (if (valid-reply? reply-input)
                              colors/neutral-40
                              colors/danger-60)}}
-     (str (count @reply-input) "/" max-reply-length)]]
+     (str (count reply-input) "/" max-reply-length)]]
    [input/input
-    {:on-change-text      #(do (reset! reply-input %)
+    {:on-change-text      #(do (set-reply-input %)
                                (when on-update-reply
                                  (on-update-reply %)))
      :auto-capitalize     :none
@@ -136,7 +135,7 @@
      (-> button
          (assoc :size size)
          (assoc :type subtype)
-         (assoc :disabled? (and replying? disable-when (disable-when @reply-input)))
+         (assoc :disabled? (and replying? disable-when (disable-when reply-input)))
          (assoc :inner-style
                 {:justify-content :center
                  :padding-bottom  0
@@ -153,17 +152,16 @@
     :blur?  blur?}])
 
 (defn- footer
-  [_]
-  (let [reply-input (reagent/atom "")]
-    (fn [{:keys [replying? items] :as props}]
-      [:<>
-       (when replying?
-         [activity-reply-text-input props reply-input])
-       (when items
-         [rn/view style/footer-container
-          (for [item items]
-            ^{:key (:key item)}
-            [footer-item-view item replying? reply-input])])])))
+  [{:keys [replying? items] :as props}]
+  (let [[reply-input set-reply-input] (rn/use-state "")]
+    [:<>
+     (when replying?
+       [activity-reply-text-input props reply-input set-reply-input])
+     (when items
+       [rn/view style/footer-container
+        (for [item items]
+          ^{:key (:key item)}
+          [footer-item-view item replying? reply-input])])]))
 
 (defn view
   [{:keys [icon
