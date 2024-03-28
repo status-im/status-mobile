@@ -61,7 +61,6 @@
         [rn/view
          {:style     style/link-1x-container
           :on-layout (fn [e]
-                       (println "dsadasdasd")
                        (reset! container-width
                          (oget e :nativeEvent :layout :width)))}
          [svg/svg
