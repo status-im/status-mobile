@@ -169,7 +169,7 @@
                  :password     constants/password
                  :color        "blue"}]))
 
-(defn- enable-testnet!
+(defn enable-testnet!
   []
   (rf/dispatch [:profile.settings/profile-update :test-networks-enabled? true {}])
   (rf/dispatch [:wallet/initialize]))
