@@ -23,4 +23,5 @@
              :password           login-sha3-password
              :imagePath          (profile.config/strip-file-prefix image-path)
              :customizationColor color
-             :emoji              (emoji-picker.utils/random-emoji)})}))
+             :emoji              (emoji-picker.utils/random-emoji)
+             :fetchBackup        true})}))
