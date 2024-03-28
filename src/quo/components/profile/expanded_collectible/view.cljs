@@ -55,7 +55,7 @@
                      {:label   (i18n/label :t/cant-fetch-info)
                       :counter counter
                       :theme   theme}]
-       [rn/view {:style {:flex 1}}
+       [rn/view
         [rn/image
          {:style  (style/image square? (:aspect-ratio image-size))
           :source image-src}]
@@ -66,7 +66,7 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:image-src {:optional true} string?]
+      [:image-src {:optional true} [:maybe string?]]
       [:container-style {:optional true} [:maybe :map]]
       [:square? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe string?]]

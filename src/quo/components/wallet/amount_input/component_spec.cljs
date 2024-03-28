@@ -12,32 +12,24 @@
 (h/describe "Amount input component"
   (h/test "Renders with default value"
     (let [text-expected 0]
-      (render [amount-input/view {:init-value text-expected}])
-      (h/is-truthy (h/query-by-label-text :amount-input))
-      (h/is-equal (oops/oget (h/get-by-label-text :amount-input) "props" "value")
-                  (str text-expected))))
+      (render [amount-input/view {:value text-expected}])
+      (h/is-truthy (h/query-by-label-text :amount-input))))
 
   (h/test "When the value = minimum dec button is disabled"
     (render [amount-input/view
-             {:init-value 0
-              :min-value  0}])
+             {:value     0
+              :min-value 0}])
     (h/is-truthy
      (oops/oget (h/get-by-label-text :amount-input-dec-button) "props" "accessibilityState" "disabled")))
 
   (h/test "When the value = maximum inc button is disabled"
     (render [amount-input/view
-             {:init-value 100
-              :max-value  100}])
+             {:value     100
+              :max-value 100}])
     (h/is-truthy
      (oops/oget (h/get-by-label-text :amount-input-inc-button) "props" "accessibilityState" "disabled")))
 
   (h/test "Renders the error state"
-    (render [amount-input/view {:status :error}])
+    (render [amount-input/view {:status :error :value 10}])
     (h/is-equal (colors/resolve-color :danger :light)
-                (oops/oget (h/get-by-label-text :amount-input) "props" "style" "color")))
-
-  (h/test "on-change-text function is fired"
-    (let [on-change-text (h/mock-fn)]
-      (render [amount-input/view {:on-change-text on-change-text}])
-      (h/fire-event :change-text (h/get-by-label-text :amount-input) "100")
-      (h/was-called on-change-text))))
+                (oops/oget (h/get-by-label-text :amount-input) "props" "style" "color"))))

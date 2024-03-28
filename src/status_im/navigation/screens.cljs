@@ -77,6 +77,7 @@
     [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
+    [status-im.contexts.wallet.send.select-collectible-amount.view :as wallet-select-collectible-amount]
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
@@ -427,6 +428,10 @@
 
     {:name      :screen/wallet.transaction-confirmation
      :component wallet-transaction-confirmation/view}
+
+    {:name      :screen/wallet.select-collectible-amount
+     :options   {:insets {:top? true}}
+     :component wallet-select-collectible-amount/view}
 
     {:name      :screen/wallet.transaction-progress
      :component wallet-transaction-progress/view}
