@@ -7,7 +7,7 @@
         db                    (assoc-in db [:alert-banners (:type banner)] banner)]
     (cond-> {:db db}
       (zero? current-banners-count)
-      (assoc :show-alert-banner nil))))
+      (assoc :show-alert-banner (:view-id db)))))
 
 (defn remove-alert-banner
   [{:keys [db]} [banner-type]]
@@ -15,12 +15,12 @@
         new-count (count (get db :alert-banners))]
     (cond-> {:db db}
       (zero? new-count)
-      (assoc :hide-alert-banner nil))))
+      (assoc :hide-alert-banner (:view-id db)))))
 
 (defn remove-all-alert-banners
   [{:keys [db]}]
   {:db                (dissoc db :alert-banners)
-   :hide-alert-banner nil})
+   :hide-alert-banner (:view-id db)})
 
 (re-frame/reg-event-fx :alert-banners/add add-alert-banner)
 (re-frame/reg-event-fx :alert-banners/remove remove-alert-banner)
