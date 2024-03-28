@@ -8,10 +8,6 @@
   {:flex    1
    :z-index 2})
 
-(def chat-actions-container
-  {:margin-top     16
-   :padding-bottom 20})
-
 (defn background-container
   [background-color background-opacity top-margin]
   (reanimated/apply-animations-to-style
@@ -24,12 +20,12 @@
     :height           (+ top-margin messages.constants/header-container-radius)}))
 
 (defn header-bottom-part
-  [border-radius theme top-margin]
+  [bottom theme top-margin]
   (reanimated/apply-animations-to-style
-   {:border-top-left-radius  border-radius
-    :border-top-right-radius border-radius}
+   {:bottom bottom}
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
+    :border-radius      20
     :margin-top         top-margin}))
 
 (defn header-image
@@ -43,5 +39,20 @@
     :border-radius 50
     :border-color  (colors/theme-colors colors/white colors/neutral-95 theme)}))
 
-(def bio
-  {:margin-top 8})
+(defn user-name-container
+  [top left]
+  (reanimated/apply-animations-to-style
+   {:top  top
+    :left left}
+   {:z-index -1}))
+
+(def user-name
+  {:align-items    :center
+   :flex-direction :row
+   :margin-top     52})
+
+(defn bio-and-actions
+  [top]
+  (reanimated/apply-animations-to-style
+   {:top top}
+   {:row-gap 16}))

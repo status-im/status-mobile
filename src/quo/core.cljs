@@ -48,6 +48,7 @@
     quo.components.drawers.action-drawers.view
     quo.components.drawers.bottom-actions.view
     quo.components.drawers.documentation-drawers.view
+    quo.components.drawers.drawer-action.view
     quo.components.drawers.drawer-buttons.view
     quo.components.drawers.drawer-top.view
     quo.components.drawers.permission-context.view
@@ -250,6 +251,7 @@
 
 ;;;; Drawers
 (def action-drawer quo.components.drawers.action-drawers.view/action-drawer)
+(def drawer-action quo.components.drawers.drawer-action.view/view)
 (def documentation-drawers quo.components.drawers.documentation-drawers.view/view)
 (def drawer-buttons quo.components.drawers.drawer-buttons.view/view)
 (def drawer-top quo.components.drawers.drawer-top.view/view)

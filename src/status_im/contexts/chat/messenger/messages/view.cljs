@@ -13,7 +13,7 @@
 ;; NOTE(parvesh) - I am working on refactoring/optimization of the chat screen for performance
 ;; improvement. Please avoid refactoring these files. Also if you are not already working on bug
 ;; fixes related to the composer, please skip them. And ping me, so I can address them while refactoring
-(defn- f-chat-screen
+(defn- chat-screen
   [chat-screen-layout-calculations-complete?]
   (let [insets                 (safe-area/get-insets)
         content-height         (atom 0)
@@ -27,7 +27,7 @@
      [messages.navigation/view
       {:distance-from-list-top                    distance-from-list-top
        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?}]
-     [:f> list.view/f-messages-list-content
+     [list.view/messages-list-content
       {:insets                                    insets
        :layout-height                             layout-height
        :content-height                            content-height
@@ -46,15 +46,11 @@
     (when-not screen-loaded?
       (reanimated/set-shared-value chat-screen-layout-calculations-complete? false))
     (when screen-loaded?
-      [:f> f-chat-screen chat-screen-layout-calculations-complete?])))
+      [chat-screen chat-screen-layout-calculations-complete?])))
 
-(defn- f-chat
+(defn chat
   []
   (let [chat-screen-layout-calculations-complete? (reanimated/use-shared-value false)]
     [:<>
      [lazy-chat-screen chat-screen-layout-calculations-complete?]
-     [:f> placeholder.view/f-view chat-screen-layout-calculations-complete?]]))
-
-(defn chat
-  []
-  [:f> f-chat])
+     [placeholder.view/view chat-screen-layout-calculations-complete?]]))
