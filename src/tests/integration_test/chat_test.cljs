@@ -56,6 +56,22 @@
         (h/wait-for [:chat/mute-successfully])
         (is (not @(rf/subscribe [:chats/muted chat-id])))))))
 
+(deftest undo-mute-chat-test
+  (h/integration-test ::undo-mute-chat
+    (fn []
+      (p/do
+        (rf/dispatch-sync [:chat.ui/start-chat chat-id])
+        (h/wait-for [:chat/one-to-one-chat-created])
+        (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
+
+        (rf/dispatch-sync [:chat.ui/mute chat-id true constants/mute-till-unmuted])
+        (h/wait-for [:chat/mute-successfully :toasts/upsert])
+        (is @(rf/subscribe [:chats/muted chat-id]))
+
+        (rf/dispatch-sync [:chat.ui/undo-mute chat-id])
+        (h/wait-for [:chat/undo-mute-success :toasts/close])
+        (is (not @(rf/subscribe [:chats/muted chat-id])))))))
+
 (deftest add-contact-test
   (h/test-async ::add-contact
     (fn []
