@@ -261,8 +261,8 @@
            :switcher-type :select-account}]
          [quo/token-input
           {:container-style     style/input-container
-           :token               (keyword token-symbol)
-           :currency            (keyword current-currency)
+           :token               token-symbol
+           :currency            current-currency
            :crypto-decimals     crypto-decimals
            :error?              @input-error
            :networks            (seq token-networks)

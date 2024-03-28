@@ -12,7 +12,7 @@
         fiat-value       (utils/total-token-fiat-value currency token)
         fiat-formatted   (utils/get-standard-fiat-format crypto-formatted currency-symbol fiat-value)]
     [quo/token-network
-     {:token       (keyword (:symbol token))
+     {:token       (:symbol token)
       :label       (:name token)
       :token-value (str crypto-formatted " " (:symbol token))
       :fiat-value  fiat-formatted

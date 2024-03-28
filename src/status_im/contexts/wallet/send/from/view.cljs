@@ -20,6 +20,12 @@
   (rf/dispatch [:wallet/clean-current-viewing-account])
   (rf/dispatch [:navigate-back]))
 
+(defn- render-fn
+  [item]
+  [quo/account-item
+   {:on-press      #(on-press (:address item))
+    :account-props item}])
+
 (defn view
   []
   (let [accounts (rf/sub [:wallet/accounts-without-watched-accounts])]
@@ -37,8 +43,5 @@
       {:style                             style/accounts-list
        :content-container-style           style/accounts-list-container
        :data                              accounts
-       :render-fn                         (fn [item]
-                                            [quo/account-item
-                                             {:on-press      #(on-press (:address item))
-                                              :account-props item}])
+       :render-fn                         render-fn
        :shows-horizontal-scroll-indicator false}]]))
