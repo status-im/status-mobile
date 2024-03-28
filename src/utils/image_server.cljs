@@ -188,7 +188,7 @@
    [:cat
     [:map
      [:color string?]
-     [:background-color string?]
+     [:background-color [:maybe string?]]
      [:size number?]
      [:ratio float?]
      [:uppercase-ratio number?]
