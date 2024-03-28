@@ -5,7 +5,7 @@
 
 (defn token-value-drawer
   [token]
-  (let [token-data (first (rf/sub [:wallet/tokens-filtered (:token token)]))]
+  (let [token-data (first (rf/sub [:wallet/current-viewing-account-tokens-filtered (:token token)]))]
     [:<>
      [quo/action-drawer
       [[{:icon                :i/buy
@@ -41,13 +41,12 @@
          :on-press            #(js/alert "to be implemented")}]]]]))
 
 (defn view
-  [item]
-  (let [{:keys [watch-only?]} (rf/sub [:wallet/current-viewing-account])]
-    [quo/token-value
-     (cond-> item
-       (not watch-only?)
-       (assoc :on-long-press
-              #(rf/dispatch
-                [:show-bottom-sheet
-                 {:content       (fn [] [token-value-drawer item])
-                  :selected-item (fn [] [quo/token-value item])}])))]))
+  [item _ _ {:keys [watch-only?]}]
+  [quo/token-value
+   (cond-> item
+     (not watch-only?)
+     (assoc :on-long-press
+            #(rf/dispatch
+              [:show-bottom-sheet
+               {:content       (fn [] [token-value-drawer item])
+                :selected-item (fn [] [quo/token-value item])}])))])

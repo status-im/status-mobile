@@ -245,6 +245,7 @@
 ;;;; Networks
 (def ^:private networks
   {:ethereum "#758EEB"
+   :mainnet  "#758EEB"
    :optimism "#E76E6E"
    :arbitrum "#6BD5F0"
    :zkSync   "#9FA0FE"

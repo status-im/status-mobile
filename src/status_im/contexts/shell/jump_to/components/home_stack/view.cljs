@@ -9,7 +9,7 @@
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.state :as state]
     [status-im.contexts.shell.jump-to.utils :as utils]
-    [status-im.contexts.wallet.home.view :as wallet-new]
+    [status-im.contexts.wallet.home.view :as wallet]
     [utils.re-frame :as rf]))
 
 (defn load-stack?
@@ -32,7 +32,7 @@
    (case stack-id
      :communities-stack [:f> communities/view]
      :chats-stack       [:f> chat/view]
-     :wallet-stack      [wallet-new/view]
+     :wallet-stack      [wallet/view]
      :browser-stack     [browser.stack/browser-stack]
      [:<>])])
 

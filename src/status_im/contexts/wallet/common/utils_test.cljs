@@ -1,7 +1,9 @@
 (ns status-im.contexts.wallet.common.utils-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [status-im.contexts.wallet.common.utils :as utils]
-            [utils.money :as money]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [utils.money :as money]))
 
 (deftest test-get-first-name
   (testing "get-first-name function"
@@ -27,7 +29,6 @@
     (is (= (utils/format-derivation-path "m/44'/60'/0'/0/5") "m / 44' / 60' / 0' / 0 / 5"))
     (is (= (utils/format-derivation-path "m/44'/60'/0'/0/0") "m / 44' / 60' / 0' / 0 / 0"))
     (is (= (utils/format-derivation-path "m/44'/60'/0'/0/123") "m / 44' / 60' / 0' / 0 / 123"))))
-
 
 (deftest test-get-formatted-derivation-path
   (testing "get-formatted-derivation-path function"
@@ -70,13 +71,13 @@
                                                token-units)
              "<2")))))
 
-(deftest test-total-token-units-in-all-chains
-  (testing "total-token-units-in-all-chains function"
+(deftest test-calculate-total-token-balance
+  (testing "calculate-total-token-balance function"
     (let [token {:balances-per-chain {1     {:raw-balance (money/bignumber 100)}
                                       10    {:raw-balance (money/bignumber 200)}
                                       42161 {:raw-balance (money/bignumber 300)}}
                  :decimals           2}]
-      (is (money/equal-to (utils/total-token-units-in-all-chains token) 6.0)))))
+      (is (money/equal-to (utils/calculate-total-token-balance token) 6.0)))))
 
 (deftest test-get-account-by-address
   (testing "get-account-by-address function"
@@ -115,3 +116,20 @@
     (is (= (utils/prettify-percentage-change 1.113454) "1.11"))
     (is (= (utils/prettify-percentage-change -0.35) "0.35"))
     (is (= (utils/prettify-percentage-change -0.78234) "0.78"))))
+
+(deftest test-network->chain-id
+  (testing "network->chain-id function"
+    (is (= (utils/network->chain-id {:network :mainnet :testnet-enabled? false :goerli-enabled? false})
+           constants/ethereum-mainnet-chain-id))
+    (is (= (utils/network->chain-id {:network :eth :testnet-enabled? true :goerli-enabled? false})
+           constants/ethereum-sepolia-chain-id))
+    (is (= (utils/network->chain-id {:network "optimism" :testnet-enabled? true :goerli-enabled? false})
+           constants/optimism-sepolia-chain-id))
+    (is (= (utils/network->chain-id {:network "opt" :testnet-enabled? false :goerli-enabled? true})
+           constants/optimism-mainnet-chain-id))
+    (is (= (utils/network->chain-id {:network :opt :testnet-enabled? true :goerli-enabled? true})
+           constants/optimism-goerli-chain-id))
+    (is (= (utils/network->chain-id {:network :arb1 :testnet-enabled? false :goerli-enabled? false})
+           constants/arbitrum-mainnet-chain-id))
+    (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true :goerli-enabled? false})
+           constants/arbitrum-sepolia-chain-id))))

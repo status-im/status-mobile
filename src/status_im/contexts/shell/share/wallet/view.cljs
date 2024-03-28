@@ -5,6 +5,7 @@
     [react-native.platform :as platform]
     [react-native.share :as share]
     [reagent.core :as reagent]
+    [status-im.constants :as constants]
     [status-im.contexts.shell.share.style :as style]
     [status-im.contexts.shell.share.wallet.style :as wallet-style]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -31,25 +32,27 @@
       :isNewTask true})))
 
 (defn- open-preferences
-  [selected-networks]
-  (rf/dispatch [:show-bottom-sheet
-                {:theme :dark
-                 :shell? true
-                 :content
-                 (fn []
-                   [network-preferences/view
-                    {:blur?             true
-                     :selected-networks (set @selected-networks)
-                     :on-save           (fn [chain-ids]
-                                          (rf/dispatch [:hide-bottom-sheet])
-                                          (reset! selected-networks (map #(get utils/id->network %)
-                                                                         chain-ids)))}])}]))
+  [selected-networks account]
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:theme   :dark
+     :shell?  true
+     :content (fn []
+                [network-preferences/view
+                 {:blur?             true
+                  :selected-networks (set @selected-networks)
+                  :account           account
+                  :on-save           (fn [chain-ids]
+                                       (rf/dispatch [:hide-bottom-sheet])
+                                       (reset! selected-networks (map #(get utils/id->network %)
+                                                                      chain-ids)))}])}]))
+
 (defn- wallet-qr-code-item-internal
   [props]
   (let [{:keys [account width index]} props
-        selected-networks             (reagent/atom [:ethereum :optimism :arbitrum])
+        selected-networks             (reagent/atom constants/default-network-names)
         wallet-type                   (reagent/atom :legacy)
-        on-settings-press             #(open-preferences selected-networks)
+        on-settings-press             #(open-preferences selected-networks account)
         on-legacy-press               #(reset! wallet-type :legacy)
         on-multichain-press           #(reset! wallet-type :multichain)]
     (fn []

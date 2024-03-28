@@ -3,6 +3,10 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]))
 
+(defn- filter-collectibles-in-chains
+  [collectibles chain-ids]
+  (filter #(contains? chain-ids (get-in % [:id :contract-id :chain-id])) collectibles))
+
 (defn- svg-animation?
   [url media-type]
   (and (not (string/blank? url))
@@ -45,6 +49,13 @@
    (-> current-account :collectibles add-collectibles-preview-url)))
 
 (re-frame/reg-sub
+ :wallet/current-viewing-account-collectibles-in-selected-networks
+ :<- [:wallet/current-viewing-account-collectibles]
+ :<- [:wallet/selected-networks->chain-ids]
+ (fn [[collectibles chain-ids]]
+   (filter-collectibles-in-chains collectibles chain-ids)))
+
+(re-frame/reg-sub
  :wallet/all-collectibles-list
  :<- [:wallet]
  (fn [{:keys [accounts]}]
@@ -60,6 +71,13 @@
           (apply interleave)
           (remove nil?)
           (add-collectibles-preview-url)))))
+
+(re-frame/reg-sub
+ :wallet/all-collectibles-list-in-selected-networks
+ :<- [:wallet/all-collectibles-list]
+ :<- [:wallet/selected-networks->chain-ids]
+ (fn [[all-collectibles chain-ids]]
+   (filter-collectibles-in-chains all-collectibles chain-ids)))
 
 (re-frame/reg-sub
  :wallet/current-viewing-account-collectibles-filtered
