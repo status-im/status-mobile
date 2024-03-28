@@ -75,7 +75,7 @@
    [token-name-text theme text]])
 
 (defn input-section
-  [{:keys [on-change-text value value-atom on-selection-change]}]
+  [{:keys [on-change-text value value-atom on-selection-change on-token-press]}]
   (let [input-ref               (atom nil)
         set-ref                 #(reset! input-ref %)
         focus-input             #(when-let [ref ^js @input-ref]
@@ -95,13 +95,14 @@
     (fn [{:keys [theme token customization-color show-keyboard? crypto? currency value error?
                  selection]
           :or   {show-keyboard? true}}]
-      [rn/pressable
-       {:on-press focus-input
-        :style    {:flex 1}}
-       [token/view
-        {:token token
-         :size  :size-32}]
-       [rn/view {:style style/text-input-container}
+      [rn/view {:style {:flex 1}}
+       [rn/pressable {:on-press on-token-press}
+        [token/view
+         {:token token
+          :size  :size-32}]]
+       [rn/pressable
+        {:style    style/text-input-container
+         :on-press focus-input}
         [rn/text-input
          (cond-> {:style                    (style/text-input theme error?)
                   :placeholder-text-color   (style/placeholder-text theme)

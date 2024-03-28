@@ -37,6 +37,7 @@
       :on-collectible-press #(rf/dispatch [:wallet/send-select-collectible
                                            {:collectible %
                                             :stack-id    :screen/wallet.select-asset}])}]))
+
 (defn- tab-view
   [search-text selected-tab on-change-text]
   (let [unfiltered-collectibles (rf/sub [:wallet/current-viewing-account-collectibles])
@@ -55,7 +56,6 @@
                           {:search-text    search-text
                            :on-token-press on-token-press}]
        :tab/collectibles [collectibles-grid search-text])]))
-
 
 (defn- f-view-internal
   []
