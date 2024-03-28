@@ -9,8 +9,6 @@
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
 (def min-length 5)
 
-(def status-regex #"^[a-zA-Z0-9\-_ ]+$")
-
 (def common-names ["Ethereum" "Bitcoin"])
 
 (defn has-common-names? [s] (pos? (count (filter #(string/includes? s %) common-names))))
