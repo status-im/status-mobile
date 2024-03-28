@@ -4,7 +4,7 @@
   [:=>
    [:cat
     [:map
-     [:token :keyword]
+     [:token [:or :string :keyword]]
      [:label :string]
      [:token-value :string]
      [:fiat-value :string]

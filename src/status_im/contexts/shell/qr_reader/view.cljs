@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.qr-reader.view
   (:require
     [clojure.string :as string]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
     [status-im.common.router :as router]
@@ -88,7 +89,9 @@
     (load-and-show-profile scanned-text)
 
     (eth-address? scanned-text)
-    (debounce/debounce-and-dispatch [:navigate-to :screen/wallet.accounts scanned-text] 300)
+    (do
+      (debounce/debounce-and-dispatch [:generic-scanner/scan-success scanned-text] 300)
+      (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 
     (eip681-address? scanned-text)
     (do
@@ -119,7 +122,12 @@
        (rn/dismiss-keyboard!))
      [scan-qr-code/view
       {:title           (i18n/label :t/scan-qr)
-       :on-success-scan on-qr-code-scanned}]]))
+       :on-success-scan on-qr-code-scanned}]
+     [quo/button
+      {:container-style {:z-index       2000
+                         :margin-bottom 40}
+       :on-press        #(on-qr-code-scanned "0x1f96d8cab99c2ddcb5ab3f44603c5f6a3f8b97b5")}
+      "press"]]))
 
 (defn view
   []

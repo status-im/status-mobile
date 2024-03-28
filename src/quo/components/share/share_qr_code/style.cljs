@@ -16,12 +16,6 @@
    :padding-top        12
    :padding-bottom     8})
 
-(def gradient-bg
-  {:position :absolute
-   :top      0
-   :left     0
-   :right    0})
-
 ;;; Header
 (def header-container
   {:flex-direction :row
@@ -70,42 +64,6 @@
   {:flex-direction  :row
    :justify-content :space-between
    :flex            1})
-
-;;; Dashed line
-(def ^:private padding-for-divider (+ padding-horizontal 4))
-(def ^:private dashed-line-width 2)
-(def ^:private dashed-line-space 4)
-
-(def dashed-line
-  {:flex-direction :row
-   :margin-left    -1})
-
-(def line
-  {:background-color colors/white-opa-20
-   :width            dashed-line-width
-   :height           1})
-
-(def line-space
-  {:width  dashed-line-space
-   :height 1})
-
-(defn number-lines-and-spaces-to-fill
-  [component-width]
-  (let [line-and-space-width (+ dashed-line-width dashed-line-space)
-        width-to-fill        (- component-width (* 2 padding-for-divider))
-        number-of-lines      (* (/ width-to-fill line-and-space-width) 2)]
-    (inc (int number-of-lines))))
-
-(def ^:private get-network-full-name
-  {"eth"  :ethereum
-   "opt"  :optimism
-   "arb1" :arbitrum})
-
-(defn network-short-name-text
-  [network-short-name]
-  {:color (-> network-short-name
-              (get-network-full-name :unknown)
-              (colors/resolve-color nil))})
 
 (def watched-account-icon
   {:margin-left 4})

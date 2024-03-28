@@ -265,7 +265,7 @@
            :currency            current-currency
            :crypto-decimals     crypto-decimals
            :error?              @input-error
-           :networks            token-networks
+           :networks            (seq token-networks)
            :title               (i18n/label :t/send-limit {:limit limit-label})
            :conversion          conversion-rate
            :show-keyboard?      false

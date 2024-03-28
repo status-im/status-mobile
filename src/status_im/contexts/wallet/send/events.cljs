@@ -357,3 +357,13 @@
                                                    {:id   :send-transaction-error
                                                     :type :negative
                                                     :text (:message error)}]))}]})))
+
+(rf/reg-event-fx
+ :wallet/select-from-account
+ (fn [_ [{:keys [address stack-id start-flow?]}]]
+   {:fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+         [:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-flow}]]]}))
