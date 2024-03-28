@@ -25,6 +25,7 @@
     quo.components.drawers.action-drawers.component-spec
     quo.components.drawers.bottom-actions.component-spec
     quo.components.drawers.documentation-drawers.component-spec
+    quo.components.drawers.drawer-action.component-spec
     quo.components.drawers.drawer-buttons.component-spec
     quo.components.drawers.drawer-top.component-spec
     quo.components.drawers.permission-context.component-spec
