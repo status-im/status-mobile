@@ -16,16 +16,6 @@
 (def contact-request-message-store
   (reagent.ratom/atom {}))
 
-(def button-count-store
-  (reagent.ratom/atom {}))
-
-(re-frame/reg-sub
- :button-count
- (fn []
-   [button-count-store])
- (fn [[store] [_ id]]
-   (get store id 0)))
-
 (re-frame/reg-sub
  :contact-request-message
  (fn []
