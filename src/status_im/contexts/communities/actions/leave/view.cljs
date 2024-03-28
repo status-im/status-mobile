@@ -13,7 +13,7 @@
   (rf/dispatch event))
 
 (defn leave-sheet
-  [id]
+  [id color]
   [generic-menu/view
    {:id    id
     :title (i18n/label :t/leave-community?)}
@@ -31,8 +31,9 @@
        :container-style style/cancel-button}
       (i18n/label :t/cancel)]
      [quo/button
-      {:on-press        #(hide-sheet-and-dispatch [:communities/leave id])
-       :container-style style/action-button}
+      {:on-press            #(hide-sheet-and-dispatch [:communities/leave id])
+       :customization-color color
+       :container-style     style/action-button}
       (i18n/label :t/leave-community)]]]])
 
 (defn cancel-request-sheet
