@@ -187,9 +187,9 @@
                                        (with-animation (+ bg-height-expanded (.-value pan-y))))
                                       ;; Workaround for
                                       ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
-                                      ;; withTiming/withSpring callback not working on-expanded should
-                                      ;; be called as a callback of with-animation instead, once this
-                                      ;; issue has been resolved
+                                      ;; withTiming/withSpring callback not working on-expanded
+                                      ;; should be called as a callback of with-animation instead,
+                                      ;; once this issue has been resolved
                                       (timer/set-timeout on-expanded animation-delay))
                                     (do
                                       (reanimated/set-shared-value
@@ -197,9 +197,9 @@
                                        (with-animation (+ bg-height (.-value pan-y))))
                                       ;; Workaround for
                                       ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
-                                      ;; withTiming/withSpring callback not working on-collapsed should
-                                      ;; be called as a callback of with-animation instead, once this
-                                      ;; issue has been resolved
+                                      ;; withTiming/withSpring callback not working on-collapsed
+                                      ;; should be called as a callback of with-animation instead,
+                                      ;; once this issue has been resolved
                                       (timer/set-timeout on-collapsed animation-delay)))
 
                                   (= @show-bottom-sheet? false)

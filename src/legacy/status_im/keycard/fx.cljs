@@ -184,8 +184,8 @@
 ;; TODO: Should act differently on different views
 (re-frame/reg-fx
  :keycard/listen-to-hardware-back-button
- ;;NOTE: not done in view because effect should happen under different conditions and is not dependent on
- ;;particular screen to be loaded. An fx is easier to re-use and test.
+ ;;NOTE: not done in view because effect should happen under different conditions and is not
+ ;;dependent on particular screen to be loaded. An fx is easier to re-use and test.
  (fn []
    (re-frame/dispatch [:keycard/add-listener-to-hardware-back-button
                        (.addEventListener BackHandler

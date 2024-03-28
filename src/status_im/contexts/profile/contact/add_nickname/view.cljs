@@ -14,7 +14,8 @@
   []
   (let [{:keys [public-key primary-name nickname customization-color]
          :as   profile}                         (rf/sub [:contacts/current-contact])
-        ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
+        ;; TODO(@mohsen): remove default color,
+        ;; https://github.com/status-im/status-mobile/issues/18733
         customization-color                     (or customization-color constants/profile-default-color)
         full-name                               (profile.utils/displayed-name profile)
         profile-picture                         (profile.utils/photo profile)

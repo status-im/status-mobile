@@ -3,8 +3,7 @@
 
 (defn displayed-name
   [{:keys [name display-name preferred-name alias ens-verified primary-name]}]
-  ;; `preferred-name` is our own name
-  ;; otherwise we make sure the `name` is verified and use it
+  ;; `preferred-name` is our own name otherwise we make sure the `name` is verified and use it
   (let [display-name   (when-not (string/blank? display-name)
                          display-name)
         preferred-name (when-not (string/blank? preferred-name)

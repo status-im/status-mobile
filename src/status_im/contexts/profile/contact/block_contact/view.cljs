@@ -13,7 +13,8 @@
   []
   (let [{:keys [customization-color contact-request-state public-key]
          :as   contact}     (rf/sub [:contacts/current-contact])
-        ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
+        ;; TODO(@mohsen): remove default color,
+        ;; https://github.com/status-im/status-mobile/issues/18733
         customization-color (or customization-color constants/profile-default-color)
         full-name           (profile.utils/displayed-name contact)
         profile-picture     (profile.utils/photo contact)
