@@ -15,14 +15,19 @@
                   community-icon        :icon
                   community-banner      :banner
                   community-name        :display-name
-                  members-count         :members-count} community]
+                  members-count         :members-count
+                  community-id          :community-id} community
+                 token-gated-not-a-member?             (rf/sub
+                                                        [:communities/token-gated-not-a-member?
+                                                         community-id])]
              ^{:key url}
              [quo/internal-link-card
-              {:type          :community
-               :size          :message
-               :description   community-description
-               :members-count members-count
-               :title         community-name
-               :banner        (:url community-banner)
-               :icon          (:url community-icon)
-               :on-press      #(rf/dispatch [:universal-links/handle-url url])}])))])))
+              {:type                :community
+               :size                :message
+               :description         community-description
+               :members-count       members-count
+               :title               community-name
+               :banner              (:url community-banner)
+               :icon                (:url community-icon)
+               :on-press            #(rf/dispatch [:universal-links/handle-url url])
+               :hide-members-count? token-gated-not-a-member?}])))])))

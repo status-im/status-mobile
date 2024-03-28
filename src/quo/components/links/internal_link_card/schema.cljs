@@ -19,5 +19,6 @@
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:emoji-hash {:optional true} [:maybe :string]]
       [:size {:optional true} [:maybe :keyword]]
+      [:hide-members-count? {:optional true} [:maybe :boolean]]
       [:theme :schema.common/theme]]]]
    :any])
