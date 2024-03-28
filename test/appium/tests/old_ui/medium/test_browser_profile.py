@@ -420,7 +420,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi('Set another fleet and check that changes are applied')
         profile.fleet_setting_button.click()
-        changed_fleet = 'wakuv2.prod'
+        changed_fleet = 'waku.sandbox'
         profile.element_by_text(changed_fleet).click_until_presence_of_element(profile.confirm_button)
         profile.confirm_button.click()
         self.sign_in.sign_in()
