@@ -1,6 +1,6 @@
 (ns quo.components.profile.expanded-collectible.view
   (:require
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [quo.components.counter.collectible-counter.view :as collectible-counter]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
@@ -37,7 +37,7 @@
         [image-size set-image-size] (rn/use-state {})]
     (rn/use-effect
      (fn []
-       (p/let [[image-width image-height] (rn/image-get-size image-src)]
+       (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
          (set-image-size {:width        image-width
                           :height       image-height
                           :aspect-ratio (/ image-width image-height)})))
