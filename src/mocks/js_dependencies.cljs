@@ -358,6 +358,9 @@
 (def react-native-blur
   (clj->js {:BlurView {}}))
 
+(def react-native-shadow-2
+  (clj->js {:Shadow {}}))
+
 (def react-native-camera-roll
   (clj->js {:default    #js {}
             :CameraRoll #js {}}))
@@ -423,6 +426,7 @@
     "@react-native-clipboard/clipboard"                react-native-clipboard
     "react-native-image-viewing"                       react-native-image-viewing
     "react-native-share"                               react-native-share
+    "react-native-shadow-2"                            react-native-shadow-2
     "@react-native-async-storage/async-storage"        async-storage
     "react-native-svg"                                 react-native-svg
     "react-native-transparent-video"                   react-native-transparent-video

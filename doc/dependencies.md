@@ -164,3 +164,7 @@ Used for taking emoji input, for custom emoji thumbnails for community channels
 ## "react-native-draggable-flatlist": "https://github.com/computerjazz/react-native-draggable-flatlist"
 
 A drag-and-drop-enabled FlatList component for React Native
+
+## "react-native-shadow-2": "https://github.com/SrBrahma/react-native-shadow-2"
+
+A shadow component that is consistent across both platforms
