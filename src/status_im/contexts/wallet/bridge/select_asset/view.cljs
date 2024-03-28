@@ -1,9 +1,9 @@
-(ns status-im.contexts.wallet.account.bridge.view
+(ns status-im.contexts.wallet.bridge.select-asset.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.contexts.wallet.account.bridge.style :as style]
+    [status-im.contexts.wallet.bridge.select-asset.style :as style]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [utils.i18n :as i18n]
@@ -28,4 +28,4 @@
          :on-token-press (fn [token]
                            (rf/dispatch [:wallet/bridge-select-token
                                          {:token    token
-                                          :stack-id :screen/wallet.bridge}]))}]])))
+                                          :stack-id :screen/wallet.bridge-select-asset}]))}]])))
