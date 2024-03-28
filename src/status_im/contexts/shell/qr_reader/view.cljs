@@ -9,8 +9,10 @@
     [status-im.contexts.communities.events]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
     [utils.debounce :as debounce]
+    [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip681 :as eip681]
     [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
     [utils.url :as url]))
 
 (def invalid-qr-toast
@@ -68,16 +70,26 @@
    [:toasts/upsert invalid-qr-toast]
    300))
 
+(rf/reg-event-fx :on-scanned
+  (fn [{:keys [db]} [uri]]
+    {:router/handle-uri {:chain (chain/chain-keyword db)
+                         :chats (get db :chats)
+                         :uri   uri
+                         :cb    #(js/console.log "ALWX" (clj->js %))}}))
+
 (defn on-qr-code-scanned
   [scanned-text]
   (cond
     (text-for-url-path? scanned-text router/community-with-data-path)
     ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
+    (js/console.log "ALWX1" scanned-text)
 
     (text-for-url-path? scanned-text router/channel-path)
     ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
+    ;; :serialization/deserialize-and-compress-key
+    ;; https://status.app/cc/G54AAKwObLdpiGjXnckYzRcOSq0QQAS_CURGfqVU42ceGHCObstUIknTTZDOKF3E8y2MSicncpO7fTskXnoACiPKeejvjtLTGWNxUhlT7fyQS7Jrr33UVHluxv_PLjV2ePGw5GQ33innzeK34pInIgUGs5RjdQifMVmURalxxQKwiuoY5zwIjixWWRHqjHM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11
+    ;; check status-im.common.router/match-uri function
+    (rf/dispatch [:on-scanned scanned-text])
 
     (text-for-url-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]
