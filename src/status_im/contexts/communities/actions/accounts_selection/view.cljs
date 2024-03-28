@@ -115,6 +115,7 @@
                       :label             :preview
                       :label-props       {:type :accounts
                                           :data revealed-accounts}
+                      :preview-size      :size-32
                       :description-props {:text addresses-shared-text}}
                      {:title             (i18n/label :t/for-airdrops)
                       :on-press          show-airdrop-addresses
@@ -123,6 +124,7 @@
                       :label             :preview
                       :label-props       {:type :accounts
                                           :data [airdrop-account]}
+                      :preview-size      :size-32
                       :description-props {:text (:name airdrop-account)}}]}]
        (when-not can-edit-addresses?
          [quo/text
