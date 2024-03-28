@@ -1,13 +1,13 @@
 (ns status-im.contexts.communities.actions.accounts-selection.effects
   (:require
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [schema.core :as schema]
     [status-im.common.json-rpc.events :as rpc]
     [utils.re-frame :as rf]))
 
 (defn- generate-requests-for-signing
   [pub-key community-id addresses-to-reveal]
-  (p/create
+  (promesa/create
    (fn [p-resolve p-reject]
      (rpc/call
       {:method     :wakuext_generateJoiningCommunityRequestsForSigning
@@ -17,7 +17,7 @@
 
 (defn- sign-data
   [sign-params password]
-  (p/create
+  (promesa/create
    (fn [p-resolve p-reject]
      (rpc/call
       {:method     :wakuext_signData
@@ -27,7 +27,7 @@
 
 (defn- edit-shared-addresses-for-community
   [community-id signatures addresses-to-reveal airdrop-address]
-  (p/create
+  (promesa/create
    (fn [p-resolve p-reject]
      (rpc/call
       {:method      :wakuext_editSharedAddressesForCommunity
@@ -41,7 +41,7 @@
 
 (defn- request-to-join
   [community-id signatures addresses-to-reveal airdrop-address]
-  (p/create
+  (promesa/create
    (fn [p-resolve p-reject]
      (rpc/call
       {:method      :wakuext_requestToJoinCommunity
@@ -66,14 +66,14 @@
            addresses-to-reveal airdrop-address
            on-success on-error
            callback]}]
-  (-> (p/let [sign-params (generate-requests-for-signing pub-key community-id addresses-to-reveal)
-              signatures  (sign-data sign-params password)
-              result      (callback community-id
-                                    signatures
-                                    addresses-to-reveal
-                                    airdrop-address)]
+  (-> (promesa/let [sign-params (generate-requests-for-signing pub-key community-id addresses-to-reveal)
+                    signatures  (sign-data sign-params password)
+                    result      (callback community-id
+                                          signatures
+                                          addresses-to-reveal
+                                          airdrop-address)]
         (run-callback-or-event on-success result))
-      (p/catch #(run-callback-or-event on-error %))))
+      (promesa/catch #(run-callback-or-event on-error %))))
 
 (schema/=> sign-and-call-endpoint
   [:=>

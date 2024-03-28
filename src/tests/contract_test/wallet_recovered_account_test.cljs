@@ -4,7 +4,7 @@
     legacy.status-im.events
     legacy.status-im.subs.root
     [native-module.core :as native-module]
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -24,13 +24,13 @@
 (deftest wallet-get-derived-addressess-contract-test
   (h/test-async :wallet/create-derived-addresses
     (fn []
-      (p/let [sha3-pwd-hash   (native-module/sha3 integration-constants/password)
-              derivation-path [integration-constants/derivation-path]
-              accounts        (contract-utils/call-rpc "accounts_getAccounts")
-              default-address (contract-utils/get-default-address accounts)
-              response        (contract-utils/call-rpc
-                               "wallet_getDerivedAddresses"
-                               sha3-pwd-hash
-                               default-address
-                               derivation-path)]
+      (promesa/let [sha3-pwd-hash   (native-module/sha3 integration-constants/password)
+                    derivation-path [integration-constants/derivation-path]
+                    accounts        (contract-utils/call-rpc "accounts_getAccounts")
+                    default-address (contract-utils/get-default-address accounts)
+                    response        (contract-utils/call-rpc
+                                     "wallet_getDerivedAddresses"
+                                     sha3-pwd-hash
+                                     default-address
+                                     derivation-path)]
         (assert-derived-account response)))))
