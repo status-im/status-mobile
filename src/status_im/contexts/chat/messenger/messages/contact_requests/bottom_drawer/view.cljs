@@ -39,8 +39,7 @@
          (i18n/label :t/contact-request-chat-pending))]]
      [quo/floating-shell-button
       {:jump-to
-       {:on-press            (fn []
-                               (rf/dispatch [:shell/navigate-to-jump-to]))
+       {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
       {:position :absolute
