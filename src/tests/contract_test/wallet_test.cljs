@@ -1,5 +1,6 @@
 (ns tests.contract-test.wallet-test
   (:require
+    [camel-snake-kebab.extras :as cske] ;; [cljs.core.async :as async]
     [cljs.test :refer [deftest is use-fixtures]]
     legacy.status-im.events
     legacy.status-im.subs.root
@@ -11,7 +12,8 @@
     status-im.navigation.core
     status-im.subs.root
     [test-helpers.integration :as h]
-    [tests.contract-test.utils :as contract-utils]))
+    [tests.contract-test.utils :as contract-utils]
+    [utils.transforms :as transforms]))
 
 (use-fixtures :each (h/fixture-session))
 
@@ -82,10 +84,11 @@
   (h/test-async :wallet/get-wallet-token
     (fn []
       (promesa/let [accounts        (contract-utils/call-rpc "accounts_getAccounts")
-                    default-address (contract-utils/get-default-address accounts)
-                    response        (contract-utils/call-rpc
-                                     "wallet_getWalletToken"
-                                     [default-address])]
+              default-address (contract-utils/get-default-address accounts)
+              response        (contract-utils/call-rpc
+                               "wallet_getWalletToken"
+                               [default-address])]
+        (prn "WALLET TOKENS: " response)
         (assert-wallet-tokens response)))))
 
 (defn assert-address-details
@@ -105,6 +108,7 @@
                                                          chain-id
                                                          ens-address)]
         (assert-address-details response)))))
+
 (defn assert-search-ens
   [expected-result actual-result]
   (is (= expected-result actual-result)))
@@ -130,3 +134,89 @@
                   (promesa/let [ens-address (contract-utils/call-rpc "ens_addressOf" chain-id ens-name)]
                     (assert-search-ens expected-result ens-address)))
                 test-cases)))))))
+
+(defn assert-suggested-routes
+  [result]
+  (is (vector? (:Best result)))
+  (is (= "Optimism" (get-in result [:Best 0 :From :chainName])))
+  (is (= "0xa" (get-in result [:Best 0 :AmountIn])))
+  (is (= "Transfer" (get-in result [:Best 0 :BridgeName]))))
+
+(deftest get-suggested-routes-test
+  (h/test-async :wallet/get-suggested-routes
+    (fn []
+      (let [transaction-type-param  constants/send-type-transfer
+            from-address            "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
+            to-address              "0x53d284357ec70cE289D6D64134DfAc8E511c8a3D"
+            amount-in               "0xA"
+            token-id                "ETH"
+            disabled-from-chain-ids []
+            disabled-to-chain-ids   []
+            network-preferences     []
+            from-locked-amount      {}
+            gas-rates               constants/gas-rate-medium
+            request-params          [transaction-type-param
+                                     from-address
+                                     to-address
+                                     amount-in
+                                     token-id
+                                     disabled-from-chain-ids
+                                     disabled-to-chain-ids
+                                     network-preferences
+                                     gas-rates
+                                     from-locked-amount]]
+        (promesa/let [result (apply contract-utils/call-rpc "wallet_getSuggestedRoutes" request-params)]
+          (println "RPC Response: " result)
+          (assert-suggested-routes result))))))
+
+;; TODO assertions and add collectibles
+;; currently returning nil
+(deftest get-owned-collectibles-async-test
+  (h/test-async :wallet/request-new-collectibles-for-account
+    (fn []
+      (promesa/let [accounts (contract-utils/call-rpc "accounts_getAccounts")]
+        (promesa/let [request-id              0
+                chain-ids               constants/mainnet-chain-ids
+                account                 [(str (contract-utils/get-default-address accounts))]
+                collectibles-filter     nil
+                current-collectible-idx 0
+                amount                  0
+                fetch-criteria          {:fetch-type            1
+                                         :max-cache-age-seconds 5000}
+                data-type               1
+                request-params          [request-id
+                                         chain-ids
+                                         account
+                                         collectibles-filter
+                                         current-collectible-idx
+                                         amount
+                                         data-type
+                                         fetch-criteria]]
+
+          (println "ACCOUNTS_GET_ACCOUNT" accounts)
+          (println "ACCOUNT" account)
+          (promesa/let [result (apply contract-utils/call-rpc
+                                "wallet_getOwnedCollectiblesAsync"
+                                request-params)]
+            (println "COLLECTIBLE Response: " result)
+            result))))))
+
+;; currently returning nil
+(deftest get-owned-collectibles-by-unique-ID-async-test
+  (h/test-async :wallet/get-collectible-details
+    (fn []
+      (promesa/let [accounts (contract-utils/call-rpc "accounts_getAccounts")]
+        (promesa/let [request-id               0
+                account                  (contract-utils/get-default-address accounts)
+                collectible-id           {:contract-id {:chain-id 1 :address account} :token-id "1"}
+                collectible-id-converted (cske/transform-keys transforms/->PascalCaseKeyword
+                                                              collectible-id)
+                data-type                1
+                request-params           [request-id
+                                          [collectible-id-converted]
+                                          data-type]]
+
+          (promesa/let [result (apply contract-utils/call-rpc
+                                "wallet_getCollectiblesByUniqueIDAsync"
+                                request-params)]
+            (println "COLLECTIBLE_UNIQUE Response: " result)))))))
