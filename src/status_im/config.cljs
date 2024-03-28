@@ -170,3 +170,4 @@
 (def community-accounts-selection-enabled? true)
 (def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
 (def test-networks-enabled? (enabled? (get-config :TEST_NETWORKS_ENABLED "0")))
+(def wallet-collectible-actvity-enabled? false)
