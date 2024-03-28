@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.platform :as platform]
     [react-native.svg :as svg]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
@@ -11,8 +10,7 @@
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.url :as url]))
+    [utils.re-frame :as rf]))
 
 (defn header
   [collectible-name collection-name collection-image-url]
@@ -72,19 +70,17 @@
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data
-            image {:image        preview-uri
-                                                        :image-width  300 ; collectibles don't have
-                                                                          ; width/height but we need
-                                                                          ; to pass something
-                                                        :image-height 300 ; without it animation
-                                                                          ; doesn't work smoothly
-                                                                          ; and :border-radius not
-                                                                          ; applied
-                                                        :id           token-id
-                                                        :header       collectible-name
-                                                        :description  collection-name}
-
-            ]
+            collectible-image           {:image        preview-uri
+                                         :image-width  300 ; collectibles don't have
+                                         ; width/height but we need
+                                         ; to pass something
+                                         :image-height 300 ; without it animation
+                                         ; doesn't work smoothly
+                                         ; and :border-radius not
+                                         ; applied
+                                         :id           token-id
+                                         :header       collectible-name
+                                         :description  collection-name}]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -95,8 +91,9 @@
                            :right-side  [{:icon-name :i/options
                                           :on-press  #(rf/dispatch
                                                        [:show-bottom-sheet
-                                                        {:content (fn [] [options-drawer/view 
-                                                                                   image])
+                                                        {:content (fn [] [options-drawer/view
+                                                                          {:name  collectible-name
+                                                                           :image preview-uri}])
                                                          :theme   theme}])}]
                            :picture     preview-uri}}
          [rn/view {:style style/container}
@@ -109,12 +106,14 @@
                                  (rf/dispatch
                                   [:lightbox/navigate-to-lightbox
                                    token-id
-                                   {:images           [image]
+                                   {:images           [collectible-image]
                                     :index            0
                                     :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                      {:content (fn []
-                                                                                  [options-drawer/view
-                                                                                   image])}]))}])))}
+                                                                     {:content
+                                                                      (fn []
+                                                                        [options-drawer/view
+                                                                         {:name  collectible-name
+                                                                          :image preview-uri}])}])}])))}
             (if svg?
               [rn/view
                {:style     (assoc style/preview :overflow :hidden)

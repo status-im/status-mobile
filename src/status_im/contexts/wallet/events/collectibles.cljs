@@ -5,6 +5,7 @@
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
 
+
 (def collectible-data-types
   {:unique-id        0
    :header           1
@@ -182,3 +183,16 @@
  :wallet/clear-last-collectible-details
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet] dissoc :last-collectible-details)}))
+
+(rf/reg-event-fx
+ :wallet/navigate-to-open-sea-from-bottom-sheet
+ (fn [_ [explorer-link address]]
+   {:fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
+
+(rf/reg-event-fx :wallet/share-collectible
+ (fn [_ [{:keys [title uri]}]]
+   {:fx [[:effects.share/open
+          {:title   title
+           :message title
+           :url     uri}]]}))
