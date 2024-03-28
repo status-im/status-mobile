@@ -9,6 +9,7 @@
             [status-im.contexts.profile.settings.header.view :as settings.header]
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
+            [status-im.contexts.profile.utils :as profile.utils]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -42,7 +43,9 @@
   (let [insets              (safe-area/get-insets)
         customization-color (rf/sub [:profile/customization-color])
         scroll-y            (reanimated/use-shared-value 0)
-        logout-press        #(rf/dispatch [:multiaccounts.logout.ui/logout-pressed])]
+        logout-press        #(rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
+        profile             (rf/sub [:profile/profile])
+        full-name           (profile.utils/displayed-name profile)]
     [quo/overlay {:type :shell}
      [rn/view
       {:key   :header
@@ -50,7 +53,11 @@
                                          :inset               (:top insets)
                                          :theme               theme})}
       [quo/page-nav
-       {:background :blur
+       {:title      full-name
+        :background :blur
+        :type       :title
+        :text-align :left
+        :scroll-y   scroll-y
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/multi-profile
