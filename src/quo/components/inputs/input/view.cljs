@@ -22,7 +22,10 @@
                                   (str current-chars "/"))]
      [rn/view {:style style/counter-container}
       [text/text
-       {:style  (style/counter-color current-chars char-limit variant-colors theme)
+       {:style  (style/counter-color {:current-chars  current-chars
+                                      :char-limit     char-limit
+                                      :variant-colors variant-colors
+                                      :theme          theme})
         :weight :regular
         :size   :paragraph-2}
        count-text]])])
