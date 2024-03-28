@@ -1,5 +1,13 @@
 # UI components coding guidelines
 
+## Content
+- [Global State and Subscriptions](#global-state-and-subscriptions)
+- [Regular Atoms](#regular-atoms)
+- [Effects](#effects)
+- [Performance Tips](#performance-tips)
+  - [Component Creation](#component-creation)
+  - [Component Updates](#component-updates)
+
 > [!IMPORTANT]
 > React apps are made out of components. A component is a piece of the UI (user interface) that has its own logic and appearance. A component can be as small as a button, or as large as an entire screen.
 > React components are JavaScript functions that return markup
@@ -49,36 +57,46 @@ NOW:
 - State values no longer need to be dereferenced; they are accessible as regular symbols. This eliminates a common bug where the "@" symbol was inadvertently omitted.
 - `theme/with-theme` wrapper is not needed anymore, `(theme/use-theme-value)` hook can be used directly in the components
 - `:f>` not needed anymore, all components are functional by default
-- `rn/use-callback` hook should be used for anon callback functions
 
 > [!IMPORTANT]
-> DO NOT USE anon functions directly in the props
- 
+> For components that re-render frequently, ensure you pass stable reference as props, this might have you wrapping your callback in `rn/use-callback` or your maps/vectors in `rn/use-memo`
+
+An example of such case would be when we have a heavy chat component which we only want to re-render when the props truly change, we can memoize callbacks/anon function passed to it.
+
 BAD
 ```clojure
 (defn view
-  []
-  (let [[pressed? set-pressed] (rn/use-state false)]
-    [rn/pressable
-     {:style               (style/main pressed?)
-      :on-press-in         #(set-pressed true)
-      :on-press-out        #(set-pressed nil)}]))
+  [chat-id]
+  (let [[opened? set-opened] (rn/use-state false)]
+    [heavy-chat-component
+     {:style                (style/main opened?)
+      :chats                (get-chats chat-id)
+      :on-chat-open         #(set-opened true)
+      :on-chat-close        #(set-opened nil)}]))
 ```
 
 GOOD:
 ```clojure
 (defn view
   []
-  (let [[pressed? set-pressed] (rn/use-state false)
-        on-press-in            (rn/use-callback #(set-pressed true))
-        on-press-out           (rn/use-callback #(set-pressed nil))]
-    [rn/pressable
-     {:style               (style/main pressed?)
-      :on-press-in         on-press-in
-      :on-press-out        on-press-out}]))
+  (let [[opened? set-opened]  (rn/use-state false)
+        chats                 (rn/use-memo #(get-chats chat-id)) [chat-id]
+        on-chat-open          (rn/use-callback #(set-pressed true))
+        on-chat-close         (rn/use-callback #(set-pressed nil))]
+    [heavy-chat-component
+     {:style                (style/main opened?)
+      :chats                chats
+      :on-chat-open         on-chat-open  
+      :on-chat-close        on-chat-close}]))
 ```
 
-## Global state and subscriptions
+Note that this should be done for only components that re-renders more frequently, as so you should profile before using. This is because you might not bebefi from using it much in scenarios 
+
+Note that this should be done for only components that re-renders more frequently. Therefore, it's advisable to conduct profiling to identify these type of components beforehand. This is because the benefits of employing this technique may not be substantial in cases where the component re-renders sparingly.
+
+When in doubt refer to the [notes on memoization](notes-on-memoization.md) to get some clarification.
+
+## Global State and Subscriptions
 
 For global state management, we utilize Re-frame subscriptions. They can be likened to React state. To obtain the state, `(rf/sub [])` is employed, and to modify it, `(rf/dispatch [])` is utilized. However, they update components in a similar manner to React states.
 
@@ -97,7 +115,7 @@ For global state management, we utilize Re-frame subscriptions. They can be like
        [activity/view]]))
 ```
 
-## Regular atoms
+### Regular Atoms
 
 In certain instances, components utilized regular atoms; however, they should now be used with `rn/use-ref-atom`
 
@@ -122,7 +140,7 @@ NOW:
         on-blur  (rn/use-callback #(reset! focused? false))]))
 ```
 
-## Effects
+### Effects
 
 LIFECYCLE:
 
@@ -170,13 +188,13 @@ Instead `:all-collectibles-changed` should be used in the handler which changes 
 
 
 
-## Performance tips
+## Performance Tips
 
 To begin with, we need to understand that there are two distinct stages for a component: creation and update. React creates a render tree, a UI tree, composed of the rendered components.
 
 ![react_tree.png](react_tree.png)
 
-### Component creation
+### Component Creation
 
 For component creation, the most critical factor is the number of elements involved, so we should strive to minimize them. For instance, it's advisable to avoid using unnecessary wrappers or containers.
 
@@ -198,7 +216,7 @@ GOOD:
     [quo/button {:container-style {:padding-top 20}}]))
 ```
 
-### Component updates
+### Component Updates
 
 For component updates, it's crucial to recognize that React will invoke the function where state is utilized. Therefore, if you utilize state in the root component, React will execute the root function and re-render the entire root component along with all its children (unless optimizations like memoization are implemented).
 
@@ -252,3 +270,4 @@ GOOD:
 ```
 
 So, now the screen component function will never be invoked, and `component` and `component2` will be re-rendered only when `label` or `label2` have changed.
+
