@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.create-account.new-keypair.keypair-name.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.validators :as validators]
@@ -58,10 +57,9 @@
                              :else                                      (set-error nil)))
         :error           error}]
       (when error
-        [rn/view
-         {:style style/error-container}
-         [quo/icon :i/info {:color (colors/resolve-color :danger theme)}]
-         [quo/text
-          {:style (style/error theme)}
-          (get error-messages error)]])]]))
+        [quo/info-message
+         {:type :error
+          :size :default
+          :icon :i/info}
+         (get error-messages error)])]]))
 (def view (quo.theme/with-theme view-internal))
