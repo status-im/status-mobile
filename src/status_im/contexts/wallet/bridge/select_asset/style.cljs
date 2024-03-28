@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.account.bridge.style)
+(ns status-im.contexts.wallet.bridge.select-asset.style)
 
 (def input-container
   {:padding-horizontal 20
