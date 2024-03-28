@@ -89,7 +89,7 @@
 
     (eth-address? scanned-text)
     (do
-      (debounce/debounce-and-dispatch [:wallet/scan-qr-code-success scanned-text] 300)
+      (debounce/debounce-and-dispatch [:generic-scanner/scan-success scanned-text] 300)
       (debounce/debounce-and-dispatch [:navigate-change-tab :wallet-stack] 300))
 
     (eip681-address? scanned-text)
