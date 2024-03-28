@@ -1,6 +1,7 @@
 (ns status-im.contexts.preview.quo.wallet.network-link
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
 
@@ -36,4 +37,6 @@
         :descriptor                descriptor
         :component-container-style {:padding-top 40
                                     :align-items :center}}
-       [quo/network-link @state]])))
+       [rn/view
+        {:style {:width 63}}
+        [quo/network-link @state]]])))

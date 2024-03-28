@@ -13,7 +13,7 @@
    :justify-content :space-between})
 
 (def routes-inner-container
-  {:margin-top      8
+  {:margin-top      11
    :flex-direction  :row
    :align-items     :center
    :justify-content :space-between})
@@ -24,8 +24,9 @@
    :margin-left margin-left})
 
 (def network-link
-  {:right   6
-   :z-index 1})
+  {:margin-horizontal -1.5
+   :z-index           1
+   :flex              1})
 
 (def empty-container
   {:flex-grow       1
@@ -33,9 +34,8 @@
    :justify-content :center})
 
 (def add-network
-  {:margin-top 8
-   :align-self :flex-end
-   :right      12})
+  {:margin-top 11
+   :align-self :flex-end})
 
 (defn warning-container
   [color theme]

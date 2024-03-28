@@ -49,6 +49,10 @@
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
 
+(rf/reg-event-fx :wallet/clean-disabled-from-networks
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
+
 (rf/reg-event-fx
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
@@ -120,6 +124,15 @@
             :start-flow?    start-flow?
             :flow-id        :wallet-flow}]]]}))
 
+(rf/reg-event-fx :wallet/disable-from-networks
+ (fn [{:keys [db]} [networks]]
+   (let [amount                  (get-in db [:wallet :ui :send :amount])
+         disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])]
+     {:db (assoc-in db
+           [:wallet :ui :send :disabled-from-chain-ids]
+           (vec (concat disabled-from-chain-ids networks)))
+      :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]]})))
+
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
@@ -127,6 +140,7 @@
          transaction-type        (get-in db [:wallet :ui :send :tx-type])
          collectible             (get-in db [:wallet :ui :send :collectible])
          to-address              (get-in db [:wallet :ui :send :to-address])
+         disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
          networks                ((if test-networks-enabled? :test :prod)
                                   (get-in db [:wallet :networks]))
@@ -142,7 +156,7 @@
          gas-rates               constants/gas-rate-medium
          amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address            wallet-address
-         disabled-from-chain-ids []
+         disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids   (if (= transaction-type :bridge)
                                    (filter #(not= % bridge-to-chain-id) network-chain-ids)
                                    [])
@@ -196,6 +210,7 @@
    {:fx [[:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
+         [:dispatch [:wallet/clean-disabled-from-networks]]
          [:dispatch [:wallet/select-address-tab nil]]
          [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 
