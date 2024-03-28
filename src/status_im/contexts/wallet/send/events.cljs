@@ -101,15 +101,23 @@
                      :amount
                      (when (= transaction-type :collecible) :tx-type))})))
 
-(rf/reg-event-fx :wallet/send-select-collectible
- (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
+(rf/reg-event-fx :wallet/send-collectibles-amount
+ (fn [{:keys [db]} [{:keys [collectible stack-id amount]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :token)
             (assoc-in [:wallet :ui :send :collectible] collectible)
             (assoc-in [:wallet :ui :send :tx-type] :collectible)
-            (assoc-in [:wallet :ui :send :amount] 1))
-    :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
+            (assoc-in [:wallet :ui :send :amount] amount))
+    :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
          [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
+
+(rf/reg-event-fx :wallet/select-collectibles-amount
+ (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
+   {:db (-> db
+            (update-in [:wallet :ui :send] dissoc :token)
+            (assoc-in [:wallet :ui :send :collectible] collectible)
+            (assoc-in [:wallet :ui :send :tx-type] :collectible))
+    :fx [[:navigate-to-within-stack [:screen/wallet.select-collectible-amount stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]

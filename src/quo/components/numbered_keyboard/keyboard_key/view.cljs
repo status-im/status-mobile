@@ -15,9 +15,9 @@
   [{:keys [disabled? blur? on-press on-long-press type]} label]
   (let [theme                   (quo.theme/use-theme-value)
         [pressed? set-pressed?] (rn/use-state false)
-        on-press                (rn/use-callback #(when on-press (on-press label)) [label])
+        on-press                (rn/use-callback #(when on-press (on-press label)) [on-press label])
         on-long-press           (rn/use-callback #(when (fn? on-long-press) (on-long-press label))
-                                                 [label])
+                                                 [on-long-press label])
         on-press-in             (rn/use-callback #(set-pressed? true))
         on-press-out            (rn/use-callback #(set-pressed? false))
         label-color             (style/get-label-color disabled? theme blur?)

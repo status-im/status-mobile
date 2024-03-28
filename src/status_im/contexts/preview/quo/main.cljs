@@ -58,6 +58,7 @@
     [status-im.contexts.preview.quo.drawers.bottom-actions :as bottom-actions]
     [status-im.contexts.preview.quo.drawers.documentation-drawers :as
      documentation-drawers]
+    [status-im.contexts.preview.quo.drawers.drawer-action :as drawer-action]
     [status-im.contexts.preview.quo.drawers.drawer-buttons :as drawer-buttons]
     [status-im.contexts.preview.quo.drawers.drawer-top :as drawer-top]
     [status-im.contexts.preview.quo.drawers.permission-drawers :as
@@ -294,6 +295,8 @@
                         :component action-drawers/view}
                        {:name      :documentation-drawer
                         :component documentation-drawers/view}
+                       {:name      :drawer-action
+                        :component drawer-action/view}
                        {:name      :drawer-buttons
                         :component drawer-buttons/view}
                        {:name      :drawer-top
