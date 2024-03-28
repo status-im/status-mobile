@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.sheets.scanned-address.view
+(ns status-im.contexts.shell.qr-reader.sheets.scanned-address
   (:require
     [quo.core :as quo]
     [utils.i18n :as i18n]
