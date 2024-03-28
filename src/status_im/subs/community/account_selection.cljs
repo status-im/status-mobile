@@ -40,6 +40,13 @@
  (fn [permissions [_ id]]
    (get permissions id)))
 
+(re-frame/reg-sub
+ :communities/permissions-check-for-selection-checking?
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/permissions-check-for-selection community-id]))
+ (fn [check]
+   (:checking? check)))
+
 (re-frame/reg-sub :communities/highest-role-for-selection
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/permissions-check-for-selection community-id])])
