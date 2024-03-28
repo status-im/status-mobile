@@ -14,7 +14,7 @@
     :parent-height (:height (rn/get-window))
     :animated?     false}])
 
-(defn f-view
+(defn view
   [chat-screen-layout-calculations-complete?]
   (let [top     (safe-area/get-top)
         opacity (worklets/placeholder-opacity chat-screen-layout-calculations-complete?)
