@@ -55,13 +55,13 @@
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
-    [status-im.contexts.wallet.account.bridge-send.view :as wallet-bridge-send]
-    [status-im.contexts.wallet.account.bridge-to.view :as wallet-bridge-to]
-    [status-im.contexts.wallet.account.bridge.view :as wallet-bridge]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
     [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as
      wallet-confirm-address-to-watch]
     [status-im.contexts.wallet.add-address-to-watch.view :as wallet-add-address-to-watch]
+    [status-im.contexts.wallet.bridge.bridge-to.view :as wallet-bridge-to]
+    [status-im.contexts.wallet.bridge.input-amount.view :as wallet-bridge-input-amount]
+    [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
@@ -362,18 +362,18 @@
     {:name      :screen/wallet.confirm-address-to-watch
      :component wallet-confirm-address-to-watch/view}
 
-    {:name      :screen/wallet.bridge
+    {:name      :screen/wallet.bridge-select-asset
      :options   {:insets                 {:top? true}
                  :modalPresentationStyle :overCurrentContext}
-     :component wallet-bridge/view}
+     :component wallet-bridge-select-asset/view}
 
     {:name      :screen/wallet.bridge-to
      :options   {:insets {:top? true}}
      :component wallet-bridge-to/view}
 
-    {:name      :screen/wallet.bridge-send
+    {:name      :screen/wallet.bridge-input-amount
      :options   {:insets {:top? true}}
-     :component wallet-bridge-send/view}
+     :component wallet-bridge-input-amount/view}
 
     {:name      :screen/wallet.edit-derivation-path
      :component wallet-edit-derivation-path/view}
