@@ -55,6 +55,8 @@
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im.contexts.wallet.account.edit-account.view :as wallet-edit-account]
+    [status-im.contexts.wallet.account.share-address.view :as wallet-share-address]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
     [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as
      wallet-confirm-address-to-watch]
@@ -63,6 +65,7 @@
     [status-im.contexts.wallet.bridge.input-amount.view :as wallet-bridge-input-amount]
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
+    [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
      wallet-backup-recovery-phrase]
@@ -71,9 +74,6 @@
     [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
-    [status-im.contexts.wallet.edit-account.view :as wallet-edit-account]
-    [status-im.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
-    [status-im.contexts.wallet.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
@@ -82,7 +82,6 @@
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
-    [status-im.contexts.wallet.share-address.view :as wallet-share-address]
     [status-im.navigation.options :as options]
     [status-im.navigation.transitions :as transitions]))
 
@@ -404,9 +403,6 @@
     {:name      :screen/wallet.share-address
      :options   options/transparent-screen-options
      :component wallet-share-address/view}
-
-    {:name      :screen/wallet.saved-addresses
-     :component wallet-saved-addresses/view}
 
     {:name      :screen/wallet.save-address
      :options   {:sheet? true}
