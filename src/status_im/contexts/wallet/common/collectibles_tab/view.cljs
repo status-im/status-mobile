@@ -9,14 +9,16 @@
     [utils.i18n :as i18n]))
 
 (defn- render-fn
-  [{:keys [preview-url collection-data ownership] :as collectible} address on-press on-long-press]
+  [{:keys [preview-url collection-data ownership collectible-data] :as collectible} index address on-press on-long-press]
   (let [total-owned (utils/calculate-owned-collectible ownership address)]
     [quo/collectible-list-item
      {:type      :card
       :image-src (:uri preview-url)
       :avatar-image-src (:image-url collection-data)
       :collectible-name (:name collection-data)
+      :collectible-mime (:animation-media-type collectible-data)
       :status :default
+      :gradient-color-index (keyword (str "gradient-" (mod index 5)))
       :counter (utils/collectible-owned-counter total-owned)
       :container-style {:padding 8}
       :on-press #(when on-press
@@ -48,7 +50,8 @@
         :content-container-style {:margin-horizontal 12}
         :window-size              11
         :num-columns              2
-        :render-fn                #(render-fn % current-account-address on-collectible-press on-collectible-long-press)
+        :render-fn                (fn [item index]
+                                    (render-fn item index current-account-address on-collectible-press on-collectible-long-press))
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
 

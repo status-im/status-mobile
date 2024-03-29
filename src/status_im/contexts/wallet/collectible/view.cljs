@@ -127,7 +127,7 @@
             ;;    {:source    preview-uri
             ;;     :style     style/preview
             ;;     :native-ID (when (= animation-shared-element-id token-id) :shared-element)}])
-            ]
+           ]
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs
