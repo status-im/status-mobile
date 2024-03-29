@@ -15,12 +15,6 @@
               {:key :image}]}
    {:key  :community?
     :type :boolean}
-   {:key     :status
-    :type    :select
-    :options [{:key :loading}
-              {:key :default}
-              {:key :unsupported}
-              {:key :cant-fetch}]}
    {:key     :gradient-color-index
     :type    :select
     :options [{:key :gradient-1}
@@ -39,7 +33,6 @@
                              :collectible-name     "Doodle #6822"
                              :gradient-color-index :gradient-1
                              :community?           false
-                             :status               :loading
                              :counter              ""})]
     (fn []
       [preview/preview-container

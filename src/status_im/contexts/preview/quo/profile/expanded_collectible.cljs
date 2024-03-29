@@ -14,12 +14,6 @@
     :type :boolean}
    {:key  :counter
     :type :text}
-   {:key     :status
-    :type    :select
-    :options [{:key :loading}
-              {:key :default}
-              {:key :unsupported}
-              {:key :cant-fetch}]}
    {:type    :select
     :key     :image-type
     :options [{:key :vertical}
@@ -29,7 +23,6 @@
   []
   (let [state (reagent/atom {:square?    false
                              :counter    ""
-                             :status     :default
                              :image-type :horizontal})]
     (fn []
       [preview/preview-container

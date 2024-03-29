@@ -8,7 +8,9 @@
     [quo.foundations.colors :as colors]
     [quo.theme]
     [react-native.core :as rn]
+    [reagent.core :as reagent]
     [schema.core :as schema]
+    [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]))
 
 (defn- counter-view
@@ -32,34 +34,43 @@
     label]])
 
 (defn view-internal
-  [{:keys [container-style square? status on-press counter image-src] :or {status :default}}]
-  (let [theme                       (quo.theme/use-theme-value)
-        [image-size set-image-size] (rn/use-state {})]
-    (rn/use-effect
-     (fn []
-       (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
-         (set-image-size {:width        image-width
-                          :height       image-height
-                          :aspect-ratio (/ image-width image-height)})))
-     [image-src])
-    [rn/pressable
-     {:on-press            on-press
-      :accessibility-label :expanded-collectible
-      :style               (merge container-style style/container)}
-     (case status
-       :unsupported [fallback-view
-                     {:label   (i18n/label :t/unsupported-file)
-                      :counter counter
-                      :theme   theme}]
-       :cant-fetch  [fallback-view
-                     {:label   (i18n/label :t/cant-fetch-info)
-                      :counter counter
-                      :theme   theme}]
-       [rn/view
-        [rn/image
-         {:style  (style/image square? (:aspect-ratio image-size))
-          :source image-src}]
-        [counter-view counter]])]))
+  []
+  (let [image-error? (reagent/atom false)]
+    (fn
+      [{:keys [container-style square? on-press counter image-src collectible-mime]}]
+      (let [theme                       (quo.theme/use-theme-value)
+            [image-size set-image-size] (rn/use-state {})]
+        (rn/use-effect
+         (fn []
+           (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
+             (set-image-size {:width        image-width
+                              :height       image-height
+                              :aspect-ratio (/ image-width image-height)})))
+         [image-src])
+        [rn/pressable
+         {:on-press            on-press
+          :accessibility-label :expanded-collectible
+          :style               (merge container-style style/container)}
+         (cond
+           (not (utils/collectible-supported? collectible-mime))
+           [fallback-view
+            {:label   (i18n/label :t/unsupported-file)
+             :counter counter
+             :theme   theme}]
+           
+           @image-error?
+           [fallback-view
+            {:label   (i18n/label :t/cant-fetch-info)
+             :counter counter
+             :theme   theme}]
+           
+           (and (not @image-error?) (utils/collectible-supported? collectible-mime))
+           [rn/view
+            [rn/image
+             {:style  (style/image square? (:aspect-ratio image-size))
+              :source image-src
+              :on-error #(reset! image-error? true)}]
+            [counter-view counter]])]))))
 
 (def ?schema
   [:=>
@@ -67,10 +78,10 @@
     [:props
      [:map {:closed true}
       [:image-src {:optional true} [:maybe string?]]
+      [:collectible-mime {:optional true} [:maybe [:or string? keyword?]]]
       [:container-style {:optional true} [:maybe :map]]
       [:square? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe string?]]
-      [:status {:optional true} [:maybe [:enum :default :loading :cant-fetch :unsupported]]]
       [:on-press {:optional true} [:maybe fn?]]]]]
    :any])
 

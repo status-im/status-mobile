@@ -162,13 +162,13 @@
         [avatar-image-src]])]))
 
 (defn- view-internal
-  [{:keys [container-style type on-press]
-    :as   props}]
+  []
   (let [image-loading?  (reagent/atom true)
         image-error?    (reagent/atom false)
         avatar-loading? (reagent/atom true)
         avatar-error?   (reagent/atom false)]
-    (fn []
+    (fn [{:keys [container-style type on-press]
+          :as   props}]
       [rn/pressable
        {:on-press            (when-not @image-loading? on-press)
         :accessibility-label :collectible-list-item
@@ -190,14 +190,13 @@
      [:map {:closed true}
       [:avatar-image-src {:optional true} [:maybe :schema.common/image-source]]
       [:collectible-name {:optional true} [:maybe string?]]
-      [:collectible-mime {:optional true} [:maybe string? keyword?]]
+      [:collectible-mime {:optional true} [:maybe [:or string? keyword?]]]
       [:community? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe [:or :string :int]]]
       [:gradient-color-index {:optional true}
        [:maybe [:enum :gradient-1 :gradient-2 :gradient-3 :gradient-4 :gradient-5]]]
       [:image-src {:optional true} [:maybe :schema.common/image-source]]
       [:on-press {:optional true} [:maybe fn?]]
-      [:status {:optional true} [:maybe [:enum :default :loading :cant-fetch :unsupported]]]
       [:type [:enum :card :image]]
       [:container-style {:optional true} [:maybe :map]]]]]
    :any])

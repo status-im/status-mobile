@@ -10,10 +10,10 @@
     [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
+    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.url :as url]
-    [status-im.contexts.wallet.common.utils :as utils]))
+    [utils.url :as url]))
 
 (defn header
   [collectible-name collection-name collection-image-url]
@@ -59,7 +59,7 @@
         on-tab-change #(reset! selected-tab %)]
     (fn []
       (let [collectible                 (rf/sub [:wallet/last-collectible-details])
-            animation-shared-element-id (rf/sub [:animation-shared-element-id])
+            ;; animation-shared-element-id (rf/sub [:animation-shared-element-id])
             wallet-address  (rf/sub [:wallet/current-viewing-account-address])
             {:keys [id
                     preview-url
@@ -98,25 +98,26 @@
                                                          :theme   theme}])}]
                            :picture     preview-uri}}
          [rn/view {:style style/container}
-           [quo/expanded-collectible
-            {:image-src preview-uri
-             :container-style style/preview-container
-             :status (if svg? :unsupported :default)
-             :counter (utils/collectible-owned-counter total-owned)
-             :on-press       (fn []
-                               (if svg?
-                                 (js/alert "Can't visualize SVG images in lightbox")
-                                 (rf/dispatch
-                                  [:lightbox/navigate-to-lightbox
-                                   token-id
-                                   {:images           [collectible-image]
-                                    :index            0
-                                    :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                     {:content
-                                                                      (fn []
-                                                                        [options-drawer/view
-                                                                         {:name  collectible-name
-                                                                          :image preview-uri}])}])}])))}
+          [quo/expanded-collectible
+           {:image-src preview-uri
+            :container-style style/preview-container
+            :status (if svg? :unsupported :default)
+            :counter (utils/collectible-owned-counter total-owned)
+            :collectible-mime (:animation-media-type collectible-data)
+            :on-press       (fn []
+                              (if svg?
+                                (js/alert "Can't visualize SVG images in lightbox")
+                                (rf/dispatch
+                                 [:lightbox/navigate-to-lightbox
+                                  token-id
+                                  {:images           [collectible-image]
+                                   :index            0
+                                   :on-options-press #(rf/dispatch [:show-bottom-sheet
+                                                                    {:content
+                                                                     (fn []
+                                                                       [options-drawer/view
+                                                                        {:name  collectible-name
+                                                                         :image preview-uri}])}])}])))}
             ;; (if svg?
             ;;   [rn/view
             ;;    {:style     (assoc style/preview :overflow :hidden)
