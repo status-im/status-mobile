@@ -148,11 +148,12 @@
         on-message-change     (rn/use-callback #(do
                                                   (rf/dispatch-sync [:ui/set-contact-request-message public-key %])
                                                   (set-message %)))
-        bind-sub              (use-bind-sub
-                               (combine-subs {:message message-sub
-                                              :public-key (reagent.ratom/cursor
-                                                           profile-sub
-                                                           [:public-key])}))
+        state-sub             (combine-subs {:message message-sub
+                                             :public-key (reagent.ratom/cursor
+                                                          profile-sub
+                                                          [:public-key])})
+        bind-sub              (use-bind-sub state-sub)
+        bind-sub-alt          (use-bind-sub state-sub)
         bind-state            (use-bind-state {:public-key public-key
                                                :message message})]
     (rn/use-unmount
@@ -197,7 +198,7 @@
        :button-one-props {:disabled?           (string/blank? message)
                           :accessibility-label :send-contact-request
                           :customization-color customization-color
-                          :on-press            (bind-state on-message-submit)}
+                          :on-press            (bind-sub-alt on-message-submit)}
        :button-one-label "Test Button One"
        :button-two-props {:accessibility-label :test-button
                           :customization-color :danger
