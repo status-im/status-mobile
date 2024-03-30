@@ -35,6 +35,24 @@
 
 ;; ---
 
+(def ^:private lookup-sentinel (js-obj))
+
+(defn memo
+  "Returns a memoized version of a referentially transparent function. The
+  memoized version of the function keeps a cache of the mapping from arguments
+  to results and, when calls with the same arguments are repeated often, has
+  higher performance at the expense of higher memory use."
+  [mem f]
+  (fn [& args]
+    (js/console.log "lookup")
+    (let [v (get @mem args lookup-sentinel)]
+      (if (identical? v lookup-sentinel)
+        (let [ret (apply f args)]
+          (js/console.log "swap")
+          (swap! mem assoc args ret)
+          ret)
+        v))))
+
 (defn make-state-ref
   [state-ratom label]
   (let [state-ref (atom nil)]
@@ -57,63 +75,94 @@
        :ref state-ref})))
 
 (defn make-state-handler-factory [state-ref]
-  (rn/use-callback
-   (memoize
-    (fn [callback]
-      (fn [event]
-        (callback @state-ref event))))
-   [state-ref]))
+  (let [storage (rn/use-memo #(atom {}) [state-ref])
+        factory (rn/use-callback
+                 (memo storage
+                       (fn [callback]
+                         (print "make state handler")
+                         (fn [event]
+                           (callback @state-ref event))))
+                 [state-ref storage])]
+    {:factory factory
+     :storage storage}))
 
-(defn make-snapshot-handler-factory [state-ref]
-  (rn/use-callback
-   (let [snapshot @state-ref]
-     (fn [handler]
-       ((memoize
-         (fn [callback]
-           (fn [event]
-             (callback snapshot event))))
-        handler)))
-   [@state-ref]))
+(defn make-snapshot-handler-factory [snapshot]
+  (let [storage (rn/use-memo #(atom {}) [])
+        capture (rn/use-memo #(atom snapshot) [])
+        factory (rn/use-memo
+                 (do (swap! capture (fn [_] snapshot))
+                     #(memo storage
+                            (fn [callback]
+                              (fn [event]
+                                (callback @capture event)))))
+                 [storage capture])]
+    {:factory factory
+     :storage storage}))
 
-(defn make-snapshot-state-handler-factory [state-ref]
-  (rn/use-callback
-   (let [snapshot @state-ref]
-     (fn [handler]
-       ((memoize
-         (fn [callback]
-           (fn [event]
-             (callback snapshot @state-ref event))))
-        handler)))
-   [@state-ref]))
+(defn make-past-present-state-handler-factory [state-ref]
+  (let [storage (rn/use-memo #(atom {}) [state-ref])
+        capture (rn/use-memo #(atom @state-ref) [state-ref])
+        factory (rn/use-memo
+                 (fn []
+                   (fn [handler]
+                     (reset! capture @state-ref)
+                     ((memo storage
+                            (fn [callback]
+                              (fn [event]
+                                (callback @capture @state-ref event))))
+                      handler)))
+                 [state-ref storage])]
+    {:factory factory
+     :storage storage}))
 
 (defn use-bind-sub [state-sub]
   (let [{:keys [ref sub]}
         (rn/use-memo (fn []
-                       (make-state-ref state-sub "bind-sub"))
-                     [state-sub])]
+                       (make-state-ref state-sub))
+                     [state-sub])
+        {:keys [factory storage]}
+        (make-state-handler-factory ref)]
     (rn/use-unmount (fn []
                       (js/console.log "unmount bind-sub")
+                      (prn "unmount storage" storage)
                       (reagent.ratom/dispose! sub)))
-    (make-state-handler-factory ref)))
+    factory))
 
-(defn use-bind-sub-snapshot [state-sub]
+(defn use-bind-past-present-sub [state-sub]
   (let [{:keys [ref sub]}
         (rn/use-memo (fn []
-                       (make-state-ref state-sub "bind-sub-snapshot"))
-                     [state-sub])]
+                       (make-state-ref state-sub))
+                     [state-sub])
+        {:keys [factory storage]}
+        (make-past-present-state-handler-factory ref)]
     (rn/use-unmount (fn []
-                      (js/console.log "unmount bind-sub-snapshot")
+                      (js/console.log "unmount bind-sub-and-snapshot")
+                      (prn "unmount storage" storage)
                       (reagent.ratom/dispose! sub)))
-    (make-snapshot-state-handler-factory ref)))
+    factory))
 
-(defn use-bind-state [state]
-  (let [state-ref (rn/use-ref-atom state)]
-    (reset! state-ref state)
-    (make-snapshot-handler-factory state-ref)))
+(defn use-bind-snapshot [snapshot]
+  (let [{:keys [factory storage]}
+        (make-snapshot-handler-factory snapshot)]
+    (rn/use-unmount (fn []
+                      (js/console.log "unmount bind-snapshot")
+                      (prn "unmount storage" storage)))
+    factory))
 
 ;; ---
 
 (defn on-message-submit
+  ([snapshot state _event]
+   (js/console.log "on-press snapshot" (clj->js snapshot))
+   (js/console.log "on-press state" (clj->js state))
+   (let [{:keys [public-key message]} state]
+    ;;  (rf/dispatch [:hide-bottom-sheet])
+    ;;  (rf/dispatch [:contact.ui/send-contact-request
+    ;;                public-key message])
+     (rf/dispatch [:toasts/upsert
+                   {:id   :send-contact-request
+                    :type :positive
+                    :text message}])))
   ([state _event]
    (js/console.log "on-press state" (clj->js state))
    (let [{:keys [public-key message]} state]
@@ -153,9 +202,9 @@
                                                           profile-sub
                                                           [:public-key])})
         bind-sub              (use-bind-sub state-sub)
-        bind-sub-alt          (use-bind-sub state-sub)
-        bind-state            (use-bind-state {:public-key public-key
-                                               :message message})]
+        bind-past-present-sub (use-bind-past-present-sub state-sub)
+        bind-snapshot         (use-bind-snapshot {:public-key public-key
+                                                  :message message})]
     (rn/use-unmount
      (fn []
        (rf/dispatch [:ui/set-contact-request-message public-key ""])))
@@ -194,14 +243,21 @@
         :input-container-style {:flex-shrink 1}}]]
      [quo/bottom-actions
       {:container-style  {:style {:flex 1}}
-       :actions          :two-actions
+       :actions          :one-action
        :button-one-props {:disabled?           (string/blank? message)
                           :accessibility-label :send-contact-request
-                          :customization-color customization-color
-                          :on-press            (bind-sub-alt on-message-submit)}
-       :button-one-label "Test Button One"
+                          :customization-color :purple
+                          :on-press            (bind-past-present-sub on-message-submit)}
+       :button-one-label "Past Present Sub"}]
+     [quo/bottom-actions
+      {:container-style  {:style {:flex 1}}
+       :actions          :two-actions
+       :button-one-props {:accessibility-label :send-contact-request
+                          :customization-color :blue
+                          :on-press            (bind-snapshot on-message-submit)}
+       :button-one-label "Snapshot"
        :button-two-props {:accessibility-label :test-button
-                          :customization-color :danger
+                          :customization-color :orange
                           :on-press            (bind-sub on-message-submit)}
-       :button-two-label "Test Button Two"}]]))
+       :button-two-label "Sub"}]]))
 
