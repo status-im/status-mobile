@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.list.view
   (:require
+    [clojure.string :as string]
     [legacy.status-im.ui.screens.chat.group :as chat.group]
     [oops.core :as oops]
     [quo.core :as quo]
@@ -112,19 +113,21 @@
     [rn/view {:style {:height height}}]))
 
 (defn list-footer-avatar
-  [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color]}]
-  (let [scale (reanimated/interpolate distance-from-list-top
-                                      [0 messages.constants/header-container-top-margin]
-                                      [1 0.4]
-                                      messages.constants/default-extrapolation-option)
-        top   (reanimated/interpolate distance-from-list-top
-                                      [0 messages.constants/header-container-top-margin]
-                                      [-44 -12]
-                                      messages.constants/default-extrapolation-option)
-        left  (reanimated/interpolate distance-from-list-top
-                                      [0 messages.constants/header-container-top-margin]
-                                      [16 -8]
-                                      messages.constants/default-extrapolation-option)]
+  [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color
+           emoji chat-type]}]
+  (let [scale              (reanimated/interpolate distance-from-list-top
+                                                   [0 messages.constants/header-container-top-margin]
+                                                   [1 0.4]
+                                                   messages.constants/default-extrapolation-option)
+        top                (reanimated/interpolate distance-from-list-top
+                                                   [0 messages.constants/header-container-top-margin]
+                                                   [-44 -12]
+                                                   messages.constants/default-extrapolation-option)
+        left               (reanimated/interpolate distance-from-list-top
+                                                   [0 messages.constants/header-container-top-margin]
+                                                   [16 -8]
+                                                   messages.constants/default-extrapolation-option)
+        community-channel? (= chat-type constants/community-chat-type)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
      (if group-chat
@@ -132,7 +135,10 @@
         {:customization-color color
          :size                :size-80
          :picture             profile-picture
-         :override-theme      :dark}]
+         :emoji               (when (and (not (string/blank? emoji))
+                                         community-channel?)
+                                emoji)
+         :chat-name           constants/default-community-channel-name}]
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?
@@ -254,7 +260,9 @@
         :theme                  theme
         :profile-picture        photo-path
         :group-chat             group-chat
-        :color                  color}]
+        :color                  color
+        :emoji                  emoji
+        :chat-type              chat-type}]
       [chat-display-name
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name

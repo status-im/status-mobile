@@ -13,3 +13,7 @@
    :background-color (colors/theme-colors (colors/custom-color customization-color 50)
                                           (colors/custom-color customization-color 60)
                                           theme)})
+
+(def emoji-text-style
+  {:margin-bottom -6
+   :text-align    :center})
