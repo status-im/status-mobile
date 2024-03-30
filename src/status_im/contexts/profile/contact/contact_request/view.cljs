@@ -54,22 +54,22 @@
         v))))
 
 (defn make-state-ref
-  [state-ratom label]
+  [state-ratom]
   (let [state-ref (atom nil)]
-    (js/console.log "init make-state-ref" label)
-    (let [reaction-sub (reagent.ratom/track!
-                        (fn [state-ratom]
-                          (js/console.log "reagent reaction" label)
-                          (let [state @state-ratom]
-                            (js/console.log
-                             (if (nil? @state-ref)
-                               "state-ref init"
-                               "state-ref update")
-                             label
-                             (clj->js state))
-                            (reset! state-ref state)
-                            state))
-                        state-ratom)]
+    (js/console.log "init make-state-ref")
+    (let [reaction-sub
+          (reagent.ratom/track!
+           (fn [state-ratom]
+             (js/console.log "reagent reaction")
+             (let [state @state-ratom]
+               (js/console.log
+                (if (nil? @state-ref)
+                  "state-ref init"
+                  "state-ref update")
+                (clj->js state))
+               (reset! state-ref state)
+               state))
+           state-ratom)]
       @reaction-sub
       {:sub reaction-sub
        :ref state-ref})))
