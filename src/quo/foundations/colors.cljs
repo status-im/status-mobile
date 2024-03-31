@@ -1,8 +1,10 @@
 (ns quo.foundations.colors
   (:require
     [clojure.string :as string]
+    [native-module.core :as native-module]
     [quo.theme :as theme]
-    [react-native.platform :as platform]))
+    [react-native.platform :as platform]
+    [status-im.constants :as constants]))
 
 (def account-colors
   [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
@@ -298,6 +300,29 @@
 (defn hex-string?
   [s]
   (and (string? s) (string/starts-with? s "#")))
+
+(defn rgb-hex?
+  [s]
+  (and (hex-string? s)
+       (= constants/rgb-hex-length
+          (count s))))
+
+(defn hex->rgba
+  "Takes a 7 character hex color and converts it to rgb() format"
+  ([s]
+   (hex->rgba s nil))
+  ([s alpha-value]
+   (let [add-ending-parenthesis (fn [input-string]
+                                  (str input-string
+                                       (if alpha-value
+                                         (str ", " alpha-value ")")
+                                         ")")))]
+     (->> (subs s 1)
+          (partition-all 2)
+          (map #(apply (comp str native-module/hex-to-number str) %))
+          (string/join ", ")
+          (str (if alpha-value "rgba" "rgb") "(")
+          add-ending-parenthesis))))
 
 (defn- get-from-colors-map
   [color suffix]
