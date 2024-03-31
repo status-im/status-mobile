@@ -320,8 +320,11 @@
                                          ")")))]
      (->> (subs s 1)
           (partition-all 2)
-          (map #(apply (comp str (fn [number]
-                                   (js/parseInt number 16)) str) %))
+          (map #(apply (comp str
+                             (fn [number]
+                               (js/parseInt number 16))
+                             str)
+                       %))
           (string/join ", ")
           (str (if alpha-value "rgba" "rgb") "(")
           add-ending-parenthesis))))

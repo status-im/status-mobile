@@ -115,5 +115,5 @@
            (when border-color
              {:border-color border-color
               :border-width 1})
-           (when-not disabled-and-rgb-hex?
+           (when (and disabled? (not (colors/rgb-hex? background-color)))
              {:opacity 0.3}))))
