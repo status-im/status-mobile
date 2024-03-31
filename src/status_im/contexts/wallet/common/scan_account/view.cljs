@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.scan-account.view
+(ns status-im.contexts.wallet.common.scan-account.view
   (:require [status-im.common.scan-qr-code.view :as scan-qr-code]
             [status-im.constants :as constants]
             [utils.debounce :as debounce]

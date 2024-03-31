@@ -38,7 +38,8 @@
       (let [cache      (get-in db [:chat/link-previews :cache])
             previews   (urls->previews cache urls)
             new-urls   (->> previews
-                            (filter :loading?)
+                            (filter (fn [{:keys [loading? status-link-preview?]}]
+                                      (or loading? status-link-preview?)))
                             (map :url))
             ;; `request-id` is a must because we need to process only the last
             ;; unfurling event, as well as avoid needlessly updating the app db
@@ -139,14 +140,18 @@
   sent."
   {:events [:link-preview/reset-unfurled]}
   [{:keys [db]}]
-  {:db (update db :chat/link-previews dissoc :unfurled :request-id :cleared)})
+  {:db (-> db
+           (update :chat/link-previews dissoc :unfurled :request-id :cleared)
+           (update :chat/status-link-previews dissoc :unfurled :request-id :cleared))})
 
 (rf/defn reset-all
   "Reset all preview state. It is especially important to delete any cached
   URLs, as failing to do so results in its unbounded growth."
   {:events [:link-preview/reset-all]}
   [{:keys [db]}]
-  {:db (dissoc db :chat/link-previews)})
+  {:db (-> db
+           (dissoc :chat/link-previews)
+           (dissoc :chat/status-link-previews))})
 
 (rf/defn clear-link-previews
   "Mark current unfurled URLs as `cleared`, meaning the user won't see previews
@@ -156,4 +161,5 @@
   (let [unfurled-urls (set (map :url (get-in db [:chat/link-previews :unfurled])))]
     {:db (-> db
              (update :chat/link-previews dissoc :unfurled :request-id)
+             (update :chat/status-link-previews dissoc :unfurled :request-id)
              (assoc-in [:chat/link-previews :cleared] unfurled-urls))}))

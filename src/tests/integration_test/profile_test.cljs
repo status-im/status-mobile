@@ -1,7 +1,7 @@
 (ns tests.integration-test.profile-test
   (:require
     [cljs.test :refer [deftest is use-fixtures]]
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [status-im.contexts.profile.utils :as profile.utils]
     [test-helpers.integration :as h]
     [tests.test-utils :as test-utils]
@@ -13,7 +13,7 @@
   (h/test-async ::edit-profile-name
     (fn []
       (let [new-name "John Doe"]
-        (p/do
+        (promesa/do
           (rf/dispatch [:profile/edit-name new-name])
           (h/wait-for [:navigate-back :toasts/upsert])
           (let [profile      (rf/sub [:profile/profile])
@@ -25,7 +25,7 @@
     (fn []
       (let [mock-image    "resources/images/mock2/monkey.png"
             absolute-path (.resolve test-utils/path mock-image)]
-        (p/do
+        (promesa/do
           (rf/dispatch [:profile/edit-picture absolute-path 80 80])
           (h/wait-for [:profile/update-local-picture :toasts/upsert])
           (let [profile (rf/sub [:profile/profile])]
@@ -34,7 +34,7 @@
 (deftest delete-profile-picture-test
   (h/test-async ::delete-profile-picture
     (fn []
-      (p/do
+      (promesa/do
         (rf/dispatch [:profile/delete-picture])
         (h/wait-for [:profile/update-local-picture :toasts/upsert])
         (let [profile (rf/sub [:profile/profile])]
@@ -44,7 +44,7 @@
   (h/test-async ::edit-profile-bio
     (fn []
       (let [new-bio "New bio text"]
-        (p/do
+        (promesa/do
           (rf/dispatch [:profile/edit-bio new-bio])
           (h/wait-for [:navigate-back :toasts/upsert])
           (let [profile (rf/sub [:profile/profile])

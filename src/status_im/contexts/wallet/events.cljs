@@ -245,12 +245,12 @@
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :tx-type] :bridge)
-    :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
+    :fx [[:dispatch [:open-modal :screen/wallet.bridge-select-asset]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-send stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
