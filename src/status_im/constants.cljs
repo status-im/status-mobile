@@ -484,6 +484,3 @@
 (def ^:const alert-banner-height 40)
 
 (def ^:const status-hostname "status.app")
-
-;; Example: #FFFFFF
-(def ^:const rgb-hex-length 7)

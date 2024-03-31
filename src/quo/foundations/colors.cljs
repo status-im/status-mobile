@@ -3,8 +3,10 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.theme :as theme]
-    [react-native.platform :as platform]
-    [status-im.constants :as constants]))
+    [react-native.platform :as platform]))
+
+;; Example: #FFFFFF
+(def ^:const ^:private rgb-hex-length 7)
 
 (def account-colors
   [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
@@ -304,7 +306,7 @@
 (defn rgb-hex?
   [s]
   (and (hex-string? s)
-       (= constants/rgb-hex-length
+       (= rgb-hex-length
           (count s))))
 
 (defn hex->rgba
