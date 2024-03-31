@@ -236,7 +236,7 @@
                                                                        :addresses-for-permissions])
                                                          (rf/dispatch [:hide-bottom-sheet]))}]))}])
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
-            (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal])) )
+            (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal])))
         pending? (rf/sub [:communities/has-pending-request-to-join? id])
         highest-role (rf/sub [:communities/highest-role-for-selection id])
         [unmodified-role _] (rn/use-state highest-role)]
