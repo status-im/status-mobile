@@ -97,9 +97,7 @@
                                     24 0
                                     9))
             :overflow           :hidden
-            :background-color   (if disabled-and-rgb-hex?
-                                  (colors/hex->rgba background-color 0.3)
-                                  background-color)
+            :background-color   (if disabled? (colors/alpha background-color 0.3)  background-color)
             :border-radius      (if border-radius
                                   border-radius
                                   (case size
@@ -114,6 +112,4 @@
              {:width size})
            (when border-color
              {:border-color border-color
-              :border-width 1})
-           (when (and disabled? (not (colors/rgb-hex? background-color)))
-             {:opacity 0.3}))))
+              :border-width 1}))))
