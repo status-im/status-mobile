@@ -4,9 +4,6 @@
     [quo.theme :as theme]
     [react-native.platform :as platform]))
 
-;; Example: #FFFFFF
-(def ^:const ^:private rgb-hex-length 7)
-
 (def account-colors
   [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
 
