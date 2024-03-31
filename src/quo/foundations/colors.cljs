@@ -1,7 +1,6 @@
 (ns quo.foundations.colors
   (:require
     [clojure.string :as string]
-    [native-module.core :as native-module]
     [quo.theme :as theme]
     [react-native.platform :as platform]))
 
@@ -321,7 +320,8 @@
                                          ")")))]
      (->> (subs s 1)
           (partition-all 2)
-          (map #(apply (comp str native-module/hex-to-number str) %))
+          (map #(apply (comp str (fn [number]
+                                   (js/parseInt number 16)) str) %))
           (string/join ", ")
           (str (if alpha-value "rgba" "rgb") "(")
           add-ending-parenthesis))))
