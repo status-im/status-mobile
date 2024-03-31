@@ -111,6 +111,4 @@
            {:width size})
          (when border-color
            {:border-color border-color
-            :border-width 1})
-         (when disabled?
-           {:opacity 0.3})))
+            :border-width 1})))
