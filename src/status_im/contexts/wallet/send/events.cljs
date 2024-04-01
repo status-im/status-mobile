@@ -96,7 +96,8 @@
  :wallet/edit-token-to-send
  (fn [{:keys [db]} [token]]
    {:db (assoc-in db [:wallet :ui :send :token] token)
-    :fx [[:dispatch [:hide-bottom-sheet]]]}))
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:wallet/clean-suggested-routes]]]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]

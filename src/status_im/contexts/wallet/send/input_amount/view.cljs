@@ -122,18 +122,19 @@
      :subtitle        amount}]])
 
 (defn select-asset-bottom-sheet
-  []
+  [clear-input!]
   (let [{preselected-token-symbol :symbol} (rf/sub [:wallet/wallet-send-token])]
     [:<> ;; Need to be a `:<>` to keep `asset-list` scrollable.
      [quo/drawer-top
-      {:title           "Select asset"
+      {:title           (i18n/label :t/select-asset)
        :container-style {:padding-bottom 8}}]
      [asset-list/view
       {:content-container-style  {:padding-horizontal 8
                                   :padding-bottom     8}
        :preselected-token-symbol preselected-token-symbol
        :on-token-press           (fn [token]
-                                   (rf/dispatch-sync [:wallet/edit-token-to-send token]))}]]))
+                                   (rf/dispatch [:wallet/edit-token-to-send token])
+                                   (clear-input!))}]]))
 
 (defn- f-view-internal
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -150,6 +151,7 @@
   (let [_ (rn/dismiss-keyboard!)
         bottom                (safe-area/get-bottom)
         input-value           (reagent/atom "")
+        clear-input!          #(reset! input-value "")
         input-error           (reagent/atom false)
         crypto-currency?      (reagent/atom initial-crypto-currency?)
         input-selection       (reagent/atom {:start 0 :end 0})
@@ -261,7 +263,9 @@
                                                                         currency-symbol
                                                                         fee-in-fiat))
             show-select-asset-sheet   #(rf/dispatch
-                                        [:show-bottom-sheet {:content select-asset-bottom-sheet}])]
+                                        [:show-bottom-sheet
+                                         {:content (fn []
+                                                     [select-asset-bottom-sheet clear-input!])}])]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
