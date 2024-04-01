@@ -78,7 +78,7 @@
 
                   :else
                   [[:profile.settings/switch-theme-fx
-                    [(or (get-in db [:profile/profile :appearance])
+                    [(or (:appearance settings)
                          constants/theme-type-dark)
                      :shell-stack
                      false]]
