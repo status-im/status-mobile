@@ -65,11 +65,10 @@
   (let [validations (juxt utils.string/has-lower-case?
                           utils.string/has-upper-case?
                           utils.string/has-numbers?
-                          utils.string/has-symbols?
-                          #(utils.string/at-least-n-chars? % 10))]
+                          utils.string/has-symbols?)]
     (->> password
          (validations)
-         (zipmap [:lower-case? :upper-case? :numbers? :symbols? :long-enough?]))))
+         (zipmap [:lower-case? :upper-case? :numbers? :symbols?]))))
 
 (defn view
   [{:keys [customization-color]}]
@@ -80,8 +79,8 @@
         [show-validation? set-show-validation]         (rn/use-state false)
 
         ;; validations
-        {:keys [long-enough?]
-         :as   validations}                            (password-validations password)
+        validations                                    (password-validations password)
+        long-enough?                                   (utils.string/at-least-n-chars? password 10)
         empty-password?                                (empty? password)
         same-passwords?                                (and (not empty-password?)
                                                             (= password repeat-password))
