@@ -1,7 +1,6 @@
 (ns status-im.events
   (:require
     [legacy.status-im.bottom-sheet.events]
-    [legacy.status-im.keycard.core :as keycard]
     status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.async-storage.effects
@@ -52,5 +51,4 @@
     ;;app starting flow continues in get-profiles-overview
     :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
     :effects.font/get-font-file-for-initials-avatar
-    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])}
-   (keycard/init)))
+    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])}))

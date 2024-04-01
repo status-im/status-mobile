@@ -2,10 +2,8 @@
   (:require
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.colors :as colors]
-    [legacy.status-im.ui.components.copyable-text :as copyable-text]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.icons.icons :as icons]
-    [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.browser.styles :as styles]
     [re-frame.core :as re-frame]
@@ -13,7 +11,7 @@
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (views/defview permissions-panel
-  [dapp-name message-id params]
+  [_dapp-name message-id params]
   (views/letsubs [{:keys [dapp? dapp]} [:get-current-browser]]
     [react/view {}
      [react/view styles/permissions-panel-icons-container
@@ -37,35 +35,6 @@
        [react/view styles/dot]]
       [react/view styles/permissions-panel-wallet-icon-container
        [icons/icon :main-icons/wallet {:color colors/white}]]]
-     [react/text {:style styles/permissions-panel-title-label :number-of-lines 2}
-      (str "\"" dapp-name "\" Allow this site to add a network?")]
-     [react/text {:style styles/permissions-panel-description-label :number-of-lines 4}
-      "This will allow this network to be used within Status.Status does not verify custom networks.Learn about scams and network security risks."]
-     [react/scroll-view
-      [copyable-text/copyable-text-view
-       {:copied-text (:name (:new-network params))}
-       [list.item/list-item
-        {:size                :small
-         :accessibility-label :network-name
-         :title               "Network Name"
-         :accessory           :text
-         :accessory-text      (:name (:new-network params))}]]
-      [copyable-text/copyable-text-view
-       {:copied-text (get-in params [:new-network :config :UpstreamConfig :URL])}
-       [list.item/list-item
-        {:size                :small
-         :accessibility-label :network-url
-         :title               "Network URL"
-         :accessory           :text
-         :accessory-text      (get-in params [:new-network :config :UpstreamConfig :URL])}]]
-      [copyable-text/copyable-text-view
-       {:copied-text (str (get-in params [:new-network :config :NetworkId]))}
-       [list.item/list-item
-        {:size                :small
-         :accessibility-label :network-id
-         :title               "Chain ID"
-         :accessory           :text
-         :accessory-text      (str (get-in params [:new-network :config :NetworkId]))}]]]
      [react/view
       {:style {:flex-direction    :row
                :justify-content   :center

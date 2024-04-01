@@ -5,8 +5,6 @@
     [legacy.status-im.ui.screens.advanced-settings.views :as advanced-settings]
     [legacy.status-im.ui.screens.appearance.views :as appearance]
     [legacy.status-im.ui.screens.backup-settings.view :as backup-settings]
-    [legacy.status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
-    [legacy.status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [legacy.status-im.ui.screens.browser.bookmarks.views :as bookmarks]
     [legacy.status-im.ui.screens.bug-report :as bug-report]
     [legacy.status-im.ui.screens.communities.invite :as communities.invite]
@@ -136,18 +134,10 @@
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
     :component edit-wakuv2-node/edit-node}
-   {:name      :bootnodes-settings
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component bootnodes-settings/bootnodes-settings}
    {:name      :installations
     :options   {:topBar (topbar-options (i18n/label :t/devices))
                 :insets {:top? true}}
     :component pairing/installations}
-   {:name      :edit-bootnode
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component edit-bootnode/edit-bootnode}
    {:name      :offline-messaging-settings
     ;;TODO dynamic title
     :options   {:insets {:top? true}}

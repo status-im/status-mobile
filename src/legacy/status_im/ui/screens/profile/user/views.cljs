@@ -73,8 +73,7 @@
 (defn content
   []
   (let [{:keys [preferred-name
-                mnemonic
-                keycard-pairing]}
+                mnemonic]}
         @(re-frame/subscribe [:profile/profile])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         chain @(re-frame/subscribe [:chain-keyword])
@@ -155,13 +154,6 @@
        :accessibility-label :sync-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:open-modal :sync-settings])}]
-     (when keycard-pairing
-       [list.item/list-item
-        {:icon                :main-icons/keycard
-         :title               (i18n/label :t/keycard)
-         :accessibility-label :keycard-button
-         :chevron             true
-         :on-press            #(re-frame/dispatch [:open-modal :keycard-settings])}])
      [list.item/list-item
       {:icon                :main-icons/settings-advanced
        :title               (i18n/label :t/advanced)
