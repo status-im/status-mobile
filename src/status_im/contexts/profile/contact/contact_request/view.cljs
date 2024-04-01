@@ -92,12 +92,18 @@
 (defn make-snapshot-handler-factory [snapshot]
   (let [storage (rn/use-memo #(atom {}) [])
         capture (rn/use-memo #(atom snapshot) [])
+        _update (rn/use-layout-effect
+                 (fn []
+                   (swap! capture (fn [_] snapshot)))
+                 snapshot)
         factory (rn/use-memo
-                 (do (swap! capture (fn [_] snapshot))
-                     #(memo storage
+                 (fn []
+                   (fn [handler]
+                     ((memo storage
                             (fn [callback]
                               (fn [event]
-                                (callback @capture event)))))
+                                (callback @capture event))))
+                      handler)))
                  [storage capture])]
     {:factory factory
      :storage storage}))
