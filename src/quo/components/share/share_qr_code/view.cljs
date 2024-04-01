@@ -188,21 +188,21 @@
          nil))]]])
 
 (defn- view-internal
-  [props]
-  (let [[component-width
+  [{provided-width :width :as props}]
+  (let [[calculated-width
          set-component-width] (rn/use-state nil)
         on-layout             (rn/use-callback #(set-component-width
                                                  (oops/oget % "nativeEvent.layout.width")))
         props                 (-> props
-                                  (assoc :component-width component-width)
+                                  (assoc :component-width (or provided-width calculated-width))
                                   (clojure.set/rename-keys {:type :share-qr-type}))]
     [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code
        :style               style/outer-container
-       :on-layout           on-layout}
+       :on-layout           (when-not provided-width on-layout)}
       [rn/view {:style {:background-color style/overlay-color}}
-       (when component-width
+       (when (:component-width props)
          [share-qr-code props])]]]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))
