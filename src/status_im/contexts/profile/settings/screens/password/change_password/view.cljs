@@ -6,8 +6,8 @@
     [react-native.hooks :as hooks]
     [react-native.safe-area :as safe-area]
     [status-im.constants :as constant]
+    [status-im.contexts.profile.settings.screens.password.change-password.events]
     [status-im.contexts.profile.settings.screens.password.change-password.style :as style]
-    [status-im.contexts.profile.settings.screens.password.events]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
@@ -97,7 +97,7 @@
         [password set-password] (rn/use-state "")
         on-change-password      (fn [new-value]
                                   (when error
-                                    (rf/dispatch [:password-settings/change-password-reset-error]))
+                                    (rf/dispatch [:change-password/reset-error]))
                                   (set-password new-value))
         meet-requirements?      (and (seq password)
                                      (utils.string/at-least-n-chars? password
@@ -105,7 +105,7 @@
         on-submit               (fn []
                                   (when meet-requirements?
                                     (rf/dispatch
-                                     [:password-settings/verify-old-password
+                                     [:change-password/verify-old-password
                                       (security/mask-data password)])))]
     [:<>
      [rn/view {:style style/top-part}
@@ -183,7 +183,7 @@
         ;; TODO fix
         on-submit                                      (fn []
                                                          (rf/dispatch
-                                                          [:password-settings/confirm-new-password
+                                                          [:change-password/confirm-new-password
                                                            (security/mask-data password)]))
         hint-1-status                                  (if long-enough? :success :default)
         hint-2-status                                  (if same-passwords? :success :error)
@@ -243,21 +243,22 @@
                                       [:settings/change-password-current-step])
                                      :old-password)
         customization-color      (rf/sub [:profile/customization-color])]
-    (rn/use-unmount #(rf/dispatch [:password-settings/reset-change-password]))
-    [rn/touchable-without-feedback
-     {:on-press   rn/dismiss-keyboard!
-      :accessible false}
-     [quo/overlay {:type :shell}
-      [rn/view {:key :change-password :style style/flex-fill}
-       [quo/page-nav
-        {:margin-top top
-         :background :blur
-         :icon-name  :i/arrow-left
-         :on-press   #(rf/dispatch [:navigate-back])}]
-       [rn/keyboard-avoiding-view {:style style/flex-fill}
-        (condp = change-password-step
-          :old-password [old-password-form
-                         {:customization-color customization-color}]
-          :new-password [new-password-form
-                         {:customization-color customization-color}])
-        [rn/view {:style {:height (if-not keyboard-shown bottom 0)}}]]]]]))
+    (rn/use-unmount #(rf/dispatch [:change-password/reset]))
+    [quo/overlay {:type :shell}
+     [rn/pressable
+      {:key        :change-password
+       :on-press   rn/dismiss-keyboard!
+       :accessible false
+       :style      style/flex-fill}
+      [quo/page-nav
+       {:margin-top top
+        :background :blur
+        :icon-name  :i/arrow-left
+        :on-press   #(rf/dispatch [:navigate-back])}]
+      [rn/keyboard-avoiding-view {:style style/flex-fill}
+       (condp = change-password-step
+         :old-password [old-password-form
+                        {:customization-color customization-color}]
+         :new-password [new-password-form
+                        {:customization-color customization-color}])
+       [rn/view {:style {:height (if-not keyboard-shown bottom 0)}}]]]]))

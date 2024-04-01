@@ -53,4 +53,4 @@
           :on-press        (fn []
                              (rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
 
-                             (rf/dispatch [:password-settings/reset-change-password]))}])]]))
+                             (rf/dispatch [:change-password/reset]))}])]]))
