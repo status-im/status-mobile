@@ -76,12 +76,15 @@
 
 (defn make-state-handler-factory [state-ref]
   (let [storage (rn/use-memo #(atom {}) [state-ref])
-        factory (rn/use-callback
-                 (memo storage
-                       (fn [callback]
-                         (print "make state handler")
-                         (fn [event]
-                           (callback @state-ref event))))
+        factory (rn/use-memo
+                 (fn []
+                   (fn [handler]
+                     ((memo storage
+                            (fn [callback]
+                              (print "make state handler")
+                              (fn [event]
+                                (callback @state-ref event))))
+                      handler)))
                  [state-ref storage])]
     {:factory factory
      :storage storage}))
