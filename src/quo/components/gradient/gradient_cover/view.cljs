@@ -8,10 +8,9 @@
 (defn- view-internal
   [{:keys [customization-color opacity container-style height]
     :or   {customization-color :blue}}]
-  ;; `when` added for safety, `linear-gradient` will break if `nil` is passed,
-  ;; the `:or` destructuring won't work because it's only applied when the
-  ;; `:customization-color` key is non-existent. While deleting an account the key exists
-  ;; and has a `nil` value.
+  ;; `when` added for safety, `linear-gradient` will break if `nil` is passed, the `:or`
+  ;; destructuring won't work because it's only applied when the `:customization-color` key is
+  ;; non-existent. While deleting an account the key exists and has a `nil` value.
   (let [color-top    (colors/resolve-color customization-color 50 20)
         color-bottom (colors/resolve-color customization-color 50 0)]
     (when (and color-top color-bottom)

@@ -32,7 +32,8 @@
       {:navigate-back?   true
        :height           148
        :on-scroll        #(reanimated/set-shared-value scroll-y %)
-       ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
+       ;; TODO(@mohsen): remove default color,
+       ;; https://github.com/status-im/status-mobile/issues/18733
        :cover-color      (colors/resolve-color (or customization-color constants/profile-default-color)
                                                theme
                                                20)

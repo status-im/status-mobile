@@ -29,7 +29,8 @@
   (let [{:keys [public-key customization-color ens-name nickname secondary-name
                 emoji-hash bio blocked? contact-request-state]
          :as   contact}     (rf/sub [:contacts/current-contact])
-        ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
+        ;; TODO(@mohsen): remove default color,
+        ;; https://github.com/status-im/status-mobile/issues/18733
         customization-color (or customization-color constants/profile-default-color)
         full-name           (profile.utils/displayed-name contact)
         profile-picture     (profile.utils/photo contact)
