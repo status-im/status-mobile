@@ -5,6 +5,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+    [status-im.contexts.wallet.collectible.utils :as utils]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles-tab]
@@ -34,9 +35,15 @@
      {:collectibles         collectibles
       :filtered?            search-performed?
       :on-end-reached       #(rf/dispatch [:wallet/request-collectibles-for-current-viewing-account])
-      :on-collectible-press #(rf/dispatch [:wallet/send-select-collectible
-                                           {:collectible %
-                                            :stack-id    :screen/wallet.select-asset}])}]))
+      :on-collectible-press #(let [collectibles-count (utils/collectible-balance %)]
+                               (if (> collectibles-count 1)
+                                 (rf/dispatch [:wallet/select-collectibles-amount
+                                               {:collectible %
+                                                :stack-id    :screen/wallet.select-asset}])
+                                 (rf/dispatch [:wallet/send-collectibles-amount
+                                               {:collectible %
+                                                :amount      1
+                                                :stack-id    :screen/wallet.select-asset}])))}]))
 (defn- tab-view
   [search-text selected-tab on-change-text]
   (let [unfiltered-collectibles (rf/sub [:wallet/current-viewing-account-collectibles])

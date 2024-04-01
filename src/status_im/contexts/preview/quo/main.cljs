@@ -58,6 +58,7 @@
     [status-im.contexts.preview.quo.drawers.bottom-actions :as bottom-actions]
     [status-im.contexts.preview.quo.drawers.documentation-drawers :as
      documentation-drawers]
+    [status-im.contexts.preview.quo.drawers.drawer-action :as drawer-action]
     [status-im.contexts.preview.quo.drawers.drawer-buttons :as drawer-buttons]
     [status-im.contexts.preview.quo.drawers.drawer-top :as drawer-top]
     [status-im.contexts.preview.quo.drawers.permission-drawers :as
@@ -150,6 +151,7 @@
     [status-im.contexts.preview.quo.settings.accounts :as accounts]
     [status-im.contexts.preview.quo.settings.category :as category]
     [status-im.contexts.preview.quo.settings.data-item :as data-item]
+    [status-im.contexts.preview.quo.settings.page-setting :as page-setting]
     [status-im.contexts.preview.quo.settings.privacy-option :as privacy-option]
     [status-im.contexts.preview.quo.settings.reorder-item :as reorder-item]
     [status-im.contexts.preview.quo.settings.section-label :as section-label]
@@ -293,6 +295,8 @@
                         :component action-drawers/view}
                        {:name      :documentation-drawer
                         :component documentation-drawers/view}
+                       {:name      :drawer-action
+                        :component drawer-action/view}
                        {:name      :drawer-buttons
                         :component drawer-buttons/view}
                        {:name      :drawer-top
@@ -447,6 +451,8 @@
                         :component react/preview-react}]
    :settings          [{:name      :privacy-option
                         :component privacy-option/view}
+                       {:name      :page-setting
+                        :component page-setting/view}
                        {:name      :accounts
                         :component accounts/view}
                        {:name      :settings-item

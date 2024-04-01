@@ -78,16 +78,14 @@
     ;; status-go will consider all possible addresses and the user will see the
     ;; incorrect highest permission role.
     {:db (update db :communities/permissions-checks-for-selection dissoc community-id)}
-    (let [{:keys [checking?]} (get-in db [:communities/permissions-checks-for-selection community-id])]
-      (when-not checking?
-        {:db (assoc-in db [:communities/permissions-checks-for-selection community-id :checking?] true)
-         :fx [[:json-rpc/call
-               [{:method     :wakuext_checkPermissionsToJoinCommunity
-                 :params     [{:communityId community-id :addresses addresses}]
-                 :on-success [:communities/check-permissions-to-join-during-selection-success
-                              community-id]
-                 :on-error   [:communities/check-permissions-to-join-during-selection-failure
-                              community-id addresses]}]]]}))))
+    {:db (assoc-in db [:communities/permissions-checks-for-selection community-id :checking?] true)
+     :fx [[:json-rpc/call
+           [{:method     :wakuext_checkPermissionsToJoinCommunity
+             :params     [{:communityId community-id :addresses addresses}]
+             :on-success [:communities/check-permissions-to-join-during-selection-success
+                          community-id]
+             :on-error   [:communities/check-permissions-to-join-during-selection-failure
+                          community-id addresses]}]]]}))
 
 ;; This event should be used to check permissions temporarily because it won't
 ;; mutate the state `:communities/permissions-check` (used by many other

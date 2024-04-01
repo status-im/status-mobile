@@ -2561,5 +2561,6 @@
     "address-count": {
         "one": "1 address",
         "other": "{{count}} addresses"
-    }
+    },
+    "max": "Max: {{number}}"
 }

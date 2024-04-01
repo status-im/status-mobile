@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.8.7'
+library 'status-jenkins-lib@v1.8.12'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -34,10 +34,10 @@ pipeline {
   }
 
   environment {
-    LANG     = "en_US.UTF-8"
-    LC_ALL   = "en_US.UTF-8"
-    LANGUAGE = "en_US.UTF-8"
-    TARGET   = 'ios'
+    LANG     = 'en_US.UTF-8'
+    LC_ALL   = 'en_US.UTF-8'
+    LANGUAGE = 'en_US.UTF-8'
+    PLATFORM = 'ios'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
     BUNDLE_PATH = "${HOME}/.bundle"

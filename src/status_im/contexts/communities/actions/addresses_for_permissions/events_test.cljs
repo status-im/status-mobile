@@ -103,11 +103,4 @@
                                  community-id]
                     :on-error   [:communities/check-permissions-to-join-during-selection-failure
                                  community-id addresses]}]]]}
-           (sut/check-permissions-to-join-for-selection cofx [community-id addresses])))))
-
-  (testing "when there are addresses to check permissions, but currently checking, then skip the check"
-    (let [addresses ["0xA"]
-          cofx      {:db {:communities/permissions-checks-for-selection
-                          {"other-comm-id" {}
-                           community-id    {:checking? true}}}}]
-      (is (nil? (sut/check-permissions-to-join-for-selection cofx [community-id addresses]))))))
+           (sut/check-permissions-to-join-for-selection cofx [community-id addresses]))))))

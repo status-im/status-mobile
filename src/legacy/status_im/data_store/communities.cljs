@@ -64,6 +64,7 @@
         :canJoin                     :can-join?
         :requestedToJoinAt           :requested-to-join-at
         :isMember                    :is-member?
+        :outroMessage                :outro-message
         :adminSettings               :admin-settings
         :tokenPermissions            :token-permissions
         :communityTokensMetadata     :tokens-metadata

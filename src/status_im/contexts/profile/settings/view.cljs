@@ -68,7 +68,8 @@
        :footer                          [footer insets logout-press]
        :scroll-event-throttle           16
        :on-scroll                       #(scroll-handler % scroll-y)
-       :bounces                         false}]
+       :bounces                         false
+       :over-scroll-mode                :never}]
      [quo/floating-shell-button
       {:key :shell
        :jump-to

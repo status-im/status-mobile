@@ -4,8 +4,7 @@
 
 (def container
   (merge (shadows/get 2)
-         {:flex            1
-          :align-items     :center
+         {:align-items     :center
           :justify-content :center
           :border-radius   16}))
 
