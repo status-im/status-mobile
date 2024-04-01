@@ -32,14 +32,13 @@
 
 (defn secondary-name
   [theme]
-  {:padding-top 1
-   :flex-shrink 999999
+  {:flex-shrink 999999
    :color       (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (defn icon-container
   [is-first?]
   {:margin-left   (if is-first? 4 2)
-   :margin-bottom 4})
+   :margin-bottom 2})
 
 (defn time-text
   [theme]
