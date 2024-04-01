@@ -181,6 +181,14 @@
     #(let [ret (handler)] (if (fn? ret) ret js/undefined))
     (get-js-deps deps))))
 
+(defn use-layout-effect
+  ([handler]
+   (use-layout-effect handler nil))
+  ([handler deps]
+   (react/useLayoutEffect
+    #(let [ret (handler)] (if (fn? ret) ret js/undefined))
+    (get-js-deps deps))))
+
 (defn use-mount
   [handler]
   (use-effect handler []))
