@@ -1,4 +1,4 @@
-(ns status-im.common.validators
+(ns status-im.common.validation.general
   (:require
     [status-im.constants :as constants]))
 
@@ -21,3 +21,4 @@
   [s]
   (and (not (= s ""))
        (not (re-find no-special-chars-regex s))))
+

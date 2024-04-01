@@ -1,6 +1,6 @@
 (ns status-im.common.validation.profile
   (:require [clojure.string :as string]
-            [status-im.common.validators :as validators]
+            [status-im.common.validation.general :as validators]
             [status-im.constants :as constants]
             utils.emojilib
             [utils.i18n :as i18n]))

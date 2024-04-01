@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.validators :as validators]
+    [status-im.common.validation.general :as validators]
     [status-im.contexts.wallet.create-account.new-keypair.keypair-name.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
