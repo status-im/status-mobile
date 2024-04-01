@@ -73,6 +73,17 @@ extern "C" NSString* StatusgoImageServerTLSCert();
   [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 
   [RNSplashScreen show];
+  
+  RCTCxxBridge *bridge = (RCTCxxBridge *)[[_bridge batchedBridge] valueForKey:@"_batchedBridge"];
+  facebook::react::RCTJSIExecutorFactory *executorFactory = [bridge jsExecutorFactoryForBridge:bridge];
+
+  if (executorFactory) {
+      bridge.jsiExecutorFactory = ^{
+          facebook::jsi::Runtime *runtime = executorFactory();
+          HelloWorldJSI::install(*runtime);
+          return runtime;
+      };
+  }
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;

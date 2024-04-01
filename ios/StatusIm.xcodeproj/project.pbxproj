@@ -61,6 +61,8 @@
 		D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */; };
 		D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */; };
 		D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B321D25F4493470980039457 /* Inter-BoldItalic.otf */; };
+		E9AC7FD92BB8FDAB0024A0AF /* HelloWorldJSI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9AC7FD72BB8FDAB0024A0AF /* HelloWorldJSI.cpp */; };
+		E9AC7FDA2BB8FDAB0024A0AF /* HelloWorldJSI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9AC7FD72BB8FDAB0024A0AF /* HelloWorldJSI.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +156,8 @@
 		CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../resources/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
 		CE4E31B21D8695250033ED64 /* Statusgo.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Statusgo.xcframework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.xcframework"; sourceTree = "<group>"; };
 		D1CE733E3486B3A8B9185945 /* Pods-Status-StatusIm-StatusImTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; path = "Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E9AC7FD72BB8FDAB0024A0AF /* HelloWorldJSI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HelloWorldJSI.cpp; path = "../modules/react-native-status/jsi/HelloWorldJSI.cpp"; sourceTree = "<group>"; };
+		E9AC7FD82BB8FDAB0024A0AF /* HelloWorldJSI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelloWorldJSI.h; path = "../modules/react-native-status/jsi/HelloWorldJSI.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -268,6 +272,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				E9AC7FD72BB8FDAB0024A0AF /* HelloWorldJSI.cpp */,
+				E9AC7FD82BB8FDAB0024A0AF /* HelloWorldJSI.h */,
 				65F6941825780A4F00A45E76 /* Bridge.swift */,
 				3AAD2AB624A3A5F10075D594 /* StatusImPR */,
 				13B07FAE1A68108700A75B9A /* StatusIm */,
@@ -737,6 +743,7 @@
 				65F6941925780A4F00A45E76 /* Bridge.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
+				E9AC7FD92BB8FDAB0024A0AF /* HelloWorldJSI.cpp in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -748,6 +755,7 @@
 				65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */,
 				3AAD2ABC24A3A60E0075D594 /* AppDelegate.mm in Sources */,
 				3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
+				E9AC7FDA2BB8FDAB0024A0AF /* HelloWorldJSI.cpp in Sources */,
 				3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
