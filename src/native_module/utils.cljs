@@ -1,7 +1,7 @@
 (ns native-module.utils
   (:require
     [clojure.string :as string]
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [utils.transforms :as types]))
 
 (defn- promisify-callback
@@ -14,7 +14,7 @@
 
 (defn promisify-native-module-call
   [func & args]
-  (p/create
+  (promesa/create
    (fn [res rej]
      (->> (promisify-callback res rej)
           (conj [])
