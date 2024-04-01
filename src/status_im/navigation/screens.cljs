@@ -472,20 +472,23 @@
 
     ;; Settings
 
-    {:name      :settings-password
+    {:name      :screen/settings-password
      :options   options/transparent-modal-screen-options
      :component settings-password/view}
 
-    {:name      :change-password
+    {:name      :screen/change-password
      :options   (merge
                  options/transparent-modal-screen-options
                  {:theme :dark})
      :component change-password/view}
 
-    {:name      :change-password-loading
+    {:name      :screen/change-password-loading
      :options   (merge
                  options/transparent-modal-screen-options
-                 {:theme :dark})
+                 {:theme              :dark
+                  :hardwareBackButton {:dismissModalOnPress false
+                                       :popStackOnPress     false}
+                  :popGesture         false})
      :component change-password-loading/view}]
 
    [{:name    :shell

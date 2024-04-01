@@ -49,7 +49,7 @@
 (defn- get-change-password-item
   []
   {:title       (i18n/label :t/change-password)
-   :on-press    #(rf/dispatch [:open-modal :change-password])
+   :on-press    #(rf/dispatch [:open-modal :screen/change-password])
    :blur?       true
    :image       :icon
    :image-props :i/password

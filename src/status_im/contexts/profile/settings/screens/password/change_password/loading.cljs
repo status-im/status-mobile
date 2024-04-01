@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn view
@@ -17,13 +18,22 @@
 
       [quo/page-nav]
       [quo/page-top
-       {;; :input            nil
-        :title            "sojfsofjo"
-        :description      :text
-        :description-text "shadhiof"}]
-      [rn/view {:style {:flex 1}}
+       (cond-> {:description :text}
+         loading?       (assoc
+                         :title            (i18n/label :t/change-password-loading-header)
+                         :description-text (i18n/label :t/change-password-loading-description))
+         (not loading?) (assoc
+                         :title            (i18n/label :t/change-password-done-header)
+                         :description-text (i18n/label :t/change-password-done-description)))]
+      [rn/view
+       {:style {:flex               1
+                :padding-horizontal 20}}
        (when loading?
-         [rn/activity-indicator])]
+         [quo/information-box
+          {:type  :error
+           :style {:margin-top 12}
+           :icon  :i/info}
+          (i18n/label :t/change-password-loading-warning)])]
       (when-not loading?
         [quo/logout-button
          {:container-style {:margin-horizontal 20

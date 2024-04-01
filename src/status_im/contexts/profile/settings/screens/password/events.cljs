@@ -1,7 +1,5 @@
 (ns status-im.contexts.profile.settings.screens.password.events
   (:require [native-module.core :as native-module]
-            [status-im.contexts.profile.settings.screens.password.change-password.confirmation-sheet :as
-             confirmation-sheet]
             [status-im.contexts.profile.settings.screens.password.effects]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
@@ -50,10 +48,7 @@
  :password-settings/confirm-new-password
  (fn [{:keys [db]} [new-password]]
    {:db (assoc-in db [:settings/change-password :new-password] new-password)
-    :fx [[:dispatch
-          [:show-bottom-sheet
-           {:content confirmation-sheet/view
-            :theme   :dark}]]]}))
+    :fx [[:dispatch [:password-settings/change-password-submit]]]}))
 
 (rf/reg-event-fx
  :password-settings/change-password-submit
@@ -61,8 +56,8 @@
    (let [key-uid                             (get-in db [:profile/profile :key-uid])
          {:keys [new-password old-password]} (get db :settings/change-password)]
      {:db (assoc-in db [:settings/change-password :loading?] true)
-      :fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:open-modal :change-password-loading]]
+      :fx [[:dispatch [:dismiss-keyboard]]
+           [:dispatch [:open-modal :screen/change-password-loading]]
            [:effects.password-settings/change-password
             {:key-uid      key-uid
              :old-password old-password

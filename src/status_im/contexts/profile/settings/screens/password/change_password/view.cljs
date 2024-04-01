@@ -129,6 +129,13 @@
            :icon :i/info}
           (i18n/label :t/oops-wrong-password)])]]
      [rn/view {:style style/bottom-part}
+      [quo/information-box
+       {:type  :error
+        :style {:margin-top        4
+                :margin-horizontal 20
+                :margin-bottom     12}
+        :icon  :i/info}
+       (i18n/label :t/change-password-confirm-warning)]
       [rn/view {:style style/button-container}
        [quo/button
         {:disabled?           (not meet-requirements?)
