@@ -24,7 +24,8 @@
   [text-input-handle selection-start selection-end]
   ;; to avoid something like this
   ;; https://lightrun.com/answers/facebook-react-native-textinput-controlled-selection-broken-on-both-ios-and-android
-  ;; use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input (clj->js
+  ;; use native invoke instead! do not use setNativeProps! e.g. (.setNativeProps ^js text-input
+  ;; (clj->js
   ;; {:selection {:start selection-start :end selection-end}}))
   (let [manager (rn/selectable-text-input-manager)]
     (oops/ocall manager :setSelection text-input-handle selection-start selection-end)))
