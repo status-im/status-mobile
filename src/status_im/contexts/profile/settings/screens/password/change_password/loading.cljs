@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [status-im.contexts.profile.settings.screens.password.change-password.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -23,11 +24,7 @@
     [quo/overlay {:type :shell}
      [rn/view
       {:key   :change-password-loading
-       :style {:flex            1
-               :justify-content :space-between
-               :padding-top     (:top insets)
-               :padding-bottom  (:bottom insets)}}
-
+       :style (style/loading-container insets)}
       [quo/page-nav]
       [quo/page-top
        (cond-> {:description :text}
@@ -38,8 +35,7 @@
                       :title            (i18n/label :t/change-password-done-header)
                       :description-text (i18n/label :t/change-password-done-description)))]
       [rn/view
-       {:style {:flex               1
-                :padding-horizontal 20}}
+       {:style style/loading-content}
        (when-not done?
          [quo/information-box
           {:type  :error
@@ -48,8 +44,7 @@
           (i18n/label :t/change-password-loading-warning)])]
       (when done?
         [quo/logout-button
-         {:container-style {:margin-horizontal 20
-                            :margin-vertical   12}
+         {:container-style style/logout-container
           :on-press        (fn []
                              (rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
 

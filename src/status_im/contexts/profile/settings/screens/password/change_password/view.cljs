@@ -22,13 +22,11 @@
     {:style  style/heading-title
      :weight :semi-bold
      :size   :heading-1}
-    ;; TODO: change text
     (i18n/label :t/change-password)]
    [quo/text
     {:style  style/heading-subtitle
      :weight :regular
      :size   :paragraph-1}
-    ;; TODO: change text
     (i18n/label :t/change-password-description)]])
 
 (defn password-with-hint
@@ -118,10 +116,7 @@
         :type           :password
         :blur?          true}]
       [rn/view
-       ;; TODO move styles
-       {:style {:margin-top     8
-                :flex-direction :row
-                :align-items    :center}}
+       {:style style/error-container}
        (when error
          [quo/info-message
           {:type :error
@@ -131,9 +126,7 @@
      [rn/view {:style style/bottom-part}
       [quo/information-box
        {:type  :error
-        :style {:margin-top        4
-                :margin-horizontal 20
-                :margin-bottom     12}
+        :style style/warning-container
         :icon  :i/info}
        (i18n/label :t/change-password-confirm-warning)]
       [rn/view {:style style/button-container}
@@ -153,7 +146,6 @@
         same-password-length?                          #(and (seq password)
                                                              (= (count password)
                                                                 (count repeat-password)))
-        ;;
         {:keys [long-enough?]
          :as   validations}                            (password-validations password)
         password-strength                              (calc-password-strength validations)
@@ -180,7 +172,6 @@
         on-disclaimer-change                           (fn []
                                                          (set-disclaimer-accepted
                                                           (not disclaimer-accepted?)))
-        ;; TODO fix
         on-submit                                      (fn []
                                                          (rf/dispatch
                                                           [:change-password/confirm-new-password
