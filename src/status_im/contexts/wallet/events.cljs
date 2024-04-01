@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -442,18 +443,20 @@
 
 (rf/reg-event-fx
  :wallet/save-address
- (fn [_ [{:keys [address name color-id on-success on-error chain-short-names ens is-test]
-         :or   {on-success        (fn [])
-                on-error          (fn [])
-                name              ""
-                ens               ""
-                is-test           false
-                chain-short-names "eth:"}}]]
+ (fn [_
+      [{:keys [address name customization-color on-success on-error chain-short-names ens test?]
+        :or   {on-success        (fn [])
+               on-error          (fn [])
+               name              ""
+               ens               ""
+               test?             false
+               ;; the chain short names should be a string like eth: or eth:arb:opt:
+               chain-short-names (str constants/mainnet-short-name ":")}}]]
    (let [address-to-save {:address           address
                           :name              name
-                          :color-id          color-id
+                          :color-id          customization-color
                           :ens               ens
-                          :is-test           is-test
+                          :is-test           test?
                           :chain-short-names chain-short-names}]
      {:json-rpc/call
       [{:method     "wakuext_upsertSavedAddress"
