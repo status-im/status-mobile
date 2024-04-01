@@ -112,7 +112,7 @@
 (deftest wallet-search-ens-test
   (h/test-async :wallet/search-ens
     (fn []
-      (p/let [_ (h/enable-testnet!)]
+      (promesa/let [_ (h/enable-testnet!)]
         (let [test-cases [{:description     "Test on Ethereum mainnet"
                            :ens-name        "test.eth"
                            :chain-id        constants/ethereum-mainnet-chain-id
@@ -125,8 +125,8 @@
                            :ens-name        "code.eth"
                            :chain-id        constants/ethereum-sepolia-chain-id
                            :expected-result "0x035ebd096afa6b98372494c7f08f3402324117d3"}]]
-          (p/all
+          (promesa/all
            (map (fn [{:keys [ens-name chain-id expected-result]}]
-                  (p/let [ens-address (contract-utils/call-rpc "ens_addressOf" chain-id ens-name)]
+                  (promesa/let [ens-address (contract-utils/call-rpc "ens_addressOf" chain-id ens-name)]
                     (assert-search-ens expected-result ens-address)))
                 test-cases)))))))
