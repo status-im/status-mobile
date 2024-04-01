@@ -98,9 +98,8 @@
                          (fn []
                            (helpers/set-value opacity 1)
                            (helpers/animate-linear scale 2.6 signal-anim-duration)
-                           ;; TODO: Research if we can implement this with withSequence method
-                           ;; from Reanimated 2
-                           ;; GitHub issue [#14561]:
+                           ;; TODO: Research if we can implement this with withSequence method from
+                           ;; Reanimated 2. GitHub issue [#14561]:
                            ;; https://github.com/status-im/status-mobile/issues/14561
                            (reset! clear-timeout
                              (js/setTimeout

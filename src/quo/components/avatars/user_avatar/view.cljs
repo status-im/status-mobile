@@ -54,9 +54,8 @@
 
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
      (if (and full-name (not (or profile-picture-fn profile-picture)))
-       ;; this is for things that's not user-avatar
-       ;; but are currently using user-avatar to render the initials
-       ;; e.g. community avatar
+       ;; this is for things that's not user-avatar but are currently using user-avatar to render
+       ;; the initials e.g. community avatar
        [initials-avatar props]
        [image-view
         {:accessibility-label :profile-picture
