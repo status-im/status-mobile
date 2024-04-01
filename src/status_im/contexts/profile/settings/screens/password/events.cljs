@@ -57,7 +57,7 @@
          {:keys [new-password old-password]} (get db :settings/change-password)]
      {:db (assoc-in db [:settings/change-password :loading?] true)
       :fx [[:dispatch [:dismiss-keyboard]]
-           [:dispatch [:open-modal :screen/change-password-loading]]
+           [:dispatch [:navigate-to :screen/change-password-loading]]
            [:effects.password-settings/change-password
             {:key-uid      key-uid
              :old-password old-password

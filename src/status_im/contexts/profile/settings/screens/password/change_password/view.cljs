@@ -248,7 +248,7 @@
      {:on-press   rn/dismiss-keyboard!
       :accessible false}
      [quo/overlay {:type :shell}
-      [rn/view {:style style/flex-fill}
+      [rn/view {:key :change-password :style style/flex-fill}
        [quo/page-nav
         {:margin-top top
          :background :blur
