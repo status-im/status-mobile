@@ -57,7 +57,7 @@
         (is (not @(rf/subscribe [:chats/muted chat-id])))))))
 
 (deftest undo-mute-chat-test
-  (h/integration-test ::undo-mute-chat
+  (h/test-async ::undo-mute-chat
     (fn []
       (p/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
