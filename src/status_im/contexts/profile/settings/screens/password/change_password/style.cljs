@@ -37,11 +37,12 @@
    :padding-bottom  (:bottom insets)})
 
 (def loading-content
-  {:flex 1})
+  {:flex               1
+   :padding-horizontal 20})
 
 (def logout-container
-  {:margin-horizontal 20
-   :margin-vertical   12})
+  {:margin-vertical   12
+   :margin-horizontal 20})
 
 (def password-tips
   {:flex-direction    :row

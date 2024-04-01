@@ -8,7 +8,7 @@
 
 ;; NOTE: The duration of the password change depends on the device hardware, so to avoid
 ;; quick changes in UI when mounted, we're waiting for a bit.
-(def ^:private minimum-loading-time 3000)
+(def ^:private minimum-loading-time 5000)
 
 (defn view
   []
