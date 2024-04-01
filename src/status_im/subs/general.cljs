@@ -120,12 +120,12 @@
 (re-frame/reg-sub
  :dimensions/window-width
  :<- [:dimensions/window]
- :width)
+ :-> :width)
 
 (re-frame/reg-sub
  :dimensions/window-height
  :<- [:dimensions/window]
- :height)
+ :-> :height)
 
 (re-frame/reg-sub
  :dimensions/small-screen?
