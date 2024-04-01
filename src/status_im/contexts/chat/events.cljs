@@ -134,22 +134,6 @@
                                   :deleted-at-clock-value  last-message-clock-value})
                          chats))))}))
 
-(rf/defn deactivate-chat
-  "Deactivate chat in db, no side effects"
-  [{:keys [db now] :as cofx} chat-id]
-  (rf/merge
-   cofx
-   {:db            (-> (if (get-in db [:chats chat-id :muted])
-                           (assoc-in db [:chats chat-id :active] false)
-                           (update db :chats dissoc chat-id))
-                       (update :chats-home-list disj chat-id)
-                       (assoc :current-chat-id nil))
-    :json-rpc/call [{:method     "wakuext_deactivateChat"
-                     :params     [{:id chat-id :preserveHistory true}]
-                     :on-success #()
-                     :on-error   #(log/error "failed to create public chat" chat-id %)}]}
-   (clear-history chat-id true)))
-
 (rf/defn offload-messages
   {:events [:chat/offload-messages]}
   [{:keys [db]} chat-id]
@@ -174,6 +158,23 @@
               (delete-for-me/sync-all)
               (delete-message/send-all)
               (offload-messages chat-id))))
+
+(rf/defn deactivate-chat
+  "Deactivate chat in db, no side effects"
+  [{:keys [db now] :as cofx} chat-id]
+  (rf/merge
+   cofx
+   {:db            (-> (if (get-in db [:chats chat-id :muted])
+                           (assoc-in db [:chats chat-id :active] false)
+                           (update db :chats dissoc chat-id))
+                       (update :chats-home-list disj chat-id))
+    :json-rpc/call [{:method     "wakuext_deactivateChat"
+                     :params     [{:id chat-id :preserveHistory true}]
+                     :on-success #()
+                     :on-error   #(log/error "failed to create public chat" chat-id %)}]}
+   (clear-history chat-id true)
+   (when (= chat-id (:current-chat-id db))
+     (close-chat))))
 
 (rf/defn force-close-chat
   [{:keys [db] :as cofx} chat-id]
