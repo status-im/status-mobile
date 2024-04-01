@@ -442,14 +442,18 @@
 
 (rf/reg-event-fx
  :wallet/save-address
- (fn [_ [{:keys [address name color on-success on-error chain-short-names]
+ (fn [_ [{:keys [address name color-id on-success on-error chain-short-names ens is-test]
          :or   {on-success        (fn [])
                 on-error          (fn [])
                 name              ""
-                chain-short-names "eth"}}]]
+                ens               ""
+                is-test           false
+                chain-short-names "eth:"}}]]
    (let [address-to-save {:address           address
                           :name              name
-                          :color             color
+                          :color-id          color-id
+                          :ens               ens
+                          :is-test           is-test
                           :chain-short-names chain-short-names}]
      {:json-rpc/call
       [{:method     "wakuext_upsertSavedAddress"
@@ -459,21 +463,8 @@
 
 (rf/reg-event-fx
  :wallet/get-saved-addresses
- (fn [_ {:keys [on-success on-error]}]
+ (fn [_ [{:keys [on-success on-error]}]]
    {:json-rpc/call
     [{:method     "wakuext_getSavedAddresses"
       :on-success on-success
       :on-error   on-error}]}))
-
-(comment
-  (rf/dispatch [:wallet/get-saved-addresses
-                {:on-success (partial prn :success--->)
-                 :on-error   (partial prn :error--->)}])
-
-  (rf/dispatch [:wallet/save-address
-                {:name     "Test 2"
-                 :colorId  :blue
-                 :on-success (partial prn :success-->)
-                 :address "0xffffffffffffffffffffffffffffffffffffff12"
-                 :on-error (partial prn :error--->)}])
-  ,)
