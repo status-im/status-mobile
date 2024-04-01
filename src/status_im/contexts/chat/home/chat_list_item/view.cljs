@@ -241,16 +241,15 @@
        :muted?    muted}]
      [rn/view {:style {:flex-shrink 1}}
       [rn/view {:style style/chat-data-container}
-       [rn/view {:style {:flex-direction :row}}
-        [quo/author
-         {:primary-name   primary-name
-          :secondary-name secondary-name
-          :size           15
-          :verified?      ens-verified
-          :contact?       added?
-          :muted?         muted
-          :time-str       (datetime/to-short-str timestamp)
-          :style          {:flex-shrink 1}}]]
+       [quo/author
+        {:primary-name   primary-name
+         :secondary-name secondary-name
+         :size           15
+         :verified?      ens-verified
+         :contact?       added?
+         :muted?         muted
+         :time-str       (datetime/to-short-str timestamp)
+         :style          {:flex-shrink 1}}]
        [last-message-preview group-chat last-message muted]]]
      [notification item]]))
 
