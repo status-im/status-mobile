@@ -13,8 +13,6 @@
     [utils.security.core :as security]
     [utils.string :as utils.string]))
 
-;; TODO move styles
-
 (defn header
   []
   [rn/view {:style style/heading}
@@ -106,23 +104,21 @@
                                      [:change-password/verify-old-password
                                       (security/mask-data password)])))]
     [:<>
-     [rn/view {:style style/top-part}
-      [header]
-      [quo/input
-       {:placeholder    (i18n/label :t/change-password-old-password-placeholder)
-        :label          (i18n/label :t/change-password-old-password-label)
-        :on-change-text on-change-password
-        :auto-focus     true
-        :type           :password
-        :blur?          true}]
-      [rn/view
-       {:style style/error-container}
-       (when error
-         [quo/info-message
-          {:type :error
-           :size :default
-           :icon :i/info}
-          (i18n/label :t/oops-wrong-password)])]]
+     [quo/input
+      {:placeholder    (i18n/label :t/change-password-old-password-placeholder)
+       :label          (i18n/label :t/change-password-old-password-label)
+       :on-change-text on-change-password
+       :auto-focus     true
+       :type           :password
+       :blur?          true}]
+     [rn/view
+      {:style style/error-container}
+      (when error
+        [quo/info-message
+         {:type :error
+          :size :default
+          :icon :i/info}
+         (i18n/label :t/oops-wrong-password)])]
      [rn/view {:style style/bottom-part}
       [quo/information-box
        {:type  :error
@@ -185,28 +181,26 @@
                                                             (not same-passwords?)
                                                             (not empty-password?))]
     [:<>
-     [rn/view {:style style/top-part}
-      [header]
-      [password-with-hint
-       {:hint           {:text   (i18n/label :t/password-creation-hint)
-                         :status hint-1-status
-                         :shown  true}
-        :placeholder    (i18n/label :t/change-password-new-password-placeholder)
-        :label          (i18n/label :t/change-password-new-password-label)
-        :on-change-text on-change-password
-        :on-focus       on-input-focus
-        :auto-focus     true}]
-      [rn/view {:style style/space-between-inputs}]
-      [password-with-hint
-       {:hint           {:text   hint-2-text
-                         :status hint-2-status
-                         :shown  (and (not empty-password?)
-                                      show-validation?)}
-        :error?         error?
-        :placeholder    (i18n/label :t/change-password-repeat-password-placeholder)
-        :on-change-text on-change-repeat-password
-        :on-focus       on-input-focus
-        :on-blur        on-blur-repeat-password}]]
+     [password-with-hint
+      {:hint           {:text   (i18n/label :t/password-creation-hint)
+                        :status hint-1-status
+                        :shown  true}
+       :placeholder    (i18n/label :t/change-password-new-password-placeholder)
+       :label          (i18n/label :t/change-password-new-password-label)
+       :on-change-text on-change-password
+       :on-focus       on-input-focus
+       :auto-focus     true}]
+     [rn/view {:style style/space-between-inputs}]
+     [password-with-hint
+      {:hint           {:text   hint-2-text
+                        :status hint-2-status
+                        :shown  (and (not empty-password?)
+                                     show-validation?)}
+       :error?         error?
+       :placeholder    (i18n/label :t/change-password-repeat-password-placeholder)
+       :on-change-text on-change-repeat-password
+       :on-focus       on-input-focus
+       :on-blur        on-blur-repeat-password}]
      [rn/view {:style style/bottom-part}
       (when same-passwords?
         [rn/view {:style style/disclaimer-container}
@@ -240,13 +234,14 @@
       {:key        :change-password
        :on-press   rn/dismiss-keyboard!
        :accessible false
-       :style      style/flex-fill}
+       :style      {:flex 1}}
       [quo/page-nav
        {:margin-top top
         :background :blur
         :icon-name  :i/arrow-left
         :on-press   #(rf/dispatch [:navigate-back])}]
-      [rn/keyboard-avoiding-view {:style style/flex-fill}
+      [rn/keyboard-avoiding-view {:style style/form-container}
+       [header]
        (condp = change-password-step
          :old-password [old-password-form
                         {:customization-color customization-color}]
