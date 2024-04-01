@@ -9,6 +9,7 @@
 
 (def name-container
   {:margin-right   8
+   :flex-shrink    1
    :flex-direction :row
    :align-items    :flex-end
   })
