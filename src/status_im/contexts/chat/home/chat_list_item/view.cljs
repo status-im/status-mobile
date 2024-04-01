@@ -186,42 +186,43 @@
 
 (defn- notification-layout
   [child]
-  (when (seq child)
-    [rn/view
-     {:style {:flex-grow       1
-              :justify-content :center
-              :margin-left     8}}
-     (into [rn/view {:style style/notification-container}] [child])]))
+  [rn/view
+   {:style style/notification-container-layout}
+   [rn/view {:style style/notification-container}
+    child]])
 
 (defn notification
   [{:keys [muted group-chat unviewed-messages-count unviewed-mentions-count]}]
   (let [customization-color (rf/sub [:profile/customization-color])
         unread-messages?    (pos? unviewed-messages-count)
         unread-mentions?    (pos? unviewed-mentions-count)]
-    [notification-layout
-     (cond
-       muted
-       [quo/icon :i/muted {:color colors/neutral-40}]
+    (cond
+      muted
+      [notification-layout
+       [quo/icon :i/muted {:color colors/neutral-40}]]
 
-       (and group-chat unread-mentions?)
+      (and group-chat unread-mentions?)
+      [notification-layout
        [quo/counter
         {:container-style     {:position :relative :right 0}
          :customization-color customization-color
          :accessibility-label :new-message-counter}
-        unviewed-mentions-count]
+        unviewed-mentions-count]]
 
-       ;; TODO: use the grey-dot component when chat-list-item is moved to quo.components
-       (and group-chat unread-messages?)
+      ;; TODO: use the grey-dot component when chat-list-item is moved to quo.components
+      (and group-chat unread-messages?)
+      [notification-layout
        [rn/view
         {:style               (style/grey-dot)
-         :accessibility-label :unviewed-messages-public}]
+         :accessibility-label :unviewed-messages-public}]]
 
-       unread-messages?
+      unread-messages?
+      [notification-layout
        [quo/counter
         {:container-style     {:position :relative :right 0}
          :customization-color customization-color
          :accessibility-label :new-message-counter}
-        unviewed-messages-count])]))
+        unviewed-messages-count]])))
 
 (defn chat-item
   [{:keys [chat-id group-chat color name last-message timestamp muted]

@@ -21,6 +21,11 @@
    :justify-content :center
    :align-items     :center})
 
+(def notification-container-layout
+  {:flex-grow       1
+   :justify-content :center
+   :margin-left     8})
+
 ;; TODO: duplicate of `quo.components.common.unread-grey-dot.style`
 ;; Replace it when this component is defined as part of `quo.components`
 (defn grey-dot
