@@ -6,7 +6,7 @@
   [{:keys [big? disabled?]}]
   (cond-> {}
     disabled?  (assoc :opacity 0.3)
-    big?       (assoc :flex-grow 1)
+    big?       (assoc :flex-grow 1 :flex-shrink 1)
     (not big?) (assoc :width 104)))
 
 (defn channel-action
