@@ -189,30 +189,33 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         unread-messages?    (pos? unviewed-messages-count)
         unread-mentions?    (pos? unviewed-mentions-count)]
-    [rn/view {:style style/notification-container}
-     (cond
-       muted
-       [quo/icon :i/muted {:color colors/neutral-40}]
+    [rn/view {:style {:flex-grow 1
+                      :justify-content :center
+                      :margin-left 8}}
+     [rn/view {:style style/notification-container}
+      (cond
+        muted
+        [quo/icon :i/muted {:color colors/neutral-40}]
 
-       (and group-chat unread-mentions?)
-       [quo/counter
-        {:container-style     {:position :relative :right 0}
-         :customization-color customization-color
-         :accessibility-label :new-message-counter}
-        unviewed-mentions-count]
+        (and group-chat unread-mentions?)
+        [quo/counter
+         {:container-style     {:position :relative :right 0}
+          :customization-color customization-color
+          :accessibility-label :new-message-counter}
+         unviewed-mentions-count]
 
        ;; TODO: use the grey-dot component when chat-list-item is moved to quo.components
-       (and group-chat unread-messages?)
-       [rn/view
-        {:style               (style/grey-dot)
-         :accessibility-label :unviewed-messages-public}]
+        (and group-chat unread-messages?)
+        [rn/view
+         {:style               (style/grey-dot)
+          :accessibility-label :unviewed-messages-public}]
 
-       unread-messages?
-       [quo/counter
-        {:container-style     {:position :relative :right 0}
-         :customization-color customization-color
-         :accessibility-label :new-message-counter}
-        unviewed-messages-count])]))
+        unread-messages?
+        [quo/counter
+         {:container-style     {:position :relative :right 0}
+          :customization-color customization-color
+          :accessibility-label :new-message-counter}
+         unviewed-messages-count])]]))
 
 (defn chat-item
   [{:keys [chat-id group-chat color name last-message timestamp muted]
@@ -223,24 +226,26 @@
           (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         {:keys [ens-verified added?] :as contact} (when-not group-chat
                                                     (rf/sub [:contacts/contact-by-address chat-id]))]
-    [:<>
+    [rn/view {:style {:flex-direction :row}}
      [avatar-view
       {:contact   contact
        :chat-id   chat-id
        :full-name primary-name
        :color     color
        :muted?    muted}]
-     [rn/view {:style style/chat-data-container}
-      [rn/view {:style {:flex-direction :row}}
-       [quo/author
-        {:primary-name   primary-name
-         :secondary-name secondary-name
-         :size           15
-         :verified?      ens-verified
-         :contact?       added?
-         :muted?         muted
-         :time-str       (datetime/to-short-str timestamp)}]]
-      [last-message-preview group-chat last-message muted]]
+     [rn/view {:style {:flex-shrink 1}}
+      [rn/view {:style style/chat-data-container}
+       [rn/view {:style {:flex-direction :row}}
+        [quo/author
+         {:primary-name   primary-name
+          :secondary-name secondary-name
+          :size           15
+          :verified?      ens-verified
+          :contact?       added?
+          :muted?         muted
+          :time-str       (datetime/to-short-str timestamp)
+          :style          {:flex-shrink 1}}]]
+       [last-message-preview group-chat last-message muted]]]
      [notification item]]))
 
 (defn chat-user

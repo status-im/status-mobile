@@ -11,9 +11,8 @@
    :align-items        :center})
 
 (def chat-data-container
-  {:flex         1
-   :margin-left  8
-   :margin-right 16})
+  {:flex        1
+   :margin-left 8})
 
 (def notification-container
   {:margin-left     :auto
