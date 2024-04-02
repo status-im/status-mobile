@@ -1,12 +1,13 @@
 (ns status-im.common.validation.profile-test
   (:require
     [cljs.test :refer-macros [deftest are]]
+    [status-im.common.validation.general :as validator]
     [status-im.common.validation.profile :as profile-validator]
     [utils.i18n :as i18n]))
 
 (deftest has-emojis-test
   (are [arg expected]
-   (expected (profile-validator/has-emojis? arg))
+   (expected (validator/has-emojis? arg))
    "Hello 😊" true?
    "Hello"    false?))
 
@@ -18,7 +19,7 @@
 
 (deftest has-special-characters-test
   (are [arg expected]
-   (expected (profile-validator/has-special-characters? arg))
+   (expected (validator/has-special-characters? arg))
    "@name" true?
    "name"  false?))
 
