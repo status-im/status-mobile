@@ -84,9 +84,6 @@
         empty-password?                                (empty? password)
         same-passwords?                                (and (not empty-password?)
                                                             (= password repeat-password))
-        same-password-length?                          (and (seq password)
-                                                            (= (count password)
-                                                               (count repeat-password)))
         meet-requirements?                             (and (not empty-password?)
                                                             long-enough?
                                                             same-passwords?
@@ -98,28 +95,28 @@
         ;; handlers
         on-change-password                             (fn [new-value]
                                                          (set-password new-value)
-                                                         (when same-password-length?
+                                                         (when (and (seq new-value)
+                                                                    (= (count new-value)
+                                                                       (count repeat-password)))
                                                            (set-show-validation true)))
         on-change-repeat-password                      (fn [new-value]
                                                          (set-repeat-password new-value)
-                                                         (when same-password-length?
+                                                         (when (and (seq new-value)
+                                                                    (= (count new-value)
+                                                                       (count password)))
                                                            (set-show-validation true)))
-        on-blur-repeat-password                        (rn/use-callback (fn []
-                                                                          (if empty-password?
-                                                                            (set-show-validation false)
-                                                                            (set-show-validation true)))
-                                                                        [empty-password?])
-        on-input-focus                                 (rn/use-callback (fn [] (set-focused true)) [])
-        on-disclaimer-change                           (rn/use-callback (fn []
-                                                                          (set-disclaimer-accepted
-                                                                           (not disclaimer-accepted?)))
-                                                                        [disclaimer-accepted?])
-        on-submit                                      (rn/use-callback
-                                                        (fn []
-                                                          (rf/dispatch
-                                                           [:change-password/confirm-new-password
-                                                            (security/mask-data password)]))
-                                                        [password])]
+        on-blur-repeat-password                        (fn []
+                                                         (if empty-password?
+                                                           (set-show-validation false)
+                                                           (set-show-validation true)))
+        on-input-focus                                 (fn [] (set-focused true))
+        on-disclaimer-change                           (fn []
+                                                         (set-disclaimer-accepted
+                                                          (not disclaimer-accepted?)))
+        on-submit                                      (fn []
+                                                         (rf/dispatch
+                                                          [:change-password/confirm-new-password
+                                                           (security/mask-data password)]))]
     [:<>
      [password-with-hint
       {:hint           {:text   (i18n/label :t/password-creation-hint)
