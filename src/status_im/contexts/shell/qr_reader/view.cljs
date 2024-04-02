@@ -76,8 +76,12 @@
     nil
 
     (text-for-url-path? scanned-text router/channel-path)
-    ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
+    (let [fragment (router/parse-fragment scanned-text)]
+      (router/match-community-channel-async
+        {:community-channel-id (router/parse-fragment "G8kAAGRhbohoG5KuEglZ81XZkRASOrmDc1uWUFtW4AkWcVligW4MHh6KRSaITXQc_OuDsZGmWZVaLdJei_1FBAk3uKKB1YuoBp1IFoEdBC8wgJ3hsMAdpB4YeU6BVf5yzOCzVpLw_1R7OqYITNAqiBHKifBCAx2Yj8UoERj_mN1KOFuC6nKmJdG8xNm0pEsWbTq2RGuGbsu2yKk2LwM=")
+         :community-id   "zQ3shq5rgnnzUdfXanPST7DQxy9qQK2DLwPWbiW1YTCtLXJSM"}
+        (fn [{:keys [chat-id]}]
+          (debounce/debounce-and-dispatch [:communities/navigate-to-community-chat chat-id :pop-to-root] 300))))
 
     (text-for-url-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]
