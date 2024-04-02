@@ -2563,11 +2563,8 @@
         "other": "{{count}} addresses"
     },
     "max": "Max: {{number}}",
-<<<<<<< HEAD
     "key-name-error-length": "Key name too long",
     "key-name-error-emoji": "Emojis are not allowed",
-    "key-name-error-special-char": "Special characters are not allowed"
-=======
+    "key-name-error-special-char": "Special characters are not allowed",
     "display": "Display"
->>>>>>> c69f477df (networks preferences)
 }
