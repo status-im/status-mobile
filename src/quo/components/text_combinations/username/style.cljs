@@ -2,22 +2,27 @@
   (:require [quo.foundations.colors :as colors]))
 
 (def container
-  {:flex-direction :row
-   :height         32})
+  {:flex-direction  :row
+   :justify-content :flex-start
+   :height          32})
 
 (def username-text-container
   {:flex-direction :row
-   :align-items    :flex-end})
+   :align-items    :flex-end
+   :flex-shrink    1})
 
 (defn real-name-text
   [theme blur?]
-  {:color (if blur?
-            (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
-            (colors/theme-colors colors/neutral-60 colors/neutral-40 theme))})
+  {:color       (if blur?
+                  (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
+                  (colors/theme-colors colors/neutral-60 colors/neutral-40 theme))
+   :flex-shrink 1})
 
 (defn real-name-dot
   [theme blur?]
-  (assoc (real-name-text theme blur?) :margin-horizontal 6))
+  (merge (real-name-text theme blur?)
+         {:margin-horizontal 6
+          :flex-shrink       0}))
 
 (defn status-icon-container
   [name-type status]

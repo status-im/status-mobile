@@ -6,6 +6,7 @@ GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 XCRUN_INSTALL_LOG_FILE="${GIT_ROOT}/logs/xcrun_install.log"
 XCRUN_LAUNCH_LOG_FILE="${GIT_ROOT}/logs/xcrun_launch.log"
 XCRUN_SIMULATOR_JSON_FILE="${GIT_ROOT}/logs/ios_simulators_list.log"
+XCODEBUILD_LOG_FILE="${GIT_ROOT}/logs/react-native-xcode.log"
 
 # Install on the simulator
 installAndLaunchApp() {
@@ -60,7 +61,7 @@ open -a Simulator --args -CurrentDeviceUDID "${UDID}"
 BUILD_DIR="${GIT_ROOT}/build"
 
 #iOS build of debug scheme
-xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme StatusIm -destination id="${UDID}" -derivedDataPath "${BUILD_DIR}" -verbose | xcbeautify
+xcodebuild -workspace "ios/StatusIm.xcworkspace" -configuration Debug -scheme StatusIm -destination id="${UDID}" -derivedDataPath "${BUILD_DIR}" -verbose | xcbeautify | tee -a "${XCODEBUILD_LOG_FILE}" 2>&1
 
 APP_PATH="${BUILD_DIR}/Build/Products/Debug-iphonesimulator/StatusIm.app"
 

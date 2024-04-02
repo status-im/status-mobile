@@ -22,9 +22,7 @@
                                :alias       "alias"
                                :name        "name"
                                :from        "from"}]
-      ;; <- cursor
-      ;; <- message
-      ;; <- top of the chat
+      ;; <- cursor <- message <- top of the chat
       (testing "there's no hidden item"
         (with-redefs [list.state/first-not-visible-item (atom nil)]
           (is
@@ -41,10 +39,7 @@
                      cofx
                      #js {:messages (to-array [message])})
              :utils/dispatch-later)))))
-      ;; <- cursor
-      ;; <- first-hidden-item
-      ;; <- message
-      ;; <- top of the chat
+      ;; <- cursor <- first-hidden-item <- message <- top of the chat
       (testing "the hidden item has a clock value less than the current"
         (with-redefs [list.state/first-not-visible-item (atom {:clock-value (dec clock-value)})]
           (is
@@ -61,10 +56,7 @@
                      cofx
                      #js {:messages (to-array [message])})
              :utils/dispatch-later)))))
-      ;; <- cursor
-      ;; <- message
-      ;; <- first-hidden-item
-      ;; <- top of the chat
+      ;; <- cursor <- message <- first-hidden-item <- top of the chat
       (testing "the message falls between the first-hidden-item and cursor"
         (with-redefs [list.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
           (let [result (dissoc (message/receive-many
@@ -77,9 +69,7 @@
               (is (= clock-value (get-in result [:db :pagination-info chat-id :cursor-clock-value])))
               (is (= (loading/clock-value->cursor clock-value)
                      (get-in result [:db :pagination-info chat-id :cursor])))))))
-      ;; <- message
-      ;; <- first-hidden-item
-      ;; <- top of the chat
+      ;; <- message <- first-hidden-item <- top of the chat
       (testing "the message falls between the first-hidden-item and cursor is nil"
         (with-redefs [list.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
           (let [result (dissoc (message/receive-many
@@ -96,10 +86,7 @@
               (is (= clock-value (get-in result [:db :pagination-info chat-id :cursor-clock-value])))
               (is (= (loading/clock-value->cursor clock-value)
                      (get-in result [:db :pagination-info chat-id :cursor])))))))
-      ;; <- message
-      ;; <- cursor
-      ;; <- first-hidden-item
-      ;; <- top of the chat
+      ;; <- message <- cursor <- first-hidden-item <- top of the chat
       (testing "the message falls before both the first-hidden-item and cursor"
         (with-redefs [list.state/first-not-visible-item (atom {:clock-value (inc clock-value)})]
           (let [message #js
