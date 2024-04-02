@@ -150,8 +150,6 @@
              :delete-key? true
              :on-press    (fn [value]
                             (reset! path-value (str @path-value value))
-                            (println "www")
-                            (native-module/multiaccount-derive-addresses public-key [@path-value] (fn [new-val] (println "sss" new-val)))
                             )
              :on-delete   #(reset! path-value (subs @path-value 0 (dec (count @path-value))))}])]))))
 

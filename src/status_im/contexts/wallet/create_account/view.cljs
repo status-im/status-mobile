@@ -41,9 +41,11 @@
     :image-props       :i/derivated-path
     :action            :button
     :action-props      {:on-press    (fn []
-                                       (rf/dispatch [:navigate-to
-                                                     :screen/wallet.edit-derivation-path
-                                                     {:customization-color customization-color}]))
+                                       (rf/dispatch [:standard-auth/authorize
+                                                     {:on-auth-success       #(rf/dispatch [:navigate-to
+                                                                                             :screen/wallet.edit-derivation-path
+                                                                                             {:customization-color customization-color}])
+                                                      :auth-button-label     (i18n/label :t/continue)}]))
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/placeholder
                         :alignment   :flex-start}
