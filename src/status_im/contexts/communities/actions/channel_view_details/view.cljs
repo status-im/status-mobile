@@ -63,6 +63,8 @@
                                                   community-id])
           profile-color                  (rf/sub [:profile/customization-color])
           theme                          (quo.theme/use-theme-value)]
+      (rn/use-mount (fn []
+                      (rf/dispatch [:pin-message/load-pin-messages chat-id])))
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:background :blur
