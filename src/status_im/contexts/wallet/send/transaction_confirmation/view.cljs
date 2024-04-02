@@ -127,25 +127,26 @@
 
 (defn- user-summary
   [{:keys [token-symbol token-decimals account-props route to? theme label accessibility-label
-           summary-type]}]
+           summary-type transaction-type collectible-chain-id amount] :as props}]
+  (tap> props)
   (letfn [(merge-sum [a b]
             (merge-with money/add a b))]
     (let [network-amounts
           (reduce (fn [acc path]
-                    (let [network         (if to? (:to path) (:from path))
-                          chain-id        (:chain-id network)
-                          amount-hex      (if to? (:amount-in path) (:amount-out path))
-                          amount-units    (native-module/hex-to-number
-                                           (utils.hex/normalize-hex amount-hex))
-                          amount          (money/with-precision
-                                           (if (= token-symbol "ETH")
-                                             (money/wei->ether amount-units)
-                                             (money/token->unit amount-units
-                                                                token-decimals))
-                                           6)
+                    (let [network (if to? (:to path) (:from path))
+                          chain-id (:chain-id network)
+                          amount-hex (if to? (:amount-in path) (:amount-out path))
+                          amount-units (native-module/hex-to-number
+                                        (utils.hex/normalize-hex amount-hex))
+                          amount (money/with-precision
+                                   (if (= token-symbol "ETH")
+                                     (money/wei->ether amount-units)
+                                     (money/token->unit amount-units
+                                                        token-decimals))
+                                   6)
                           network-details (rf/sub [:wallet/network-details-by-chain-id chain-id])
-                          network-name    (:network-name network-details)
-                          network-name    (if (= network-name :mainnet) :ethereum network-name)]
+                          network-name (:network-name network-details)
+                          network-name (if (= network-name :mainnet) :ethereum network-name)]
                       (merge-sum acc {network-name amount})))
                   {}
                   route)
@@ -154,13 +155,17 @@
                        (assoc acc k {:amount v :token-symbol token-symbol}))
                      {}
                      network-amounts)
-          network-values-sanitized (into {}
-                                         (map (fn [[k v]]
-                                                [k
-                                                 (if (money/equal-to (v :amount) 0)
-                                                   (assoc v :amount "<0.01")
-                                                   v)])
-                                              network-values))]
+          network-values-sanitized (if (= transaction-type :collectible)
+                                     (let [{:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id collectible-chain-id])
+                                           network-name (if (= network-name :mainnet) :ethereum network-name)]
+                                       {network-name {:amount amount :token-symbol token-symbol }})
+                                     (into {}
+                                           (map (fn [[k v]]
+                                                  [k
+                                                   (if (money/equal-to (v :amount) 0)
+                                                     (assoc v :amount "<0.01")
+                                                     v)])
+                                                network-values)))]
       [rn/view
        {:style {:padding-horizontal 20
                 :padding-bottom     16}}
@@ -175,6 +180,8 @@
          :networks?     true
          :values        network-values-sanitized
          :account-props account-props}]])))
+
+
 
 (defn- transaction-details
   [{:keys [estimated-time-min max-fees token-symbol amount to-address to-network route transaction-type
@@ -255,6 +262,7 @@
             collection-data       (:collection-data collectible)
             collectible-data      (:collectible-data collectible)
             collectible-id        (get-in collectible [:id :token-id])
+            collectible-chain-id (get-in collectible [:id :contract-id :chain-id])
             token-symbol          (if collectible
                                     (first (remove
                                             string/blank?
@@ -262,7 +270,7 @@
                                              (str (:name collection-data) " #" collectible-id)]))
                                     (:symbol token))
             token-decimals        (if collectible 0 (:decimals token))
-            image-url             (when collectible (:image-url collectible-data))
+            image-url             (when collectible (get-in collectible [:preview-url :uri]))
             amount                (:amount send-transaction-data)
             route                 (:route send-transaction-data)
             transaction-type      (:tx-type send-transaction-data)
@@ -319,29 +327,35 @@
              :transaction-type transaction-type
              :collectible?     (some? collectible)}]
            [user-summary
-            {:token-symbol        token-symbol
-             :token-decimals      token-decimals
-             :summary-type        :status-account
+            {:token-symbol token-symbol
+             :token-decimals token-decimals
+             :summary-type :status-account
              :accessibility-label :summary-from-label
-             :label               (i18n/label :t/from-capitalized)
-             :route               route
-             :to?                 false
-             :account-props       from-account-props
-             :theme               theme}]
+             :label (i18n/label :t/from-capitalized)
+             :route route
+             :to? false
+             :account-props from-account-props
+             :transaction-type transaction-type
+             :collectible-chain-id collectible-chain-id
+             :amount amount
+             :theme theme}]
            [user-summary
-            {:token-symbol        token-symbol
-             :token-decimals      token-decimals
-             :summary-type        (if (= transaction-type :bridge)
-                                    :status-account
-                                    :account)
+            {:token-symbol token-symbol
+             :token-decimals token-decimals
+             :summary-type (if (= transaction-type :bridge)
+                             :status-account
+                             :account)
              :accessibility-label :summary-to-label
-             :label               (i18n/label :t/to-capitalized)
-             :account-props       (if (= transaction-type :bridge)
-                                    from-account-props
-                                    user-props)
-             :route               route
-             :to?                 true
-             :theme               theme}]
+             :label (i18n/label :t/to-capitalized)
+             :account-props (if (= transaction-type :bridge)
+                              from-account-props
+                              user-props)
+             :route route
+             :to? true
+             :transaction-type transaction-type
+             :collectible-chain-id collectible-chain-id
+             :amount amount
+             :theme theme}]
            [transaction-details
             {:estimated-time-min estimated-time-min
              :max-fees           max-fees
