@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.create-account.edit-derivation-path.view
   (:require
+    [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -31,6 +32,7 @@
         derive-action      #(js/alert "To be implemented")
         choose-action      #(reset! state :show)
         number-of-accounts (count (rf/sub [:wallet/accounts-without-watched-accounts]))
+        asdf (rf/sub [:wallet/accounts-without-watched-accounts])
         path-value         (reagent/atom (utils/get-formatted-derivation-path number-of-accounts))
         handle-path-change (fn [v]
                              (reset! path-value v)
@@ -42,11 +44,13 @@
                              (when on-reset
                                (on-reset)))]
     (fn [{:keys [theme]}]
-      (let [{:keys [public-key]} (rf/sub [:profile/profile])
+      (let [{:keys [public-key address wallet-root-address] :as profile} (rf/sub [:profile/profile])
+            account          (rf/sub [:wallet/current-viewing-account-address])
             primary-name           (first (rf/sub [:contacts/contact-two-names-by-identity
                                                    public-key]))
             profile-picture        (rf/sub [:profile/image])
             show-path-format-sheet #(rf/dispatch [:show-bottom-sheet {:content path-format-sheet/view}])]
+        (println "ppp" asdf)
         [rn/view
          {:style (style/screen top)}
          [quo/page-nav
@@ -144,7 +148,11 @@
            [quo/numbered-keyboard
             {:left-action :dot
              :delete-key? true
-             :on-press    #(reset! path-value (str @path-value %))
+             :on-press    (fn [value]
+                            (reset! path-value (str @path-value value))
+                            (println "www")
+                            (native-module/multiaccount-derive-addresses public-key [@path-value] (fn [new-val] (println "sss" new-val)))
+                            )
              :on-delete   #(reset! path-value (subs @path-value 0 (dec (count @path-value))))}])]))))
 
 (def view (quo.theme/with-theme view-internal))
@@ -153,4 +161,8 @@
 
 ;; 1. Need to ask how to check for address activity on status-go
 ;; 2. what does this list of addresses mean, for example I see selecting 2 addresses with activity what does that mean
+<<<<<<< HEAD
 >>>>>>> 301f62ffb (dp)
+=======
+
+>>>>>>> ba664d193 (lint)
