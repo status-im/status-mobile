@@ -217,7 +217,6 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
-  x86_64-darwin-22
 
 DEPENDENCIES
   activesupport (>= 6.1.7.3, < 7.1.0)
