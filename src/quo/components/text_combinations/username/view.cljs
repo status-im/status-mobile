@@ -26,7 +26,8 @@
        {:style               (style/real-name-text theme blur?)
         :size                :paragraph-1
         :accessibility-label :real-name
-        :weight              :medium}
+        :weight              :medium
+        :number-of-lines     1}
        real-name]])])
 
 (defn- icon-20

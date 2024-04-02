@@ -11,9 +11,8 @@
    :align-items        :center})
 
 (def chat-data-container
-  {:flex         1
-   :margin-left  8
-   :margin-right 16})
+  {:flex        1
+   :margin-left 8})
 
 (def notification-container
   {:margin-left     :auto
@@ -21,6 +20,11 @@
    :width           20
    :justify-content :center
    :align-items     :center})
+
+(def notification-container-layout
+  {:flex-grow       1
+   :justify-content :center
+   :margin-left     8})
 
 ;; TODO: duplicate of `quo.components.common.unread-grey-dot.style`
 ;; Replace it when this component is defined as part of `quo.components`
