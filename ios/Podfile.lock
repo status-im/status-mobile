@@ -891,15 +891,13 @@ PODS:
     - React-Core
   - react-native-image-resizer (1.2.3):
     - React
-  - react-native-lottie-splash-screen (1.0.1):
+  - react-native-lottie-splash-screen (1.1.2):
     - React
   - react-native-mail (6.1.1):
     - React-Core
   - react-native-netinfo (4.7.0):
     - React
   - react-native-orientation-locker (1.5.0):
-    - React-Core
-  - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-shake (3.4.0):
     - React
@@ -1123,12 +1121,8 @@ PODS:
     - TOCropViewController
   - RNKeychain (8.1.2):
     - React-Core
-  - RNLanguages (3.0.2):
-    - React
   - RNPermissions (3.8.0):
     - React-Core
-  - RNReactNativeHapticFeedback (1.9.0):
-    - React
   - RNReanimated (3.6.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1197,7 +1191,6 @@ DEPENDENCIES:
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
-  - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-shake (from `../node_modules/react-native-shake`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-status (from `../modules/react-native-status`)
@@ -1236,9 +1229,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
-  - RNLanguages (from `../node_modules/react-native-languages`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
-  - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNShare (from `../node_modules/react-native-share`)
   - RNStaticSafeAreaInsets (from `../node_modules/react-native-static-safe-area-insets`)
@@ -1344,8 +1335,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-orientation-locker:
     :path: "../node_modules/react-native-orientation-locker"
-  react-native-randombytes:
-    :path: "../node_modules/react-native-randombytes"
   react-native-shake:
     :path: "../node_modules/react-native-shake"
   react-native-slider:
@@ -1422,12 +1411,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-crop-picker"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
-  RNLanguages:
-    :path: "../node_modules/react-native-languages"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
-  RNReactNativeHapticFeedback:
-    :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNShare:
@@ -1494,11 +1479,10 @@ SPEC CHECKSUMS:
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
   react-native-hole-view: 6935448993bac79f2b5a4ad7e9741094cf810679
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
-  react-native-lottie-splash-screen: 068688c15dd478301fda00f8d87d7fb7d5b9a93e
+  react-native-lottie-splash-screen: 4e1b1fd9d6633f9cd2106d6877eb5ba0147f3e2b
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
-  react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
@@ -1537,9 +1521,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 15c6ef51acba34c49ff03003806cf5dd6098f383
   RNImageCropPicker: 486e2f7e2b0461ce24321f751410dce1b3b49e6d
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
-  RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: 215c54462104b3925b412b0fb3c9c497b21c358b
-  RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: dee37576492f1a375017515f5c77e66e5eec696b
   RNShare: 859ff710211285676b0bcedd156c12437ea1d564
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
