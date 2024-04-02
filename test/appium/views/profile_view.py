@@ -292,7 +292,6 @@ class ProfileView(BaseView):
         self.syncing_button = Button(self.driver, accessibility_id="icon, Syncing, label-component, icon")
         self.sync_plus_button = Button(self.driver,
                                        xpath="//*[@text='Syncing']/following-sibling::android.view.ViewGroup[1]")
-        self.slide_button_track = Button(self.driver, xpath="//*[@resource-id='slide-button-track']")
 
         # Keycard
         self.keycard_button = Button(self.driver, accessibility_id="keycard-button")

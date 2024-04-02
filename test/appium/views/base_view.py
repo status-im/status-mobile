@@ -94,6 +94,10 @@ class WalletTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="wallet-stack-tab")
 
+    def navigate(self):
+        from views.wallet_view import WalletView
+        return WalletView(self.driver)
+
 
 class BrowserTab(TabButton):
     def __init__(self, driver):
@@ -128,11 +132,11 @@ class WalletButton(TabButton):
         super().__init__(driver, xpath="//*[contains(@content-desc,'tab, 3 out of 5')]")
 
     def navigate(self):
-        from views.wallet_view import WalletView
+        from views.wallet_view_old_ui import WalletView
         return WalletView(self.driver)
 
     def click(self):
-        from views.wallet_view import WalletView
+        from views.wallet_view_old_ui import WalletView
         self.click_until_presence_of_element(WalletView(self.driver).multiaccount_more_options)
         return self.navigate()
 
@@ -245,6 +249,14 @@ class SignInPhraseText(Text):
         return self.text.split()
 
 
+class SlideButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, xpath="//*[@resource-id='slide-button-track']")
+
+    def slide(self):
+        self.swipe_right_on_element(width_percentage=1.3, start_x=100)
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -318,6 +330,7 @@ class BaseView(object):
 
         # checkboxes and toggles
         self.checkbox_button = CheckBox(self.driver, accessibility_id="checkbox-off")
+        self.slide_button_track = SlideButton(self.driver)
 
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)
