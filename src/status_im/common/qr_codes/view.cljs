@@ -44,6 +44,7 @@
   [network]
   (case network
     :ethereum "eth:"
+    :mainnet  "eth:"
     :optimism "opt:"
     :arbitrum "arb1:"
     (str (name network) ":")))
@@ -66,7 +67,7 @@
      - customization-color:   Custom color for the QR code component.
      - unblur-on-android?:    [Android only] disables blur for this component.
      - full-name:             User full name.
-  
+
      Depending on the `type`, different properties are accepted:
      `:profile`
        - profile-picture:     map ({:source image-source}) or any image source.
