@@ -47,7 +47,7 @@
                                                                                              {:customization-color customization-color}])
                                                       :auth-button-label     (i18n/label :t/continue)}]))
                         :button-text (i18n/label :t/edit)
-                        :icon-left   :i/placeholder
+                        :icon-left   :i/face-id
                         :alignment   :flex-start}
     :description       :text
     :description-props {:text (string/replace derivation-path #"/" " / ")}}])

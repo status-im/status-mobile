@@ -154,13 +154,6 @@
              :on-delete   #(reset! path-value (subs @path-value 0 (dec (count @path-value))))}])]))))
 
 (def view (quo.theme/with-theme view-internal))
-<<<<<<< HEAD
-=======
 
 ;; 1. Need to ask how to check for address activity on status-go
 ;; 2. what does this list of addresses mean, for example I see selecting 2 addresses with activity what does that mean
-<<<<<<< HEAD
->>>>>>> 301f62ffb (dp)
-=======
-
->>>>>>> ba664d193 (lint)
