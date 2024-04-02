@@ -114,7 +114,7 @@
 
 (defn list-footer-avatar
   [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color
-           emoji chat-type]}]
+           emoji chat-type chat-name]}]
   (let [scale              (reanimated/interpolate distance-from-list-top
                                                    [0 messages.constants/header-container-top-margin]
                                                    [1 0.4]
@@ -138,7 +138,7 @@
          :emoji               (when (and (not (string/blank? emoji))
                                          community-channel?)
                                 emoji)
-         :chat-name           constants/default-community-channel-name}]
+         :chat-name           chat-name}]
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?
@@ -262,7 +262,8 @@
         :group-chat             group-chat
         :color                  color
         :emoji                  emoji
-        :chat-type              chat-type}]
+        :chat-type              chat-type
+        :chat-name              chat-name}]
       [chat-display-name
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name
