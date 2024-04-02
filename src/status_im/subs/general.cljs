@@ -19,11 +19,6 @@
      my-status-update
      (get status-updates public-key))))
 
-(defn online?
-  [visibility-status-type]
-  (or (= visibility-status-type constants/visibility-status-automatic)
-      (= visibility-status-type constants/visibility-status-always-online)))
-
 (re-frame/reg-sub
  :visibility-status-updates/online?
  (fn [[_ public-key]]
