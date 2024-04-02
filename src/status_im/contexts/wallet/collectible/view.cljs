@@ -7,7 +7,6 @@
     [react-native.svg :as svg]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
-    [status-im.config :as config]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [utils.i18n :as i18n]
@@ -45,16 +44,12 @@
     (i18n/label :t/opensea)]])
 
 (def tabs-data
-  (let [base-tabs    [{:id                  :overview
-                       :label               (i18n/label :t/overview)
-                       :accessibility-label :overview-tab}
-                      {:id                  :about
-                       :label               (i18n/label :t/about)
-                       :accessibility-label :about-tab}]
-        activity-tab [{:id                  :activity
-                       :label               (i18n/label :t/activity)
-                       :accessibility-label :activity-tab}]]
-    (concat base-tabs (if config/wallet-collectible-actvity-enabled? activity-tab []))))
+  [{:id                  :overview
+    :label               (i18n/label :t/overview)
+    :accessibility-label :overview-tab}
+   {:id                  :about
+    :label               (i18n/label :t/about)
+    :accessibility-label :about-tab}])
 
 (defn collectible-actions-sheet
   []
