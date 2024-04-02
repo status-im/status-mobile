@@ -457,11 +457,7 @@
      :component settings-password/view}]
 
    [{:name    :shell
-     :options {:theme :dark}}
-    {:name :communities-stack}
-    {:name :chats-stack}
-    {:name :wallet-stack}
-    {:name :browser-stack}]
+     :options {:theme :dark}}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview
