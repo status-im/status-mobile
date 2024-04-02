@@ -1,4 +1,4 @@
-(ns status-im.subs.utils
+(ns status-im.subs.chat.utils
   (:require [status-im.constants :as constants]))
 
 (defn online?

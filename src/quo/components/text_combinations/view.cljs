@@ -7,12 +7,13 @@
     [react-native.core :as rn]))
 
 (defn icon
-  [{:keys [source size emoji-background-color]}]
-  (if emoji-background-color
-    [rn/view {:style (style/textual-emoji size emoji-background-color)}
+  [{:keys [source size customization-color theme]}]
+  (if customization-color
+    [rn/view {:style (style/textual-emoji size customization-color theme)}
      [text/text
       {:style {:margin-left 1
-               :margin-top  1}}
+               :margin-top  1
+               :text-align  :center}}
       source]]
     [rn/image
      {:source source
@@ -25,6 +26,7 @@
 (defn view-internal
   [{:keys [container-style
            title
+           theme
            title-number-of-lines
            avatar
            title-accessibility-label
@@ -34,8 +36,7 @@
            button-on-press
            customization-color
            emoji-hash
-           emoji
-           emoji-background-color]
+           emoji]
     :or   {title-number-of-lines 1}}]
   [rn/view {:style container-style}
    [rn/view
@@ -47,7 +48,7 @@
         [icon {:source avatar :size 32}]])
      (when emoji
        [rn/view {:style style/avatar-container}
-        [icon {:source emoji :size 32 :emoji-background-color emoji-background-color}]])
+        [icon {:source emoji :size 32 :customization-color customization-color :theme theme}]])
      [text/text
       {:accessibility-label title-accessibility-label
        :weight              :semi-bold

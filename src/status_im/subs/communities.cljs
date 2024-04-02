@@ -4,7 +4,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [status-im.subs.utils :as subs.utils]
+    [status-im.subs.chat.utils :as subs.utils]
     [utils.i18n :as i18n]
     [utils.money :as money]))
 
@@ -66,7 +66,7 @@
  (fn [[{:keys [members]}] _]
    members))
 
-(defn keys->names
+(defn- keys->names
   [public-keys profile]
   (reduce (fn [acc contact-identity]
             (assoc acc
@@ -77,7 +77,7 @@
           {}
           public-keys))
 
-(defn sort-members-by-name
+(defn- sort-members-by-name
   [names descending? members]
   (if descending?
     (sort-by #(get names (first %)) #(compare %2 %1) members)

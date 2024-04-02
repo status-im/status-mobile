@@ -143,7 +143,7 @@
      :options   {:insets {:top? true}}
      :component communities.accounts-selection/view}
 
-    {:name      :view-channel-members-and-details
+    {:name      :screen/chat.view-channel-members-and-details
      :options   {:insets {:top? true}}
      :component channel-view-channel-members-and-details/view}
 

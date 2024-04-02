@@ -1,7 +1,6 @@
 (ns status-im.contexts.communities.actions.channel-view-details.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
-            [quo.foundations.colors :as colors]
             [quo.theme]
             [react-native.core :as rn]
             [status-im.common.contact-list-item.view :as contact-list-item]
@@ -52,16 +51,18 @@
     :render-fn                         contact-item
     :scroll-event-throttle             8}])
 
-(defn- view-internal
+(defn view
   [_args]
-  (fn [{:keys [theme]}]
-    (let [{:keys [chat-id community-id]} (rf/sub [:get-screen-params :view-channel-members-and-details])
+  (fn []
+    (let [{:keys [chat-id community-id]} (rf/sub [:get-screen-params
+                                                  :screen/chat.view-channel-members-and-details])
           {:keys [description chat-name emoji muted chat-type]
            :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
           pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
           items                          (rf/sub [:communities/sorted-community-members-section-list
                                                   community-id])
-          profile-color                  (rf/sub [:profile/customization-color])]
+          profile-color                  (rf/sub [:profile/customization-color])
+          theme                          (quo.theme/use-theme-value)]
       [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:background :blur
@@ -78,8 +79,9 @@
          :title                           [quo/channel-name
                                            {:channel-name chat-name
                                             :unlocked?    true}]
+         :theme                           theme
          :emoji                           (when (not (string/blank? emoji)) emoji)
-         :emoji-background-color          (colors/resolve-color profile-color theme 10)
+         :customization-color             profile-color
          :title-accessibility-label       :welcome-title
          :description                     description
          :description-accessibility-label :welcome-sub-title}]
@@ -87,22 +89,21 @@
         [rn/view
          {:style style/channel-actions-wrapper}
          [quo/channel-actions
-          {:actions [{:big?          true
-                      :label         (i18n/label :t/pinned-messages-2)
-                      :color         profile-color
-                      :icon          :i/pin
-                      :counter-value pins-count
-                      :on-press      (fn []
-                                       (rf/dispatch [:dismiss-keyboard])
-                                       (rf/dispatch [:pin-message/show-pins-bottom-sheet
-                                                     chat-id]))}
-                     {:label    (if muted (i18n/label :t/unmute-channel) (i18n/label :t/mute-channel))
-                      :color    profile-color
-                      :icon     (if muted :i/muted :i/activity-center)
-                      :on-press (fn []
-                                  (if muted
-                                    (home.actions/unmute-chat-action chat-id)
-                                    (home.actions/mute-chat-action chat-id chat-type muted)))}]}]]]
+          {:actions
+           [{:big?                true
+             :label               (i18n/label :t/pinned-messages-2)
+             :customization-color profile-color
+             :icon                :i/pin
+             :counter-value       pins-count
+             :on-press            (fn []
+                                    (rf/dispatch [:dismiss-keyboard])
+                                    (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                                  chat-id]))}
+            {:label               (if muted (i18n/label :t/unmute-channel) (i18n/label :t/mute-channel))
+             :customization-color profile-color
+             :icon                (if muted :i/muted :i/activity-center)
+             :on-press            (fn []
+                                    (if muted
+                                      (home.actions/unmute-chat-action chat-id)
+                                      (home.actions/mute-chat-action chat-id chat-type muted)))}]}]]]
        [members items profile-color]])))
-
-(defn view [] (quo.theme/with-theme view-internal))

@@ -6,7 +6,7 @@
     [legacy.status-im.utils.build :as build]
     [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
     [re-frame.core :as re-frame]
-    [status-im.subs.utils :as utils]
+    [status-im.subs.chat.utils :as chat.utils]
     [utils.ethereum.chain :as chain]))
 
 (re-frame/reg-sub
@@ -25,7 +25,7 @@
    [(re-frame/subscribe [:visibility-status-updates/visibility-status-update public-key])])
  (fn [[status-update]]
    (let [visibility-status-type (:status-type status-update)]
-     (utils/online? visibility-status-type))))
+     (chat.utils/online? visibility-status-type))))
 
 (re-frame/reg-sub
  :multiaccount/logged-in?

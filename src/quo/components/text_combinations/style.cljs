@@ -1,4 +1,5 @@
-(ns quo.components.text-combinations.style)
+(ns quo.components.text-combinations.style
+  (:require [quo.foundations.colors :as colors]))
 
 (def title-container
   {:flex-direction :row
@@ -6,7 +7,8 @@
    :align-items    :center})
 
 (def avatar-container
-  {:margin-right 9})
+  {:margin-right 9
+   :text-align   :center})
 
 (def description-description-text
   {:margin-top 8})
@@ -18,7 +20,7 @@
    :line-height    20.5})
 
 (defn textual-emoji
-  [size emoji-background-color]
+  [size customization-color theme]
   {:border-radius    50
    :border-width     0
    :border-color     :transparent
@@ -26,4 +28,4 @@
    :height           size
    :justify-content  :center
    :align-items      :center
-   :background-color emoji-background-color})
+   :background-color (colors/resolve-color customization-color theme 10)})

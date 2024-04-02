@@ -34,7 +34,7 @@
   {:icon                :i/members
    :accessibility-label :chat-view-members-and-details
    :label               (i18n/label :t/view-channel-members-and-details)
-   :on-press            #(rf/dispatch [:navigate-to :view-channel-members-and-details
+   :on-press            #(rf/dispatch [:navigate-to :screen/chat.view-channel-members-and-details
                                        {:community-id community-id :chat-id chat-id}])})
 
 (defn- action-token-requirements
