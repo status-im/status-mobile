@@ -18,8 +18,8 @@
 
 (defn navigate-back [] (rf/dispatch [:navigate-back]))
 
-(defn view-internal
-  [{:keys [theme]}]
+(defn view
+  []
   (let [[keypair-name set-keypair-name] (rn/use-state "")
         customization-color             (rf/sub [:profile/customization-color])
         [error set-error]               (rn/use-state false)
@@ -71,4 +71,3 @@
           :icon            :i/info
           :container-style style/error-container}
          (get error-messages error)])]]))
-(def view (quo.theme/with-theme view-internal))
