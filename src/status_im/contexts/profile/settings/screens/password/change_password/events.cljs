@@ -69,7 +69,6 @@
               {:error error
                :event :change-password/submit})
    {:fx [[:dispatch [:change-password/reset]]
-         [:dispatch [:hide-bottom-sheet]]
          [:dispatch [:navigate-back]]]}))
 
 (rf/reg-event-fx
