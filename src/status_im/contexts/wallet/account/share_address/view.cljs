@@ -34,7 +34,8 @@
   [selected-networks]
   (let [on-save       (fn [chain-ids]
                         (rf/dispatch [:hide-bottom-sheet])
-                        (reset! selected-networks (map utils/id->network chain-ids)))
+                        (reset! selected-networks (map #(if (= % 1) :mainnet (utils/id->network %))
+                                                       chain-ids)))
         sheet-content (fn []
                         [network-preferences/view
                          {:blur?             true
@@ -52,7 +53,7 @@
         wallet-type         (reagent/atom :legacy)
         ;; Design team is yet to confirm the default selected networks here. Should be the current
         ;; selected for the account or all the networks always
-        selected-networks   (reagent/atom [:ethereum :optimism :arbitrum])
+        selected-networks   (reagent/atom [:mainnet :optimism :arbitrum])
         on-settings-press   #(open-preferences selected-networks)
         on-legacy-press     #(reset! wallet-type :legacy)
         on-multichain-press #(reset! wallet-type :multichain)]

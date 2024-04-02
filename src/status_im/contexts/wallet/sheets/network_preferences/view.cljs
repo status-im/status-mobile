@@ -93,7 +93,7 @@
                             layer-2-networks)}]
          [quo/bottom-actions
           {:actions          :one-action
-           :button-one-label (i18n/label :t/update)
+           :button-one-label (i18n/label :t/display)
            :button-one-props {:disabled?           (= @state :default)
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]

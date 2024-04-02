@@ -5,7 +5,7 @@
     [react-native.hooks :as hooks]
     [status-im.common.router :as router]
     [status-im.common.scan-qr-code.view :as scan-qr-code]
-    [status-im.common.validators :as validators]
+    [status-im.common.validation.general :as validators]
     [status-im.contexts.communities.events]
     [status-im.contexts.wallet.common.validation :as wallet-validation]
     [utils.debounce :as debounce]

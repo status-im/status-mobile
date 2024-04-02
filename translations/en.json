@@ -2562,5 +2562,9 @@
         "one": "1 address",
         "other": "{{count}} addresses"
     },
-    "max": "Max: {{number}}"
+    "max": "Max: {{number}}",
+    "key-name-error-length": "Key name too long",
+    "key-name-error-emoji": "Emojis are not allowed",
+    "key-name-error-special-char": "Special characters are not allowed",
+    "display": "Display"
 }
