@@ -1,5 +1,4 @@
-(ns status-im.contexts.wallet.create-account.new-keypair.keypair-name.style
-  (:require [quo.foundations.colors :as colors]))
+(ns status-im.contexts.wallet.create-account.new-keypair.keypair-name.style)
 
 (def header-container
   {:margin-horizontal 20
@@ -10,14 +9,5 @@
   {:margin-horizontal -20})
 
 (def error-container
-  {:flex-direction  :row
-   :justify-content :center
-   :align-items     :center
-   :align-self      :flex-start
-   :margin-left     20
+  {:margin-left     20
    :margin-vertical 8})
-
-(defn error
-  [theme]
-  {:margin-left 4
-   :color       (colors/resolve-color :danger theme)})
