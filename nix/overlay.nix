@@ -60,10 +60,10 @@ in {
     version = "15.0";
     allowHigher = true;
   };
-  go = super.go_1_19;
+  go = super.go_1_20;
   clang = super.clang_15;
-  buildGoPackage = super.buildGo119Package;
-  buildGoModule = super.buildGo119Module;
+  buildGoPackage = super.buildGo120Package;
+  buildGoModule = super.buildGo120Module;
   gomobile = (super.gomobile.overrideAttrs (old: {
     patches = [
       (self.fetchurl { # https://github.com/golang/mobile/pull/84
