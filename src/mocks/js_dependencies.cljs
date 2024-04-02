@@ -170,7 +170,6 @@
 
 (def net-info #js {})
 (def react-native-biometrics #js {:default {}})
-(def react-native-image-viewing #js {:default {}})
 (def react-native-static-safe-area-insets #js {:default {}})
 
 (def back-handler
@@ -222,8 +221,6 @@
    {:createStackNavigator identity
     :TransitionPresets    #js {:ModalPresentationIOS #js {}}})
 (def react-navigation-bottom-tabs #js {:createBottomTabNavigator identity})
-
-(def react-native-haptic-feedback #js {:default #js {:trigger nil}})
 
 (def react-native-reanimated
   #js
@@ -313,10 +310,6 @@
    {:clamp     nil
     :withPause (fn [])})
 
-(def react-native-languages
-  (clj->js {:default {:language            "en"
-                      :addEventListener    (fn [])
-                      :removeEventListener (fn [])}}))
 
 (def react-native-device-info
   #js {:getInstallReferrer identity})
@@ -342,9 +335,6 @@
    {:default #js
               {:abandonPermissions              identity
                :removeAllDeliveredNotifications identity}})
-
-(def rn-emoji-keyboard
-  #js {:EmojiKeyboard #js {}})
 
 (def react-native-hole-view
   #js {:RNHoleView #js {}})
@@ -382,7 +372,6 @@
 (defn mock
   [module]
   (case module
-    "react-native-languages"                           react-native-languages
     "react-native-background-timer"                    background-timer
     "react-native-image-crop-picker"                   image-crop-picker
     "react-native-gesture-handler"                     react-native-gesture-handler
@@ -403,7 +392,6 @@
     "react-native-fs"                                  fs
     "react-native-mail"                                react-native-mail
     "react-native-image-resizer"                       image-resizer
-    "react-native-haptic-feedback"                     react-native-haptic-feedback
     "react-native-device-info"                         react-native-device-info
     "react-native-push-notification"                   react-native-push-notification
     "react-native-linear-gradient"                     react-native-gradien
@@ -415,13 +403,11 @@
     "@react-native-camera-roll/camera-roll"            react-native-camera-roll
     "react-native-camera-kit"                          react-native-camera-kit
     "react-native-permissions"                         react-native-permissions
-    "rn-emoji-keyboard"                                rn-emoji-keyboard
     "react-native-hole-view"                           react-native-hole-view
     "react-native-draggable-flatlist"                  react-native-draggable-flatlist
     "react-native-webview"                             react-native-webview
     "@react-native-community/audio-toolkit"            react-native-audio-toolkit
     "@react-native-clipboard/clipboard"                react-native-clipboard
-    "react-native-image-viewing"                       react-native-image-viewing
     "react-native-share"                               react-native-share
     "@react-native-async-storage/async-storage"        async-storage
     "react-native-svg"                                 react-native-svg
