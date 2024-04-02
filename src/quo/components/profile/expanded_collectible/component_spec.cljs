@@ -14,27 +14,5 @@
          :on-press on-press}])
       (h/fire-event :press (h/get-by-label-text :expanded-collectible))
       (h/was-called on-press)
-      (h/is-truthy (h/get-by-text "1200"))))
-
-  (h/test "renders with status :cant-fetch and has on-press event"
-    (let [on-press (h/mock-fn)]
-      (h/render-with-theme-provider
-       [expanded-collectible/view
-        {:counter  "1200"
-         :status   :cant-fetch
-         :on-press on-press}])
-      (h/fire-event :press (h/get-by-label-text :expanded-collectible))
-      (h/was-called on-press)
-      (h/is-truthy (h/get-by-translation-text :t/cant-fetch-info))))
-
-
-  (h/test "renders with status :unsupported and has on-press event"
-    (let [on-press (h/mock-fn)]
-      (h/render-with-theme-provider
-       [expanded-collectible/view
-        {:counter  "1200"
-         :status   :unsupported
-         :on-press on-press}])
-      (h/fire-event :press (h/get-by-label-text :expanded-collectible))
-      (h/was-called on-press)
-      (h/is-truthy (h/get-by-translation-text :t/unsupported-file)))))
+      (h/wait-for
+       (h/is-truthy (h/get-by-text "1200"))))))
