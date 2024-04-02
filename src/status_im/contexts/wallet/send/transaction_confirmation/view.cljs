@@ -125,61 +125,72 @@
           :emoji               (:emoji account)
           :customization-color (:color account)}]])]))
 
+(defn network-name-from-chain-id
+  [chain-id]
+  (let [network-name (-> (rf/sub [:wallet/network-details-by-chain-id chain-id])
+                         :network-name)]
+    (if (= network-name :mainnet) :ethereum network-name)))
+
+(defn network-amounts-from-route
+  [route token-symbol token-decimals to?]
+  (reduce (fn [acc path]
+            (let [network (if to? (:to path) (:from path))
+                  chain-id (:chain-id network)
+                  amount-hex (if to? (:amount-in path) (:amount-out path))
+                  amount-units (native-module/hex-to-number
+                                (utils.hex/normalize-hex amount-hex))
+                  amount (money/with-precision
+                           (if (= token-symbol "ETH")
+                             (money/wei->ether amount-units)
+                             (money/token->unit amount-units
+                                                token-decimals))
+                           6)
+                  network-name (network-name-from-chain-id chain-id)]
+              (merge-with money/add acc {network-name amount})))
+          {}
+          route))
+
+(defn network-values-from-amounts
+  [network-amounts token-symbol]
+  (reduce-kv (fn [acc k v]
+               (assoc acc k {:amount v :token-symbol token-symbol}))
+             {}
+             network-amounts))
+
+(defn sanitize-network-values
+  [network-values]
+  (into {}
+        (map (fn [[k v]]
+               [k
+                (if (money/equal-to (v :amount) 0)
+                  (assoc v :amount "<0.01")
+                  v)])
+             network-values)))
+
 (defn- user-summary
   [{:keys [token-symbol token-decimals account-props route to? theme label accessibility-label
            summary-type transaction-type collectible-chain-id amount] :as props}]
   (tap> props)
-  (letfn [(merge-sum [a b]
-            (merge-with money/add a b))]
-    (let [network-amounts
-          (reduce (fn [acc path]
-                    (let [network (if to? (:to path) (:from path))
-                          chain-id (:chain-id network)
-                          amount-hex (if to? (:amount-in path) (:amount-out path))
-                          amount-units (native-module/hex-to-number
-                                        (utils.hex/normalize-hex amount-hex))
-                          amount (money/with-precision
-                                   (if (= token-symbol "ETH")
-                                     (money/wei->ether amount-units)
-                                     (money/token->unit amount-units
-                                                        token-decimals))
-                                   6)
-                          network-details (rf/sub [:wallet/network-details-by-chain-id chain-id])
-                          network-name (:network-name network-details)
-                          network-name (if (= network-name :mainnet) :ethereum network-name)]
-                      (merge-sum acc {network-name amount})))
-                  {}
-                  route)
-          network-values
-          (reduce-kv (fn [acc k v]
-                       (assoc acc k {:amount v :token-symbol token-symbol}))
-                     {}
-                     network-amounts)
-          network-values-sanitized (if (= transaction-type :collectible)
-                                     (let [{:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id collectible-chain-id])
-                                           network-name (if (= network-name :mainnet) :ethereum network-name)]
-                                       {network-name {:amount amount :token-symbol token-symbol }})
-                                     (into {}
-                                           (map (fn [[k v]]
-                                                  [k
-                                                   (if (money/equal-to (v :amount) 0)
-                                                     (assoc v :amount "<0.01")
-                                                     v)])
-                                                network-values)))]
-      [rn/view
-       {:style {:padding-horizontal 20
-                :padding-bottom     16}}
-       [quo/text
-        {:size                :paragraph-2
-         :weight              :medium
-         :style               (style/section-label theme)
-         :accessibility-label accessibility-label}
-        label]
-       [quo/summary-info
-        {:type          summary-type
-         :networks?     true
-         :values        network-values-sanitized
-         :account-props account-props}]])))
+  (let [network-amounts (network-amounts-from-route route token-symbol token-decimals to?)
+        network-values (network-values-from-amounts network-amounts token-symbol)
+        network-values-sanitized (if (= transaction-type :collectible)
+                                   (let [network-name (network-name-from-chain-id collectible-chain-id)]
+                                     {network-name {:amount amount :token-symbol token-symbol }})
+                                   (sanitize-network-values network-values))]
+    [rn/view
+     {:style {:padding-horizontal 20
+              :padding-bottom     16}}
+     [quo/text
+      {:size                :paragraph-2
+       :weight              :medium
+       :style               (style/section-label theme)
+       :accessibility-label accessibility-label}
+      label]
+     [quo/summary-info
+      {:type          summary-type
+       :networks?     true
+       :values        network-values-sanitized
+       :account-props account-props}]]))
 
 
 
