@@ -14,8 +14,7 @@
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [status-im.contexts.preview.quo.settings.data-item :as data-item]))
+    [utils.security.core :as security]))
 
 (defn- transaction-title
   [{:keys [token-symbol amount account to-address route to-network image-url transaction-type
