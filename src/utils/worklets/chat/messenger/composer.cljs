@@ -13,3 +13,15 @@
 (defn jump-to-button-position
   [scroll-down-button-opacity-sv composer-focused?]
   (.jumpToButtonPosition ^js worklets scroll-down-button-opacity-sv composer-focused?))
+
+(defn composer-container-opacity
+  [composer-focused? empty-input? empty-opacity]
+  (.composerContainerOpacity ^js worklets composer-focused? empty-input? empty-opacity))
+
+(defn blur-container-elevation
+  [composer-focused? empty-input?]
+  (.blurContainerElevation ^js worklets composer-focused? empty-input?))
+
+(defn composer-elevation
+  [composer-focused? empty-input?]
+  (.composerElevation ^js worklets composer-focused? empty-input?))
