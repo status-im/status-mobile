@@ -465,9 +465,19 @@
         :on-error   on-error}]})))
 
 (rf/reg-event-fx
+ :wallet/get-saved-addresses-success
+ (fn [{:keys [db]} [saved-addresses]]
+   {:db (assoc-in db [:wallet :saved-addresses] saved-addresses)}))
+
+(rf/reg-event-fx
+ :wallet/get-saved-addresses-error
+ (fn [{:keys [db]} [err]]
+   {:db (assoc db [:wallet :get-saved-addresses-error] err)}))
+
+(rf/reg-event-fx
  :wallet/get-saved-addresses
- (fn [_ [{:keys [on-success on-error]}]]
+ (fn [_ _]
    {:json-rpc/call
     [{:method     "wakuext_getSavedAddresses"
-      :on-success on-success
-      :on-error   on-error}]}))
+      :on-success [:wallet/get-saved-addresses-success]
+      :on-error   [:wallet/get-saved-addresses-error]}]}))

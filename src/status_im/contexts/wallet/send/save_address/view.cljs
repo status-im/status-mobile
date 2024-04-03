@@ -43,7 +43,8 @@
   []
   (let [[address-label set-address-label] (rn/use-state "")
         [address-color set-address-color] (rn/use-state :blue)
-        placeholder                       (i18n/label :t/address-name)]
+        placeholder                       (i18n/label :t/address-name)
+        address-to-save                   (rf/sub [:wallet/wallet-send-to-address])]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [quo/page-nav
@@ -86,4 +87,4 @@
        :on-change        set-address-color
        :container-style  style/color-picker}]
      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
-     [address-view "0xshivek"]]))
+     [address-view address-to-save]]))
