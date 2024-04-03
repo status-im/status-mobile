@@ -3,11 +3,20 @@
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))
 
-(def container
+(defn- primary-name-offset
+  [size]
+  (when (= size 15)
+    (cond platform/ios?     1
+          platform/android? -0.5
+          :else             0)))
+
+(defn container
+  [size]
   {:flex-shrink    1
    :flex-wrap      :nowrap
    :flex-direction :row
-   :align-items    :baseline})
+   :align-items    :baseline
+   :top            (* -1 (primary-name-offset size))})
 
 (def details-container
   {:flex-direction :row
@@ -28,10 +37,7 @@
                   colors/neutral-50
                   (colors/theme-colors colors/neutral-100 colors/white theme))
    :flex-shrink 1
-   :top         (when (= size 15)
-                  (cond platform/ios?     1
-                        platform/android? -0.5
-                        :else             0))})
+   :top         (primary-name-offset size)})
 
 (defn secondary-name
   [theme]

@@ -14,7 +14,7 @@
            muted? size theme]
     :or   {size 13}}]
   [rn/view
-   {:style (merge style/container style)}
+   {:style (merge (style/container size) style)}
    [text/text
     {:weight              :semi-bold
      :size                (if (= size 15) :paragraph-1 :paragraph-2)
