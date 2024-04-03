@@ -67,8 +67,9 @@
            gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme-value)
+        {window-height :height}           (rn/get-window)
         [sheet-height set-sheet-height]   (rn/use-state 0)
-        [layout-height set-layout-height] (rn/use-state 0)
+        [layout-height set-layout-height] (rn/use-state window-height)
         handle-sheet-height               (rn/use-callback (fn [e]
                                                              (when (= sheet-height 0)
                                                                (set-sheet-height
@@ -83,7 +84,6 @@
                                                                (set-item-height
                                                                 (get-layout-height e))))
                                                            [item-height])
-        {window-height :height}           (rn/get-window)
         bg-opacity                        (reanimated/use-shared-value 0)
         translate-y                       (reanimated/use-shared-value window-height)
         sheet-gesture                     (rn/use-memo #(get-sheet-gesture translate-y
