@@ -3,7 +3,8 @@
     [status-im.contexts.communities.utils :as utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-success
  (fn [{:keys [db]} [community-id based-on-client-selection? result]]
@@ -89,7 +90,7 @@
   (let [addresses-to-reveal (map :account sign-params)]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_signData"
-             :params     [(map #(assoc % :password password) sign-params)]
+             :params     [(map #(assoc % :password (security/safe-unmask-data password)) sign-params)]
              :on-success [:communities/request-to-join-with-signatures community-id addresses-to-reveal]
              :on-error   [:communities/requested-to-join-error community-id]}]]]}))
 
