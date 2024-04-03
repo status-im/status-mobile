@@ -43,10 +43,14 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
 
-(rf/reg-event-fx :wallet/close-account-page
+(rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]}]
-   {:db (update db :wallet dissoc :current-viewing-account-address)
-    :fx [[:dispatch [:pop-to-root :shell-stack]]]}))
+   {:db (update db :wallet dissoc :current-viewing-account-address)}))
+
+(rf/reg-event-fx :wallet/close-account-page
+ (fn [_]
+   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx
  :wallet/get-accounts-success

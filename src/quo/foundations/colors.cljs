@@ -254,6 +254,17 @@
    :polygon  "#AD71F3"
    :unknown  "#EEF2F5"})
 
+(def ^:private get-network-full-name
+  {:eth  :ethereum
+   :opt  :optimism
+   :arb1 :arbitrum})
+
+(def ^:private networks-short-name
+  (reduce (fn [acc [k v]]
+            (assoc acc k (get networks v)))
+          {}
+          get-network-full-name))
+
 (def socials
   {:social/link      "#647084"
    :social/facebook  "#1877F2"
@@ -294,6 +305,7 @@
                     60 warning-60}}
          customization
          networks
+         networks-short-name
          socials))
 
 (defn hex-string?
