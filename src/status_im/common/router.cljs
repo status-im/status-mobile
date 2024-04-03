@@ -204,7 +204,7 @@
                                 :error :invalid-chat-id})))))
 
 (defn match-community-channel-async
-  [{:keys [community-channel-id community-id] :as data} cb]
+  [{:keys [community-channel-id community-id]} cb]
   (if (validators/valid-compressed-key? community-id)
     (native-module/deserialize-and-compress-key
      community-id
