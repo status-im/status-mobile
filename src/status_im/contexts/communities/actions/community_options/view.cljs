@@ -112,13 +112,13 @@
    :on-press            #(hide-sheet-and-dispatch [:communities/share-community-pressed id])})
 
 (defn leave-community
-  [id]
+  [id color]
   {:icon                :i/log-out
    :label               (i18n/label :t/leave-community)
    :accessibility-label :leave-community
    :danger?             true
    :on-press            #(rf/dispatch [:show-bottom-sheet
-                                       {:content (fn [] [leave-menu/leave-sheet id])}])})
+                                       {:content (fn [] [leave-menu/leave-sheet id color])}])})
 
 (defn cancel-request-to-join
   [id request-id]
@@ -152,7 +152,7 @@
     (not-joined-options id token-gated? pending?)))
 
 (defn joined-options
-  [id token-gated? muted? muted-till]
+  [id token-gated? muted? muted-till color]
   [[(view-members id)
     (view-rules id)
     (when token-gated? (view-token-gating id))
@@ -164,7 +164,7 @@
     (invite-contacts id)
     (show-qr id)
     (share-community id)]
-   [(assoc (leave-community id) :add-divider? true)]])
+   [(assoc (leave-community id color) :add-divider? true)]])
 
 (defn owner-options
   [id token-gated? muted? muted-till]
@@ -181,11 +181,11 @@
 (defn get-context-drawers
   [{:keys [id]}]
   (let [{:keys [token-permissions admin joined
-                muted banList muted-till]} (rf/sub [:communities/community id])
-        request-id                         (rf/sub [:communities/my-pending-request-to-join id])]
+                muted banList muted-till color]} (rf/sub [:communities/community id])
+        request-id                               (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
       admin      (owner-options id token-permissions muted muted-till)
-      joined     (joined-options id token-permissions muted muted-till)
+      joined     (joined-options id token-permissions muted muted-till color)
       request-id (join-request-sent-options id token-permissions request-id)
       banList    (banned-options id token-permissions)
       :else      (not-joined-options id token-permissions request-id))))
