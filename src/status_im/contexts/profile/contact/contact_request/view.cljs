@@ -12,8 +12,7 @@
   []
   (let [{:keys [public-key customization-color]
          :as   profile}       (rf/sub [:contacts/current-contact])
-        ;; TODO: remove default color when #18733 merged.
-        customization-color   (or customization-color constants/profile-default-color)
+        customization-color   customization-color
         full-name             (profile.utils/displayed-name profile)
         profile-picture       (profile.utils/photo profile)
         [message set-message] (rn/use-state "")

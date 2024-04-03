@@ -27,7 +27,6 @@ deps  node_modules
  > ls node_modules | grep react-native-image
 react-native-image-crop-picker
 react-native-image-resizer
-react-native-image-viewing
 ```
 
 # Known Issues

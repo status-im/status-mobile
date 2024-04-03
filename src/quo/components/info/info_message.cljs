@@ -23,7 +23,8 @@
    :text-color     colors/white  ;; text color override
    :icon-color     colors/white  ;; icon color override
    :no-icon-color? false         ;; disable tint color for icon"
-  [{:keys [type size theme icon text-color icon-color no-icon-color? style accessibility-label]} message]
+  [{:keys [type size theme icon text-color icon-color no-icon-color? style accessibility-label
+           container-style]} message]
   (let [weight     (if (= size :default) :regular :medium)
         icon-size  (if (= size :default) 16 12)
         size       (if (= size :default) :paragraph-2 :label)
@@ -32,7 +33,8 @@
     [rn/view
      {:style (merge {:flex-direction :row
                      :align-items    :center}
-                    style)}
+                    style
+                    container-style)}
      [quo.icons/icon icon
       {:color    icon-color
        :no-color no-icon-color?

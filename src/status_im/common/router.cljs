@@ -5,7 +5,7 @@
     [legacy.status-im.ethereum.ens :as ens]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.common.validators :as validators]
+    [status-im.common.validation.general :as validators]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
     [taoensso.timbre :as log]

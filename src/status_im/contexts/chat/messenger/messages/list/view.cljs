@@ -328,19 +328,24 @@
 (defn messages-list-content
   [{:keys [insets distance-from-list-top content-height layout-height distance-atom
            chat-screen-layout-calculations-complete? chat-list-scroll-y]}]
-  (let [theme                    (quo.theme/use-theme-value)
-        chat                     (rf/sub [:chats/current-chat-chat-view])
-        community-channel?       (= constants/community-chat-type (:chat-type chat))
-        customization-color      (if community-channel?
-                                   (or (:color chat)
-                                       (rf/sub [:communities/community-color (:community-id chat)]))
-                                   :turquoise)
-        {:keys [keyboard-shown]} (hooks/use-keyboard)
-        {window-height :height}  (rn/get-window)
-        context                  (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                 (rf/sub [:chats/raw-chat-messages-stream
-                                          (:chat-id chat)])
-        recording?               (rf/sub [:chats/recording?])]
+  (let [theme                                (quo.theme/use-theme-value)
+        {:keys [chat-type chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])
+        one-to-one-chat?                     (= chat-type constants/one-to-one-chat-type)
+        community-channel?                   (= constants/community-chat-type chat-type)
+        {contact-customization-color
+         :customization-color}               (when one-to-one-chat?
+                                               (rf/sub [:contacts/contact-by-identity chat-id]))
+        customization-color                  (cond community-channel?
+                                                   (or (:color chat)
+                                                       (rf/sub [:communities/community-color
+                                                                (:community-id chat)]))
+                                                   one-to-one-chat? contact-customization-color
+                                                   :else (or (:color chat) :turquoise))
+        {:keys [keyboard-shown]}             (hooks/use-keyboard)
+        {window-height :height}              (rn/get-window)
+        context                              (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                             (rf/sub [:chats/raw-chat-messages-stream chat-id])
+        recording?                           (rf/sub [:chats/recording?])]
     [rn/view {:style {:flex 3}} ;; Pushes composer to bottom
      [rn/view {:style {:flex-shrink 1}} ;; Keeps flat list on top
       [reanimated/flat-list

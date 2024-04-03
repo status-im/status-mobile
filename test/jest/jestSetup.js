@@ -28,17 +28,6 @@ jest.mock('react-native-navigation', () => ({
 
 jest.mock('react-native-background-timer', () => ({}));
 
-jest.mock('react-native-languages', () => ({
-  RNLanguages: {
-    language: 'en',
-    languages: ['en'],
-  },
-  default: {
-    language: 'en',
-    locale: 'en',
-  },
-}));
-
 jest.mock('react-native-static-safe-area-insets', () => ({
   default: {
     safeAreaInsetsTop: 0,

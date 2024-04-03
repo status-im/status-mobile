@@ -20,12 +20,6 @@ required by bignumber.js otherwise there is a compilation error
 
 used to generate guids and random values in `status-im.utils.random`
 
-## "create-react-class": "15.6.2"
-
-fixed version because even bugfix update causes compilation error with current version of react-native (0.59)
-
-internal react library, used by figwheel for instance but also probably react
-
 ## "emojilib": "^2.4.0"
 
 used for emojis
@@ -113,11 +107,6 @@ used for profile picture
 used for storing password when user saves password
 TODO: check if fork is necessary, merge with upstream?
 
-## "react-native-languages": "^3.0.2"
-
-TODO DEPRECATED, should be replaced with https://github.com/react-native-community/react-native-localize
-used to get user language and interact with i18n.js
-
 ## "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v3.0.8_status"
 
 used to send email to support when phone is shaked
@@ -131,6 +120,7 @@ TODO: update once bug is fixed for Android that causes crash when app is back fr
 ## "react-native-shake": "^3.3.1"
 
 used to send email to support when phone is shaked
+
 ## "react-native-lottie-splash-screen": "^1.0.1"
 
 used to make splash screen with lottie animation during initial loading for android, also used as replacement of "react-native-splash-screen" for iOS
@@ -156,10 +146,6 @@ used for browser
 
 used for native navigation
 fixed because even bugfix version upgrade causes runtime errors with current version of react-native
-
-## "rn-emoji-keyboard": "https://github.com/status-im/rn-emoji-keyboard"
-
-Used for taking emoji input, for custom emoji thumbnails for community channels
 
 ## "react-native-draggable-flatlist": "https://github.com/computerjazz/react-native-draggable-flatlist"
 

@@ -420,8 +420,7 @@ class CommunityView(HomeView):
         self.join_button.wait_and_click(120)
         self.slide_to_request_to_join_button.swipe_right_on_element(width_percentage=16)
         self.password_input.send_keys(password)
-        Button(self.driver,
-               xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
+        self.login_button.click()
         if open_community:
             self.community_status_joined.wait_for_visibility_of_element(60)
 

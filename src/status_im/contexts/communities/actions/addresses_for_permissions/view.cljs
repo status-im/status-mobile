@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.constants :as constants]
     [status-im.contexts.communities.actions.addresses-for-permissions.style :as style]
     [status-im.contexts.communities.actions.permissions-sheet.view :as permissions-sheet]
@@ -222,22 +221,22 @@
         confirm-changes
         (fn []
           (if can-edit-addresses?
-            (rf/dispatch
-             [:password-authentication/show
-              {:content (fn [] [password-authentication/view])}
-              {:label    (i18n/label :t/enter-password)
-               :on-press (fn [password]
-                           (rf/dispatch
-                            [:communities/edit-shared-addresses
-                             {:community-id id
-                              :password     password
-                              :addresses    addresses-to-reveal
-                              :on-success   (fn []
-                                              (rf/dispatch [:dismiss-modal :addresses-for-permissions])
-                                              (rf/dispatch [:hide-bottom-sheet]))}]))}])
             (do
-              (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])
-              (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal]))))
+              (rf/dispatch
+               [:standard-auth/authorize
+                {:auth-button-label (i18n/label :t/confirm-changes)
+                 :on-auth-success   (fn [password]
+                                      (rf/dispatch
+                                       [:communities/edit-shared-addresses
+                                        {:community-id id
+                                         :password     password
+                                         :addresses    addresses-to-reveal
+                                         :on-success   (fn []
+                                                         (rf/dispatch [:dismiss-modal
+                                                                       :addresses-for-permissions])
+                                                         (rf/dispatch [:hide-bottom-sheet]))}]))}])
+              (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
+            (rf/dispatch [:communities/set-addresses-to-reveal id addresses-to-reveal])))
         pending? (rf/sub [:communities/has-pending-request-to-join? id])
         highest-role (rf/sub [:communities/highest-role-for-selection id])
         [unmodified-role _] (rn/use-state highest-role)]

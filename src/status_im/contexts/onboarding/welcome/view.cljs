@@ -57,6 +57,7 @@
       [quo/button
        {:on-press            (fn []
                                (rf/dispatch [:init-root :shell-stack])
+                               (rf/dispatch [:profile/show-testnet-mode-banner-if-enabled])
                                (rf/dispatch [:universal-links/process-stored-event]))
         :type                :primary
         :accessibility-label :welcome-button

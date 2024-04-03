@@ -1,7 +1,7 @@
-(ns status-im.common.validators-test
+(ns status-im.common.validation.general-test
   (:require
     [cljs.test :refer-macros [deftest testing is]]
-    [status-im.common.validators :refer [valid-compressed-key?]]))
+    [status-im.common.validation.general :refer [valid-compressed-key?]]))
 
 (deftest test-valid-compressed-key
   (testing "valid"
@@ -32,3 +32,4 @@
   (testing "contains l"
     (is (not (valid-compressed-key?
               "zQ3shWj4WaBdf2zYKCkXe6PHxDxNTzZyid1i75879Ue9cX9gl")))))
+

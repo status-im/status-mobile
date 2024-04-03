@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -42,10 +43,14 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
 
-(rf/reg-event-fx :wallet/close-account-page
+(rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]}]
-   {:db (update db :wallet dissoc :current-viewing-account-address)
-    :fx [[:dispatch [:pop-to-root :shell-stack]]]}))
+   {:db (update db :wallet dissoc :current-viewing-account-address)}))
+
+(rf/reg-event-fx :wallet/close-account-page
+ (fn [_]
+   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx
  :wallet/get-accounts-success
@@ -439,3 +444,34 @@
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
+
+(rf/reg-event-fx
+ :wallet/save-address
+ (fn [_
+      [{:keys [address name customization-color on-success on-error chain-short-names ens test?]
+        :or   {on-success        (fn [])
+               on-error          (fn [])
+               name              ""
+               ens               ""
+               test?             false
+               ;; the chain short names should be a string like eth: or eth:arb:opt:
+               chain-short-names (str constants/mainnet-short-name ":")}}]]
+   (let [address-to-save {:address           address
+                          :name              name
+                          :color-id          customization-color
+                          :ens               ens
+                          :is-test           test?
+                          :chain-short-names chain-short-names}]
+     {:json-rpc/call
+      [{:method     "wakuext_upsertSavedAddress"
+        :params     [address-to-save]
+        :on-success on-success
+        :on-error   on-error}]})))
+
+(rf/reg-event-fx
+ :wallet/get-saved-addresses
+ (fn [_ [{:keys [on-success on-error]}]]
+   {:json-rpc/call
+    [{:method     "wakuext_getSavedAddresses"
+      :on-success on-success
+      :on-error   on-error}]}))

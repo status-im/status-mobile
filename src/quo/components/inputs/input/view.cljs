@@ -8,7 +8,7 @@
             [react-native.platform :as platform]))
 
 (defn- label-&-counter
-  [{:keys [label current-chars char-limit variant-colors]}]
+  [{:keys [label current-chars char-limit variant-colors theme]}]
   [rn/view
    {:accessibility-label :input-labels
     :style               style/texts-container}
@@ -22,7 +22,10 @@
                                   (str current-chars "/"))]
      [rn/view {:style style/counter-container}
       [text/text
-       {:style  (style/counter-color current-chars char-limit variant-colors)
+       {:style  (style/counter-color {:current-chars  current-chars
+                                      :char-limit     char-limit
+                                      :variant-colors variant-colors
+                                      :theme          theme})
         :weight :regular
         :size   :paragraph-2}
        count-text]])])
@@ -114,7 +117,8 @@
         {:variant-colors variant-colors
          :label          label
          :current-chars  char-count
-         :char-limit     char-limit}])
+         :char-limit     char-limit
+         :theme          theme}])
      [rn/view {:style (style/input-container colors-by-status small? disabled?)}
       (when-let [{:keys [icon-name]} left-icon]
         [left-accessory

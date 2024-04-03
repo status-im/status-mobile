@@ -7,10 +7,8 @@ const transformIgnorePatterns = () => {
     'react-native-config',
     'react-native-background-timer',
     'react-native-gifted-charts',
-    'react-native-haptic-feedback',
     'react-native-hole-view',
     'react-native-image-crop-picker',
-    'react-native-languages',
     'react-native-linear-gradient',
     'react-native-permissions',
     'react-native-reanimated',
@@ -18,7 +16,6 @@ const transformIgnorePatterns = () => {
     'react-native-redash',
     'react-native-shake',
     'react-native-static-safe-area-insets',
-    'rn-emoji-keyboard',
   ].join('|');
 
   return [`/node_modules/(?!(${libs})/).*/`];
