@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -440,44 +439,3 @@
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
-
-(rf/reg-event-fx
- :wallet/save-address
- (fn [_
-      [{:keys [address name customization-color on-success on-error chain-short-names ens test?]
-        :or   {on-success        (fn [])
-               on-error          (fn [])
-               name              ""
-               ens               ""
-               test?             false
-               ;; the chain short names should be a string like eth: or eth:arb:opt:
-               chain-short-names (str constants/mainnet-short-name ":")}}]]
-   (let [address-to-save {:address           address
-                          :name              name
-                          :color-id          customization-color
-                          :ens               ens
-                          :is-test           test?
-                          :chain-short-names chain-short-names}]
-     {:json-rpc/call
-      [{:method     "wakuext_upsertSavedAddress"
-        :params     [address-to-save]
-        :on-success on-success
-        :on-error   on-error}]})))
-
-(rf/reg-event-fx
- :wallet/get-saved-addresses-success
- (fn [{:keys [db]} [saved-addresses]]
-   {:db (assoc-in db [:wallet :saved-addresses] saved-addresses)}))
-
-(rf/reg-event-fx
- :wallet/get-saved-addresses-error
- (fn [{:keys [db]} [err]]
-   {:db (assoc db [:wallet :get-saved-addresses-error] err)}))
-
-(rf/reg-event-fx
- :wallet/get-saved-addresses
- (fn [_ _]
-   {:json-rpc/call
-    [{:method     "wakuext_getSavedAddresses"
-      :on-success [:wallet/get-saved-addresses-success]
-      :on-error   [:wallet/get-saved-addresses-error]}]}))
