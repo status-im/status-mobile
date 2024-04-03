@@ -30,7 +30,7 @@
   (let [send-to-address      (rf/sub [:wallet/wallet-send-to-address])
         save-address-hidden? (rf/sub [:wallet/address-saved? send-to-address])]
     [quo/bottom-actions
-     {:actions          (if-not save-address-hidden? :two-actions :one-action)
+     {:actions          (if save-address-hidden? :one-action :two-actions)
       :button-two-label (i18n/label :t/save-address)
       :button-two-props {:type                :grey
                          :icon-left           :i/contact-book
