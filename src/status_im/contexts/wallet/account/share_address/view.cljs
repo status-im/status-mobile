@@ -35,13 +35,13 @@
   [selected-networks]
   (let [on-save       (fn [chain-ids]
                         (rf/dispatch [:hide-bottom-sheet])
-                        (reset! selected-networks (map #(if (= % 1) :mainnet (utils/id->network %))
-                                                       chain-ids)))
+                        (reset! selected-networks (map utils/id->network chain-ids)))
         sheet-content (fn []
                         [network-preferences/view
                          {:blur?             true
                           :selected-networks (set @selected-networks)
-                          :on-save           on-save}])]
+                          :on-save           on-save
+                          :button-label      (i18n/label :t/display)}])]
     (rf/dispatch [:show-bottom-sheet
                   {:theme   :dark
                    :shell?  true

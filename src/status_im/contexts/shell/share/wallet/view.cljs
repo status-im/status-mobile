@@ -44,6 +44,7 @@
                  {:blur?             true
                   :selected-networks (set @selected-networks)
                   :account           account
+                  :button-label      (i18n/label :t/display)
                   :on-save           (fn [chain-ids]
                                        (rf/dispatch [:hide-bottom-sheet])
                                        (reset! selected-networks (map #(get utils/id->network %)

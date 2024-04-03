@@ -34,7 +34,7 @@
                                               (if (= @state :default)
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
-    (fn [{:keys [on-save blur? theme]}]
+    (fn [{:keys [on-save blur? theme button-label]}]
       (let [network-details  (rf/sub [:wallet/network-details])
             mainnet          (first network-details)
             layer-2-networks (rest network-details)
@@ -99,7 +99,7 @@
          [quo/bottom-actions
           {:actions          :one-action
            :blur?            blur?
-           :button-one-label (i18n/label :t/display)
+           :button-one-label (or button-label (i18n/label :t/update))
            :button-one-props {:disabled?           (= @state :default)
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]
