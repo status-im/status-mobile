@@ -1,6 +1,7 @@
 (ns status-im.common.qr-codes.view
   (:require
     [quo.core :as quo]
+    [status-im.constants :as constants]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
@@ -43,9 +44,10 @@
 (defn get-network-short-name-url
   [network]
   (case network
-    :ethereum "eth:"
-    :optimism "opt:"
-    :arbitrum "arb1:"
+    :ethereum (str constants/mainnet-short-name ":")
+    :mainnet  (str constants/mainnet-short-name ":")
+    :optimism (str constants/optimism-short-name ":")
+    :arbitrum (str constants/arbitrum-short-name ":")
     (str (name network) ":")))
 
 (defn- get-qr-data-for-wallet-multichain
@@ -66,7 +68,7 @@
      - customization-color:   Custom color for the QR code component.
      - unblur-on-android?:    [Android only] disables blur for this component.
      - full-name:             User full name.
-  
+
      Depending on the `type`, different properties are accepted:
      `:profile`
        - profile-picture:     map ({:source image-source}) or any image source.

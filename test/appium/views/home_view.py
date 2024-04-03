@@ -331,6 +331,7 @@ class HomeView(BaseView):
         self.mark_all_read_activity_button = Button(self.driver, translation_id="mark-all-notifications-as-read")
 
         # Share tab
+        self.link_to_profile_button = Button(self.driver, accessibility_id="link-to-profile")
         self.link_to_profile_text = Text(self.driver, accessibility_id="share-qr-code-info-text")
         self.close_share_tab_button = Button(self.driver, accessibility_id="close-shell-share-tab")
 
@@ -562,9 +563,10 @@ class HomeView(BaseView):
 
     def get_link_to_profile(self):
         self.show_qr_code_button.click()
-        self.link_to_profile_text.wait_for_visibility_of_element()
-        self.link_to_profile_text.click()
-        return self.driver.get_clipboard_text()
+        self.link_to_profile_button.click()
+        link_to_profile = self.sharing_text_native.text
+        self.click_system_back_button()
+        return link_to_profile
 
     def get_public_key(self):
         self.driver.info("Getting public key via Share tab")
