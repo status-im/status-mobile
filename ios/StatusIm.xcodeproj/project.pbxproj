@@ -592,7 +592,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = "/usr/bin/env sh";
-			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\"\n";
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ../logs/set_xcode_version.log 2>&1\n";
 		};
 		5BEC29A10D63DFF8AFF5B788 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -716,7 +716,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = "/usr/bin/env sh";
-			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ./logs/set_xcode_version.log 2>&1\n";
+			shellScript = "\"${PROJECT_DIR}/scripts/set_xcode_version.sh\" > ../logs/set_xcode_version.log 2>&1\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
