@@ -14,7 +14,8 @@
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [status-im.contexts.preview.quo.settings.data-item :as data-item]))
 
 (defn- transaction-title
   [{:keys [token-symbol amount account to-address route to-network image-url transaction-type
@@ -167,33 +168,49 @@
                   v)])
              network-values)))
 
+(defn values-by-network
+  [{:keys [collectible amount token-symbol route token-decimals to?]}]
+  (if collectible
+    (let [collectible-chain-id (get-in collectible [:id :contract-id :chain-id])
+          network-name         (network-name-from-chain-id collectible-chain-id)]
+      {network-name {:amount amount :token-symbol token-symbol}})
+    (let [network-amounts (network-amounts-from-route route token-symbol token-decimals to?)
+          network-values  (network-values-from-amounts network-amounts token-symbol)]
+      (sanitize-network-values network-values))))
+
 (defn- user-summary
-  [{:keys [token-symbol token-decimals account-props route to? theme label accessibility-label
-           summary-type transaction-type collectible-chain-id amount]
+  [{:keys [account-props theme label accessibility-label
+           summary-type values]
     :as   props}]
   (tap> props)
-  (let [network-amounts          (network-amounts-from-route route token-symbol token-decimals to?)
-        network-values           (network-values-from-amounts network-amounts token-symbol)
-        network-values-sanitized (if (= transaction-type :collectible)
-                                   (let [network-name (network-name-from-chain-id collectible-chain-id)]
-                                     {network-name {:amount amount :token-symbol token-symbol}})
-                                   (sanitize-network-values network-values))]
-    [rn/view
-     {:style {:padding-horizontal 20
-              :padding-bottom     16}}
-     [quo/text
-      {:size                :paragraph-2
-       :weight              :medium
-       :style               (style/section-label theme)
-       :accessibility-label accessibility-label}
-      label]
-     [quo/summary-info
-      {:type          summary-type
-       :networks?     true
-       :values        network-values-sanitized
-       :account-props account-props}]]))
+  [rn/view
+   {:style {:padding-horizontal 20
+            :padding-bottom     16}}
+   [quo/text
+    {:size                :paragraph-2
+     :weight              :medium
+     :style               (style/section-label theme)
+     :accessibility-label accessibility-label}
+    label]
+   [quo/summary-info
+    {:type          summary-type
+     :networks?     true
+     :values        values
+     :account-props account-props}]])
 
-
+(defn data-item
+  [{:keys [title subtitle]}]
+  [quo/data-item
+   {:container-style style/detail-item
+    :blur?           false
+    :description     :default
+    :icon-right?     false
+    :card?           false
+    :label           :none
+    :status          :default
+    :size            :small
+    :title           title
+    :subtitle        subtitle}])
 
 (defn- transaction-details
   [{:keys [estimated-time-min max-fees token-symbol amount to-address to-network route transaction-type
@@ -219,47 +236,33 @@
         [rn/activity-indicator {:style {:align-self :center}}]
         route-loaded?
         [:<>
-         [quo/data-item
-          {:container-style style/detail-item
-           :blur?           false
-           :description     :default
-           :icon-right?     false
-           :card?           false
-           :label           :none
-           :status          :default
-           :size            :small
-           :title           (i18n/label :t/est-time)
-           :subtitle        (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
-         [quo/data-item
-          {:container-style style/detail-item
-           :blur?           false
-           :description     :default
-           :icon-right?     false
-           :card?           false
-           :label           :none
-           :status          :default
-           :size            :small
-           :title           (i18n/label :t/max-fees)
-           :subtitle        (i18n/label :t/amount-with-currency-symbol
-                                        {:amount (str max-fees)
-                                         :symbol currency-symbol})}]
-         [quo/data-item
-          {:container-style style/detail-item
-           :blur?           false
-           :description     :default
-           :icon-right?     false
-           :card?           false
-           :label           :none
-           :status          :default
-           :size            :small
-           :title           (if (= transaction-type :bridge)
-                              (i18n/label :t/bridged-to
-                                          {:network (:abbreviated-name to-network)})
-                              (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)}))
-           :subtitle        (str amount " " token-symbol)}]]
+         [data-item
+          {:title    (i18n/label :t/est-time)
+           :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
+         [data-item
+          {:title    (i18n/label :t/max-fees)
+           :subtitle (i18n/label :t/amount-with-currency-symbol
+                                 {:amount (str max-fees)
+                                  :symbol currency-symbol})}]
+         [data-item
+          {:title    (if (= transaction-type :bridge)
+                       (i18n/label :t/bridged-to
+                                   {:network (:abbreviated-name to-network)})
+                       (i18n/label :t/user-gets {:name (utils/get-shortened-address to-address)}))
+           :subtitle (str amount " " token-symbol)}]]
         :else
         [quo/text {:style {:align-self :center}}
          (i18n/label :t/no-routes-found-confirmation)])]]))
+
+(defn collectible-token-symbol
+  [collectible]
+  (let [collection-data  (:collection-data collectible)
+        collectible-data (:collectible-data collectible)
+        collectible-id   (get-in collectible [:id :token-id])]
+    (first (remove
+            string/blank?
+            [(:name collectible-data)
+             (str (:name collection-data) " #" collectible-id)]))))
 
 (defn- view-internal
   [_]
@@ -267,41 +270,35 @@
                    (rf/dispatch [:wallet/clean-suggested-routes])
                    (rf/dispatch [:navigate-back]))]
     (fn [{:keys [theme]}]
-      (let [send-transaction-data (rf/sub [:wallet/wallet-send])
-            token                 (:token send-transaction-data)
-            collectible           (:collectible send-transaction-data)
-            collection-data       (:collection-data collectible)
-            collectible-data      (:collectible-data collectible)
-            collectible-id        (get-in collectible [:id :token-id])
-            collectible-chain-id  (get-in collectible [:id :contract-id :chain-id])
-            token-symbol          (if collectible
-                                    (first (remove
-                                            string/blank?
-                                            [(:name collectible-data)
-                                             (str (:name collection-data) " #" collectible-id)]))
-                                    (:symbol token))
-            token-decimals        (if collectible 0 (:decimals token))
-            image-url             (when collectible (get-in collectible [:preview-url :uri]))
-            amount                (:amount send-transaction-data)
-            route                 (:route send-transaction-data)
-            transaction-type      (:tx-type send-transaction-data)
-            estimated-time-min    (reduce + (map :estimated-time route))
-            max-fees              "-"
-            to-address            (:to-address send-transaction-data)
-            account               (rf/sub [:wallet/current-viewing-account])
-            account-color         (:color account)
-            bridge-to-chain-id    (:bridge-to-chain-id send-transaction-data)
-            bridge-to-network     (when bridge-to-chain-id
-                                    (rf/sub [:wallet/network-details-by-chain-id bridge-to-chain-id]))
-            from-account-props    {:customization-color account-color
-                                   :size                32
-                                   :emoji               (:emoji account)
-                                   :type                :default
-                                   :name                (:name account)
-                                   :address             (utils/get-shortened-address (:address
-                                                                                      account))}
-            user-props            {:full-name to-address
-                                   :address   (utils/get-shortened-address to-address)}]
+      (let [send-transaction-data                   (rf/sub [:wallet/wallet-send])
+            {:keys [token collectible amount route
+                    to-address bridge-to-chain-id]} send-transaction-data
+            collectible?                            (some? collectible)
+            token-symbol                            (if collectible
+                                                      (collectible-token-symbol collectible)
+                                                      (:symbol token))
+            token-decimals                          (if collectible 0 (:decimals token))
+            image-url                               (when collectible
+                                                      (get-in collectible [:preview-url :uri]))
+            transaction-type                        (:tx-type send-transaction-data)
+            estimated-time-min                      (reduce + (map :estimated-time route))
+            max-fees                                "-"
+            account                                 (rf/sub [:wallet/current-viewing-account])
+            account-color                           (:color account)
+            bridge-to-network                       (when bridge-to-chain-id
+                                                      (rf/sub [:wallet/network-details-by-chain-id
+                                                               bridge-to-chain-id]))
+            from-account-props                      {:customization-color account-color
+                                                     :size                32
+                                                     :emoji               (:emoji account)
+                                                     :type                :default
+                                                     :name                (:name account)
+                                                     :address             (utils/get-shortened-address
+                                                                           (:address
+                                                                            account))}
+            user-props                              {:full-name to-address
+                                                     :address   (utils/get-shortened-address
+                                                                 to-address)}]
         [rn/view {:style {:flex 1}}
          [floating-button-page/view
           {:footer-container-padding 0
@@ -336,37 +333,35 @@
              :to-network       bridge-to-network
              :image-url        image-url
              :transaction-type transaction-type
-             :collectible?     (some? collectible)}]
+             :collectible?     collectible?}]
            [user-summary
-            {:token-symbol         token-symbol
-             :token-decimals       token-decimals
-             :summary-type         :status-account
-             :accessibility-label  :summary-from-label
-             :label                (i18n/label :t/from-capitalized)
-             :route                route
-             :to?                  false
-             :account-props        from-account-props
-             :transaction-type     transaction-type
-             :collectible-chain-id collectible-chain-id
-             :amount               amount
-             :theme                theme}]
+            {:summary-type        :status-account
+             :accessibility-label :summary-from-label
+             :label               (i18n/label :t/from-capitalized)
+             :account-props       from-account-props
+             :theme               theme
+             :values              (values-by-network {:collectible    collectible
+                                                      :amount         amount
+                                                      :token-symbol   token-symbol
+                                                      :route          route
+                                                      :token-decimals token-decimals
+                                                      :to?            false})}]
            [user-summary
-            {:token-symbol         token-symbol
-             :token-decimals       token-decimals
-             :summary-type         (if (= transaction-type :bridge)
-                                     :status-account
-                                     :account)
-             :accessibility-label  :summary-to-label
-             :label                (i18n/label :t/to-capitalized)
-             :account-props        (if (= transaction-type :bridge)
-                                     from-account-props
-                                     user-props)
-             :route                route
-             :to?                  true
-             :transaction-type     transaction-type
-             :collectible-chain-id collectible-chain-id
-             :amount               amount
-             :theme                theme}]
+            {:summary-type        (if (= transaction-type :bridge)
+                                    :status-account
+                                    :account)
+             :accessibility-label :summary-to-label
+             :label               (i18n/label :t/to-capitalized)
+             :account-props       (if (= transaction-type :bridge)
+                                    from-account-props
+                                    user-props)
+             :theme               theme
+             :values              (values-by-network {:collectible    collectible
+                                                      :amount         amount
+                                                      :token-symbol   token-symbol
+                                                      :route          route
+                                                      :token-decimals token-decimals
+                                                      :to?            true})}]
            [transaction-details
             {:estimated-time-min estimated-time-min
              :max-fees           max-fees
