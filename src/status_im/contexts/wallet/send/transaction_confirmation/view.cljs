@@ -264,7 +264,6 @@
   [_]
   (let [on-close (fn []
                    (rf/dispatch [:wallet/clean-suggested-routes])
-                   (rf/dispatch [:wallet/clean-selected-collectible])
                    (rf/dispatch [:navigate-back]))]
     (fn [{:keys [theme]}]
       (let [send-transaction-data (rf/sub [:wallet/wallet-send])
