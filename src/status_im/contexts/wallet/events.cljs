@@ -99,6 +99,7 @@
  :wallet/remove-account-success
  (fn [_ [toast-message _]]
    {:fx [[:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]
          [:dispatch-later
           {:ms       100
            :dispatch [:hide-bottom-sheet]}]
@@ -183,6 +184,7 @@
                 :navigate-to-account address
                 :new-account?        true)
     :fx [[:dispatch [:wallet/get-accounts]]
+         [:dispatch [:wallet/get-keypairs]]
          [:dispatch [:wallet/clear-new-keypair]]]}))
 
 (rf/reg-event-fx :wallet/add-account
