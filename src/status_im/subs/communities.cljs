@@ -304,7 +304,8 @@
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
-                  muted]}   (get full-chats-data
+                  muted
+                  color]}   (get full-chats-data
                                  (str community-id id))
           acc-with-category (if (get acc category-id)
                               acc
@@ -330,7 +331,8 @@
                              ;; -> has access
                              :locked?                      locked?
                              :hide-if-permissions-not-met? (and hide-if-permissions-not-met? locked?)
-                             :id                           id}]
+                             :id                           id
+                             :color                        color}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
 (re-frame/reg-sub

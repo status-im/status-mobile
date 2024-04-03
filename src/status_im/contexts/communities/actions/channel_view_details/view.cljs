@@ -56,12 +56,11 @@
   (fn []
     (let [{:keys [chat-id community-id]} (rf/sub [:get-screen-params
                                                   :screen/chat.view-channel-members-and-details])
-          {:keys [description chat-name emoji muted chat-type]
+          {:keys [description chat-name emoji muted chat-type color]
            :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
           pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
           items                          (rf/sub [:communities/sorted-community-members-section-list
                                                   community-id])
-          profile-color                  (rf/sub [:profile/customization-color])
           theme                          (quo.theme/use-theme-value)]
       (rn/use-mount (fn []
                       (rf/dispatch [:pin-message/load-pin-messages chat-id])))
@@ -83,7 +82,7 @@
                                             :unlocked?    true}]
          :theme                           theme
          :emoji                           (when (not (string/blank? emoji)) emoji)
-         :customization-color             profile-color
+         :customization-color             color
          :title-accessibility-label       :welcome-title
          :description                     description
          :description-accessibility-label :welcome-sub-title}]
@@ -94,7 +93,7 @@
           {:actions
            [{:big?                true
              :label               (i18n/label :t/pinned-messages-2)
-             :customization-color profile-color
+             :customization-color color
              :icon                :i/pin
              :counter-value       pins-count
              :on-press            (fn []
@@ -102,10 +101,10 @@
                                     (rf/dispatch [:pin-message/show-pins-bottom-sheet
                                                   chat-id]))}
             {:label               (if muted (i18n/label :t/unmute-channel) (i18n/label :t/mute-channel))
-             :customization-color profile-color
+             :customization-color color
              :icon                (if muted :i/muted :i/activity-center)
              :on-press            (fn []
                                     (if muted
                                       (home.actions/unmute-chat-action chat-id)
                                       (home.actions/mute-chat-action chat-id chat-type muted)))}]}]]]
-       [members items profile-color]])))
+       [members items color]])))
