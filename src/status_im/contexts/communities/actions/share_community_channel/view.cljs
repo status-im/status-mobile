@@ -12,7 +12,6 @@
   []
   (fn []
     (let [{:keys [url chat-id]}           (rf/sub [:get-screen-params])
-          _ (js/console.log "ALWX chat-id" chat-id)
           {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])
           window-width                    (rf/sub [:dimensions/window-width])]
       [quo/overlay {:type :shell}
