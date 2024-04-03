@@ -54,12 +54,11 @@
        [rn/view
         {:style style/card-header}
         [user-avatar/user-avatar
-         {:full-name           name
-          :profile-picture     profile-picture
-          :size                :medium
-          :status-indicator?   false
-          :customization-color customization-color
-          :static?             true}]
+         {:full-name         name
+          :profile-picture   profile-picture
+          :size              :medium
+          :status-indicator? false
+          :static?           true}]
         [rn/view {:flex-direction :row}
          (when show-logged-in?
            [tag/tag

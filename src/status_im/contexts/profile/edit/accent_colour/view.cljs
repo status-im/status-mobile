@@ -16,7 +16,8 @@
         unsaved-custom-color  (reagent/atom customization-color constants/profile-default-color)
         on-change             #(reset! unsaved-custom-color %)]
     (fn [{:keys [customization-color]}]
-      (let [profile         (rf/sub [:profile/profile-with-image])
+      (let [profile         (rf/sub [:profile/profile-with-image
+                                     {:customization-color @unsaved-custom-color}])
             profile-picture (profile.utils/photo profile)
             display-name    (profile.utils/displayed-name profile)]
         (rn/use-effect
