@@ -34,7 +34,8 @@
   (oops/oget event "nativeEvent.layout.y"))
 
 (defn- channel-chat-item
-  [community-id {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}]
+  [community-id
+   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}]
   (let [sheet-content      [actions/chat-actions
                             (assoc chat
                                    :chat-type constants/community-chat-type
