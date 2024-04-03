@@ -59,7 +59,7 @@
 (deftest undo-mute-chat-test
   (h/test-async ::undo-mute-chat
     (fn []
-      (p/do
+      (promesa/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
         (h/wait-for [:chat/one-to-one-chat-created])
         (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
