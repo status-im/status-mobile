@@ -1,5 +1,5 @@
 Appium-Python-Client==2.11.1
-Pillow==10.0.0
+Pillow==10.3.0
 PyGithub==1.55
 PyYAML==5.3.1
 Cython<3.0
