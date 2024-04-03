@@ -204,7 +204,8 @@
                                 :error :invalid-chat-id})))))
 
 (defn match-community-channel-async
-  [{:keys [community-channel-id community-id]} cb]
+  [{:keys [community-channel-id community-id] :as data} cb]
+  (js/console.log "ALWXXX" (clj->js data))
   (if (validators/valid-compressed-key? community-id)
     (native-module/deserialize-and-compress-key
      community-id
