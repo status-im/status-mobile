@@ -25,7 +25,6 @@
 
 (defn banner-card-blur-layer
   [scroll-shared-value theme]
-  (prn theme "Hey")
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y (animated-card-translation-y scroll-shared-value)}]}
    {:overflow         (if platform/ios? :visible :hidden)
