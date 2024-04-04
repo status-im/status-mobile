@@ -37,7 +37,7 @@
   []
   (let [image-error? (reagent/atom false)]
     (fn
-      [{:keys [container-style square? on-press counter image-src collectible-mime]}]
+      [{:keys [container-style square? on-press counter image-src collectible-mime native-ID]}]
       (let [theme                       (quo.theme/use-theme-value)
             [image-size set-image-size] (rn/use-state {})]
         (rn/use-effect
@@ -67,9 +67,10 @@
            (and (not @image-error?) (utils/collectible-supported? collectible-mime))
            [rn/view
             [rn/image
-             {:style    (style/image square? (:aspect-ratio image-size))
-              :source   image-src
-              :on-error #(reset! image-error? true)}]
+             {:style     (style/image square? (:aspect-ratio image-size))
+              :source    image-src
+              :native-ID native-ID
+              :on-error  #(reset! image-error? true)}]
             [counter-view counter]])]))))
 
 (def ?schema

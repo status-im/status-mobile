@@ -58,16 +58,16 @@
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn []
-      (let [collectible                (rf/sub [:wallet/last-collectible-details])
-            ;; animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            wallet-address             (rf/sub [:wallet/current-viewing-account-address])
+      (let [collectible                 (rf/sub [:wallet/last-collectible-details])
+            animation-shared-element-id (rf/sub [:animation-shared-element-id])
+            wallet-address              (rf/sub [:wallet/current-viewing-account-address])
             {:keys [id
                     preview-url
                     collection-data
-                    collectible-data]} collectible
+                    collectible-data]}  collectible
             {svg?        :svg?
-             preview-uri :uri}         preview-url
-            token-id                   (:token-id id)
+             preview-uri :uri}          preview-url
+            token-id                    (:token-id id)
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data
@@ -104,31 +104,21 @@
             :status           (if svg? :unsupported :default)
             :counter          (utils/collectible-owned-counter total-owned)
             :collectible-mime (:animation-media-type collectible-data)
-            :on-press       (fn []
-                              (if svg?
-                                (js/alert "Can't visualize SVG images in lightbox")
-                                (rf/dispatch
-                                 [:lightbox/navigate-to-lightbox
-                                  token-id
-                                  {:images           [collectible-image]
-                                   :index            0
-                                   :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                    {:content
-                                                                     (fn []
-                                                                       [options-drawer/view
-                                                                        {:name  collectible-name
-                                                                         :image preview-uri}])}])}])))}
-            ;; (if svg?
-            ;;   [rn/view
-            ;;    {:style     (assoc style/preview :overflow :hidden)
-            ;;     :native-ID (when (= animation-shared-element-id token-id)
-            ;;                  :shared-element)}
-            ;;    [svg/svg-uri (assoc style/preview :uri preview-uri)]]
-            ;;   [rn/image
-            ;;    {:source    preview-uri
-            ;;     :style     style/preview
-            ;;     :native-ID (when (= animation-shared-element-id token-id) :shared-element)}])
-           ]
+            :native-ID        (when (= animation-shared-element-id token-id) :shared-element)
+            :on-press         (fn []
+                                (if svg?
+                                  (js/alert "Can't visualize SVG images in lightbox")
+                                  (rf/dispatch
+                                   [:lightbox/navigate-to-lightbox
+                                    token-id
+                                    {:images           [collectible-image]
+                                     :index            0
+                                     :on-options-press #(rf/dispatch [:show-bottom-sheet
+                                                                      {:content
+                                                                       (fn []
+                                                                         [options-drawer/view
+                                                                          {:name  collectible-name
+                                                                           :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs
