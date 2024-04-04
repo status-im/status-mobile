@@ -500,9 +500,8 @@ class CommunityView(HomeView):
         community_element.long_press_until_element_is_shown(self.share_community_button)
         self.share_community_button.click()
         for user_name in user_names_to_share:
-            user_contact = self.element_by_text_part(user_name)
-            user_contact.scroll_and_click()
-        self.share_community_link_button.click()
+            Button(self.driver, xpath="//*[@content-desc='author-primary-name'][@text='%s']" % user_name).click()
+        self.setup_chat_button.click()
 
 
 class PreviewMessage(ChatElementByText):
