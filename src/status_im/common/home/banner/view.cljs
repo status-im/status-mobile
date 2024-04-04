@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -31,21 +31,22 @@
 
 (defn- banner-card-blur-layer
   [scroll-shared-value child]
-  (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)]
-    [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value)}
+  (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)
+        theme       (quo.theme/use-theme-value)]
+    [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value theme)}
      [blur/view
       {:style         style/fill-space
        :blur-amount   (if platform/ios? 20 10)
-       :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
+       :blur-type     (quo.theme/theme-value (if platform/ios? :light :xlight) :dark)
        :overlay-color (if open-sheet?
                         (colors/theme-colors colors/white colors/neutral-95-opa-70)
-                        (theme/theme-value nil colors/neutral-95-opa-70))}
+                        (quo.theme/theme-value nil colors/neutral-95-opa-70))}
       child]]))
 
 (defn- banner-card-hiding-layer
-  [{:keys [title-props card-props scroll-shared-value]}]
+  [{:keys [title-props card-props scroll-shared-value theme]}]
   (let [customization-color (rf/sub [:profile/customization-color])]
-    [reanimated/view {:style (style/banner-card-hiding-layer scroll-shared-value)}
+    [reanimated/view {:style (style/banner-card-hiding-layer scroll-shared-value theme)}
      [top-nav/view]
      [title-column/view (assoc title-props :customization-color customization-color)]
      [rn/view {:style {:overflow @card-banner-overflow}}
@@ -53,8 +54,8 @@
        [quo/discover-card card-props]]]]))
 
 (defn- banner-card-tabs-layer
-  [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value customization-color]}]
-  [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value)}
+  [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value customization-color theme]}]
+  [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value theme)}
    ^{:key (str "tabs-" selected-tab)}
    [quo/tabs
     {:style               style/banner-card-tabs
@@ -71,16 +72,19 @@
 
 (defn animated-banner
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
-  [:<>
-   [:f> banner-card-blur-layer scroll-shared-value
-    [:f> banner-card-hiding-layer (assoc content :scroll-shared-value scroll-shared-value)]]
-   [:f> banner-card-tabs-layer
-    {:scroll-shared-value scroll-shared-value
-     :selected-tab        selected-tab
-     :tabs                tabs
-     :on-tab-change       on-tab-change
-     :scroll-ref          scroll-ref
-     :customization-color customization-color}]])
+  (let [theme (quo.theme/use-theme-value)]
+    [:<>
+     [:f> banner-card-blur-layer scroll-shared-value
+      [:f> banner-card-hiding-layer
+       (assoc content :scroll-shared-value scroll-shared-value :theme theme)]]
+     [:f> banner-card-tabs-layer
+      {:scroll-shared-value scroll-shared-value
+       :selected-tab        selected-tab
+       :tabs                tabs
+       :on-tab-change       on-tab-change
+       :scroll-ref          scroll-ref
+       :customization-color customization-color
+       :theme               theme}]]))
 
 (defn set-scroll-shared-value
   [{:keys [shared-value scroll-input]}]

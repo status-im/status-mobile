@@ -53,21 +53,22 @@
                       false))
       :fx [[:activity-center.notifications/fetch-unread-count]
            [:effects/push-notifications-clear-message-notifications [public-key]]
-           [:dispatch [:shell/close-switcher-card public-key]]]}
+           [:dispatch-later
+            [{:ms       500
+              :dispatch [:chat.ui/close-and-remove-chat public-key]}]]]}
      fxs)))
 
 (rf/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}
-  [{:keys [db] :as cofx} public-key
-   {:keys [handle-navigation?]
-    :or   {handle-navigation? true}}]
+  [{:keys [db] :as cofx} public-key]
   (let [contact               (-> (contact.db/public-key->contact
                                    (:contacts/contacts db)
                                    public-key)
                                   (assoc :blocked? true
                                          :added?   false
                                          :active?  false))
-        from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
+        current-chat-id       (:current-chat-id db)
+        from-one-to-one-chat? (not (get-in db [:chats current-chat-id :group-chat]))]
     (rf/merge cofx
               {:db (assoc-in db [:contacts/contacts public-key] contact)}
               (contacts-store/block
@@ -77,7 +78,7 @@
                  (re-frame/dispatch [:sanitize-messages-and-process-response block-contact])
                  (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
-              (when handle-navigation?
+              (when current-chat-id
                 (if from-one-to-one-chat?
                   (navigation/pop-to-root :shell-stack)
                   (navigation/navigate-back))))))

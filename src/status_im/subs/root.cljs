@@ -16,6 +16,7 @@
     status-im.subs.shell
     status-im.subs.wallet.collectibles
     status-im.subs.wallet.networks
+    status-im.subs.wallet.saved-addresses
     status-im.subs.wallet.send
     status-im.subs.wallet.wallet))
 

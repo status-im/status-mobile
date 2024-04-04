@@ -132,8 +132,8 @@
   [{:keys [event error-message validate-fn on-success-scan on-failed-scan scan-code?]}]
   (let [scanned-value (string/trim (oops/oget event "nativeEvent.codeStringValue"))
         validated?    (if validate-fn (validate-fn scanned-value) true)]
-    ;; Note - camera-kit keeps scanning until the screen is dismissed,
-    ;; so disable scanning to make sure the on-read-code doesn't get executed multiple times
+    ;; Note - camera-kit keeps scanning until the screen is dismissed, so disable scanning to make
+    ;; sure the on-read-code doesn't get executed multiple times
     (reset! scan-code? false)
     (if validated?
       (on-success-scan scanned-value)

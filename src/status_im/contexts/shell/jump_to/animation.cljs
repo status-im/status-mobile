@@ -14,9 +14,7 @@
     (reanimated/set-shared-value (:home-stack-state @state/shared-values-atom) home-stack-state-value)
     (utils/change-selected-stack-id stack-id true home-stack-state-value)
     (js/setTimeout
-     (fn []
-       (utils/load-stack stack-id)
-       (utils/change-shell-status-bar-style))
+     #(utils/load-stack stack-id)
      (if animate? shell.constants/shell-animation-time 0))))
 
 (defn change-tab
@@ -41,7 +39,6 @@
     (reanimated/set-shared-value (:animate-home-stack-left @state/shared-values-atom) true)
     (reanimated/set-shared-value (:home-stack-state @state/shared-values-atom) home-stack-state-value)
     (utils/change-selected-stack-id stack-id true home-stack-state-value)
-    (utils/change-shell-status-bar-style)
     (when animate? (utils/update-view-id (or stack-id :shell)))))
 
 ;;;; Floating Screen

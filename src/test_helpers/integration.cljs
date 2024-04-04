@@ -95,6 +95,7 @@
 
 (defn logout
   []
+  (log/info (str "==== before dispatch logout ===="))
   (rf/dispatch [:logout]))
 
 (defn log-headline
@@ -123,6 +124,7 @@
                                                           :timeout-ms  timeout-ms}
                                                          ::timeout)))
                                       timeout-ms)]
+          (log/info (str "==== inside wait-for after let block ===="))
           (rf/add-post-event-callback
            cb-id
            (fn [[event-id & _]]
@@ -169,7 +171,7 @@
                  :password     constants/password
                  :color        "blue"}]))
 
-(defn- enable-testnet!
+(defn enable-testnet!
   []
   (rf/dispatch [:profile.settings/profile-update :test-networks-enabled? true {}])
   (rf/dispatch [:wallet/initialize]))
@@ -256,7 +258,9 @@
         (setup-app)
         (setup-account)
         (logout)
-        (wait-for [::logout/logout-method])))))
+        (log/info (str "==== before wait-for logout ===="))
+        (wait-for [::logout/logout-method])
+        (log/info (str "==== after wait-for logout ===="))))))
 
 ;;;; Fixtures
 
@@ -282,7 +286,9 @@
     :after  (fn []
               (test/async done
                 (promesa/do (logout)
+                            (log/info (str "==== before wait-for logout ===="))
                             (wait-for [::logout/logout-method])
+                            (log/info (str "==== after wait-for logout ===="))
                             (done))))})
   ([] (fixture-session [:new-account])))
 

@@ -24,9 +24,6 @@
     [rn/keyboard-avoiding-view
      {:style                    style/keyboard-avoiding-container
       :keyboard-vertical-offset (- (:bottom insets))}
-     [messages.navigation/view
-      {:distance-from-list-top                    distance-from-list-top
-       :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?}]
      [list.view/messages-list-content
       {:insets                                    insets
        :layout-height                             layout-height
@@ -35,6 +32,9 @@
        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?
        :distance-from-list-top                    distance-from-list-top
        :chat-list-scroll-y                        chat-list-scroll-y}]
+     [messages.navigation/view
+      {:distance-from-list-top                    distance-from-list-top
+       :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?}]
      [composer.view/composer
       {:insets                                    insets
        :chat-screen-layout-calculations-complete? chat-screen-layout-calculations-complete?

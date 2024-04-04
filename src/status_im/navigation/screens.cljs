@@ -74,6 +74,7 @@
     [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
     [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
     [status-im.contexts.wallet.create-account.view :as wallet-create-account]
+    [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
@@ -418,6 +419,11 @@
                  :insets                 {:top? true}}
      :component wallet-select-address/view}
 
+    {:name      :screen/wallet.select-from
+     :options   {:modalPresentationStyle :overCurrentContext
+                 :insets                 {:top? true}}
+     :component wallet-select-from/view}
+
     {:name      :screen/wallet.select-asset
      :options   {:insets {:top? true}}
      :component wallet-select-asset/view}
@@ -451,11 +457,7 @@
      :component settings-password/view}]
 
    [{:name    :shell
-     :options {:theme :dark}}
-    {:name :communities-stack}
-    {:name :chats-stack}
-    {:name :wallet-stack}
-    {:name :browser-stack}]
+     :options {:theme :dark}}]
 
    (when js/goog.DEBUG
      [{:name      :dev-component-preview

@@ -7,3 +7,7 @@
 
 (def bottom-action
   {:margin-horizontal -20})
+
+(def error-container
+  {:margin-left     20
+   :margin-vertical 8})

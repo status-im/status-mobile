@@ -134,9 +134,9 @@
    :align-items :flex-end})
 
 (defn counter-color
-  [current-chars char-limit variant-colors]
+  [{:keys [current-chars char-limit variant-colors theme]}]
   {:color (if (> current-chars char-limit)
-            colors/danger-60
+            (colors/resolve-color :danger theme)
             (:label variant-colors))})
 
 (defn button

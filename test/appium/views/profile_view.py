@@ -540,11 +540,11 @@ class ProfileView(BaseView):
         return self.active_network_name.text
 
     def get_sync_code(self):
-        # Pointing to legacy profile until feature is
         self.syncing_button.scroll_and_click()
         self.sync_plus_button.click()
         self.slide_button_track.swipe_right_on_element(width_percentage=1.3)
-        self.password_input.send_keys(common_password)
+        password_input = self.password_input.find_element()
+        password_input.send_keys(common_password)
         self.login_button.click()
-        self.element_by_translation_id("copy-qr").click()
-        return self.driver.get_clipboard_text()
+        self.wait_for_staleness_of_element(password_input)
+        return self.password_input.text
