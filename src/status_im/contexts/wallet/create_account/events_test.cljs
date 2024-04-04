@@ -42,3 +42,25 @@
         expected-db {:wallet {:ui {:create-account {}}}}
         effects     (events/clear-new-keypair {:db db})]
     (is (match? (:db effects) expected-db))))
+
+(deftest get-derived-addresses-test
+  (let [db           {}
+        password     "test-password"
+        derived-from "test-derive-from"
+        paths        ["path1"]
+        event-args   [{:password password :derived-from derived-from :paths paths}]
+        expected-db  (assoc-in db [:wallet :ui :create-account :derivation-path-state] :scanning)
+        effects      (events/get-derived-addresses {:db db} event-args)
+        result-db    (:db effects)]
+    (is (match? result-db expected-db))))
+
+(deftest get-derived-addresses-success-test
+  (let [db          {}
+        response    [{:has-activity true}]
+        expected-db (-> db
+                        (assoc-in [:wallet :ui :create-account :derivation-path-state] :has-activity)
+                        (assoc-in [:wallet :ui :create-account :derivation-path] (first response)))
+        effects     (events/get-derived-addresses-success {:db db} response)
+        result-db   (:db effects)]
+    (is (match? result-db expected-db))))
+

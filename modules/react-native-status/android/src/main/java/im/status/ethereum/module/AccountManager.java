@@ -353,8 +353,4 @@ public class AccountManager extends ReactContextBaseJavaModule {
         this.utils.executeRunnableStatusGoMethod(() -> Statusgo.createAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic), callback);
     }
 
-    @ReactMethod
-    public void getDerivedAddresses(final String mnemonic, final Callback callback) throws JSONException {
-        this.utils.executeRunnableStatusGoMethod(() -> Statusgo.createAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic), callback);
-    }
 }
