@@ -180,16 +180,16 @@
 
 (defn get-context-drawers
   [{:keys [id]}]
-  (let [{:keys [token-permissions admin joined
+  (let [{:keys [role-permissions? admin joined
                 muted banList muted-till color
                 intro-message]} (rf/sub [:communities/community id])
         request-id              (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
-      admin      (owner-options id token-permissions muted muted-till intro-message)
-      joined     (joined-options id token-permissions muted muted-till color intro-message)
-      request-id (join-request-sent-options id token-permissions request-id intro-message)
-      banList    (banned-options id token-permissions intro-message)
-      :else      (not-joined-options id token-permissions request-id intro-message))))
+      admin      (owner-options id role-permissions? muted muted-till intro-message)
+      joined     (joined-options id role-permissions? muted muted-till color intro-message)
+      request-id (join-request-sent-options id role-permissions? request-id intro-message)
+      banList    (banned-options id role-permissions? intro-message)
+      :else      (not-joined-options id role-permissions? request-id intro-message))))
 
 (defn community-options-bottom-sheet
   [id]
