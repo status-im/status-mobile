@@ -131,8 +131,8 @@
                          :network-name)]
     (if (= network-name :mainnet) :ethereum network-name)))
 
-(defn network-amounts-from-route
-  [route token-symbol token-decimals to?]
+(defn- network-amounts-from-route
+  [{:keys [route token-symbol token-decimals to?]}]
   (reduce (fn [acc path]
             (let [network      (if to? (:to path) (:from path))
                   chain-id     (:chain-id network)
@@ -150,14 +150,17 @@
           {}
           route))
 
-(defn network-values-from-amounts
+(defn- network-values-from-amounts
   [network-amounts token-symbol]
   (reduce-kv (fn [acc k v]
-               (assoc acc k {:amount v :token-symbol token-symbol}))
+               (assoc acc
+                      k
+                      {:amount       v
+                       :token-symbol token-symbol}))
              {}
              network-amounts))
 
-(defn sanitize-network-values
+(defn- sanitize-network-values
   [network-values]
   (into {}
         (map (fn [[k v]]
@@ -167,21 +170,23 @@
                   v)])
              network-values)))
 
-(defn values-by-network
+(defn- values-by-network
   [{:keys [collectible amount token-symbol route token-decimals to?]}]
   (if collectible
     (let [collectible-chain-id (get-in collectible [:id :contract-id :chain-id])
           network-name         (network-name-from-chain-id collectible-chain-id)]
       {network-name {:amount amount :token-symbol token-symbol}})
-    (let [network-amounts (network-amounts-from-route route token-symbol token-decimals to?)
+    (let [network-amounts (network-amounts-from-route {:route          route
+                                                       :token-symbol   token-symbol
+                                                       :token-decimals token-decimals
+                                                       :to?            to?})
           network-values  (network-values-from-amounts network-amounts token-symbol)]
       (sanitize-network-values network-values))))
 
 (defn- user-summary
   [{:keys [account-props theme label accessibility-label
-           summary-type values]
-    :as   props}]
-  (tap> props)
+           summary-type network-values]
+    :as   _props}]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
@@ -194,7 +199,7 @@
    [quo/summary-info
     {:type          summary-type
      :networks?     true
-     :values        values
+     :values        network-values
      :account-props account-props}]])
 
 (defn data-item
@@ -339,7 +344,7 @@
              :label               (i18n/label :t/from-capitalized)
              :account-props       from-account-props
              :theme               theme
-             :values              (values-by-network {:collectible    collectible
+             :network-values      (values-by-network {:collectible    collectible
                                                       :amount         amount
                                                       :token-symbol   token-symbol
                                                       :route          route
@@ -355,7 +360,7 @@
                                     from-account-props
                                     user-props)
              :theme               theme
-             :values              (values-by-network {:collectible    collectible
+             :network-values      (values-by-network {:collectible    collectible
                                                       :amount         amount
                                                       :token-symbol   token-symbol
                                                       :route          route
