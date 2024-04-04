@@ -194,7 +194,7 @@
      [:size number?]
      [:ratio float?]
      [:uppercase-ratio number?]
-     [:customization-color :schema.quo/customization-color]
+     [:customization-color :schema.common/customization-color]
      [:font-size number?]
      [:font-file string?]]]
    [:string]])
