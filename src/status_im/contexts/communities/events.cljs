@@ -11,6 +11,7 @@
     status-im.contexts.communities.actions.airdrop-addresses.events
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
+    [status-im.contexts.communities.utils :as utils]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
