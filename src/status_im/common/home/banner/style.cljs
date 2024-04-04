@@ -68,5 +68,5 @@
 
 (def banner-card-tabs
   {:padding-horizontal 20
-   :padding-top        8
-   :padding-bottom     12})
+   :padding-top        12
+   :padding-bottom     16})
