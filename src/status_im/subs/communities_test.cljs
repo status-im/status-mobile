@@ -321,15 +321,17 @@
     (swap! rf-db/app-db assoc-in [:communities/permissions-check community-id] checks)
     (is (match? {:can-request-access?     true
                  :networks-not-supported? nil
-                 :tokens                  [[{:symbol      "DAI"
-                                             :amount      "5"
-                                             :sufficient? true
-                                             :loading?    checking-permissions?}]
-                                           [{:symbol      "ETH"
-                                             :amount      "0.002"
-                                             :sufficient? false
-                                             :loading?    checking-permissions?
-                                             :img-src     token-image-eth}]]}
+                 :tokens                  [[{:symbol       "DAI"
+                                             :amount       "5"
+                                             :collectible? false
+                                             :sufficient?  true
+                                             :loading?     checking-permissions?}]
+                                           [{:symbol       "ETH"
+                                             :amount       "0.002"
+                                             :collectible? false
+                                             :sufficient?  false
+                                             :loading?     checking-permissions?
+                                             :img-src      token-image-eth}]]}
                 (rf/sub [sub-name community-id])))))
 
 (h/deftest-sub :communities/community-color
@@ -417,18 +419,20 @@
        (match? [{:role 1
                  :satisfied? true
                  :tokens
-                 [[{:symbol      "ETH"
-                    :sufficient? true
-                    :loading?    false
-                    :amount      "1"
-                    :img-src     token-image-eth}]]}
+                 [[{:symbol       "ETH"
+                    :sufficient?  true
+                    :loading?     false
+                    :collectible? false
+                    :amount       "1"
+                    :img-src      token-image-eth}]]}
                 {:role       2
                  :satisfied? false
-                 :tokens     [[{:symbol      "DAI"
-                                :sufficient? false
-                                :loading?    false
-                                :amount      "10"
-                                :img-src     nil}]]}]
+                 :tokens     [[{:symbol       "DAI"
+                                :sufficient?  false
+                                :collectible? false
+                                :loading?     false
+                                :amount       "10"
+                                :img-src      nil}]]}]
                (rf/sub [sub-name community-id])))))
   (testing
     "without any visible permissions"
