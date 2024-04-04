@@ -27,9 +27,10 @@
 
 (defn- footer
   [{:keys [color leave-page]}]
-  (let [save-address-visible? false]
+  (let [send-to-address      (rf/sub [:wallet/wallet-send-to-address])
+        save-address-hidden? (rf/sub [:wallet/address-saved? send-to-address])]
     [quo/bottom-actions
-     {:actions          (if save-address-visible? :two-actions :one-action)
+     {:actions          (if save-address-hidden? :one-action :two-actions)
       :button-two-label (i18n/label :t/save-address)
       :button-two-props {:type                :grey
                          :icon-left           :i/contact-book
@@ -47,6 +48,9 @@
   (let [leave-page      #(rf/dispatch [:wallet/close-transaction-progress-page])
         {:keys [color]} (rf/sub [:wallet/current-viewing-account])]
     (fn []
+      (rn/use-effect
+       (fn []
+         (rf/dispatch [:wallet/get-saved-addresses])))
       (let [transaction-details (rf/sub [:wallet/send-transaction-progress])]
         [floating-button-page/view
          {:footer-container-padding 0
