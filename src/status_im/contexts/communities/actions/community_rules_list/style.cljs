@@ -3,8 +3,7 @@
 (def community-rule
   {:flex-direction :row
    :flex           1
-   :align-items    :flex-start
-   :margin-top     16})
+   :align-items    :flex-start})
 
 (def community-rule-index
   {:margin-left 4})

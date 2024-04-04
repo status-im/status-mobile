@@ -5,8 +5,8 @@
    [:catn
     [:props
      [:map
-      [:token {:optional true} [:maybe :keyword]]
-      [:currency {:optional true} [:maybe :keyword]]
+      [:token {:optional true} [:maybe :string :keyword]]
+      [:currency {:optional true} [:maybe :string :keyword]]
       [:error? {:optional true} [:maybe :boolean]]
       [:title {:optional true} [:maybe :string]]
       [:conversion {:optional true} [:maybe :double]]

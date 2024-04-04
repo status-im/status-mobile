@@ -314,6 +314,7 @@ class BaseView(object):
         # share contact screen
         self.show_qr_button = Button(self.driver, accessibility_id="show-qr-button")
         self.link_to_profile_button = Button(self.driver, accessibility_id="share-qr-code-info-text")
+        self.sharing_text_native = Text(self.driver, xpath="//*[@resource-id='android:id/content_preview_text']")
 
         # checkboxes and toggles
         self.checkbox_button = CheckBox(self.driver, accessibility_id="checkbox-off")

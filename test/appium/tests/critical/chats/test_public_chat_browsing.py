@@ -477,7 +477,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.navigate_back_to_chat_view()
 
         self.channel_2.just_fyi("Can reply to images")
-        self.channel_2.quote_message(image_description)
+        self.channel_2.chat_element_by_text(image_description).long_press_element_by_coordinate(rel_x=0.8, rel_y=0.8)
+        self.channel_2.reply_message_button.click()
         message_text = 'reply to image'
         self.channel_2.chat_message_input.send_keys(message_text)
         self.channel_2.send_message_button.click()

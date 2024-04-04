@@ -16,7 +16,7 @@
       :label       (:name token)
       :token-value (str crypto-formatted " " (:symbol token))
       :fiat-value  fiat-formatted
-      :networks    (:networks token)
+      :networks    (seq (:networks token))
       :on-press    #(on-token-press token)}]))
 
 (defn view

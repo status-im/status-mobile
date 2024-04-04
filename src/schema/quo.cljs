@@ -1,5 +1,6 @@
 (ns schema.quo
   (:require
+    [quo.foundations.colors :as colors]
     [schema.registry :as registry]))
 
 (def ^:private ?profile-picture-fn-params
@@ -23,6 +24,9 @@
    [:map
     [:fn [:=> [:cat ?profile-picture-fn-params] :string]]]])
 
+(def ^:private ?customization-color (into [:enum] colors/account-colors))
+
 (defn register-schemas
   []
-  (registry/register ::profile-picture-source ?profile-picture-source))
+  (registry/register ::profile-picture-source ?profile-picture-source)
+  (registry/register ::customization-color ?customization-color))

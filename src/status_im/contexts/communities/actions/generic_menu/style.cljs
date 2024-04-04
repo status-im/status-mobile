@@ -1,10 +1,16 @@
 (ns status-im.contexts.communities.actions.generic-menu.style)
 
-(def container
-  {:flex          1
-   :margin-left   20
-   :margin-right  20
-   :margin-bottom 20})
+(defn container
+  [max-height]
+  {:flex         1
+   :max-height   max-height
+   :margin-left  20
+   :margin-right 20})
+
+(defn scroll-view-style
+  [max-height]
+  {:margin-bottom 12
+   :max-height    max-height})
 
 (def inner-container
   {:display         :flex
@@ -14,4 +20,4 @@
 
 (def community-tag
   {:margin-right :auto
-   :margin-top   8})
+   :margin-top   4})

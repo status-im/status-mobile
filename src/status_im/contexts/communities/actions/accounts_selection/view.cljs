@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
     [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
@@ -58,12 +57,15 @@
         (rn/use-callback
          (fn []
            (rf/dispatch
-            [:password-authentication/show
-             {:content (fn [] [password-authentication/view])}
-             {:label    (i18n/label :t/join-open-community)
-              :on-press (fn [password]
-                          (rf/dispatch [:communities/request-to-join-with-addresses
-                                        {:community-id id :password password}]))}])
+            [:standard-auth/authorize
+             {:auth-button-label (if can-edit-addresses?
+                                   (i18n/label :t/edit-shared-addresses)
+                                   (i18n/label :t/request-to-join))
+              :on-auth-success   (fn [password]
+                                   (rf/dispatch
+                                    [:communities/request-to-join-with-addresses
+                                     {:community-id id
+                                      :password     password}]))}])
            (navigate-back)))
 
         open-permission-sheet

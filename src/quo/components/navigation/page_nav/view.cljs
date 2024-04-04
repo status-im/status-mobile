@@ -11,7 +11,9 @@
     [quo.components.markdown.text :as text]
     [quo.components.navigation.page-nav.style :as style]
     [quo.theme :as theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [utils.worklets.profile-header :as header-worklet]))
 
 (def ^:private button-type
   {:white       :grey
@@ -85,14 +87,24 @@
      :else
      nil)])
 
+(def header-height 155)
+(def page-nav-height 25)
+(def threshold (- header-height page-nav-height))
+
 (defn- title-center
-  [{:keys [centered? title center-opacity]}]
-  [rn/view {:style (style/center-content-container centered? center-opacity)}
-   [text/text
-    {:weight          :medium
-     :size            :paragraph-1
-     :number-of-lines 1}
-    title]])
+  [{:keys [centered? title center-opacity scroll-y]}]
+  (let [animated-style (when scroll-y
+                         (header-worklet/profile-header-animation scroll-y
+                                                                  threshold
+                                                                  page-nav-height))]
+    [reanimated/view
+     {:style [(style/center-content-container centered? center-opacity)
+              animated-style]}
+     [text/text
+      {:weight          :medium
+       :size            :paragraph-1
+       :number-of-lines 1}
+      title]]))
 
 (defn- dropdown-center
   [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
@@ -295,6 +307,7 @@
   `:title`
     - title
     - text-align: `:center` or `:left`
+    - scroll-y: a shared value (optional)
    `:dropdown`
     - dropdown-on-press:  a callback
     - dropdown-selected?: a boolean
