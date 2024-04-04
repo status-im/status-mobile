@@ -18,8 +18,8 @@
       [rn/view
        [quo/text
         {:accessibility-label :sync-code-generated
-         :weight              :bold
-         :size                :heading-1
+         :weight              :semi-bold
+         :size                :heading-2
          :style               {:margin-bottom 4}}
         (i18n/label :t/enter-password)]
        [rn/view
