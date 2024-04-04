@@ -42,10 +42,14 @@
     :action            :button
     :action-props      {:on-press    (fn []
                                        (rf/dispatch [:standard-auth/authorize
-                                                     {:on-auth-success       #(rf/dispatch [:navigate-to
-                                                                                             :screen/wallet.edit-derivation-path
-                                                                                             {:customization-color customization-color}])
-                                                      :auth-button-label     (i18n/label :t/continue)}]))
+                                                     {:on-auth-success
+                                                      (fn [password]
+                                                        (rf/dispatch [:navigate-to
+                                                                      :screen/wallet.edit-derivation-path
+                                                                      {:customization-color
+                                                                       customization-color
+                                                                       :password password}]))
+                                                      :auth-button-label (i18n/label :t/continue)}]))
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/face-id
                         :alignment   :flex-start}

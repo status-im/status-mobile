@@ -126,6 +126,7 @@
  :-> :selected-keypair-uid)
 
 (rf/reg-sub
+<<<<<<< HEAD
  :wallet/selected-networks->chain-ids
  :<- [:wallet/selected-networks]
  :<- [:profile/test-networks-enabled?]
@@ -136,6 +137,16 @@
                 :testnet-enabled? testnet-enabled?
                 :goerli-enabled?  goerli-enabled?})
              selected-networks))))
+=======
+ :wallet/derivation-path
+ :<- [:wallet/create-account]
+ :-> :derivation-path)
+
+(rf/reg-sub
+ :wallet/derivation-path-state
+ :<- [:wallet/create-account]
+ :-> :derivation-path-state)
+>>>>>>> c3d7c3f39 (derivation path 2)
 
 (rf/reg-sub
  :wallet/accounts

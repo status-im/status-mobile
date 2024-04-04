@@ -83,7 +83,7 @@
                         :has-activity               {:accessibility-label :account-has-activity
                                                      :icon                :i/done
                                                      :type                :success
-                                                     :message             :t/this-address-has-activity}
+                                                     :message             :t/address-activity}
                         :no-activity                {:accessibility-label :account-has-no-activity
                                                      :icon :i/info
                                                      :type :warning
