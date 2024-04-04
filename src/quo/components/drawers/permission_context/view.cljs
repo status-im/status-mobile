@@ -71,10 +71,11 @@
   [{:keys [on-press blur? type container-style] :as props}]
   (let [theme (quo.theme/use-theme-value)]
     [shadow/view
-     {:offset      [0 4]
-      :start-color (colors/theme-colors colors/neutral-100-opa-8 colors/neutral-100-opa-60)
-      :distance    25
-      :style       {:align-self :stretch}}
+     {:offset       [0 4]
+      :paint-inside false
+      :start-color  (colors/theme-colors colors/neutral-100-opa-8 colors/neutral-100-opa-60)
+      :distance     25
+      :style        {:align-self :stretch}}
      [rn/view {:style (merge (style/container blur? theme) container-style)}
       (when blur?
         [blur/view
