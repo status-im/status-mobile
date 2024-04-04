@@ -352,5 +352,4 @@ public class AccountManager extends ReactContextBaseJavaModule {
     public void createAccountFromMnemonicAndDeriveAccountsForPaths(final String mnemonic, final Callback callback) throws JSONException {
         this.utils.executeRunnableStatusGoMethod(() -> Statusgo.createAccountFromMnemonicAndDeriveAccountsForPaths(mnemonic), callback);
     }
-
 }

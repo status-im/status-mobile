@@ -57,9 +57,7 @@
   {:db            (assoc-in db [:wallet :ui :create-account :derivation-path-state] :scanning)
    :json-rpc/call [{:method     "wallet_getDerivedAddresses"
                     :params     [password derived-from paths]
-                    :on-success [:wallet/get-derived-addresses-success]
-                    :on-error   (fn [error]
-                                  (println "error" error))}]})
+                    :on-success [:wallet/get-derived-addresses-success]}]})
 
 (rf/reg-event-fx :wallet/get-derived-addresses get-derived-addresses)
 
