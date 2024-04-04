@@ -1,8 +1,5 @@
 (ns quo.core-spec
   (:require
-<<<<<<< HEAD
-    quo.components.profile.collectible-list-item.component-spec))
-=======
     quo.components.avatars.account-avatar.component-spec
     quo.components.avatars.user-avatar.component-spec
     quo.components.banners.banner.component-spec
@@ -109,4 +106,3 @@
     quo.components.wallet.transaction-summary.component-spec
     quo.components.wallet.wallet-activity.component-spec
     quo.components.wallet.wallet-overview.component-spec))
->>>>>>> fc0a72525 (finalize code)
