@@ -12,11 +12,11 @@
   [{:keys [preview-url collection-data ownership collectible-data] :as collectible} index address on-press on-long-press]
   (let [total-owned (utils/calculate-owned-collectible ownership address)]
     [quo/collectible-list-item
-     {:type      :card
-      :image-src (:uri preview-url)
-      :avatar-image-src (:image-url collection-data)
-      :collectible-name (:name collection-data)
-      :collectible-mime (:animation-media-type collectible-data)
+     {:type                 :card
+      :image-src            (:uri preview-url)
+      :avatar-image-src     (:image-url collection-data)
+      :collectible-name     (:name collection-data)
+      :collectible-mime     (:animation-media-type collectible-data)
       :gradient-color-index (keyword (str "gradient-" (inc (mod index 5))))
       :counter (utils/collectible-owned-counter total-owned)
       :container-style {:padding 8}
@@ -46,7 +46,7 @@
       [rn/flat-list
        {:data                     collectibles
         :style                    {:flex 1}
-        :content-container-style {:margin-horizontal 12}
+        :content-container-style  {:margin-horizontal 12}
         :window-size              11
         :num-columns              2
         :render-fn                (fn [item index]

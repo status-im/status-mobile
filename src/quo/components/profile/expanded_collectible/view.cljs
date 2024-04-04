@@ -57,18 +57,18 @@
             {:label   (i18n/label :t/unsupported-file)
              :counter counter
              :theme   theme}]
-           
+
            @image-error?
            [fallback-view
             {:label   (i18n/label :t/cant-fetch-info)
              :counter counter
              :theme   theme}]
-           
+
            (and (not @image-error?) (utils/collectible-supported? collectible-mime))
            [rn/view
             [rn/image
-             {:style  (style/image square? (:aspect-ratio image-size))
-              :source image-src
+             {:style    (style/image square? (:aspect-ratio image-size))
+              :source   image-src
               :on-error #(reset! image-error? true)}]
             [counter-view counter]])]))))
 

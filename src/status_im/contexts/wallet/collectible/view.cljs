@@ -58,16 +58,16 @@
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn []
-      (let [collectible                 (rf/sub [:wallet/last-collectible-details])
+      (let [collectible                (rf/sub [:wallet/last-collectible-details])
             ;; animation-shared-element-id (rf/sub [:animation-shared-element-id])
-            wallet-address  (rf/sub [:wallet/current-viewing-account-address])
+            wallet-address             (rf/sub [:wallet/current-viewing-account-address])
             {:keys [id
                     preview-url
                     collection-data
-                    collectible-data]}  collectible
+                    collectible-data]} collectible
             {svg?        :svg?
-             preview-uri :uri}          preview-url
-            token-id                    (:token-id id)
+             preview-uri :uri}         preview-url
+            token-id                   (:token-id id)
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data
@@ -99,10 +99,10 @@
                            :picture     preview-uri}}
          [rn/view {:style style/container}
           [quo/expanded-collectible
-           {:image-src preview-uri
-            :container-style style/preview-container
-            :status (if svg? :unsupported :default)
-            :counter (utils/collectible-owned-counter total-owned)
+           {:image-src        preview-uri
+            :container-style  style/preview-container
+            :status           (if svg? :unsupported :default)
+            :counter          (utils/collectible-owned-counter total-owned)
             :collectible-mime (:animation-media-type collectible-data)
             :on-press       (fn []
                               (if svg?

@@ -68,10 +68,10 @@
     (when-not @error?
       [:<>
        [collection-avatar/view
-        {:size  :size-20
+        {:size        :size-20
          :on-load-end #(reset! loading? false)
-         :on-error #(reset! error? true)
-         :image avatar-image-src}]
+         :on-error    #(reset! error? true)
+         :image       avatar-image-src}]
        [rn/view {:style {:width 8}}]])
     [text/text
      {:size            :paragraph-1
@@ -86,29 +86,29 @@
            gradient-color-index image-src image-loading? image-error? collectible-mime]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style (style/card-view-container theme)}
-     [rn/view {:style {:aspect-ratio 1}} 
-       (cond
-         @image-error?  
-         [fallback-view
-          {:theme theme
-           :label (i18n/label :t/cant-fetch-info)}]
-         
-         (not (utils/collectible-supported? collectible-mime))
-         [fallback-view
-          {:theme theme
-           :label (i18n/label :t/unsupported-file)}]
-         
-         @image-loading? 
-         [loading-image
-          {:theme                theme
-           :gradient-color-index gradient-color-index}])
+     [rn/view {:style {:aspect-ratio 1}}
+      (cond
+        @image-error?
+        [fallback-view
+         {:theme theme
+          :label (i18n/label :t/cant-fetch-info)}]
+
+        (not (utils/collectible-supported? collectible-mime))
+        [fallback-view
+         {:theme theme
+          :label (i18n/label :t/unsupported-file)}]
+
+        @image-loading?
+        [loading-image
+         {:theme                theme
+          :gradient-color-index gradient-color-index}])
       (when (utils/collectible-supported? collectible-mime)
         [rn/view {:style {:aspect-ratio 1}}
          [rn/image
-          {:style  style/image
+          {:style       style/image
            :on-load-end #(reset! image-loading? false)
-           :on-error #(reset! image-error? true)
-           :source image-src}]])]
+           :on-error    #(reset! image-error? true)
+           :source      image-src}]])]
      (when (and (not @image-loading?) (not @image-error?) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -145,10 +145,10 @@
      (when (utils/collectible-supported? collectible-mime)
        [rn/view {:style {:aspect-ratio 1}}
         [rn/image
-         {:style  style/image
+         {:style       style/image
           :on-load-end #(reset! image-loading? false)
-          :on-error #(reset! image-error? true)
-          :source image-src}]])
+          :on-error    #(reset! image-error? true)
+          :source      image-src}]])
      (when (and (not @image-loading?) (not @image-error?) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
@@ -174,14 +174,16 @@
         :accessibility-label :collectible-list-item
         :style               (merge container-style style/container)}
        (if (= type :card)
-         [card-view (assoc props
-                           :image-loading? image-loading?
-                           :image-error? image-error?
-                           :avatar-loading? avatar-loading?
-                           :avatar-error? avatar-error?)]
-         [image-view (assoc props 
-                            :image-loading? image-loading? 
-                            :image-error? image-error?)])])))
+         [card-view
+          (assoc props
+                 :image-loading?  image-loading?
+                 :image-error?    image-error?
+                 :avatar-loading? avatar-loading?
+                 :avatar-error?   avatar-error?)]
+         [image-view
+          (assoc props
+                 :image-loading? image-loading?
+                 :image-error?   image-error?)])])))
 
 (def ?schema
   [:=>

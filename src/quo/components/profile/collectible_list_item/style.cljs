@@ -85,17 +85,17 @@
 
 (defn loading-image
   [theme]
-  {:position :absolute
-   :top 0
-   :bottom 0
-   :left 0
-   :right 0
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0
    :border-radius    container-border-radius
    :background-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
-   :z-index 2})
+   :z-index          2})
 
 (defn avatar-container
   [loading?]
-  {:flex 1
+  {:flex           1
    :flex-direction :row
-   :opacity (when loading? 0)})
+   :opacity        (when loading? 0)})
