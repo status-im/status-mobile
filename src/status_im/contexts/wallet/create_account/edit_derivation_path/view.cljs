@@ -134,13 +134,14 @@
                                :disabled? true}}]]
          (when @input-focused?
            [quo/numbered-keyboard
-            {:left-action :dot
-             :delete-key? true
-             :on-press    (fn [value]
-                            (reset! path-value (str @path-value value))
-                            (on-change-text))
-             :on-delete   (fn []
-                            (reset! path-value (subs @path-value 0 (dec (count @path-value))))
-                            (on-change-text))}])]))))
+            {:left-action     :dot
+             :delete-key?     true
+             :container-style (style/keyboard bottom)
+             :on-press        (fn [value]
+                                (reset! path-value (str @path-value value))
+                                (on-change-text))
+             :on-delete       (fn []
+                                (reset! path-value (subs @path-value 0 (dec (count @path-value))))
+                                (on-change-text))}])]))))
 
 (def view (quo.theme/with-theme view-internal))

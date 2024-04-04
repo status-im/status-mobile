@@ -44,8 +44,6 @@
   {:margin-vertical 9
    :padding-left    2})
 
-(def temporal-placeholder
-  {:height           94
-   :background-color colors/danger-50
-   :align-items      :center
-   :justify-content  :center})
+(defn keyboard
+  [padding-bottom]
+  {:padding-bottom padding-bottom})
