@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.create-account.events
-  (:require [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]
+  (:require [camel-snake-kebab.extras :as cske]
             [status-im.contexts.wallet.data-store :as data-store]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.transforms :as transforms]))
 
 (defn get-keypairs-success
   [{:keys [db]} [keypairs]]
@@ -63,10 +63,11 @@
 
 (defn get-derived-addresses-success
   [{:keys [db]} [response]]
-  {:db (-> db
-           (assoc-in [:wallet :ui :create-account :derivation-path-state]
-                     (if (:has-activity (first response)) :has-activity :no-activity))
-           (assoc-in [:wallet :ui :create-account :derivation-path]
-                     (cske/transform-keys csk/->kebab-case-keyword (first response))))})
+  (let [derived-address (first response)]
+    {:db (-> db
+             (assoc-in [:wallet :ui :create-account :derivation-path-state]
+                       (if (:has-activity derived-address) :has-activity :no-activity))
+             (assoc-in [:wallet :ui :create-account :derivation-path]
+                       (cske/transform-keys transforms/->kebab-case-keyword derived-address)))}))
 
 (rf/reg-event-fx :wallet/get-derived-addresses-success get-derived-addresses-success)

@@ -21,40 +21,42 @@
     | -> (reveal-action) -> show
     | -> (clear-action) -> empty -> (derive-action) -> choose -> (choose-action) -> show"
   [{:keys [on-reset]}]
-  (let [top                (safe-area/get-top)
-        bottom             (safe-area/get-bottom)
-        input-focused?     (reagent/atom false)
-        number-of-accounts (count (rf/sub [:wallet/accounts-without-watched-accounts]))
-        path-value         (reagent/atom (utils/get-formatted-derivation-path number-of-accounts))
-        handle-path-change (fn [v]
-                             (reset! path-value v)
-                             (when (empty? v)))
-        reset-path-value   (fn [_]
-                             (reset! path-value "")
-                             (when on-reset
-                               (on-reset)))
-        input-ref          (reagent/atom nil)]
+  (let [top              (safe-area/get-top)
+        bottom           (safe-area/get-bottom)
+        input-focused?   (reagent/atom false)
+        path-value       (reagent/atom "")
+        input-ref        (reagent/atom nil)
+        reset-path-value (fn [_]
+                           (reset! path-value "")
+                           (when on-reset
+                             (on-reset)))]
     (fn [{:keys [theme]}]
-      (let [{:keys [public-key address]} (rf/sub [:profile/profile])
-            {:keys [password]}           (rf/sub [:get-screen-params])
-            primary-name                 (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                         public-key]))
-            profile-picture              (rf/sub [:profile/image])
-            show-path-format-sheet       #(rf/dispatch [:show-bottom-sheet
-                                                        {:content path-format-sheet/view}])
-            derivation-path              (rf/sub [:wallet/derivation-path])
-            state                        (rf/sub [:wallet/derivation-path-state])
-            navigate-back-handler        #(if @input-focused?
-                                            (do
-                                              (.blur ^js @input-ref)
-                                              true)
-                                            (rf/dispatch [:navigate-to :screen/wallet.create-account]))
-            on-change-text               #(rf/dispatch
-                                           [:wallet/get-derived-addresses
-                                            {:password     (security/safe-unmask-data password)
-                                             :paths        [(string/replace @path-value #"\s" "")]
-                                             :derived-from address}])]
+      (let [{:keys [public-key address]}               (rf/sub [:profile/profile])
+            {:keys [password current-derivation-path]} (rf/sub [:get-screen-params])
+            primary-name                               (first (rf/sub
+                                                               [:contacts/contact-two-names-by-identity
+                                                                public-key]))
+            profile-picture                            (rf/sub [:profile/image])
+            show-path-format-sheet                     #(rf/dispatch [:show-bottom-sheet
+                                                                      {:content path-format-sheet/view}])
+            derivation-path                            (rf/sub [:wallet/derivation-path])
+            state                                      (rf/sub [:wallet/derivation-path-state])
+            navigate-back-handler                      #(if @input-focused?
+                                                          (do
+                                                            (.blur ^js @input-ref)
+                                                            true)
+                                                          (rf/dispatch [:navigate-to
+                                                                        :screen/wallet.create-account]))
+            on-change-text                             #(rf/dispatch
+                                                         [:wallet/get-derived-addresses
+                                                          {:password     (security/safe-unmask-data
+                                                                          password)
+                                                           :paths        [(string/replace @path-value
+                                                                                          #"\s"
+                                                                                          "")]
+                                                           :derived-from address}])]
         (rn/use-mount (fn []
+                        (reset! path-value current-derivation-path)
                         (rf/dispatch [:wallet/get-derived-addresses
                                       {:password     (security/safe-unmask-data password)
                                        :paths        [(string/replace @path-value #"\s" "")]
@@ -107,8 +109,7 @@
            :label                    (i18n/label :t/derivation-path)
            :placeholder              (utils/get-formatted-derivation-path 3)
            :button                   {:on-press reset-path-value
-                                      :text     (i18n/label :t/reset)}
-           :on-change-text           handle-path-change}]
+                                      :text     (i18n/label :t/reset)}}]
          [rn/view {:style style/revealed-address-container}
           [rn/view {:style (style/revealed-address state theme)}
            [quo/text
@@ -145,3 +146,4 @@
                                 (on-change-text))}])]))))
 
 (def view (quo.theme/with-theme view-internal))
+
