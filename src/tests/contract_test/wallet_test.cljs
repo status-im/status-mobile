@@ -130,3 +130,45 @@
                   (promesa/let [ens-address (contract-utils/call-rpc "ens_addressOf" chain-id ens-name)]
                     (assert-search-ens expected-result ens-address)))
                 test-cases)))))))
+
+(defn assert-suggested-routes
+  [result]
+  (is (vector? (:Best result)))
+  (is (= "Arbitrum" (get-in result [:Best 0 :From :chainName])))
+  (is (= "0xa" (get-in result [:Best 0 :AmountIn])))
+  (is (= "Transfer" (get-in result [:Best 0 :BridgeName])))
+  (is (not= "Transfer" (get-in result [:Best 1 :BridgeName])))
+  (doseq [route (:Best result)]
+    (is (not (nil? (:AmountIn route)))))
+  (doseq [route (:Best result)]
+    (is (not (nil? (:BridgeName route)))))
+  (doseq [route (:Best result)]
+    (is (not (nil? (:From route)))))
+  (doseq [route (:Best result)]
+    (is (not (nil? (:To route))))))
+
+(deftest get-suggested-routes-test
+  (h/test-async :wallet/get-suggested-routes
+    (fn []
+      (let [transaction-type-param  constants/send-type-transfer
+            from-address            "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
+            to-address              "0x53d284357ec70cE289D6D64134DfAc8E511c8a3D"
+            amount-in               "0xA"
+            token-id                "ETH"
+            disabled-from-chain-ids []
+            disabled-to-chain-ids   []
+            network-preferences     []
+            from-locked-amount      {}
+            gas-rates               constants/gas-rate-medium
+            request-params          [transaction-type-param
+                                     from-address
+                                     to-address
+                                     amount-in
+                                     token-id
+                                     disabled-from-chain-ids
+                                     disabled-to-chain-ids
+                                     network-preferences
+                                     gas-rates
+                                     from-locked-amount]]
+        (promesa/let [result (apply contract-utils/call-rpc "wallet_getSuggestedRoutes" request-params)]
+          (assert-suggested-routes result))))))
