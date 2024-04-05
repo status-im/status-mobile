@@ -2,7 +2,8 @@
   (:require
     [legacy.status-im.fleet.core :as fleet]
     [react-native.core :as rn]
-    [status-im.contexts.shell.activity-center.events :as activity-center]))
+    [status-im.contexts.shell.activity-center.events :as activity-center]
+    [status-im.contexts.wallet.db :as wallet]))
 
 ;; initial state of app-db
 (def app-db
@@ -18,6 +19,7 @@
    :sync-state                         :done
    :link-previews-whitelist            []
    :app-state                          "active"
+   :wallet                             wallet/defaults
    :peers-count                        0
    :node-info                          {}
    :peers-summary                      []

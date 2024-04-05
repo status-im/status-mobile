@@ -2,20 +2,11 @@
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
-    [react-native.gesture :as gesture]
+    [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.send.select-address.tabs.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-(defn- render-account-item
-  [{:keys [color address] :as account}]
-  [quo/account-item
-   {:account-props (assoc account :customization-color color)
-    :on-press      #(rf/dispatch [:wallet/select-send-address
-                                  {:address   address
-                                   :recipient account
-                                   :stack-id  :screen/wallet.select-address}])}])
 
 (defn my-accounts
   [theme]
@@ -26,11 +17,15 @@
         :description     (i18n/label :t/here-is-a-cat-in-a-box-instead)
         :image           (resources/get-themed-image :cat-in-box theme)
         :container-style style/empty-container-style}]
-      [gesture/flat-list
-       {:data                            other-accounts
-        :render-fn                       render-account-item
-        :content-container-style         style/my-accounts-container
-        :shows-vertical-scroll-indicator false}])))
+      (into [rn/view {:style style/my-accounts-container}]
+            (map (fn [{:keys [color address] :as account}]
+                   [quo/account-item
+                    {:account-props (assoc account :customization-color color)
+                     :on-press      #(rf/dispatch [:wallet/select-send-address
+                                                   {:address   address
+                                                    :recipient account
+                                                    :stack-id  :screen/wallet.select-address}])}]))
+            other-accounts))))
 
 (defn view-internal
   [{:keys [selected-tab theme]}]

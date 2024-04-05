@@ -456,7 +456,9 @@
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
 
-(def ^:const default-network-names #{mainnet-network-name optimism-network-name arbitrum-network-name})
+(def ^:const default-network-names [mainnet-network-name optimism-network-name arbitrum-network-name])
+
+(def ^:const default-network-count (count default-network-names))
 
 (def ^:const chain-id-separator ":")
 
