@@ -13,7 +13,6 @@
    {::wallet.bridge-token              (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
     ::wallet.edit-derivation-path      (enabled-in-env? :FLAG_EDIT_DERIVATION_PATH)
     ::wallet.remove-account            (enabled-in-env? :FLAG_REMOVE_ACCOUNT_ENABLED)
-    ::wallet.network-filter            (enabled-in-env? :FLAG_NETWORK_FILTER_ENABLED)
     ::community.edit-account-selection (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)}))
 
 (defn feature-flags [] @feature-flags-config)

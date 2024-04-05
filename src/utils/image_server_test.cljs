@@ -1,6 +1,7 @@
 (ns utils.image-server-test
   (:require
     [cljs.test :as t]
+    [quo.foundations.colors :as colors]
     [utils.image-server :as sut]))
 
 (t/deftest get-account-image-uri
@@ -25,6 +26,7 @@
 (t/deftest get-account-initials-uri
   (with-redefs
     [sut/current-theme-index identity
+     colors/resolve-color    str
      sut/timestamp           (constantly "timestamp")]
     (t/is
      (=
@@ -38,7 +40,7 @@
         :size                     48
         :theme                    :light
         :ring?                    "ring?"
-        :background-color         "background-color"
+        :customization-color      :blue
         :color                    "#0E162000"
         :font-size                12
         :font-file                "/font/Inter Medium.otf"
@@ -47,4 +49,4 @@
         :indicator-center-to-edge 6
         :indicator-color          "#0E1620"
         :ring-width               4})
-      "https://localhost:port/accountInitials?publicKey=public-key&keyUid=key-uid&length=length&size=96&bgColor=background-color&color=%230E162000&fontSize=24&fontFile=%2Ffont%2FInter%20Medium.otf&uppercaseRatio=0.6&theme=:light&clock=&name=full-nametimestamp&indicatorColor=%230E1620&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=8"))))
+      "https://localhost:port/accountInitials?publicKey=public-key&keyUid=key-uid&length=length&size=96&bgColor=%3Ablue%3Alight&color=%230E162000&fontSize=24&fontFile=%2Ffont%2FInter%20Medium.otf&uppercaseRatio=0.6&theme=:light&clock=&name=full-nametimestamp&indicatorColor=%230E1620&indicatorSize=4&indicatorBorder=0&indicatorCenterToEdge=12&addRing=1&ringWidth=8"))))

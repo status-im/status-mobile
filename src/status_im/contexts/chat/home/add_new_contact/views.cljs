@@ -3,6 +3,7 @@
             [quo.core :as quo]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
+            [status-im.common.floating-button-page.view :as floating-button-page]
             [status-im.contexts.chat.home.add-new-contact.style :as style]
             [utils.address :as address]
             [utils.debounce :as debounce]
@@ -34,19 +35,6 @@
            :size   :paragraph-2
            :style  (style/found-user-key)}
           (address/get-shortened-compressed-key compressed-key)]]]])))
-
-(defn- header
-  []
-  [:<>
-   [quo/button
-    {:type                :grey
-     :icon-only?          true
-     :accessibility-label :new-contact-close-button
-     :size                32
-     :on-press            #(rf/dispatch [:navigate-back])}
-    :i/close]
-   [quo/text (style/text-title) (i18n/label :t/add-a-contact)]
-   [quo/text (style/text-subtitle) (i18n/label :t/find-your-friends)]])
 
 (defn- search-input
   []
@@ -118,31 +106,42 @@
    [quo/text style/text-invalid
     (i18n/label (or message :t/invalid-ens-or-key))]])
 
+(defn navigate-back [] (rf/dispatch [:navigate-back]))
+
 (defn new-contact
   []
   (let [{:keys [public-key ens state msg]} (rf/sub [:contacts/new-identity])
         customization-color                (rf/sub [:profile/customization-color])]
-    [rn/keyboard-avoiding-view {:style {:flex 1}}
-     [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-      [rn/view {:style (style/container-outer)}
-       [rn/view {:style style/container-inner}
-        [header]
-        [search-input]
-        (case state
-          :invalid [invalid-text msg]
-          :valid   [found-contact public-key]
-          nil)]
-       [quo/button
-        {:type                :primary
-         :customization-color customization-color
-         :size                40
-         :container-style     style/button-view-profile
-         :accessibility-label :new-contact-button
-         :icon-left           :i/profile
-         :disabled?           (not= state :valid)
-         :on-press            (fn []
-                                (rf/dispatch [:navigate-back])
-                                (rf/dispatch [:chat.ui/show-profile public-key ens])
-                                (js/setTimeout #(rf/dispatch [:contacts/clear-new-identity])
-                                               600))}
-        (i18n/label :t/view-profile)]]]]))
+    [floating-button-page/view
+     {:header-container-style {:margin-top 8}
+      :header                 [quo/page-nav
+                               {:type                :no-title
+                                :icon-name           :i/close
+                                :accessibility-label :new-contact-close-button
+                                :on-press            navigate-back}]
+      :footer                 [quo/button
+                               {:type                :primary
+                                :customization-color customization-color
+                                :size                40
+                                :accessibility-label :new-contact-button
+                                :icon-left           :i/profile
+                                :disabled?           (not= state :valid)
+                                :on-press            (fn []
+                                                       (rf/dispatch [:navigate-back])
+                                                       (rf/dispatch [:chat.ui/show-profile public-key
+                                                                     ens])
+                                                       (js/setTimeout #(rf/dispatch
+                                                                        [:contacts/clear-new-identity])
+                                                                      600))}
+                               (i18n/label :t/view-profile)]}
+     [quo/page-top
+      {:title            (i18n/label :t/add-a-contact)
+       :description      :text
+       :description-text (i18n/label :t/find-your-friends)
+       :container-style  {:padding-vertical 8}}]
+     [rn/view {:style (style/container-outer)}
+      [search-input]
+      (case state
+        :invalid [invalid-text msg]
+        :valid   [found-contact public-key]
+        nil)]]))

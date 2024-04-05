@@ -22,6 +22,13 @@
     (h/is-truthy (h/get-by-text "Title"))
     (h/is-truthy (h/get-by-text "Description")))
 
+  (h/test "component renders in address type"
+    (h/render-with-theme-provider [quo/drawer-top
+                                   {:title "0x1"
+                                    :type  :address}]
+                                  theme)
+    (h/is-truthy (h/get-by-text "0x1")))
+
   (h/test "component renders in info type"
     (h/render-with-theme-provider [quo/drawer-top
                                    {:title "Title"

@@ -4,7 +4,6 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.not-implemented :as not-implemented]
-    [status-im.common.password-authentication.view :as password-authentication]
     [status-im.contexts.communities.actions.airdrop-addresses.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -19,18 +18,20 @@
           (fn []
             (if can-edit-addresses?
               (rf/dispatch
-               [:password-authentication/show
-                {:content (fn [] [password-authentication/view])}
-                {:label    (i18n/label :t/enter-password)
-                 :on-press (fn [password]
-                             (rf/dispatch
-                              [:communities/edit-shared-addresses
-                               {:community-id    community-id
-                                :password        password
-                                :airdrop-address address
-                                :on-success      (fn []
-                                                   (rf/dispatch [:dismiss-modal :address-for-airdrop])
-                                                   (rf/dispatch [:hide-bottom-sheet]))}]))}])
+               [:standard-auth/authorize
+                {:auth-button-label (i18n/label :t/confirm-changes)
+                 :on-auth-success   (fn [password]
+                                      (rf/dispatch
+                                       [:communities/edit-shared-addresses
+                                        {:community-id    community-id
+                                         :password        password
+                                         :airdrop-address address
+                                         :on-success      (fn []
+                                                            (rf/dispatch
+                                                             [:dismiss-modal
+                                                              :address-for-airdrop])
+                                                            (rf/dispatch
+                                                             [:hide-bottom-sheet]))}]))}])
               (do
                 (rf/dispatch [:communities/set-airdrop-address community-id address])
                 (rf/dispatch [:hide-bottom-sheet])))))]

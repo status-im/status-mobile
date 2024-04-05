@@ -4,31 +4,37 @@
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.network-preferences.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn- view-internal
-  [{:keys [selected-networks watch-only?]}]
+  [{:keys [selected-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
-                network-preferences-names]} (rf/sub [:wallet/current-viewing-account])
+                network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
         initial-network-preferences-names   (or selected-networks network-preferences-names)
         network-preferences-names-state     (reagent/atom #{})
         toggle-network                      (fn [network-name]
                                               (reset! state :changed)
-                                              (if (contains? @network-preferences-names-state
-                                                             network-name)
-                                                (swap! network-preferences-names-state disj
-                                                  network-name)
-                                                (swap! network-preferences-names-state conj
-                                                  network-name)))
+                                              (let [contains-network? (contains?
+                                                                       @network-preferences-names-state
+                                                                       network-name)
+                                                    update-fn         (if contains-network? disj conj)
+                                                    networks-count    (count
+                                                                       @network-preferences-names-state)]
+                                                (if (and (= networks-count 1) contains-network?)
+                                                  (reset! network-preferences-names-state
+                                                    (set constants/default-network-names))
+                                                  (swap! network-preferences-names-state update-fn
+                                                    network-name))))
         get-current-preferences-names       (fn []
                                               (if (= @state :default)
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
-    (fn [{:keys [on-save blur? theme]}]
+    (fn [{:keys [on-save blur? theme button-label]}]
       (let [network-details  (rf/sub [:wallet/network-details])
             mainnet          (first network-details)
             layer-2-networks (rest network-details)
@@ -70,30 +76,30 @@
          [quo/category
           {:list-type :settings
            :blur?     blur?
-           :data      [(utils/make-network-item mainnet
-                                                {:state     @state
-                                                 :title     (i18n/label :t/mainnet)
-                                                 :color     color
-                                                 :blur?     blur?
-                                                 :networks  (get-current-preferences-names)
-                                                 :on-change #(toggle-network (:network-name
-                                                                              mainnet))})]}]
+           :data      [(utils/make-network-item {:state        @state
+                                                 :network-name (:network-name mainnet)
+                                                 :color        color
+                                                 :blur?        blur?
+                                                 :networks     (get-current-preferences-names)
+                                                 :on-change    #(toggle-network (:network-name
+                                                                                 mainnet))})]}]
          [quo/category
           {:list-type :settings
            :blur?     blur?
            :label     (i18n/label :t/layer-2)
            :data      (mapv (fn [network]
-                              (utils/make-network-item network
-                                                       {:state     @state
-                                                        :color     color
-                                                        :blur?     blur?
-                                                        :networks  (get-current-preferences-names)
-                                                        :on-change #(toggle-network (:network-name
-                                                                                     network))}))
+                              (utils/make-network-item {:state        @state
+                                                        :network-name (:network-name network)
+                                                        :color        color
+                                                        :blur?        blur?
+                                                        :networks     (get-current-preferences-names)
+                                                        :on-change    #(toggle-network (:network-name
+                                                                                        network))}))
                             layer-2-networks)}]
          [quo/bottom-actions
           {:actions          :one-action
-           :button-one-label (i18n/label :t/update)
+           :blur?            blur?
+           :button-one-label (or button-label (i18n/label :t/update))
            :button-one-props {:disabled?           (= @state :default)
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]

@@ -236,9 +236,10 @@
                                         (utils/get-standard-crypto-format native-token
                                                                           fee-in-native-token))
             fee-in-fiat               (when-not confirm-disabled?
-                                        (utils/token-fiat-value fiat-currency
-                                                                fee-in-native-token
-                                                                native-token))
+                                        (utils/calculate-token-fiat-value
+                                         {:currency fiat-currency
+                                          :balance  fee-in-native-token
+                                          :token    native-token}))
             currency-symbol           (rf/sub [:profile/currency-symbol])
             fee-formatted             (when fee-in-fiat
                                         (utils/get-standard-fiat-format fee-in-crypto-formatted
@@ -265,7 +266,7 @@
            :currency            current-currency
            :crypto-decimals     crypto-decimals
            :error?              @input-error
-           :networks            token-networks
+           :networks            (seq token-networks)
            :title               (i18n/label :t/send-limit {:limit limit-label})
            :conversion          conversion-rate
            :show-keyboard?      false
