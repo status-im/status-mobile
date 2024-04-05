@@ -136,6 +136,7 @@
                 :testnet-enabled? testnet-enabled?
                 :goerli-enabled?  goerli-enabled?})
              selected-networks))))
+
 (rf/reg-sub
  :wallet/derivation-path-state
  :<- [:wallet/create-account]
