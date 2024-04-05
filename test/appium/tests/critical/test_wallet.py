@@ -67,7 +67,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
             # for _ in range(12):  # ToDo: 120 sec wait time, enable when autoupdate feature is ready
             wallet_view.wallet_tab.click()
             new_eth_amount = round(wallet_view.get_asset(asset_name='Ether').get_amount(), 4)
-            if user_name == 'sender' and new_eth_amount < exp_amount:
+            if user_name == 'sender' and new_eth_amount <= exp_amount:
                 return
             if user_name == 'receiver' and new_eth_amount >= exp_amount:
                 return
