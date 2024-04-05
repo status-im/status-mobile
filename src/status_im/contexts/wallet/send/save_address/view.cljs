@@ -12,9 +12,10 @@
     [utils.re-frame :as rf]))
 
 (defn- address-view
-  []
+  [{:keys [address-color]}]
   (let [network-details (rf/sub [:wallet/network-preference-details])
-        address         (rf/sub [:wallet/wallet-send-to-address])]
+        address         (rf/sub [:wallet/wallet-send-to-address])
+        saved-address   (rf/sub [:wallet/saved-address-by-address address])]
     [rn/view {:style style/address-container}
      [quo/data-item
       {:status          :default
@@ -28,16 +29,25 @@
        :title           (i18n/label :t/address)
        :custom-subtitle (rn/use-callback
                          (fn [] [quo/address-text
-                                 {:networks network-details
-                                  :address  address
-                                  :format   :long}]))
+                                {:networks network-details
+                                 :address  address
+                                 :format   :long}]))
        :on-press        (rn/use-callback
                          (fn []
                            (rf/dispatch [:show-bottom-sheet
                                          {:content
                                           (fn []
                                             [network-preferences/view
-                                             {:on-save (fn [])}])}])))
+                                             {:blur?             true
+                                              :selected-networks (-> saved-address :networks)
+                                              :account           {:color address-color :address address }
+                                              :button-label      (i18n/label :t/display)
+                                              :on-save           (fn [chain-ids]
+                                                              (rf/dispatch [:hide-bottom-sheet])
+                                                              ;; (reset! selected-networks (map #(get utils/id->network %)
+                                                              ;;                                chain-ids))
+                                                              )}
+                                             ])}])))
        :container-style style/data-item}]]))
 
 (defn view
@@ -87,4 +97,4 @@
        :on-change        set-address-color
        :container-style  style/color-picker}]
      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
-     [address-view]]))
+     [address-view {:address-color address-color}]]))

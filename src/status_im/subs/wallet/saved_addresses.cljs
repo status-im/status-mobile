@@ -13,3 +13,12 @@
  (fn [wallet [address]]
    (some #(= address (:address %))
          (:saved-addresses wallet))))
+
+(rf/reg-sub
+ :wallet/saved-address-by-address
+ :<- [:wallet]
+ (fn [wallet [address]]
+   (->> wallet
+        :saved-addresses
+        (filter #(= address (:address %)))
+        first)))
