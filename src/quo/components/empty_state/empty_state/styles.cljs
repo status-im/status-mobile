@@ -7,8 +7,14 @@
    :align-items :center})
 
 (def image
-  {:width  80
-   :height 80})
+  {:width  72
+   :height 72})
+
+(def image-container
+  {:width           80
+   :height          80
+   :align-items     :center
+   :justify-content :center})
 
 (def text-container
   {:margin-top  12
