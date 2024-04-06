@@ -10,11 +10,12 @@
 
 (defn icon-style
   [{:keys [icon-container-size icon-container-rounded?
-           icon-size margin-left margin-right]}]
+           icon-size margin-left margin-right disabled?]}]
   (cond-> (merge {:margin-left     margin-left
                   :margin-right    margin-right
                   :align-items     :center
-                  :justify-content :center})
+                  :justify-content :center
+                  :opacity         (when disabled? 0.3)})
     icon-container-size
     (assoc :width icon-container-size :height icon-container-size)
     icon-container-rounded?
@@ -22,24 +23,26 @@
 
 (defn icon-left-icon-style
   [{:keys [override-margins size icon-container-size icon-container-rounded?
-           icon-size]}]
+           icon-size disabled?]}]
   (icon-style
    {:margin-left             (or (get override-margins :left)
                                  (if (= size 40) 12 8))
     :margin-right            (or (get override-margins :right) 4)
     :icon-container-size     icon-container-size
     :icon-container-rounded? icon-container-rounded?
-    :icon-size               icon-size}))
+    :icon-size               icon-size
+    :disabled?               disabled?}))
 
 (defn icon-right-icon-style
   [{:keys [override-margins size icon-container-size icon-container-rounded?
-           icon-size]}]
+           icon-size disabled?]}]
   (icon-style {:margin-left             (or (get override-margins :left) 4)
                :margin-right            (or (get override-margins :right)
                                             (if (= size 40) 12 8))
                :icon-container-size     icon-container-size
                :icon-container-rounded? icon-container-rounded?
-               :icon-size               icon-size}))
+               :icon-size               icon-size
+               :disabled?               disabled?}))
 
 (defn shape-style-container
   [size border-radius]
