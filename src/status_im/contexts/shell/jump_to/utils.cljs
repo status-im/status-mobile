@@ -92,7 +92,7 @@
     (doseq [screen-id (seq shell.constants/floating-screens)]
       (reanimated/set-shared-value
        (:screen-state (get @state/shared-values-atom screen-id))
-       shell.constants/close-screen-without-animation))))
+       shell.constants/close-screen-with-shell-animation))))
 
 ;;; Floating screen
 (defn- screen-state-open?

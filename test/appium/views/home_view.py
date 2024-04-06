@@ -225,6 +225,15 @@ class MuteButton(Button):
         return self.find_element().find_element(by=MobileBy.XPATH, value="//android.widget.TextView[2]").text
 
 
+class ShareQRCodeInfoText(Text):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="share-qr-code-info-text")
+
+    @property
+    def text(self):
+        return self.find_element().find_element(by=MobileBy.XPATH, value="/android.widget.TextView").text
+
+
 class HomeView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
@@ -329,10 +338,16 @@ class HomeView(BaseView):
         self.mark_all_read_activity_button = Button(self.driver, translation_id="mark-all-notifications-as-read")
 
         # Share tab
+        self.share_qr_code_info_text = ShareQRCodeInfoText(self.driver)
         self.link_to_profile_button = Button(self.driver, accessibility_id="link-to-profile")
         self.link_to_profile_text = Text(self.driver, accessibility_id="share-qr-code-info-text")
         self.close_share_tab_button = Button(self.driver, accessibility_id="close-shell-share-tab")
-
+        self.qr_code_image_element = BaseElement(self.driver, accessibility_id='share-qr-code')
+        self.share_wallet_tab_button = Button(self.driver, accessibility_id="Wallet")
+        self.account_avatar = BaseElement(self.driver, accessibility_id="account-avatar")
+        self.account_name_text = Text(
+            self.driver, xpath="//*[@content-desc='link-to-profile']/preceding-sibling::android.widget.TextView")
+        self.share_link_to_profile_button = Button(self.driver, accessibility_id='link-to-profile')
         # Discover communities
         self.community_card_item = BaseElement(self.driver, accessibility_id="community-card-item")
 
@@ -571,3 +586,17 @@ class HomeView(BaseView):
         link_to_profile = self.get_link_to_profile()
         self.click_system_back_button()
         return link_to_profile.split("#")[-1]
+
+    def copy_wallet_address(self):
+        self.share_link_to_profile_button.click()
+        address = self.sharing_text_native.text
+        self.click_system_back_button()
+        return address
+
+    def get_wallet_address(self):
+        self.show_qr_code_button.click()
+        self.share_wallet_tab_button.click()
+        self.account_avatar.wait_for_visibility_of_element()
+        address = self.copy_wallet_address()
+        self.click_system_back_button()
+        return address

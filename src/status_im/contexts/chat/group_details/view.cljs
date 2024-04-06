@@ -169,10 +169,7 @@
                                         :admin?  admin?}
        :render-fn                      contact-item-render}]
      [quo/floating-shell-button
-      {:jump-to {:on-press            (fn []
-                                        (rf/dispatch [:navigate-back])
-                                        (rf/dispatch [:shell/navigate-to-jump-to])
-                                      )
+      {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color profile-color
                  :label               (i18n/label :t/jump-to)}}
       style/floating-shell-button]]))

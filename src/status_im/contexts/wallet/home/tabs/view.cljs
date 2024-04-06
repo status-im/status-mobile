@@ -9,7 +9,7 @@
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [collectible-list     (rf/sub [:wallet/all-collectibles-list])
+  (let [collectible-list     (rf/sub [:wallet/all-collectibles-list-in-selected-networks])
         request-collectibles #(rf/dispatch
                                [:wallet/request-collectibles-for-all-accounts {}])]
     [rn/view {:style style/container}
