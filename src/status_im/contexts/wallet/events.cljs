@@ -7,6 +7,7 @@
     [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
@@ -445,33 +446,32 @@
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
 
-(rf/reg-event-fx
- :wallet/save-address
- (fn [_
-      [{:keys [address name customization-color on-success on-error chain-short-names ens test?]
-        :or   {on-success        (fn [])
-               on-error          (fn [])
-               name              ""
-               ens               ""
-               test?             false
-               ;; the chain short names should be a string like eth: or eth:arb:opt:
-               chain-short-names (str constants/mainnet-short-name ":")}}]]
-   (let [address-to-save {:address           address
-                          :name              name
-                          :color-id          customization-color
-                          :ens               ens
-                          :is-test           test?
-                          :chain-short-names chain-short-names}]
-     {:json-rpc/call
-      [{:method     "wakuext_upsertSavedAddress"
-        :params     [address-to-save]
-        :on-success on-success
-        :on-error   on-error}]})))
+(defn reset-selected-networks
+  [{:keys [db]}]
+  {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)})
 
-(rf/reg-event-fx
- :wallet/get-saved-addresses
- (fn [_ [{:keys [on-success on-error]}]]
-   {:json-rpc/call
-    [{:method     "wakuext_getSavedAddresses"
-      :on-success on-success
-      :on-error   on-error}]}))
+(rf/reg-event-fx :wallet/reset-selected-networks reset-selected-networks)
+
+(defn update-selected-networks
+  [{:keys [db]} [network-name]]
+  (let [selected-networks (get-in db [:wallet :ui :network-filter :selected-networks])
+        selector-state    (get-in db [:wallet :ui :network-filter :selector-state])
+        contains-network? (contains? selected-networks network-name)
+        update-fn         (if contains-network? disj conj)
+        networks-count    (count selected-networks)]
+    (cond (= selector-state :default)
+          {:db (-> db
+                   (assoc-in [:wallet :ui :network-filter :selected-networks] #{network-name})
+                   (assoc-in [:wallet :ui :network-filter :selector-state] :changed))}
+
+          ;; reset the list
+          ;; - if user is removing the last network in the list
+          ;; - if all networks is selected
+          (or (and (= networks-count 1) contains-network?)
+              (and (= (inc networks-count) constants/default-network-count) (not contains-network?)))
+          {:fx [[:dispatch [:wallet/reset-selected-networks]]]}
+
+          :else
+          {:db (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)})))
+
+(rf/reg-event-fx :wallet/update-selected-networks update-selected-networks)

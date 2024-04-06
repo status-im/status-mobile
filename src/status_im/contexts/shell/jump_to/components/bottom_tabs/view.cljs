@@ -33,7 +33,10 @@
          (assoc :test-ID             stack-id
                 :icon                icon
                 :icon-color-anim     icon-color
-                :on-press            #(animation/bottom-tab-on-press stack-id true)
+                :on-press            (fn []
+                                       (when-not (= stack-id :wallet-stack)
+                                         (rf/dispatch [:wallet/reset-selected-networks]))
+                                       (animation/bottom-tab-on-press stack-id true))
                 :accessibility-label (str (name stack-id) "-tab")
                 :customization-color customization-color))]))
 

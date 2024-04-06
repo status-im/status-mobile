@@ -236,9 +236,10 @@
                                         (utils/get-standard-crypto-format native-token
                                                                           fee-in-native-token))
             fee-in-fiat               (when-not confirm-disabled?
-                                        (utils/token-fiat-value fiat-currency
-                                                                fee-in-native-token
-                                                                native-token))
+                                        (utils/calculate-token-fiat-value
+                                         {:currency fiat-currency
+                                          :balance  fee-in-native-token
+                                          :token    native-token}))
             currency-symbol           (rf/sub [:profile/currency-symbol])
             fee-formatted             (when fee-in-fiat
                                         (utils/get-standard-fiat-format fee-in-crypto-formatted

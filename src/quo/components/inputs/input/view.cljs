@@ -60,12 +60,12 @@
   "Custom properties that must be removed from properties map passed to InputText."
   [:type :blur? :error? :right-icon :left-icon :disabled? :small? :button
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur
-   :container-style :ref])
+   :container-style :input-container-style :ref :placeholder])
 
 (defn- base-input
   [{:keys [blur? error? right-icon left-icon disabled? small? button
-           label char-limit multiline? clearable? on-focus on-blur container-style
-           on-change-text on-char-limit-reach weight default-value on-clear]
+           label char-limit multiline? clearable? on-focus on-blur container-style input-container-style
+           on-change-text on-char-limit-reach weight default-value on-clear placeholder]
     :as   props}]
   (let [theme                  (quo.theme/use-theme-value)
         ref                    (rn/use-ref-atom nil)
@@ -110,7 +110,10 @@
                                      {:style-fn  style/clear-icon
                                       :icon-name :i/clear
                                       :on-press  clear-on-press}))
-        clean-props            (apply dissoc props custom-props)]
+        clean-props            (apply dissoc props custom-props)
+        ;; Workaround for android cursor overlapping placeholder
+        ;; https://github.com/facebook/react-native/issues/27687
+        modified-placeholder   (if platform/android? (str "\u2009" placeholder) placeholder)]
     [rn/view {:style container-style}
      (when (or label char-limit)
        [label-&-counter
@@ -119,7 +122,8 @@
          :current-chars  char-count
          :char-limit     char-limit
          :theme          theme}])
-     [rn/view {:style (style/input-container colors-by-status small? disabled?)}
+     [rn/view
+      {:style (merge (style/input-container colors-by-status small? disabled?) input-container-style)}
       (when-let [{:keys [icon-name]} left-icon]
         [left-accessory
          {:variant-colors variant-colors
@@ -133,6 +137,7 @@
                 :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
                 :cursor-color           (:cursor variant-colors)
                 :editable               (not disabled?)
+                :placeholder            modified-placeholder
                 :on-focus               (fn []
                                           (when on-focus (on-focus))
                                           (internal-on-focus))

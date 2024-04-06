@@ -205,9 +205,10 @@ class SignInView(BaseView):
         self.remove_profile_button = Button(self.driver, accessibility_id="remove-profile")
 
     def set_password(self, password: str):
-        self.profile_password_edit_box.send_keys(password)
-        self.profile_repeat_password_edit_box.click()
-        self.profile_repeat_password_edit_box.send_keys(password)
+        input_elements = self.password_input.wait_for_elements()
+        input_elements[0].send_keys(password)
+        input_elements[1].click()
+        input_elements[1].send_keys(password)
         self.checkbox_button.scroll_to_element()
         self.checkbox_button.click()
         self.profile_confirm_password_button.click()

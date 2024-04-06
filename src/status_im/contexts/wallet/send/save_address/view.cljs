@@ -12,8 +12,9 @@
     [utils.re-frame :as rf]))
 
 (defn- address-view
-  [address]
-  (let [network-details (rf/sub [:wallet/network-preference-details])]
+  []
+  (let [network-details (rf/sub [:wallet/network-preference-details])
+        address         (rf/sub [:wallet/wallet-send-to-address])]
     [rn/view {:style style/address-container}
      [quo/data-item
       {:status          :default
@@ -86,4 +87,4 @@
        :on-change        set-address-color
        :container-style  style/color-picker}]
      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
-     [address-view "0xshivek"]]))
+     [address-view]]))

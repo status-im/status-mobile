@@ -55,4 +55,5 @@
                                                        {:check (i18n/label :t/emojis)})
     (validators/has-special-characters? s) (i18n/label :t/are-not-allowed
                                                        {:check (i18n/label :t/special-characters)})
+    (name-too-short? s)                    (i18n/label :t/minimum-characters {:min-chars min-length})
     (name-too-long? s)                     (i18n/label :t/nickname-is-too-long)))

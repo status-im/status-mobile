@@ -36,6 +36,7 @@
             (assoc :view-id component)
             (all-screens-params component screen-params))
     :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:dismiss-keyboard]]
          [:open-modal-fx component]]}))
 
 (rf/defn dismiss-modal
