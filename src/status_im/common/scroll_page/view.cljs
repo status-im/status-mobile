@@ -66,7 +66,7 @@
                                     :blur
                                     :photo)
                   :right-side     page-nav-right-section-buttons
-                  :center-opacity (reanimated/get-shared-value opacity-animation)
+                  :center-opacity opacity-animation
                   :overlay-shown? overlay-shown?}
            navigate-back? (assoc :icon-name           :i/close
                                  :accessibility-label :back-button
