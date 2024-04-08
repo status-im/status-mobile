@@ -254,6 +254,13 @@
      (contact.db/find-contact-by-address contacts address))))
 
 (re-frame/reg-sub
+ :contacts/contact-customization-color-by-address
+ (fn [[_ address]]
+   [(re-frame/subscribe [:contacts/contact-by-address address])])
+ (fn [[contact]]
+   (:customization-color contact)))
+
+(re-frame/reg-sub
  :contacts/filtered-active-sections
  :<- [:contacts/active-sections]
  :<- [:contacts/search-query]

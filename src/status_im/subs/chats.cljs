@@ -188,6 +188,12 @@
                  :last-message])))
 
 (re-frame/reg-sub
+ :chats/current-chat-color
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (:color current-chat)))
+
+(re-frame/reg-sub
  :chats/community-channel-ui-details-by-id
  :<- [:chats/chats]
  (fn [chats [_ chat-id]]

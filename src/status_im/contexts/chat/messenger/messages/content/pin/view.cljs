@@ -29,11 +29,15 @@
 
 (defn pinned-message
   [{:keys [from quoted-message timestamp-str]}]
-  (let [[primary-name _]    (rf/sub [:contacts/contact-two-names-by-identity from])
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [[primary-name _]            (rf/sub [:contacts/contact-two-names-by-identity from])
+        one-to-one-chat?            (rf/sub [:current-chat/one-to-one-chat?])
+        current-chat-color          (rf/sub [:chats/current-chat-color])
+        contact-customization-color (rf/sub [:contacts/contact-customization-color-by-address from])]
     [quo/system-message
      {:type                :pinned
       :pinned-by           primary-name
-      :customization-color customization-color
+      :customization-color (if one-to-one-chat?
+                             contact-customization-color
+                             current-chat-color)
       :child               [reply/quoted-message quoted-message false true]
       :timestamp           timestamp-str}]))
