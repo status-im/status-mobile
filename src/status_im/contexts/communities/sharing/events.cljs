@@ -45,9 +45,9 @@
                       (rf/dispatch [:open-share
                                     {:content (if platform/ios?
                                                 {:activityItemSources
-                                                 [{:placeholderItem {:type    "text"
+                                                 [{:placeholderItem {:type    :text
                                                                      :content title}
-                                                   :item            {:default {:type    "url"
+                                                   :item            {:default {:type    :url
                                                                                :content url}}
                                                    :linkMetadata    {:title title}}]}
                                                 {:title     title

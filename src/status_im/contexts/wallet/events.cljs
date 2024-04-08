@@ -404,9 +404,9 @@
    {:fx [[:effects.share/open
           {:content (if platform/ios?
                       {:activityItemSources
-                       [{:placeholderItem {:type    "text"
+                       [{:placeholderItem {:type    :text
                                            :content content}
-                         :item            {:default {:type    "text"
+                         :item            {:default {:type    :text
                                                      :content content}}
                          :linkMetadata    {:title title}}]}
                       {:title   title

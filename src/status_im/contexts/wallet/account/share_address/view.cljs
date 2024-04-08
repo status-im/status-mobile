@@ -19,9 +19,9 @@
   [address share-title]
   (rf/dispatch [:open-share
                 {:content (if platform/ios?
-                            {:activityItemSources [{:placeholderItem {:type    "text"
+                            {:activityItemSources [{:placeholderItem {:type    :text
                                                                       :content address}
-                                                    :item            {:default {:type "text"
+                                                    :item            {:default {:type :text
                                                                                 :content
                                                                                 address}}
                                                     :linkMetadata    {:title share-title}}]}
