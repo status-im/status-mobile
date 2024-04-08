@@ -91,3 +91,12 @@
         networks               (get-in db [:wallet :networks])
         env-networks           (get networks (if test-networks-enabled? :test :prod))]
     (map :chain-id env-networks)))
+
+
+(defn chain-ids->address-prefix [chain-ids])
+
+(defn chain-short-ids->address-prefix [chain-short-ids])
+
+(defn address-prefix->chain-ids [adress-prefix])
+
+(defn address-prefix->chain-short-ids [address-prefix])

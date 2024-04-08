@@ -34,6 +34,9 @@
                                               (if (= @state :default)
                                                 initial-network-preferences-names
                                                 @network-preferences-names-state))]
+ ;;    (prn {:color color :address address :npn network-preferences-names})
+ ;; LOG  {:color :magenta, :address "0x328d5041b23e3872fbc8e55fc3a046f016d5449d", :npn #{}}
+ ;; LOG  {:color :magenta, :address "0x328d5041b23e3872fbc8e55fc3a046f016d5449d", :npn #{:mainnet :arbitrum :optimism}}
     (fn [{:keys [on-save blur? theme button-label]}]
       (let [network-details  (rf/sub [:wallet/network-details])
             mainnet          (first network-details)
