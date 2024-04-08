@@ -56,7 +56,7 @@
 
 (deftest get-derived-addresses-success-test
   (let [db              {}
-        response        [{:has-activity true}]
+        response        [[{:has-activity true}]]
         derived-address (first response)
         expected-db     (-> db
                             (assoc-in [:wallet :ui :create-account :derivation-path-state]
