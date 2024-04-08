@@ -114,8 +114,8 @@
          :size            :size-24
          :value           counter}])
      [card-details
-      {:state state
-       :set-state set-state
+      {:state            state
+       :set-state        set-state
        :community?       community?
        :avatar-image-src avatar-image-src
        :collectible-name collectible-name
@@ -163,11 +163,11 @@
 (defn- view-internal
   [{:keys [container-style type on-press collectible-mime]
     :as   props}]
-  (let [[state set-state] (rn/use-state {:image-loaded? false
-                                         :image-error? false
-                                         :avatar-loaded? false
-                                         :avatar-error? false})
-        collectible-supported?  (utils/collectible-supported? collectible-mime)]
+  (let [[state set-state]      (rn/use-state {:image-loaded?  false
+                                              :image-error?   false
+                                              :avatar-loaded? false
+                                              :avatar-error?  false})
+        collectible-supported? (utils/collectible-supported? collectible-mime)]
     [rn/pressable
      {:on-press            (when (or (:image-loaded? state) (not collectible-supported?)) on-press)
       :accessibility-label :collectible-list-item
@@ -175,13 +175,13 @@
      (if (= type :card)
        [card-view
         (assoc props
-               :state state
-               :set-state set-state
+               :state                  state
+               :set-state              set-state
                :collectible-supported? collectible-supported?)]
        [image-view
         (assoc props
-               :state state
-               :set-state set-state
+               :state                  state
+               :set-state              set-state
                :collectible-supported? collectible-supported?)])]))
 
 (def ?schema

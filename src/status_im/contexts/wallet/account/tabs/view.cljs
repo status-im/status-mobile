@@ -13,8 +13,9 @@
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [collectible-list (rf/sub [:wallet/current-viewing-account-collectibles-in-selected-networks])
-        current-account-address (rf/sub [:wallet/current-viewing-account-address])] 
+  (let [collectible-list        (rf/sub
+                                 [:wallet/current-viewing-account-collectibles-in-selected-networks])
+        current-account-address (rf/sub [:wallet/current-viewing-account-address])]
     [rn/view {:style {:flex 1}}
      (case selected-tab
        :assets       [assets/view]
