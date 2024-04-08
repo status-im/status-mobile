@@ -183,6 +183,14 @@
 
 (rf/reg-fx :open-modal-fx open-modal)
 
+;;;; Share
+
+(defn open-share-fx
+  [content]
+  (rn/sharing content))
+
+(rf/reg-fx :open-share-fx open-share-fx)
+
 ;;;; Overlay
 
 (defn show-overlay
