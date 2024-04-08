@@ -3,7 +3,7 @@
     [cljs.test :refer [deftest is use-fixtures]]
     legacy.status-im.events
     legacy.status-im.subs.root
-    [promesa.core :as p]
+    [promesa.core :as promesa]
     [re-frame.core :as rf]
     [status-im.constants :as constants]
     status-im.events
@@ -19,7 +19,7 @@
 (deftest one-to-one-chat-test
   (h/test-async ::one-to-one-chat
     (fn []
-      (p/do
+      (promesa/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
         (h/wait-for [:chat/one-to-one-chat-created])
         (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
@@ -28,7 +28,7 @@
 (deftest delete-chat-test
   (h/test-async ::delete-chat
     (fn []
-      (p/do
+      (promesa/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
         (h/wait-for [:chat/one-to-one-chat-created])
         (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
@@ -40,7 +40,7 @@
 (deftest mute-chat-test
   (h/test-async ::mute-chat
     (fn []
-      (p/do
+      (promesa/do
         (rf/dispatch-sync [:chat.ui/start-chat chat-id])
         (h/wait-for [:chat/one-to-one-chat-created])
 
@@ -56,6 +56,22 @@
         (h/wait-for [:chat/mute-successfully])
         (is (not @(rf/subscribe [:chats/muted chat-id])))))))
 
+(deftest undo-mute-chat-test
+  (h/test-async ::undo-mute-chat
+    (fn []
+      (promesa/do
+        (rf/dispatch-sync [:chat.ui/start-chat chat-id])
+        (h/wait-for [:chat/one-to-one-chat-created])
+        (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
+
+        (rf/dispatch-sync [:chat.ui/mute chat-id true constants/mute-till-unmuted])
+        (h/wait-for [:chat/mute-successfully :toasts/upsert])
+        (is @(rf/subscribe [:chats/muted chat-id]))
+
+        (rf/dispatch-sync [:chat.ui/undo-mute chat-id])
+        (h/wait-for [:chat/undo-mute-success :toasts/close])
+        (is (not @(rf/subscribe [:chats/muted chat-id])))))))
+
 (deftest add-contact-test
   (h/test-async ::add-contact
     (fn []
@@ -64,7 +80,7 @@
                                 "ed2a86050325bc8856e26898c17e31dee2602b9429c91"
                                 "ecf65a41d62ac1f2f0823c0710dcb536e79af2763c")
             primary-name   "zQ3...pFNErL"]
-        (p/do
+        (promesa/do
           ;; Search for contact using compressed key
           (rf/dispatch [:contacts/set-new-identity {:input compressed-key}])
           (h/wait-for [:contacts/set-new-identity-success])

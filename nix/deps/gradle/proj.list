@@ -16,12 +16,10 @@ react-native-dialogs
 react-native-fast-image
 react-native-fs
 react-native-gesture-handler
-react-native-haptic-feedback
 react-native-hole-view
 react-native-image-crop-picker
 react-native-image-resizer
 react-native-keychain
-react-native-languages
 react-native-linear-gradient
 react-native-lottie-splash-screen
 react-native-mail
@@ -29,7 +27,6 @@ react-native-navigation
 react-native-nfc-manager
 react-native-orientation-locker
 react-native-permissions
-react-native-randombytes
 react-native-reanimated
 react-native-shake
 react-native-share

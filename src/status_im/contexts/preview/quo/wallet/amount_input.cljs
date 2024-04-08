@@ -9,7 +9,7 @@
     :type :number}
    {:key  :min-value
     :type :number}
-   {:key  :init-value
+   {:key  :value
     :type :number}
    {:type    :select
     :key     :status
@@ -18,12 +18,18 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:max-value  10000
-                             :min-value  0
-                             :init-value 1
-                             :status     :default})]
+  (let [state        (reagent/atom {:max-value 10000
+                                    :min-value 0
+                                    :value     1
+                                    :status    :default})
+        on-inc-press (fn [] (swap! state #(assoc % :value (inc (:value %)))))
+        on-dec-press (fn [] (swap! state #(assoc % :value (dec (:value %)))))]
     (fn []
       [preview/preview-container
        {:state      state
         :descriptor descriptor}
-       [quo/amount-input @state]])))
+       [quo/amount-input
+        (merge
+         @state
+         {:on-dec-press on-dec-press
+          :on-inc-press on-inc-press})]])))

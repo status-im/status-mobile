@@ -83,40 +83,37 @@
 (rf/defn navigate-to-jump-to
   {:events [:shell/navigate-to-jump-to]}
   [{:keys [db]}]
-  (let [open-floating-screens (shell.utils/open-floating-screens)]
-    {:db
-     (cond-> db
+  (let [current-view-id                   (:view-id db)
+        open-floating-screens             (shell.utils/open-floating-screens)
+        chat-screen-open?                 (get open-floating-screens shell.constants/chat-screen)
+        community-screen-open?            (get open-floating-screens shell.constants/community-screen)
+        discover-communities-screen-open? (get open-floating-screens
+                                               shell.constants/discover-communities-screen)]
+    (assoc
+     (if (shell.utils/shell-navigation? current-view-id)
+       {:db
+        (cond-> db
 
-       (get open-floating-screens shell.constants/chat-screen)
-       (assoc-in [:shell/floating-screens shell.constants/chat-screen :animation]
-        shell.constants/close-screen-with-shell-animation)
+          chat-screen-open?
+          (assoc-in [:shell/floating-screens shell.constants/chat-screen :animation]
+           shell.constants/close-screen-with-shell-animation)
 
-       (and (get open-floating-screens shell.constants/chat-screen)
-            (get open-floating-screens shell.constants/community-screen))
-       (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
-        shell.constants/close-screen-without-animation)
+          (and chat-screen-open? community-screen-open?)
+          (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
+           shell.constants/close-screen-without-animation)
 
-       (and (not (get open-floating-screens shell.constants/chat-screen))
-            (get open-floating-screens shell.constants/community-screen))
-       (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
-        shell.constants/close-screen-with-shell-animation)
+          (and (not chat-screen-open?) community-screen-open?)
+          (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
+           shell.constants/close-screen-with-shell-animation)
 
-       (get open-floating-screens shell.constants/discover-communities-screen)
-       (assoc-in [:shell/floating-screens shell.constants/discover-communities-screen :animation]
-        shell.constants/close-screen-without-animation))
+          discover-communities-screen-open?
+          (assoc-in [:shell/floating-screens shell.constants/discover-communities-screen :animation]
+           shell.constants/close-screen-without-animation))
 
-     :dispatch [:set-view-id :shell]
-     :effects.shell/navigate-to-jump-to nil}))
-
-(rf/defn change-shell-status-bar-style
-  {:events [:change-shell-status-bar-style]}
-  [_ style]
-  {:merge-options {:id "shell-stack" :options {:statusBar {:style style}}}})
-
-(rf/defn change-shell-nav-bar-color
-  {:events [:change-shell-nav-bar-color]}
-  [_ color]
-  {:merge-options {:id "shell-stack" :options {:navigationBar {:backgroundColor color}}}})
+        :dispatch [:set-view-id :shell]}
+       {:dispatch [:pop-to-root :shell-stack]})
+     :effects.shell/navigate-to-jump-to
+     nil)))
 
 (rf/defn shell-navigate-to
   {:events [:shell/navigate-to]}

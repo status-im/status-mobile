@@ -1,5 +1,6 @@
 (ns utils.image-server
   (:require
+    [quo.foundations.colors :as colors]
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
     [schema.core :as schema]
@@ -139,9 +140,10 @@
   check `get-font-file-ready` for `font-file`
 
   `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
-  [{:keys [port public-key key-uid theme ring? length size background-color color
-           font-size font-file uppercase-ratio indicator-size indicator-border
-           indicator-center-to-edge indicator-color full-name ring-width ratio]}]
+  [{:keys [port public-key key-uid theme ring? length size customization-color
+           color font-size font-file uppercase-ratio indicator-size
+           indicator-border indicator-center-to-edge indicator-color full-name
+           ring-width ratio]}]
   (str
    image-server-uri-prefix
    port
@@ -155,7 +157,7 @@
    "&size="
    (Math/round (* size ratio))
    "&bgColor="
-   (js/encodeURIComponent background-color)
+   (js/encodeURIComponent (colors/resolve-color customization-color theme))
    "&color="
    (js/encodeURIComponent color)
    "&fontSize="
@@ -188,10 +190,11 @@
    [:cat
     [:map
      [:color string?]
-     [:background-color string?]
+     [:theme :schema.common/theme]
      [:size number?]
      [:ratio float?]
      [:uppercase-ratio number?]
+     [:customization-color :schema.common/customization-color]
      [:font-size number?]
      [:font-file string?]]]
    [:string]])
@@ -204,10 +207,11 @@
   check `get-font-file-ready` for `font-file`
 
   check `get-account-image-uri-fn` for `override-ring?`"
-  [{:keys [port public-key key-uid theme override-ring? font-file ratio uppercase-ratio]}]
-  (fn [{:keys [full-name length size background-color font-size color
-               indicator-size indicator-border indicator-color indicator-center-to-edge
-               ring? ring-width override-theme]}]
+  [{:keys [port public-key key-uid theme override-ring? font-file ratio
+           uppercase-ratio customization-color]}]
+  (fn [{:keys [full-name length size font-size color indicator-size indicator-border
+               indicator-color indicator-center-to-edge ring? ring-width
+               override-theme]}]
     (get-initials-avatar-uri
      {:port                     port
       :public-key               public-key
@@ -216,7 +220,7 @@
       :full-name                full-name
       :length                   length
       :size                     size
-      :background-color         background-color
+      :customization-color      customization-color
       :theme                    (if (nil? override-theme) theme override-theme)
       :ring?                    (if (nil? override-ring?) ring? override-ring?)
       :ring-width               ring-width

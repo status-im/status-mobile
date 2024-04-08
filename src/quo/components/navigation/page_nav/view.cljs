@@ -11,7 +11,9 @@
     [quo.components.markdown.text :as text]
     [quo.components.navigation.page-nav.style :as style]
     [quo.theme :as theme]
-    [react-native.core :as rn]))
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [utils.worklets.profile-header :as header-worklet]))
 
 (def ^:private button-type
   {:white       :grey
@@ -85,14 +87,24 @@
      :else
      nil)])
 
+(def header-height 155)
+(def page-nav-height 25)
+(def threshold (- header-height page-nav-height))
+
 (defn- title-center
-  [{:keys [centered? title center-opacity]}]
-  [rn/view {:style (style/center-content-container centered? center-opacity)}
-   [text/text
-    {:weight          :medium
-     :size            :paragraph-1
-     :number-of-lines 1}
-    title]])
+  [{:keys [centered? title center-opacity scroll-y]}]
+  (let [animated-style (when scroll-y
+                         (header-worklet/profile-header-animation scroll-y
+                                                                  threshold
+                                                                  page-nav-height))]
+    [reanimated/view
+     {:style [(style/center-content-container centered? center-opacity)
+              animated-style]}
+     [text/text
+      {:weight          :medium
+       :size            :paragraph-1
+       :number-of-lines 1}
+      title]]))
 
 (defn- dropdown-center
   [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
@@ -101,7 +113,7 @@
                          (and (= theme :dark) (= background :blur)) :grey
                          :else                                      :ghost)
         dropdown-state (if dropdown-selected? :active :default)]
-    [rn/view {:style (style/center-content-container true center-opacity)}
+    [reanimated/view {:style (style/center-content-container true center-opacity)}
      [dropdown/view
       {:type       dropdown-type
        :state      dropdown-state
@@ -112,7 +124,7 @@
 
 (defn- token-center
   [{:keys [theme background token-logo token-name token-abbreviation center-opacity]}]
-  [rn/view {:style (style/center-content-container false center-opacity)}
+  [reanimated/view {:style (style/center-content-container false center-opacity)}
    [rn/image {:style style/token-logo :source token-logo}]
    [text/text
     {:style           style/token-name
@@ -129,7 +141,7 @@
 
 (defn- channel-center
   [{:keys [theme background channel-emoji channel-name channel-icon center-opacity]}]
-  [rn/view {:style (style/center-content-container false center-opacity)}
+  [reanimated/view {:style (style/center-content-container false center-opacity)}
    [rn/text {:style style/channel-emoji}
     channel-emoji]
    [text/text
@@ -142,7 +154,7 @@
 
 (defn- title-description-center
   [{:keys [background theme picture title description center-opacity]}]
-  [rn/view {:style (style/center-content-container false center-opacity)}
+  [reanimated/view {:style (style/center-content-container false center-opacity)}
    (when picture
      [rn/view {:style style/group-avatar-picture}
       [group-avatar/view {:picture picture :size :size-28}]])
@@ -165,7 +177,7 @@
   (let [community? (= type :community)
         shown-logo (if community? community-logo network-logo)
         shown-name (if community? community-name network-name)]
-    [rn/view {:style (style/center-content-container false center-opacity)}
+    [reanimated/view {:style (style/center-content-container false center-opacity)}
      [rn/image
       {:style  style/community-network-logo
        :source shown-logo}]
@@ -177,7 +189,7 @@
 
 (defn- wallet-networks-center
   [{:keys [networks networks-on-press background center-opacity]}]
-  [rn/view {:style (style/center-content-container true center-opacity)}
+  [reanimated/view {:style (style/center-content-container true center-opacity)}
    [network-dropdown/view
     {:state    :default
      :on-press networks-on-press
@@ -295,6 +307,7 @@
   `:title`
     - title
     - text-align: `:center` or `:left`
+    - scroll-y: a shared value (optional)
    `:dropdown`
     - dropdown-on-press:  a callback
     - dropdown-selected?: a boolean

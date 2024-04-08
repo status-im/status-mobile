@@ -2,6 +2,8 @@
   (:require
     [cljs.test :refer-macros [deftest is testing]]
     matcher-combinators.test
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.events :as events]
     [status-im.contexts.wallet.events.collectibles :as collectibles]))
 
@@ -73,3 +75,46 @@
           effects          (collectibles/store-last-collectible-details {:db db} [last-collectible])
           result-db        (:db effects)]
       (is (match? result-db expected-db)))))
+
+(deftest reset-selected-networks
+  (testing "reset-selected-networks"
+    (let [db          {:wallet {}}
+          expected-db {:wallet db/defaults}
+          effects     (events/reset-selected-networks {:db db})
+          result-db   (:db effects)]
+      (is (match? result-db expected-db)))))
+
+(deftest update-selected-networks
+  (testing "update-selected-networks"
+    (let [db           {:wallet {:ui {:network-filter {:selected-networks
+                                                       #{constants/optimism-network-name}
+                                                       :selector-state :changed}}}}
+          network-name constants/arbitrum-network-name
+          expected-db  {:wallet {:ui {:network-filter {:selected-networks
+                                                       #{constants/optimism-network-name
+                                                         network-name}
+                                                       :selector-state :changed}}}}
+          props        [network-name]
+          effects      (events/update-selected-networks {:db db} props)
+          result-db    (:db effects)]
+      (is (match? result-db expected-db))))
+
+  (testing "update-selected-networks > if all networks is already selected, update to incoming network"
+    (let [db           {:wallet db/defaults}
+          network-name constants/arbitrum-network-name
+          expected-db  {:wallet {:ui {:network-filter {:selected-networks #{network-name}
+                                                       :selector-state    :changed}}}}
+          props        [network-name]
+          effects      (events/update-selected-networks {:db db} props)
+          result-db    (:db effects)]
+      (is (match? result-db expected-db))))
+
+  (testing "update-selected-networks > reset on removing last network"
+    (let [db          {:wallet {:ui {:network-filter {:selected-networks
+                                                      #{constants/optimism-network-name}
+                                                      :selector-state :changed}}}}
+          expected-fx [[:dispatch [:wallet/reset-selected-networks]]]
+          props       [constants/optimism-network-name]
+          effects     (events/update-selected-networks {:db db} props)
+          result-fx   (:fx effects)]
+      (is (match? result-fx expected-fx)))))

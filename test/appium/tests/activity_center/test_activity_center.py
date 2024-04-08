@@ -25,7 +25,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_1 = self.home_1.get_public_key()
         self.profile_link_2 = self.home_2.get_link_to_profile()
-        self.home_2.close_share_tab_button.click_until_absense_of_element(self.home_2.link_to_profile_text)
+        self.home_2.close_share_tab_button.click_until_absense_of_element(self.home_2.link_to_profile_button)
         [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
 

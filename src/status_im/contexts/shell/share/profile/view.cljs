@@ -16,16 +16,18 @@
   []
   (let [{:keys [emoji-hash
                 universal-profile-url]
-         :as   profile}     (rf/sub [:profile/profile-with-image])
-        customization-color (rf/sub [:profile/customization-color])
-        abbreviated-url     (address/get-abbreviated-profile-url
-                             universal-profile-url)
-        emoji-hash-string   (string/join emoji-hash)]
+         :as   profile}       (rf/sub [:profile/profile-with-image])
+        {window-width :width} (rn/get-window)
+        customization-color   (rf/sub [:profile/customization-color])
+        abbreviated-url       (address/get-abbreviated-profile-url
+                               universal-profile-url)
+        emoji-hash-string     (string/join emoji-hash)]
     [rn/scroll-view
      {:content-container-style {:padding-bottom 16}}
      [rn/view {:style style/qr-code-container}
       [qr-codes/share-qr-code
        {:type                :profile
+        :width               (- window-width (* style/screen-padding 2))
         :qr-data             universal-profile-url
         :qr-data-label-shown abbreviated-url
         :on-share-press      #(list-selection/open-share {:message universal-profile-url})
@@ -35,7 +37,7 @@
         :on-text-long-press  #(rf/dispatch [:share/copy-text-and-show-toast
                                             {:text-to-copy      universal-profile-url
                                              :post-copy-message (i18n/label :t/link-to-profile-copied)}])
-        :profile-picture     (:uri (profile.utils/photo profile))
+        :profile-picture     (profile.utils/photo profile)
         :full-name           (profile.utils/displayed-name profile)
         :customization-color customization-color}]]
 

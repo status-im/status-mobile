@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.common.validators :as validators]
+    [status-im.common.validation.general :as validators]
     [status-im.contexts.chat.contacts.events :as data-store.contacts]
     status-im.contexts.chat.home.add-new-contact.effects
     [utils.ens.stateofus :as stateofus]

@@ -53,12 +53,16 @@
  :wallet/select-send-address
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [[prefix to-address] (utils/split-prefix-and-address address)
-         test-net?           (get-in db [:profile/profile :test-networks-enabled?])
+         testnet-enabled?    (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
          prefix-seq          (string/split prefix #":")
          selected-networks   (->> prefix-seq
                                   (remove string/blank?)
-                                  (mapv #(utils/short-name->id (keyword %) test-net? goerli-enabled?)))]
+                                  (mapv
+                                   #(utils/network->chain-id
+                                     {:network          %
+                                      :testnet-enabled? testnet-enabled?
+                                      :goerli-enabled?  goerli-enabled?})))]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
@@ -101,15 +105,23 @@
                      :amount
                      (when (= transaction-type :collecible) :tx-type))})))
 
-(rf/reg-event-fx :wallet/send-select-collectible
- (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
+(rf/reg-event-fx :wallet/send-collectibles-amount
+ (fn [{:keys [db]} [{:keys [collectible stack-id amount]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :token)
             (assoc-in [:wallet :ui :send :collectible] collectible)
             (assoc-in [:wallet :ui :send :tx-type] :collectible)
-            (assoc-in [:wallet :ui :send :amount] 1))
-    :fx [[:dispatch [:wallet/get-suggested-routes {:amount 1}]]
+            (assoc-in [:wallet :ui :send :amount] amount))
+    :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
          [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
+
+(rf/reg-event-fx :wallet/select-collectibles-amount
+ (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
+   {:db (-> db
+            (update-in [:wallet :ui :send] dissoc :token)
+            (assoc-in [:wallet :ui :send :collectible] collectible)
+            (assoc-in [:wallet :ui :send :tx-type] :collectible))
+    :fx [[:navigate-to-within-stack [:screen/wallet.select-collectible-amount stack-id]]]}))
 
 (rf/reg-event-fx :wallet/send-select-amount
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
@@ -349,3 +361,13 @@
                                                    {:id   :send-transaction-error
                                                     :type :negative
                                                     :text (:message error)}]))}]})))
+
+(rf/reg-event-fx
+ :wallet/select-from-account
+ (fn [_ [{:keys [address stack-id start-flow?]}]]
+   {:fx [[:dispatch [:wallet/switch-current-viewing-account address]]
+         [:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-flow}]]]}))

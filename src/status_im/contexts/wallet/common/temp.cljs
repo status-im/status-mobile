@@ -43,37 +43,3 @@
     :image             :icon-avatar
     :image-props       {:icon (status.resources/get-service-image :latamex)}
     :on-press          #(rn/open-url "https://latamex.com")}])
-
-(defn bridge-token-list
-  [networks-list]
-  [{:token               :snt
-    :name                "Status"
-    :token-value         "0.00 SNT"
-    :fiat-value          "€0.00"
-    :networks            networks-list
-    :state               :default
-    :symbol              "STT"
-    :customization-color :blue}
-   {:token               :eth
-    :name                "Ethereum"
-    :token-value         "0.00 ETH"
-    :fiat-value          "€0.00"
-    :networks            networks-list
-    :state               :default
-    :symbol              "ETH"
-    :customization-color :blue}
-   {:token               :dai
-    :name                "Dai"
-    :token-value         "0.00 DAI"
-    :fiat-value          "€0.00"
-    :networks            networks-list
-    :state               :default
-    :symbol              "DAI"
-    :customization-color :blue}])
-
-(def secret-phrase
-  ["witch" "collapse" "practice" "feed" "shame" "open" "lion"
-   "collapse" "umbrella" "fabric" "sadness" "obligue"])
-(def random-words
-  ["cousin" "roof" "minute" "swallow" "wing" "motion" "stomach"
-   "abuse" "banner" "noble" "poet" "wrist"])

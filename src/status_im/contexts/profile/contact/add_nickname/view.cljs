@@ -14,22 +14,24 @@
   []
   (let [{:keys [public-key primary-name nickname customization-color]
          :as   profile}                         (rf/sub [:contacts/current-contact])
-        ;; TODO(@mohsen): remove default color, https://github.com/status-im/status-mobile/issues/18733
-        customization-color                     (or customization-color constants/profile-default-color)
+        customization-color                     customization-color
         full-name                               (profile.utils/displayed-name profile)
         profile-picture                         (profile.utils/photo profile)
         [unsaved-nickname set-unsaved-nickname] (rn/use-state nickname)
         [error-msg set-error-msg]               (rn/use-state nil)
+        [typing? set-typing?]                   (rn/use-state false)
         has-nickname?                           (rn/use-memo (fn [] (not (string/blank? nickname)))
                                                              [nickname])
         validate-nickname                       (rn/use-callback
                                                  (debounce/debounce
                                                   (fn [name]
                                                     (set-error-msg
-                                                     (profile-validator/validation-nickname name)))
+                                                     (profile-validator/validation-nickname name))
+                                                    (set-typing? false))
                                                   300))
         on-cancel                               (rn/use-callback #(rf/dispatch [:hide-bottom-sheet]))
         on-nickname-change                      (rn/use-callback (fn [text]
+                                                                   (set-typing? true)
                                                                    (set-unsaved-nickname text)
                                                                    (validate-nickname text)))
         on-nickname-submit                      (rn/use-callback
@@ -75,7 +77,8 @@
      [quo/bottom-actions
       {:actions          :two-actions
        :button-one-label (i18n/label (if has-nickname? :t/update-nickname-title :t/add-nickname-title))
-       :button-one-props {:disabled?           (or (string/blank? unsaved-nickname)
+       :button-one-props {:disabled?           (or typing?
+                                                   (string/blank? unsaved-nickname)
                                                    (not (string/blank? error-msg)))
                           :customization-color customization-color
                           :on-press            on-nickname-submit}

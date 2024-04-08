@@ -3,9 +3,11 @@
     [clojure.string :as string]
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
@@ -42,10 +44,14 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
 
-(rf/reg-event-fx :wallet/close-account-page
+(rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]}]
-   {:db (update db :wallet dissoc :current-viewing-account-address)
-    :fx [[:dispatch [:pop-to-root :shell-stack]]]}))
+   {:db (update db :wallet dissoc :current-viewing-account-address)}))
+
+(rf/reg-event-fx :wallet/close-account-page
+ (fn [_]
+   {:fx [[:dispatch [:wallet/clean-current-viewing-account]]
+         [:dispatch [:pop-to-root :shell-stack]]]}))
 
 (rf/reg-event-fx
  :wallet/get-accounts-success
@@ -245,12 +251,12 @@
 (rf/reg-event-fx :wallet/start-bridge
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :send :tx-type] :bridge)
-    :fx [[:dispatch [:open-modal :screen/wallet.bridge]]]}))
+    :fx [[:dispatch [:open-modal :screen/wallet.bridge-select-asset]]]}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
    {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-send stack-id]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.bridge-input-amount stack-id]]]]}))
 
 (rf/reg-event-fx
  :wallet/get-ethereum-chains
@@ -439,3 +445,33 @@
                 :type     :negative
                 :text     (i18n/label :t/provider-is-down {:chains chain-names})
                 :duration 10000}]]])})))
+
+(defn reset-selected-networks
+  [{:keys [db]}]
+  {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)})
+
+(rf/reg-event-fx :wallet/reset-selected-networks reset-selected-networks)
+
+(defn update-selected-networks
+  [{:keys [db]} [network-name]]
+  (let [selected-networks (get-in db [:wallet :ui :network-filter :selected-networks])
+        selector-state    (get-in db [:wallet :ui :network-filter :selector-state])
+        contains-network? (contains? selected-networks network-name)
+        update-fn         (if contains-network? disj conj)
+        networks-count    (count selected-networks)]
+    (cond (= selector-state :default)
+          {:db (-> db
+                   (assoc-in [:wallet :ui :network-filter :selected-networks] #{network-name})
+                   (assoc-in [:wallet :ui :network-filter :selector-state] :changed))}
+
+          ;; reset the list
+          ;; - if user is removing the last network in the list
+          ;; - if all networks is selected
+          (or (and (= networks-count 1) contains-network?)
+              (and (= (inc networks-count) constants/default-network-count) (not contains-network?)))
+          {:fx [[:dispatch [:wallet/reset-selected-networks]]]}
+
+          :else
+          {:db (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)})))
+
+(rf/reg-event-fx :wallet/update-selected-networks update-selected-networks)

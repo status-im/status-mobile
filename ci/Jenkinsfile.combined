@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.8.11'
+library 'status-jenkins-lib@v1.8.12'
 
 pipeline {
   agent { label 'linux' }
@@ -81,7 +81,7 @@ pipeline {
     stage('Publish') {
       when { expression { params.PUBLISH } }
       steps { script {
-        switch (btype) {
+        switch (utils.getBuildType()) {
           case 'nightly': /* Create JSON file with newest build URLs */
             s3.updateBucketJSON(urls, 'latest.json');
             break;

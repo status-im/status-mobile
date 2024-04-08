@@ -6,10 +6,11 @@ let
   # For testing local version of nixpkgs
   #nixpkgsSrc = (import <nixpkgs> { }).lib.cleanSource "/home/jakubgs/work/nixpkgs";
 
-  # We follow a fork of nixpkgs where we bump gradle to 8.3 and update build tools
+  # We follow release 23-11 of nixpkgs
+  # https://github.com/NixOS/nixpkgs/releases/tag/23.11
   nixpkgsSrc = builtins.fetchTarball {
-    url = "https://github.com/status-im/nixpkgs/archive/44d8b23ebbe40ed16ef1aecef6c5354657c48b19.tar.gz";
-    sha256 = "sha256:0s7kjnc8drchzp268yzbv5snc4702hswcns9hrncjq4im8cv6mf9";
+    url = "https://github.com/NixOS/nixpkgs/archive/224fd9a362487ab2894dac0df161c84ab1d8880b.tar.gz";
+    sha256 = "sha256:1syvl39pi1h8lf5gkd9h7ksn5hp34cj7pa3abr59217kv0bdklhy";
   };
 
   # Status specific configuration defaults

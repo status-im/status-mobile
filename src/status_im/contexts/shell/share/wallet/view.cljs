@@ -1,16 +1,19 @@
 (ns status-im.contexts.shell.share.wallet.view
   (:require
+    [oops.core :as oops]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.share :as share]
     [reagent.core :as reagent]
+    [status-im.constants :as constants]
     [status-im.contexts.shell.share.style :as style]
     [status-im.contexts.shell.share.wallet.style :as wallet-style]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (def qr-size 500)
@@ -31,27 +34,30 @@
       :isNewTask true})))
 
 (defn- open-preferences
-  [selected-networks]
-  (rf/dispatch [:show-bottom-sheet
-                {:theme :dark
-                 :shell? true
-                 :content
-                 (fn []
-                   [network-preferences/view
-                    {:blur?             true
-                     :selected-networks (set @selected-networks)
-                     :on-save           (fn [chain-ids]
-                                          (rf/dispatch [:hide-bottom-sheet])
-                                          (reset! selected-networks (map #(get utils/id->network %)
-                                                                         chain-ids)))}])}]))
-(defn- wallet-qr-code-item-internal
-  [props]
-  (let [{:keys [account width index]} props
-        selected-networks             (reagent/atom [:ethereum :optimism :arbitrum])
-        wallet-type                   (reagent/atom :legacy)
-        on-settings-press             #(open-preferences selected-networks)
-        on-legacy-press               #(reset! wallet-type :legacy)
-        on-multichain-press           #(reset! wallet-type :multichain)]
+  [selected-networks account]
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:theme   :dark
+     :shell?  true
+     :content (fn []
+                [network-preferences/view
+                 {:blur?             true
+                  :selected-networks (set @selected-networks)
+                  :account           account
+                  :button-label      (i18n/label :t/display)
+                  :on-save           (fn [chain-ids]
+                                       (rf/dispatch [:hide-bottom-sheet])
+                                       (reset! selected-networks (map #(get utils/id->network %)
+                                                                      chain-ids)))}])}]))
+
+(defn- wallet-qr-code-item
+  [{:keys [account index]}]
+  (let [{window-width :width} (rn/get-window)
+        selected-networks     (reagent/atom constants/default-network-names)
+        wallet-type           (reagent/atom :legacy)
+        on-settings-press     #(open-preferences selected-networks account)
+        on-legacy-press       #(reset! wallet-type :legacy)
+        on-multichain-press   #(reset! wallet-type :multichain)]
     (fn []
       (let [share-title         (str (:name account) " " (i18n/label :t/address))
             qr-url              (utils/get-wallet-qr {:wallet-type       @wallet-type
@@ -62,10 +68,11 @@
                                   :port        (rf/sub [:mediaserver/port])
                                   :qr-size     qr-size
                                   :error-level :highest})]
-        [rn/view {:style {:height qr-size :width width :margin-left (if (zero? index) 0 -30)}}
+        [rn/view {:style {:width window-width :margin-left (if (zero? index) 0 -30)}}
          [rn/view {:style style/qr-code-container}
           [quo/share-qr-code
            {:type                :wallet
+            :width               (- window-width (* style/screen-padding 2))
             :address             @wallet-type
             :qr-image-uri        qr-media-server-uri
             :qr-data             qr-url
@@ -79,54 +86,54 @@
             :on-legacy-press     on-legacy-press
             :on-settings-press   on-settings-press}]]]))))
 
-(def wallet-qr-code-item (memoize wallet-qr-code-item-internal))
-
 (defn- indicator
   [active?]
-  [rn/view
-   {:style (wallet-style/indicator-wrapper-style active?)}])
+  [rn/view {:style (wallet-style/indicator-wrapper-style active?)}])
 
 (defn- indicator-list
-  [indicator-count current-index]
-  [rn/view
-   {:style wallet-style/indicator-list-style}
-   (for [i (range indicator-count)]
-     (let [current-index (cond (<= current-index 0)                     0
-                               (>= current-index (dec indicator-count)) (dec indicator-count)
-                               :else                                    current-index)]
-       ^{:key i} [indicator (= current-index i)]))])
+  [num-indicators current-index]
+  [rn/view {:style wallet-style/indicator-list-style}
+   (for [i (range num-indicators)]
+     ^{:key i} [indicator (= current-index i)])])
 
 (defn render-item
   [item]
-  (let [width (rf/sub [:dimensions/window-width])]
-    [wallet-qr-code-item
-     {:account item
-      :index   (:position item)
-      :width   width}]))
+  [wallet-qr-code-item
+   {:account item
+    :index   (:position item)}])
+
+(defn- qr-code-visualized-index
+  [offset qr-code-size num-qr-codes]
+  (-> (+ (/ offset qr-code-size) 0.5)
+      (int)
+      (utils.number/value-in-range 0 (dec num-qr-codes))))
 
 (defn wallet-tab
   []
-  (let [accounts      (rf/sub [:wallet/accounts])
-        width         (rf/sub [:dimensions/window-width])
-        current-index (reagent/atom 0)]
+  (let [current-index         (reagent/atom 0)
+        {window-width :width} (rn/get-window)
+        qr-code-size          (- window-width 30)]
     (fn []
-      [rn/view
-       [rn/flat-list
-        {:horizontal                        true
-         :deceleration-rate                 0.9
-         :snap-to-alignment                 :start
-         :snap-to-interval                  (- width 30)
-         :disable-interval-momentum         true
-         :scroll-event-throttle             64
-         :data                              accounts
-         :directional-lock-enabled          true
-         :shows-horizontal-scroll-indicator false
-         :on-scroll                         (fn [e]
-                                              (reset! current-index (js/Math.ceil
-                                                                     (/ e.nativeEvent.contentOffset.x
-                                                                        width))))
-         :render-fn                         render-item}]
-       (when (> (count accounts) 1)
-         [rn/view
-          {:style {:margin-top 20}}
-          (indicator-list (count accounts) @current-index)])])))
+      (let [accounts     (rf/sub [:wallet/accounts])
+            num-accounts (count accounts)
+            on-scroll    (rn/use-callback
+                          (fn [e]
+                            (let [offset-x (oops/oget e "nativeEvent.contentOffset.x")
+                                  index    (qr-code-visualized-index offset-x qr-code-size num-accounts)]
+                              (reset! current-index index))))]
+        [rn/view
+         [rn/flat-list
+          {:horizontal                        true
+           :deceleration-rate                 0.9
+           :snap-to-alignment                 :start
+           :snap-to-interval                  qr-code-size
+           :disable-interval-momentum         true
+           :scroll-event-throttle             64
+           :data                              accounts
+           :directional-lock-enabled          true
+           :shows-horizontal-scroll-indicator false
+           :on-scroll                         on-scroll
+           :render-fn                         render-item}]
+         (when (> num-accounts 1)
+           [rn/view {:style {:margin-top 20}}
+            [indicator-list num-accounts @current-index]])]))))

@@ -47,9 +47,6 @@
   [{:id                  :overview
     :label               (i18n/label :t/overview)
     :accessibility-label :overview-tab}
-   {:id                  :activity
-    :label               (i18n/label :t/activity)
-    :accessibility-label :activity-tab}
    {:id                  :about
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])

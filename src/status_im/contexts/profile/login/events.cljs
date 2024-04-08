@@ -10,6 +10,7 @@
     [status-im.contexts.profile.rpc :as profile.rpc]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
@@ -78,11 +79,12 @@
 
                   :else
                   [[:profile.settings/switch-theme-fx
-                    [(or (get-in db [:profile/profile :appearance])
+                    [(or (:appearance settings)
                          constants/theme-type-dark)
                      :shell-stack
                      false]]
-                   [:set-root :shell-stack]]))})))
+                   [:set-root :shell-stack]
+                   [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
@@ -234,3 +236,12 @@
  :profile/on-password-input-changed
  (fn [{:keys [db]} [{:keys [password error]}]]
    {:db (update db :profile/login assoc :password password :error error)}))
+
+(rf/reg-event-fx
+ :profile/show-testnet-mode-banner-if-enabled
+ (fn [{:keys [db]}]
+   (when (get-in db [:profile/profile :test-networks-enabled?])
+     {:fx [[:dispatch
+            [:alert-banners/add
+             {:type :alert
+              :text (i18n/label :t/testnet-mode-enabled)}]]]})))
