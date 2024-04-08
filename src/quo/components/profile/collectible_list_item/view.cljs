@@ -10,7 +10,6 @@
     [quo.foundations.gradients :as gradients]
     [quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [schema.core :as schema]
     [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]))
@@ -43,9 +42,9 @@
     :color-index     gradient-color-index}])
 
 (defn- card-details
-  [{:keys [community? avatar-image-src collectible-name theme loading? error?]}]
+  [{:keys [community? avatar-image-src collectible-name theme state set-state]}]
   [rn/view {:style style/card-details-container}
-   (cond @loading?
+   (cond (:avatar-loading? state)
          [rn/view {:style {:flex-direction :row}}
           [loading-square theme]
           [loading-message theme]]
@@ -64,13 +63,13 @@
            collectible-name]])
 
    [rn/view
-    {:style (style/avatar-container @loading?)}
-    (when-not @error?
+    {:style (style/avatar-container (:avatar-loading? state))}
+    (when-not (:avatar-error? state)
       [:<>
        [collection-avatar/view
         {:size        :size-20
-         :on-load-end #(reset! loading? false)
-         :on-error    #(reset! error? true)
+         :on-load-end #(set-state (assoc state :avatar-loading? false))
+         :on-error    #(set-state (assoc state :error? true))
          :image       avatar-image-src}]
        [rn/view {:style {:width 8}}]])
     [text/text
@@ -82,13 +81,13 @@
      collectible-name]]])
 
 (defn- card-view
-  [{:keys [avatar-image-src collectible-name community? counter avatar-error? avatar-loading?
-           gradient-color-index image-src image-loading? image-error? collectible-mime]}]
+  [{:keys [avatar-image-src collectible-name community? counter state set-state
+           gradient-color-index image-src  collectible-mime]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style (style/card-view-container theme)}
      [rn/view {:style {:aspect-ratio 1}}
       (cond
-        @image-error?
+        (:image-error? state)
         [fallback-view
          {:theme theme
           :label (i18n/label :t/cant-fetch-info)}]
@@ -98,7 +97,7 @@
          {:theme theme
           :label (i18n/label :t/unsupported-file)}]
 
-        @image-loading?
+        (:image-loading? state)
         [loading-image
          {:theme                theme
           :gradient-color-index gradient-color-index}])
@@ -106,29 +105,29 @@
         [rn/view {:style {:aspect-ratio 1}}
          [rn/image
           {:style       style/image
-           :on-load-end #(reset! image-loading? false)
-           :on-error    #(reset! image-error? true)
+           :on-load-end #(set-state (assoc state :image-loading? false))
+           :on-error    #(set-state (assoc state :image-error? true))
            :source      image-src}]])]
-     (when (and (not @image-loading?) (not @image-error?) counter)
+     (when (and (not (:image-loading? state)) (not (:image-error? state)) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
          :size            :size-24
          :value           counter}])
      [card-details
-      {:loading?         avatar-loading?
-       :error?           avatar-error?
+      {:state state
+       :set-state set-state
        :community?       community?
        :avatar-image-src avatar-image-src
        :collectible-name collectible-name
        :theme            theme}]]))
 
 (defn- image-view
-  [{:keys [avatar-image-src community? counter image-error?
-           gradient-color-index image-src image-loading? collectible-mime]}]
+  [{:keys [avatar-image-src community? counter state set-state
+           gradient-color-index image-src collectible-mime]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style style/image-view-container}
      (cond
-       @image-error?
+       (:image-error? state)
        [fallback-view
         {:theme theme
          :label (i18n/label :t/cant-fetch-info)}]
@@ -138,7 +137,7 @@
         {:theme theme
          :label (i18n/label :t/unsupported-file)}]
 
-       @image-loading?
+       (:image-loading? state)
        [loading-image
         {:theme                theme
          :gradient-color-index gradient-color-index}])
@@ -146,15 +145,15 @@
        [rn/view {:style {:aspect-ratio 1}}
         [rn/image
          {:style       style/image
-          :on-load-end #(reset! image-loading? false)
-          :on-error    #(reset! image-error? true)
+          :on-load-end #(set-state (assoc state :image-loading? false))
+          :on-error    #(set-state (assoc state :image-error? true))
           :source      image-src}]])
-     (when (and (not @image-loading?) (not @image-error?) counter)
+     (when (and (not (:image-loading? state)) (not (:image-error? state)) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
          :size            :size-24
          :value           counter}])
-     (when (and (not @image-loading?) (not @image-error?) community?)
+     (when (and (not (:image-loading? state)) (not (:image-error? state)) community?)
        [preview-list/view
         {:container-style style/avatar
          :type            :communities
@@ -162,28 +161,25 @@
         [avatar-image-src]])]))
 
 (defn- view-internal
-  []
-  (let [image-loading?  (reagent/atom true)
-        image-error?    (reagent/atom false)
-        avatar-loading? (reagent/atom true)
-        avatar-error?   (reagent/atom false)]
-    (fn [{:keys [container-style type on-press]
-          :as   props}]
-      [rn/pressable
-       {:on-press            (when-not @image-loading? on-press)
-        :accessibility-label :collectible-list-item
-        :style               (merge container-style style/container)}
-       (if (= type :card)
-         [card-view
-          (assoc props
-                 :image-loading?  image-loading?
-                 :image-error?    image-error?
-                 :avatar-loading? avatar-loading?
-                 :avatar-error?   avatar-error?)]
-         [image-view
-          (assoc props
-                 :image-loading? image-loading?
-                 :image-error?   image-error?)])])))
+  [{:keys [container-style type on-press]
+    :as   props}]
+  (let [[state set-state] (rn/use-state {:image-loading? true
+                                         :image-error? false
+                                         :avatar-loading? true
+                                         :avatar-error? false})]
+    [rn/pressable
+     {:on-press            (when-not (:image-loading? state) on-press)
+      :accessibility-label :collectible-list-item
+      :style               (merge container-style style/container)}
+     (if (= type :card)
+       [card-view
+        (assoc props
+               :state state
+               :set-state set-state)]
+       [image-view
+        (assoc props
+               :state state
+               :set-state set-state)])]))
 
 (def ?schema
   [:=>
@@ -193,6 +189,7 @@
       [:avatar-image-src {:optional true} [:maybe :schema.common/image-source]]
       [:collectible-name {:optional true} [:maybe string?]]
       [:collectible-mime {:optional true} [:maybe [:or string? keyword?]]]
+      [:native-ID {:optional true} [:maybe [:or string? keyword?]]]
       [:community? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe [:or :string :int]]]
       [:gradient-color-index {:optional true}
