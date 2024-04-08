@@ -1,7 +1,6 @@
 (ns status-im.navigation.events
   (:require
     [re-frame.core :as re-frame]
-    [react-native.core :as rn]
     [status-im.contexts.shell.jump-to.events :as shell.events]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
@@ -147,7 +146,7 @@
   {:reload-status-nav-color-fx (or view-id (:view-id db))})
 
 (defn open-share
-  [_ [content]]
-  {:fx [[:effects.share/open content]]})
+  [_ [content handlers]]
+  {:fx [[:effects.share/open [content handlers]]]})
 
 (rf/reg-event-fx :open-share open-share)
