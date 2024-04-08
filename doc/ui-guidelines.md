@@ -90,7 +90,7 @@ GOOD:
       :on-chat-close        on-chat-close}]))
 ```
 
-Note that this should be done for only components that re-renders more frequently, as so you should profile before using. This is because you might not bebefi from using it much in scenarios 
+Note that this should be done for only components that re-renders more frequently, as so you should profile before using. This is because you might not benefit from using it much in scenarios 
 
 Note that this should be done for only components that re-renders more frequently. Therefore, it's advisable to conduct profiling to identify these type of components beforehand. This is because the benefits of employing this technique may not be substantial in cases where the component re-renders sparingly.
 
