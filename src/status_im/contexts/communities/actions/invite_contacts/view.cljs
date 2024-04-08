@@ -50,25 +50,33 @@
       (i18n/label :t/invite-friends-to-status)]]))
 
 (defn- contact-item
-  [{:keys [public-key] :as item}]
-  (let [user-selected? (rf/sub [:is-contact-selected? public-key])
-        on-toggle      (fn []
-                         (if user-selected?
-                           (rf/dispatch [:deselect-contact public-key])
-                           (rf/dispatch [:select-contact public-key])))]
+  [{:keys [public-key]
+    :as   item}]
+  (let [user-selected?         (rf/sub [:is-contact-selected? public-key])
+        {:keys [id]}           (rf/sub [:get-screen-params])
+        community-members-keys (set (keys (rf/sub [:communities/community-members id])))
+        community-member?      (boolean (community-members-keys public-key))
+        on-toggle              (fn []
+                                 (when-not community-member?
+                                   (if user-selected?
+                                     (rf/dispatch [:deselect-contact public-key])
+                                     (rf/dispatch [:select-contact public-key]))))]
     [contact-list-item/contact-list-item
      {:on-press                on-toggle
       :allow-multiple-presses? true
-      :accessory               {:type     :checkbox
-                                :checked? user-selected?
-                                :on-check on-toggle}}
+      :accessory               {:type      :checkbox
+                                :disabled? community-member?
+                                :checked?  (or community-member? user-selected?)
+                                :on-check  on-toggle}
+      :disabled?               community-member?}
      item]))
 
 (defn view-internal
   [{:keys [theme]}]
   (fn []
     (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
-    (let [{:keys [id]}            (rf/sub [:get-screen-params])
+    (let [customization-color     (rf/sub [:profile/customization-color])
+          {:keys [id]}            (rf/sub [:get-screen-params])
           contacts                (rf/sub [:contacts/filtered-active-sections])
           selected                (rf/sub [:group/selected-contacts])
           {:keys [name images]}   (rf/sub [:communities/community id])
@@ -113,7 +121,7 @@
          [:<>
           [gesture/section-list
            {:key-fn                         :public-key
-            :sticky-section-headers-enabled false
+            :sticky-section-headers-enabled true
             :sections                       contacts
             :render-section-header-fn       contact-list/contacts-section-header
             :content-container-style        (style/section-list-container-style theme)
@@ -123,6 +131,7 @@
             [quo/button
              {:type                :primary
               :accessibility-label :next-button
+              :customization-color customization-color
               :container-style     style/chat-button
               :on-press            on-press}
              (if (= 1 selected-contacts-count)

@@ -41,21 +41,24 @@
 (defn user
   [{:keys [short-chat-key primary-name secondary-name photo-path online? contact? verified?
            untrustworthy? on-press on-long-press accessory customization-color theme
-           allow-multiple-presses?]}]
+           allow-multiple-presses? disabled?]}]
   [rn/touchable-highlight
    {:style                   container-style
     :underlay-color          (colors/resolve-color customization-color theme 5)
     :allow-multiple-presses? allow-multiple-presses?
     :accessibility-label     :user-list
     :on-press                (when on-press on-press)
-    :on-long-press           (when on-long-press on-long-press)}
+    :on-long-press           (when on-long-press on-long-press)
+    :disabled                disabled?}
    [:<>
     [user-avatar/user-avatar
      {:full-name       primary-name
       :profile-picture photo-path
       :online?         online?
       :size            :small}]
-    [rn/view {:style {:margin-horizontal 8 :flex 1}}
+    [rn/view
+     {:style {:margin-horizontal 8
+              :flex              1}}
      [author/view
       {:primary-name   primary-name
        :secondary-name secondary-name
@@ -69,4 +72,4 @@
          :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
         short-chat-key])]
     (when accessory
-      [action-icon accessory customization-color theme])]])
+      [action-icon accessory customization-color disabled? theme])]])
