@@ -301,7 +301,7 @@
    (let [ens      (if (string/includes? input ".")
                     input
                     (str input domain))
-         chain-id (utils/short-name->id db :eth)]
+         chain-id (utils/network->chain-id db :mainnet)]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]

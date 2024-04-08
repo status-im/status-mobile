@@ -35,7 +35,7 @@
  :wallet/get-address-details
  (fn [{db :db} [address-or-ens]]
    (let [ens?           (string/includes? address-or-ens ".")
-         chain-id       (utils/short-name->id db :eth)
+         chain-id       (utils/network->chain-id db :mainnet)
          request-params [chain-id address-or-ens]]
      {:db (-> db
               (assoc-in [:wallet :ui :add-address-to-watch :activity-state] :scanning)
