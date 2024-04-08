@@ -15,7 +15,7 @@
     "image/png"
     "image/webp"})
 
-(defn collectible-supported?
+(defn supported-file?
   [collectible-type]
   (supported-collectible-types collectible-type))
 

@@ -36,7 +36,8 @@
   [{:keys [container-style square? on-press counter image-src collectible-mime native-ID]}]
   (let [theme                          (quo.theme/use-theme-value)
         [image-size set-image-size]    (rn/use-state {})
-        [image-error? set-image-error] (rn/use-state false)]
+        [image-error? set-image-error] (rn/use-state false)
+        supported-file?                (utils/supported-file? collectible-mime)]
     (rn/use-effect
      (fn []
        (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
@@ -45,11 +46,11 @@
                           :aspect-ratio (/ image-width image-height)})))
      [image-src])
     [rn/pressable
-     {:on-press            on-press
+     {:on-press            (when (and (not image-error?) supported-file?) on-press)
       :accessibility-label :expanded-collectible
       :style               (merge container-style style/container)}
      (cond
-       (not (utils/collectible-supported? collectible-mime))
+       (not supported-file?)
        [fallback-view
         {:label   (i18n/label :t/unsupported-file)
          :counter counter
@@ -61,7 +62,7 @@
          :counter counter
          :theme   theme}]
 
-       (and (not image-error?) (utils/collectible-supported? collectible-mime))
+       (and (not image-error?) supported-file?)
        [rn/view
         [rn/image
          {:style     (style/image square? (:aspect-ratio image-size))
