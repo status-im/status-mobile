@@ -79,7 +79,8 @@
  (fn [{:keys [db]} [selected-networks]]
    {:db (assoc-in db [:wallet :ui :send :selected-networks] selected-networks)}))
 
-(rf/reg-event-fx :wallet/send-select-token
+(rf/reg-event-fx
+ :wallet/send-select-token
  (fn [{:keys [db]} [{:keys [token stack-id start-flow?]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
@@ -90,6 +91,13 @@
            {:current-screen stack-id
             :start-flow?    start-flow?
             :flow-id        :wallet-flow}]]]}))
+
+(rf/reg-event-fx
+ :wallet/edit-token-to-send
+ (fn [{:keys [db]} [token]]
+   {:db (assoc-in db [:wallet :ui :send :token] token)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:wallet/clean-suggested-routes]]]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]

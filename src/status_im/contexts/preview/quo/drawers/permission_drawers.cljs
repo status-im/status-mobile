@@ -1,64 +1,58 @@
 (ns status-im.contexts.preview.quo.drawers.permission-drawers
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [status-im.common.resources :as resources]))
+    [reagent.core :as reagent]
+    [status-im.contexts.preview.quo.preview :as preview]))
 
-(def token-icon (resources/get-mock-image :status-logo))
+(def descriptor
+  [{:key     :type
+    :type    :select
+    :options [{:key :action}
+              {:key :single-token-gating}
+              {:key :multiple-token-gating}]}
+   {:key  :blur?
+    :type :boolean}])
 
-(defn example-1
-  []
-  [:<>
-   [quo/text {:style {:margin-right 4}} "Hold"]
-   [quo/permission-tag
-    {:size             24
-     :locked?          false
-     :tokens           [{:id    1
-                         :group [{:id 1 :token-icon token-icon}
-                                 {:id 2 :token-icon token-icon}
-                                 {:id 3 :token-icon token-icon}
-                                 {:id 4 :token-icon token-icon}
-                                 {:id 5 :token-icon token-icon}]}]
-     :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)}]
-   [quo/text
-    {:style {:margin-left  4
-             :margin-right 4}} "Or"]
-   [quo/permission-tag
-    {:size             24
-     :locked?          false
-     :tokens           [{:id    1
-                         :group [{:id 1 :token-icon token-icon}
-                                 {:id 2 :token-icon token-icon}
-                                 {:id 3 :token-icon token-icon}
-                                 {:id 4 :token-icon token-icon}
-                                 {:id 5 :token-icon token-icon}]}]
-     :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)}]
-   [quo/text {:style {:margin-left 4}} "To post"]])
+(def single-token-gating-props
+  [{:token-value  "50"
+    :token-symbol "SNT"}
+   {:token-value  "0.01"
+    :token-symbol "ETH"}])
 
-(defn example-2
-  []
-  [:<>
-   [quo/text {:style {:margin-right 4}} "Hold"]
-   [quo/token-tag
-    {:size         :size-24
-     :token-value  5
-     :token-symbol "ETH"}]
-   [quo/text {:style {:margin-left 4}} "To post"]])
+(def multiple-token-gating-props
+  [{:token-groups [[:eth :knc :snt :rare :mana]]}
+   {:token-groups [[:snt :eth :knc]
+                   [:eth :knc :snt :rare :mana]]}
+   {:token-groups [[:snt :eth :knc :rare :mana :snt]
+                   [:eth :knc :snt :rare :mana]
+                   [:rare :mana]]}])
 
-(defn example-3
-  []
-  [:<>
-   [quo/icon :i/communities {:color (colors/theme-colors colors/neutral-100 colors/white)}]
-   [quo/text {:style {:margin-right 4}} "Join community to post"]])
+(def action-props
+  [{:action-label "You sure you know this guy?"
+    :action-icon  :i/pending-state}
+   {:action-label "Join community to post"
+    :action-icon  :i/communities}])
 
 (defn view
   []
-  (fn []
-    [:<>
-     [rn/view {:margin-top 60}
-      [quo/permission-context [example-1] #(js/alert "drawer pressed")]]
-     [rn/view {:margin-top 60}
-      [quo/permission-context [example-2] #(js/alert "drawer pressed")]]
-     [rn/view {:margin-top 60}
-      [quo/permission-context [example-3] #(js/alert "drawer pressed")]]]))
+  (let [state (reagent/atom {:type  :multiple-token-gating
+                             :blur? true})
+        blur? (reagent/cursor state [:blur?])
+        type  (reagent/cursor state [:type])]
+    (fn []
+      [preview/preview-container
+       {:state                     state
+        :blur?                     @blur?
+        :show-blur-background?     true
+        :component-container-style {:padding-horizontal 0}
+        :blur-container-style      {:padding-horizontal 0}
+        :descriptor                descriptor}
+       (->> (condp = @type
+              :action                action-props
+              :single-token-gating   single-token-gating-props
+              :multiple-token-gating multiple-token-gating-props)
+            (map-indexed (fn [idx props]
+                           [:<>
+                            ^{:key idx}
+                            [quo/permission-context
+                             (merge @state props {:container-style {:margin-bottom 8}})]])))])))

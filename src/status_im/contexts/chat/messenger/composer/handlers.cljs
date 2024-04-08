@@ -16,8 +16,8 @@
 (defn focus
   "Animate to the `saved-height`, display background-overlay if needed, and set cursor position"
   [{:keys [input-ref] :as props}
-   {:keys [text-value focused? lock-selection? saved-cursor-position composer-focused? maximized?]}
-   {:keys [height saved-height last-height opacity background-y container-opacity]
+   {:keys [text-value focused? lock-selection? saved-cursor-position maximized?]}
+   {:keys [height saved-height last-height opacity background-y composer-focused?]
     :as   animations}
    {:keys [max-height] :as dimensions}]
   (reanimated/set-shared-value composer-focused? true)
@@ -27,7 +27,6 @@
         new-height        (min max-height last-height-value)]
     (reanimated/animate height new-height)
     (reanimated/set-shared-value saved-height new-height)
-    (reanimated/animate container-opacity 1)
     (when (> last-height-value (* constants/background-threshold max-height))
       (reset! maximized? true)
       (reanimated/animate opacity 1)
@@ -42,10 +41,9 @@
 (defn blur
   "Save the current height, minimize the composer, animate-out the background, and save cursor position"
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index
-           maximized? recording? composer-focused?]}
-   {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
-   {:keys [content-height max-height window-height]}
-   {:keys [images link-previews? reply]}]
+           maximized? recording?]}
+   {:keys [height saved-height last-height gradient-opacity opacity background-y composer-focused?]}
+   {:keys [content-height max-height window-height]}]
   (when-not @recording?
     (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
           min-height    (utils/get-min-height lines)
@@ -62,8 +60,6 @@
       (reanimated/set-shared-value saved-height min-height)
       (reanimated/animate opacity 0)
       (js/setTimeout #(reanimated/set-shared-value background-y (- window-height)) 300)
-      (when (utils/empty-input? @text-value images link-previews? reply nil)
-        (reanimated/animate container-opacity constants/empty-opacity))
       (reanimated/animate gradient-opacity 0)
       (reset! lock-selection? true)
       (reset! saved-cursor-position @cursor-position)
@@ -164,8 +160,3 @@
       (let [{:keys [start end text-input-handle]} @selection-event]
         (selection/update-selection text-input-handle start end)
         (reset! selection-event nil)))))
-
-(defn layout
-  [event state blur-height]
-  (when (utils/update-blur-height? event state blur-height)
-    (reanimated/set-shared-value blur-height (oops/oget event "nativeEvent.layout.height"))))

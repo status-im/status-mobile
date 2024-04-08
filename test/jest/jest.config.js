@@ -14,6 +14,7 @@ const transformIgnorePatterns = () => {
     'react-native-reanimated',
     'react-native-redash',
     'react-native-redash',
+    'react-native-shadow-2',
     'react-native-shake',
     'react-native-static-safe-area-insets',
   ].join('|');
