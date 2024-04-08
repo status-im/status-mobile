@@ -1,11 +1,11 @@
 (ns status-im.contexts.profile.settings.view
-  (:require [oops.core :as oops]
+  (:require [legacy.status-im.ui.components.list-selection :as list-selection]
+            [oops.core :as oops]
             [quo.core :as quo]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.profile.settings.header.view :as settings.header]
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
@@ -62,7 +62,7 @@
         :on-press   #(rf/dispatch [:navigate-back])
         :right-side [{:icon-name :i/qr-code
                       :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
-                     {:icon-name :i/share :on-press not-implemented/alert}]}]]
+                     {:icon-name :i/share :on-press #(list-selection/open-share {:message (:universal-profile-url profile)})}]}]]
      [rn/flat-list
       {:key                             :list
        :header                          [settings.header/view {:scroll-y scroll-y}]
