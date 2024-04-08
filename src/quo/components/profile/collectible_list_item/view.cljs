@@ -44,7 +44,7 @@
 (defn- card-details
   [{:keys [community? avatar-image-src collectible-name theme state set-state]}]
   [rn/view {:style style/card-details-container}
-   (cond (:avatar-loading? state)
+   (cond (not (:avatar-loaded? state))
          [rn/view {:style {:flex-direction :row}}
           [loading-square theme]
           [loading-message theme]]
@@ -63,12 +63,12 @@
            collectible-name]])
 
    [rn/view
-    {:style (style/avatar-container (:avatar-loading? state))}
+    {:style (style/avatar-container (:avatar-loaded? state))}
     (when-not (:avatar-error? state)
       [:<>
        [collection-avatar/view
         {:size        :size-20
-         :on-load-end #(set-state (assoc state :avatar-loading? false))
+         :on-load-end #(set-state (assoc state :avatar-loaded? true))
          :on-error    #(set-state (assoc state :error? true))
          :image       avatar-image-src}]
        [rn/view {:style {:width 8}}]])
@@ -82,7 +82,7 @@
 
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter state set-state
-           gradient-color-index image-src  collectible-mime]}]
+           gradient-color-index image-src collectible-supported?]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style (style/card-view-container theme)}
      [rn/view {:style {:aspect-ratio 1}}
@@ -92,23 +92,23 @@
          {:theme theme
           :label (i18n/label :t/cant-fetch-info)}]
 
-        (not (utils/collectible-supported? collectible-mime))
+        (not collectible-supported?)
         [fallback-view
          {:theme theme
           :label (i18n/label :t/unsupported-file)}]
 
-        (:image-loading? state)
+        (not (:image-loaded? state))
         [loading-image
          {:theme                theme
           :gradient-color-index gradient-color-index}])
-      (when (utils/collectible-supported? collectible-mime)
+      (when collectible-supported?
         [rn/view {:style {:aspect-ratio 1}}
          [rn/image
           {:style       style/image
-           :on-load-end #(set-state (assoc state :image-loading? false))
+           :on-load-end #(set-state (assoc state :image-loaded? true))
            :on-error    #(set-state (assoc state :image-error? true))
            :source      image-src}]])]
-     (when (and (not (:image-loading? state)) (not (:image-error? state)) counter)
+     (when (and (:image-loaded? state) (not (:image-error? state)) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
          :size            :size-24
@@ -123,7 +123,7 @@
 
 (defn- image-view
   [{:keys [avatar-image-src community? counter state set-state
-           gradient-color-index image-src collectible-mime]}]
+           gradient-color-index image-src collectible-supported?]}]
   (let [theme (quo.theme/use-theme-value)]
     [rn/view {:style style/image-view-container}
      (cond
@@ -132,28 +132,28 @@
         {:theme theme
          :label (i18n/label :t/cant-fetch-info)}]
 
-       (not (utils/collectible-supported? collectible-mime))
+       (not collectible-supported?)
        [fallback-view
         {:theme theme
          :label (i18n/label :t/unsupported-file)}]
 
-       (:image-loading? state)
+       (not (:image-loaded? state))
        [loading-image
         {:theme                theme
          :gradient-color-index gradient-color-index}])
-     (when (utils/collectible-supported? collectible-mime)
+     (when collectible-supported?
        [rn/view {:style {:aspect-ratio 1}}
         [rn/image
          {:style       style/image
-          :on-load-end #(set-state (assoc state :image-loading? false))
-          :on-error    #(set-state (assoc state :image-error? true))
+          :on-load-end #(set-state (assoc state :image-loaded? true))
+          :on-error    #(set-state (assoc state :image-error? true :image-loaded? true))
           :source      image-src}]])
-     (when (and (not (:image-loading? state)) (not (:image-error? state)) counter)
+     (when (and (:image-loaded? state) (not (:image-error? state)) counter)
        [collectible-counter/view
         {:container-style style/collectible-counter
          :size            :size-24
          :value           counter}])
-     (when (and (not (:image-loading? state)) (not (:image-error? state)) community?)
+     (when (and (:image-loaded? state) (not (:image-error? state)) community?)
        [preview-list/view
         {:container-style style/avatar
          :type            :communities
@@ -161,25 +161,28 @@
         [avatar-image-src]])]))
 
 (defn- view-internal
-  [{:keys [container-style type on-press]
+  [{:keys [container-style type on-press collectible-mime]
     :as   props}]
-  (let [[state set-state] (rn/use-state {:image-loading? true
+  (let [[state set-state] (rn/use-state {:image-loaded? false
                                          :image-error? false
-                                         :avatar-loading? true
-                                         :avatar-error? false})]
+                                         :avatar-loaded? false
+                                         :avatar-error? false})
+        collectible-supported?  (utils/collectible-supported? collectible-mime)]
     [rn/pressable
-     {:on-press            (when-not (:image-loading? state) on-press)
+     {:on-press            (when (or (:image-loaded? state) (not collectible-supported?)) on-press)
       :accessibility-label :collectible-list-item
       :style               (merge container-style style/container)}
      (if (= type :card)
        [card-view
         (assoc props
                :state state
-               :set-state set-state)]
+               :set-state set-state
+               :collectible-supported? collectible-supported?)]
        [image-view
         (assoc props
                :state state
-               :set-state set-state)])]))
+               :set-state set-state
+               :collectible-supported? collectible-supported?)])]))
 
 (def ?schema
   [:=>

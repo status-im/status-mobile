@@ -95,7 +95,7 @@
    :z-index          2})
 
 (defn avatar-container
-  [loading?]
+  [loaded?]
   {:flex           1
    :flex-direction :row
-   :opacity        (when loading? 0)})
+   :opacity        (when-not loaded? 0)})

@@ -4,8 +4,8 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
+    [status-im.contexts.wallet.collectible.utils :as utils]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]))
 
 (defn- render-fn

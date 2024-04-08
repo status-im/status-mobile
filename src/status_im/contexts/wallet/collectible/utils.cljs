@@ -8,7 +8,7 @@
       :balance
       js/parseInt))
 
-(def ^:private supported-collectible-types
+(def ^:const supported-collectible-types
   #{"image/jpeg"
     "image/gif"
     "image/bmp"
@@ -16,5 +16,28 @@
     "image/webp"})
 
 (defn collectible-supported?
-  [type]
-  (some #{type} supported-collectible-types))
+  [collectible-type]
+  (supported-collectible-types collectible-type))
+
+(defn total-owned-collectible
+  [ownership]
+  (reduce (fn [acc item] (+ acc (js/parseInt (:balance item)))) 0 ownership))
+
+(defn total-owned-collectible-by-address
+  [ownership address]
+  (reduce (fn [acc item]
+            (if (= (:address item) address)
+              (+ acc (js/parseInt (:balance item)))
+              acc))
+          0
+          ownership))
+
+(defn calculate-owned-collectible
+  [ownership address]
+  (if address
+    (total-owned-collectible-by-address ownership address)
+    (total-owned-collectible ownership)))
+
+(defn collectible-owned-counter
+  [total]
+  (when (> total 1) total))

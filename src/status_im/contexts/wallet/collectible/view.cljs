@@ -10,7 +10,7 @@
     [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
-    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.url :as url]))
@@ -101,7 +101,6 @@
           [quo/expanded-collectible
            {:image-src        preview-uri
             :container-style  style/preview-container
-            :status           (if svg? :unsupported :default)
             :counter          (utils/collectible-owned-counter total-owned)
             :collectible-mime (:animation-media-type collectible-data)
             :native-ID        (when (= animation-shared-element-id token-id) :shared-element)
