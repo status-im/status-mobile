@@ -37,7 +37,7 @@
   [blur? idx group]
   ^{:key idx}
   [rn/view {:style style/token-group}
-   (when-not (= idx 0)
+   (when-not (zero? idx)
      [text/text {:style {:margin-right 3}}
       (string/lower-case (i18n/label :t/or))])
    [preview-list/view
@@ -68,8 +68,9 @@
       (i18n/label :t/hold-to-post-2)]]))
 
 (defn- view-internal
-  [{:keys [on-press blur? type container-style] :as props}]
-  (let [theme (quo.theme/use-theme-value)]
+  [{:keys [on-press blur? container-style] :as props}]
+  (let [theme        (quo.theme/use-theme-value)
+        context-type (:type props)]
     [shadow/view
      {:offset       [0 4]
       :paint-inside false
@@ -88,9 +89,9 @@
        {:type      :ghost
         :size      24
         :on-press  on-press
-        :icon-left (when (= type :action)
+        :icon-left (when (= context-type :action)
                      (:action-icon props))}
-       (condp = type
+       (condp = context-type
          :action                (:action-label props)
          :single-token-gating   [single-token-gating
                                  (select-keys props [:token-value :token-symbol :blur?])]
