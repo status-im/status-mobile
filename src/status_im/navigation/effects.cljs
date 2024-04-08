@@ -192,7 +192,8 @@
      (fn? on-success) (.then on-success)
      :always          (.catch (fn [error]
                                 (log/error "[react-native-share]" error)
-                                (on-error error))))))
+                                (when (fn? on-error)
+                                  (on-error error)))))))
 
 ;;;; Overlay
 
