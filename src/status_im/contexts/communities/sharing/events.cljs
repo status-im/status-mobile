@@ -43,7 +43,7 @@
    (let [title      (i18n/label :t/channel-on-status)
          on-success (fn [url]
                       (rf/dispatch [:open-share
-                                    {:content (if platform/ios?
+                                    {:options (if platform/ios?
                                                 {:activityItemSources
                                                  [{:placeholderItem {:type    :text
                                                                      :content title}

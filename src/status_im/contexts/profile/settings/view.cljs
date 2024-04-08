@@ -63,7 +63,7 @@
                       :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
                      {:icon-name :i/share
                       :on-press  #(rf/dispatch [:open-share
-                                                {:content {:message (:universal-profile-url
+                                                {:options {:message (:universal-profile-url
                                                                      profile)}}])}]}]]
      [rn/flat-list
       {:key                             :list

@@ -15,7 +15,7 @@
                config
                (fn [downloaded-url]
                  (rf/dispatch [:open-share
-                               {:content    {:url       (str (when platform/android? "file://")
+                               {:options    {:url       (str (when platform/android? "file://")
                                                              downloaded-url)
                                              :isNewTask true}
                                 :on-success #(fs/unlink downloaded-url)

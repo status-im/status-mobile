@@ -187,8 +187,8 @@
 ;;;; Share
 
 (rf/reg-fx :effects.share/open
- (fn [{:keys [content on-success on-error]}]
-   (cond-> (share/open content)
+ (fn [{:keys [options on-success on-error]}]
+   (cond-> (share/open options)
      (fn? on-success) (.then on-success)
      :always          (.catch (fn [error]
                                 (log/error "[react-native-share]" error)

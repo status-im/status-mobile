@@ -402,7 +402,7 @@
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
    {:fx [[:effects.share/open
-          {:content (if platform/ios?
+          {:options (if platform/ios?
                       {:activityItemSources
                        [{:placeholderItem {:type    :text
                                            :content content}

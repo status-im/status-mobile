@@ -18,7 +18,7 @@
 (defn- share-action
   [address share-title]
   (rf/dispatch [:open-share
-                {:content (if platform/ios?
+                {:options (if platform/ios?
                             {:activityItemSources [{:placeholderItem {:type    :text
                                                                       :content address}
                                                     :item            {:default {:type :text
