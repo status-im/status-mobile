@@ -15,6 +15,7 @@
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.contexts.wallet.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :as responsiveness]
@@ -46,9 +47,11 @@
       :image             :icon
       :image-props       :i/derivated-path
       :action            :button
-      :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
-                                                      {:on-auth-success   on-auth-success
-                                                       :auth-button-label (i18n/label :t/continue)}])
+      :action-props      {:on-press    #(if (ff/enabled? :ff/wallet.edit-derivation-path)
+                                          (rf/dispatch [:standard-auth/authorize
+                                                        {:on-auth-success   on-auth-success
+                                                         :auth-button-label (i18n/label :t/continue)}])
+                                          (js/alert "Coming soon!"))
                           :button-text (i18n/label :t/edit)
                           :icon-left   :i/face-id
                           :alignment   :flex-start}

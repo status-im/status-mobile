@@ -55,12 +55,15 @@
     (is (match? result-db expected-db))))
 
 (deftest get-derived-addresses-success-test
-  (let [db          {}
-        response    [{:has-activity true}]
-        expected-db (-> db
-                        (assoc-in [:wallet :ui :create-account :derivation-path-state] :has-activity)
-                        (assoc-in [:wallet :ui :create-account :derivation-path] (first response)))
-        effects     (events/get-derived-addresses-success {:db db} response)
-        result-db   (:db effects)]
-    (is (match? result-db expected-db))))
+  (let [db              {}
+        response        [{:has-activity true}]
+        derived-address (first response)
+        expected-db     (-> db
+                            (assoc-in [:wallet :ui :create-account :derivation-path-state]
+                                      (if (:has-activity derived-address) :has-activity :no-activity))
+                            (assoc-in [:wallet :ui :create-account :derivation-path] derived-address))
+        effects         (events/get-derived-addresses-success {:db db} response)
+        result-db       (:db effects)]
+    (is (match? expected-db result-db))))
+
 
