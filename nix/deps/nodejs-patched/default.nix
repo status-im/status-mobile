@@ -4,16 +4,16 @@
 
 { stdenv, deps, nodejs, patchMavenSources }:
 
+let
+  patchesDir = ./../../../patches;
+  patches = builtins.attrNames (builtins.readDir patchesDir);
+in
 stdenv.mkDerivation {
   name = "${deps.nodejs.name}-patched";
   phases = [
     "unpackPhase"
     "patchGradlePhase"
-    "patchBuildIdPhase"
-    "patchKeyChainPhase"
-    "patchGlogPhase"
-    "patchNativeNavigationPhase"
-    "patchRNScriptPhase"
+    "patchNodeLibsPhase"
     "installPhase"
   ];
 
@@ -50,49 +50,15 @@ stdenv.mkDerivation {
     done
   '';
 
-  # Do not add a BuildId to the generated libraries, for reproducibility
-  patchBuildIdPhase = ''
-    substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt --replace \
-      '-Wl,--build-id' \
-      '-Wl,--build-id=none'
-  '';
-
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/
   '';
 
-  # Remove gradle-test-logger-plugin:
-  # https://github.com/oblador/react-native-keychain/issues/595
-  # TODO: remove this patch when we this library fixes above issue
-  patchKeyChainPhase = ''
-    sed -i -e '/classpath/d' \
-      -e '/apply plugin: "com\.adarshr\.test-logger"/d' \
-      ./node_modules/react-native-keychain/android/build.gradle
-  '';
-
-  # Fix pod issue after upgrading to MacOS Sonoma and Xcode 15
-  # https://github.com/status-im/status-mobile/issues/17682
-  patchGlogPhase = ''
-    substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh \
-    --replace 'export CC="' '#export CC="' \
-    --replace 'export CXX="' '#export CXX="'
-  '';
-
-  # https://github.com/wix/react-native-navigation/issues/7819
-  patchNativeNavigationPhase = ''
-    substituteInPlace ./node_modules/react-native-navigation/lib/android/app/build.gradle \
-      --replace 'JavaVersion.VERSION_1_8' 'JavaVersion.VERSION_17'
-
-    substituteInPlace ./node_modules/react-native-navigation/lib/android/app/src/main/java/com/reactnativenavigation/viewcontrollers/stack/topbar/button/ButtonPresenter.kt \
-      --replace 'host: View?,' 'host: View,' \
-      --replace 'info: AccessibilityNodeInfoCompat?' 'info: AccessibilityNodeInfoCompat'
-  '';
-  
-  # to fix https://github.com/status-im/status-mobile/issues/18548
-  patchRNScriptPhase = ''
-    substituteInPlace ./node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh \
-      --replace 'cp -R -X' 'cp -R'
+  patchNodeLibsPhase = ''
+    for patch in ${toString patches}; do
+      patch -p1 < ${patchesDir}/$patch
+    done
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try

@@ -39,6 +39,7 @@
    {:size                :paragraph-2
     :weight              :medium
     :style               (style/text theme)
+    :number-of-lines     2
     :accessibility-label :notification-content}
    text])
 

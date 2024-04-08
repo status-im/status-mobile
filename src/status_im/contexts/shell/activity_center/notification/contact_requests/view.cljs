@@ -113,7 +113,8 @@
       :unread? (not (:read notification))
       :context [[common/user-avatar-tag author]
                 (i18n/label :t/contact-request-sent)]
-      :message {:body (get-in message [:content :text])}
+      :message {:body                 (get-in message [:content :text])
+                :body-number-of-lines 2}
       :items
       (condp = (:contact-request-state message)
         constants/contact-request-message-state-accepted
