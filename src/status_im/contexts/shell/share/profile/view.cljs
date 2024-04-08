@@ -37,7 +37,7 @@
         :on-text-long-press  #(rf/dispatch [:share/copy-text-and-show-toast
                                             {:text-to-copy      universal-profile-url
                                              :post-copy-message (i18n/label :t/link-to-profile-copied)}])
-        :profile-picture     (:uri (profile.utils/photo profile))
+        :profile-picture     (profile.utils/photo profile)
         :full-name           (profile.utils/displayed-name profile)
         :customization-color customization-color}]]
 

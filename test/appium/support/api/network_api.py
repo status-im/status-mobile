@@ -1,59 +1,53 @@
 import logging
+import time
+from decimal import Decimal
+from json import JSONDecodeError
+from os import environ
 from typing import List
 
 import pytest
 import requests
-import time
-from json import JSONDecodeError
-from decimal import Decimal
-from os import environ
+from selenium.common import TimeoutException
+
 import tests
 
 
-class NetworkApi(object):
+class NetworkApi:
     def __init__(self):
-        self.network_url = 'http://api-goerli.etherscan.io/api?'
-        self.headers = {
-        'User-Agent':"Mozilla\\5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\\537.36 (KHTML, like Gecko) Chrome\\7"
-                     "7.0.3865.90 Safari\\537.36", }
-        self.chat_bot_url = 'http://offsite.chat:8099'
+        self.network_url = 'http://api-sepolia.etherscan.io/api'
         self.api_key = environ.get('ETHERSCAN_API_KEY')
 
     def log(self, text: str):
         tests.test_suite_data.current_test.testruns[-1].steps.append(text)
         logging.info(text)
 
-    def send_etherscan_request(self, method, extracted_param: str):
-        for attempt in range(3):
-            try:
-                response = requests.request('GET', url=method, headers=self.headers).json()
-                if response:
-                    return response[extracted_param]
-            except TypeError as e:
-                self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
-            except JSONDecodeError as e:
-                self.log("No valid JSON response from Etherscan: %s " % str(e))
-                pass
-            time.sleep(30)
+    def send_etherscan_request(self, params):
+        params['apikey'] = self.api_key
+        try:
+            response = requests.get(url=self.network_url, params=params).json()
+            if response:
+                return response['result']
+        except TypeError as e:
+            self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
+        except JSONDecodeError as e:
+            self.log("No valid JSON response from Etherscan: %s " % str(e))
+            pass
 
     def get_token_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (
-        address, self.api_key)
-        return self.send_etherscan_request(method, 'result')
+        params = {'module': 'account', 'action': 'tokentx', 'address': address, 'sort': 'desc'}
+        return self.send_etherscan_request(params)
 
     def get_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
-        return self.send_etherscan_request(method, 'result')
+        params = {'module': 'account', 'action': 'txlist', 'address': address, 'sort': 'desc'}
+        return self.send_etherscan_request(params)
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
-        method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
-        return not int(requests.request('GET', url=method, headers=self.headers).json()['result']['isError'])
+        params = {'module': 'transaction', 'action': 'getstatus', 'txhash': transaction_hash}
+        return not int(self.send_etherscan_request(params)['isError'])
 
-    def get_balance(self, address):
-        address = '0x' + address
-        method = self.network_url + 'module=account&action=balance&address=%s&tag=latest&apikey=%s' % (
-        address, self.api_key)
-        balance = self.send_etherscan_request(method, 'result')
+    def get_balance(self, address: str):
+        params = {'module': 'account', 'action': 'balance', 'address': address, 'tag': 'latest'}
+        balance = self.send_etherscan_request(params)
         if balance:
             self.log('Balance is %s Gwei' % balance)
             return int(balance)
@@ -61,13 +55,12 @@ class NetworkApi(object):
             self.log('Cannot extract balance!')
 
     def get_latest_block_number(self) -> int:
-        method = self.network_url + 'module=proxy&action=eth_blockNumber'
-        return int(requests.request('GET', url=method).json()['result'], 0)
+        params = {'module': 'proxy', 'action': 'eth_blockNumber'}
+        return int(self.send_etherscan_request(params), 0)
 
     def find_transaction_by_hash(self, transaction_hash: str):
-        method = self.network_url + 'module=transaction&action=gettxreceiptstatus&txhash=%s&apikey=%s' % (
-            transaction_hash, self.api_key)
-        result = self.send_etherscan_request(method, 'result')
+        params = {'module': 'transaction', 'action': 'gettxreceiptstatus', 'txhash': transaction_hash}
+        result = self.send_etherscan_request(params)
 
         if result:
             final_status = True
@@ -86,13 +79,14 @@ class NetworkApi(object):
         while True:
             if counter >= wait_time:
                 for entry in range(0, 5):
-                    self.log('Transaction #%s, amount is %s' %(entry+1, float(int(transactions[entry]['value']) / 10 ** decimals)))
+                    self.log('Transaction #%s, amount is %s' % (
+                        entry + 1, float(int(transactions[entry]['value']) / 10 ** decimals)))
                     self.log(str(transactions[entry]))
                 pytest.fail(
                     'Transaction with amount %s is not found in list of %s, address is %s during %ss' %
                     (amount, additional_info, address, wait_time))
             else:
-                self.log("Finding tx in %s, attempt #%s" % (additional_info, str(int(counter / 30)+1)))
+                self.log("Finding tx in %s, attempt #%s" % (additional_info, str(int(counter / 30) + 1)))
                 try:
                     if token:
                         transactions = self.get_token_transactions(address)
@@ -126,7 +120,8 @@ class NetworkApi(object):
             if int(transaction['confirmations']) >= confirmations:
                 return
             time.sleep(20)
-        pytest.fail('Transaction with amount %s was not confirmed, address is %s, still has %s confirmations' % (amount, address, int(transaction['confirmations'])))
+        pytest.fail('Transaction with amount %s was not confirmed, address is %s, still has %s confirmations' % (
+            amount, address, int(transaction['confirmations'])))
 
     def verify_balance_is_updated(self, initial_balance, recipient_address, wait_time=360):
         counter = 0
@@ -141,10 +136,13 @@ class NetworkApi(object):
                 self.log('Balance is updated!')
                 return
 
-    def verify_balance_is(self, expected_balance: int, recipient_address: str, errors: list):
-        balance = self.get_balance(recipient_address)
-        if balance / 1000000000000000000 != expected_balance:
-            errors.append('Recipients balance is not updated on etherscan')
+    def wait_for_balance_to_be(self, address: str, expected_balance: int, less: bool = True):
+        for _ in range(5):
+            balance = self.get_balance(address) / 1000000000000000000
+            if (less and balance < expected_balance) or (not less and balance > expected_balance):
+                return
+            time.sleep(10)
+        raise TimeoutException('Balance is not updated on Etherscan')
 
     # Do not use until web3 update
     # def faucet(self, address):
@@ -159,7 +157,6 @@ class NetworkApi(object):
     #     self.log("Trying to get funds from %s" % self.faucet_backup_address)
     #     address = "0x" + address
     #     w3.donate_testnet_eth(address=address, amount=0.01, inscrease_default_gas_price=10)
-
 
     # def get_donate(self, address, external_faucet=False, wait_time=300):
     #     initial_balance = self.get_balance(address)
@@ -180,11 +177,6 @@ class NetworkApi(object):
     #                 self.log('Got %s Gwei for %s' % (self.get_balance(address), address))
     #                 return
 
-    def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:
-        url = '%s/ping/%s?count=%s&interval=%s' % (self.chat_bot_url, chat_name, messages_number, interval)
-        text = requests.request('GET', url).text
-        return [i.split(maxsplit=5)[-1].strip('*') for i in text.splitlines()]
-
     def get_rounded_balance(self, fetched_balance, actual_balance):
         fetched_balance, actual_balance = str(fetched_balance), str(actual_balance)
         # get actual number of decimals on account balance
@@ -192,15 +184,14 @@ class NetworkApi(object):
         rounded_balance = round(float(actual_balance), decimals)
         return rounded_balance
 
-    def get_tx_param_by_hash(self, hash: str, param: str):
-        method = self.network_url + 'module=proxy&action=eth_getTransactionByHash&txhash=%s&apikey=%s' % (
-            hash, self.api_key)
-        res = self.send_etherscan_request(method, 'result')
+    def get_tx_param_by_hash(self, transaction_hash: str, param: str):
+        params = {'module': 'proxy', 'action': 'eth_getTransactionByHash', 'txhash': transaction_hash}
+        res = self.send_etherscan_request(params)
         return int(res[param], 16)
 
     def get_custom_fee_tx_params(self, hash: str):
         return {
-            'fee_cap': str(self.get_tx_param_by_hash(hash, 'maxFeePerGas')/1000000000),
-            'tip_cap': str(self.get_tx_param_by_hash(hash, 'maxPriorityFeePerGas')/1000000000),
+            'fee_cap': str(self.get_tx_param_by_hash(hash, 'maxFeePerGas') / 1000000000),
+            'tip_cap': str(self.get_tx_param_by_hash(hash, 'maxPriorityFeePerGas') / 1000000000),
             'gas_limit': str(self.get_tx_param_by_hash(hash, 'gas'))
         }

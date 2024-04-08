@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [react-native.share :as share]
     [reagent.core :as reagent]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.account.share-address.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
@@ -34,13 +35,13 @@
   [selected-networks]
   (let [on-save       (fn [chain-ids]
                         (rf/dispatch [:hide-bottom-sheet])
-                        (reset! selected-networks (map #(if (= % 1) :mainnet (utils/id->network %))
-                                                       chain-ids)))
+                        (reset! selected-networks (map utils/id->network chain-ids)))
         sheet-content (fn []
                         [network-preferences/view
                          {:blur?             true
                           :selected-networks (set @selected-networks)
-                          :on-save           on-save}])]
+                          :on-save           on-save
+                          :button-label      (i18n/label :t/display)}])]
     (rf/dispatch [:show-bottom-sheet
                   {:theme   :dark
                    :shell?  true
@@ -53,7 +54,7 @@
         wallet-type         (reagent/atom :legacy)
         ;; Design team is yet to confirm the default selected networks here. Should be the current
         ;; selected for the account or all the networks always
-        selected-networks   (reagent/atom [:mainnet :optimism :arbitrum])
+        selected-networks   (reagent/atom constants/default-network-names)
         on-settings-press   #(open-preferences selected-networks)
         on-legacy-press     #(reset! wallet-type :legacy)
         on-multichain-press #(reset! wallet-type :multichain)]

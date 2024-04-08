@@ -12,9 +12,9 @@
 
 (def sub-mocks
   {:profile/profile                              {:currency :usd}
-   :wallet/network-details                       [{:source           525
+   :wallet/selected-network-details              [{:source           525
                                                    :short-name       "eth"
-                                                   :network-name     :ethereum
+                                                   :network-name     :mainnet
                                                    :chain-id         1
                                                    :related-chain-id 5}]
    :wallet/current-viewing-account               {:path "m/44'/60'/0'/0/1"
@@ -30,7 +30,7 @@
                                                   :color :purple
                                                   :hidden false
                                                   :prod-preferred-chain-ids #{1 10 42161}
-                                                  :network-preferences-names #{:ethereum :arbitrum
+                                                  :network-preferences-names #{:mainnet :arbitrum
                                                                                :optimism}
                                                   :position 1
                                                   :clock 1698945829328

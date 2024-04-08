@@ -10,6 +10,7 @@
     [react-native.hooks :as hooks]
     [react-native.reanimated :as reanimated]
     [status-im.common.bottom-sheet.style :as style]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (def duration 450)
@@ -66,19 +67,23 @@
            gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
   (let [theme                             (quo.theme/use-theme-value)
+        {window-height :height}           (rn/get-window)
         [sheet-height set-sheet-height]   (rn/use-state 0)
+        [layout-height set-layout-height] (rn/use-state window-height)
         handle-sheet-height               (rn/use-callback (fn [e]
                                                              (when (= sheet-height 0)
                                                                (set-sheet-height
                                                                 (get-layout-height e))))
                                                            [sheet-height])
+        handle-layout-height              (rn/use-callback (fn [e]
+                                                             (-> (get-layout-height e)
+                                                                 (set-layout-height))))
         [item-height set-item-height]     (rn/use-state 0)
         handle-item-height                (rn/use-callback (fn [e]
                                                              (when (= item-height 0)
                                                                (set-item-height
                                                                 (get-layout-height e))))
                                                            [item-height])
-        {window-height :height}           (rn/get-window)
         bg-opacity                        (reanimated/use-shared-value 0)
         translate-y                       (reanimated/use-shared-value window-height)
         sheet-gesture                     (rn/use-memo #(get-sheet-gesture translate-y
@@ -96,7 +101,8 @@
         bottom                            (if selected-item-smaller-than-sheet?
                                             (+ sheet-height bottom-margin)
                                             (:bottom insets))
-        sheet-max-height                  (- window-height (:top insets))
+        sheet-max-height                  (- layout-height
+                                             (:top insets))
         content-padding-bottom            (or padding-bottom-override
                                               (+ (:bottom insets) bottom-margin))]
     (rn/use-effect
@@ -109,7 +115,9 @@
                                 (on-close))
                               (rf/dispatch [:hide-bottom-sheet])
                               true))
-    [rn/view {:style {:flex 1}}
+    [rn/view
+     {:style     {:flex 1}
+      :on-layout handle-layout-height}
      ;; backdrop
      [rn/pressable
       {:on-press #(rf/dispatch [:hide-bottom-sheet])

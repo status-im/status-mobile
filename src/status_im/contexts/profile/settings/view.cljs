@@ -80,9 +80,7 @@
      [quo/floating-shell-button
       {:key :shell
        :jump-to
-       {:on-press            (fn []
-                               (rf/dispatch [:navigate-back])
-                               (debounce/throttle-and-dispatch [:shell/navigate-to-jump-to] 500))
+       {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
       (style/floating-shell-button-style insets)]]))

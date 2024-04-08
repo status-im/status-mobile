@@ -190,7 +190,7 @@ class BaseElement(object):
         self.driver.fail(message if message else "`%s` is not equal to expected `%s` in %s sec" % (
             element_text, text, wait_time))
 
-    def scroll_to_element(self, depth: int = 9, direction='down'):
+    def scroll_to_element(self, depth: int = 9, direction='down', down_start_y=0.4, down_end_y=0.05):
         self.driver.info('Scrolling %s to %s' % (direction, self.name))
         for _ in range(depth):
             try:
@@ -198,7 +198,7 @@ class BaseElement(object):
             except NoSuchElementException:
                 size = self.driver.get_window_size()
                 if direction == 'down':
-                    self.driver.swipe(500, size["height"] * 0.4, 500, size["height"] * 0.05)
+                    self.driver.swipe(500, size["height"] * down_start_y, 500, size["height"] * down_end_y)
                 else:
                     self.driver.swipe(500, size["height"] * 0.25, 500, size["height"] * 0.8)
         else:
@@ -303,12 +303,13 @@ class BaseElement(object):
         width, height = size['width'], size['height']
         self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
 
-    def swipe_right_on_element(self, width_percentage=0.9):
+    def swipe_right_on_element(self, width_percentage=0.9, start_x=0):
         self.driver.info("Swiping right on element %s" % self.name)
         location, size = self.get_element_coordinates()
         x, y = location['x'], location['y']
         width, height = size['width'], size['height']
-        self.driver.swipe(start_x=x, start_y=y + height / 2, end_x=x + width * width_percentage, end_y=y + height / 2)
+        self.driver.swipe(start_x=x + start_x, start_y=y + height / 2, end_x=x + width * width_percentage,
+                          end_y=y + height / 2)
 
     def swipe_to_web_element(self, depth=700):
         element = self.find_element()
