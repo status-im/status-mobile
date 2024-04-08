@@ -190,7 +190,9 @@
  (fn [{:keys [content on-success on-error]}]
    (cond-> (share/open content)
      (fn? on-success) (.then on-success)
-     (fn? on-error)   (.catch on-error))))
+     :always          (.catch (fn [error]
+                                (log/error "[react-native-share]" error)
+                                (on-error error))))))
 
 ;;;; Overlay
 
