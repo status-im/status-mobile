@@ -191,7 +191,9 @@
    (cond-> (share/open options)
      (fn? on-success) (.then on-success)
      :always          (.catch (fn [error]
-                                (log/error "[react-native-share]" error)
+                                (log/error "Failed to share content"
+                                           {:error  error
+                                            :effect :effects.share/open})
                                 (when (fn? on-error)
                                   (on-error error)))))))
 
