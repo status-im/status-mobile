@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.messenger.composer.sub-view
   (:require
     [quo.core :as quo]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.style :as style]
@@ -13,15 +12,6 @@
   [theme]
   [rn/view {:style style/bar-container}
    [rn/view {:style (style/bar theme)}]])
-
-(defn f-blur-view
-  [{:keys [layout-height focused? theme]}]
-  [reanimated/view {:style (style/blur-container layout-height focused?)}
-   [blur/view (style/blur-view theme)]])
-
-(defn blur-view
-  [props]
-  [:f> f-blur-view props])
 
 (defn- f-shell-button
   [{:keys [composer-focused?]} chat-list-scroll-y window-height]
@@ -52,5 +42,5 @@
       scroll-down-button-opacity]]))
 
 (defn shell-button
-  [state chat-list-scroll-y window-height]
-  [:f> f-shell-button state chat-list-scroll-y window-height])
+  [shared-values chat-list-scroll-y window-height]
+  [:f> f-shell-button shared-values chat-list-scroll-y window-height])
