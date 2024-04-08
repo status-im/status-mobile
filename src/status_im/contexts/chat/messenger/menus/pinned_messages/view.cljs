@@ -1,14 +1,14 @@
 (ns status-im.contexts.chat.messenger.menus.pinned-messages.view
   (:require
-    [quo.core :as quo]
-    [quo.theme]
-    [react-native.core :as rn]
-    [react-native.gesture :as gesture]
-    [status-im.common.resources :as resources]
-    [status-im.contexts.chat.messenger.menus.pinned-messages.style :as style]
-    [status-im.contexts.chat.messenger.messages.content.view :as message]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [quo.theme]
+   [react-native.core :as rn]
+   [react-native.gesture :as gesture]
+   [status-im.common.resources :as resources]
+   [status-im.contexts.chat.messenger.menus.pinned-messages.style :as style]
+   [status-im.contexts.chat.messenger.messages.content.view :as message]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -63,6 +63,8 @@
          :render-data (assoc render-data :disable-message-long-press? disable-message-long-press?)
          :render-fn   message-render-fn
          :footer      [rn/view {:style style/list-footer}]
+         :content-container-style {:padding-top    16
+                                   :padding-bottom 16}
          :key-fn      list-key-fn
          :separator   [quo/separator {:style {:margin-vertical 8}}]}]
        [empty-pinned-messages-state

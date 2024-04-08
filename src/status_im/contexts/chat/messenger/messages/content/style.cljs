@@ -1,6 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.content.style
   (:require
-    [quo.foundations.colors :as colors]))
+   [quo.foundations.colors :as colors]))
 
 (def ^:private message-padding-scaling-ratio 4.5)
 
@@ -8,6 +8,9 @@
   [{:keys [in-pinned-view? pinned-by mentioned last-in-group? system-message?]}]
   (cond-> {:border-radius     16
            :margin-horizontal 8}
+
+    in-pinned-view?
+    (assoc :padding-vertical 0)
 
     (and (not in-pinned-view?) (or mentioned pinned-by))
     (assoc :background-color colors/primary-50-opa-5 :margin-bottom 4)
