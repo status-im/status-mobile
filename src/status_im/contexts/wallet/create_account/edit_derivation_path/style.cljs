@@ -30,9 +30,11 @@
    :padding-top        24})
 
 (defn revealed-address
-  [theme]
+  [state theme]
   {:border-width       1
-   :border-color       (colors/resolve-color :success theme 40)
+   :border-color       (if (= state :scanning)
+                         (colors/theme-colors colors/neutral-20 colors/neutral-70 theme)
+                         (colors/resolve-color (if (= state :has-activity) :success :warning) theme 40))
    :border-style       :dashed
    :border-radius      16
    :padding-horizontal 12
@@ -42,8 +44,6 @@
   {:margin-vertical 9
    :padding-left    2})
 
-(def temporal-placeholder
-  {:height           94
-   :background-color colors/danger-50
-   :align-items      :center
-   :justify-content  :center})
+(defn keyboard
+  [padding-bottom]
+  {:padding-bottom padding-bottom})
