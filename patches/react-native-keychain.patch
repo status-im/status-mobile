@@ -1,0 +1,20 @@
+# Remove gradle-test-logger-plugin:
+# https://github.com/oblador/react-native-keychain/issues/595
+# TODO: remove this patch when we this library fixes above issue
+
+--- ./node_modules/react-native-keychain/android/build.gradle
++++ ./node_modules/react-native-keychain/android/build-patched.gradle
+@@ -4,13 +4,9 @@
+       url 'https://plugins.gradle.org/m2/'
+     }
+   }
+-  dependencies {
+-    classpath 'com.adarshr:gradle-test-logger-plugin:2.0.0'
+-  }
+ }
+
+ apply plugin: 'com.android.library'
+-apply plugin: "com.adarshr.test-logger"
+
+ def safeExtGet(prop, fallback) {
+   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback

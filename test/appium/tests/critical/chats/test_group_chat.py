@@ -221,15 +221,15 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[1].send_images_with_description(description=image_description, indexes=[2])
 
         self.chats[0].just_fyi("Admin checks image message")
-        self.chats[0].chat_element_by_text(image_description).wait_for_visibility_of_element(60)
-        if not self.chats[0].chat_element_by_text(
-                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+        chat_element = self.chats[0].chat_element_by_text(image_description)
+        chat_element.wait_for_visibility_of_element(60)
+        if not chat_element.image_in_message.is_element_image_similar_to_template('saucelabs_sauce_group_chat.png'):
             self.errors.append("Not expected image is shown to the admin.")
 
         self.chats[2].just_fyi("Member_2 checks image message")
-        self.chats[2].chat_element_by_text(image_description).wait_for_visibility_of_element(60)
-        if not self.chats[2].chat_element_by_text(
-                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+        chat_element = self.chats[2].chat_element_by_text(image_description)
+        chat_element.wait_for_visibility_of_element(60)
+        if not chat_element.image_in_message.is_element_image_similar_to_template('saucelabs_sauce_group_chat.png'):
             self.errors.append("Not expected image is shown to the member_2.")
 
         self.chats[0].just_fyi("Admin opens the image and shares it")
