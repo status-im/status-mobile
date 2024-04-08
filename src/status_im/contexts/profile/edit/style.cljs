@@ -15,11 +15,10 @@
    :margin-bottom 12})
 
 (def camera-button
-  {:position      :absolute
-   :border-radius 16
-   :overflow      :hidden
-   :right         0
-   :bottom        0})
+  {:position :absolute
+   :overflow :hidden
+   :right    0
+   :bottom   0})
 
 (def item-container
   {:padding-top 14})

@@ -9,6 +9,8 @@
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
 (def min-length 5)
 
+(def bio-special-chars-regex #"^[a-zA-Z0-9\-_ @',.’-]+$")
+
 (def common-names ["Ethereum" "Bitcoin"])
 
 (defn has-common-names? [s] (pos? (count (filter #(string/includes? s %) common-names))))
@@ -18,6 +20,10 @@
 (defn name-too-long? [s] (> (count (string/trim (str s))) constants/profile-name-max-length))
 
 (defn bio-too-long? [s] (> (count (string/trim (str s))) constants/profile-bio-max-length))
+
+(defn bio-has-special-characters?
+  [s]
+  (not (re-find bio-special-chars-regex s)))
 
 (defn validation-name
   [s]
@@ -40,12 +46,14 @@
 (defn validation-bio
   [s]
   (cond
-    (string/blank? s)                      nil
-    (validators/has-emojis? s)             (i18n/label :t/are-not-allowed
-                                                       {:check (i18n/label :t/emojis)})
-    (validators/has-special-characters? s) (i18n/label :t/are-not-allowed
-                                                       {:check (i18n/label :t/special-characters)})
-    (bio-too-long? s)                      (i18n/label :t/bio-is-too-long)))
+    (string/blank? s)                                  nil
+    ;; workaround to bypass ’, as emoji regex considers it as emoji
+    (validators/has-emojis? (string/replace s "’" "")) (i18n/label :t/are-not-allowed
+                                                                   {:check (i18n/label :t/emojis)})
+    (bio-has-special-characters? s)                    (i18n/label :t/are-not-allowed
+                                                                   {:check (i18n/label
+                                                                            :t/special-characters)})
+    (bio-too-long? s)                                  (i18n/label :t/bio-is-too-long)))
 
 (defn validation-nickname
   [s]
