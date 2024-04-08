@@ -1,7 +1,6 @@
 (ns legacy.status-im.subs.mailservers
   (:require
     [legacy.status-im.fleet.core :as fleet]
-    [legacy.status-im.mailserver.core :as mailserver]
     [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
@@ -23,12 +22,6 @@
  :<- [:mailserver/state]
  (fn [state]
    (#{:error :disconnected} state)))
-
-(re-frame/reg-sub
- :chats/fetching-gap-in-progress?
- :<- [:mailserver/fetching-gaps-in-progress]
- (fn [gaps [_ ids _]]
-   (seq (select-keys gaps ids))))
 
 (re-frame/reg-sub
  :mailserver/fetching?
@@ -59,11 +52,6 @@
       current-mailserver-id)))
 
 (re-frame/reg-sub
- :mailserver/use-status-nodes?
- (fn [db _]
-   (boolean (mailserver/fetch-use-mailservers? db))))
-
-(re-frame/reg-sub
  :mailserver.edit/validation-errors
  :<- [:mailserver.edit/mailserver]
  (fn [mailserver]
@@ -71,15 +59,6 @@
          (fn [[k {:keys [error]}]]
            (when error k))
          mailserver))))
-
-(re-frame/reg-sub
- :mailserver/connected?
- :<- [:mailserver/state]
- :<- [:disconnected?]
- (fn [[mail-state disconnected?]]
-   (let [mailserver-connected? (= :connected mail-state)]
-     (and mailserver-connected?
-          (not disconnected?)))))
 
 (re-frame/reg-sub
  :mailserver/preferred-id

@@ -10,7 +10,6 @@
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
-    [utils.address :as address]
     [utils.image-server :as image-server]
     [utils.security.core :as security]))
 
@@ -32,28 +31,6 @@
  (fn [currency-id]
    (-> (get currency/currencies currency-id)
        :symbol)))
-
-(re-frame/reg-sub
- :profile/onboarding-placeholder-avatar
- :<- [:mediaserver/port]
- :<- [:initials-avatar-font-file]
- (fn [[port font-file] [_ profile-pic]]
-   {:fn
-    (if profile-pic
-      (image-server/get-account-image-uri-fn {:port            port
-                                              :ratio           pixel-ratio/ratio
-                                              :image-name      profile-pic
-                                              :override-ring?  false
-                                              :uppercase-ratio (:uppercase-ratio
-                                                                constants/initials-avatar-font-conf)
-                                              :theme           (theme/get-theme)})
-      (image-server/get-initials-avatar-uri-fn {:port            port
-                                                :ratio           pixel-ratio/ratio
-                                                :theme           (theme/get-theme)
-                                                :override-ring?  false
-                                                :uppercase-ratio (:uppercase-ratio
-                                                                  constants/initials-avatar-font-conf)
-                                                :font-file       font-file}))}))
 
 (re-frame/reg-sub
  :profile/login-profiles-picture
@@ -158,12 +135,6 @@
    (first accounts)))
 
 (re-frame/reg-sub
- :multiaccount/visible-accounts
- :<- [:profile/wallet-accounts]
- (fn [accounts]
-   (remove :hidden accounts)))
-
-(re-frame/reg-sub
  :sign-in-enabled?
  :<- [:profile/login]
  (fn [{:keys [password]}]
@@ -208,16 +179,6 @@
    (some #(when (= (:address %) address) %) accounts)))
 
 (re-frame/reg-sub
- :multiaccount/current-account
- :<- [:profile/wallet-accounts]
- :<- [:get-screen-params :wallet-account]
- (fn [[accounts acc]]
-   (some #(when (= (string/lower-case (:address %))
-                   (string/lower-case (:address acc)))
-            %)
-         accounts)))
-
-(re-frame/reg-sub
  :account-by-address
  :<- [:profile/wallet-accounts]
  (fn [accounts [_ address]]
@@ -226,20 +187,6 @@
                      (string/lower-case address))
               %)
            accounts))))
-
-;; NOTE: this subscription only works on login
-(re-frame/reg-sub
- :multiaccounts.login/keycard-account?
- :<- [:profile/profiles-overview]
- :<- [:profile/login]
- (fn [[multiaccounts {:keys [key-uid]}]]
-   (get-in multiaccounts [key-uid :keycard-pairing])))
-
-(re-frame/reg-sub
- :multiaccounts/keycard-account?
- :<- [:profile/profile]
- (fn [multiaccount]
-   (:keycard-pairing multiaccount)))
 
 (re-frame/reg-sub
  :accounts-without-watch-only
@@ -252,41 +199,6 @@
  :<- [:profile/wallet-accounts]
  (fn [accounts]
    (remove :hidden (filter #(not= (:type %) :watch) accounts))))
-
-(defn filter-recipient-accounts
-  [search-filter {:keys [name]}]
-  (string/includes? (string/lower-case (str name)) search-filter))
-
-(re-frame/reg-sub
- :accounts-for-recipient
- :<- [:multiaccount/visible-accounts]
- :<- [:wallet-legacy/prepare-transaction]
- :<- [:wallet-legacy/search-recipient-filter]
- (fn [[accounts {:keys [from]} search-filter]]
-   (let [accounts (remove #(= (:address %) (:address from)) accounts)]
-     (if (string/blank? search-filter)
-       accounts
-       (filter (partial filter-recipient-accounts
-                        (string/lower-case search-filter))
-               accounts)))))
-
-(re-frame/reg-sub
- :add-account-disabled?
- :<- [:profile/wallet-accounts]
- :<- [:add-account]
- (fn [[accounts {:keys [address type account seed private-key]}]]
-   (or (string/blank? (:name account))
-       (case type
-         :generate
-         false
-         :watch
-         (or (not (address/address? address))
-             (some #(when (= (:address %) address) %) accounts))
-         :key
-         (string/blank? (security/safe-unmask-data private-key))
-         :seed
-         (string/blank? (security/safe-unmask-data seed))
-         false))))
 
 (re-frame/reg-sub
  :multiaccount/current-user-visibility-status
@@ -378,12 +290,6 @@
  :<- [:profile/login]
  (fn [{:keys [processing]}]
    processing))
-
-(re-frame/reg-sub
- :profile/login-password
- :<- [:profile/login]
- (fn [{:keys [password]}]
-   password))
 
 ;; LINK PREVIEW
 ;; ========================================================================================================

@@ -24,11 +24,6 @@
  (fn [multiaccount] (:installation-id multiaccount)))
 
 (re-frame/reg-sub
- :pairing/installation-name
- :<- [:profile/profile]
- (fn [multiaccount] (:installation-name multiaccount)))
-
-(re-frame/reg-sub
  :pairing/pairing-status
  :<- [:syncing]
  (fn [syncing]
