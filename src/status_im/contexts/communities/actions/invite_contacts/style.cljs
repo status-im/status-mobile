@@ -12,7 +12,7 @@
 
 (def chat-button
   {:position :absolute
-   :bottom   (+ 12 (safe-area/get-bottom))
+   :bottom   (safe-area/get-bottom)
    :left     20
    :right    20})
 
