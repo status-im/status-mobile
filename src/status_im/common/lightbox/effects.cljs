@@ -15,9 +15,10 @@
                config
                (fn [downloaded-url]
                  (rf/dispatch [:open-share
-                               {:url       (str (when platform/android? "file://") downloaded-url)
-                                :isNewTask true}
-                               {:on-success #(fs/unlink downloaded-url)
+                               {:content    {:url       (str (when platform/android? "file://")
+                                                             downloaded-url)
+                                             :isNewTask true}
+                                :on-success #(fs/unlink downloaded-url)
                                 :on-error   #(fs/unlink downloaded-url)}])))))
 
 (rf/reg-fx :effects.lightbox/save-image-to-gallery

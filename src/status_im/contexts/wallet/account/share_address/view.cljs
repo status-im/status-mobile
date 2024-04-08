@@ -18,17 +18,17 @@
 (defn- share-action
   [address share-title]
   (rf/dispatch [:open-share
-                (if platform/ios?
-                  {:activityItemSources [{:placeholderItem {:type    "text"
-                                                            :content address}
-                                          :item            {:default {:type "text"
-                                                                      :content
-                                                                      address}}
-                                          :linkMetadata    {:title share-title}}]}
-                  {:title     share-title
-                   :subject   share-title
-                   :message   address
-                   :isNewTask true})]))
+                {:content (if platform/ios?
+                            {:activityItemSources [{:placeholderItem {:type    "text"
+                                                                      :content address}
+                                                    :item            {:default {:type "text"
+                                                                                :content
+                                                                                address}}
+                                                    :linkMetadata    {:title share-title}}]}
+                            {:title     share-title
+                             :subject   share-title
+                             :message   address
+                             :isNewTask true})}]))
 
 (defn- open-preferences
   [selected-networks]

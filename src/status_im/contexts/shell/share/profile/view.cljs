@@ -29,7 +29,7 @@
         :width               (- window-width (* style/screen-padding 2))
         :qr-data             universal-profile-url
         :qr-data-label-shown abbreviated-url
-        :on-share-press      #(rf/dispatch [:open-share {:message universal-profile-url}])
+        :on-share-press      #(rf/dispatch [:open-share {:content {:message universal-profile-url}}])
         :on-text-press       #(rf/dispatch [:share/copy-text-and-show-toast
                                             {:text-to-copy      universal-profile-url
                                              :post-copy-message (i18n/label :t/link-to-profile-copied)}])

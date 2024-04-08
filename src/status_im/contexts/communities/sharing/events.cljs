@@ -43,17 +43,18 @@
    (let [title      (i18n/label :t/channel-on-status)
          on-success (fn [url]
                       (rf/dispatch [:open-share
-                                    (if platform/ios?
-                                      {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                                :content title}
-                                                              :item            {:default {:type    "url"
-                                                                                          :content url}}
-                                                              :linkMetadata    {:title title}}]}
-                                      {:title     title
-                                       :subject   title
-                                       :message   url
-                                       :url       url
-                                       :isNewTask true})]))]
+                                    {:content (if platform/ios?
+                                                {:activityItemSources
+                                                 [{:placeholderItem {:type    "text"
+                                                                     :content title}
+                                                   :item            {:default {:type    "url"
+                                                                               :content url}}
+                                                   :linkMetadata    {:title title}}]}
+                                                {:title     title
+                                                 :subject   title
+                                                 :message   url
+                                                 :url       url
+                                                 :isNewTask true})}]))]
      {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
 
 (rf/reg-event-fx :communities/get-community-channel-share-data

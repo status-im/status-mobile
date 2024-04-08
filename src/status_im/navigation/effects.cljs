@@ -187,7 +187,7 @@
 ;;;; Share
 
 (rf/reg-fx :effects.share/open
- (fn [[content {:keys [on-success on-error]}]]
+ (fn [{:keys [content on-success on-error]}]
    (cond-> (share/open content)
      (fn? on-success) (.then on-success)
      (fn? on-error)   (.catch on-error))))

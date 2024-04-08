@@ -121,7 +121,7 @@
                            [:show-bottom-sheet {:content chat.actions.view/new-chat}])
     :accessibility-label :new-chat-button}
    :card-props
-   {:on-press    #(rf/dispatch [:open-share {:url profile-link}])
+   {:on-press    #(rf/dispatch [:open-share {:content {:url profile-link}}])
     :banner      (resources/get-image :invite-friends)
     :title       (i18n/label :t/invite-friends-to-status)
     :description (i18n/label :t/share-invite-link)}})

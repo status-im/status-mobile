@@ -18,7 +18,8 @@
         abbreviated-url (rn/use-memo (fn []
                                        (address/get-abbreviated-profile-url universal-profile-url))
                                      [universal-profile-url])
-        on-share-press  (rn/use-callback #(rf/dispatch [:open-share {:message universal-profile-url}])
+        on-share-press  (rn/use-callback #(rf/dispatch [:open-share
+                                                        {:content {:message universal-profile-url}}])
                                          [universal-profile-url])
         on-copy-press   (rn/use-callback (fn []
                                            (rf/dispatch [:share/copy-text-and-show-toast
