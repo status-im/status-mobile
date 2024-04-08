@@ -42,14 +42,22 @@
                     :height container-size}}]
          (cond
            emoji
-           [text/text
-            {:size  :heading-1
-             :style style/emoji-text-style}
-            emoji]
+           (if (= size :size-80)
+             [rn/text
+              {:style (style/avatar-identifier theme)}
+              emoji]
+             [text/text
+              {:size  :paragraph-1
+               :style (dissoc (style/avatar-identifier theme) :font-size)}
+              emoji])
            chat-name
-           [text/text
-            {:size :heading-1}
-            ((comp first string/upper-case) chat-name)]
+           (if (= size :size-80)
+             [rn/text
+              {:style (style/avatar-identifier theme)}
+              ((comp first string/upper-case) chat-name)]
+             [text/text
+              {:size :paragraph-1}
+              ((comp first string/upper-case) chat-name)])
            :else
            [icon/icon icon-name
             {:size  icon-size

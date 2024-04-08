@@ -137,7 +137,7 @@
          :picture             profile-picture
          :emoji               (when (and (not (string/blank? emoji))
                                          community-channel?)
-                                emoji)
+                                (string/trim emoji))
          :chat-name           chat-name}]
        [quo/user-avatar
         {:full-name       display-name
@@ -222,7 +222,7 @@
                                      (= chat-type constants/one-to-one-chat-type)
                                      (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                      (= chat-type constants/community-chat-type)
-                                     (str (when emoji (str emoji " ")) "# " chat-name)
+                                     (str "# " chat-name)
                                      :else (str emoji chat-name))
         {:keys [bio]}              (rf/sub [:contacts/contact-by-identity chat-id])
         online?                    (rf/sub [:visibility-status-updates/online? chat-id])

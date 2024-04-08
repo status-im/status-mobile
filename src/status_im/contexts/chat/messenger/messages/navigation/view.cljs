@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.navigation.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [re-frame.db]
@@ -28,7 +29,7 @@
                                         [:contacts/contact-two-names-by-identity
                                          chat-id]))
                                 (= chat-type constants/community-chat-type)
-                                (str (when emoji (str emoji " ")) "# " chat-name)
+                                (str "# " chat-name)
                                 :else (str emoji chat-name))
         online?               (when-not group-chat (rf/sub [:visibility-status-updates/online? chat-id]))
         photo-path            (when-not group-chat (rf/sub [:chats/photo-path chat-id]))
@@ -53,7 +54,10 @@
         {:customization-color color
          :size                :size-32
          :picture             photo-path
-         :override-theme      :dark}]
+         :override-theme      :dark
+         :emoji               (when-not (string/blank? emoji)
+                                (string/trim emoji))
+         :chat-name           chat-name}]
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?

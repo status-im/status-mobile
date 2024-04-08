@@ -14,6 +14,10 @@
                                           (colors/custom-color customization-color 60)
                                           theme)})
 
-(def emoji-text-style
-  {:margin-bottom -6
-   :text-align    :center})
+(defn avatar-identifier
+  [theme]
+  {:text-align :center
+   :font-size  36
+   :color      (colors/theme-colors colors/black
+                                    colors/white
+                                    theme)})
