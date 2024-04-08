@@ -16,7 +16,8 @@
    [preview-list/view
     {:type   :network
      :number (count networks)
-     :size   :size-16} networks]
+     :size   :size-16}
+    networks]
    [text/text
     {:weight :medium
      :size   :paragraph-2
