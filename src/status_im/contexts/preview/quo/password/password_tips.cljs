@@ -3,15 +3,11 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [reagent.core :as reagent]
+    [status-im.constants :as constant]
     [status-im.contexts.preview.quo.preview :as preview]))
 
-(def tips [:lower-case? :upper-case? :numbers? :symbols?])
-
-(defn make-init-state
-  []
-  (->> (repeat 4 false)
-       (vec)
-       (zipmap tips)))
+(def init-state
+  (reduce (fn [acc tip] (assoc acc tip false)) {} constant/password-tips))
 
 (defn make-tip-descriptor
   [tip]
@@ -19,11 +15,11 @@
    :type :boolean})
 
 (def descriptor
-  (map make-tip-descriptor tips))
+  (map make-tip-descriptor constant/password-tips))
 
 (defn view
   []
-  (let [state (reagent/atom (make-init-state))]
+  (let [state (reagent/atom init-state)]
     (fn []
       [preview/preview-container
        {:state                     state

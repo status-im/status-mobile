@@ -129,6 +129,8 @@
 (def ^:const default-number-of-messages 20)
 (def ^:const default-number-of-pin-messages 3)
 
+(def ^:const password-tips [:lower-case? :upper-case? :numbers? :symbols?])
+
 (def ^:const mailserver-password "status-offline-inbox")
 
 (def ^:const send-transaction-failed-parse-response 1)

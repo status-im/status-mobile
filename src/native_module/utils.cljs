@@ -16,7 +16,6 @@
   [func & args]
   (promesa/create
    (fn [res rej]
-     (->> (promisify-callback res rej)
-          (conj [])
+     (->> [(promisify-callback res rej)]
           (concat args)
           (apply func)))))

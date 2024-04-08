@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.constants :as constant]
     [status-im.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -112,7 +113,7 @@
                           #(utils.string/at-least-n-chars? % 10))]
     (->> password
          (validations)
-         (zipmap [:lower-case? :upper-case? :numbers? :symbols? :long-enough?]))))
+         (zipmap (conj constant/password-tips :long-enough?)))))
 
 (defn calc-password-strength
   [validations]

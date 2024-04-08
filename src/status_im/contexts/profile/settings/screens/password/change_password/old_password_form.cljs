@@ -11,8 +11,9 @@
     [utils.string :as utils.string]))
 
 (defn view
-  [{:keys [customization-color]}]
+  []
   (let [error                   (rf/sub [:settings/change-password-error])
+        customization-color     (rf/sub [:profile/customization-color])
         [password set-password] (rn/use-state "")
         on-change-password      (fn [new-value]
                                   (when error

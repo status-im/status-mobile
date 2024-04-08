@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [status-im.constants :as constant]
     [status-im.contexts.profile.settings.screens.password.change-password.events]
     [status-im.contexts.profile.settings.screens.password.change-password.style :as style]
     [utils.i18n :as i18n]
@@ -68,11 +69,12 @@
                           utils.string/has-symbols?)]
     (->> password
          (validations)
-         (zipmap [:lower-case? :upper-case? :numbers? :symbols?]))))
+         (zipmap constant/password-tips))))
 
 (defn view
-  [{:keys [customization-color]}]
-  (let [[password set-password]                        (rn/use-state "")
+  []
+  (let [customization-color                            (rf/sub [:profile/customization-color])
+        [password set-password]                        (rn/use-state "")
         [repeat-password set-repeat-password]          (rn/use-state "")
         [disclaimer-accepted? set-disclaimer-accepted] (rn/use-state false)
         [focused? set-focused]                         (rn/use-state false)
