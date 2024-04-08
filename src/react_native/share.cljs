@@ -3,11 +3,6 @@
     ["react-native-share" :default react-native-share]))
 
 (defn open
-  ([options
-    {:keys [on-success on-error]
-     :or   {on-success #()
-            on-error   #()}}]
+  ([options]
    (-> ^js react-native-share
-       (.open (clj->js options))
-       (.then on-success)
-       (.catch on-error))))
+       (.open (clj->js options)))))

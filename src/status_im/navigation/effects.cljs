@@ -187,8 +187,10 @@
 ;;;; Share
 
 (rf/reg-fx :effects.share/open
- (fn [[content handlers]]
-   (share/open content handlers)))
+ (fn [[content {:keys [on-success on-error]}]]
+   (cond-> (share/open content)
+     (fn? on-success) (.then on-success)
+     (fn? on-error)   (.catch on-error))))
 
 ;;;; Overlay
 
