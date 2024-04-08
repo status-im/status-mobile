@@ -26,7 +26,11 @@
    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
     :padding-horizontal 20
     :border-radius      20
-    :margin-top         top-margin}))
+    :margin-top         top-margin
+    :shadow-offset      {:width  0
+                         :height -5}
+    :shadow-opacity     0.035
+    :shadow-radius      0.1}))
 
 (defn header-image
   [scale top left theme]

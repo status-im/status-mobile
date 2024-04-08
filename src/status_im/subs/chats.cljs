@@ -183,7 +183,9 @@
                  :synced-to
                  :synced-from
                  :community-id
-                 :emoji])))
+                 :emoji
+                 :description
+                 :last-message])))
 
 (re-frame/reg-sub
  :chats/community-channel-ui-details-by-id

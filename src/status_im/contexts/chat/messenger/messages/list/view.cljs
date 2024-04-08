@@ -114,17 +114,17 @@
 
 (defn list-footer-avatar
   [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color
-           emoji chat-type chat-name]}]
+           emoji chat-type chat-name last-message]}]
   (let [scale              (reanimated/interpolate distance-from-list-top
-                                                   [0 messages.constants/header-container-top-margin]
+                                                   [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                                                    [1 0.4]
                                                    messages.constants/default-extrapolation-option)
         top                (reanimated/interpolate distance-from-list-top
-                                                   [0 messages.constants/header-container-top-margin]
+                                                   [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                                                    [-44 -12]
                                                    messages.constants/default-extrapolation-option)
         left               (reanimated/interpolate distance-from-list-top
-                                                   [0 messages.constants/header-container-top-margin]
+                                                   [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                                                    [16 -8]
                                                    messages.constants/default-extrapolation-option)
         community-channel? (= chat-type constants/community-chat-type)]
@@ -146,13 +146,13 @@
          :size            :big}])]))
 
 (defn chat-display-name
-  [{:keys [distance-from-list-top display-name contact theme]}]
+  [{:keys [distance-from-list-top display-name contact theme last-message]}]
   (let [top  (reanimated/interpolate distance-from-list-top
-                                     [0 messages.constants/header-container-top-margin]
+                                     [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                                      [0 -35]
                                      messages.constants/default-extrapolation-option)
         left (reanimated/interpolate distance-from-list-top
-                                     [0 messages.constants/header-container-top-margin]
+                                     [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                                      [0 40]
                                      messages.constants/default-extrapolation-option)]
     [reanimated/view
@@ -201,23 +201,23 @@
                                                                          muted?)))}]}]))
 
 (defn bio-and-actions
-  [{:keys [distance-from-list-top bio chat-id customization-color]}]
-  (let [has-bio (seq bio)
+  [{:keys [distance-from-list-top bio chat-id customization-color last-message description]}]
+  (let [has-bio (seq (or bio description))
         top     (reanimated/interpolate
                  distance-from-list-top
-                 [0 messages.constants/header-container-top-margin]
+                 [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                  [(if has-bio 8 16) (if has-bio -28 -20)]
                  messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/bio-and-actions top)}
      (when has-bio
-       [quo/text bio])
+       [quo/text (or bio description)])
      [actions chat-id customization-color]]))
 
 (defn footer-component
   [{:keys [chat distance-from-list-top theme customization-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
-                group-chat color]} chat
+                group-chat color description last-message]} chat
         display-name               (cond
                                      (= chat-type constants/one-to-one-chat-type)
                                      (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
@@ -263,18 +263,22 @@
         :color                  color
         :emoji                  emoji
         :chat-type              chat-type
-        :chat-name              chat-name}]
+        :chat-name              chat-name
+        :last-message           last-message}]
       [chat-display-name
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name
         :theme                  theme
         :contact                contact
-        :group-chat             group-chat}]
+        :group-chat             group-chat
+        :last-message           last-message}]
       [bio-and-actions
        {:distance-from-list-top distance-from-list-top
         :bio                    bio
         :chat-id                chat-id
-        :customization-color    customization-color}]]]))
+        :customization-color    customization-color
+        :description            description
+        :last-message           last-message}]]]))
 
 (defn list-footer
   [props]
