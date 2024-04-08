@@ -21,7 +21,8 @@
 
 (defn textual-emoji
   [size customization-color theme]
-  {:border-radius    50
+  {:border-radius    size
+   :margin-top       -5
    :border-width     0
    :border-color     :transparent
    :width            size

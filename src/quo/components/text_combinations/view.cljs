@@ -11,9 +11,6 @@
   (if customization-color
     [rn/view {:style (style/textual-emoji size customization-color theme)}
      [text/text
-      {:style {:margin-left 1
-               :margin-top  1
-               :text-align  :center}}
       source]]
     [rn/image
      {:source source

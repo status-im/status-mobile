@@ -12,11 +12,14 @@
 
 (defn- contact-item
   [public-key]
-  (let [show-profile-actions          #(rf/dispatch [:show-bottom-sheet
-                                                     {:content (fn [] [home.actions/contact-actions
-                                                                       {:public-key public-key}])}])
-        [primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity public-key])
-        {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address public-key])]
+  (let [show-profile-actions                         #(rf/dispatch
+                                                       [:show-bottom-sheet
+                                                        {:content (fn [] [home.actions/contact-actions
+                                                                          {:public-key public-key}])}])
+        [primary-name secondary-name]                (rf/sub [:contacts/contact-two-names-by-identity
+                                                              public-key])
+        {:keys [ens-verified added? compressed-key]} (rf/sub [:contacts/contact-by-address public-key])
+        theme                                        (quo.theme/use-theme-value)]
     [contact-list-item/contact-list-item
      {:on-press      #(rf/dispatch [:chat.ui/show-profile public-key])
       :on-long-press show-profile-actions
@@ -24,10 +27,11 @@
                       :on-press show-profile-actions}}
      {:primary-name   primary-name
       :secondary-name secondary-name
+      :compressed-key compressed-key
       :public-key     public-key
       :ens-verified   ens-verified
       :added?         added?}
-     {:public-key public-key}]))
+     theme]))
 
 (defn- footer
   []
@@ -64,7 +68,13 @@
           theme                          (quo.theme/use-theme-value)]
       (rn/use-mount (fn []
                       (rf/dispatch [:pin-message/load-pin-messages chat-id])))
-      [rn/view {:style {:flex 1}}
+      [:<>
+       [quo/floating-shell-button
+        {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+                   :customization-color color
+                   :label               (i18n/label :t/jump-to)}}
+        style/floating-shell-button]
+       [quo/gradient-cover {:customization-color color :opacity 0.4}]
        [quo/page-nav
         {:background :blur
          :icon-name  :i/arrow-left
@@ -81,7 +91,7 @@
                                            {:channel-name chat-name
                                             :unlocked?    true}]
          :theme                           theme
-         :emoji                           (when (not (string/blank? emoji)) emoji)
+         :emoji                           (when (not (string/blank? emoji)) (string/trim emoji))
          :customization-color             color
          :title-accessibility-label       :welcome-title
          :description                     description

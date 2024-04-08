@@ -7,3 +7,8 @@
 (def text-combinations {:margin-top 12 :margin-horizontal 20})
 
 (def wrapper {:padding 20})
+
+(def floating-shell-button
+  {:position :absolute
+   :bottom   34
+   :z-index  3})
