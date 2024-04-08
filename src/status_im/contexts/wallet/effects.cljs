@@ -2,12 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
-    [re-frame.core :as rf]
-    [react-native.share :as share]))
-
-(rf/reg-fx :effects.share/open
- (fn [content]
-   (share/open content)))
+    [re-frame.core :as rf]))
 
 (rf/reg-fx
  :effects.wallet/create-account-from-mnemonic

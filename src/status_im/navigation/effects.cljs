@@ -186,11 +186,9 @@
 
 ;;;; Share
 
-(defn open-share-fx
-  [content]
-  (share/open content))
-
-(rf/reg-fx :open-share-fx open-share-fx)
+(rf/reg-fx :effects.share/open
+ (fn [content]
+   (share/open content)))
 
 ;;;; Overlay
 

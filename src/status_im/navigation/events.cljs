@@ -148,6 +148,6 @@
 
 (defn open-share
   [_ [content]]
-  {:fx [[:open-share-fx content]]})
+  {:fx [[:effects.share/open content]]})
 
 (rf/reg-event-fx :open-share open-share)
