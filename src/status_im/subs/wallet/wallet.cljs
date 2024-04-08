@@ -138,6 +138,11 @@
              selected-networks))))
 
 (rf/reg-sub
+ :wallet/derivation-path-state
+ :<- [:wallet/create-account]
+ :-> :derivation-path-state)
+
+(rf/reg-sub
  :wallet/accounts
  :<- [:wallet]
  :<- [:wallet/network-details]
