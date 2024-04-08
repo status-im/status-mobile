@@ -110,7 +110,7 @@
               :show-button? true
               :button-label (i18n/label :t/read-more)
               :button-icon  :info}
-             [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+             [quo/text {:size :paragraph-2} (i18n/label :t/token-gated-communities-info)]])}])}
      [rn/view
       [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 

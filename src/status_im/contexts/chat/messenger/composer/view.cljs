@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.composer.view
   (:require
+    [clojure.string :as string]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.blur :as blur]
@@ -166,12 +167,10 @@
 
 (defn composer
   [props]
-  (let [{:keys [chat-id
-                contact-request-state
-                group-chat
-                able-to-send-message?]
-         :as   chat} (rf/sub [:chats/current-chat-chat-view])]
-    (when (seq chat)
+  (let [current-chat-id       (rf/sub [:chats/current-chat-id])
+        able-to-send-message? (rf/sub [:chats/able-to-send-message?])]
+    (when-not (string/blank? current-chat-id)
       (if able-to-send-message?
         [:f> f-composer props]
-        [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]))))
+        [contact-requests.bottom-drawer/view
+         {:contact-id current-chat-id}]))))
