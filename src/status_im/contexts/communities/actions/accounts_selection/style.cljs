@@ -5,7 +5,8 @@
 (def screen-horizontal-padding 20)
 
 (def container
-  {:flex 1})
+  {:flex       1
+   :margin-top -12})
 
 (def section-title
   {:padding-top        12
