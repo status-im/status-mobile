@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
+    [react-native.share :as share]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.utils :as jump-to.utils]
     [status-im.navigation.options :as options]
@@ -187,7 +188,7 @@
 
 (defn open-share-fx
   [content]
-  (rn/sharing content))
+  (share/open content))
 
 (rf/reg-fx :open-share-fx open-share-fx)
 
