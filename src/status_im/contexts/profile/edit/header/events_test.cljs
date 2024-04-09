@@ -1,7 +1,7 @@
 (ns status-im.contexts.profile.edit.header.events-test
   (:require [cljs.test :refer [deftest is]]
             matcher-combinators.test
-            [status-im.common.profile-picture-picker.view :as profile-picture-picker]
+            [status-im.common.avatar-picture-picker.view :as profile-picture-picker]
             [status-im.contexts.profile.edit.header.events :as sut]))
 
 (deftest edit-picture-test

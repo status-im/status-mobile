@@ -125,6 +125,7 @@
        :profile-public-key          (.-profile chat)
        :highlight                   (.-highlight chat)
        :active                      (.-active chat)
+       :image                       (.-image chat)
        :members                     (types/js->clj (.-members chat))
        :hide-if-permissions-not-met (.-hideIfPermissionsNotMet chat)}
       rpc->type

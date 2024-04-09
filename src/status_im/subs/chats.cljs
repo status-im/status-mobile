@@ -184,8 +184,6 @@
        inputs]]
    (when current-chat
      (cond-> current-chat
-       (chat.events/public-chat? current-chat)
-       (assoc :able-to-send-message? true)
 
        (and (chat.events/community-chat? current-chat)
             (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
