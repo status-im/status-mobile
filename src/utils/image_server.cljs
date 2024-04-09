@@ -191,6 +191,7 @@
     [:map
      [:color string?]
      [:theme :schema.common/theme]
+     [:background-color {:optional true} [:maybe string?]]
      [:size number?]
      [:ratio float?]
      [:uppercase-ratio number?]

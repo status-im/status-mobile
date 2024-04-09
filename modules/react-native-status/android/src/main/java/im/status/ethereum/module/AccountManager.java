@@ -210,18 +210,14 @@ public class AccountManager extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void saveAccountAndLoginWithKeycard(final String multiaccountData, final String password, final String settings, final String config, final String accountsData, final String chatKey) {
-        try {
-            Log.d(TAG, "saveAccountAndLoginWithKeycard");
-            String finalConfig = prepareDirAndUpdateConfig(config, this.utils.getKeyUID(multiaccountData));
-            String result = Statusgo.saveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
-            if (result.startsWith("{\"error\":\"\"")) {
-                Log.d(TAG, "saveAccountAndLoginWithKeycard result: " + result);
-                Log.d(TAG, "Geth node started");
-            } else {
-                Log.e(TAG, "saveAccountAndLoginWithKeycard failed: " + result);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+        Log.d(TAG, "saveAccountAndLoginWithKeycard");
+        String finalConfig = prepareDirAndUpdateConfig(config, this.utils.getKeyUID(multiaccountData));
+        String result = Statusgo.saveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "saveAccountAndLoginWithKeycard result: " + result);
+            Log.d(TAG, "Geth node started");
+        } else {
+            Log.e(TAG, "saveAccountAndLoginWithKeycard failed: " + result);
         }
     }
 

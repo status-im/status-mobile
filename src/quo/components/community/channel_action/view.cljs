@@ -14,9 +14,10 @@
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]
     [rn/view
-     {:style (style/channel-action-container
-              {:big?      big?
-               :disabled? disabled?})}
+     {:accessibility-label :channel-action
+      :style               (style/channel-action-container
+                            {:big?      big?
+                             :disabled? disabled?})}
      [rn/pressable
       (cond-> {:style               (style/channel-action
                                      {:big?      big?
