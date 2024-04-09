@@ -161,7 +161,7 @@
            (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button]]
-       [quo/text {:style {:padding-horizontal 12 :padding-bottom 8} :size :paragraph-2}
+       [quo/text {:style {:padding-horizontal 12 :padding-bottom 6} :size :paragraph-2}
         (if can-request-access?
           (i18n/label :t/you-hodl)
           (i18n/label :t/you-must-hold))]
