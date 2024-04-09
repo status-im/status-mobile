@@ -35,6 +35,17 @@
        :icon                :i/muted}]}]
    [rn/view {:height 50}]
    [quo/channel-actions
+    {:actions
+     [{:big? true
+       :label "Pinned Messages sometimes can get very long and we have to take care of that"
+       :customization-color :blue
+       :icon :i/pin
+       :counter-value 5}
+      {:label               "Mute chat"
+       :customization-color :blue
+       :icon                :i/muted}]}]
+   [rn/view {:height 50}]
+   [quo/channel-actions
     {:actions [{:label               "Pinned Messages"
                 :customization-color :blue
                 :icon                :i/pin
