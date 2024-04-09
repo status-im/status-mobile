@@ -9,9 +9,6 @@
   (cond-> {:border-radius     16
            :margin-horizontal 8}
 
-    in-pinned-view?
-    (assoc :padding-vertical 0)
-
     (and (not in-pinned-view?) (or mentioned pinned-by))
     (assoc :background-color colors/primary-50-opa-5 :margin-bottom 4)
 
@@ -19,16 +16,17 @@
     (assoc :margin-top 4)))
 
 (defn user-message-content
-  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen?]}]
+  [{:keys [outgoing outgoing-status six-reactions? window-scale small-screen? in-pinned-view?]}]
   {:border-radius      16
    :padding-horizontal 8
-   :padding-top        4
-   :padding-bottom     (if (or small-screen?
-                               (and
-                                (> 3 window-scale)
-                                six-reactions?))
-                         (* message-padding-scaling-ratio window-scale)
-                         4)
+   :padding-top        (if in-pinned-view? 8 4)
+   :padding-bottom     (if in-pinned-view?
+                         5
+                         (when (or small-screen?
+                                 (and
+                                  (> 3 window-scale)
+                                  six-reactions?))
+                           (* message-padding-scaling-ratio window-scale)))
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5
                          1)})

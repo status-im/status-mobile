@@ -152,7 +152,7 @@
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
-                 show-user-info? preview? theme]}]
+                 show-user-info? preview? in-pinned-view? theme]}]
       (let [{:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
                     last-in-group? message-id chat-id]} message-data
             {:keys [disable-message-long-press?]}       context
@@ -195,7 +195,8 @@
                                  :outgoing-status outgoing-status
                                  :small-screen?   rn/small-screen?
                                  :window-scale    window-scale
-                                 :six-reactions?  six-reactions?})
+                                 :six-reactions?  six-reactions?
+                                 :in-pinned-view? in-pinned-view?})
           :on-press            (fn []
                                  (if (and platform/ios? keyboard-shown?)
                                    (do
@@ -337,4 +338,5 @@
         {:message-data    message-data
          :context         context
          :keyboard-shown? keyboard-shown?
-         :show-reactions? true}])]))
+         :show-reactions? true
+         :in-pinned-view? in-pinned-view?}])]))

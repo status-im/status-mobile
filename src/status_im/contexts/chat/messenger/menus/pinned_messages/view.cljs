@@ -63,8 +63,8 @@
          :render-data (assoc render-data :disable-message-long-press? disable-message-long-press?)
          :render-fn   message-render-fn
          :footer      [rn/view {:style style/list-footer}]
-         :content-container-style {:padding-top    16
-                                   :padding-bottom 16}
+         :content-container-style {:padding-top    8
+                                   :padding-bottom 8}
          :key-fn      list-key-fn
          :separator   [quo/separator {:style {:margin-vertical 8}}]}]
        [empty-pinned-messages-state
