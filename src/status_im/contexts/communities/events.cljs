@@ -59,16 +59,11 @@
 
 (defn- handle-my-request
   [db {:keys [community-id state deleted] :as request}]
-  (let [{:keys [name]} (get-in db [:communities community-id])]
-    (cond (and (= constants/community-request-to-join-state-pending state) (not deleted))
-          (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
-          (and (= constants/community-request-to-join-state-accepted state) (not deleted))
-          (do (rf/dispatch [:toasts/upsert
-                            {:id   :joined-community
-                             :type :positive
-                             :text (i18n/label :t/joined-community {:community name})}])
-              (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))
-          :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))))
+  (cond (and (= constants/community-request-to-join-state-pending state) (not deleted))
+        (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
+        (and (= constants/community-request-to-join-state-accepted state) (not deleted))
+        (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)
+        :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)))
 
 (defn handle-admin-request
   [db {:keys [id community-id deleted] :as request}]
