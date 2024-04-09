@@ -1,5 +1,6 @@
 (ns status-im.subs.communities
   (:require
+    [clojure.string :as string]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
