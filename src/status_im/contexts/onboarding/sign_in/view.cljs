@@ -8,7 +8,6 @@
   []
   [scan-sync-code/view
    {:title             (i18n/label :t/sign-in-by-syncing)
-    :show-bottom-view? true
     :background        [background/view true]
     :animated?         false
     :screen-name       "sign-in"}])
@@ -17,6 +16,5 @@
   []
   [scan-sync-code/view
    {:title             (i18n/label :t/sign-in-by-syncing)
-    :show-bottom-view? true
     :animated?         true
     :screen-name       "sign-in-intro"}])
