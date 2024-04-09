@@ -92,14 +92,16 @@
        (when icon-top
          [rn/view
           [quo.icons/icon icon-top
-           {:container-style {:margin-bottom 2}
+           {:container-style {:margin-bottom 2
+                              :opacity       (when disabled? 0.3)}
             :color           icon-color
             :size            icon-size}]])
        (when icon-left
          [rn/view
           {:style (style/icon-left-icon-style
                    {:size      size
-                    :icon-size icon-size})}
+                    :icon-size icon-size
+                    :disabled? disabled?})}
           [quo.icons/icon icon-left
            {:color icon-color
             :size  icon-size}]])
@@ -115,7 +117,8 @@
            {:size            (when (#{56 24} size) :paragraph-2)
             :weight          :medium
             :number-of-lines 1
-            :style           {:color label-color}}
+            :style           {:color   label-color
+                              :opacity (when disabled? 0.3)}}
            children]
 
           (vector? children)
@@ -124,7 +127,8 @@
          [rn/view
           {:style (style/icon-right-icon-style
                    {:size      size
-                    :icon-size icon-size})}
+                    :icon-size icon-size
+                    :disabled? disabled?})}
           [quo.icons/icon icon-right
            {:color icon-color
             :size  icon-size}]])]]]))
