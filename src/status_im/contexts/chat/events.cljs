@@ -84,11 +84,11 @@
   (let [{:keys [view-id current-chat-id]} db
         {:keys [all-chats chats-home-list removed-chats]}
         (reduce
-         (fn [acc {:keys [chat-id profile-public-key timeline? community-id active muted] :as chat}]
+         (fn [acc {:keys [chat-id community-id active muted] :as chat}]
            (if (not (or active muted))
              (update acc :removed-chats conj chat-id)
              (cond-> acc
-               (and (not profile-public-key) (not timeline?) (not community-id) active)
+               (and (not community-id) active)
                (update :chats-home-list conj chat-id)
                :always
                (assoc-in [:all-chats chat-id] chat))))

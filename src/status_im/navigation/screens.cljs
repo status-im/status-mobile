@@ -127,6 +127,9 @@
                  :skip-background? true}
      :component group-create/view}
 
+    {:name      :group-details
+     :component group-details/group-details}
+
     {:name      :community-requests-to-join
      :options   {:sheet? true}
      :component join-menu/view}

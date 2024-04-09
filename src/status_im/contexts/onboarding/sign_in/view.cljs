@@ -7,16 +7,14 @@
 (defn view
   []
   [scan-sync-code/view
-   {:title             (i18n/label :t/sign-in-by-syncing)
-    :show-bottom-view? true
-    :background        [background/view true]
-    :animated?         false
-    :screen-name       "sign-in"}])
+   {:title       (i18n/label :t/sign-in-by-syncing)
+    :background  [background/view true]
+    :animated?   false
+    :screen-name "sign-in"}])
 
 (defn animated-view
   []
   [scan-sync-code/view
-   {:title             (i18n/label :t/sign-in-by-syncing)
-    :show-bottom-view? true
-    :animated?         true
-    :screen-name       "sign-in-intro"}])
+   {:title       (i18n/label :t/sign-in-by-syncing)
+    :animated?   true
+    :screen-name "sign-in-intro"}])
