@@ -4,6 +4,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
+    [status-im.subs.chat.utils :as subs.utils]
     [utils.i18n :as i18n]
     [utils.money :as money]))
 
@@ -65,12 +66,22 @@
  (fn [[{:keys [members]}] _]
    members))
 
-(re-frame/reg-sub
- :communities/current-community-members
- :<- [:chats/current-chat]
- :<- [:communities]
- (fn [[{:keys [community-id]} communities]]
-   (get-in communities [community-id :members])))
+(defn- keys->names
+  [public-keys profile]
+  (reduce (fn [acc contact-identity]
+            (assoc acc
+                   contact-identity
+                   (when (= (:public-key profile) contact-identity)
+                     (:primary-name profile)
+                     contact-identity)))
+          {}
+          public-keys))
+
+(defn- sort-members-by-name
+  [names descending? members]
+  (if descending?
+    (sort-by #(get names (first %)) #(compare %2 %1) members)
+    (sort-by #(get names (first %)) members)))
 
 (re-frame/reg-sub
  :communities/sorted-community-members
@@ -79,17 +90,38 @@
          members (re-frame/subscribe [:communities/community-members community-id])]
      [profile members]))
  (fn [[profile members] _]
-   (let [names (reduce (fn [acc contact-identity]
-                         (assoc acc
-                                contact-identity
-                                (when (= (:public-key profile) contact-identity)
-                                  (:primary-name profile)
-                                  contact-identity)))
-                       {}
-                       (keys members))]
+   (let [names (keys->names (keys members) profile)]
      (->> members
-          (sort-by #(get names (get % 0)))
+          (sort-members-by-name names false)
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
+
+(re-frame/reg-sub
+ :communities/sorted-community-members-section-list
+ (fn [[_ community-id]]
+   (let [profile                   (re-frame/subscribe [:profile/profile])
+         members                   (re-frame/subscribe [:communities/community-members
+                                                        community-id])
+         visibility-status-updates (re-frame/subscribe
+                                    [:visibility-status-updates])
+         my-status-update          (re-frame/subscribe
+                                    [:multiaccount/current-user-visibility-status])]
+     [profile members visibility-status-updates my-status-update]))
+ (fn [[profile members visibility-status-updates my-status-update] _]
+   (let [online? (fn [public-key]
+                   (let [{visibility-status-type :status-type}
+                         (if (or (string/blank? (:public-key profile))
+                                 (= (:public-key profile) public-key))
+                           my-status-update
+                           (get visibility-status-updates public-key))]
+                     (subs.utils/online? visibility-status-type)))
+         names   (keys->names (keys members) profile)]
+     (->> members
+          (sort-members-by-name names true)
+          keys
+          (group-by online?)
+          (map (fn [[k v]]
+                 {:title (if k (i18n/label :t/online) (i18n/label :t/offline))
+                  :data  v}))))))
 
 (re-frame/reg-sub
  :communities/featured-contract-communities
@@ -272,7 +304,8 @@
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
-                  muted]}   (get full-chats-data
+                  muted
+                  color]}   (get full-chats-data
                                  (str community-id id))
           acc-with-category (if (get acc category-id)
                               acc
@@ -298,7 +331,8 @@
                              ;; -> has access
                              :locked?                      locked?
                              :hide-if-permissions-not-met? (and hide-if-permissions-not-met? locked?)
-                             :id                           id}]
+                             :id                           id
+                             :color                        color}]
       (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
 (re-frame/reg-sub

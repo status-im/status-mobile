@@ -15,6 +15,7 @@
     [status-im.contexts.wallet.create-account.style :as style]
     [status-im.contexts.wallet.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :as responsiveness]
@@ -23,29 +24,39 @@
 
 (defn- get-keypair-data
   [{:keys [title primary-keypair? new-keypair? derivation-path customization-color]}]
-  [{:title             title
-    :image             (if primary-keypair? :avatar :icon)
-    :image-props       (if primary-keypair?
-                         {:full-name           (utils.string/get-initials title 1)
-                          :size                :xxs
-                          :customization-color customization-color}
-                         :i/seed)
-    :action            (when-not new-keypair? :button)
-    :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
-                        :button-text (i18n/label :t/edit)
-                        :alignment   :flex-start}
-    :description       :text
-    :description-props {:text (i18n/label :t/on-device)}}
-   {:title             (i18n/label :t/derivation-path)
-    :image             :icon
-    :image-props       :i/derivated-path
-    :action            :button
-    :action-props      {:on-press    #(js/alert "Coming soon!")
-                        :button-text (i18n/label :t/edit)
-                        :icon-left   :i/placeholder
-                        :alignment   :flex-start}
-    :description       :text
-    :description-props {:text (string/replace derivation-path #"/" " / ")}}])
+  (let [formatted-path  (string/replace derivation-path #"/" " / ")
+        on-auth-success (fn [password]
+                          (rf/dispatch [:navigate-to
+                                        :screen/wallet.edit-derivation-path
+                                        {:password                password
+                                         :current-derivation-path formatted-path}]))]
+    [{:title             title
+      :image             (if primary-keypair? :avatar :icon)
+      :image-props       (if primary-keypair?
+                           {:full-name           (utils.string/get-initials title 1)
+                            :size                :xxs
+                            :customization-color customization-color}
+                           :i/seed)
+      :action            (when-not new-keypair? :button)
+      :action-props      {:on-press    #(rf/dispatch [:navigate-to :screen/wallet.select-keypair])
+                          :button-text (i18n/label :t/edit)
+                          :alignment   :flex-start}
+      :description       :text
+      :description-props {:text (i18n/label :t/on-device)}}
+     {:title             (i18n/label :t/derivation-path)
+      :image             :icon
+      :image-props       :i/derivated-path
+      :action            :button
+      :action-props      {:on-press    #(if (ff/enabled? :ff/wallet.edit-derivation-path)
+                                          (rf/dispatch [:standard-auth/authorize
+                                                        {:on-auth-success   on-auth-success
+                                                         :auth-button-label (i18n/label :t/continue)}])
+                                          (js/alert "Coming soon!"))
+                          :button-text (i18n/label :t/edit)
+                          :icon-left   :i/face-id
+                          :alignment   :flex-start}
+      :description       :text
+      :description-props {:text formatted-path}}]))
 
 (defn- f-view
   [_]

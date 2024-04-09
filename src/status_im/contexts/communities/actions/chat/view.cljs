@@ -30,11 +30,12 @@
   (hide-sheet-and-dispatch [:chat.ui/mute chat-id false 0]))
 
 (defn- action-view-members-and-details
-  []
+  [community-id chat-id]
   {:icon                :i/members
    :accessibility-label :chat-view-members-and-details
    :label               (i18n/label :t/view-channel-members-and-details)
-   :on-press            not-implemented/alert})
+   :on-press            #(rf/dispatch [:navigate-to :screen/chat.view-channel-members-and-details
+                                       {:community-id community-id :chat-id chat-id}])})
 
 (defn- action-token-requirements
   []
@@ -110,7 +111,7 @@
    :label               (i18n/label :t/share-channel)})
 
 (defn actions
-  [{:keys [locked? chat-id]} inside-chat?]
+  [{:keys [locked? chat-id community-id]} inside-chat? hide-view-members?]
   (let [{:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])]
     (cond
       locked?
@@ -122,7 +123,7 @@
 
       (and (not inside-chat?) (not locked?))
       [quo/action-drawer
-       [[(action-view-members-and-details)
+       [[(when-not hide-view-members? (action-view-members-and-details community-id chat-id))
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
@@ -133,7 +134,7 @@
 
       (and inside-chat? (not locked?))
       [quo/action-drawer
-       [[(action-view-members-and-details)
+       [[(action-view-members-and-details community-id chat-id)
          (action-token-requirements)
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)

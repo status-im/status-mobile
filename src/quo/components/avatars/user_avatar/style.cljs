@@ -65,8 +65,9 @@
      :align-items      :center
      :background-color (colors/resolve-color customization-color theme)}))
 
-(def indicator-color
-  {:online  colors/success-50
+(defn indicator-color
+  []
+  {:online  (colors/theme-colors colors/success-50 colors/success-60)
    :offline colors/neutral-40})
 
 (defn outer

@@ -1,0 +1,12 @@
+# Do not add a BuildId to the generated libraries, for reproducibility
+--- ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt
++++ ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists-patched.txt
+@@ -21,7 +21,7 @@
+ endif(CCACHE_FOUND)
+
+ # Make sure every shared lib includes a .note.gnu.build-id header
+-add_link_options(-Wl,--build-id)
++add_link_options(-Wl,--build-id=none)
+ add_compile_options(-Wall -Werror -std=c++20)
+
+ function(add_react_android_subdir relative_path)

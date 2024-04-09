@@ -34,8 +34,8 @@
   (oops/oget event "nativeEvent.layout.y"))
 
 (defn- channel-chat-item
-  [community-id community-color
-   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked?] :as chat}]
+  [community-id
+   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}]
   (let [sheet-content      [actions/chat-actions
                             (assoc chat
                                    :chat-type constants/community-chat-type
@@ -48,7 +48,7 @@
                              :else                nil)
         channel-options    {:name                name
                             :emoji               emoji
-                            :customization-color community-color
+                            :customization-color color
                             :mentions-count      mentions-count
                             ;; NOTE: this is a troolean, nil/true/false have different meaning
                             :locked?             locked?
@@ -62,7 +62,7 @@
              :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data]))]]))
 
 (defn- channel-list-component
-  [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
+  [{:keys [on-category-layout community-id on-first-channel-height-changed]}
    channels-list]
   [rn/view
    {:on-layout #(on-first-channel-height-changed
@@ -86,7 +86,7 @@
         [rn/view {:style {:padding-horizontal 8}}
          (for [chat chats]
            ^{:key (:id chat)}
-           [channel-chat-item community-id community-color chat])])])])
+           [channel-chat-item community-id chat])])])])
 
 (defn- get-access-type
   [access]
@@ -110,7 +110,7 @@
               :show-button? true
               :button-label (i18n/label :t/read-more)
               :button-icon  :info}
-             [quo/text (i18n/label :t/token-gated-communities-info)]])}])}
+             [quo/text {:size :paragraph-2} (i18n/label :t/token-gated-communities-info)]])}])}
      [rn/view
       [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
@@ -254,7 +254,7 @@
        {:keys [on-category-layout
                collapsed?
                on-first-channel-height-changed]}]
-    (let [{:keys [name description joined spectated images tags color id membership-permissions?]
+    (let [{:keys [name description joined spectated images tags id membership-permissions?]
            :as   community}
           (rf/sub [:communities/community id])
           joined-or-spectated (or joined spectated)
@@ -275,7 +275,6 @@
          [channel-list-component
           {:on-category-layout              on-category-layout
            :community-id                    id
-           :community-color                 color
            :on-first-channel-height-changed on-first-channel-height-changed}
           (add-handlers-to-categorized-chats id chats-by-category joined-or-spectated)])])))
 

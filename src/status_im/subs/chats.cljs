@@ -108,6 +108,12 @@
    (get chats chat-id)))
 
 (re-frame/reg-sub
+ :chats/chat-members-by-id
+ :<- [:chats/chats]
+ (fn [chats [_ chat-id]]
+   (get-in chats [chat-id :members])))
+
+(re-frame/reg-sub
  :chats/muted
  (fn [[_ chat-id] _]
    (re-frame/subscribe [:chats/chat-by-id chat-id]))
@@ -201,6 +207,21 @@
           (= constants/contact-request-state-mutual
              (get-in contacts [chat-id :contact-request-state])))
          (not (contains? blocked-users-set chat-id))))))))
+
+(re-frame/reg-sub
+ :chats/able-to-send-message?
+ :<- [:chats/current-chat]
+ (fn [current-chat]
+   (get current-chat :able-to-send-message?)))
+
+(re-frame/reg-sub
+ :chats/chat-type
+ :<- [:chats/current-chat]
+ (fn [current-chat]
+   (condp apply [current-chat]
+     chat.events/community-chat? :community-chat
+     chat.events/group-chat?     :group-chat
+     :chat)))
 
 (re-frame/reg-sub
  :chats/current-chat-chat-view
