@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
@@ -43,7 +44,7 @@
   []
   (let [selected-participants      (rf/sub [:group-chat/selected-participants])
         deselected-members         (rf/sub [:group-chat/deselected-members])
-        chat-id                    (rf/sub [:get-screen-params :group-chat-profile])
+        chat-id                    (rf/sub [:get-screen-params :group-details])
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
         admin?                     (get admins (rf/sub [:multiaccount/public-key]))]
     [rn/view {:flex 1 :margin-top 20}
@@ -107,8 +108,8 @@
 
 (defn group-details
   []
-  (let [chat-id         (rf/sub [:get-screen-params :group-chat-profile])
-        {:keys [admins chat-id chat-name color muted contacts]
+  (let [chat-id         (rf/sub [:get-screen-params :group-details])
+        {:keys [admins chat-id chat-name color muted contacts image]
          :as   group}   (rf/sub [:chats/chat-by-id chat-id])
         members         (rf/sub [:contacts/group-members-sections chat-id])
         pinned-messages (rf/sub [:chats/pinned chat-id])
@@ -121,6 +122,7 @@
        :customization-color color}]
      [quo/page-nav
       {:type       :no-title
+       :margin-top (safe-area/get-top)
        :background :photo
        :right-side [{:icon-name :i/options
                      :on-press  #(rf/dispatch [:show-bottom-sheet
@@ -130,7 +132,9 @@
        :on-press   #(rf/dispatch [:navigate-back])}]
      [quo/page-top
       {:title  chat-name
-       :avatar {:customization-color color}}]
+       :avatar {:group?              true
+                :picture             (when image {:uri image})
+                :customization-color color}}]
      [quo/channel-actions
       {:container-style style/actions-view
        :actions         [{:accessibility-label :pinned-messages
@@ -167,7 +171,8 @@
        :render-section-footer-fn       contacts-section-footer
        :render-data                    {:chat-id chat-id
                                         :admin?  admin?}
-       :render-fn                      contact-item-render}]
+       :render-fn                      contact-item-render
+       :separator                      [rn/view {:style {:height 4}}]}]
      [quo/floating-shell-button
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color profile-color

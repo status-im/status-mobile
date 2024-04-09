@@ -169,7 +169,7 @@
      preview-text]))
 
 (defn avatar-view
-  [{:keys [contact chat-id full-name color muted?]}]
+  [{:keys [contact chat-id full-name color muted? image]}]
   (if contact ; `contact` is passed when it's not a group chat
     (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
           photo-path (rf/sub [:chats/photo-path chat-id])]
@@ -182,6 +182,7 @@
          (assoc :ring? false))])
     [quo/group-avatar
      {:customization-color color
+      :picture             (when image {:uri image})
       :size                :size-32}]))
 
 (defn- notification-layout
@@ -225,7 +226,7 @@
         unviewed-messages-count]])))
 
 (defn chat-item
-  [{:keys [chat-id group-chat color name last-message timestamp muted]
+  [{:keys [chat-id group-chat color name last-message timestamp muted image]
     :as   item}]
   (let [[primary-name secondary-name]
         (if group-chat
@@ -239,7 +240,8 @@
        :chat-id   chat-id
        :full-name primary-name
        :color     color
-       :muted?    muted}]
+       :muted?    muted
+       :image     image}]
      [rn/view {:style {:flex-shrink 1}}
       [rn/view {:style style/chat-data-container}
        [quo/author

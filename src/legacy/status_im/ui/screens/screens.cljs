@@ -44,7 +44,6 @@
     [legacy.status-im.ui.screens.sync-settings.views :as sync-settings]
     [legacy.status-im.ui.screens.wakuv2-settings.edit-node.views :as edit-wakuv2-node]
     [legacy.status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
-    [status-im.contexts.chat.group-details.view :as group-details]
     [utils.i18n :as i18n]))
 
 (defn topbar-options
@@ -69,10 +68,6 @@
     :component progress/progress}
 
    ;;CHAT
-   {:name      :group-chat-profile
-    ;;TODO animated-header
-    :options   {:insets {:top? true}}
-    :component group-details/group-details}
    {:name      :group-chat-invite
     ;;TODO parameter in the event
     :options   {:insets {:top? true}}
