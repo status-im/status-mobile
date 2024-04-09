@@ -76,7 +76,7 @@
     nil))
 
 (defn label-component
-  [{:keys [label label-props blur? theme]}]
+  [{:keys [label label-props blur? theme preview-size]}]
   [rn/view {:accessibility-label :label-component}
    (case label
      :text    [text/text
@@ -84,7 +84,7 @@
                label-props]
      :color   [rn/view
                {:style (style/label-dot label-props)}]
-     :preview [preview-list/view {:type (:type label-props) :size :size-24}
+     :preview [preview-list/view {:type (:type label-props) :size (or preview-size :size-24)}
                (:data label-props)]
      nil)])
 
