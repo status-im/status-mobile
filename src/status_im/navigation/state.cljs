@@ -4,7 +4,6 @@
 (defonce root-id (atom nil))
 (defonce modals (atom []))
 (defonce dissmissing (atom false))
-(defonce alert-banner-shown? (atom false))
 
 (defonce ^:private navigation-state (atom []))
 

@@ -1,11 +1,12 @@
 (ns status-im.contexts.profile.settings.effects
   (:require [native-module.core :as native-module]
+            [quo.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [react-native.platform :as platform]
             [status-im.common.theme.core :as theme]
             [status-im.constants :as constants]
-            [status-im.setup.hot-reload :as hot-reload]
-            [utils.re-frame :as rf]))
+            [status-im.contexts.shell.jump-to.utils :as shell.utils]
+            [status-im.setup.hot-reload :as hot-reload]))
 
 (re-frame/reg-fx
  :profile.settings/blank-preview-flag-changed
@@ -21,14 +22,19 @@
 (re-frame/reg-fx
  :profile.settings/switch-theme-fx
  (fn [[theme-type view-id reload-ui?]]
-   (let [theme (if (or (= theme-type constants/theme-type-dark)
-                       (and (= theme-type constants/theme-type-system)
-                            (theme/device-theme-dark?)))
-                 :dark
-                 :light)]
+   (let [[theme status-bar-theme nav-bar-color]
+         ;; Status bar theme represents status bar icons colors, so opposite to app theme
+         (if (or (= theme-type constants/theme-type-dark)
+                 (and (= theme-type constants/theme-type-system)
+                      (theme/device-theme-dark?)))
+           [:dark :light colors/neutral-100]
+           [:light :dark colors/white])]
      (theme/set-theme theme)
-     (rf/dispatch [:reload-status-nav-color view-id])
+     (re-frame/dispatch [:change-shell-status-bar-style
+                         (if (shell.utils/home-stack-open?) status-bar-theme :light)])
      (when reload-ui?
        (re-frame/dispatch [:dismiss-all-overlays])
        (when js/goog.DEBUG
-         (hot-reload/reload))))))
+         (hot-reload/reload))
+       (when-not (= view-id :shell-stack)
+         (re-frame/dispatch [:change-shell-nav-bar-color nav-bar-color]))))))
