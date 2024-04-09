@@ -64,7 +64,7 @@
                            :on-token-press on-token-press}]
        :tab/collectibles [collectibles-grid search-text])]))
 
-(defn- f-view-internal
+(defn- view-internal
   []
   (let [selected-tab   (reagent/atom (:id (first tabs-data)))
         search-text    (reagent/atom "")
@@ -93,9 +93,5 @@
          :data            tabs-data
          :on-change       on-change-tab}]
        [tab-view @search-text @selected-tab on-change-text]])))
-
-(defn- view-internal
-  []
-  [:f> f-view-internal])
 
 (def view (quo.theme/with-theme view-internal))

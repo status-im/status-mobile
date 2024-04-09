@@ -84,7 +84,9 @@
  (fn [{:keys [db]} [{:keys [token stack-id start-flow?]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
-            (assoc-in [:wallet :ui :send :token] token))
+            (assoc-in [:wallet :ui :send :token]
+                      {:symbol   (:symbol token)
+                       :networks (:networks token)}))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
          [:dispatch
           [:wallet/wizard-navigate-forward
