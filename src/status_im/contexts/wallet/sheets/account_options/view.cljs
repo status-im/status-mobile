@@ -112,6 +112,10 @@
   (let [options-height (reagent/atom 0)]
     (fn [{:keys [theme]}]
       (let [accounts               (rf/sub [:wallet/accounts-without-current-viewing-account])
+            view-id                (rf/sub [:view-id])
+            accounts               (if (= view-id :screen/wallet.bridge-select-asset)
+                                     (filter #(not (:watch-only? %)) accounts)
+                                     accounts)
             show-account-selector? (pos? (count accounts))]
         [:<>
          (when show-account-selector?
