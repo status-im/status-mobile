@@ -93,6 +93,7 @@
 ;;100 with transparency
 (def neutral-100-opa-0 (alpha neutral-100 0))
 (def neutral-100-opa-5 (alpha neutral-100 0.05))
+(def neutral-100-opa-8 (alpha neutral-100 0.08))
 (def neutral-100-opa-10 (alpha neutral-100 0.1))
 (def neutral-100-opa-30 (alpha neutral-100 0.3))
 (def neutral-100-opa-50 (alpha neutral-100 0.5))
