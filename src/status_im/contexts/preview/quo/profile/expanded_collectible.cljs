@@ -36,4 +36,5 @@
                             vertical-image
                             horizontal-image)
                :counter   (when (seq (:counter @state)) (:counter @state))
+               :supported-file? true
                :on-press  #(js/alert "Pressed"))]])))

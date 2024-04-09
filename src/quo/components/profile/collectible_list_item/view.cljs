@@ -1,18 +1,17 @@
 (ns quo.components.profile.collectible-list-item.view
   (:require
-    [quo.components.avatars.collection-avatar.view :as collection-avatar]
-    [quo.components.counter.collectible-counter.view :as collectible-counter]
-    [quo.components.icon :as icon]
-    [quo.components.list-items.preview-list.view :as preview-list]
-    [quo.components.markdown.text :as text]
-    [quo.components.profile.collectible-list-item.style :as style]
-    [quo.foundations.colors :as colors]
-    [quo.foundations.gradients :as gradients]
-    [quo.theme]
-    [react-native.core :as rn]
-    [schema.core :as schema]
-    [status-im.contexts.wallet.collectible.utils :as utils]
-    [utils.i18n :as i18n]))
+   [quo.components.avatars.collection-avatar.view :as collection-avatar]
+   [quo.components.counter.collectible-counter.view :as collectible-counter]
+   [quo.components.icon :as icon]
+   [quo.components.list-items.preview-list.view :as preview-list]
+   [quo.components.markdown.text :as text]
+   [quo.components.profile.collectible-list-item.style :as style]
+   [quo.foundations.colors :as colors]
+   [quo.foundations.gradients :as gradients]
+   [quo.theme]
+   [react-native.core :as rn]
+   [schema.core :as schema]
+   [utils.i18n :as i18n]))
 
 (defn- fallback-view
   [{:keys [label theme]}]
@@ -159,12 +158,11 @@
         [avatar-image-src]])]))
 
 (defn- view-internal
-  [{:keys [container-style type on-press collectible-mime]
+  [{:keys [container-style type on-press supported-file?]
     :as   props}]
   (let [[state set-state] (rn/use-state {:image-loaded?  false
                                          :image-error?   false
-                                         :avatar-loaded? false})
-        supported-file?   (utils/supported-file? collectible-mime)]
+                                         :avatar-loaded? false})]
     [rn/pressable
      {:on-press            (when (or (:image-loaded? state) (not supported-file?)) on-press)
       :accessibility-label :collectible-list-item
@@ -188,7 +186,7 @@
      [:map {:closed true}
       [:avatar-image-src {:optional true} [:maybe :schema.common/image-source]]
       [:collectible-name {:optional true} [:maybe string?]]
-      [:collectible-mime {:optional true} [:maybe [:or string? keyword?]]]
+      [:supported-file? {:optional true} [:maybe boolean?]]
       [:native-ID {:optional true} [:maybe [:or string? keyword?]]]
       [:community? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe [:or :string :int]]]

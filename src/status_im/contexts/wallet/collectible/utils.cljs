@@ -17,7 +17,7 @@
 
 (defn supported-file?
   [collectible-type]
-  (supported-collectible-types collectible-type))
+  (if (supported-collectible-types collectible-type) true false))
 
 (defn total-owned-collectible
   [ownership]

@@ -16,7 +16,7 @@
       :image-src            (:uri preview-url)
       :avatar-image-src     (:image-url collection-data)
       :collectible-name     (:name collection-data)
-      :collectible-mime     (:animation-media-type collectible-data)
+      :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
       :gradient-color-index (keyword (str "gradient-" (inc (mod index 5))))
       :counter (utils/collectible-owned-counter total-owned)
       :container-style {:padding 8}

@@ -45,5 +45,6 @@
                :counter              (when (seq (:counter @state)) (:counter @state))
                :gradient-color-index (:gradient-color-index @state)
                :image-src            test-image
+               :supported-file?      true
                :avatar-image-src     test-avatar
                :on-press             #(js/alert "Pressed"))]])))

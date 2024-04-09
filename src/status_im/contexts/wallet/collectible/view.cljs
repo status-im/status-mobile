@@ -102,8 +102,8 @@
            {:image-src        preview-uri
             :container-style  style/preview-container
             :counter          (utils/collectible-owned-counter total-owned)
-            :collectible-mime (:animation-media-type collectible-data)
             :native-ID        (when (= animation-shared-element-id token-id) :shared-element)
+            :supported-file?  (utils/supported-file? (:animation-media-type collectible-data))
             :on-press         (fn []
                                 (if svg?
                                   (js/alert "Can't visualize SVG images in lightbox")

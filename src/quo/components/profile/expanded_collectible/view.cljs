@@ -1,16 +1,15 @@
 (ns quo.components.profile.expanded-collectible.view
   (:require
-    [promesa.core :as promesa]
-    [quo.components.counter.collectible-counter.view :as collectible-counter]
-    [quo.components.icon :as icon]
-    [quo.components.markdown.text :as text]
-    [quo.components.profile.expanded-collectible.style :as style]
-    [quo.foundations.colors :as colors]
-    [quo.theme]
-    [react-native.core :as rn]
-    [schema.core :as schema]
-    [status-im.contexts.wallet.collectible.utils :as utils]
-    [utils.i18n :as i18n]))
+   [promesa.core :as promesa]
+   [quo.components.counter.collectible-counter.view :as collectible-counter]
+   [quo.components.icon :as icon]
+   [quo.components.markdown.text :as text]
+   [quo.components.profile.expanded-collectible.style :as style]
+   [quo.foundations.colors :as colors]
+   [quo.theme]
+   [react-native.core :as rn]
+   [schema.core :as schema]
+   [utils.i18n :as i18n]))
 
 (defn- counter-view
   [counter]
@@ -33,11 +32,10 @@
     label]])
 
 (defn view-internal
-  [{:keys [container-style square? on-press counter image-src collectible-mime native-ID]}]
+  [{:keys [container-style square? on-press counter image-src native-ID supported-file?]}]
   (let [theme                          (quo.theme/use-theme-value)
         [image-size set-image-size]    (rn/use-state {})
-        [image-error? set-image-error] (rn/use-state false)
-        supported-file?                (utils/supported-file? collectible-mime)]
+        [image-error? set-image-error] (rn/use-state false)]
     (rn/use-effect
      (fn []
        (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
@@ -77,7 +75,7 @@
     [:props
      [:map {:closed true}
       [:image-src {:optional true} [:maybe string?]]
-      [:collectible-mime {:optional true} [:maybe [:or string? keyword?]]]
+      [:supported-file? {:optional true} [:maybe boolean?]]
       [:container-style {:optional true} [:maybe :map]]
       [:native-ID {:optional true} [:maybe [:or string? keyword?]]]
       [:square? {:optional true} [:maybe boolean?]]
