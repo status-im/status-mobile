@@ -102,7 +102,6 @@
 (defn cancel-reply-message
   [input-ref]
   (js/setTimeout #(blur-input input-ref) 100)
-  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
   (rf/dispatch [:chat.ui/cancel-message-reply]))
 
 (defn cancel-edit-message
