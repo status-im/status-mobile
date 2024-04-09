@@ -60,9 +60,7 @@
         :scroll-y   scroll-y
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
-        :right-side [{:icon-name :i/multi-profile
-                      :on-press  #(rf/dispatch [:open-modal :screen/onboarding.sign-in])}
-                     {:icon-name :i/qr-code
+        :right-side [{:icon-name :i/qr-code
                       :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
                      {:icon-name :i/share :on-press not-implemented/alert}]}]]
      [rn/flat-list
