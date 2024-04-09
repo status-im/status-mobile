@@ -9,6 +9,7 @@
     [legacy.status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [legacy.status-im.ui.screens.browser.bookmarks.views :as bookmarks]
     [legacy.status-im.ui.screens.bug-report :as bug-report]
+    [legacy.status-im.ui.screens.communities.invite :as communities.invite]
     [legacy.status-im.ui.screens.communities.members :as members]
     [legacy.status-im.ui.screens.contacts-list.views :as contacts-list]
     [legacy.status-im.ui.screens.currency-settings.views :as currency-settings]
@@ -284,6 +285,13 @@
                 :insets {:bottom? true
                          :top?    true}}
     :component group-chat/add-participants-toggle-list}
+
+   ;[Communities] Invite people
+   {:name      :legacy-invite-people-community
+    ;;TODO dyn title
+    :options   {:insets {:bottom? true
+                         :top?    true}}
+    :component communities.invite/legacy-invite}
 
    ;QR Scanner
    {:name      :qr-scanner
