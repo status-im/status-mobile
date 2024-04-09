@@ -19,10 +19,11 @@
 
 (defn emoji-size
   [size]
-  {:font-size (case size
-                :size-64 24
-                :size-32 15
-                11)})
+  {:text-align :center
+   :font-size  (case size
+                 :size-64 24
+                 :size-32 15
+                 11)})
 
 (defn lock-container
   [size theme]

@@ -49,7 +49,7 @@
         font-size          (get-in style/sizes [size :font-size])
         amount-initials    (if (#{:xs :xxs :xxxs} size) 1 2)
         sizes              (get style/sizes size)
-        indicator-color    (get style/indicator-color (if online? :online :offline))
+        indicator-color    (get (style/indicator-color) (if online? :online :offline))
         profile-picture-fn (:fn profile-picture)]
 
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
