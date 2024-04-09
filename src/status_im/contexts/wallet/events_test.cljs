@@ -3,9 +3,9 @@
     [cljs.test :refer-macros [deftest is testing]]
     matcher-combinators.test
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.collectible.events :as collectible-events]
     [status-im.contexts.wallet.db :as db]
-    [status-im.contexts.wallet.events :as events]
-    [status-im.contexts.wallet.events.collectibles :as collectibles]))
+    [status-im.contexts.wallet.events :as events]))
 
 (def address "0x2f88d65f3cb52605a54a833ae118fb1363acccd2")
 
@@ -47,7 +47,7 @@
                                   :accounts {"0x1" {:collectibles (list collectible-1 collectible-2)}
                                              "0x2" {:collectibles (list collectible-3)}
                                              "0x3" {}}}}
-          result-db     (:db (collectibles/flush-collectibles {:db db}))]
+          result-db     (:db (collectible-events/flush-collectibles {:db db}))]
 
       (is (match? result-db expected-db)))))
 
@@ -60,7 +60,7 @@
       (let [expected-db {:wallet {:accounts {"0x1" {}
                                              "0x2" {"some other stuff" "with any value"}
                                              "0x3" {}}}}
-            effects     (collectibles/clear-stored-collectibles {:db db})
+            effects     (collectible-events/clear-stored-collectibles {:db db})
             result-db   (:db effects)]
 
         (is (match? result-db expected-db))))))
@@ -72,7 +72,8 @@
                             :image-url   "https://..."}
           expected-db      {:wallet {:last-collectible-details {:description "Pandaria"
                                                                 :image-url   "https://..."}}}
-          effects          (collectibles/store-last-collectible-details {:db db} [last-collectible])
+          effects          (collectible-events/store-last-collectible-details {:db db}
+                                                                              [last-collectible])
           result-db        (:db effects)]
       (is (match? result-db expected-db)))))
 
