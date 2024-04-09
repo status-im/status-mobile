@@ -32,9 +32,9 @@
                                     :margin-horizontal 35}}
        [quo/expanded-collectible
         (assoc (dissoc @state :image-type)
-               :image-src (if (= :vertical (:image-type @state))
-                            vertical-image
-                            horizontal-image)
-               :counter   (when (seq (:counter @state)) (:counter @state))
+               :image-src       (if (= :vertical (:image-type @state))
+                                  vertical-image
+                                  horizontal-image)
+               :counter         (when (seq (:counter @state)) (:counter @state))
                :supported-file? true
-               :on-press  #(js/alert "Pressed"))]])))
+               :on-press        #(js/alert "Pressed"))]])))

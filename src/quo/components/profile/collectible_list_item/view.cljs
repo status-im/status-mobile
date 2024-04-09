@@ -1,17 +1,17 @@
 (ns quo.components.profile.collectible-list-item.view
   (:require
-   [quo.components.avatars.collection-avatar.view :as collection-avatar]
-   [quo.components.counter.collectible-counter.view :as collectible-counter]
-   [quo.components.icon :as icon]
-   [quo.components.list-items.preview-list.view :as preview-list]
-   [quo.components.markdown.text :as text]
-   [quo.components.profile.collectible-list-item.style :as style]
-   [quo.foundations.colors :as colors]
-   [quo.foundations.gradients :as gradients]
-   [quo.theme]
-   [react-native.core :as rn]
-   [schema.core :as schema]
-   [utils.i18n :as i18n]))
+    [quo.components.avatars.collection-avatar.view :as collection-avatar]
+    [quo.components.counter.collectible-counter.view :as collectible-counter]
+    [quo.components.icon :as icon]
+    [quo.components.list-items.preview-list.view :as preview-list]
+    [quo.components.markdown.text :as text]
+    [quo.components.profile.collectible-list-item.style :as style]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.gradients :as gradients]
+    [quo.theme]
+    [react-native.core :as rn]
+    [schema.core :as schema]
+    [utils.i18n :as i18n]))
 
 (defn- fallback-view
   [{:keys [label theme]}]
