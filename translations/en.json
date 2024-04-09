@@ -2574,6 +2574,7 @@
     "key-name-error-special-char": "Special characters are not allowed",
     "display": "Display",
     "testnet-mode-enabled": "Testnet mode enabled",
+<<<<<<< HEAD
     "online-community-member": "Online",
     "offline-community-member": "Offline",
     "invite-to-community": "Invite to community",
@@ -2582,6 +2583,7 @@
     "one-user-was-invited": "1 user was invited",
     "n-users-were-invited": "{{count}} users were invited",
     "invite-friend-to-status": "Invite friends to Status",
+<<<<<<< HEAD
     "send-community-link": "Send community link",
     "enter-private-key": "Enter the private key of an address",
     "enter-private-key-placeholder": "Enter your private key",
@@ -2591,4 +2593,9 @@
     "this-account-has-no-activity": "This account has no activity",
     "this-address-has-activity": "This address has activity",
     "scanning-for-activity": "Scanning for activity..."
+=======
+    "send-community-link": "Send community link"
+=======
+>>>>>>> eb996e861 (lint)
+>>>>>>> 4c97cd202 (lint)
 }

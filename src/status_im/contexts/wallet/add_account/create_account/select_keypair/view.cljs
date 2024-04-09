@@ -20,7 +20,12 @@
      {:icon                :i/seed
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)
+<<<<<<< HEAD
       :add-divider?        true}
+=======
+      :add-divider?        true
+      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.recovery-phrase])}
+>>>>>>> d81082798 (lint)
      {:icon                :i/key
       :accessibility-label :import-private-key
       :label               (i18n/label :t/import-private-key)

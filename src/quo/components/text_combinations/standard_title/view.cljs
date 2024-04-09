@@ -16,6 +16,7 @@
       parsed-number)))
 
 (defn- right-counter
+<<<<<<< HEAD
   [{:keys [blur? counter-left counter-right]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/right-counter}
@@ -26,6 +27,18 @@
       (str (get-counter-number counter-left)
            "/"
            (get-counter-number counter-right))]]))
+=======
+  [{:keys [blur? theme counter-left counter-right text]}]
+  [rn/view {:style style/right-counter}
+   [text/text
+    {:size   :paragraph-2
+     :weight :regular
+     :style  (style/right-counter-text blur? theme)}
+    (or text
+        (str (get-counter-number counter-left)
+             "/"
+             (get-counter-number counter-right)))]])
+>>>>>>> d81082798 (lint)
 
 (defn- right-action
   [{:keys [customization-color on-press icon]

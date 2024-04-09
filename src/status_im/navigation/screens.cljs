@@ -88,7 +88,19 @@
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
+<<<<<<< HEAD
     [status-im.contexts.wallet.save-address.view :as wallet-save-address]
+=======
+    [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
+    [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
+    [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
+     wallet-check-your-backup]
+    [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
+    [status-im.contexts.wallet.create-account.recovery-phrase.view :as wallet-recovery-phrase]
+    [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
+    [status-im.contexts.wallet.create-account.view :as wallet-create-account]
+>>>>>>> eb996e861 (lint)
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
@@ -412,6 +424,10 @@
     {:name      :screen/wallet.select-keypair
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-select-keypair/view}
+
+    {:name      :screen/wallet.recovery-phrase
+     :options   {:insets {:top? true :bottom? true}}
+     :component wallet-recovery-phrase/view}
 
     {:name      :screen/wallet.create-account
      :options   {:insets {:top? true}}
