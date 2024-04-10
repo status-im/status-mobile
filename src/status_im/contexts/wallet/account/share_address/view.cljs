@@ -8,6 +8,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.account.share-address.style :as style]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.i18n :as i18n]
     [utils.image-server :as image-server]
@@ -34,7 +35,7 @@
   [selected-networks]
   (let [on-save       (fn [chain-ids]
                         (rf/dispatch [:hide-bottom-sheet])
-                        (reset! selected-networks (map utils/id->network chain-ids)))
+                        (reset! selected-networks (map network-utils/id->network chain-ids)))
         sheet-content (fn []
                         [network-preferences/view
                          {:blur?             true

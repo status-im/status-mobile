@@ -436,6 +436,15 @@
 (def ^:const optimism-goerli-chain-id 420)
 (def ^:const optimism-sepolia-chain-id 11155420)
 
+(def opensea-url-names
+  {:ethereum "ethereum"
+   :sepolia  "sepolia"
+   :goerli   "goerli"})
+
+(def ^:const ethereum "ethereum")
+(def ^:const sepolia "sepolia")
+(def ^:const goerli "goerli")
+
 (def ^:const mainnet-chain-ids
   #{ethereum-mainnet-chain-id arbitrum-mainnet-chain-id optimism-mainnet-chain-id})
 

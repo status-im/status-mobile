@@ -35,6 +35,9 @@
 (def arbitrum-sepolia-chain-explorer-link "https://sepolia.arbiscan.io/address/")
 (def goerli-chain-explorer-link "https://goerli.etherscan.io/address/")
 (def optimism-goerli-chain-explorer-link "https://goerli-optimistic.etherscan.io/address/")
+(def opensea-link "https://opensea.io")
+(def opensea-tesnet-link "https://testnets.opensea.io")
+
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))

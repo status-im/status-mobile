@@ -28,7 +28,7 @@
      collection-name]]])
 
 (defn cta-buttons
-  []
+  [chain-id token-id contract-address]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/buttons-container}
      [quo/button
@@ -41,6 +41,9 @@
       {:container-style  style/opensea-button
        :type             :outline
        :size             40
+       :on-press         (fn []
+                           (rf/dispatch [:wallet/navigate-to-opensea chain-id token-id
+                                         contract-address]))
        :icon-left        :i/opensea
        :icon-left-color  (colors/theme-colors colors/neutral-100 colors/neutral-40 theme)
        :icon-right       :i/external
@@ -71,6 +74,8 @@
             {svg?        :svg?
              preview-uri :uri}          preview-url
             token-id                    (:token-id id)
+            chain-id                    (get-in id [:contract-id :chain-id])
+            contract-address            (get-in id [:contract-id :address])
             {collection-image :image-url
              collection-name  :name}    collection-data
             {collectible-name :name}    collectible-data
@@ -123,7 +128,7 @@
                                                                          {:name  collectible-name
                                                                           :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
-          [cta-buttons]
+          [cta-buttons chain-id token-id contract-address]
           [quo/tabs
            {:size           32
             :style          style/tabs

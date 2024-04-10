@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.contexts.wallet.common.utils :as utils]
+            [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.subs.wallet.add-account.address-to-watch]
             [utils.number]))
 
@@ -136,7 +137,7 @@
  :<- [:profile/test-networks-enabled?]
  :<- [:profile/is-goerli-enabled?]
  (fn [[selected-networks testnet-enabled? goerli-enabled?]]
-   (set (map #(utils/network->chain-id
+   (set (map #(network-utils/network->chain-id
                {:network          %
                 :testnet-enabled? testnet-enabled?
                 :goerli-enabled?  goerli-enabled?})
@@ -236,7 +237,7 @@
  (fn [[account networks] [_ query]]
    (let [tokens        (map (fn [token]
                               (assoc token
-                                     :networks      (utils/network-list token networks)
+                                     :networks      (network-utils/network-list token networks)
                                      :total-balance (utils/calculate-total-token-balance token)))
                             (:tokens account))
          sorted-tokens (sort-by :name compare tokens)]
@@ -254,7 +255,7 @@
  (fn [[account networks] [_ token-symbol]]
    (let [tokens (map (fn [token]
                        (assoc token
-                              :networks      (utils/network-list token networks)
+                              :networks      (network-utils/network-list token networks)
                               :total-balance (utils/calculate-total-token-balance token)))
                      (:tokens account))
          token  (first (filter #(= (string/lower-case (:symbol %))
