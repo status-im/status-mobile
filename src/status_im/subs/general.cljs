@@ -1,7 +1,6 @@
 (ns status-im.subs.general
   (:require
     [clojure.string :as string]
-    [legacy.status-im.ethereum.tokens :as tokens]
     [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.utils.build :as build]
     [legacy.status-im.utils.mobile-sync :as mobile-network-utils]
@@ -48,12 +47,6 @@
      (assoc network :rpc-network? (get-in network [:config :UpstreamConfig :Enabled])))))
 
 (re-frame/reg-sub
- :custom-rpc-node
- :<- [:current-network]
- (fn [{:keys [id]}]
-   (= 45 (count id))))
-
-(re-frame/reg-sub
  :chain-keyword
  :<- [:current-network]
  (fn [network]
@@ -78,12 +71,6 @@
    (= 1 chain-id)))
 
 (re-frame/reg-sub
- :ethereum-network?
- :<- [:chain-id]
- (fn [chain-id]
-   (< chain-id 6)))
-
-(re-frame/reg-sub
  :network-name
  :<- [:current-network]
  (fn [network]
@@ -99,16 +86,6 @@
    ;; peer-stats (populated from "wakuv2.peerstats" status-go signal)
    ;; Otherwise use peers-count fetched from "discovery.summary" signal
    (if wakuv2-flag (not (:isOnline peer-stats)) (zero? peers-count))))
-
-(re-frame/reg-sub
- :offline?
- :<- [:network-status]
- :<- [:sync-state]
- :<- [:disconnected?]
- (fn [[network-status sync-state disconnected?]]
-   (or disconnected?
-       (= network-status :offline)
-       (= sync-state :offline))))
 
 (re-frame/reg-sub
  :syncing?
@@ -127,12 +104,6 @@
  :-> :height)
 
 (re-frame/reg-sub
- :dimensions/small-screen?
- :<- [:dimensions/window-height]
- (fn [height]
-   (< height 550)))
-
-(re-frame/reg-sub
  :get-screen-params
  :<- [:screen-params]
  :<- [:view-id]
@@ -140,32 +111,14 @@
    (get params (or view-id view-id-db))))
 
 (re-frame/reg-sub
- :delete-swipe-position
- :<- [:animations]
- (fn [animations [_ type item-id]]
-   (get-in animations [type item-id :delete-swiped])))
-
-(re-frame/reg-sub
  :wallet-legacy/search-recipient-filter
  :<- [:ui/search]
  (fn [search]
    (get search :recipient-filter)))
 
-(re-frame/reg-sub
- :search/currency-filter
- :<- [:ui/search]
- (fn [search]
-   (get search :currency-filter)))
-
 (defn- node-version
   [web3-node-version]
   (or web3-node-version "N/A"))
-
-(re-frame/reg-sub
- :get-app-version
- :<- [:web3-node-version]
- (fn [web3-node-version]
-   (str build/app-short-version "; " (node-version web3-node-version))))
 
 (re-frame/reg-sub
  :get-app-short-version
@@ -217,12 +170,6 @@
    (chain/network->chain-keyword network)))
 
 (re-frame/reg-sub
- :ethereum/native-currency
- :<- [:current-network]
- (fn [network]
-   (tokens/native-currency network)))
-
-(re-frame/reg-sub
  :connectivity/state
  :<- [:network-status]
  :<- [:disconnected?]
@@ -263,22 +210,6 @@
  :<- [:profile/profile]
  (fn [{:keys [mnemonic]}]
    mnemonic))
-
-(re-frame/reg-sub
- :get-profile-unread-messages-number
- :<- [:profile/profile]
- (fn [{:keys [mnemonic]}]
-   (if mnemonic 1 0)))
-
-(re-frame/reg-sub
- :mobile-network/syncing-allowed?
- :<- [:network/type]
- :<- [:profile/profile]
- (fn [[network-type {:keys [syncing-on-mobile-network?]}]]
-   (or (= network-type "wifi")
-       (and
-        (= network-type "cellular")
-        syncing-on-mobile-network?))))
 
 (re-frame/reg-sub
  :toasts/toast
