@@ -1,6 +1,8 @@
 (ns status-im.contexts.chat.messenger.messages.list.style
   (:require
     [quo.foundations.colors :as colors]
+    [quo.foundations.shadows :as shadows]
+    [quo.theme :as quo.theme]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.messages.constants :as messages.constants]))
 
@@ -23,14 +25,12 @@
   [bottom theme top-margin]
   (reanimated/apply-animations-to-style
    {:bottom bottom}
-   {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
-    :padding-horizontal 20
-    :border-radius      20
-    :margin-top         top-margin
-    :shadow-offset      {:width  0
-                         :height -5}
-    :shadow-opacity     0.035
-    :shadow-radius      0.1}))
+   (merge
+    (shadows/get 2 (quo.theme/get-theme) :inverted)
+    {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
+     :padding-horizontal 20
+     :border-radius      20
+     :margin-top         top-margin})))
 
 (defn header-image
   [scale top left theme]
