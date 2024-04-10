@@ -1,6 +1,6 @@
 (ns status-im.contexts.chat.messenger.menus.pinned-messages.style
   (:require
-   [react-native.platform :as platform]))
+    [react-native.platform :as platform]))
 
 (defn heading
   [community?]

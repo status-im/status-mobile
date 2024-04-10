@@ -1,16 +1,16 @@
 (ns status-im.contexts.chat.messenger.messages.pin.events
   (:require
-   [legacy.status-im.data-store.messages :as data-store.messages]
-   [legacy.status-im.data-store.pin-messages :as data-store.pin-messages]
-   [re-frame.core :as re-frame]
-   [status-im.common.toasts.events :as toasts]
-   [status-im.constants :as constants]
-   [status-im.contexts.chat.messenger.menus.pinned-messages.view :as pinned-messages-menu]
-   [status-im.contexts.chat.messenger.messages.list.events :as message-list]
-   [status-im.navigation.events :as navigation]
-   [taoensso.timbre :as log]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [legacy.status-im.data-store.messages :as data-store.messages]
+    [legacy.status-im.data-store.pin-messages :as data-store.pin-messages]
+    [re-frame.core :as re-frame]
+    [status-im.common.toasts.events :as toasts]
+    [status-im.constants :as constants]
+    [status-im.contexts.chat.messenger.menus.pinned-messages.view :as pinned-messages-menu]
+    [status-im.contexts.chat.messenger.messages.list.events :as message-list]
+    [status-im.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn handle-failed-loading-pin-messages
   {:events [:pin-message/failed-loading-pin-messages]}
@@ -46,14 +46,14 @@
     (if (and message
              (aget message "message"))
       (assoc-in db
-                [:pin-messages
-                 (aget pinned-message "localChatId")
-                 (aget pinned-message "message_id")]
-                (-> (aget message "message")
-                    (js->clj :keywordize-keys true)
-                    data-store.messages/<-rpc
-                    (assoc :pinned-by (aget message "pinnedBy")
-                           :pinned-at (aget message "pinnedAt"))))
+       [:pin-messages
+        (aget pinned-message "localChatId")
+        (aget pinned-message "message_id")]
+       (-> (aget message "message")
+           (js->clj :keywordize-keys true)
+           data-store.messages/<-rpc
+           (assoc :pinned-by (aget message "pinnedBy")
+                  :pinned-at (aget message "pinnedAt"))))
       db)))
 
 (rf/defn receive-signal
@@ -73,8 +73,8 @@
                                 pin-messages)]
     {:db
      (assoc-in db
-               [:pin-message-lists current-chat-id]
-               (message-list/add-many nil (vals (get-in db [:pin-messages current-chat-id]))))}))
+      [:pin-message-lists current-chat-id]
+      (message-list/add-many nil (vals (get-in db [:pin-messages current-chat-id]))))}))
 
 (rf/defn send-pin-message-locally
   "Pin message, rebuild pinned messages list locally"
@@ -87,12 +87,12 @@
               {:db (cond-> db
                      pinned
                      (->
-                      (update-in [:pin-message-lists chat-id] message-list/add message)
-                      (assoc-in [:pin-messages chat-id message-id] message))
+                       (update-in [:pin-message-lists chat-id] message-list/add message)
+                       (assoc-in [:pin-messages chat-id message-id] message))
                      (and (not pinned) pin-message-lists-exist?)
                      (->
-                      (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
-                      (update-in [:pin-messages chat-id] dissoc message-id)))})))
+                       (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
+                       (update-in [:pin-messages chat-id] dissoc message-id)))})))
 
 (rf/defn send-pin-message
   "Pin message, rebuild pinned messages list"

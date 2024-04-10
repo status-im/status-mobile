@@ -1,6 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.content.style
   (:require
-   [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def ^:private message-padding-scaling-ratio 4.5)
 
@@ -23,9 +23,9 @@
    :padding-bottom     (if in-pinned-view?
                          5
                          (when (or small-screen?
-                                 (and
-                                  (> 3 window-scale)
-                                  six-reactions?))
+                                   (and
+                                    (> 3 window-scale)
+                                    six-reactions?))
                            (* message-padding-scaling-ratio window-scale)))
    :opacity            (if (and outgoing (= outgoing-status :sending))
                          0.5

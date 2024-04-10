@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.theme :as quo.theme]
+    [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.re-frame :as rf]))
@@ -54,7 +55,7 @@
 (defn- view-internal
   [{:keys [message-id chat-id pinned-by preview? theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
-    [:<>
+    [rn/view {:style {:padding-bottom 12}}
      (when (seq reactions)
        [quo/react
         {:container-style {:margin-left 44
