@@ -13,9 +13,9 @@
       (if error (rej error) (res result)))))
 
 (defn promisify-native-module-call
-  [func & args]
+  [f & args]
   (promesa/create
    (fn [res rej]
      (->> [(promisify-callback res rej)]
           (concat args)
-          (apply func)))))
+          (apply f)))))

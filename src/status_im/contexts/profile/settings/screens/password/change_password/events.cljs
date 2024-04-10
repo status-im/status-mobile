@@ -4,8 +4,7 @@
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
-(rf/reg-event-fx
- :change-password/verify-old-password
+(rf/reg-event-fx :change-password/verify-old-password
  (fn [_ [entered-password]]
    (let [hashed-password (-> entered-password
                              security/hash-masked-password
@@ -19,8 +18,7 @@
                                      (log/error "accounts_verifyPassword error"
                                                 {:error error
                                                  :event :password-settings/change-password}))}]})))
-(rf/reg-event-fx
- :change-password/password-verify-success
+(rf/reg-event-fx :change-password/password-verify-success
  (fn [{:keys [db]} [valid? old-password]]
    {:db (if valid?
           (-> db
@@ -28,24 +26,20 @@
               (assoc-in [:settings/change-password :current-step] :new-password))
           (assoc-in db [:settings/change-password :verify-error] true))}))
 
-(rf/reg-event-fx
- :change-password/reset-error
+(rf/reg-event-fx :change-password/reset-error
  (fn [{:keys [db]}]
    {:db (assoc-in db [:settings/change-password :verify-error] false)}))
 
-(rf/reg-event-fx
- :change-password/reset
+(rf/reg-event-fx :change-password/reset
  (fn [{:keys [db]}]
    {:db (assoc db :settings/change-password {})}))
 
-(rf/reg-event-fx
- :change-password/confirm-new-password
+(rf/reg-event-fx :change-password/confirm-new-password
  (fn [{:keys [db]} [new-password]]
    {:db (assoc-in db [:settings/change-password :new-password] new-password)
     :fx [[:dispatch [:change-password/submit]]]}))
 
-(rf/reg-event-fx
- :change-password/submit
+(rf/reg-event-fx :change-password/submit
  (fn [{:keys [db]}]
    (let [key-uid                             (get-in db [:profile/profile :key-uid])
          {:keys [new-password old-password]} (get db :settings/change-password)]
@@ -61,8 +55,7 @@
              :on-fail      (fn [error]
                              (rf/dispatch [:change-password/submit-fail error]))}]]})))
 
-(rf/reg-event-fx
- :change-password/submit-fail
+(rf/reg-event-fx :change-password/submit-fail
  (fn [_ [error]]
    (log/error "failed to change the password"
               {:error error
@@ -70,7 +63,6 @@
    {:fx [[:dispatch [:change-password/reset]]
          [:dispatch [:navigate-back]]]}))
 
-(rf/reg-event-fx
- :change-password/submit-success
+(rf/reg-event-fx :change-password/submit-success
  (fn [{:keys [db]}]
    {:db (assoc-in db [:settings/change-password :loading?] false)}))

@@ -5,8 +5,7 @@
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
-(rf/reg-fx
- :effects.change-password/change-password
+(rf/reg-fx :effects.change-password/change-password
  (fn [{:keys [key-uid old-password new-password on-success on-fail]}]
    (let [hash-masked-password (fn [pw]
                                 (-> pw security/hash-masked-password security/safe-unmask-data))

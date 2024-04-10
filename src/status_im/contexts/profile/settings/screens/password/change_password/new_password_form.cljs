@@ -56,13 +56,10 @@
 
 (defn- password-validations
   [password]
-  (let [validations (juxt utils.string/has-lower-case?
-                          utils.string/has-upper-case?
-                          utils.string/has-numbers?
-                          utils.string/has-symbols?)]
-    (->> password
-         (validations)
-         (zipmap constant/password-tips))))
+  {:lower-case? (utils.string/has-lower-case? password)
+   :upper-case? (utils.string/has-upper-case? password)
+   :numbers?    (utils.string/has-numbers? password)
+   :symbols?    (utils.string/has-symbols? password)})
 
 (defn view
   []
