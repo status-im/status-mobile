@@ -9,7 +9,7 @@
 (def init-state
   (reduce (fn [acc tip] (assoc acc tip false)) {} constant/password-tips))
 
-(defn make-tip-descriptor
+(defn- make-tip-descriptor
   [tip]
   {:key  tip
    :type :boolean})

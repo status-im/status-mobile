@@ -99,7 +99,7 @@
 
 (defn- info-button
   []
-  (let [theme (theme/use-theme)]
+  (let [theme (theme/use-theme-value)]
     [rn/pressable
      {:on-press
       #(rf/dispatch

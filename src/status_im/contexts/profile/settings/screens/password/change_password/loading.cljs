@@ -10,6 +10,11 @@
 ;; quick changes in UI when mounted, we're waiting for a bit.
 (def ^:private minimum-loading-time 5000)
 
+(defn- handle-logout
+  []
+  (rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
+  (rf/dispatch [:change-password/reset]))
+
 (defn view
   []
   (let [insets                             (safe-area/get-insets)
@@ -45,7 +50,5 @@
       (when done?
         [quo/logout-button
          {:container-style style/logout-container
-          :on-press        (fn []
-                             (rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
+          :on-press        handle-logout}])]]))
 
-                             (rf/dispatch [:change-password/reset]))}])]]))
