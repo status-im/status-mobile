@@ -14,7 +14,6 @@
     [status-im.contexts.communities.utils :as utils]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn handle-community
