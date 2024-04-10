@@ -9,8 +9,9 @@
     [utils.i18n :as i18n]))
 
 (defn- render-fn
-  [{:keys [preview-url collection-data ownership collectible-data] :as collectible} index address on-press on-long-press]
-  (let [total-owned (utils/calculate-owned-collectible ownership address)]
+  [{:keys [preview-url collection-data ownership collectible-data] :as collectible} index address
+   on-press on-long-press]
+  (let [total-owned (utils/total-owned-collectible ownership address)]
     [quo/collectible-list-item
      {:type                 :card
       :image-src            (:uri preview-url)

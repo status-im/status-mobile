@@ -3,8 +3,6 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.svg :as svg]
-    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.options.view :as options-drawer]
@@ -12,8 +10,7 @@
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.url :as url]))
+    [utils.re-frame :as rf]))
 
 (defn header
   [collectible-name collection-name collection-image-url]
