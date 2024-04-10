@@ -17,7 +17,11 @@
 
 (defn supported-file?
   [collectible-type]
-  (if (supported-collectible-types collectible-type) true false))
+  (if (supported-collectible-types collectible-type)
+    true
+    (do
+      (println "unsupoorted collectible file type" collectible-type)
+      false)))
 
 (defn total-owned-collectible
   ([ownership]
