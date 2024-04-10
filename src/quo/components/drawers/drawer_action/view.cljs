@@ -11,7 +11,7 @@
 
 (defn view-internal
   [{:keys [action icon description state title on-press
-           customization-color blur?]
+           customization-color blur? accessibility-label]
     :or   {customization-color :blue
            blur?               false}}]
   (let [theme                  (quo.theme/use-theme)
@@ -29,7 +29,7 @@
                                              :pressed?            pressed?
                                              :description?        (not-empty description)
                                              :blur?               blur?})
-      :accessibility-label :container}
+      :accessibility-label accessibility-label}
      (when icon
        [icon/icon icon
         {:accessibility-label :left-icon
