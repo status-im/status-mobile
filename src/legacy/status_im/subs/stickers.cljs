@@ -4,12 +4,6 @@
     [status-im.constants :as constants]))
 
 (re-frame/reg-sub
- :stickers/installed-packs
- :<- [:stickers/packs]
- (fn [packs]
-   (filter #(= (:status %) constants/sticker-pack-status-installed) (vals packs))))
-
-(re-frame/reg-sub
  :stickers/all-packs
  :<- [:stickers/packs]
  (fn [packs]
