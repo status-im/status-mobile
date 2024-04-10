@@ -5,6 +5,7 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.common.utils :as wallet-common-utils]
     [status-im.contexts.wallet.send.save-address.style :as style]
     [status-im.contexts.wallet.sheets.network-preferences.view
      :as network-preferences]
@@ -12,10 +13,10 @@
     [utils.re-frame :as rf]))
 
 (defn- address-view
-  [{:keys [address-color]}]
-  (let [network-details (rf/sub [:wallet/network-preference-details])
-        address         (rf/sub [:wallet/wallet-send-to-address])
-        saved-address   (rf/sub [:wallet/saved-address-by-address address])]
+  [{:keys [address-color selected-chain-ids set-selected-chain-ids]}]
+  (let [address           (rf/sub [:wallet/wallet-send-to-address])
+        selected-networks (map wallet-common-utils/id->network selected-chain-ids)]
+    (prn selected-chain-ids selected-networks)
     [rn/view {:style style/address-container}
      [quo/data-item
       {:status          :default
@@ -29,7 +30,7 @@
        :title           (i18n/label :t/address)
        :custom-subtitle (rn/use-callback
                          (fn [] [quo/address-text
-                                {:networks network-details
+                                {:networks selected-networks
                                  :address  address
                                  :format   :long}]))
        :on-press        (rn/use-callback
@@ -39,22 +40,24 @@
                                           (fn []
                                             [network-preferences/view
                                              {:blur?             true
-                                              :selected-networks (-> saved-address :networks)
-                                              :account           {:color address-color :address address }
-                                              :button-label      (i18n/label :t/display)
+                                              :selected-networks selected-networks
+                                              :account           {:color address-color :address address}
+                                              :button-label      (i18n/label :t/save)
                                               :on-save           (fn [chain-ids]
-                                                              (rf/dispatch [:hide-bottom-sheet])
-                                                              ;; (reset! selected-networks (map #(get utils/id->network %)
-                                                              ;;                                chain-ids))
-                                                              )}
-                                             ])}])))
+                                                                   (set-selected-chain-ids chain-ids)
+                                                                   (rf/dispatch [:hide-bottom-sheet]))}
+                                             ])}]))
+                         [selected-networks])
        :container-style style/data-item}]]))
 
 (defn view
   []
-  (let [[address-label set-address-label] (rn/use-state "")
-        [address-color set-address-color] (rn/use-state :blue)
-        placeholder                       (i18n/label :t/address-name)]
+  (let [[address-label set-address-label]           (rn/use-state "")
+        [address-color set-address-color]           (rn/use-state :blue)
+        address                                     (rf/sub [:wallet/wallet-send-to-address])
+        saved-address                               (rf/sub [:wallet/saved-address-by-address address])
+        [selected-chain-ids set-selected-chain-ids] (rn/use-state nil)
+        placeholder                                 (i18n/label :t/address-name)]
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [quo/page-nav
@@ -97,4 +100,10 @@
        :on-change        set-address-color
        :container-style  style/color-picker}]
      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
-     [address-view {:address-color address-color}]]))
+     [address-view {:address-color          address-color
+                    :selected-chain-ids     selected-chain-ids
+                    :set-selected-chain-ids set-selected-chain-ids}]]))
+
+(comment
+  (rf/dispatch [:open-modal :screen/wallet.save-address])
+  ,)

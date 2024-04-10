@@ -1,19 +1,28 @@
-(ns utils.ethereum.chain)
+(ns utils.ethereum.chain
+  (:require [status-im.constants :as constants]))
 
 (def BSC-mainnet-chain-id 56)
 (def BSC-testnet-chain-id 97)
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains
-  {:mainnet     {:id 1 :name "Mainnet"}
-   :xdai        {:id 100 :name "xDai"}
-   :goerli      {:id 5 :name "Goerli"}
-   :bsc         {:id   BSC-mainnet-chain-id
-                 :name "BSC"}
-   :bsc-testnet {:id   BSC-testnet-chain-id
-                 :name "BSC testnet"}
-   :arbitrum    {:id 42161 :name "Arbitrum"}
-   :optimism    {:id 10 :name "Optimism"}})
+  {:mainnet         {:id   constants/ethereum-mainnet-chain-id
+                     :name "Mainnet"}
+   :xdai            {:id 100 :name "xDai"}
+   :goerli          {:id   constants/ethereum-goerli-chain-id
+                     :name "Ethreum Goerli"}
+   :bsc             {:id   BSC-mainnet-chain-id
+                     :name "BSC"}
+   :bsc-testnet     {:id   BSC-testnet-chain-id
+                     :name "BSC testnet"}
+   :arbitrum        {:id   constants/arbitrum-mainnet-chain-id
+                     :name "Arbitrum"}
+   :arbitrum-goerli {:id   constants/arbitrum-goerli-chain-id
+                     :name "Arbitrum Goerli"}
+   :optimism        {:id   constants/optimism-mainnet-chain-id
+                     :name "Optimism"}
+   :optimism-goerli {:id   constants/optimism-goerli-chain-id
+                     :name "Optimism Goerli"}})
 
 (defn chain-id->chain-keyword
   [i]
