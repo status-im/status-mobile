@@ -46,23 +46,25 @@
         safe-area-top (safe-area/get-top)
         colors-map    (get-colors-map theme)]
     [hole-view/hole-view
-     {:style {:background-color colors/neutral-100}
+     ;; required for fix flicker issue https://github.com/status-im/status-mobile/issues/19490
+     {:style {:padding-bottom 1}
       :holes [{:x            0
                :y            (+ safe-area-top (* constants/alert-banner-height banners-count))
                :width        (:width (rn/get-window))
                :height       constants/alert-banner-height
                :borderRadius style/border-radius}]}
-     [rn/view
-      {:style {:height           safe-area-top
-               :background-color (get-in colors-map
-                                         [(if error-banner :error :alert) :background-color])}}]
-     (when error-banner
-       [banner
-        (assoc error-banner
-               :colors-map     colors-map
-               :second-banner? false)])
-     (when alert-banner
-       [banner
-        (assoc alert-banner
-               :colors-map     colors-map
-               :second-banner? (= 2 banners-count))])]))
+     [rn/view {:style {:background-color colors/neutral-100}}
+      [rn/view
+       {:style {:height           safe-area-top
+                :background-color (get-in colors-map
+                                          [(if error-banner :error :alert) :background-color])}}]
+      (when error-banner
+        [banner
+         (assoc error-banner
+                :colors-map     colors-map
+                :second-banner? false)])
+      (when alert-banner
+        [banner
+         (assoc alert-banner
+                :colors-map     colors-map
+                :second-banner? (= 2 banners-count))])]]))
