@@ -8,6 +8,7 @@
    1) Read our [PR Review Policy](pr-review-policy.md) for more details on our approach to PR reviews.
    2) Learn more about our [Pipeline for QA](pipeline_process.md) process
 6) Once e2e tests have run, they will report the result on the PR, if it's less than 100%, ask QA to take a look to make sure everything is in order (some might fail for legitimate reasons)
+   1) Try pinging @status-im/mobile-qa for help when reviewing the e2e results on the PR.
 7) Ask QA for manual testing if the PR requires it (more details [here](pipeline_process.md))
 8) Once it has been tested successfully, squash everything into one commit. rebase and merge. The commands we use:
 ```
