@@ -17,35 +17,35 @@
      :image       :icon
      :blur?       true
      :action      :arrow}]
-   [(when config/show-not-implemented-settings?
+   [(when config/show-not-implemented-features?
       {:title       (i18n/label :t/messages)
        :on-press    not-implemented/alert
        :image-props :i/messages
        :image       :icon
        :blur?       true
        :action      :arrow})
-    (when config/show-not-implemented-settings?
+    (when config/show-not-implemented-features?
       {:title       (i18n/label :t/wallet)
        :on-press    not-implemented/alert
        :image-props :i/wallet
        :image       :icon
        :blur?       true
        :action      :arrow})
-    (when config/show-not-implemented-settings?
+    (when config/show-not-implemented-features?
       {:title       (i18n/label :t/dapps)
        :on-press    not-implemented/alert
        :image-props :i/placeholder
        :image       :icon
        :blur?       true
        :action      :arrow})
-    (when config/show-not-implemented-settings?
+    (when config/show-not-implemented-features?
       {:title       (i18n/label :t/browser)
        :on-press    not-implemented/alert
        :image-props :i/browser
        :image       :icon
        :blur?       true
        :action      :arrow})
-    (when config/show-not-implemented-settings?
+    (when config/show-not-implemented-features?
       {:title       (i18n/label :t/keycard)
        :on-press    not-implemented/alert
        :image-props :i/keycard
@@ -70,14 +70,14 @@
      :image       :icon
      :blur?       true
      :action      :arrow}
-    (when config/show-not-implemented-settings?
+    (when config/show-not-implemented-features?
       {:title       (i18n/label :t/language-and-currency)
        :on-press    not-implemented/alert
        :image-props :i/globe
        :image       :icon
        :blur?       true
        :action      :arrow})]
-   [(when config/show-not-implemented-settings?
+   [(when config/show-not-implemented-features?
       {:title       (i18n/label :t/data-usage)
        :on-press    not-implemented/alert
        :image-props :i/mobile

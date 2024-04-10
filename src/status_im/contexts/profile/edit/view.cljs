@@ -34,7 +34,7 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])
-       :right-side (when config/show-not-implemented-settings?
+       :right-side (when config/show-not-implemented-features?
                      [{:icon-name :i/reveal :on-press not-implemented/alert}])}]
      [rn/flat-list
       {:key                             :list

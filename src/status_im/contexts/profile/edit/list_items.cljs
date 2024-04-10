@@ -37,7 +37,7 @@
                :action          :arrow
                :container-style style/item-container}]}
 
-     (when config/show-not-implemented-settings?
+     (when config/show-not-implemented-features?
        {:label (i18n/label :t/showcase)
         :items [{:title           (i18n/label :t/communities)
                  :on-press        not-implemented/alert
@@ -60,7 +60,7 @@
                  :action          :arrow
                  :container-style style/item-container}]})
 
-     (when config/show-not-implemented-settings?
+     (when config/show-not-implemented-features?
        {:label (i18n/label :t/on-the-web)
         :items [{:title           (i18n/label :t/links)
                  :on-press        not-implemented/alert
