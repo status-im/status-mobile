@@ -4,9 +4,11 @@
 
 (defn container
   [pressed? theme]
-  {:padding          10
+  {:padding          9
    :border-radius    12
    :border-width     1
    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :background-color (when pressed?
                        (colors/theme-colors colors/neutral-10 colors/neutral-80-opa-40 theme))})
+
+(def emoji-text-style {:line-height 20})
