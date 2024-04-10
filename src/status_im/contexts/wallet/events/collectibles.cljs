@@ -182,3 +182,25 @@
  :wallet/clear-last-collectible-details
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet] dissoc :last-collectible-details)}))
+
+(rf/reg-event-fx :wallet/trigger-share-collectible
+ (fn [_ [{:keys [title uri]}]]
+   {:fx [[:effects.share/open
+          {:title   title
+           :message title
+           :url     uri}]]}))
+
+(rf/reg-event-fx :wallet/share-collectible
+ (fn [_ [{:keys [title uri in-sheet?]}]]
+   (if in-sheet?
+     {:fx [[:dispatch
+            [:hide-bottom-sheet]]
+           [:dispatch-later
+            {:ms       600
+             :dispatch [:wallet/trigger-share-collectible
+                        {:title title
+                         :uri   uri}]}]]}
+     {:fx [[:dispatch
+            [:wallet/trigger-share-collectible
+             {:title title
+              :uri   uri}]]]})))
