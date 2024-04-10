@@ -40,9 +40,6 @@
             :verifyENSURL             config/verify-ens-url
             :verifyENSContractAddress config/verify-ens-contract-address
             :verifyTransactionChainID config/verify-transaction-chain-id
-            :upstreamConfig           config/default-network-rpc-url
-            :networkId                config/default-network-id
-            :currentNetwork           config/default-network
             :wakuV2LightClient        false
             :previewPrivacy           config/blank-preview?
             :testNetworksEnabled      config/test-networks-enabled?})))

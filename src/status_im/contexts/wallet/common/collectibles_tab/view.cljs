@@ -8,7 +8,7 @@
     [utils.i18n :as i18n]))
 
 (defn- view-internal
-  [{:keys [theme collectibles filtered? on-collectible-press on-end-reached]}]
+  [{:keys [theme collectibles filtered? on-collectible-press on-collectible-long-press on-end-reached]}]
   (let [no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
@@ -33,9 +33,11 @@
         :num-columns              2
         :render-fn                (fn [{:keys [preview-url] :as collectible}]
                                     [quo/collectible
-                                     {:images   [preview-url]
-                                      :on-press #(when on-collectible-press
-                                                   (on-collectible-press collectible))}])
+                                     {:images        [preview-url]
+                                      :on-press      #(when on-collectible-press
+                                                        (on-collectible-press collectible))
+                                      :on-long-press #(when on-collectible-long-press
+                                                        (on-collectible-long-press collectible))}])
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
 
