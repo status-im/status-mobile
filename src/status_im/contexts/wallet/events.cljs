@@ -183,7 +183,8 @@
                 :navigate-to-account address
                 :new-account?        true)
     :fx [[:dispatch [:wallet/get-accounts]]
-         [:dispatch [:wallet/clear-new-keypair]]]}))
+         [:dispatch [:wallet/clear-new-keypair]]
+         [:dispatch [:wallet/request-collectibles-for-current-viewing-account]]]}))
 
 (rf/reg-event-fx :wallet/add-account
  (fn [{:keys [db]}
