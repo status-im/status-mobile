@@ -5,16 +5,6 @@
     [react-native.platform :as platform]
     [status-im.config :as config]))
 
-(defn- add-custom-bootnodes
-  [config network all-bootnodes]
-  (let [bootnodes (as-> all-bootnodes $
-                    (get $ network)
-                    (vals $)
-                    (map :address $))]
-    (if (seq bootnodes)
-      (assoc-in config [:ClusterConfig :BootNodes] bootnodes)
-      config)))
-
 (defn- add-log-level
   [config log-level]
   (if (empty? log-level)
@@ -124,10 +114,8 @@
         waku-nodes (get config/waku-nodes-config fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
-                waku-bloom-filter-mode
-                custom-bootnodes custom-bootnodes-enabled?]}
-        profile
-        use-custom-bootnodes (get custom-bootnodes-enabled? current-network)]
+                waku-bloom-filter-mode]}
+        profile]
     (cond-> (get-in networks [current-network :config])
       :always
       (get-base-node-config)
@@ -144,8 +132,6 @@
                              (if wakuv2-enabled
                                waku-nodes
                                [])
-                             :BootNodes
-                             (if wakuv2-enabled [] (pick-nodes 4 (vals (:boot current-fleet))))
                              :TrustedMailServers
                              (if wakuv2-enabled [] (pick-nodes 6 (vals (:mail current-fleet))))
                              :StaticNodes
@@ -184,11 +170,6 @@
               :PFSEnabled                 true}
              :RequireTopics (get-topics current-network)
              :StatusAccountsConfig {:Enabled true})
-
-      (and
-       config/bootnodes-settings-enabled?
-       use-custom-bootnodes)
-      (add-custom-bootnodes current-network custom-bootnodes)
 
       :always
       (add-log-level log-level))))

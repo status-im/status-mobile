@@ -1,9 +1,7 @@
 (ns legacy.status-im.subs.root
   (:require
-    legacy.status-im.subs.bootnodes
     legacy.status-im.subs.browser
     legacy.status-im.subs.ens
-    legacy.status-im.subs.keycard
     legacy.status-im.subs.mailservers
     legacy.status-im.subs.stickers
     [re-frame.core :as re-frame]))
@@ -22,10 +20,6 @@
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :peers-summary :peers-summary)
 (reg-root-key-sub :web3-node-version :web3-node-version)
-
-;;keycard
-(reg-root-key-sub :keycard :keycard)
-(reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 
 ;;bottom sheet old
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)

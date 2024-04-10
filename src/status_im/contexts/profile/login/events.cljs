@@ -39,19 +39,17 @@
 ;; login phase 1: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/login-existing-profile
  (fn [{:keys [db]} [settings account]]
-   (let [{:networks/keys [current-network networks]
+   (let [{:networks/keys [_current-network _networks]
           :as            settings}
          (data-store.settings/rpc->settings settings)
          profile-overview (profile.rpc/rpc->profiles-overview account)
          log-level (or (:log-level settings) config/log-level)
          pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)]
      {:db (cond-> (-> db
-                      (assoc :chats/loading?           true
-                             :networks/current-network current-network
-                             :networks/networks        (merge networks config/default-networks-by-id)
-                             :profile/profile          (merge profile-overview
-                                                              settings
-                                                              {:log-level log-level}))
+                      (assoc :chats/loading?  true
+                             :profile/profile (merge profile-overview
+                                                     settings
+                                                     {:log-level log-level}))
                       (assoc-in [:activity-center :loading?] true))
             pairing-completed?
             (dissoc :syncing))
