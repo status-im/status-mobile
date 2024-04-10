@@ -1,6 +1,5 @@
 (ns status-im.contexts.profile.settings.screens.password.change-password.events
-  (:require [native-module.core :as native-module]
-            [status-im.contexts.profile.settings.screens.password.change-password.effects]
+  (:require [status-im.contexts.profile.settings.screens.password.change-password.effects]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
@@ -9,8 +8,8 @@
  :change-password/verify-old-password
  (fn [_ [entered-password]]
    (let [hashed-password (-> entered-password
-                             security/safe-unmask-data
-                             native-module/sha3)]
+                             security/hash-masked-password
+                             security/safe-unmask-data)]
      {:json-rpc/call [{:method     "accounts_verifyPassword"
                        :params     [hashed-password]
                        :on-success (fn [valid?]

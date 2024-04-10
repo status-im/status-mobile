@@ -130,6 +130,12 @@
 (def ^:const default-number-of-pin-messages 3)
 
 (def ^:const password-tips [:lower-case? :upper-case? :numbers? :symbols?])
+(def ^:const strength-status
+  {1 :very-weak
+   2 :weak
+   3 :okay
+   4 :strong
+   5 :very-strong})
 
 (def ^:const mailserver-password "status-offline-inbox")
 

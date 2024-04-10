@@ -9,7 +9,7 @@
  :effects.change-password/change-password
  (fn [{:keys [key-uid old-password new-password on-success on-fail]}]
    (let [hash-masked-password (fn [pw]
-                                (-> pw security/safe-unmask-data native-module/sha3))
+                                (-> pw security/hash-masked-password security/safe-unmask-data))
          old-password-hashed  (hash-masked-password old-password)
          new-password-hashed  (hash-masked-password new-password)]
      (-> (native-module/reset-password key-uid old-password-hashed new-password-hashed)

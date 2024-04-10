@@ -81,18 +81,11 @@
        :on-focus       on-input-focus
        :on-blur        on-blur-repeat-password}]]))
 
-(def strength-status
-  {1 :very-weak
-   2 :weak
-   3 :okay
-   4 :strong
-   5 :very-strong})
-
 (defn help
   [{{:keys [lower-case? upper-case? numbers? symbols?]} :validations
     password-strength                                   :password-strength}]
   [rn/view
-   [quo/strength-divider {:type (strength-status password-strength :info)}
+   [quo/strength-divider {:type (constant/strength-status password-strength :info)}
     (i18n/label :t/password-creation-tips-title)]
    [rn/view {:style style/password-tips}
     [quo/tips {:completed? lower-case?}
@@ -110,7 +103,7 @@
                           utils.string/has-upper-case?
                           utils.string/has-numbers?
                           utils.string/has-symbols?
-                          #(utils.string/at-least-n-chars? % 10))]
+                          #(utils.string/at-least-n-chars? % constant/new-password-min-length))]
     (->> password
          (validations)
          (zipmap (conj constant/password-tips :long-enough?)))))

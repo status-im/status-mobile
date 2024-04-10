@@ -11,13 +11,6 @@
     [utils.security.core :as security]
     [utils.string :as utils.string]))
 
-(def ^:private strength-status
-  {1 :very-weak
-   2 :weak
-   3 :okay
-   4 :strong
-   5 :very-strong})
-
 (defn- password-with-hint
   [{{:keys [text status shown]} :hint :as input-props}]
   [:<>
@@ -49,7 +42,7 @@
   (let [{:keys [lower-case? upper-case? numbers? symbols?]} validations
         password-strength                                   (calc-password-strength validations)]
     [rn/view
-     [quo/strength-divider {:type (strength-status password-strength :info)}
+     [quo/strength-divider {:type (constant/strength-status password-strength :info)}
       (i18n/label :t/password-creation-tips-title)]
      [rn/view {:style style/password-tips}
       [quo/tips {:completed? lower-case?}
@@ -82,7 +75,9 @@
 
         ;; validations
         validations                                    (password-validations password)
-        long-enough?                                   (utils.string/at-least-n-chars? password 10)
+        long-enough?                                   (utils.string/at-least-n-chars?
+                                                        password
+                                                        constant/new-password-min-length)
         empty-password?                                (empty? password)
         same-passwords?                                (and (not empty-password?)
                                                             (= password repeat-password))
