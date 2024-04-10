@@ -158,6 +158,7 @@
                                    (str (get-in collectible [:id :contract-id :address])
                                         ":"
                                         (get-in collectible [:id :token-id])))
+         to-token-id             ""
          network-preferences     (if token [] [(get-in collectible [:id :contract-id :chain-id])])
          gas-rates               constants/gas-rate-medium
          amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
@@ -176,6 +177,7 @@
                                   to-address
                                   amount-in
                                   token-id
+                                  to-token-id
                                   disabled-from-chain-ids
                                   disabled-to-chain-ids
                                   network-preferences
