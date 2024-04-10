@@ -5,8 +5,8 @@
             [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
             [react-native.safe-area :as safe-area]
+            [status-im.common.alert-banner.constants :as alert-banner.constants]
             [status-im.common.alert-banner.style :as style]
-            [status-im.constants :as constants]
             [utils.re-frame :as rf]))
 
 (defn get-colors-map
@@ -26,10 +26,10 @@
      :holes (if second-banner?
               []
               [{:x            0
-                :y            constants/alert-banner-height
+                :y            alert-banner.constants/alert-banner-height
                 :width        (:width (rn/get-window))
-                :height       constants/alert-banner-height
-                :borderRadius style/border-radius}])}
+                :height       alert-banner.constants/alert-banner-height
+                :borderRadius alert-banner.constants/border-radius}])}
     [quo/text
      {:size   :paragraph-2
       :weight :medium
@@ -38,8 +38,8 @@
 
 (defn view
   []
-  (let [banners       (rf/sub [:alert-banners])
-        theme         (quo.theme/use-theme-value)
+  (let [banners (rf/sub [:alert-banners])
+        theme (quo.theme/use-theme-value)
         banners-count (count banners)
         alert-banner  (:alert banners)
         error-banner  (:error banners)
@@ -49,10 +49,10 @@
      ;; required for fix flicker issue https://github.com/status-im/status-mobile/issues/19490
      {:style {:padding-bottom 1}
       :holes [{:x            0
-               :y            (+ safe-area-top (* constants/alert-banner-height banners-count))
+               :y            (+ safe-area-top (* alert-banner.constants/alert-banner-height banners-count))
                :width        (:width (rn/get-window))
-               :height       constants/alert-banner-height
-               :borderRadius style/border-radius}]}
+               :height       alert-banner.constants/alert-banner-height
+               :borderRadius alert-banner.constants/border-radius}]}
      [rn/view {:style {:background-color colors/neutral-100}}
       [rn/view
        {:style {:height           safe-area-top

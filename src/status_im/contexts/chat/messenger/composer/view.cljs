@@ -149,6 +149,7 @@
   (let [theme                   (quo.theme/use-theme-value)
         opacity                 (reanimated/use-shared-value 0)
         window-height           (:height (rn/get-window))
+        _ (js/console.log "ALWX WINDOW" window-height)
         background-y            (reanimated/use-shared-value (- window-height))
         composer-default-height (+ constants/composer-default-height (:bottom (:insets props)))
         shared-values           (utils/init-shared-values)

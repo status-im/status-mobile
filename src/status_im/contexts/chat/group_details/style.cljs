@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.group-details.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [status-im.contexts.shell.jump-to.constants :as jump-to.constants]))
 
 (def actions-view
   {:margin-top         8
@@ -42,4 +43,4 @@
 
 (def floating-shell-button
   {:position :absolute
-   :bottom   21})
+   :bottom   jump-to.constants/default-bottom-spacing})

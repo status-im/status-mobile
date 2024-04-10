@@ -485,8 +485,6 @@
 (def ^:const bridge-name-erc-721-transfer "ERC721Transfer")
 (def ^:const bridge-name-hop "Hop")
 
-(def ^:const alert-banner-height 40)
-
 (def ^:const status-hostname "status.app")
 
 (def ^:const community-joined-notification-type "communityJoined")

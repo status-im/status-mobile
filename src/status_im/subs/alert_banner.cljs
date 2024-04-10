@@ -1,7 +1,7 @@
 (ns status-im.subs.alert-banner
   (:require
     [re-frame.core :as re-frame]
-    [status-im.constants :as constants]))
+    [status-im.common.alert-banner.constants :as alert-banner.constants]))
 
 (re-frame/reg-sub
  :alert-banners/top-margin
@@ -9,4 +9,4 @@
  (fn [banners]
    (let [banners-count (count banners)]
      (when (pos? banners-count)
-       (+ (* constants/alert-banner-height banners-count) 8)))))
+       (+ (* alert-banner.constants/alert-banner-height banners-count) 8)))))

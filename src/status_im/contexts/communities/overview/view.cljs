@@ -385,12 +385,13 @@
 
 (defn view
   [id]
-  (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [id (or id (rf/sub [:get-screen-params :community-overview]))
+        customization-color (rf/sub [:profile/customization-color])
+        alert-banners (rf/sub [:alert-banners])]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [quo/floating-shell-button
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
-      style/floating-shell-button]]))
+      (style/floating-shell-button alert-banners)]]))

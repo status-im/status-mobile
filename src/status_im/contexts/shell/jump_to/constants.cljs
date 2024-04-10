@@ -3,6 +3,7 @@
 (def ^:const shell-animation-time 200)
 (def ^:const switcher-card-size 160)
 (def ^:const floating-shell-button-height 44)
+(def ^:const default-bottom-spacing 21)
 
 ;; Bottom tabs
 (def ^:const bottom-tabs-container-height-android 57)

@@ -1,6 +1,7 @@
 (ns status-im.contexts.communities.overview.style
   (:require
     [quo.foundations.colors :as colors]
+    [status-im.common.alert-banner.constants :as alert-banner.constants]
     [status-im.contexts.shell.jump-to.constants :as jump-to.constants]))
 
 (def screen-horizontal-padding 20)
@@ -49,14 +50,17 @@
    :right    0
    :bottom   0})
 
-(def floating-shell-button
+(defn floating-shell-button [alert-banners]
   {:position :absolute
-   :bottom   21})
+   :bottom   (+ jump-to.constants/default-bottom-spacing
+                (when (> (count alert-banners) 0)
+                  alert-banner.constants/hole-view-height))})
 
 (defn channel-list-component
   []
   {:margin-top    8
-   :margin-bottom (+ 21 jump-to.constants/floating-shell-button-height)
+   :margin-bottom (+ jump-to.constants/default-bottom-spacing
+                     jump-to.constants/floating-shell-button-height)
    :flex          1})
 
 (defn token-gated-container
