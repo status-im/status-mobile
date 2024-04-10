@@ -256,8 +256,9 @@
                                            (<= input-num-value 0)
                                            (> input-num-value (current-limit)))
             amount-text                (str @input-value " " token-symbol)
+            first-route                (first route)
             native-currency-symbol     (when-not confirm-disabled?
-                                         (get-in route [:from :native-currency-symbol]))
+                                         (get-in first-route [:from :native-currency-symbol]))
             native-token               (when native-currency-symbol
                                          (rf/sub [:wallet/token-by-symbol
                                                   native-currency-symbol]))

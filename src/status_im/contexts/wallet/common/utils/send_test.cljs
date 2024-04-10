@@ -4,22 +4,75 @@
             [utils.money :as money]))
 
 (deftest test-calculate-gas-fee
-  (testing "Test calculate-gas-fee function with EIP-1559 enabled"
-    (let [data-eip1559-enabled            {:gas-amount "23487"
-                                           :gas-fees   {:base-fee                 "32.325296406"
-                                                        :max-priority-fee-per-gas "0.011000001"
-                                                        :eip1559-enabled          true}}
-          expected-eip1559-enabled-result (money/bignumber 0.0007594826)]
-      (is (money/equal-to (utils/calculate-gas-fee data-eip1559-enabled)
-                          expected-eip1559-enabled-result)))
+  (testing "EIP-1559 transaction without L1 fee"
+    (let [data            {:gas-amount "23487"
+                           :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                        :eip-1559-enabled       true
+                                        :l-1-gas-fee            "0"}}
+          expected-result (money/bignumber "53063589834657")] ; This is in Wei
+      (is (money/equal-to (utils/calculate-gas-fee data)
+                          expected-result))))
 
-    (testing "Test calculate-gas-fee function with EIP-1559 disabled"
-      (let [data-eip1559-disabled            {:gas-amount "23487"
-                                              :gas-fees   {:gas-price       "32.375609968"
-                                                           :eip1559-enabled false}}
-            expected-eip1559-disabled-result (money/bignumber 0.000760406)]
-        (is (money/equal-to (utils/calculate-gas-fee data-eip1559-disabled)
-                            expected-eip1559-disabled-result))))))
+  (testing "EIP-1559 transaction with L1 fee of 60,000 Gwei"
+    (let [data            {:gas-amount "23487"
+                           :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                        :eip-1559-enabled       true
+                                        :l-1-gas-fee            "60000"}}
+          expected-result (money/bignumber "113063589834657")] ; Added 60,000 Gwei in Wei to the
+                                                               ; previous result
+      (is (money/equal-to (utils/calculate-gas-fee data)
+                          expected-result))))
+
+  (testing "Non-EIP-1559 transaction with specified gas price"
+    (let [data            {:gas-amount "23487"
+                           :gas-fees   {:gas-price        "2.872721089"
+                                        :eip-1559-enabled false
+                                        :l-1-gas-fee      "0"}}
+          expected-result (money/bignumber "67471600217343")] ; This is in Wei, for the specified
+                                                              ; gas amount and price
+      (is (money/equal-to (utils/calculate-gas-fee data)
+                          expected-result)))))
+
+(deftest test-calculate-full-route-gas-fee
+  (testing "Route with a single EIP-1559 transaction, no L1 fees"
+    (let [route           [{:gas-amount "23487"
+                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                         :eip-1559-enabled       true
+                                         :l-1-gas-fee            "0"}}]
+          expected-result (money/bignumber "0.000053063589834657")] ; The Wei amount for the
+                                                                    ; transaction, converted to
+                                                                    ; Ether
+      (is (money/equal-to (utils/calculate-full-route-gas-fee route)
+                          expected-result))))
+
+  (testing "Route with two EIP-1559 transactions, no L1 fees"
+    (let [route           [{:gas-amount "23487"
+                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                         :eip-1559-enabled       true
+                                         :l-1-gas-fee            "0"}}
+                           {:gas-amount "23487"
+                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                         :eip-1559-enabled       true
+                                         :l-1-gas-fee            "0"}}]
+          expected-result (money/bignumber "0.000106127179669314")] ; Sum of both transactions' Wei
+                                                                    ; amounts, converted to Ether
+      (is (money/equal-to (utils/calculate-full-route-gas-fee route)
+                          expected-result))))
+
+  (testing "Route with two EIP-1559 transactions, one with L1 fee of 60,000 Gwei"
+    (let [route           [{:gas-amount "23487"
+                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                         :eip-1559-enabled       true
+                                         :l-1-gas-fee            "0"}}
+                           {:gas-amount "23487"
+                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
+                                         :eip-1559-enabled       true
+                                         :l-1-gas-fee            "60000"}}]
+          expected-result (money/bignumber "0.000166127179669314")] ; Added 60,000 Gwei in Wei to
+                                                                    ; the previous total and
+                                                                    ; converted to Ether
+      (is (money/equal-to (utils/calculate-full-route-gas-fee route)
+                          expected-result)))))
 
 (deftest test-find-affordable-networks
   (testing "All networks affordable and selected, none disabled"
