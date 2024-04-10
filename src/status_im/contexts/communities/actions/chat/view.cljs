@@ -112,12 +112,14 @@
 
 (defn actions
   [{:keys [locked? chat-id community-id]} inside-chat? hide-view-members?]
-  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])]
+  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chats/chat-by-id chat-id])
+        {:keys [token-gated?]}               (rf/sub [:chats/community-chat-by-id community-id chat-id])]
     (cond
       locked?
       [quo/action-drawer
        [[(action-invite-people)
-         (action-token-requirements)
+         (when token-gated?
+           (action-token-requirements))
          (action-qr-code chat-id)
          (action-share chat-id)]]]
 
@@ -135,7 +137,8 @@
       (and inside-chat? (not locked?))
       [quo/action-drawer
        [[(action-view-members-and-details community-id chat-id)
-         (action-token-requirements)
+         (when token-gated?
+           (action-token-requirements))
          (action-mark-as-read)
          (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
