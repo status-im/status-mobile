@@ -87,18 +87,14 @@
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
  (fn [{:keys [db]}]
-   (let [{:networks/keys [current-network networks]} db
-         {:keys [notifications-enabled? key-uid
-                 preview-privacy?]}                  (:profile/profile db)
-         network-id                                  (str (get-in networks
-                                                                  [current-network :config :NetworkId]))]
+   (let [{:keys [notifications-enabled? key-uid
+                 preview-privacy?]} (:profile/profile db)]
      {:db db
       :fx [[:json-rpc/call
             [{:method     "wakuext_startMessenger"
               :on-success [:profile.login/messenger-started]
               :on-error   #(log/error
                             "failed to start messenger")}]]
-           [:check-eip1559-activation {:network-id network-id}]
            [:effects.profile/enable-local-notifications]
            [:contacts/initialize-contacts]
            [:browser/initialize-browser]
