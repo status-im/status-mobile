@@ -78,7 +78,8 @@
                                          :id           token-id
                                          :header       collectible-name
                                          :description  collection-name}
-            total-owned (utils/total-owned-collectible (:ownership collectible) wallet-address)]
+            total-owned                 (utils/total-owned-collectible (:ownership collectible)
+                                                                       wallet-address)]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -96,25 +97,25 @@
                            :picture     preview-uri}}
          [rn/view {:style style/container}
           [quo/expanded-collectible
-           {:image-src        preview-uri
-            :container-style  style/preview-container
-            :counter          (utils/collectible-owned-counter total-owned)
-            :native-ID        (when (= animation-shared-element-id token-id) :shared-element)
-            :supported-file?  (utils/supported-file? (:animation-media-type collectible-data))
-            :on-press         (fn []
-                                (if svg?
-                                  (js/alert "Can't visualize SVG images in lightbox")
-                                  (rf/dispatch
-                                   [:lightbox/navigate-to-lightbox
-                                    token-id
-                                    {:images           [collectible-image]
-                                     :index            0
-                                     :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                      {:content
-                                                                       (fn []
-                                                                         [options-drawer/view
-                                                                          {:name  collectible-name
-                                                                           :image preview-uri}])}])}])))}]
+           {:image-src       preview-uri
+            :container-style style/preview-container
+            :counter         (utils/collectible-owned-counter total-owned)
+            :native-ID       (when (= animation-shared-element-id token-id) :shared-element)
+            :supported-file? (utils/supported-file? (:animation-media-type collectible-data))
+            :on-press        (fn []
+                               (if svg?
+                                 (js/alert "Can't visualize SVG images in lightbox")
+                                 (rf/dispatch
+                                  [:lightbox/navigate-to-lightbox
+                                   token-id
+                                   {:images           [collectible-image]
+                                    :index            0
+                                    :on-options-press #(rf/dispatch [:show-bottom-sheet
+                                                                     {:content
+                                                                      (fn []
+                                                                        [options-drawer/view
+                                                                         {:name  collectible-name
+                                                                          :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs

@@ -160,9 +160,9 @@
 (defn- view-internal
   [{:keys [container-style type on-press on-long-press supported-file?]
     :as   props}]
-  (let [[state set-state] (rn/use-state {:image-loaded?  false
-                                         :image-error?   false
-                                         :avatar-loaded? false})
+  (let [[state set-state]  (rn/use-state {:image-loaded?  false
+                                          :image-error?   false
+                                          :avatar-loaded? false})
         collectible-ready? (or (:image-loaded? state) (not supported-file?))]
     [rn/pressable
      {:on-press            (when collectible-ready? on-press)

@@ -19,16 +19,17 @@
       :collectible-name     (:name collection-data)
       :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
       :gradient-color-index (keyword (str "gradient-" (inc (mod index 5))))
-      :counter (utils/collectible-owned-counter total-owned)
-      :container-style {:padding 8}
-      :on-press #(when on-press
-                   (on-press collectible))
-      :on-long-press #(when on-long-press
-                   (on-long-press collectible))}]))
+      :counter              (utils/collectible-owned-counter total-owned)
+      :container-style      {:padding 8}
+      :on-press             #(when on-press
+                               (on-press collectible))
+      :on-long-press        #(when on-long-press
+                               (on-long-press collectible))}]))
 
 (defn- view-internal
-  [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address on-collectible-long-press]}]
-  (let [no-results-match-query? (and filtered? (empty? collectibles))] 
+  [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address
+           on-collectible-long-press]}]
+  (let [no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
@@ -51,7 +52,11 @@
         :window-size              11
         :num-columns              2
         :render-fn                (fn [item index]
-                                    (render-fn item index current-account-address on-collectible-press on-collectible-long-press))
+                                    (render-fn item
+                                               index
+                                               current-account-address
+                                               on-collectible-press
+                                               on-collectible-long-press))
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
 
