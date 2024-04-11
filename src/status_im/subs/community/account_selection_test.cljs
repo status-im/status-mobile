@@ -1,6 +1,6 @@
 (ns status-im.subs.community.account-selection-test
   (:require
-    [cljs.test :refer [is testing]]
+    [cljs.test :refer [is]]
     matcher-combinators.test
     [re-frame.db :as rf-db]
     status-im.subs.communities
@@ -21,36 +21,6 @@
                :logo  "data:image/png;"
                :color :orange}
               (rf/sub [sub-name community-id]))))
-
-(h/deftest-sub :communities/can-edit-shared-addresses?
-  [sub-name]
-  (testing "joined community and there are pending requests"
-    (reset! rf-db/app-db
-      {:communities                            {community-id {:id community-id :joined true}}
-       :communities/my-pending-request-to-join {community-id {:id :request-id-1}}})
-
-    (is (true? (rf/sub [sub-name community-id]))))
-
-  (testing "joined community and there are no pending requests"
-    (reset! rf-db/app-db
-      {:communities                            {community-id {:id community-id :joined true}}
-       :communities/my-pending-request-to-join {community-id {}}})
-
-    (is (true? (rf/sub [sub-name community-id]))))
-
-  (testing "not joined community and there are pending requests"
-    (reset! rf-db/app-db
-      {:communities                            {community-id {:id community-id :joined false}}
-       :communities/my-pending-request-to-join {community-id {:id :request-id-1}}})
-
-    (is (false? (rf/sub [sub-name community-id]))))
-
-  (testing "not joined community and there are no pending requests"
-    (reset! rf-db/app-db
-      {:communities                            {community-id {:id community-id :joined false}}
-       :communities/my-pending-request-to-join {community-id {}}})
-
-    (is (false? (rf/sub [sub-name community-id])))))
 
 (h/deftest-sub :communities/airdrop-account
   [sub-name]

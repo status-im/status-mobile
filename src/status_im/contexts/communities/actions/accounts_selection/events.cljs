@@ -7,10 +7,8 @@
 
 (defn initialize-permission-addresses
   [{:keys [db]} [community-id]]
-  (let [{:keys [joined]}              (get-in db [:communities community-id])
-        pending-requests              (get-in db [:communities/my-pending-requests-to-join community-id])
-        init-using-revealed-accounts? (or joined (seq pending-requests))]
-    {:fx [(if init-using-revealed-accounts?
+  (let [{:keys [joined]} (get-in db [:communities community-id])]
+    {:fx [(if joined
             [:dispatch
              [:communities/get-revealed-accounts community-id
               [:communities/do-init-permission-addresses community-id]]]
