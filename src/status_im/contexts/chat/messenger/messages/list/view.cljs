@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.messages.list.view
   (:require
+    [clojure.string :as string]
     [legacy.status-im.ui.screens.chat.group :as chat.group]
     [oops.core :as oops]
     [quo.core :as quo]
@@ -112,19 +113,24 @@
     [rn/view {:style {:height height}}]))
 
 (defn list-footer-avatar
-  [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color]}]
-  (let [scale (reanimated/interpolate distance-from-list-top
-                                      [0 messages.constants/header-container-top-margin]
-                                      [1 0.4]
-                                      messages.constants/default-extrapolation-option)
-        top   (reanimated/interpolate distance-from-list-top
-                                      [0 messages.constants/header-container-top-margin]
-                                      [-44 -12]
-                                      messages.constants/default-extrapolation-option)
-        left  (reanimated/interpolate distance-from-list-top
-                                      [0 messages.constants/header-container-top-margin]
-                                      [16 -8]
-                                      messages.constants/default-extrapolation-option)]
+  [{:keys [distance-from-list-top display-name online? profile-picture theme group-chat color
+           emoji chat-type chat-name last-message]}]
+  (let [scale              (reanimated/interpolate
+                            distance-from-list-top
+                            [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
+                            [1 0.4]
+                            messages.constants/default-extrapolation-option)
+        top                (reanimated/interpolate
+                            distance-from-list-top
+                            [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
+                            [-44 -12]
+                            messages.constants/default-extrapolation-option)
+        left               (reanimated/interpolate
+                            distance-from-list-top
+                            [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
+                            [16 -8]
+                            messages.constants/default-extrapolation-option)
+        community-channel? (= chat-type constants/community-chat-type)]
     [reanimated/view
      {:style (style/header-image scale top left theme)}
      (if group-chat
@@ -132,7 +138,10 @@
         {:customization-color color
          :size                :size-80
          :picture             profile-picture
-         :override-theme      :dark}]
+         :emoji               (when (and (not (string/blank? emoji))
+                                         community-channel?)
+                                (string/trim emoji))
+         :chat-name           chat-name}]
        [quo/user-avatar
         {:full-name       display-name
          :online?         online?
@@ -140,15 +149,17 @@
          :size            :big}])]))
 
 (defn chat-display-name
-  [{:keys [distance-from-list-top display-name contact theme]}]
-  (let [top  (reanimated/interpolate distance-from-list-top
-                                     [0 messages.constants/header-container-top-margin]
-                                     [0 -35]
-                                     messages.constants/default-extrapolation-option)
-        left (reanimated/interpolate distance-from-list-top
-                                     [0 messages.constants/header-container-top-margin]
-                                     [0 40]
-                                     messages.constants/default-extrapolation-option)]
+  [{:keys [distance-from-list-top display-name contact theme last-message]}]
+  (let [top  (reanimated/interpolate
+              distance-from-list-top
+              [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
+              [0 -35]
+              messages.constants/default-extrapolation-option)
+        left (reanimated/interpolate
+              distance-from-list-top
+              [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
+              [0 40]
+              messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/user-name-container top left)}
      [rn/view
@@ -195,54 +206,55 @@
                                                                          muted?)))}]}]))
 
 (defn bio-and-actions
-  [{:keys [distance-from-list-top bio chat-id customization-color]}]
-  (let [has-bio (seq bio)
+  [{:keys [distance-from-list-top bio chat-id customization-color last-message description]}]
+  (let [has-bio (seq (or bio description))
         top     (reanimated/interpolate
                  distance-from-list-top
-                 [0 messages.constants/header-container-top-margin]
+                 [0 (if (seq last-message) messages.constants/header-container-top-margin 0)]
                  [(if has-bio 8 16) (if has-bio -28 -20)]
                  messages.constants/default-extrapolation-option)]
     [reanimated/view
      {:style (style/bio-and-actions top)}
      (when has-bio
-       [quo/text bio])
+       [quo/text (or bio description)])
      [actions chat-id customization-color]]))
 
 (defn footer-component
   [{:keys [chat distance-from-list-top theme customization-color]}]
   (let [{:keys [chat-id chat-name emoji chat-type
-                group-chat color]} chat
-        display-name               (cond
-                                     (= chat-type constants/one-to-one-chat-type)
-                                     (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                                     (= chat-type constants/community-chat-type)
-                                     (str (when emoji (str emoji " ")) "# " chat-name)
-                                     :else (str emoji chat-name))
-        {:keys [bio]}              (rf/sub [:contacts/contact-by-identity chat-id])
-        online?                    (rf/sub [:visibility-status-updates/online? chat-id])
-        contact                    (when-not group-chat
-                                     (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path                 (rf/sub [:chats/photo-path chat-id])
-        top-margin                 (+ (safe-area/get-top)
-                                      messages.constants/top-bar-height
-                                      messages.constants/header-container-top-margin
-                                      32)
-        background-color           (colors/theme-colors
-                                    (colors/resolve-color customization-color theme 20)
-                                    (colors/resolve-color customization-color theme 40)
-                                    theme)
-        bottom                     (reanimated/interpolate
-                                    distance-from-list-top
-                                    [0 messages.constants/header-container-top-margin]
-                                    [32 -4]
-                                    messages.constants/default-extrapolation-option)
-        background-opacity         (reanimated/interpolate
-                                    distance-from-list-top
-                                    [messages.constants/header-container-top-margin
-                                     (+ messages.constants/header-animation-distance
-                                        messages.constants/header-container-top-margin)]
-                                    [1 0]
-                                    messages.constants/default-extrapolation-option)]
+                group-chat color description
+                last-message]} chat
+        display-name           (cond
+                                 (= chat-type constants/one-to-one-chat-type)
+                                 (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                                 (= chat-type constants/community-chat-type)
+                                 (str "# " chat-name)
+                                 :else (str emoji chat-name))
+        {:keys [bio]}          (rf/sub [:contacts/contact-by-identity chat-id])
+        online?                (rf/sub [:visibility-status-updates/online? chat-id])
+        contact                (when-not group-chat
+                                 (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path             (rf/sub [:chats/photo-path chat-id])
+        top-margin             (+ (safe-area/get-top)
+                                  messages.constants/top-bar-height
+                                  messages.constants/header-container-top-margin
+                                  32)
+        background-color       (colors/theme-colors
+                                (colors/resolve-color customization-color theme 20)
+                                (colors/resolve-color customization-color theme 40)
+                                theme)
+        bottom                 (reanimated/interpolate
+                                distance-from-list-top
+                                [0 messages.constants/header-container-top-margin]
+                                [32 -4]
+                                messages.constants/default-extrapolation-option)
+        background-opacity     (reanimated/interpolate
+                                distance-from-list-top
+                                [messages.constants/header-container-top-margin
+                                 (+ messages.constants/header-animation-distance
+                                    messages.constants/header-container-top-margin)]
+                                [1 0]
+                                messages.constants/default-extrapolation-option)]
     [:<>
      [reanimated/view
       {:style (style/background-container background-color background-opacity top-margin)}]
@@ -254,18 +266,25 @@
         :theme                  theme
         :profile-picture        photo-path
         :group-chat             group-chat
-        :color                  color}]
+        :color                  color
+        :emoji                  emoji
+        :chat-type              chat-type
+        :chat-name              chat-name
+        :last-message           last-message}]
       [chat-display-name
        {:distance-from-list-top distance-from-list-top
         :display-name           display-name
         :theme                  theme
         :contact                contact
-        :group-chat             group-chat}]
+        :group-chat             group-chat
+        :last-message           last-message}]
       [bio-and-actions
        {:distance-from-list-top distance-from-list-top
         :bio                    bio
         :chat-id                chat-id
-        :customization-color    customization-color}]]]))
+        :customization-color    customization-color
+        :description            description
+        :last-message           last-message}]]]))
 
 (defn list-footer
   [props]
