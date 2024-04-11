@@ -30,9 +30,9 @@
        :title           (i18n/label :t/address)
        :custom-subtitle (rn/use-callback
                          (fn [] [quo/address-text
-                                {:networks selected-networks
-                                 :address  address
-                                 :format   :long}]))
+                                 {:networks selected-networks
+                                  :address  address
+                                  :format   :long}]))
        :on-press        (rn/use-callback
                          (fn []
                            (rf/dispatch [:show-bottom-sheet
@@ -46,7 +46,7 @@
                                               :on-save           (fn [chain-ids]
                                                                    (set-selected-chain-ids chain-ids)
                                                                    (rf/dispatch [:hide-bottom-sheet]))}
-                                             ])}]))
+                                            ])}]))
                          [selected-networks])
        :container-style style/data-item}]]))
 
@@ -54,8 +54,9 @@
   []
   (let [[address-label set-address-label]           (rn/use-state "")
         [address-color set-address-color]           (rn/use-state :blue)
-        address                                     (rf/sub [:wallet/wallet-send-to-address])
-        saved-address                               (rf/sub [:wallet/saved-address-by-address address])
+        ;; address                                     (rf/sub [:wallet/wallet-send-to-address])
+        ;; saved-address                               (rf/sub [:wallet/saved-address-by-address
+        ;; address])
         [selected-chain-ids set-selected-chain-ids] (rn/use-state nil)
         placeholder                                 (i18n/label :t/address-name)]
     [floating-button-page/view
@@ -100,10 +101,11 @@
        :on-change        set-address-color
        :container-style  style/color-picker}]
      [quo/divider-line {:container-style style/color-picker-bottom-divider}]
-     [address-view {:address-color          address-color
-                    :selected-chain-ids     selected-chain-ids
-                    :set-selected-chain-ids set-selected-chain-ids}]]))
+     [address-view
+      {:address-color          address-color
+       :selected-chain-ids     selected-chain-ids
+       :set-selected-chain-ids set-selected-chain-ids}]]))
 
 (comment
   (rf/dispatch [:open-modal :screen/wallet.save-address])
-  ,)
+)

@@ -12,7 +12,7 @@
  :<- [:wallet]
  (fn [wallet [_ address]]
    (->> wallet
-        :saved-addressesj
+        :saved-addresses
         (some #(= address (:address %)))
         boolean)))
 
@@ -20,16 +20,6 @@
  :wallet/saved-address-by-address
  :<- [:wallet]
  (fn [wallet [_ address]]
-
-   (prn {:saved (:saved-addresses wallet)
-         :needle address
-         :found (filter #(= address (:address %)) (:saved-addresses wallet))
-         :return (first (filter #(= address (:address %)) (:saved-addresses wallet)))
-         :f-return (->> wallet
-                        :saved-addresses
-                        (filter #(= address (:address %)))
-                        first)
-         })
    (->> wallet
         :saved-addresses
         (filter #(= address (:address %)))
