@@ -1,7 +1,6 @@
 (ns status-im.events
   (:require
     [legacy.status-im.bottom-sheet.events]
-    [legacy.status-im.keycard.core :as keycard]
     status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.async-storage.effects
@@ -30,8 +29,10 @@
     status-im.contexts.shell.qr-reader.events
     status-im.contexts.shell.share.events
     status-im.contexts.syncing.events
-    status-im.contexts.wallet.common.wizard
-    status-im.contexts.wallet.create-account.events
+    status-im.contexts.wallet.add-account.add-address-to-watch.events
+    status-im.contexts.wallet.add-account.create-account.events
+    status-im.contexts.wallet.collectible.events
+    status-im.contexts.wallet.common.wizard.events
     status-im.contexts.wallet.effects
     status-im.contexts.wallet.events
     status-im.contexts.wallet.send.events
@@ -52,5 +53,4 @@
     ;;app starting flow continues in get-profiles-overview
     :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
     :effects.font/get-font-file-for-initials-avatar
-    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])}
-   (keycard/init)))
+    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])}))

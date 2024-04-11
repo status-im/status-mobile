@@ -4,11 +4,9 @@
     [react-native.background-timer :as background-timer]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.accounts.add-account.address-to-watch.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
-    [status-im.contexts.wallet.events.collectibles]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]
@@ -281,46 +279,50 @@
                      data)}]
      {:db (assoc-in db [:wallet :networks] network-data)})))
 
-(rf/reg-event-fx :wallet/find-ens
- (fn [{:keys [db]} [input contacts chain-id cb]]
+(rf/reg-event-fx
+ :wallet/find-ens
+ (fn [{:keys [db]} [input contacts on-error-fn]]
    (let [result (if (empty? input)
                   []
                   (filter #(string/starts-with? (or (:ens-name %) "") input) contacts))]
      (if (and input (empty? result))
-       (rf/dispatch [:wallet/search-ens input chain-id cb ".stateofus.eth"])
+       (rf/dispatch [:wallet/search-ens input on-error-fn ".stateofus.eth"])
        {:db (-> db
                 (assoc-in [:wallet :ui :search-address :local-suggestions]
                           (map #(assoc % :type item-types/saved-address) result))
                 (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
                           (not-empty result)))}))))
 
-(rf/reg-event-fx :wallet/search-ens
- (fn [_ [input chain-id cb domain]]
-   (let [ens (if (string/includes? input ".") input (str input domain))]
+(rf/reg-event-fx
+ :wallet/search-ens
+ (fn [{db :db} [input on-error-fn domain]]
+   (let [ens      (if (string/includes? input ".")
+                    input
+                    (str input domain))
+         chain-id (utils/network->chain-id db :mainnet)]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]
               :on-success #(rf/dispatch [:wallet/set-ens-address % ens])
               :on-error   (fn []
                             (if (= domain ".stateofus.eth")
-                              (rf/dispatch [:wallet/search-ens input chain-id cb ".eth"])
+                              (rf/dispatch [:wallet/search-ens input on-error-fn ".eth"])
                               (do
                                 (rf/dispatch [:wallet/set-ens-address nil ens])
-                                (cb))))}]]]})))
+                                (on-error-fn))))}]]]})))
 
-(rf/reg-event-fx :wallet/set-ens-address
+(rf/reg-event-fx
+ :wallet/set-ens-address
  (fn [{:keys [db]} [result ens]]
-   {:db
-    (-> db
-        (assoc-in [:wallet :ui :search-address :local-suggestions]
-                  (if result
-                    [{:type     item-types/address
-                      :ens      ens
-                      :address  (eip55/address->checksum result)
-                      :networks [:ethereum :optimism]}]
-                    []))
-        (assoc-in [:wallet :ui :search-address :valid-ens-or-address?]
-                  (boolean result)))}))
+   (let [suggestion (if result
+                      [{:type     item-types/address
+                        :ens      ens
+                        :address  (eip55/address->checksum result)
+                        :networks [:ethereum :optimism]}]
+                      [])]
+     {:db (-> db
+              (assoc-in [:wallet :ui :search-address :local-suggestions] suggestion)
+              (assoc-in [:wallet :ui :search-address :valid-ens-or-address?] (boolean result)))})))
 
 (rf/reg-event-fx :wallet/fetch-address-suggestions
  (fn [{:keys [db]} [_address]]

@@ -30,7 +30,6 @@
           recipient                (rf/sub [:wallet/wallet-send-recipient])
           recipient-plain-address? (= send-address recipient)
           valid-ens-or-address?    (rf/sub [:wallet/valid-ens-or-address?])
-          chain-id                 (rf/sub [:chain-id])
           contacts                 (rf/sub [:contacts/active])]
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
@@ -58,7 +57,7 @@
                                    ; is loaded but not being shown to the user (deep in the
                                    ; navigation stack) and avoid undesired behaviors
                                    (debounce/debounce-and-dispatch
-                                    [:wallet/find-ens text contacts chain-id cb]
+                                    [:wallet/find-ens text contacts cb]
                                     300)))
         :on-change-text        (fn [text]
                                  (when (empty? text)

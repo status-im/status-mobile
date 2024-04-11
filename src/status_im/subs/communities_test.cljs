@@ -21,37 +21,6 @@
         raw-communities)
       (is (match? raw-communities (rf/sub [sub-name]))))))
 
-(h/deftest-sub :communities/section-list
-  [sub-name]
-  (testing "builds sections using the first community name char (uppercased)"
-    (swap! rf-db/app-db assoc
-      :communities
-      {"0x1" {:name "civilized monkeys"}
-       "0x2" {:name "Civilized rats"}})
-    (is (match? [{:title "C"
-                  :data  [{:name "civilized monkeys"}
-                          {:name "Civilized rats"}]}]
-                (rf/sub [sub-name]))))
-
-  (testing "sorts by section ascending"
-    (swap! rf-db/app-db assoc
-      :communities
-      {"0x3" {:name "Memorable"}
-       "0x1" {:name "Civilized monkeys"}})
-    (is (match? [{:title "C" :data [{:name "Civilized monkeys"}]}
-                 {:title "M" :data [{:name "Memorable"}]}]
-                (rf/sub [sub-name]))))
-
-  (testing "builds default section for communities without a name"
-    (swap! rf-db/app-db assoc
-      :communities
-      {"0x2" {:id "0x2"}
-       "0x1" {:id "0x1"}})
-    (is (match? [{:title ""
-                  :data  [{:id "0x2"}
-                          {:id "0x1"}]}]
-                (rf/sub [sub-name])))))
-
 (h/deftest-sub :communities/unviewed-counts
   [sub-name]
   (testing "sums counts for a particular community"

@@ -2,7 +2,6 @@
   (:require
     clojure.set
     legacy.status-im.backup.core
-    legacy.status-im.bootnodes.core
     legacy.status-im.browser.core
     legacy.status-im.browser.permissions
     legacy.status-im.chat.models.loading
@@ -13,7 +12,6 @@
     legacy.status-im.data-store.visibility-status-updates
     legacy.status-im.fleet.core
     legacy.status-im.group-chats.core
-    [legacy.status-im.keycard.core :as keycard]
     legacy.status-im.log-level.core
     legacy.status-im.mailserver.constants
     [legacy.status-im.mailserver.core :as mailserver]
@@ -192,14 +190,7 @@
 
               (not (get db :screens/was-focused-once?))
               {:db (assoc db :screens/was-focused-once? true)})
-            #(case view-id
-               :keycard-settings              (keycard/settings-screen-did-load %)
-               :reset-card                    (keycard/reset-card-screen-did-load %)
-               :enter-pin-settings            (keycard/enter-pin-screen-did-load %)
-               :keycard-login-pin             (keycard/login-pin-screen-did-load %)
-               :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
-               :multiaccounts                 (keycard/multiaccounts-screen-did-load %)
-               nil)))
+  ))
 
 ;;TODO :replace by named events
 (rf/defn set-event
