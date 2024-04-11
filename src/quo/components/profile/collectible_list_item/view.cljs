@@ -158,13 +158,15 @@
         [avatar-image-src]])]))
 
 (defn- view-internal
-  [{:keys [container-style type on-press supported-file?]
+  [{:keys [container-style type on-press on-long-press supported-file?]
     :as   props}]
   (let [[state set-state] (rn/use-state {:image-loaded?  false
                                          :image-error?   false
-                                         :avatar-loaded? false})]
+                                         :avatar-loaded? false})
+        collectible-ready? (or (:image-loaded? state) (not supported-file?))]
     [rn/pressable
-     {:on-press            (when (or (:image-loaded? state) (not supported-file?)) on-press)
+     {:on-press            (when collectible-ready? on-press)
+      :on-long-press       (when collectible-ready? on-long-press)
       :accessibility-label :collectible-list-item
       :style               (merge container-style style/container)}
      (if (= type :card)
@@ -194,6 +196,7 @@
        [:maybe [:enum :gradient-1 :gradient-2 :gradient-3 :gradient-4 :gradient-5]]]
       [:image-src {:optional true} [:maybe :schema.common/image-source]]
       [:on-press {:optional true} [:maybe fn?]]
+      [:on-long-press {:optional true} [:maybe fn?]]
       [:type [:enum :card :image]]
       [:container-style {:optional true} [:maybe :map]]]]]
    :any])

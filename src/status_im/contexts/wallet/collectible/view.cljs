@@ -78,7 +78,7 @@
                                          :id           token-id
                                          :header       collectible-name
                                          :description  collection-name}
-            total-owned (utils/calculate-owned-collectible (:ownership collectible) wallet-address)]
+            total-owned (utils/total-owned-collectible (:ownership collectible) wallet-address)]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
