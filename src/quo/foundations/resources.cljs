@@ -10,7 +10,10 @@
 (def ui-themed
   {:no-funds
    {:light (js/require "../resources/images/ui2/no-funds-light.png")
-    :dark  (js/require "../resources/images/ui2/no-funds-dark.png")}})
+    :dark  (js/require "../resources/images/ui2/no-funds-dark.png")}
+   :no-contacts-to-chat
+   {:light (js/require "../resources/images/ui2/no-contacts-to-chat-light.png")
+    :dark  (js/require "../resources/images/ui2/no-contacts-to-chat-dark.png")}})
 
 (defn get-themed-image
   [k theme]

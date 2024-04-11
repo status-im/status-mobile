@@ -93,6 +93,12 @@
    (:test-networks-enabled? profile)))
 
 (re-frame/reg-sub
+ :profile/universal-profile-url
+ :<- [:profile/profile]
+ (fn [profile]
+   (:universal-profile-url profile)))
+
+(re-frame/reg-sub
  :profile/is-goerli-enabled?
  :<- [:profile/profile]
  (fn [profile]
