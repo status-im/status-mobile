@@ -123,12 +123,6 @@
    preferred-name))
 
 (re-frame/reg-sub
- :profile/image
- :<- [:profile/profile-with-image]
- (fn [profile]
-   (profile.utils/photo profile)))
-
-(re-frame/reg-sub
  :multiaccount/default-account
  :<- [:wallet/accounts]
  (fn [accounts]
