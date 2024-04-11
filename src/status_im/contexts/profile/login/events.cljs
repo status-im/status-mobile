@@ -9,7 +9,6 @@
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
     [taoensso.timbre :as log]
-    [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
