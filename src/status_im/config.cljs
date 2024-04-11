@@ -59,6 +59,7 @@
 (def swap-enabled? (enabled? (get-config :SWAP_ENABLED "0")))
 (def stickers-test-enabled? (enabled? (get-config :STICKERS_TEST_ENABLED "0")))
 (def local-pairing-mode-enabled? (enabled? (get-config :LOCAL_PAIRING_ENABLED "1")))
+(def show-not-implemented-features? (enabled? (get-config :SHOW_NOT_IMPLEMENTED_FEATURES "0")))
 
 ;; CONFIG VALUES
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))

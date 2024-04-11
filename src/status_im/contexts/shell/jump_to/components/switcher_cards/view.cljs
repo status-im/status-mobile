@@ -220,7 +220,7 @@
   []
   (let [card-ref (atom nil)]
     (fn [{:keys [avatar-params title type customization-color
-                 content banner id channel-id profile-customization-color]}]
+                 content banner id channel-id profile-customization-color]} card-size]
       (let [color-50 (colors/custom-color customization-color 50)]
         [rn/touchable-opacity
          {:on-press       #(calculate-card-position-and-open-screen
@@ -230,13 +230,13 @@
                             channel-id)
           :ref            #(reset! card-ref %)
           :active-opacity 1}
-         [rn/view {:style (style/base-container color-50)}
+         [rn/view {:style (style/base-container color-50 card-size)}
           (when banner
             [rn/image
              {:source banner
               :style  {:width  160
                        :height 65}}])
-          [rn/view {:style style/secondary-container}
+          [rn/view {:style (style/secondary-container card-size)}
            [quo/text
             {:size            :paragraph-1
              :weight          :semi-bold
@@ -284,8 +284,8 @@
   [:<>])
 
 (defn empty-card
-  []
-  [rn/view {:style (style/empty-card)}])
+  [card-size]
+  [rn/view {:style (style/empty-card card-size)}])
 
 ;; Home Card
 (defn communities-discover
@@ -294,32 +294,35 @@
 
 (defn card
   [{:keys [type] :as data}]
-  (cond
-    (= type shell.constants/empty-card) ; Placeholder
-    [empty-card]
+  (let [screen-width (:width (rn/get-window))
+        ;; 2 column, 20px horizontal margin, 15px gap
+        card-size    (/ (- screen-width 55) 2)]
+    (cond
+      (= type shell.constants/empty-card) ; Placeholder
+      [empty-card card-size]
 
-    ;; Screens Card
-    (#{shell.constants/one-to-one-chat-card
-       shell.constants/private-group-chat-card
-       shell.constants/community-card
-       shell.constants/community-channel-card}
-     type)
-    [screens-card data]
+      ;; Screens Card
+      (#{shell.constants/one-to-one-chat-card
+         shell.constants/private-group-chat-card
+         shell.constants/community-card
+         shell.constants/community-channel-card}
+       type)
+      [screens-card data card-size]
 
-    (= type shell.constants/browser-card) ; Browser Card
-    [browser-card data]
+      (= type shell.constants/browser-card) ; Browser Card
+      [browser-card data]
 
-    (= type shell.constants/wallet-card) ; Wallet Card
-    [wallet-card data]
+      (= type shell.constants/wallet-card) ; Wallet Card
+      [wallet-card data]
 
-    (= type shell.constants/wallet-collectible) ; Wallet Card
-    [wallet-collectible data]
+      (= type shell.constants/wallet-collectible) ; Wallet Card
+      [wallet-collectible data]
 
-    (= type shell.constants/wallet-graph) ; Wallet Card
-    [wallet-graph data]
+      (= type shell.constants/wallet-graph) ; Wallet Card
+      [wallet-graph data]
 
-    (= type shell.constants/communities-discover) ; Home Card
-    [communities-discover data]
+      (= type shell.constants/communities-discover) ; Home Card
+      [communities-discover data]
 
-    :else
-    nil))
+      :else
+      nil)))

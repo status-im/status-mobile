@@ -3,23 +3,20 @@
     [quo.components.icon :as icon]
     [quo.components.selectors.filter.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [react-native.core :as rn]))
 
-(defn view-internal
-  [initial-props]
-  (let [pressed? (reagent/atom (:pressed? initial-props))]
-    (fn [{:keys [blur? customization-color theme on-press-out]}]
-      [rn/touchable-without-feedback
-       {:accessibility-label :selector-filter
-        :on-press-out        (fn []
-                               (swap! pressed? not)
-                               (when on-press-out
-                                 (on-press-out @pressed?)))}
-       [rn/view {:style (style/container-outer customization-color @pressed? theme)}
-        [rn/view {:style (style/container-inner @pressed? blur? theme)}
-         [icon/icon :i/unread
-          {:color (style/icon-color @pressed? theme)
-           :size  20}]]]])))
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [blur? customization-color on-press-out pressed?]}]
+  (let [theme                  (quo.theme/use-theme-value)
+        [pressed? set-pressed] (rn/use-state pressed?)
+        on-press-out           (fn []
+                                 (set-pressed (not pressed?))
+                                 (when on-press-out (on-press-out pressed?)))]
+    [rn/touchable-without-feedback
+     {:accessibility-label :selector-filter
+      :on-press-out        on-press-out}
+     [rn/view {:style (style/container-outer customization-color pressed? theme)}
+      [rn/view {:style (style/container-inner pressed? blur? theme)}
+       [icon/icon :i/unread
+        {:color (style/icon-color pressed? theme)
+         :size  20}]]]]))

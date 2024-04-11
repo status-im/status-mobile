@@ -60,7 +60,7 @@
 (def empty-cards (repeat 6 {:type shell.constants/empty-card}))
 
 (defn jump-to-list
-  [switcher-cards shell-margin]
+  [switcher-cards]
   (let [data (if (seq switcher-cards) switcher-cards empty-cards)]
     [:<>
      [rn/flat-list
@@ -70,7 +70,7 @@
        :header                            (jump-to-text)
        :ref                               #(reset! state/jump-to-list-ref %)
        :num-columns                       2
-       :column-wrapper-style              {:margin-horizontal shell-margin
+       :column-wrapper-style              {:margin-horizontal 20
                                            :justify-content   :space-between
                                            :margin-bottom     16}
        :style                             style/jump-to-list
@@ -89,9 +89,7 @@
 (defn view
   []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
-        width          (rf/sub [:dimensions/window-width])
-        top            (safe-area/get-top)
-        shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
+        top            (safe-area/get-top)]
     [theme/provider {:theme :dark}
      [rn/view
       {:style {:top              0
@@ -100,7 +98,7 @@
                :bottom           -1
                :position         :absolute
                :background-color colors/neutral-100}}
-      [jump-to-list switcher-cards shell-margin]
+      [jump-to-list switcher-cards]
       [top-nav-blur-overlay top]
       [common.top-nav/view
        {:jump-to?        true
