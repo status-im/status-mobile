@@ -10,14 +10,26 @@
 (rf/reg-sub
  :wallet/address-saved?
  :<- [:wallet]
- (fn [wallet [address]]
-   (some #(= address (:address %))
-         (:saved-addresses wallet))))
+ (fn [wallet [_ address]]
+   (->> wallet
+        :saved-addressesj
+        (some #(= address (:address %)))
+        boolean)))
 
 (rf/reg-sub
  :wallet/saved-address-by-address
  :<- [:wallet]
- (fn [wallet [address]]
+ (fn [wallet [_ address]]
+
+   (prn {:saved (:saved-addresses wallet)
+         :needle address
+         :found (filter #(= address (:address %)) (:saved-addresses wallet))
+         :return (first (filter #(= address (:address %)) (:saved-addresses wallet)))
+         :f-return (->> wallet
+                        :saved-addresses
+                        (filter #(= address (:address %)))
+                        first)
+         })
    (->> wallet
         :saved-addresses
         (filter #(= address (:address %)))
