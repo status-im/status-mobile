@@ -27,6 +27,7 @@ nix_install_type() {
     if [[ "$(os_name)" =~ NixOS ]]; then
         echo "nixos"
     else
+        USER=$(id -un) # Missing in Docker.
         case "${NIX_STORE_DIR_GROUP}" in
             "nixbld")   echo "multi";;
             "30000")    echo "multi";;
