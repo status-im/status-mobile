@@ -454,10 +454,10 @@
 
 (re-frame/reg-fx :activity-center/update-seen-state
  (fn []
-   (json-rpc/call [{:method     "wakuext_hasUnseenActivityCenterNotifications"
-                    :params     []
-                    :on-success [:activity-center/update-seen-state-success]
-                    :on-error   [:activity-center/update-seen-state-error]}])))
+   (json-rpc/call {:method     "wakuext_hasUnseenActivityCenterNotifications"
+                   :params     []
+                   :on-success [:activity-center/update-seen-state-success]
+                   :on-error   [:activity-center/update-seen-state-error]})))
 
 (rf/defn update-seen-state-success
   {:events [:activity-center/update-seen-state-success]}
