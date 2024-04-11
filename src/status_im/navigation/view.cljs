@@ -54,7 +54,6 @@
 
 (defn screen
   [screen-key]
-
   (reagent.core/reactify-component
    (fn []
      (let [screen-details              (get (if js/goog.DEBUG
@@ -110,7 +109,7 @@
             sheet])]]))
    functional-compiler))
 
-(def toasts (reagent/reactify-component toasts/toasts))
+(def toasts (reagent/reactify-component toasts/toasts functional-compiler))
 
 (def alert-banner
   (reagent/reactify-component

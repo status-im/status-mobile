@@ -61,4 +61,4 @@
   (->> (rf/sub [:toasts])
        :ordered
        (into [rn/view {:style (style/outmost-transparent-container)}]
-             (map #(with-meta [:f> f-container %] {:key %})))))
+             (map #(with-meta [f-container %] {:key %})))))
