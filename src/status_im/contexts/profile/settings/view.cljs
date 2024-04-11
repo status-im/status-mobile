@@ -19,7 +19,7 @@
   [rf/delay-render
    [quo/category
     {:list-type       :settings
-     :container-style {:padding-bottom 0}
+     :container-style {:padding-bottom 12}
      :blur?           true
      :data            data}]])
 

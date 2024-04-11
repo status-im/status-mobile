@@ -22,13 +22,15 @@
 
 (defn floating-button
   [shared-values]
-  [quo/floating-shell-button
-   {:jump-to {:on-press            #(animation/close-home-stack true)
-              :label               (i18n/label :t/jump-to)
-              :customization-color (rf/sub [:profile/customization-color])}}
-   {:position :absolute
-    :bottom   (utils/bottom-tabs-container-height)}
-   (:home-stack-opacity shared-values)])
+  (let [current-screen-id (rf/sub [:view-id])]
+    (when-not (= current-screen-id :settings)
+      [quo/floating-shell-button
+       {:jump-to {:on-press            #(animation/close-home-stack true)
+                  :label               (i18n/label :t/jump-to)
+                  :customization-color (rf/sub [:profile/customization-color])}}
+       {:position :absolute
+        :bottom   (utils/bottom-tabs-container-height)}
+       (:home-stack-opacity shared-values)])))
 
 (defn f-shell-stack
   []
