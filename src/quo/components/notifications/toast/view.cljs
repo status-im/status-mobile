@@ -15,10 +15,10 @@
   [rn/touchable-highlight
    {:on-press       on-press
     :underlay-color :transparent}
-   [into
+   (into
     [rn/view
      {:style (merge (style/action-container theme) style)}]
-    children]])
+    children)])
 
 (defn toast-undo-action-internal
   [{:keys [undo-duration undo-on-press theme]}]

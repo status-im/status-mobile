@@ -48,7 +48,7 @@
   {:color {:dark  colors/neutral-80-opa-40
            :light colors/white-opa-40}})
 
-(defn circle-timer-internal
+(defn circle-timer
   [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time]}]
   (let [theme                           (quo.theme/use-theme-value)
         rotation                        (or rotation :clockwise)
@@ -76,10 +76,7 @@
                                               (set-display-time
                                                (if completed? duration current-display-time))
                                               (when-not completed?
-                                                (reset! prev-frame-time frame-time)
-                                                (reset! frame-request
-                                                  (js/requestAnimationFrame
-                                                   swap-elapsed-time-each-frame))))))]
+                                                (reset! prev-frame-time frame-time)))))]
     (rn/use-effect #(reset! frame-request (js/requestAnimationFrame swap-elapsed-time-each-frame)))
     (rn/use-unmount #(js/cancelAnimationFrame @frame-request))
     [rn/view
@@ -101,8 +98,3 @@
           :stroke-width      stroke-width
           :stroke-dasharray  path-length
           :stroke-dashoffset (linear-ease display-time 0 path-length duration)}])]]))
-
-;;NOTE: for some reason it doesn't work without :f>
-(defn circle-timer
-  [props]
-  [:f> circle-timer-internal props])
