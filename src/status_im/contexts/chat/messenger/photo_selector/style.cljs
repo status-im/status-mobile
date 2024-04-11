@@ -7,7 +7,7 @@
   [bottom-inset]
   {:left     0
    :right    0
-   :height   (+ bottom-inset (if platform/ios? 65 85))
+   :height   (+ bottom-inset (if platform/ios? 51 85))
    :position :absolute
    :bottom   0})
 
