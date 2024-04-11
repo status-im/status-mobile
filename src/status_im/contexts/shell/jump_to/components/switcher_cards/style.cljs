@@ -12,22 +12,23 @@
    :community-channel            colors/white})
 
 (defn base-container
-  [background-color]
-  {:width            160
-   :height           160
+  [background-color card-size]
+  {:width            card-size
+   :height           card-size
    :border-radius    16
    :overflow         :hidden
    :background-color (colors/alpha background-color 0.4)})
 
 (defn empty-card
-  []
+  [card-size]
   (merge
-   (base-container nil)
+   (base-container nil card-size)
    {:background-color colors/neutral-95}))
 
-(def secondary-container
-  {:width            160
-   :height           120
+(defn secondary-container
+  [card-size]
+  {:width            card-size
+   :height           (- card-size 40)
    :border-radius    16
    :bottom           0
    :position         :absolute
