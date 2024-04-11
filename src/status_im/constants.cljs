@@ -490,4 +490,3 @@
 (def ^:const status-hostname "status.app")
 
 (def ^:const community-joined-notification-type "communityJoined")
-(def ^:const default-community-channel-name "general")
