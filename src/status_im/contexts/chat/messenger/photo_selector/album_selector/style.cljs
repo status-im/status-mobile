@@ -31,5 +31,5 @@
 
 (def divider
   {:padding-horizontal 20
-   :margin-top         16
+   :margin-top         12
    :margin-bottom      8})
