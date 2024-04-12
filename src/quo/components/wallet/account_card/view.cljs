@@ -167,7 +167,8 @@
                                                   :metrics? metrics?
                                                   :pressed? pressed?})}
      [button/button
-      {:type                :primary
+      {:on-press            on-press
+       :type                :primary
        :size                24
        :icon                true
        :accessibility-label :add-account
