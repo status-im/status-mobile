@@ -12,6 +12,5 @@
           [:amount :int]
           [:max-amount :int]
           [:network-name [:or :string :keyword]]]]]]
-      [:container-style {:optional true} [:maybe :map]]
-      [:theme :schema.common/theme]]]]
+      [:container-style {:optional true} [:maybe :map]]]]]
    :any])

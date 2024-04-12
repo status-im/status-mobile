@@ -13,7 +13,6 @@
       [:blur? {:optional true} [:maybe :boolean]]
       [:on-press {:optional true} [:maybe fn?]]
       [:state {:optional true} [:maybe [:= :disabled]]]
-      [:theme :schema.common/theme]
       [:second-tag-prefix {:optional true} [:maybe :keyword]]
       [:third-tag-prefix {:optional true} [:maybe :keyword]]
       [:fourth-tag-prefix {:optional true} [:maybe :keyword]]

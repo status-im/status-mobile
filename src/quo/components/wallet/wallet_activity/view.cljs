@@ -8,7 +8,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
-    [reagent.core :as reagent]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
 
@@ -100,39 +99,37 @@
    [context-tag/view (merge props {:size 24 :blur? blur?})]])
 
 (defn- view-internal
-  [_]
-  (let [pressed? (reagent/atom false)]
-    (fn
-      [{:keys [state theme blur?
-               on-press
-               first-tag second-tag third-tag fourth-tag
-               second-tag-prefix third-tag-prefix fourth-tag-prefix]
-        :as   props}]
-      [rn/pressable
-       {:style               (style/wallet-activity-container {:pressed? @pressed?
-                                                               :theme    theme
-                                                               :blur?    blur?})
-        :accessibility-label :wallet-activity
-        :disabled            (= state :disabled)
-        :on-press            on-press
-        :on-press-in         (fn [] (reset! pressed? true))
-        :on-press-out        (fn [] (reset! pressed? false))}
-       [rn/view
-        {:style {:flex-direction :row}}
-        [transaction-icon-view props]
-        [rn/view
-         {:style style/content-container}
-         [transaction-header props]
-         [rn/view {:style style/content-line}
-          (when first-tag [prop-tag first-tag blur?])
-          (when second-tag-prefix [prop-text second-tag-prefix theme])
-          (when second-tag [prop-tag second-tag blur?])]
-         [rn/view {:style style/content-line}
-          (when third-tag-prefix [prop-text third-tag-prefix theme])
-          (when third-tag [prop-tag third-tag blur?])
-          (when fourth-tag-prefix [prop-text fourth-tag-prefix theme])
-          (when fourth-tag [prop-tag fourth-tag blur?])]]]])))
+  [{:keys [state blur? first-tag second-tag third-tag fourth-tag on-press
+           second-tag-prefix third-tag-prefix fourth-tag-prefix]
+    :as   props}]
+  (let [theme         (quo.theme/use-theme-value)
+        [pressed?
+         set-pressed] (rn/use-state false)
+        on-press-in   (rn/use-callback #(set-pressed true))
+        on-press-out  (rn/use-callback #(set-pressed false))]
+    [rn/pressable
+     {:style               (style/wallet-activity-container {:pressed? pressed?
+                                                             :theme    theme
+                                                             :blur?    blur?})
+      :accessibility-label :wallet-activity
+      :disabled            (= state :disabled)
+      :on-press            on-press
+      :on-press-in         on-press-in
+      :on-press-out        on-press-out}
+     [rn/view
+      {:style {:flex-direction :row}}
+      [transaction-icon-view props]
+      [rn/view
+       {:style style/content-container}
+       [transaction-header props]
+       [rn/view {:style style/content-line}
+        (when first-tag [prop-tag first-tag blur?])
+        (when second-tag-prefix [prop-text second-tag-prefix theme])
+        (when second-tag [prop-tag second-tag blur?])]
+       [rn/view {:style style/content-line}
+        (when third-tag-prefix [prop-text third-tag-prefix theme])
+        (when third-tag [prop-tag third-tag blur?])
+        (when fourth-tag-prefix [prop-text fourth-tag-prefix theme])
+        (when fourth-tag [prop-tag fourth-tag blur?])]]]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))
