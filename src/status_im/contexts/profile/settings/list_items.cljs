@@ -34,7 +34,7 @@
     (when config/show-not-implemented-features?
       {:title       (i18n/label :t/dapps)
        :on-press    not-implemented/alert
-       :image-props :i/placeholder
+       :image-props :i/dapps
        :image       :icon
        :blur?       true
        :action      :arrow})
