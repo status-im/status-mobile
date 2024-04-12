@@ -59,7 +59,7 @@
 
 ## Articles
 
-[Notes on memoization](notes-on-memoization.md) 
+[Notes on memoization](./articles/notes-on-memoization.md) 
 
 
 ## Outdated:
