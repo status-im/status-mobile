@@ -1,12 +1,9 @@
 (ns status-im.contexts.profile.settings.screens.password.view
   (:require [quo.core :as quo]
             [quo.theme :as quo.theme]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [status-im.common.biometric.utils :as biometric]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.constants :as constants]
-            [status-im.contexts.profile.settings.screens.password.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -56,27 +53,19 @@
    :image-props :i/password
    :action      :arrow})
 
+(defn- navigate-back
+  []
+  (rf/dispatch [:navigate-back]))
+
 (defn view
   []
-  (let [theme  (quo.theme/use-theme)
-        insets (safe-area/get-insets)]
-    [quo/overlay {:type :shell}
-     [rn/view
-      {:key   :navigation
-       :style (style/navigation (:top insets))}
-      [quo/page-nav
-       {:background :blur
-        :icon-name  :i/arrow-left
-        :on-press   #(rf/dispatch [:navigate-back])}]]
-     [rn/view
-      {:key   :header
-       :style style/header}
-      [quo/text
-       {:accessibility-label :password-settings-label
-        :weight              :semi-bold
-        :number-of-lines     1
-        :size                :heading-1}
-       (i18n/label :t/password)]]
+  (let [theme (quo.theme/use-theme)]
+    [quo/overlay {:type :shell :top-inset? true}
+     [quo/page-nav
+      {:background :blur
+       :icon-name  :i/arrow-left
+       :on-press   navigate-back}]
+     [quo/page-top {:title (i18n/label :t/password)}]
      [quo/category
       {:key       :category
        :data      [(get-biometric-item theme)

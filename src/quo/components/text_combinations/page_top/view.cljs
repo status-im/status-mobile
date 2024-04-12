@@ -142,11 +142,11 @@
                   :blur?           blur?)]
 
           :address
-          [address-input/address-input (assoc input-props :blur? blur?)]
+          [address-input/address-input (assoc input-props :blur? blur?)
 
-          :recovery-phrase
-          [recovery-phrase/recovery-phrase-input
-           (assoc input-props
-                  :container-style style/recovery-phrase-container
-                  :blur?           blur?)]
-          nil)])]))
+            :recovery-phrase
+            [recovery-phrase/recovery-phrase-input
+             (assoc input-props
+                    :container-style style/recovery-phrase-container
+                    :blur?           blur?)]
+            nil])])]))
