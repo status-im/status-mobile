@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.token-value.view
   (:require [quo.core :as quo]
+            [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -9,7 +10,8 @@
   {:icon                :i/buy
    :accessibility-label :buy
    :label               (i18n/label :t/buy)
-   :on-press            #(js/alert "to be implemented")
+   :on-press            #(rf/dispatch [:show-bottom-sheet
+                                       {:content buy-token/view}])
    :right-icon          :i/external})
 
 (defn- action-send
