@@ -15,7 +15,9 @@
      :text-align :left
      :title      "Features Flags"
      :icon-name  :i/arrow-left
-     :on-press   #(rf/dispatch [:navigate-back])}]
+     :on-press   #(rf/dispatch [:navigate-back])
+     :right-side [{:icon-name :i/rotate
+                   :on-press  #(ff/reset-flags)}]}]
    (doall
     (for [context-name ff/feature-flags-categories
           :let         [context-flags (filter (fn [[k]]
@@ -36,4 +38,3 @@
              :container-style {:margin-right 8}
              :on-change       #(ff/toggle flag)}]
            [quo/text (second (string/split (name flag) "."))]]))]))])
-
