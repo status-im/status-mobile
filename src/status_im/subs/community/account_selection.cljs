@@ -30,8 +30,8 @@
 
 (re-frame/reg-sub :communities/can-edit-shared-addresses?
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [joined]}]]
+   (re-frame/subscribe [:communities/community community-id]))
+ (fn [{:keys [joined]}]
    joined))
 
 (re-frame/reg-sub :communities/permissions-check-for-selection
