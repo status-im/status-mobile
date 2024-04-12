@@ -161,7 +161,7 @@
            (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button]]
-       [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
+       [quo/text {:style {:padding-horizontal 12 :padding-bottom 6} :size :paragraph-2}
         (if can-request-access?
           (i18n/label :t/you-hodl)
           (i18n/label :t/you-must-hold))]
@@ -175,7 +175,7 @@
                                 #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
          :accessibility-label :join-community-button
          :customization-color color
-         :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+         :container-style     {:margin-horizontal 12 :margin-top 8 :margin-bottom 12}
          :disabled?           (not can-request-access?)
          :icon-left           (if can-request-access? :i/unlocked :i/locked)}
         (i18n/label :t/request-to-join)]])))
