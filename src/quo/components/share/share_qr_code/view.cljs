@@ -23,16 +23,6 @@
   [{:keys [on-legacy-press on-multichain-press address]}]
   [rn/view {:style style/header-container}
    [tab/view
-    {:accessibility-label         :share-qr-code-legacy-tab
-     :id                          :wallet-legacy-tab
-     :active-item-container-style style/header-tab-active
-     :item-container-style        style/header-tab-inactive
-     :size                        24
-     :active                      (= :legacy address)
-     :on-press                    on-legacy-press}
-    (i18n/label :t/legacy)]
-   [rn/view {:style style/space-between-tabs}]
-   [tab/view
     {:accessibility-label         :share-qr-code-multichain-tab
      :id                          :wallet-multichain-tab
      :active-item-container-style style/header-tab-active
@@ -40,7 +30,17 @@
      :size                        24
      :active                      (= :multichain address)
      :on-press                    on-multichain-press}
-    (i18n/label :t/multichain)]])
+    (i18n/label :t/multichain)]
+   [rn/view {:style style/space-between-tabs}]
+   [tab/view
+    {:accessibility-label         :share-qr-code-legacy-tab
+     :id                          :wallet-legacy-tab
+     :active-item-container-style style/header-tab-active
+     :item-container-style        style/header-tab-inactive
+     :size                        24
+     :active                      (= :legacy address)
+     :on-press                    on-legacy-press}
+    (i18n/label :t/legacy)]])
 
 (defn- info-label
   [share-qr-code-type]

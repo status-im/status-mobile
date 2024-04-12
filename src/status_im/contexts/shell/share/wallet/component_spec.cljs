@@ -11,7 +11,8 @@
         share-qr-code      (h/get-by-label-text :share-qr-code)]
     ;; Fires on-layout since it's needed to render the content
     (h/fire-event :layout share-qr-code #js {:nativeEvent #js {:layout #js {:width 500}}})
-    (rerender-fn [wallet-view/wallet-tab])))
+    (rerender-fn [wallet-view/wallet-tab])
+    (h/fire-event :press (h/get-by-label-text :share-qr-code-legacy-tab))))
 
 (h/describe "share wallet addresses"
   (h/setup-restorable-re-frame)
