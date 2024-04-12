@@ -404,6 +404,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703495)
+    @marks.xfail(
+        reason="Chat is not unmuted after expected time: https://github.com/status-im/status-mobile/issues/19627")
     def test_group_chat_mute_chat(self):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
 

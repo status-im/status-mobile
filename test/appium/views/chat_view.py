@@ -386,7 +386,6 @@ class CommunityView(HomeView):
         self.leave_community_button = Button(self.driver, translation_id="leave-community")
         self.edit_community_button = Button(self.driver, translation_id="edit-community")
         self.share_community_button = Button(self.driver, accessibility_id="share-community")
-        self.share_community_link_button = Button(self.driver, accessibility_id="share-community-link")
 
         # Members
         self.invite_people_button = Button(self.driver, accessibility_id="community-invite-people")
@@ -500,8 +499,9 @@ class CommunityView(HomeView):
         community_element.long_press_until_element_is_shown(self.share_community_button)
         self.share_community_button.click()
         for user_name in user_names_to_share:
-            Button(self.driver, xpath="//*[@content-desc='author-primary-name'][@text='%s']" % user_name).click()
-        self.setup_chat_button.click()
+            xpath = "//*[@content-desc='user-avatar']/following-sibling::android.widget.TextView[@text='%s']" % user_name
+            Button(self.driver, xpath=xpath).click()
+        self.share_invite_button.click()
 
 
 class PreviewMessage(ChatElementByText):
