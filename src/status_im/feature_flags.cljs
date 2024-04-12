@@ -10,10 +10,13 @@
 
 (defonce ^:private feature-flags-config
   (reagent/atom
-   {::wallet.bridge-token              (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
-    ::wallet.edit-derivation-path      (enabled-in-env? :FLAG_EDIT_DERIVATION_PATH)
-    ::wallet.remove-account            (enabled-in-env? :FLAG_REMOVE_ACCOUNT_ENABLED)
-    ::community.edit-account-selection (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)}))
+   {::wallet.bridge-token                (enabled-in-env? :FLAG_BRIDGE_TOKEN_ENABLED)
+    ::wallet.edit-derivation-path        (enabled-in-env? :FLAG_EDIT_DERIVATION_PATH)
+    ::wallet.remove-account              (enabled-in-env? :FLAG_REMOVE_ACCOUNT_ENABLED)
+    ::wallet.long-press-watch-only-asset (enabled-in-env? :FLAG_LONG_PRESS_WATCH_ONLY_ASSET_ENABLED)
+    ::wallet.assets-modal-manage-tokens  (enabled-in-env? :FLAG_ASSETS_MODAL_MANAGE_TOKENS)
+    ::wallet.assets-modal-hide           (enabled-in-env? :FLAG_ASSETS_MODAL_HIDE)
+    ::community.edit-account-selection   (enabled-in-env? :FLAG_EDIT_ACCOUNT_SELECTION_ENABLED)}))
 
 (defn feature-flags [] @feature-flags-config)
 
