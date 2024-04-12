@@ -1,7 +1,8 @@
 (ns quo.components.inputs.input.style
   (:require
     [quo.components.markdown.text :as text]
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (defn variants-colors
   [blur? theme]
@@ -97,9 +98,12 @@
       (assoc base-props
              :text-align-vertical :top
              :line-height         22)
-      (assoc base-props
-             :height      (if small? 30 38)
-             :line-height nil))))
+      (cond-> base-props
+        :always
+        (assoc :height      (if small? 30 38)
+               :line-height nil)
+        platform/ios?
+        (assoc :padding-top (+ padding 2))))))
 
 (defn right-icon-touchable-area
   [small?]
