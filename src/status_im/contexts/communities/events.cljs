@@ -149,23 +149,6 @@
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
-(defn initialize-permission-addresses
-  [{:keys [db]} [community-id]]
-  (when community-id
-    (let [accounts  (utils/sorted-non-watch-only-accounts db)
-          addresses (set (map :address accounts))]
-      {:db (update-in db
-                      [:communities community-id]
-                      assoc
-                      :previous-share-all-addresses? true
-                      :share-all-addresses?          true
-                      :previous-permission-addresses addresses
-                      :selected-permission-addresses addresses
-                      :airdrop-address               (:address (first accounts)))})))
-
-(rf/reg-event-fx :communities/initialize-permission-addresses
- initialize-permission-addresses)
-
 (defn update-previous-permission-addresses
   [{:keys [db]} [community-id]]
   (when community-id
