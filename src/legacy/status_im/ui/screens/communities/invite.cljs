@@ -1,16 +1,15 @@
 (ns legacy.status-im.ui.screens.communities.invite
   (:require
     [clojure.string :as string]
-    [legacy.status-im.communities.core :as communities]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [legacy.status-im.ui.components.core :as quo]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.toolbar :as toolbar]
     [legacy.status-im.ui.components.topbar :as topbar]
+    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
-    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -49,18 +48,35 @@
         contacts-selected (reagent/atom #{})
         {:keys [invite?]} (rf/sub [:get-screen-params])]
     (fn []
-      (let [contacts-data (rf/sub [:contacts/active])
-            {:keys [permissions
-                    can-manage-users?]}
+      (let [theme (quo.theme/use-theme)
+            contacts-data (rf/sub [:contacts/active])
+            {community-id :id
+             :keys        [permissions
+                           can-manage-users?]}
             (rf/sub [:communities/edited-community])
             selected @contacts-selected
+            selected-contacts-count (count selected)
             contacts (map (fn [{:keys [public-key] :as contact}]
                             (assoc contact :active (contains? selected public-key)))
                           contacts-data)
             ;; no-membership communities can only be shared
             can-invite? (and can-manage-users?
                              invite?
-                             (not= (:access permissions) constants/community-no-membership-access))]
+                             (not= (:access permissions) constants/community-no-membership-access))
+            on-press-share-community (rn/use-callback
+                                      (fn []
+                                        (rf/dispatch [:communities/share-community-confirmation-pressed
+                                                      selected community-id])
+                                        (rf/dispatch [:navigate-back])
+                                        (rf/dispatch [:toasts/upsert
+                                                      {:type  :positive
+                                                       :theme theme
+                                                       :text  (if (= 1 selected-contacts-count)
+                                                                (i18n/label :t/one-user-was-invited)
+                                                                (i18n/label
+                                                                 :t/n-users-were-invited
+                                                                 {:count selected-contacts-count}))}]))
+                                      [community-id selected selected-contacts-count theme])]
         [:<>
          [topbar/topbar
           {:title  (i18n/label (if can-invite?
@@ -81,11 +97,8 @@
            :center
            [quo/button
             {:disabled            (and (string/blank? @user-pk)
-                                       (zero? (count selected)))
+                                       (zero? selected-contacts-count))
              :accessibility-label :share-community-link
              :type                :secondary
-             :on-press            #(debounce/throttle-and-dispatch
-                                    [::communities/share-community-confirmation-pressed @user-pk
-                                     selected]
-                                    3000)}
+             :on-press            on-press-share-community}
             (i18n/label (if can-invite? :t/invite :t/share))]}]]))))
