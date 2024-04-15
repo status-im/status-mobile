@@ -194,6 +194,12 @@
    (:color current-chat)))
 
 (re-frame/reg-sub
+ :chats/current-chat-one-to-one?
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (= (:chat-type current-chat) constants/one-to-one-chat-type)))
+
+(re-frame/reg-sub
  :chats/community-channel-ui-details-by-id
  :<- [:chats/chats]
  (fn [chats [_ chat-id]]
