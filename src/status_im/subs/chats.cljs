@@ -242,6 +242,12 @@
       :can-delete-message-for-everyone? can-delete-message-for-everyone?})))
 
 (re-frame/reg-sub
+ :chats/current-chat-one-to-one?
+ :<- [:chats/current-raw-chat]
+ (fn [{:keys [chat-type]}]
+   (= chat-type constants/one-to-one-chat-type)))
+
+(re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
  :<- [:profile/profile-with-image]
