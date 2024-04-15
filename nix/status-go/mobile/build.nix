@@ -35,6 +35,8 @@ in buildGoPackage {
 
   ANDROID_HOME = optionalString isAndroid androidPkgs.sdk;
 
+  CGO_ENABLED=1;
+
   # Ensure XCode is present for iOS, instead of failing at the end of the build.
   preConfigure = optionalString isIOS enforceXCodeAvailable;
 
