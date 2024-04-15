@@ -38,8 +38,9 @@
    {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}]
   (let [sheet-content      [actions/chat-actions
                             (assoc chat
-                                   :chat-type constants/community-chat-type
-                                   :chat-id   (str community-id id))
+                                   :community-id community-id
+                                   :chat-type    constants/community-chat-type
+                                   :chat-id      (str community-id id))
                             false]
         notification       (cond
                              muted?               :mute
