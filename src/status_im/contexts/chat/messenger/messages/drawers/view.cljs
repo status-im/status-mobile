@@ -156,7 +156,7 @@
        :on-press (fn []
                    (rf/dispatch [:hide-bottom-sheet])
                    (rf/dispatch [:chat.ui/delete-message message-data
-                                 constants/delete-message-undo-time-limit-ms]))
+                                 config/delete-message-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-everyone)
        :icon     :i/delete
        :id       :delete-for-all}])))

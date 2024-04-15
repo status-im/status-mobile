@@ -71,11 +71,17 @@
 ; currently not supported in status-go
 (def enable-remove-profile-picture? false)
 
+(defn env-variable->int
+  [env-var-name default-value]
+  (js/parseInt (get-config env-var-name default-value)))
+
 (def delete-message-for-me-undo-time-limit-ms
-  (let [time-limit-ms (js/parseInt (get-config :DELETE_MESSAGE_FOR_ME_UNDO_TIME_LIMIT ""))]
-    (if (number? time-limit-ms)
-      time-limit-ms
-      constants/delete-message-for-me-undo-time-limit-ms)))
+  (env-variable->int :DELETE_MESSAGE_FOR_ME_UNDO_TIME_LIMIT
+                     constants/delete-message-for-me-undo-time-limit-ms))
+
+(def delete-message-undo-time-limit-ms
+  (env-variable->int :DELETE_MESSAGE_UNDO_TIME_LIMIT
+                     constants/delete-message-undo-time-limit-ms))
 
 (def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
 (def verify-transaction-url
