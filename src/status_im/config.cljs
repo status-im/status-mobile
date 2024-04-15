@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [react-native.config :as react-native-config]
+    [status-im.constants :as constants]
     [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]))
 
@@ -69,6 +70,12 @@
 (def max-installations 2)
 ; currently not supported in status-go
 (def enable-remove-profile-picture? false)
+
+(def delete-message-for-me-undo-time-limit-ms
+  (let [time-limit-ms (js/parseInt (get-config :DELETE_MESSAGE_FOR_ME_UNDO_TIME_LIMIT ""))]
+    (if (number? time-limit-ms)
+      time-limit-ms
+      constants/delete-message-for-me-undo-time-limit-ms)))
 
 (def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
 (def verify-transaction-url
