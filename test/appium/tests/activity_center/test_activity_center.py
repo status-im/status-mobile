@@ -268,7 +268,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = "open community"
+        self.community_name = "Open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
@@ -407,7 +407,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = "open community"
+        self.community_name = "Open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
@@ -468,7 +468,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        community_name = 'closed community'
+        community_name = 'Closed community'
         self.channel_name = "dogs"
         self.home_1.create_community(community_type="closed")
         self.home_1.reopen_app()

@@ -17,7 +17,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
-        self.community_name = "open community"
+        self.community_name = "Open community"
         self.channel_name = "general"
         self.community = self.home.create_community(community_type="open")
         self.profile_view = self.home.get_profile_view()

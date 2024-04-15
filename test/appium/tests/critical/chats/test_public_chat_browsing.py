@@ -25,7 +25,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
-        self.community_name = "closed community"
+        self.community_name = "Closed community"
         self.channel_name = "cats"
         self.community = self.home.create_community(community_type="closed")
 
@@ -307,7 +307,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = "open community"
+        self.community_name = "Open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
@@ -828,7 +828,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = "open community"
+        self.community_name = "Open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
 
@@ -1004,7 +1004,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device 1 creates a closed community")
         self.home_1.create_community(community_type="closed")
-        community_name = "closed community"
+        community_name = "Closed community"
         self.community_1.share_community(community_name, self.username_2)
         self.community_1.get_to_community_channel_from_home(community_name, "general")
         control_message_general_chat = "this message should be visible to the user before joining"
@@ -1104,7 +1104,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device 1 creates open community")
         self.home_1.create_community(community_type="open")
-        community_name = "open community"
+        community_name = "Open community"
         self.community_1.share_community(community_name, self.username_2)
         self.community_1.get_to_community_channel_from_home(community_name, "general")
         control_message_general_chat = "this message should be visible to the user before joining"
