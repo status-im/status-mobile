@@ -20,7 +20,8 @@
       :supported-file?      (utils/supported-file? (:animation-media-type collectible-data))
       :gradient-color-index (keyword (str "gradient-" (inc (mod index 5))))
       :counter              (utils/collectible-owned-counter total-owned)
-      :container-style      {:padding 8}
+      :container-style      {:padding 8
+                             :width   "50%"}
       :on-press             #(when on-press
                                (on-press collectible))
       :on-long-press        #(when on-long-press

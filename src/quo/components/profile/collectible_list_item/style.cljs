@@ -28,9 +28,6 @@
    :bottom   12
    :left     12})
 
-(def container
-  {:flex 1})
-
 (defn card-view-container
   [theme]
   (merge

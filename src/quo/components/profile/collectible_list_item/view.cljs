@@ -168,7 +168,7 @@
      {:on-press            (when collectible-ready? on-press)
       :on-long-press       (when collectible-ready? on-long-press)
       :accessibility-label :collectible-list-item
-      :style               (merge container-style style/container)}
+      :style               container-style}
      (if (= type :card)
        [card-view
         (assoc props
