@@ -8,5 +8,4 @@
   [id]
   (let [permissions (rf/sub [:community/token-permissions id])]
     [gesture/scroll-view
-     [quo/community-detail-token-gating {:permissions permissions}]
-    ]))
+     [quo/community-detail-token-gating {:permissions permissions}]]))

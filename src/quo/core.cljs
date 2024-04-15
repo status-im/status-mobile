@@ -35,9 +35,9 @@
     quo.components.community.community-detail-token-gating.view
     quo.components.community.community-list-view
     quo.components.community.community-stat.view
+    quo.components.community.community-token-gating.view
     quo.components.community.community-view
     quo.components.community.icon
-    quo.components.community.token-gating
     quo.components.counter.collectible-counter.view
     quo.components.counter.counter.view
     quo.components.counter.step.view
@@ -227,6 +227,7 @@
 ;;;; Community
 (def community-card-view-item quo.components.community.community-card-view/view)
 (def community-detail-token-gating quo.components.community.community-detail-token-gating.view/view)
+(def community-token-gating quo.components.community.community-token-gating.view/view)
 (def communities-membership-list-item
   quo.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo.components.community.community-view/community-stats-column)
@@ -236,7 +237,6 @@
 (def permission-tag-container quo.components.community.community-view/permission-tag-container)
 (def discover-card quo.components.community.banner.view/view)
 (def community-icon quo.components.community.icon/community-icon)
-(def token-requirement-list quo.components.community.token-gating/token-requirement-list)
 (def channel-action quo.components.community.channel-action.view/view)
 (def channel-actions quo.components.community.channel-actions.view/view)
 

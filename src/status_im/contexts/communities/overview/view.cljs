@@ -102,24 +102,6 @@
     constants/community-on-request-access      :request-access
     :unknown-access))
 
-(defn- info-button
-  []
-  (let [theme (quo.theme/use-theme)]
-    [rn/pressable
-     {:on-press
-      #(rf/dispatch
-        [:show-bottom-sheet
-         {:content
-          (fn []
-            [quo/documentation-drawers
-             {:title        (i18n/label :t/token-gated-communities)
-              :show-button? true
-              :button-label (i18n/label :t/read-more)
-              :button-icon  :info}
-             [quo/text {:size :paragraph-2} (i18n/label :t/token-gated-communities-info)]])}])}
-     [rn/view
-      [quo/icon :i/info {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
-
 (defn- network-not-supported
   []
   [quo/text (i18n/label :t/network-not-supported)])
@@ -137,19 +119,39 @@
     :icon-left           :i/communities}
    (i18n/label :t/request-to-join)])
 
+(defn- info-button-handler
+  []
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content
+     (fn []
+       [quo/documentation-drawers
+        {:title        (i18n/label :t/token-gated-communities)
+         :show-button? true
+         :button-label (i18n/label :t/read-more)
+         :button-icon  :info}
+        [quo/text {:size :paragraph-2}
+         (i18n/label :t/token-gated-communities-info)]])}]))
+
 (defn- token-requirements
   [{:keys [id color role-permissions?]}]
-  (let [theme (quo.theme/use-theme)
-        {:keys [can-request-access?
+  (let [{:keys [can-request-access?
                 no-member-permission?
                 tokens
                 networks-not-supported?
                 highest-permission-role]} (rf/sub [:community/token-gated-overview id])
         highest-role-text
         (i18n/label
-         (communities.utils/role->translation-key highest-permission-role :t/member))]
+         (communities.utils/role->translation-key highest-permission-role :t/member))
+        on-press (rn/use-callback (fn []
+                                    (if config/community-accounts-selection-enabled?
+                                      (rf/dispatch [:open-modal :community-account-selection-sheet
+                                                    {:community-id id}])
+                                      (rf/dispatch [:open-modal :community-requests-to-join
+                                                    {:id
+                                                     id}])))
+                                  [id])]
     (cond
-
       networks-not-supported?
       [network-not-supported]
 
@@ -157,36 +159,14 @@
       [request-access-button id color]
 
       :else
-      [rn/view {:style (style/token-gated-container theme)}
-       [rn/view
-        {:style {:padding-horizontal 12
-                 :flex-direction     :row
-                 :align-items        :center
-                 :justify-content    :space-between
-                 :flex               1}}
-        [quo/text {:weight :medium}
-         (if (and can-request-access? highest-permission-role)
-           (i18n/label :t/you-eligible-to-join-as {:role highest-role-text})
-           (i18n/label :t/you-not-eligible-to-join))]
-        [info-button]]
-       [quo/text {:style {:padding-horizontal 12 :padding-bottom 6} :size :paragraph-2}
-        (if can-request-access?
-          (i18n/label :t/you-hodl)
-          (i18n/label :t/you-must-hold))]
-       [quo/token-requirement-list
-        {:tokens   tokens
-         :padding? true}]
-       [quo/button
-        {:on-press            (if config/community-accounts-selection-enabled?
-                                #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                               {:community-id id}])
-                                #(rf/dispatch [:open-modal :community-requests-to-join {:id id}]))
-         :accessibility-label :join-community-button
-         :customization-color color
-         :container-style     {:margin-horizontal 12 :margin-top 8 :margin-bottom 12}
-         :disabled?           (not can-request-access?)
-         :icon-left           (if can-request-access? :i/unlocked :i/locked)}
-        (i18n/label :t/request-to-join)]])))
+      [quo/community-token-gating
+       {:role highest-role-text
+        :tokens tokens
+        :community-color color
+        :satisfied? can-request-access?
+        :on-press on-press
+        :on-press-info
+        info-button-handler}])))
 
 (defn- join-community
   [{:keys [id joined permissions] :as community}]
