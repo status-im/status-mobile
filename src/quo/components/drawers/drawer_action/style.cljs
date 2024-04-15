@@ -28,6 +28,23 @@
   {:flex         1
    :margin-right 12})
 
+(defn text
+  [{:keys [theme blur? type]}]
+  (let [base {:weight :medium}
+        theme-with-blur (if blur? :blue theme)
+        matcher [theme-with-blur type]
+        color
+        (case matcher
+          ([:dark :main] [:light :main])     (colors/theme-colors colors/neutral-100
+                                                                  colors/white
+                                                                  theme)
+          [:blur :main]                      colors/white-70-blur
+          ([:dark :danger] [:light :danger]) (colors/theme-colors colors/danger-50
+                                                                  colors/danger-60
+                                                                  theme)
+          [:blur :danger]                    colors/danger-60)]
+    (assoc-in base [:style :color] color)))
+
 (defn- neutral-color
   [theme blur?]
   (if blur?
@@ -41,8 +58,14 @@
    :margin-top   1})
 
 (defn icon-color
-  [{:keys [theme blur?]}]
-  (neutral-color theme blur?))
+  [{:keys [theme blur? type]}]
+  (let [theme-with-blur (if blur? :blue theme)
+        matcher         [theme-with-blur type]]
+    (case matcher
+      ([:dark :main] [:light :main])     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+      [:blur :main]                      colors/white-70-blur
+      ([:dark :danger] [:light :danger]) (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+      [:blur :danger]                    colors/danger-60)))
 
 (defn desc
   [{:keys [theme blur?]}]
