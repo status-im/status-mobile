@@ -5,6 +5,7 @@
     [native-module.core :as native-module]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [taoensso.timbre :as log]
     [utils.address :as address]
@@ -24,30 +25,60 @@
 (rf/reg-event-fx :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes timestamp]]
    (when (= (get-in db [:wallet :ui :send :suggested-routes-call-timestamp]) timestamp)
-     (let [suggested-routes-data (cske/transform-keys transforms/->kebab-case-keyword suggested-routes)
-           chosen-route          (:best suggested-routes-data)]
+     (let [suggested-routes-data         (cske/transform-keys transforms/->kebab-case-keyword
+                                                              suggested-routes)
+           chosen-route                  (:best suggested-routes-data)
+           token                         (get-in db [:wallet :ui :send :token])
+           collectible                   (get-in db [:wallet :ui :send :collectible])
+           token-display-name            (get-in db [:wallet :ui :send :token-display-name])
+           token-decimals                (if collectible 0 (:decimals token))
+           native-token?                 (and token (= token-display-name "ETH"))
+           from-network-amounts-by-chain (send-utils/network-amounts-by-chain {:route chosen-route
+                                                                               :token-decimals
+                                                                               token-decimals
+                                                                               :native-token?
+                                                                               native-token?
+                                                                               :to? false})
+           from-network-values-for-ui    (send-utils/network-values-for-ui from-network-amounts-by-chain)
+           to-network-amounts-by-chain   (send-utils/network-amounts-by-chain {:route chosen-route
+                                                                               :token-decimals
+                                                                               token-decimals
+                                                                               :native-token?
+                                                                               native-token?
+                                                                               :to? true})
+           to-network-values-for-ui      (send-utils/network-values-for-ui to-network-amounts-by-chain)]
        {:db (-> db
                 (assoc-in [:wallet :ui :send :suggested-routes] suggested-routes-data)
                 (assoc-in [:wallet :ui :send :route] chosen-route)
+                (assoc-in [:wallet :ui :send :from-values-by-chain] from-network-values-for-ui)
+                (assoc-in [:wallet :ui :send :to-values-by-chain] to-network-values-for-ui)
                 (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))}))))
 
 (rf/reg-event-fx :wallet/suggested-routes-error
  (fn [{:keys [db]} [_error]]
    {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :suggested-routes)
-            (update-in [:wallet :ui :send] dissoc :route)
+            (update-in [:wallet :ui :send] dissoc :suggested-routes :route)
             (assoc-in [:wallet :ui :send :loading-suggested-routes?] false))}))
 
 (rf/reg-event-fx :wallet/clean-suggested-routes
  (fn [{:keys [db]}]
-   {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :suggested-routes)
-            (update-in [:wallet :ui :send] dissoc :route)
-            (update-in [:wallet :ui :send] dissoc :loading-suggested-routes?))}))
+   {:db (update-in db
+                   [:wallet :ui :send]
+                   dissoc
+                   :suggested-routes
+                   :route
+                   :from-values-by-chain
+                   :to-values-by-chain
+                   :loading-suggested-routes?
+                   :suggested-routes-call-timestamp)}))
 
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
    {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
+
+(rf/reg-event-fx :wallet/clean-disabled-from-networks
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui :send] dissoc :disabled-from-chain-ids)}))
 
 (rf/reg-event-fx
  :wallet/select-send-address
@@ -55,14 +86,10 @@
    (let [[prefix to-address] (utils/split-prefix-and-address address)
          testnet-enabled?    (get-in db [:profile/profile :test-networks-enabled?])
          goerli-enabled?     (get-in db [:profile/profile :is-goerli-enabled?])
-         prefix-seq          (string/split prefix #":")
-         selected-networks   (->> prefix-seq
-                                  (remove string/blank?)
-                                  (mapv
-                                   #(utils/network->chain-id
-                                     {:network          %
-                                      :testnet-enabled? testnet-enabled?
-                                      :goerli-enabled?  goerli-enabled?})))]
+         selected-networks   (network-utils/resolve-receiver-networks
+                              {:prefix           prefix
+                               :testnet-enabled? testnet-enabled?
+                               :goerli-enabled?  goerli-enabled?})]
      {:db (-> db
               (assoc-in [:wallet :ui :send :recipient] (or recipient address))
               (assoc-in [:wallet :ui :send :to-address] to-address)
@@ -84,7 +111,8 @@
  (fn [{:keys [db]} [{:keys [token stack-id start-flow?]}]]
    {:db (-> db
             (update-in [:wallet :ui :send] dissoc :collectible)
-            (assoc-in [:wallet :ui :send :token] token))
+            (assoc-in [:wallet :ui :send :token] token)
+            (assoc-in [:wallet :ui :send :token-display-name] (:symbol token)))
     :fx [[:dispatch [:wallet/clean-suggested-routes]]
          [:dispatch
           [:wallet/wizard-navigate-forward
@@ -95,13 +123,15 @@
 (rf/reg-event-fx
  :wallet/edit-token-to-send
  (fn [{:keys [db]} [token]]
-   {:db (assoc-in db [:wallet :ui :send :token] token)
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :token] token)
+            (assoc-in [:wallet :ui :send :token-display-name] token))
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:wallet/clean-suggested-routes]]]}))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :token :tx-type)}))
+   {:db (update-in db [:wallet :ui :send] dissoc :token :token-display-name :tx-type)}))
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]}]
@@ -110,18 +140,30 @@
                      [:wallet :ui :send]
                      dissoc
                      :collectible
+                     :token-display-name
                      :amount
                      (when (= transaction-type :collecible) :tx-type))})))
 
 (rf/reg-event-fx :wallet/send-collectibles-amount
  (fn [{:keys [db]} [{:keys [collectible stack-id amount]}]]
-   {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :token)
-            (assoc-in [:wallet :ui :send :collectible] collectible)
-            (assoc-in [:wallet :ui :send :tx-type] :collectible)
-            (assoc-in [:wallet :ui :send :amount] amount))
-    :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
-         [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]}))
+   (let [collection-data    (:collection-data collectible)
+         collectible-data   (:collectible-data collectible)
+         collectible-id     (get-in collectible [:id :token-id])
+         token-display-name (cond
+                              (and collectible
+                                   (not (string/blank? (:name collectible-data))))
+                              (:name collectible-data)
+
+                              collectible
+                              (str (:name collection-data) " #" collectible-id))]
+     {:db (-> db
+              (update-in [:wallet :ui :send] dissoc :token)
+              (assoc-in [:wallet :ui :send :collectible] collectible)
+              (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
+              (assoc-in [:wallet :ui :send :tx-type] :collectible)
+              (assoc-in [:wallet :ui :send :amount] amount))
+      :fx [[:dispatch [:wallet/get-suggested-routes {:amount amount}]]
+           [:navigate-to-within-stack [:screen/wallet.transaction-confirmation stack-id]]]})))
 
 (rf/reg-event-fx :wallet/select-collectibles-amount
  (fn [{:keys [db]} [{:keys [collectible stack-id]}]]
@@ -140,6 +182,12 @@
             :start-flow?    start-flow?
             :flow-id        :wallet-flow}]]]}))
 
+(rf/reg-event-fx :wallet/disable-from-networks
+ (fn [{:keys [db]} [chain-ids]]
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :disabled-from-chain-ids] chain-ids)
+            (assoc-in [:wallet :ui :send :loading-suggested-routes?] true))}))
+
 (rf/reg-event-fx :wallet/get-suggested-routes
  (fn [{:keys [db now]} [{:keys [amount]}]]
    (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
@@ -147,6 +195,7 @@
          transaction-type        (get-in db [:wallet :ui :send :tx-type])
          collectible             (get-in db [:wallet :ui :send :collectible])
          to-address              (get-in db [:wallet :ui :send :to-address])
+         disabled-from-chain-ids (or (get-in db [:wallet :ui :send :disabled-from-chain-ids]) [])
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
          networks                ((if test-networks-enabled? :test :prod)
                                   (get-in db [:wallet :networks]))
@@ -163,7 +212,7 @@
          gas-rates               constants/gas-rate-medium
          amount-in               (send-utils/amount-in-hex amount (if token token-decimal 0))
          from-address            wallet-address
-         disabled-from-chain-ids []
+         disabled-from-chain-ids disabled-from-chain-ids
          disabled-to-chain-ids   (if (= transaction-type :bridge)
                                    (filter #(not= % bridge-to-chain-id) network-chain-ids)
                                    [])
@@ -218,6 +267,7 @@
    {:fx [[:dispatch [:wallet/clean-scanned-address]]
          [:dispatch [:wallet/clean-local-suggestions]]
          [:dispatch [:wallet/clean-send-address]]
+         [:dispatch [:wallet/clean-disabled-from-networks]]
          [:dispatch [:wallet/select-address-tab nil]]
          [:dispatch [:dismiss-modal :screen/wallet.transaction-progress]]]}))
 

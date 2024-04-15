@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.utils.send
-  (:require [utils.money :as money]))
+  (:require [clojure.string :as string]
+            [utils.money :as money]))
 
 (defn calculate-gas-fee
   [data]
@@ -20,3 +21,17 @@
 (defn calculate-full-route-gas-fee
   [route]
   (reduce money/add (map calculate-gas-fee route)))
+
+(defn find-affordable-networks
+  [{:keys [balances-per-chain input-value selected-networks disabled-chain-ids]}]
+  (let [input-value (if (string/blank? input-value) 0 input-value)]
+    (->> balances-per-chain
+         (filter (fn [[_
+                       {:keys [balance chain-id]
+                        :or   {balance 0}}]]
+                   (and
+                    (money/greater-than-or-equals (money/bignumber balance)
+                                                  (money/bignumber input-value))
+                    (some #(= % chain-id) selected-networks)
+                    (not-any? #(= % chain-id) disabled-chain-ids))))
+         (map first))))

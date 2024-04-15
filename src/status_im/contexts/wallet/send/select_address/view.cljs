@@ -132,6 +132,7 @@
                          (rf/dispatch [:wallet/clean-selected-token])
                          (rf/dispatch [:wallet/clean-selected-collectible])
                          (rf/dispatch [:wallet/clean-send-address])
+                         (rf/dispatch [:wallet/clean-disabled-from-networks])
                          (rf/dispatch [:wallet/select-address-tab nil])
                          (rf/dispatch [:navigate-back]))
         on-change-tab  #(rf/dispatch [:wallet/select-address-tab %])

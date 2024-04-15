@@ -96,6 +96,21 @@
  :-> :token)
 
 (rf/reg-sub
+ :wallet/wallet-send-disabled-from-chain-ids
+ :<- [:wallet/wallet-send]
+ :-> :disabled-from-chain-ids)
+
+(rf/reg-sub
+ :wallet/wallet-send-from-values-by-chain
+ :<- [:wallet/wallet-send]
+ :-> :from-values-by-chain)
+
+(rf/reg-sub
+ :wallet/wallet-send-to-values-by-chain
+ :<- [:wallet/wallet-send]
+ :-> :to-values-by-chain)
+
+(rf/reg-sub
  :wallet/wallet-send-loading-suggested-routes?
  :<- [:wallet/wallet-send]
  :-> :loading-suggested-routes?)
