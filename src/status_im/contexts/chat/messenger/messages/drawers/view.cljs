@@ -186,7 +186,7 @@
     [rn/view
      {:style {:flex-direction     :row
               :justify-content    :space-between
-              :padding-horizontal 30
+              :padding-horizontal 22
               :padding-top        5
               :padding-bottom     15}}
      (for [[id reaction-name] constants/reactions
