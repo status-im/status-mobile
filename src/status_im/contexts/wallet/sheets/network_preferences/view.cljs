@@ -39,8 +39,8 @@
             mainnet          (first network-details)
             layer-2-networks (rest network-details)
             current-networks (filter (fn [network]
-                                       (some #(= (:network-name network) %)
-                                             (get-current-preferences-names)))
+                                       (contains? (get-current-preferences-names)
+                                                  (:network-name network)))
                                      network-details)]
         [:<>
          ;; quo/overlay isn't compatible with sheets
