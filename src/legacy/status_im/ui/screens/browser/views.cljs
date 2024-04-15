@@ -2,7 +2,6 @@
   (:require
     [legacy.status-im.browser.core :as browser]
     [legacy.status-im.browser.webview-ref :as webview-ref]
-    [legacy.status-im.qr-scanner.core :as qr-scanner]
     [legacy.status-im.ui.components.chat-icon.screen :as chat-icon]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.connectivity.view :as connectivity]
@@ -105,9 +104,7 @@
      (if empty-tab
        [react/touchable-highlight
         {:accessibility-label :universal-qr-scanner
-         :on-press            #(re-frame/dispatch
-                                [::qr-scanner/scan-code
-                                 {:handler ::qr-scanner/on-scan-success}])}
+         :on-press            #(re-frame/dispatch [:open-modal :shell-qr-reader])}
         [icons/icon :main-icons/qr {:color colors/black}]]
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch
