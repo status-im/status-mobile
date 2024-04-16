@@ -9,7 +9,7 @@
     [schema.core :as schema]))
 
 (defn- description-comp
-  [description members-count active-members-count hide-members-count?]
+  [description members-count active-members-count show-members-count?]
   (let [has-members?        (pos? members-count)
         has-active-members? (pos? active-members-count)]
     [rn/view
@@ -18,7 +18,7 @@
        :number-of-lines     3
        :accessibility-label :description}
       description]
-     (when-not hide-members-count?
+     (when show-members-count?
        [rn/view
         {:style style/stat-container}
         (when has-members?

@@ -432,5 +432,6 @@
  :communities/token-gated-not-a-member?
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
- (fn [{:keys [token-permissions joined]}]
-   (and (not joined) (some? token-permissions))))
+ (fn [{:keys [token-permissions joined] :as community}]
+   (or (and joined (seq community))
+       (and (not joined) (empty? token-permissions) (seq community)))))

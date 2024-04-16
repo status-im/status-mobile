@@ -30,4 +30,4 @@
                :banner              (:url community-banner)
                :icon                (:url community-icon)
                :on-press            #(rf/dispatch [:universal-links/handle-url url])
-               :hide-members-count? token-gated-not-a-member?}])))])))
+               :show-members-count? token-gated-not-a-member?}])))])))
