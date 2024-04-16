@@ -1,0 +1,57 @@
+--- /tmp/tmp-status-mobile-851dbcb56/tmp.beqWjtcNwi/BlurView.mm	2024-04-16 17:55:00.688450000 +0200
++++ ./node_modules/@react-native-community/blur/ios/BlurView.mm	2024-04-16 17:56:17.772952042 +0200
+@@ -73,7 +73,7 @@
+ {
+   const auto &oldViewProps = *std::static_pointer_cast<const BlurViewProps>(_props);
+   const auto &newViewProps = *std::static_pointer_cast<const BlurViewProps>(props);
+-  
++
+   if (oldViewProps.blurAmount != newViewProps.blurAmount) {
+     NSNumber *blurAmount = [NSNumber numberWithInt:newViewProps.blurAmount];
+     [self setBlurAmount:blurAmount];
+@@ -83,12 +83,12 @@
+     NSString *blurType = [NSString stringWithUTF8String:toString(newViewProps.blurType).c_str()];
+     [self setBlurType:blurType];
+   }
+-  
++
+   if (oldViewProps.reducedTransparencyFallbackColor != newViewProps.reducedTransparencyFallbackColor) {
+     UIColor *color = RCTUIColorFromSharedColor(newViewProps.reducedTransparencyFallbackColor);
+     [self setReducedTransparencyFallbackColor:color];
+   }
+-  
++
+   [super updateProps:props oldProps:oldProps];
+ }
+ #endif // RCT_NEW_ARCH_ENABLED
+@@ -131,6 +131,7 @@
+ 
+ - (UIBlurEffectStyle)blurEffectStyle
+ {
++  if ([self.blurType isEqual: @"transparent"]) return UIBlurEffectStyleDark;
+   if ([self.blurType isEqual: @"xlight"]) return UIBlurEffectStyleExtraLight;
+   if ([self.blurType isEqual: @"light"]) return UIBlurEffectStyleLight;
+   if ([self.blurType isEqual: @"dark"]) return UIBlurEffectStyleDark;
+@@ -160,7 +161,7 @@
+     if ([self.blurType isEqual: @"thinMaterialLight"]) return UIBlurEffectStyleSystemThinMaterialLight;
+     if ([self.blurType isEqual: @"ultraThinMaterialLight"]) return UIBlurEffectStyleSystemUltraThinMaterialLight;
+   #endif
+-    
++
+   #if TARGET_OS_TV
+     if ([self.blurType isEqual: @"regular"]) return UIBlurEffectStyleRegular;
+     if ([self.blurType isEqual: @"prominent"]) return UIBlurEffectStyleProminent;
+@@ -183,6 +184,13 @@
+   UIBlurEffectStyle style = [self blurEffectStyle];
+   self.blurEffect = [BlurEffectWithAmount effectWithStyle:style andBlurAmount:self.blurAmount];
+   self.blurEffectView.effect = self.blurEffect;
++
++  if ([self.blurType isEqual: @"transparent"]) {
++    for (UIView *subview in self.blurEffectView.subviews) {
++      subview.backgroundColor = [UIColor clearColor];
++    }
++  }
++
+ }
+ 
+ - (void)updateFallbackView
