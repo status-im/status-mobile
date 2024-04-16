@@ -49,7 +49,7 @@
     [:<>
      [reanimated/blur-view
       {:blur-amount   20
-       :blur-type     :transparent
+       :blur-type     :ultraThinMaterial
        :overlay-color :transparent
        :style         (style/blur-slider translate-animation height theme)}]
      [rn/view
