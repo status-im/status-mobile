@@ -100,7 +100,7 @@
       ens?
       (assoc-in [:route-params :ens-name] fragment)
 
-      (and (or (= handler :community) (= handler :community-chat)) compressed-key?)
+      (and (= handler :community) compressed-key?)
       (assoc-in [:route-params :community-id] fragment)
 
       (and equal-end-of-base64url (= handler :community) (:community-data route-params))
@@ -118,6 +118,13 @@
            (string? (:community-data route-params))
            (re-find constants/regx-starts-with-uuid (:community-data route-params)))
       (assoc-in [:route-params :community-channel-id] (:community-data route-params))
+
+      (and fragment
+           (= handler :community-chat)
+           (:community-data route-params)
+           (string? (:community-data route-params))
+           (not (re-find constants/regx-starts-with-uuid (:community-data route-params))))
+      (assoc-in [:route-params :community-encoded-data?] true)
 
       (and equal-end-of-base64url (= handler :user) (:user-data route-params))
       (update-in [:route-params :user-data] #(str % equal-end-of-base64url))
@@ -202,6 +209,10 @@
                                 :chat-id public-key})
                            (cb {:type  :private-chat
                                 :error :invalid-chat-id})))))
+
+(defn parse-shared-url
+  [uri]
+  (re-frame/dispatch [:shared-urls/parse-shared-url uri]))
 
 (defn match-community-channel-async
   [{:keys [community-channel-id community-id]} cb]
@@ -307,9 +318,10 @@
       (and (= handler :community-chat) (:community-channel-id route-params) (:community-id route-params))
       (match-community-channel-async route-params cb)
 
-      (and (= handler :community-chat) (:community-id route-params))
-      (cb {:type         :community
-           :community-id (:community-id route-params)})
+      (and (= handler :community-chat)
+           (:community-encoded-data? route-params)
+           (:community-id route-params))
+      (parse-shared-url uri)
 
       ;; NOTE: removed in `match-uri`, might need this in the future
       (= handler :wallet-account)
