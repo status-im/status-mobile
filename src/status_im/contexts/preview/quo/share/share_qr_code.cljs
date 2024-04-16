@@ -16,7 +16,8 @@
     :options [{:key :profile}
               {:key :wallet}
               {:key :saved-address}
-              {:key :watched-address}]}])
+              {:key :watched-address}
+              {:key :channel}]}])
 
 (def possible-networks [:ethereum :optimism :arbitrum :myNet])
 
