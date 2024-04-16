@@ -112,28 +112,29 @@
                                                           [:change-password/confirm-new-password
                                                            (security/mask-data password)]))]
     [:<>
-     [password-with-hint
-      {:hint           {:text   (i18n/label :t/password-creation-hint)
-                        :status (if long-enough? :success :default)
-                        :shown  true}
-       :placeholder    (i18n/label :t/change-password-new-password-placeholder)
-       :label          (i18n/label :t/change-password-new-password-label)
-       :on-change-text on-change-password
-       :on-focus       on-input-focus
-       :auto-focus     true}]
-     [rn/view {:style style/space-between-inputs}]
-     [password-with-hint
-      {:hint           {:text   (if same-passwords?
-                                  (i18n/label :t/password-creation-match)
-                                  (i18n/label :t/password-creation-dont-match))
-                        :status (if same-passwords? :success :error)
-                        :shown  (and (not empty-password?)
-                                     show-validation?)}
-       :error?         error?
-       :placeholder    (i18n/label :t/change-password-repeat-password-placeholder)
-       :on-change-text on-change-repeat-password
-       :on-focus       on-input-focus
-       :on-blur        on-blur-repeat-password}]
+     [rn/view {:style style/form-container}
+      [password-with-hint
+       {:hint           {:text   (i18n/label :t/password-creation-hint)
+                         :status (if long-enough? :success :default)
+                         :shown  true}
+        :placeholder    (i18n/label :t/change-password-new-password-placeholder)
+        :label          (i18n/label :t/change-password-new-password-label)
+        :on-change-text on-change-password
+        :on-focus       on-input-focus
+        :auto-focus     true}]
+      [rn/view {:style style/space-between-inputs}]
+      [password-with-hint
+       {:hint           {:text   (if same-passwords?
+                                   (i18n/label :t/password-creation-match)
+                                   (i18n/label :t/password-creation-dont-match))
+                         :status (if same-passwords? :success :error)
+                         :shown  (and (not empty-password?)
+                                      show-validation?)}
+        :error?         error?
+        :placeholder    (i18n/label :t/change-password-repeat-password-placeholder)
+        :on-change-text on-change-repeat-password
+        :on-focus       on-input-focus
+        :on-blur        on-blur-repeat-password}]]
      [rn/view {:style style/bottom-part}
       (when same-passwords?
         [rn/view {:style style/disclaimer-container}

@@ -1,14 +1,16 @@
 (ns status-im.contexts.profile.settings.screens.password.change-password.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [react-native.safe-area :as safe-area]))
 
 (def form-container
   {:flex               1
    :padding-horizontal 20})
 
 (def heading
-  {:margin-bottom 20
-   :margin-top    12})
+  {:margin-bottom     20
+   :margin-horizontal 20
+   :margin-top        12})
 
 (def heading-subtitle {:color colors/white})
 
@@ -25,9 +27,7 @@
    :align-items    :center})
 
 (def warning-container
-  {:margin-top        4
-   :margin-horizontal 20
-   :margin-bottom     12})
+  {:margin-top 12})
 
 (defn loading-container
   [insets]
@@ -50,15 +50,14 @@
    :justify-content   :space-between})
 
 (def bottom-part
-  {:position :absolute
-   :bottom   0
-   :left     0
-   :right    0})
+  {:flex            1
+   :margin-bottom   (+ (safe-area/get-bottom) 12)
+   :justify-content :flex-end})
 
 (def disclaimer-container
   {:margin-horizontal 20
    :margin-vertical   4})
 
 (def button-container
-  {:margin-vertical   12
+  {:margin-top        12
    :margin-horizontal 20})

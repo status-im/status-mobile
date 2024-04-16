@@ -27,7 +27,7 @@
                                     (rf/dispatch
                                      [:change-password/verify-old-password
                                       (security/mask-data password)])))]
-    [:<>
+    [rn/view {:style style/form-container}
      [quo/input
       {:placeholder    (i18n/label :t/change-password-old-password-placeholder)
        :label          (i18n/label :t/change-password-old-password-label)
@@ -43,15 +43,14 @@
           :size :default
           :icon :i/info}
          (i18n/label :t/oops-wrong-password)])]
+     [quo/information-box
+      {:type  :error
+       :style style/warning-container
+       :icon  :i/info}
+      (i18n/label :t/change-password-confirm-warning)]
      [rn/view {:style style/bottom-part}
-      [quo/information-box
-       {:type  :error
-        :style style/warning-container
-        :icon  :i/info}
-       (i18n/label :t/change-password-confirm-warning)]
-      [rn/view {:style style/button-container}
-       [quo/button
-        {:disabled?           (not meet-requirements?)
-         :customization-color customization-color
-         :on-press            on-submit}
-        (i18n/label :t/continue)]]]]))
+      [quo/button
+       {:disabled?           (not meet-requirements?)
+        :customization-color customization-color
+        :on-press            on-submit}
+       (i18n/label :t/continue)]]]))
