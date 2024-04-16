@@ -116,6 +116,8 @@
          set-active-tab-id]          (rn/use-state default-active)
         [fading set-fading]          (rn/use-state fade-end-percentage)
         flat-list-ref                (rn/use-ref-atom nil)
+        tabs-data                    (rn/use-memo (fn [] (filterv some? data))
+                                                  [data])
         clean-props                  (dissoc props
                                       :default-active
                                       :fade-end-percentage
@@ -142,8 +144,8 @@
                                               :index
                                               (utils.collection/first-index
                                                #(= active-tab-id (:id %))
-                                               data)}))))
-                                      [active-tab-id data])
+                                               tabs-data)}))))
+                                      [active-tab-id tabs-data])
         on-tab-press                 (rn/use-callback (fn [id index]
                                                         (set-active-tab-id id)
                                                         (when (and scroll-on-press? @flat-list-ref)
@@ -175,7 +177,7 @@
            :horizontal true
            :scroll-event-throttle 64
            :shows-horizontal-scroll-indicator false
-           :data data
+           :data tabs-data
            :key-fn (comp str :id)
            :on-scroll-to-index-failed identity
            :on-scroll on-scroll
@@ -184,7 +186,7 @@
            :render-data {:active-tab-id       active-tab-id
                          :blur?               blur?
                          :customization-color customization-color
-                         :number-of-items     (count data)
+                         :number-of-items     (count tabs-data)
                          :size                size
                          :on-press            on-tab-press
                          :style               style}})]]]
@@ -195,8 +197,8 @@
                        {:active-tab-id       active-tab-id
                         :blur?               blur?
                         :customization-color customization-color
-                        :number-of-items     (count data)
+                        :number-of-items     (count tabs-data)
                         :size                size
                         :on-press            on-tab-press
                         :style               style}])
-                    data)])))
+                    tabs-data)])))
