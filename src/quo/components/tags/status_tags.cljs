@@ -112,20 +112,19 @@
                            colors/white-opa-70
                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])
 
-(defn- status-tag-internal
-  [{:keys [status size theme label blur? no-icon? container-style]}]
+(defn status-tag
+  [{:keys [status size label blur? no-icon? container-style]}]
   (when status
-    (when-let [status-component (case (:type status)
-                                  :positive positive
-                                  :negative negative
-                                  :pending  pending
-                                  nil)]
-      [status-component
-       size
-       theme
-       label
-       blur?
-       no-icon?
-       container-style])))
-
-(def status-tag (quo.theme/with-theme status-tag-internal))
+    (let [theme (quo.theme/use-theme)]
+      (when-let [status-component (case (:type status)
+                                    :positive positive
+                                    :negative negative
+                                    :pending  pending
+                                    nil)]
+        [status-component
+         size
+         theme
+         label
+         blur?
+         no-icon?
+         container-style]))))

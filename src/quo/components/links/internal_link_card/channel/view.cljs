@@ -68,25 +68,23 @@
    [rn/view {:style (style/loading-thumbnail-box theme size)}]])
 
 (defn view-internal
-  [{:keys [title description loading? icon banner
-           theme on-press channel-name size]
+  [{:keys [title description loading? icon banner on-press channel-name size]
     :or   {channel-name "empty name"}}]
-  [rn/pressable
-   {:style               (style/container size theme)
-    :accessibility-label :internal-link-card
-    :on-press            on-press}
-   (if loading?
-     [loading-view theme size]
-     [:<>
-      [rn/view {:style style/header-container}
-       (when icon
-         [logo-comp icon])
-       [title-comp title channel-name theme]]
-      (when description
-        [description-comp description])
-      (when banner
-        [banner-comp banner size])])])
+  (let [theme (quo.theme/use-theme)]
+    [rn/pressable
+     {:style               (style/container size theme)
+      :accessibility-label :internal-link-card
+      :on-press            on-press}
+     (if loading?
+       [loading-view theme size]
+       [:<>
+        [rn/view {:style style/header-container}
+         (when icon
+           [logo-comp icon])
+         [title-comp title channel-name theme]]
+        (when description
+          [description-comp description])
+        (when banner
+          [banner-comp banner size])])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

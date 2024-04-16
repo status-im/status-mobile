@@ -3,7 +3,7 @@
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.markdown.text :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (def themes
@@ -35,7 +35,7 @@
 
 (defn get-color-by-type
   [type k]
-  (get-in themes [(theme/get-theme) type k]))
+  (get-in themes [(quo.theme/get-theme) type k]))
 
 (defn account-selector
   "[account-selector opts]

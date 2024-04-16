@@ -3,14 +3,14 @@
     [quo.foundations.colors :as colors]))
 
 (defn- get-background-color
-  [{:keys [status theme]}]
+  [{:keys [status]} theme]
   (case status
     :default (colors/theme-colors colors/white-opa-70 colors/neutral-95-opa-70 theme)
     :error   (colors/resolve-color :danger theme 10)
     (colors/theme-colors colors/white-opa-70 colors/neutral-95-opa-70 theme)))
 
 (defn- get-container-border-styles
-  [{:keys [status theme]}]
+  [{:keys [status]} theme]
   (when (= status :error)
     {:border-color (colors/resolve-color :danger theme 20)
      :border-width 1}))
@@ -29,17 +29,17 @@
       style-size-32)))
 
 (defn container
-  [props]
+  [props theme]
   (merge {:align-self       :flex-start
           :flex-direcrion   :row
           :justify-content  :center
           :border-radius    999
-          :background-color (get-background-color props)}
-         (get-container-border-styles props)
+          :background-color (get-background-color props theme)}
+         (get-container-border-styles props theme)
          (get-container-styles-by-size props)))
 
 (defn- get-text-color
-  [{:keys [status theme]}]
+  [{:keys [status]} theme]
   (case status
     :default (colors/theme-colors colors/neutral-100 colors/white theme)
     :error   (colors/resolve-color :danger theme)
@@ -53,5 +53,5 @@
     :paragraph-1))
 
 (defn text
-  [props]
-  {:color (get-text-color props)})
+  [props theme]
+  {:color (get-text-color props theme)})

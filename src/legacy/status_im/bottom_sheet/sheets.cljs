@@ -3,7 +3,7 @@
     [legacy.status-im.bottom-sheet.view :as bottom-sheet]
     [legacy.status-im.ui.screens.about-app.views :as about-app]
     [legacy.status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [utils.re-frame :as rf]))
 
@@ -32,7 +32,7 @@
                        (rn/hw-back-add-listener dismiss-bottom-sheet-callback)
                        (fn []
                          (rn/hw-back-remove-listener dismiss-bottom-sheet-callback))))
-       [theme/provider {:theme (or page-theme (theme/get-theme))}
+       [quo.theme/provider (or page-theme (quo.theme/get-theme))
         [bottom-sheet/bottom-sheet opts
          (when content
            [content (when options options)])]])]))

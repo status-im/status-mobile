@@ -35,7 +35,7 @@
            record-button-at-initial-position? locked? set-locked reviewing-audio? recording-length-ms
            set-recording-length-ms
            clear-timeout touch-active? recorder-ref reload-recorder-fn idle? on-send on-cancel]}]
-  (let [theme (quo.theme/use-theme-value)
+  (let [theme (quo.theme/use-theme)
         scale (reanimated/use-shared-value 1)
         opacity (reanimated/use-shared-value 0)
         opacity-from (if ready-to-lock? opacity-from-lock opacity-from-default)

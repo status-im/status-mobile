@@ -69,7 +69,7 @@
 
 (defn- view-internal
   [{:keys [on-press blur? container-style] :as props}]
-  (let [theme        (quo.theme/use-theme-value)
+  (let [theme        (quo.theme/use-theme)
         context-type (:type props)]
     [shadow/view
      {:offset       [0 4]

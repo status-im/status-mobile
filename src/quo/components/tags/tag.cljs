@@ -73,7 +73,7 @@
              text-color)
       label])])
 
-(defn tag-internal
+(defn tag
   "opts
    {:type         :icon/:emoji/:label
     :label        string
@@ -89,9 +89,10 @@
     - `type`     can be icon or emoji with or without a tag label
     - `labelled` boolean: is true if tag has label else false"
   [{:keys [id on-press disabled? size active accessibility-label label resource type
-           labelled? blurred? icon-color theme]
+           labelled? blurred? icon-color]
     :or   {size 32}}]
-  (let [state                (cond
+  (let [theme                (quo.theme/use-theme)
+        state                (cond
                                disabled? :disabled
                                active    :active
                                :else     :default)
@@ -112,5 +113,3 @@
        :type                type
        :labelled?           (if (= type :label) true labelled?)}
       [tag-resources size type resource icon-color label text-color labelled?]]]))
-
-(def tag (quo.theme/with-theme tag-internal))

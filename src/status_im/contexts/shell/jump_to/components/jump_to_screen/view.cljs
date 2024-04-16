@@ -2,7 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
@@ -90,7 +90,7 @@
   []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         top            (safe-area/get-top)]
-    [theme/provider {:theme :dark}
+    [quo.theme/provider :dark
      [rn/view
       {:style {:top              0
                :left             0

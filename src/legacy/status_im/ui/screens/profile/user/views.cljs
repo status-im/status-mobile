@@ -14,7 +14,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.views :as visibility-status]
     [legacy.status-im.utils.utils :as utils]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.common.qr-codes.view :as qr-codes]
@@ -221,7 +221,7 @@
                                                               {:content (edit/bottom-sheet
                                                                          has-picture)}])
                               :color     (user-avatar.style/customization-color customization-color
-                                                                                (theme/get-theme))
+                                                                                (quo.theme/get-theme))
                               :title     (profile.utils/displayed-name profile)
                               :photo     (profile.utils/photo profile)
                               :monospace (not ens-verified)

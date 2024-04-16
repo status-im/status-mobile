@@ -15,7 +15,7 @@
 
 (defn- account
   [{:keys [emoji name address customization-color]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view
      {:accessibility-label :account-container
       :style               style/account-container}
@@ -40,7 +40,7 @@
     :or   {customization-color :blue
            accounts            []
            active-state?       true}}]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)

@@ -14,7 +14,6 @@
       [:status-indicator? {:optional true} [:maybe boolean?]]
       [:online? {:optional true} [:maybe boolean?]]
       [:ring? {:optional true} [:maybe boolean?]]
-      [:theme :schema.common/theme]
       [:profile-picture
        {:optional true}
        [:maybe :schema.quo/profile-picture-source]]]]]

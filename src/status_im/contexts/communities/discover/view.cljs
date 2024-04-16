@@ -225,10 +225,12 @@
         featured-communities
         @view-type]])))
 
-(defn f-view-internal
-  [{:keys [theme]}]
-  (let [featured-communities (rf/sub [:communities/featured-contract-communities])
+(defn view
+  []
+  (let [theme                (quo.theme/use-theme)
+        featured-communities (rf/sub [:communities/featured-contract-communities])
         customization-color  (rf/sub [:profile/customization-color])]
+    (rn/use-mount #(rf/dispatch [:fetch-contract-communities]))
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors
                                                colors/white
@@ -240,11 +242,3 @@
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
       style/floating-shell-button]]))
-
-
-(defn- internal-discover-view
-  [params]
-  (rf/dispatch [:fetch-contract-communities])
-  [:f> f-view-internal params])
-
-(def view (quo.theme/with-theme internal-discover-view))

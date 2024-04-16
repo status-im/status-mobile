@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.contact.db :as contact.db]
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
@@ -34,7 +34,7 @@
 
 (defn- replace-contact-image-uri
   [contact port public-key font-file]
-  (let [theme (theme/get-theme)
+  (let [theme (quo.theme/get-theme)
         {:keys [images ens-name customization-color]} contact
         images
         (reduce (fn [acc image]

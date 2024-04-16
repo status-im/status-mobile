@@ -107,11 +107,12 @@
          {:section         (i18n/label :t/select-another-account)
           :container-style style/drawer-section-label}]])]))
 
-(defn- view-internal
+(defn view
   []
   (let [options-height (reagent/atom 0)]
-    (fn [{:keys [theme]}]
-      (let [accounts               (rf/sub [:wallet/accounts-without-current-viewing-account])
+    (fn []
+      (let [theme                  (quo.theme/use-theme)
+            accounts               (rf/sub [:wallet/accounts-without-current-viewing-account])
             show-account-selector? (pos? (count accounts))]
         [:<>
          (when show-account-selector?
@@ -124,5 +125,3 @@
           {:show-account-selector? show-account-selector?
            :theme                  theme
            :options-height         options-height}]]))))
-
-(def view (quo.theme/with-theme view-internal))

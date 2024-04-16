@@ -67,7 +67,7 @@
            label char-limit multiline? clearable? on-focus on-blur container-style input-container-style
            on-change-text on-char-limit-reach weight default-value on-clear placeholder]
     :as   props}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         ref                    (rn/use-ref-atom nil)
         on-ref                 (rn/use-callback (fn [value]
                                                   (when (:ref props)

@@ -50,12 +50,13 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(defn f-view-internal
-  [{:keys [theme] :as _props}]
+(defn view
+  [_]
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn []
-      (let [collectible                 (rf/sub [:wallet/last-collectible-details])
+      (let [theme                       (quo.theme/use-theme)
+            collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
             {:keys [id
                     preview-url
@@ -130,9 +131,3 @@
             :on-change      on-tab-change
             :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
-
-(defn- view-internal
-  [props]
-  [:f> f-view-internal props])
-
-(def view (quo.theme/with-theme view-internal))

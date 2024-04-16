@@ -8,12 +8,11 @@
 
 (defn- view-internal
   [{:keys [full-width?] :as props}]
-  [rn/view
-   {:accessibility-label :progress-bar
-    :style               (style/root-container props)}
-   (when full-width?
-     [rn/view {:style (style/progressed-bar props)}])])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:accessibility-label :progress-bar
+      :style               (style/root-container props theme)}
+     (when full-width?
+       [rn/view {:style (style/progressed-bar props theme)}])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal progress-bar-schema/?schema)))
+(def view (schema/instrument #'view-internal progress-bar-schema/?schema))

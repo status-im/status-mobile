@@ -4,12 +4,10 @@
             [status-im.contexts.wallet.collectible.tabs.activity.view :as activity]
             [status-im.contexts.wallet.collectible.tabs.overview.view :as overview]))
 
-(defn- view-internal
+(defn view
   [{:keys [selected-tab]}]
   (case selected-tab
     :overview [overview/view]
     :about    [about/view]
     :activity [activity/view]
     nil))
-
-(def view (quo.theme/with-theme view-internal))

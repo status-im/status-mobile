@@ -14,7 +14,7 @@
 
 (defn get-theme
   []
-  @theme-state)
+  (or @theme-state :dark))
 
 (defn set-theme
   [value]
@@ -42,20 +42,4 @@
 (defn use-theme
   "A hook that returns the current theme context."
   []
-  (utils.transforms/js->clj (rn/use-context theme-context)))
-
-(defn use-theme-value
-  []
-  (keyword (:theme (use-theme))))
-
-(defn ^:private f-with-theme
-  [component props & args]
-  (let [theme (-> (use-theme) :theme keyword)]
-    (into [component (assoc props :theme theme)] args)))
-
-(defn with-theme
-  "Create a functional component that assoc `:theme` into the first arg of
-  `component`. The theme value is taken from the nearest `quo.theme/provider`."
-  [component]
-  (fn [& args]
-    (into [:f> f-with-theme component] args)))
+  (keyword (rn/use-context theme-context)))

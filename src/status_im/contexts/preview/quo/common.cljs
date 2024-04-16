@@ -5,9 +5,10 @@
     [utils.re-frame :as rf]))
 
 
-(defn- view-internal
-  [{:keys [theme title]}]
-  (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
+(defn navigation-bar
+  [{:keys [title]}]
+  (let [theme         (quo.theme/use-theme)
+        logged-in?    (rf/sub [:multiaccount/logged-in?])
         has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
         root          (if has-profiles? :screen/profile.profiles :screen/onboarding.intro)
         light?        (= theme :light)]
@@ -23,5 +24,3 @@
                      (do
                        (quo.theme/set-theme :dark)
                        (rf/dispatch [:init-root root])))}]))
-
-(def navigation-bar (quo.theme/with-theme view-internal))

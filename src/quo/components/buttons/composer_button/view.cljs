@@ -2,13 +2,13 @@
   (:require
     [quo.components.buttons.composer-button.style :as style]
     [quo.components.icon :as quo.icons]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [on-press on-long-press disabled? blur? icon accessibility-label container-style]}]
   (let [[pressed? set-pressed] (rn/use-state false)
-        theme                  (theme/use-theme-value)
+        theme                  (quo.theme/use-theme)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed nil))]
     [rn/pressable

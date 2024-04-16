@@ -58,7 +58,7 @@
   [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan
            on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
            valid-ens-or-address? container-style]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [status set-status]    (rn/use-state :default)
         [value set-value]      (rn/use-state nil)
         [focused? set-focused] (rn/use-state false)

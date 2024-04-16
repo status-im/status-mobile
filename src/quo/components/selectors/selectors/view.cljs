@@ -7,9 +7,10 @@
 
 (defn- base-selector
   [{:keys [default-checked? checked? disabled? blur? customization-color on-change container-style
-           label-prefix outer-style-fn inner-style-fn icon-style-fn theme]
+           label-prefix outer-style-fn inner-style-fn icon-style-fn]
     :or   {customization-color :blue}}]
-  (let [controlled-component?   (some? checked?)
+  (let [theme                   (quo.theme/use-theme)
+        controlled-component?   (some? checked?)
         [internal-checked?
          set-internal-checked?] (rn/use-state (when-not controlled-component?
                                                 (or default-checked? false)))
@@ -79,7 +80,7 @@
           :inner-style-fn style/common-checkbox-inner
           :icon-style-fn  style/filled-checkbox-check)])
 
-(defn view-internal
+(defn view
   [{:keys [type]
     :or   {type :toggle}
     :as   props}]
@@ -89,5 +90,3 @@
     :checkbox        [checkbox props]
     :filled-checkbox [filled-checkbox props]
     nil))
-
-(def view (quo.theme/with-theme view-internal))

@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.content.audio.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]))
+    [quo.theme]))
 
 (defn container
   []
@@ -28,7 +28,7 @@
 
 (defn play-pause-container
   []
-  {:background-color (get-in colors/customization [:blue (if (theme/dark?) 60 50)])
+  {:background-color (get-in colors/customization [:blue (if (quo.theme/dark?) 60 50)])
    :width            32
    :height           32
    :border-radius    16

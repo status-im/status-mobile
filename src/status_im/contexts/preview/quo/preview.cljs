@@ -325,7 +325,7 @@
            blur-container-style blur-view-props blur-height show-blur-background? full-screen?]
     :or   {blur-height 200}}
    & children]
-  (let [theme (quo.theme/use-theme-value)
+  (let [theme (quo.theme/use-theme)
         title (or title @(rf/subscribe [:view-id]))]
     (rn/use-effect (fn []
                      (when blur-dark-only?

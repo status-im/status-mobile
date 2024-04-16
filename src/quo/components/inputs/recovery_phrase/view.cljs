@@ -47,7 +47,7 @@
            error-pred-written-words (constantly false)}
     :as   props}
    text]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         on-focus          (rn/use-callback
                            (fn []

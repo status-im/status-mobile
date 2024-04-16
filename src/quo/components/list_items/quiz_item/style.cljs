@@ -2,7 +2,7 @@
   (:require [quo.foundations.colors :as colors]))
 
 (defn container
-  [{:keys [blur? theme state]}]
+  [{:keys [blur? state]} theme]
   {:flex             1
    :flex-direction   :row
    :justify-content  :space-between
@@ -27,7 +27,7 @@
                        :error    (colors/resolve-color :danger theme 10))})
 
 (defn num-container
-  [{:keys [blur? theme]}]
+  [{:keys [blur?]} theme]
   {:width           32
    :height          32
    :justify-content :center
@@ -39,7 +39,7 @@
                       (colors/theme-colors colors/neutral-20 colors/neutral-70 theme))})
 
 (defn text
-  [{:keys [theme state]}]
+  [{:keys [state]} theme]
   {:color (case state
             :success (colors/theme-colors colors/success-50 colors/success-60 theme)
             :error   (colors/theme-colors colors/danger-50 colors/danger-60 theme))})

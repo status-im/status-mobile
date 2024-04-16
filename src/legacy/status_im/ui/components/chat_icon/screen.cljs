@@ -8,7 +8,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
     [quo.core :as quo]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
     [status-im.contexts.profile.utils :as profile.utils]
@@ -72,7 +72,7 @@
                 :full-name        full-name
                 :font-size        (get text-style :font-size)
                 :background-color (user-avatar.style/customization-color customization-color
-                                                                         (theme/get-theme))
+                                                                         (quo.theme/get-theme))
                 :indicator-size   0
                 :indicator-border 0
                 :indicator-color  "#000000"

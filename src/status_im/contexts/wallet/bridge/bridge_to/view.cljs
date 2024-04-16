@@ -33,7 +33,7 @@
                                       {:network-chain-id chain-id
                                        :stack-id         :screen/wallet.bridge-to}])}])))
 
-(defn- view-internal
+(defn view
   []
   (let [send-bridge-data (rf/sub [:wallet/wallet-send])
         network-details  (rf/sub [:wallet/network-details])
@@ -61,5 +61,3 @@
        :render-fn               (fn [network]
                                   [bridge-token-component network account-token])
        :content-container-style style/content-container}]]))
-
-(def view (quo.theme/with-theme view-internal))

@@ -38,8 +38,9 @@
 (defn link-linear
   []
   (let [container-width (reagent/atom 100)]
-    (fn [{:keys [source theme]}]
-      (let [stroke-color (colors/resolve-color source theme)
+    (fn [{:keys [source]}]
+      (let [theme        (quo.theme/use-theme)
+            stroke-color (colors/resolve-color source theme)
             fill-color   (colors/theme-colors colors/white colors/neutral-90 theme)]
         [rn/view
          {:style     style/link-linear-container
@@ -56,8 +57,9 @@
   []
   (let [container-width (reagent/atom 100)
         stroke-color    "url(#gradient)"]
-    (fn [{:keys [source destination theme]}]
-      (let [source-color      (colors/resolve-color source theme)
+    (fn [{:keys [source destination]}]
+      (let [theme             (quo.theme/use-theme)
+            source-color      (colors/resolve-color source theme)
             destination-color (colors/resolve-color destination theme)
             fill-color        (colors/theme-colors colors/white colors/neutral-90 theme)
             view-box          (str "0 0 " @container-width " 58")
@@ -104,8 +106,9 @@
   []
   (let [container-width (reagent/atom 100)
         stroke-color    "url(#gradient)"]
-    (fn [{:keys [source destination theme]}]
-      (let [source-color      (colors/resolve-color source theme)
+    (fn [{:keys [source destination]}]
+      (let [theme             (quo.theme/use-theme)
+            source-color      (colors/resolve-color source theme)
             destination-color (colors/resolve-color destination theme)
             fill-color        (colors/theme-colors colors/white colors/neutral-90 theme)
             view-box          (str "0 0 " @container-width " 114")
@@ -155,6 +158,4 @@
      :1x     [link-1x props]
      :2x     [link-2x props])])
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

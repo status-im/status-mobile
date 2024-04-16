@@ -20,9 +20,10 @@
    types/membership           (i18n/label :t/empty-notifications-membership-tab)
    types/system               (i18n/label :t/empty-notifications-system-tab)})
 
-(defn empty-tab-internal
-  [{:keys [theme]}]
-  (let [filter-type (rf/sub [:activity-center/filter-type])
+(defn empty-tab
+  []
+  (let [theme       (quo.theme/use-theme)
+        filter-type (rf/sub [:activity-center/filter-type])
         description (get empty-tab-description filter-type nil)]
     [rn/view {:style style/empty-container}
      [quo/empty-state
@@ -30,5 +31,3 @@
        :image       (resources/get-themed-image :no-notifications theme)
        :title       (i18n/label :t/empty-notifications-title-unread)
        :description description}]]))
-
-(def empty-tab (quo.theme/with-theme empty-tab-internal))

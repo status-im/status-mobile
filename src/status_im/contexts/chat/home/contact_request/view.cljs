@@ -34,9 +34,10 @@
          " " (- (count requests) 2)
          " " (i18n/label :t/more))))
 
-(defn- view-internal
-  [{:keys [theme requests]}]
-  (let [customization-color (rf/sub [:profile/customization-color])]
+(defn view
+  [{:keys [requests]}]
+  (let [theme               (quo.theme/use-theme)
+        customization-color (rf/sub [:profile/customization-color])]
     [rn/touchable-opacity
      {:active-opacity      1
       :accessibility-label :open-activity-center-contact-requests
@@ -62,5 +63,3 @@
        :customization-color customization-color
        :accessibility-label :pending-contact-requests-count}
       (count requests)]]))
-
-(def view (quo.theme/with-theme view-internal))

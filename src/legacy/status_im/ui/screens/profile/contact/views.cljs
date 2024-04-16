@@ -11,7 +11,7 @@
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.screens.profile.components.sheets :as sheets]
     [quo.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
@@ -206,7 +206,7 @@
            :bottom-separator false
            :title            (profile.utils/displayed-name profile)
            :color            (user-avatar.style/customization-color customization-color
-                                                                    (theme/get-theme))
+                                                                    (quo.theme/get-theme))
            :photo            (profile.utils/photo profile)
            :monospace        (not ens-verified)
            :subtitle         secondary-name

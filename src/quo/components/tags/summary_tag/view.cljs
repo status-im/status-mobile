@@ -45,7 +45,7 @@
       :style style/token-image}]
     nil))
 
-(defn- view-internal
+(defn view
   "Options:
     - :label - string - tag label
     - :customization-color - color - It will be passed down to components that
@@ -54,17 +54,16 @@
     - :emoji - string - emoji used for displaying account avatar
     - :image-source - resource - image to display on :network, :collectible and :user
     - :theme - :light / :dark"
-  [{:keys [label customization-color type theme]
+  [{:keys [label customization-color type]
     :as   props
     :or   {customization-color colors/neutral-80-opa-5}}]
-  [rn/view
-   {:accessibility-label :container
-    :style               (style/main (assoc props :customization-color customization-color))}
-   [left-view props]
-   [text/text
-    {:style  (style/label type theme)
-     :weight :semi-bold
-     :size   :heading-1}
-    label]])
-
-(def view (quo.theme/with-theme view-internal))
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:accessibility-label :container
+      :style               (style/main (assoc props :customization-color customization-color) theme)}
+     [left-view props]
+     [text/text
+      {:style  (style/label type theme)
+       :weight :semi-bold
+       :size   :heading-1}
+      label]]))

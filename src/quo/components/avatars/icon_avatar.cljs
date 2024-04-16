@@ -15,11 +15,12 @@
    :size-20 {:component 20
              :icon      12}})
 
-(defn icon-avatar-internal
-  [{:keys [size icon color opacity border? theme]
+(defn icon-avatar
+  [{:keys [size icon color opacity border?]
     :or   {opacity 20
            size    :size-32}}]
-  (let [{component-size :component icon-size :icon} (get sizes size)
+  (let [theme                                       (quo.theme/use-theme)
+        {component-size :component icon-size :icon} (get sizes size)
         circle-color                                (colors/resolve-color color theme opacity)
         icon-color                                  (colors/resolve-color color theme)]
     (if (keyword? icon)
@@ -38,5 +39,3 @@
       [rn/image
        {:source icon
         :style  {:width component-size :height component-size}}])))
-
-(def icon-avatar (quo.theme/with-theme icon-avatar-internal))

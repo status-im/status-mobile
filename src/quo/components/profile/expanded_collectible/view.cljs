@@ -33,7 +33,7 @@
 
 (defn view-internal
   [{:keys [container-style square? status on-press counter image-src] :or {status :default}}]
-  (let [theme                       (quo.theme/use-theme-value)
+  (let [theme                       (quo.theme/use-theme)
         [image-size set-image-size] (rn/use-state {})]
     (rn/use-effect
      (fn []

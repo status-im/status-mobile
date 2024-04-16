@@ -12,7 +12,7 @@
 
 (defn- view-internal
   [{:keys [options blur? collectible-img-src collectible-name collectible-id] :as props}]
-  (let [theme                 (quo.theme/use-theme-value)
+  (let [theme                 (quo.theme/use-theme)
         [container-width
          set-container-width] (rn/use-state 0)
         on-layout             (rn/use-callback

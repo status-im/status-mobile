@@ -7,9 +7,10 @@
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.i18n :as i18n]))
 
-(defn- view-internal
-  [{:keys [theme collectibles filtered? on-collectible-press on-collectible-long-press on-end-reached]}]
-  (let [no-results-match-query? (and filtered? (empty? collectibles))]
+(defn view
+  [{:keys [collectibles filtered? on-collectible-press on-collectible-long-press on-end-reached]}]
+  (let [theme                   (quo.theme/use-theme)
+        no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
@@ -40,5 +41,3 @@
                                                         (on-collectible-long-press collectible))}])
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
-
-(def view (quo.theme/with-theme view-internal))

@@ -148,12 +148,13 @@
 
 (declare on-long-press)
 
-(defn- user-message-content-internal
+(defn user-message-content
   []
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
-                 show-user-info? preview? theme]}]
-      (let [{:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
+                 show-user-info? preview?]}]
+      (let [theme                                       (quo.theme/use-theme)
+            {:keys [content-type quoted-message content outgoing outgoing-status pinned-by pinned
                     last-in-group? message-id chat-id]} message-data
             {:keys [disable-message-long-press?]}       context
             first-image                                 (first (:album message-data))
@@ -262,14 +263,12 @@
           (when show-reactions?
             [reactions/message-reactions-row (assoc message-data :preview? preview?)
              [rn/view {:pointer-events :none}
-              [user-message-content-internal
+              [user-message-content
                {:theme           theme
                 :message-data    message-data
                 :context         context
                 :keyboard-shown? keyboard-shown?
                 :show-reactions? false}]]])]]))))
-
-(def user-message-content (quo.theme/with-theme user-message-content-internal))
 
 (defn on-long-press
   [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]

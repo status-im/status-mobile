@@ -4,7 +4,7 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 ;;; helpers
@@ -18,7 +18,7 @@
 
 (defn get-color
   [k]
-  (get-in themes [(theme/get-theme) k]))
+  (get-in themes [(quo.theme/get-theme) k]))
 
 (def ui-images
   {:light {:horizontal (js/require "../resources/images/ui/message-gap-hborder-light.png")
@@ -29,7 +29,7 @@
 
 (defn get-image
   [k]
-  (get-in ui-images [(theme/get-theme) k]))
+  (get-in ui-images [(quo.theme/get-theme) k]))
 
 ;;; components
 ;;;; borders

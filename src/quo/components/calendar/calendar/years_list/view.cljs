@@ -3,7 +3,7 @@
     [quo.components.calendar.calendar-year.view :as calendar-year]
     [quo.components.calendar.calendar.utils :as utils]
     [quo.components.calendar.calendar.years-list.style :as style]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]))
 
@@ -30,21 +30,20 @@
     :start  {:x 0 :y 0}
     :end    {:x 0 :y 1}}])
 
-(defn view-internal
-  [{:keys [on-change-year year theme]}]
-  [rn/view
-   {:style (style/container-years theme)}
-   [rn/flat-list
-    {:data                            (utils/generate-years (utils/current-year))
-     :key-fn                          str
-     :list-key                        :years-list
-     :inverted                        true
-     :shows-vertical-scroll-indicator false
-     :footer                          [footer]
-     :separator                       [separator]
-     :render-fn                       year-view
-     :render-data                     {:selected-year year
-                                       :on-press      #(on-change-year %)}}]
-   [gradiant-overview theme]])
-
-(def view (theme/with-theme view-internal))
+(defn view
+  [{:keys [on-change-year year]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style (style/container-years theme)}
+     [rn/flat-list
+      {:data                            (utils/generate-years (utils/current-year))
+       :key-fn                          str
+       :list-key                        :years-list
+       :inverted                        true
+       :shows-vertical-scroll-indicator false
+       :footer                          [footer]
+       :separator                       [separator]
+       :render-fn                       year-view
+       :render-data                     {:selected-year year
+                                         :on-press      #(on-change-year %)}}]
+     [gradiant-overview theme]]))

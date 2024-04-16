@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.pin.banner.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -14,7 +14,7 @@
    [blur/view
     {:style       style/container
      :blur-radius (if platform/ios? 20 10)
-     :blur-type   (if (theme/dark?) :dark :light)
+     :blur-type   (if (quo.theme/dark?) :dark :light)
      :blur-amount 20}]
    [quo/banner
     {:latest-pin-text latest-pin-text

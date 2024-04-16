@@ -4,7 +4,7 @@
     [quo.components.buttons.predictive-keyboard.style :as style]
     [quo.components.info.info-message :as info-message]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]))
 
@@ -26,7 +26,7 @@
   []
   [rn/view {:style {:width 8}}])
 
-(defn- view-internal
+(defn view
   "Options
    - `type` `:words`/`:error`/`:info`/`:empty`.
    - `blur?` Boolean to enable blur background support.
@@ -34,43 +34,42 @@
    - `words` List of words to display in the keyboard.
    - `on-press` Callback called when a word is pressed `(fn [word])`
    - `theme` :light or :dark, received from with-theme HOC."
-  [{:keys [type blur? text words on-press theme]}]
-  [linear-gradient/linear-gradient
-   {:style               {:flex-direction :row}
-    :accessibility-label :predictive-keyboard
-    :colors              (if blur?
-                           (gradients :blur)
-                           (colors/theme-colors (gradients :light) (gradients :dark) theme))}
-   [rn/view {:style (style/wrapper type)}
-    (case type
-      :words
-      [rn/flat-list
-       {:keyboard-should-persist-taps      :always
-        :data                              words
-        :content-container-style           style/word-list
-        :render-fn                         word-component
-        :render-data                       {:on-press on-press}
-        :shows-horizontal-scroll-indicator false
-        :separator                         [separator]
-        :horizontal                        true
-        :key-fn                            str}]
+  [{:keys [type blur? text words on-press]}]
+  (let [theme (quo.theme/use-theme)]
+    [linear-gradient/linear-gradient
+     {:style               {:flex-direction :row}
+      :accessibility-label :predictive-keyboard
+      :colors              (if blur?
+                             (gradients :blur)
+                             (colors/theme-colors (gradients :light) (gradients :dark) theme))}
+     [rn/view {:style (style/wrapper type)}
+      (case type
+        :words
+        [rn/flat-list
+         {:keyboard-should-persist-taps      :always
+          :data                              words
+          :content-container-style           style/word-list
+          :render-fn                         word-component
+          :render-data                       {:on-press on-press}
+          :shows-horizontal-scroll-indicator false
+          :separator                         [separator]
+          :horizontal                        true
+          :key-fn                            str}]
 
-      :error
-      [info-message/info-message
-       {:icon :i/info
-        :size :default
-        :type :error}
-       text]
+        :error
+        [info-message/info-message
+         {:icon :i/info
+          :size :default
+          :type :error}
+         text]
 
-      :info
-      [info-message/info-message
-       (merge {:icon :i/info
-               :size :default
-               :type (if (= type :error) :error :default)}
-              (when blur?
-                {:text-color colors/white-opa-70
-                 :icon-color colors/white-opa-70}))
-       text]
-      nil)]])
-
-(def view (theme/with-theme view-internal))
+        :info
+        [info-message/info-message
+         (merge {:icon :i/info
+                 :size :default
+                 :type (if (= type :error) :error :default)}
+                (when blur?
+                  {:text-color colors/white-opa-70
+                   :icon-color colors/white-opa-70}))
+         text]
+        nil)]]))

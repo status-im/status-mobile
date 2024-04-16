@@ -96,8 +96,9 @@
     :secondary-color secondary-color}])
 
 (defn view-internal
-  [{:keys [type theme derivation-path on-press] :as props}]
-  (let [secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
+  [{:keys [type derivation-path on-press] :as props}]
+  (let [theme           (quo.theme/use-theme)
+        secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
     [rn/view {:style (style/container theme)}
      [text/text
       {:weight :regular
@@ -108,6 +109,4 @@
      (when (not= :private-key type)
        [card-view theme derivation-path secondary-color on-press])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

@@ -10,7 +10,7 @@
 
 (defn lock-button
   [recording? ready-to-lock? locked?]
-  (let [theme                     (quo.theme/use-theme-value)
+  (let [theme                     (quo.theme/use-theme)
         translate-x-y             (reanimated/use-shared-value 20)
         opacity                   (reanimated/use-shared-value 0)
         connector-opacity         (reanimated/use-shared-value 0)

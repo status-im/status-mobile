@@ -27,24 +27,23 @@
                                                     :stack-id  :screen/wallet.select-address}])}]))
             other-accounts))))
 
-(defn view-internal
-  [{:keys [selected-tab theme]}]
-  (case selected-tab
-    :tab/recent      [quo/empty-state
-                      {:title           (i18n/label :t/no-recent-transactions)
-                       :description     (i18n/label :t/make-one-it-is-easy-we-promise)
-                       :image           (resources/get-themed-image :angry-man theme)
-                       :container-style style/empty-container-style}]
-    :tab/saved       [quo/empty-state
-                      {:title           (i18n/label :t/no-saved-addresses)
-                       :description     (i18n/label :t/you-like-to-type-43-characters)
-                       :image           (resources/get-themed-image :sweating-man theme)
-                       :container-style style/empty-container-style}]
-    :tab/contacts    [quo/empty-state
-                      {:title           (i18n/label :t/no-contacts)
-                       :description     (i18n/label :t/no-contacts-description)
-                       :image           (resources/get-themed-image :no-contacts theme)
-                       :container-style style/empty-container-style}]
-    :tab/my-accounts [my-accounts theme]))
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [selected-tab]}]
+  (let [theme (quo.theme/use-theme)]
+    (case selected-tab
+      :tab/recent      [quo/empty-state
+                        {:title           (i18n/label :t/no-recent-transactions)
+                         :description     (i18n/label :t/make-one-it-is-easy-we-promise)
+                         :image           (resources/get-themed-image :angry-man theme)
+                         :container-style style/empty-container-style}]
+      :tab/saved       [quo/empty-state
+                        {:title           (i18n/label :t/no-saved-addresses)
+                         :description     (i18n/label :t/you-like-to-type-43-characters)
+                         :image           (resources/get-themed-image :sweating-man theme)
+                         :container-style style/empty-container-style}]
+      :tab/contacts    [quo/empty-state
+                        {:title           (i18n/label :t/no-contacts)
+                         :description     (i18n/label :t/no-contacts-description)
+                         :image           (resources/get-themed-image :no-contacts theme)
+                         :container-style style/empty-container-style}]
+      :tab/my-accounts [my-accounts theme])))

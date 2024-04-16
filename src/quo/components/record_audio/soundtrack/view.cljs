@@ -17,7 +17,7 @@
   [{:keys [audio-current-time-ms set-audio-current-time-ms player-ref style
            seeking-audio? set-seeking-audio max-audio-duration-ms]}]
   (let [audio-duration-ms   (min max-audio-duration-ms (audio/get-player-duration player-ref))
-        theme               (quo.theme/use-theme-value)
+        theme               (quo.theme/use-theme)
         on-sliding-start    (rn/use-callback #(set-seeking-audio true))
         on-sliding-complete (rn/use-callback
                              (fn [seek-time]

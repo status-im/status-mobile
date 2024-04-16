@@ -1,7 +1,7 @@
 (ns quo.foundations.colors
   (:require
     [clojure.string :as string]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.platform :as platform]))
 
 (def account-colors
@@ -40,7 +40,7 @@
      ([color light-opacity dark-opacity]
       (theme-alpha color light-opacity color dark-opacity))
      ([light-color light-opacity dark-color dark-opacity]
-      (if (theme/dark?)
+      (if (quo.theme/dark?)
         (alpha light-color light-opacity)
         (alpha dark-color dark-opacity))))))
 
@@ -375,5 +375,5 @@
   ([light dark]
    (theme-colors light dark nil))
   ([light dark override-theme]
-   (let [theme (or override-theme (theme/get-theme))]
+   (let [theme (or override-theme (quo.theme/get-theme))]
      (if (= theme :light) light dark))))

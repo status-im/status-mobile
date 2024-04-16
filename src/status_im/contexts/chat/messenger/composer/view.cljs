@@ -146,7 +146,7 @@
 
 (defn f-composer
   [props]
-  (let [theme                   (quo.theme/use-theme-value)
+  (let [theme                   (quo.theme/use-theme)
         opacity                 (reanimated/use-shared-value 0)
         window-height           (:height (rn/get-window))
         background-y            (reanimated/use-shared-value (- window-height))

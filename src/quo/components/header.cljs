@@ -139,7 +139,7 @@
            background]
     :or   {title-align   :center
            border-bottom false}}]
-  (let [theme               (quo.theme/use-theme-value)
+  (let [theme               (quo.theme/use-theme)
         [layout set-layout] (rn/use-state {:left  {:width  (or left-width 8)
                                                    :height header-height}
                                            :right {:width  (or right-width 8)

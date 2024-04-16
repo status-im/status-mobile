@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -98,7 +98,7 @@
 
 (defn- info-button
   []
-  (let [theme (theme/use-theme)]
+  (let [theme (quo.theme/use-theme)]
     [rn/pressable
      {:on-press
       #(rf/dispatch

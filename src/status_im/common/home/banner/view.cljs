@@ -32,7 +32,7 @@
 (defn- banner-card-blur-layer
   [scroll-shared-value child]
   (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)
-        theme       (quo.theme/use-theme-value)]
+        theme       (quo.theme/use-theme)]
     [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value theme)}
      [blur/view
       {:style         style/fill-space
@@ -72,7 +72,7 @@
 
 (defn animated-banner
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [:<>
      [:f> banner-card-blur-layer scroll-shared-value
       [:f> banner-card-hiding-layer

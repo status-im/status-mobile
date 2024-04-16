@@ -86,7 +86,7 @@
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter
            gradient-color-index image-src status]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view {:style (style/card-view-container theme)}
      [rn/view {:style {:aspect-ratio 1}}
       (cond
@@ -125,7 +125,7 @@
 (defn- image-view
   [{:keys [avatar-image-src community? counter
            gradient-color-index image-src status]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/image-view-container}
      (cond
        (= :loading status)

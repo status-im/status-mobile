@@ -13,7 +13,7 @@
 
 (defn view
   [{:keys [disabled? blur? on-press on-long-press type]} label]
-  (let [theme                   (quo.theme/use-theme-value)
+  (let [theme                   (quo.theme/use-theme)
         [pressed? set-pressed?] (rn/use-state false)
         on-press                (rn/use-callback #(when on-press (on-press label)) [on-press label])
         on-long-press           (rn/use-callback #(when (fn? on-long-press) (on-long-press label))

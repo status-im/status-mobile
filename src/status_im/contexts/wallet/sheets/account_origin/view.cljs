@@ -27,7 +27,7 @@
    [header title]
    [description desc]])
 
-(defn- view-internal
+(defn view
   []
   [rn/view
    [quo/drawer-top {:title (i18n/label :t/account-origin-header)}]
@@ -43,5 +43,3 @@
      :container-style style/action-container
      :on-press        #(rn/open-url const/create-account-link)}
     (i18n/label :t/read-more)]])
-
-(def view (quo.theme/with-theme view-internal))

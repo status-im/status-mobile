@@ -38,9 +38,10 @@
   [_ index]
   #js {:length 100 :offset (* 100 index) :index index})
 
-(defn- settings-view
-  [theme]
-  (let [insets              (safe-area/get-insets)
+(defn view
+  []
+  (let [theme               (quo.theme/use-theme)
+        insets              (safe-area/get-insets)
         customization-color (rf/sub [:profile/customization-color])
         scroll-y            (reanimated/use-shared-value 0)
         logout-press        #(rf/dispatch [:multiaccounts.logout.ui/logout-pressed])
@@ -82,9 +83,3 @@
         :customization-color customization-color
         :label               (i18n/label :t/jump-to)}}
       (style/floating-shell-button-style insets)]]))
-
-(defn- internal-view
-  [props]
-  [:f> settings-view props])
-
-(def view (quo.theme/with-theme internal-view))
