@@ -10,23 +10,24 @@
 
 (defn view
   [{:keys [contact-id]}]
-  (let [customization-color             (rf/sub [:profile/customization-color])
-        [primary-name _]                (rf/sub [:contacts/contact-two-names-by-identity
-                                                 contact-id])
-        {:keys [contact-request-state]} (rf/sub [:chats/current-chat-chat-view])
-        chat-type                       (rf/sub [:chats/chat-type])
-        contact-request-send?           (or (not contact-request-state)
-                                            (= contact-request-state
-                                               constants/contact-request-state-none))
-        contact-request-received?       (= contact-request-state
-                                           constants/contact-request-state-received)
-        contact-request-pending?        (= contact-request-state
-                                           constants/contact-request-state-sent)]
+  (let [customization-color                          (rf/sub [:profile/customization-color])
+        [primary-name _]                             (rf/sub [:contacts/contact-two-names-by-identity
+                                                              contact-id])
+        {:keys [contact-request-state community-id]} (rf/sub [:chats/current-chat-chat-view])
+        chat-type                                    (rf/sub [:chats/chat-type])
+        contact-request-send?                        (or (not contact-request-state)
+                                                         (= contact-request-state
+                                                            constants/contact-request-state-none))
+        contact-request-received?                    (= contact-request-state
+                                                        constants/contact-request-state-received)
+        contact-request-pending?                     (= contact-request-state
+                                                        constants/contact-request-state-sent)]
     [rn/view {:style style/container}
      [quo/permission-context
       {:blur?        true
        :on-press     (condp = chat-type
-                       :community-chat #(rf/dispatch [:navigate-to :community-account-selection])
+                       :community-chat #(rf/dispatch [:open-modal :community-account-selection-sheet
+                                                      {:community-id community-id}])
                        #(rf/dispatch [:chat.ui/show-profile contact-id]))
        :type         :action
        :action-icon  (cond
