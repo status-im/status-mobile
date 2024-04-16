@@ -2582,5 +2582,8 @@
     "one-user-was-invited": "1 user was invited",
     "n-users-were-invited": "{{count}} users were invited",
     "invite-friend-to-status": "Invite friends to Status",
-    "send-community-link": "Send community link"
+    "send-community-link": "Send community link",
+    "dont-auto-recalculate-network": "Don't auto recalculate {{network}}",
+    "send-from-network": "Send from {{network}}",
+    "define-amount-sent-from-network": "Define amount sent from {{network}}"
 }

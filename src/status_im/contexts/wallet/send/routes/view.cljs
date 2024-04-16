@@ -116,6 +116,74 @@
                                                    (rf/dispatch [:hide-bottom-sheet])
                                                    (fetch-routes))
                             :customization-color color}}]])))
+(defn edit-network-amount
+  [{:keys [ theme amount network] :as props}]
+  (tap> props)
+  (let [network-details     (rf/sub [:wallet/network-details])
+        {:keys [color]}     (rf/sub [:wallet/current-viewing-account])
+        selected-networks   (rf/sub [:wallet/wallet-send-selected-networks])
+        prefix              (rf/sub [:wallet/wallet-send-address-prefix])
+        prefix-seq          (string/split prefix #":")
+        grouped-details     (group-by #(contains? (set prefix-seq) (:short-name %)) network-details)
+        preferred           (get grouped-details true [])
+        not-preferred       (get grouped-details false [])
+        network-preferences (reagent/atom selected-networks)
+        toggle-network      (fn [{:keys [chain-id]}]
+                              (swap! network-preferences
+                                     (fn [preferences]
+                                       (if (some #(= % chain-id) preferences)
+                                         (vec (remove #(= % chain-id) preferences))
+                                         (conj preferences chain-id)))))]
+    (fn []
+      [rn/view
+       [quo/drawer-top {:title (i18n/label :t/send-from-network {:network network})
+                        :subtitle (i18n/label :t/define-amount-sent-from-network {:network network})}]
+
+       
+      
+       [quo/token-input
+        { ;; :container-style     style/input-container
+         :token :ETH
+         ;; :currency            current-currency
+         ;; :crypto-decimals     crypto-decimals
+         ;; :error?              @input-error
+         :networks '(network)
+         :title               (i18n/label :t/send-limit {:limit "12"})
+         ;; :conversion          conversion-rate 
+         :show-keyboard? false 
+         :value "80"          ; @input-value
+         ;; :selection           @input-selection
+         ;; :on-change-text      #(handle-on-change % (current-limit))
+         ;; :on-selection-change selection-change
+         ;; :on-swap             #(handle-swap
+         ;;                        {:crypto?      %
+         ;;                         :currency     current-currency
+         ;;                         :token-symbol token-symbol
+         ;;                         :limit-fiat   fiat-limit
+         ;;                         :limit-crypto crypto-limit})
+         ;; :on-token-press      show-select-asset-sheet
+         }] 
+       
+       
+       [quo/disclaimer
+        {:blur?     true
+         :on-change               #()
+         :checked?  false}
+        (i18n/label :t/dont-auto-recalculate-network {:network network})]
+       [quo/bottom-actions
+        {:button-one-label (i18n/label :t/apply-changes)
+         :button-one-props {:disabled?           (= selected-networks @network-preferences)
+                            :on-press            (fn [])
+                            :customization-color color}}]
+       [quo/numbered-keyboard
+        { ;; :container-style      (style/keyboard-container bottom)
+         :left-action          :dot
+         :delete-key?          true
+         ;; :on-press             #(handle-keyboard-press % loading-routes? (current-limit))
+         ;; :on-delete            #(handle-delete loading-routes? (current-limit))
+         ;; :on-long-press-delete #(on-long-press-delete loading-routes?)
+         }]])))
+
 
 (defn route-item
   [{:keys [first-item? from-amount to-amount token-symbol from-chain-id to-chain-id from-network
@@ -135,7 +203,13 @@
        :network  from-network
        :status   status
        :on-press #(when (and on-press-from-network (not loading?))
-                    (on-press-from-network from-chain-id from-amount))}]
+                    (on-press-from-network from-chain-id from-amount))
+       :on-long-press #(rf/dispatch [:show-bottom-sheet
+                                      {:content (fn [] [edit-network-amount
+                                                        {:amount from-amount
+                                                         :theme        theme
+                                                         :network from-network
+                                                         }])}])}]
      (if (= status :default)
        [quo/network-link
         {:shape           :linear
