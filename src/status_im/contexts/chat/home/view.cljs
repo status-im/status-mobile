@@ -5,7 +5,6 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [react-native.share :as share]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
     [status-im.common.home.actions.view :as actions]
@@ -122,7 +121,7 @@
                            [:show-bottom-sheet {:content chat.actions.view/new-chat}])
     :accessibility-label :new-chat-button}
    :card-props
-   {:on-press    #(share/open {:url profile-link})
+   {:on-press    #(rf/dispatch [:open-share {:options {:url profile-link}}])
     :banner      (resources/get-image :invite-friends)
     :title       (i18n/label :t/invite-friends-to-status)
     :description (i18n/label :t/share-invite-link)}})
