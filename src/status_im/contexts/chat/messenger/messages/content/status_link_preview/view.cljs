@@ -9,20 +9,21 @@
         link-previews?       (rf/sub [:chats/message-link-previews? chat-id message-id])]
     (when (seq status-link-previews)
       [rn/view {:style {:margin-top (when link-previews? 8)}}
-       (for [{:keys [url community]} status-link-previews]
-         (when community
-           (let [{community-description :description
-                  community-icon        :icon
-                  community-banner      :banner
-                  community-name        :display-name
-                  members-count         :members-count} community]
-             ^{:key url}
-             [quo/internal-link-card
-              {:type          :community
-               :size          :message
-               :description   community-description
-               :members-count members-count
-               :title         community-name
-               :banner        (:url community-banner)
-               :icon          (:url community-icon)
-               :on-press      #(rf/dispatch [:universal-links/handle-url url])}])))])))
+       (doall
+        (for [{:keys [url community]} status-link-previews]
+          (when community
+            (let [{community-description :description
+                   community-icon        :icon
+                   community-banner      :banner
+                   community-name        :display-name
+                   members-count         :members-count} community]
+              ^{:key url}
+              [quo/internal-link-card
+               {:type          :community
+                :size          :message
+                :description   community-description
+                :members-count members-count
+                :title         community-name
+                :banner        (:url community-banner)
+                :icon          (:url community-icon)
+                :on-press      #(rf/dispatch [:universal-links/handle-url url])}]))))])))
