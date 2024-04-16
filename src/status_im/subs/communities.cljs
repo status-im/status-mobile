@@ -433,5 +433,5 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
  (fn [{:keys [token-permissions joined] :as community}]
-   (or (and joined (seq community))
+   (or joined
        (and (not joined) (empty? token-permissions) (seq community)))))
