@@ -12,8 +12,7 @@
   []
   (fn []
     (let [{:keys [url chat-id]}           (rf/sub [:get-screen-params])
-          {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])
-          window-width                    (rf/sub [:dimensions/window-width])]
+          {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])]
       [quo/overlay {:type :shell}
        [rn/view
         {:style {:padding-top (safe-area/get-top)}
@@ -27,19 +26,12 @@
          {:container-style style/header-container
           :title           (i18n/label :t/share-channel)}]
         [rn/view {:style style/qr-code-wrapper}
-         [quo/gradient-cover
-          {:container-style
-           (style/gradient-cover-wrapper window-width)
-           :customization-color color}]
-         [rn/view
-          {:style {:padding-vertical 12}}
-          [qr-codes/qr-code
-           {:size                (style/qr-code-size window-width)
-            :url                 url
-            :avatar              :channel
-            :customization-color color
-            :emoji               emoji
-            :full-name           chat-name}]]]
+         [qr-codes/share-qr-code
+          {:type                :channel
+           :qr-data             url
+           :customization-color color
+           :emoji               emoji
+           :full-name           chat-name}]]
         [quo/text
          {:size   :paragraph-2
           :weight :regular
