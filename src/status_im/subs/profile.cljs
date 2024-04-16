@@ -5,7 +5,7 @@
     [legacy.status-im.fleet.core :as fleet]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
     [legacy.status-im.utils.currency :as currency]
-    [quo.theme :as theme]
+    [quo.theme]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]
@@ -37,7 +37,8 @@
  :<- [:profile/profiles-overview]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
- (fn [[profiles port font-file] [_ target-key-uid]]
+ :<- [:theme]
+ (fn [[profiles port font-file theme] [_ target-key-uid]]
    (let [{:keys [images ens-name? customization-color] :as profile} (get profiles target-key-uid)
          image-name                                                 (-> images first :type)
          override-ring?                                             (when ens-name? false)]
@@ -48,13 +49,13 @@
                                                   :ratio          pixel-ratio/ratio
                                                   :image-name     image-name
                                                   :key-uid        target-key-uid
-                                                  :theme          (theme/get-theme)
+                                                  :theme          theme
                                                   :override-ring? override-ring?})
           (image-server/get-initials-avatar-uri-fn
            {:port                port
             :ratio               pixel-ratio/ratio
             :key-uid             target-key-uid
-            :theme               (theme/get-theme)
+            :theme               theme
             :uppercase-ratio     (:uppercase-ratio constants/initials-avatar-font-conf)
             :customization-color customization-color
             :override-ring?      override-ring?
@@ -231,11 +232,10 @@
    (pos? (count (get multiaccount :images)))))
 
 (defn- replace-multiaccount-image-uri
-  [profile ens-names port font-file avatar-opts]
+  [profile ens-names port font-file avatar-opts theme]
   (let [{:keys [key-uid ens-name? images
                 customization-color]} profile
         ens-name?                     (or ens-name? (seq ens-names))
-        theme                         (theme/get-theme)
         avatar-opts                   (assoc avatar-opts :override-ring? (when ens-name? false))
         images-with-uri               (mapv (fn [{key-uid :keyUid image-name :type :as image}]
                                               (let [uri-fn (image-server/get-account-image-uri-fn
@@ -269,8 +269,9 @@
  :<- [:ens/current-names]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
- (fn [[profile ens-names port font-file] [_ avatar-opts]]
-   (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts)))
+ :<- [:theme]
+ (fn [[profile ens-names port font-file theme] [_ avatar-opts]]
+   (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts theme)))
 
 (re-frame/reg-sub
  :profile/image

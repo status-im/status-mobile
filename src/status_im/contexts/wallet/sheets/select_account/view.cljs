@@ -17,7 +17,7 @@
                            (rf/dispatch [:wallet/switch-current-viewing-account address])
                            (rf/dispatch [:hide-bottom-sheet]))}])
 
-(defn- view-internal
+(defn view
   []
   (let [selected-account-address (rf/sub [:wallet/current-viewing-account-address])
         accounts                 (rf/sub [:wallet/accounts-without-watched-accounts])]
@@ -29,5 +29,3 @@
        :render-data                     {:selected-account-address selected-account-address}
        :content-container-style         style/list-container
        :shows-vertical-scroll-indicator false}]]))
-
-(def view (quo.theme/with-theme view-internal))

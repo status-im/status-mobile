@@ -49,7 +49,7 @@
   [{:keys [data state customization-color reference-value reference-prefix decimal-separator]
     :or   {reference-prefix  "$"
            decimal-separator :dot}}]
-  (let [theme                            (quo.theme/use-theme-value)
+  (let [theme                            (quo.theme/use-theme)
         [inspecting? set-inspecting]     (rn/use-state false)
         data                             (if (> (count data) max-data-points)
                                            (utils/downsample-data data max-data-points)

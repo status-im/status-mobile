@@ -29,22 +29,23 @@
 
 (defn cta-buttons
   []
-  [rn/view {:style style/buttons-container}
-   [quo/button
-    {:container-style style/send-button
-     :type            :outline
-     :size            40
-     :icon-left       :i/send}
-    (i18n/label :t/send)]
-   [quo/button
-    {:container-style  style/opensea-button
-     :type             :outline
-     :size             40
-     :icon-left        :i/opensea
-     :icon-left-color  (colors/theme-colors colors/neutral-100 colors/neutral-40)
-     :icon-right       :i/external
-     :icon-right-color (colors/theme-colors colors/neutral-50 colors/neutral-40)}
-    (i18n/label :t/opensea)]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/buttons-container}
+     [quo/button
+      {:container-style style/send-button
+       :type            :outline
+       :size            40
+       :icon-left       :i/send}
+      (i18n/label :t/send)]
+     [quo/button
+      {:container-style  style/opensea-button
+       :type             :outline
+       :size             40
+       :icon-left        :i/opensea
+       :icon-left-color  (colors/theme-colors colors/neutral-100 colors/neutral-40 theme)
+       :icon-right       :i/external
+       :icon-right-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}
+      (i18n/label :t/opensea)]]))
 
 (def tabs-data
   [{:id                  :overview
@@ -54,12 +55,13 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(defn f-view-internal
-  [{:keys [theme] :as _props}]
+(defn view
+  [_]
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
     (fn []
-      (let [collectible                 (rf/sub [:wallet/last-collectible-details])
+      (let [theme                       (quo.theme/use-theme)
+            collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
             wallet-address              (rf/sub [:wallet/current-viewing-account-address])
             {:keys [id
@@ -130,9 +132,3 @@
             :on-change      on-tab-change
             :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
-
-(defn- view-internal
-  [props]
-  [:f> f-view-internal props])
-
-(def view (quo.theme/with-theme view-internal))

@@ -26,7 +26,6 @@
       [:button-two-label {:optional true} [:maybe :string]]
       [:button-one-props {:optional true} [:maybe :map]]
       [:button-two-props {:optional true} [:maybe :map]]
-      [:theme :schema.common/theme]
       [:scroll? {:optional true} [:maybe :boolean]]
       [:blur? {:optional true} [:maybe :boolean]]
       [:container-style {:optional true} [:maybe :map]]]]]
@@ -40,58 +39,57 @@
 
 (defn- view-internal
   [{:keys [actions description description-text description-top-text error-message role button-one-label
-           button-two-label blur? button-one-props button-two-props theme scroll? container-style]}]
-  [rn/view
-   {:style (merge (style/container scroll? blur? theme) container-style)}
-   (when (= description :top-error)
-     [rn/view {:style style/error-message}
-      [icon/icon
-       :i/alert
-       {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)
-        :size  16}]
-      [text/text
-       {:size  :paragraph-2
-        :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
-       error-message]])
+           button-two-label blur? button-one-props button-two-props scroll? container-style]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style (merge (style/container scroll? blur? theme) container-style)}
+     (when (= description :top-error)
+       [rn/view {:style style/error-message}
+        [icon/icon
+         :i/alert
+         {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+          :size  16}]
+        [text/text
+         {:size  :paragraph-2
+          :style {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)}}
+         error-message]])
 
-   (when (and (= description :top) role)
-     [rn/view {:style style/description-top}
-      [text/text
-       {:size  :paragraph-2
-        :style (style/description-top-text scroll? blur? theme)}
-       (or description-top-text (i18n/label :t/eligible-to-join-as))]
-      [context-tag/view
-       {:type    :icon
-        :size    24
-        :icon    (role role-icon)
-        :blur?   blur?
-        :context (i18n/label (keyword "t" role))}]])
+     (when (and (= description :top) role)
+       [rn/view {:style style/description-top}
+        [text/text
+         {:size  :paragraph-2
+          :style (style/description-top-text scroll? blur? theme)}
+         (or description-top-text (i18n/label :t/eligible-to-join-as))]
+        [context-tag/view
+         {:type    :icon
+          :size    24
+          :icon    (role role-icon)
+          :blur?   blur?
+          :context (i18n/label (keyword "t" role))}]])
 
-   [rn/view {:style style/buttons-container}
-    (when (= actions :two-actions)
+     [rn/view {:style style/buttons-container}
+      (when (= actions :two-actions)
+        [button/button
+         (merge
+          {:size                40
+           :background          (when (or blur? scroll?) :blur)
+           :container-style     style/button-container
+           :theme               theme
+           :accessibility-label :button-two}
+          button-two-props)
+         button-two-label])
       [button/button
        (merge
         {:size                40
-         :background          (when (or blur? scroll?) :blur)
          :container-style     style/button-container
+         :background          (when (or blur? scroll?) :blur)
          :theme               theme
-         :accessibility-label :button-two}
-        button-two-props)
-       button-two-label])
-    [button/button
-     (merge
-      {:size                40
-       :container-style     style/button-container
-       :background          (when (or blur? scroll?) :blur)
-       :theme               theme
-       :accessibility-label :button-one}
-      button-one-props)
-     button-one-label]]
-   (when (= description :bottom)
-     [text/text
-      {:size  :paragraph-2
-       :style (style/description-bottom scroll? blur? theme)} description-text])])
+         :accessibility-label :button-one}
+        button-one-props)
+       button-one-label]]
+     (when (= description :bottom)
+       [text/text
+        {:size  :paragraph-2
+         :style (style/description-bottom scroll? blur? theme)} description-text])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal ?schema)))
+(def view (schema/instrument #'view-internal ?schema))

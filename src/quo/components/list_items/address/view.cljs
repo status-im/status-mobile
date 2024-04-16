@@ -40,7 +40,7 @@
 (defn- internal-view
   [{:keys [networks address customization-color on-press active-state? blur?]
     :or   {customization-color :blue}}]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)

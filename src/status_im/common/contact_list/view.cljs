@@ -11,6 +11,6 @@
 
 (defn contacts-section-header
   [{:keys [title]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [quo/divider-label {:container-style (style/contacts-section-header theme)}
      title]))

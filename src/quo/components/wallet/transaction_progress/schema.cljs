@@ -14,7 +14,6 @@
    [:catn
     [:props
      [:map
-      [:theme :schema.common/theme]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:title {:optional true} [:maybe :string]]
       [:tag-name {:optional true} [:maybe :string]]

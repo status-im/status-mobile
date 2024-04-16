@@ -31,9 +31,10 @@
      (colors/custom-color color-keyword 60)
      theme)))
 
-(defn- view-internal
-  [{:keys [data state time-frame customization-color theme]}]
-  (let [max-data-points (time-frame->max-data-points time-frame)
+(defn view
+  [{:keys [data state time-frame customization-color]}]
+  (let [theme           (quo.theme/use-theme)
+        max-data-points (time-frame->max-data-points time-frame)
         data            (if (and (not= time-frame :empty) (> (count data) max-data-points))
                           (utils/downsample-data data max-data-points)
                           data)
@@ -41,7 +42,7 @@
         width           (:width (rn/get-window))
         line-color      (get-line-color customization-color state theme)
         gradient-colors [(colors/alpha line-color 0.1) (colors/alpha line-color 0)]
-        fill-color      (colors/theme-colors colors/white colors/neutral-95)]
+        fill-color      (colors/theme-colors colors/white colors/neutral-95 theme)]
     (if (= time-frame :empty)
       [fast-image/fast-image
        {:style               style/empty-state
@@ -78,5 +79,3 @@
           :y-axis-label-width      0.01
           :labels-extra-height     -36
           :x-axis-label-text-style style/x-axis-label-text-style}]]])))
-
-(def view (quo.theme/with-theme view-internal))

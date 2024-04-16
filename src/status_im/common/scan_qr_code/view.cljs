@@ -185,7 +185,7 @@
   (rf/dispatch [:navigate-back])
   true)
 
-(defn f-view-internal
+(defn view
   [{:keys [title subtitle validate-fn on-success-scan error-message]}]
   (let [insets             (safe-area/get-insets)
         qr-code-succeed?   (reagent/atom false)
@@ -237,7 +237,7 @@
           [scan-qr-code-tab @qr-view-finder (when subtitle true)]
           [rn/view {:style style/flex-spacer}]
           (when show-camera?
-            [quo.theme/provider {:theme :light}
+            [quo.theme/provider :light
              [quo/button
               {:icon-only?          true
                :type                :grey
@@ -247,9 +247,3 @@
                :container-style     (style/camera-flash-button @qr-view-finder)
                :on-press            #(swap! torch? not)}
               flashlight-icon]])]]))))
-
-(defn view-internal
-  [props]
-  [:f> f-view-internal props])
-
-(def view (quo.theme/with-theme view-internal))

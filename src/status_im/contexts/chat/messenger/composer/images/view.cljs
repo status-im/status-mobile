@@ -28,7 +28,7 @@
 
 (defn f-images-list
   []
-  (let [theme  (quo.theme/use-theme-value)
+  (let [theme  (quo.theme/use-theme)
         images (rf/sub [:chats/sending-image])
         height (reanimated/use-shared-value (if (seq images) constants/images-container-height 0))]
     (rn/use-effect (fn []

@@ -19,7 +19,7 @@
                      (update :toasts dissoc :hide-toasts-timer-set))}
 
       (and (not update?) (= (count ordered) 1))
-      (assoc :show-toasts (:view-id db))
+      (assoc :show-toasts [(:view-id db) (:theme db)])
 
       (not (:id opts))
       (update-in [:db :toasts :next-toast-number] inc))))
@@ -30,7 +30,7 @@
   (when (get-in db [:toasts :hide-toasts-timer-set])
     {:db                         (update db :toasts dissoc :hide-toasts-timer-set)
      :hide-toasts                nil
-     :reload-status-nav-color-fx (:view-id db)}))
+     :reload-status-nav-color-fx [(:view-id db) (:theme db)]}))
 
 (rf/defn close
   {:events [:toasts/close]}

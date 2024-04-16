@@ -56,9 +56,10 @@
    :image-props :i/password
    :action      :arrow})
 
-(defn- view-internal
-  [{:keys [theme]}]
-  (let [insets (safe-area/get-insets)]
+(defn view
+  []
+  (let [theme  (quo.theme/use-theme)
+        insets (safe-area/get-insets)]
     [quo/overlay {:type :shell}
      [rn/view
       {:key   :navigation
@@ -82,5 +83,3 @@
                    (get-change-password-item)]
        :blur?     true
        :list-type :settings}]]))
-
-(def view (quo.theme/with-theme view-internal))

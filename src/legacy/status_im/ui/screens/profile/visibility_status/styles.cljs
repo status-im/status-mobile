@@ -17,14 +17,14 @@
    :padding-right          12})
 
 (defn visibility-status-dot
-  [{:keys [color size new-ui?]}]
+  [{:keys [color size new-ui?]} theme]
   (if new-ui?
     {:background-color color
      :width            size
      :height           size
      :border-radius    (/ size 2)
      :border-width     3.5
-     :border-color     (quo.colors/theme-colors quo.colors/white quo.colors/neutral-90)}
+     :border-color     (quo.colors/theme-colors quo.colors/white quo.colors/neutral-90 theme)}
     {:background-color color
      :width            size
      :height           size
@@ -33,10 +33,11 @@
      :border-color     colors/white}))
 
 (defn visibility-status-profile-dot
-  [{:keys [color size border-width margin-left new-ui?]}]
+  [{:keys [color size border-width margin-left new-ui?]} theme]
   (merge (visibility-status-dot {:color   color
                                  :size    size
-                                 :new-ui? new-ui?})
+                                 :new-ui? new-ui?}
+                                theme)
          {:margin-right 6
           :margin-left  margin-left
           :border-width border-width}))

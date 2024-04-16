@@ -20,9 +20,10 @@
       :add-divider?        true
       :danger?             true}]]])
 
-(defn- view-internal
-  [{:keys [theme]}]
-  (let [dapps-list []]
+(defn view
+  []
+  (let [theme      (quo.theme/use-theme)
+        dapps-list []]
     (if (empty? dapps-list)
       [empty-tab/view
        {:title       (i18n/label :t/no-dapps)
@@ -34,5 +35,3 @@
          :style     (style/dapps-list theme)
          :render-fn (fn [item] [quo/dapp item])
          :separator [rn/view {:style (style/separator theme)}]}]])))
-
-(def view (quo.theme/with-theme view-internal))

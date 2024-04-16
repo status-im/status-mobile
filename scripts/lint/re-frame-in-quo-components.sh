@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-INVALID_CHANGES=$(grep -E -r '(re-frame/dispatch|rf/dispatch|re-frame/subscribe|rf/subscribe|rf/sub|<sub|>evt|status-im\.)' --include '*.cljs' --include '*.clj' './src/quo')
+INVALID_CHANGES=$(grep -E -r '(/atom|re-frame/dispatch|rf/dispatch|re-frame/subscribe|rf/subscribe|rf/sub|<sub|>evt|status-im\.)' --include '*.cljs' --include '*.clj' './src/quo')
 
 if test -n "$INVALID_CHANGES"; then
-    echo "WARNING: re-frame, status-im are not allowed in quo components"
+    echo "WARNING: re-frame, status-im, reagent atoms are not allowed in quo components"
     echo ''
     echo "$INVALID_CHANGES"
     exit 1

@@ -19,7 +19,7 @@
         [primary-name secondary-name]                (rf/sub [:contacts/contact-two-names-by-identity
                                                               public-key])
         {:keys [ens-verified added? compressed-key]} (rf/sub [:contacts/contact-by-address public-key])
-        theme                                        (quo.theme/use-theme-value)]
+        theme                                        (quo.theme/use-theme)]
     [contact-list-item/contact-list-item
      {:on-press      #(rf/dispatch [:chat.ui/show-profile public-key])
       :on-long-press show-profile-actions
@@ -65,7 +65,7 @@
           pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
           items                          (rf/sub [:communities/sorted-community-members-section-list
                                                   community-id])
-          theme                          (quo.theme/use-theme-value)]
+          theme                          (quo.theme/use-theme)]
       (rn/use-mount (fn []
                       (rf/dispatch [:pin-message/load-pin-messages chat-id])))
       [:<>

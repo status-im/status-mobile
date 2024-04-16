@@ -121,7 +121,7 @@
             :size                favicon-size}])
         [rn/text
          {:accessibility-label :browser-input-label
-          :style               (style/text)}
+          :style               (style/text theme)}
          (remove-http-https-www value)]
         (when locked?
           [lock-icon {:blur? blur? :theme theme}])])

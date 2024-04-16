@@ -192,54 +192,50 @@
                             colors/white-opa-40
                             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])]))
 
-(defn- view-internal
-  [{:keys [title title-icon type theme description blur? community-name community-logo button-icon
-           account-name emoji context-tag-type button-type
-           on-button-press
-           on-button-long-press
-           button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
-           profile-picture keycard? networks label full-name
-           container-style]}]
-  [rn/view {:style (merge style/container container-style)}
-   (when (left-image-supported-types type)
-     [rn/view {:style style/left-container}
-      [left-image
-       {:type                 type
-        :customization-color  customization-color
-        :account-avatar-emoji account-avatar-emoji
-        :account-avatar-type  account-avatar-type
-        :icon-avatar          icon-avatar
-        :profile-picture      profile-picture}]])
-   [rn/view {:style style/body-container}
-    [left-title
-     {:type       type
-      :label      label
-      :title      title
-      :title-icon title-icon
-      :theme      theme
-      :blur?      blur?}]
-    [subtitle
-     {:type                type
-      :theme               theme
-      :blur?               blur?
-      :keycard?            keycard?
-      :networks            networks
-      :description         description
-      :community-name      community-name
-      :community-logo      community-logo
-      :context-tag-type    context-tag-type
-      :customization-color customization-color
-      :account-name        account-name
-      :emoji               emoji
-      :full-name           full-name
-      :profile-picture     profile-picture}]]
-   [right-icon
-    {:theme                theme
-     :type                 type
-     :button-type          button-type
-     :on-button-press      on-button-press
-     :on-button-long-press on-button-long-press
-     :button-disabled?     button-disabled?
-     :button-icon          button-icon}]])
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [title title-icon type description blur? community-name community-logo button-icon
+           account-name emoji context-tag-type button-type container-style
+           on-button-press on-button-long-press profile-picture keycard? networks label full-name
+           button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (merge style/container container-style)}
+     (when (left-image-supported-types type)
+       [rn/view {:style style/left-container}
+        [left-image
+         {:type                 type
+          :customization-color  customization-color
+          :account-avatar-emoji account-avatar-emoji
+          :account-avatar-type  account-avatar-type
+          :icon-avatar          icon-avatar
+          :profile-picture      profile-picture}]])
+     [rn/view {:style style/body-container}
+      [left-title
+       {:type       type
+        :label      label
+        :title      title
+        :title-icon title-icon
+        :theme      theme
+        :blur?      blur?}]
+      [subtitle
+       {:type                type
+        :theme               theme
+        :blur?               blur?
+        :keycard?            keycard?
+        :networks            networks
+        :description         description
+        :community-name      community-name
+        :community-logo      community-logo
+        :context-tag-type    context-tag-type
+        :customization-color customization-color
+        :account-name        account-name
+        :emoji               emoji
+        :full-name           full-name
+        :profile-picture     profile-picture}]]
+     [right-icon
+      {:theme                theme
+       :type                 type
+       :button-type          button-type
+       :on-button-press      on-button-press
+       :on-button-long-press on-button-long-press
+       :button-disabled?     button-disabled?
+       :button-icon          button-icon}]]))

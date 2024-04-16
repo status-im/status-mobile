@@ -5,14 +5,13 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
+(defn view
   [{:keys [label] :as props}]
-  [rn/view {:style style/main}
-   [rn/view {:style (style/inner props)}
-    [text/text
-     {:style  (style/label props)
-      :weight :medium
-      :size   :label
-      :align  :center} label]]])
-
-(def view (quo.theme/with-theme view-internal))
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/main}
+     [rn/view {:style (style/inner props theme)}
+      [text/text
+       {:style  (style/label props theme)
+        :weight :medium
+        :size   :label
+        :align  :center} label]]]))

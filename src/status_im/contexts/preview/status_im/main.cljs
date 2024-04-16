@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [filter])
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.common :as common]
@@ -40,12 +41,13 @@
 
 (defn- main-screen
   []
-  [:<>
-   [common/navigation-bar {:title "Status IM components"}]
-   [rn/scroll-view {:style (style/main)}
-    (for [category (sort screens-categories)]
-      ^{:key (first category)}
-      [category-view category])]])
+  (let [theme (quo.theme/use-theme)]
+    [:<>
+     [common/navigation-bar {:title "Status IM components"}]
+     [rn/scroll-view {:style (style/main theme)}
+      (for [category (sort screens-categories)]
+        ^{:key (first category)}
+        [category-view category])]]))
 
 (def screens
   (->> screens-categories

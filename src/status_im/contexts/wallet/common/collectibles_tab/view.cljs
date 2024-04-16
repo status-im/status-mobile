@@ -30,7 +30,8 @@
 (defn- view-internal
   [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address
            on-collectible-long-press]}]
-  (let [no-results-match-query? (and filtered? (empty? collectibles))]
+  (let [theme                   (quo.theme/use-theme)
+        no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
@@ -60,5 +61,3 @@
                                                on-collectible-long-press))
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
-
-(def view (quo.theme/with-theme view-internal))

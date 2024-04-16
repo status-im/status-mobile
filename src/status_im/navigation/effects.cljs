@@ -16,9 +16,9 @@
     [utils.re-frame :as rf]))
 
 (defn get-status-nav-color
-  [view-id]
+  [view-id theme]
   (let [theme (or (get-in views/screens [view-id :options :theme])
-                  (quo.theme/get-theme))
+                  theme)
         [rnn-status-bar rn-status-bar]
         (if (or (= theme :dark)
                 @state/alert-banner-shown?
@@ -40,9 +40,9 @@
     [rnn-status-bar rn-status-bar nav-bar-color comp-id]))
 
 (defn reload-status-nav-color-fx
-  [view-id]
+  [[view-id theme]]
   (when (and (= @state/root-id :shell-stack) view-id)
-    (let [[rnn-status-bar rn-status-bar nav-bar-color comp-id] (get-status-nav-color view-id)]
+    (let [[rnn-status-bar rn-status-bar nav-bar-color comp-id] (get-status-nav-color view-id theme)]
       (if platform/ios?
         (rn/set-status-bar-style rn-status-bar true)
         (navigation/merge-options
@@ -53,8 +53,8 @@
 (rf/reg-fx :reload-status-nav-color-fx reload-status-nav-color-fx)
 
 (rf/reg-fx :set-view-id-fx
- (fn [view-id]
-   (reload-status-nav-color-fx view-id)
+ (fn [[view-id theme]]
+   (reload-status-nav-color-fx [view-id theme])
    (rf/dispatch [:screens/on-will-focus view-id])
    (when-let [{:keys [on-focus]} (get views/screens view-id)]
      (when on-focus
@@ -213,8 +213,8 @@
                                  opts)}})))
 
 (rf/reg-fx :show-toasts
- (fn [view-id]
-   (let [[rnn-status-bar nav-bar-color] (get-status-nav-color view-id)]
+ (fn [[view-id theme]]
+   (let [[rnn-status-bar nav-bar-color] (get-status-nav-color view-id theme)]
      (show-overlay "toasts"
                    (assoc (options/statusbar-and-navbar-options nil rnn-status-bar nav-bar-color)
                           :overlay
@@ -233,16 +233,16 @@
 
 ;;;; Alert Banner
 (rf/reg-fx :show-alert-banner
- (fn [view-id]
+ (fn [[view-id theme]]
    (show-overlay "alert-banner" {:overlay {:interceptTouchOutside false}})
    (reset! state/alert-banner-shown? true)
-   (reload-status-nav-color-fx view-id)))
+   (reload-status-nav-color-fx [view-id theme])))
 
 (rf/reg-fx :hide-alert-banner
- (fn [view-id]
+ (fn [[view-id theme]]
    (navigation/dissmiss-overlay "alert-banner")
    (reset! state/alert-banner-shown? false)
-   (reload-status-nav-color-fx view-id)))
+   (reload-status-nav-color-fx [view-id theme])))
 
 ;;;; Merge options
 

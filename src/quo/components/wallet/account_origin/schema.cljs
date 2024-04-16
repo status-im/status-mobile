@@ -3,8 +3,7 @@
 (def ^:private ?base
   [:map
    [:type {:optional true} [:enum :default-keypair :recovery-phrase :private-key]]
-   [:stored {:optional true} [:enum :on-device :on-keycard]]
-   [:theme :schema.common/theme]])
+   [:stored {:optional true} [:enum :on-device :on-keycard]]])
 
 (def ^:private ?default-keypair
   [:map

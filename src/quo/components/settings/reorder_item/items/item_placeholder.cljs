@@ -5,12 +5,12 @@
     [react-native.core :as rn]))
 
 (defn view
-  [item]
+  [item theme]
   (let [label (:label item)]
     [rn/view
      {:accessibility-label :reorder-placerholder-drag-handle
-      :style               (style/placeholder-container)}
+      :style               (style/placeholder-container theme)}
      [text/text
-      {:style  (style/placeholder-text)
+      {:style  (style/placeholder-text theme)
        :weight :regular}
       label]]))

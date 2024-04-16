@@ -6,6 +6,7 @@
             [quo.components.tags.collectible-tag.view :as collectible-tag]
             [quo.components.tags.token-tag.view :as token-tag]
             [quo.foundations.colors :as colors]
+            [quo.theme]
             [react-native.core :as rn]
             [utils.i18n :as i18n]))
 
@@ -28,20 +29,21 @@
 
 (defn- tokens-row
   [{:keys [tokens divider? first?]}]
-  [:<>
-   [rn/view
-    {:style (style/token-row first?)}
-    (map-indexed (fn [token-index token]
-                   ^{:key (str "token-" token-index)}
-                   [token-view token])
-                 tokens)]
-   (when-not divider?
-     [divider-label/view
-      {:container-style style/divider}
-      [text/text
-       {:size  :label
-        :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-       (string/lower-case (i18n/label :t/or))]])])
+  (let [theme (quo.theme/use-theme)]
+    [:<>
+     [rn/view
+      {:style (style/token-row first?)}
+      (map-indexed (fn [token-index token]
+                     ^{:key (str "token-" token-index)}
+                     [token-view token])
+                   tokens)]
+     (when-not divider?
+       [divider-label/view
+        {:container-style style/divider}
+        [text/text
+         {:size  :label
+          :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+         (string/lower-case (i18n/label :t/or))]])]))
 
 (defn- role-view
   [{:keys [role tokens satisfied? role-text]}]

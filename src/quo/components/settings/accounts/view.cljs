@@ -29,30 +29,28 @@
      :on-press        on-press}
     :i/more]])
 
-(defn- account-internal
-  [{:keys [account-name account-address avatar-icon
-           customization-color on-press-menu theme]}]
-  [rn/view {:style style/card}
-   [card-background
-    {:customization-color customization-color
-     :theme               theme}]
-   [rn/view {:style style/card-top}
-    [avatar
-     {:color customization-color
-      :icon  avatar-icon}
-     theme]
-    [menu-button
-     {:on-press on-press-menu
-      :theme    theme}]]
-   [rn/view {:style style/card-bottom}
-    [text/text
-     {:size   :paragraph-1
-      :weight :semi-bold}
-     account-name]
-    [text/text
-     {:style  (style/address-text theme)
-      :size   :paragraph-2
-      :weight :medium}
-     account-address]]])
-
-(def account (quo.theme/with-theme account-internal))
+(defn account
+  [{:keys [account-name account-address avatar-icon customization-color on-press-menu]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/card}
+     [card-background
+      {:customization-color customization-color
+       :theme               theme}]
+     [rn/view {:style style/card-top}
+      [avatar
+       {:color customization-color
+        :icon  avatar-icon}
+       theme]
+      [menu-button
+       {:on-press on-press-menu
+        :theme    theme}]]
+     [rn/view {:style style/card-bottom}
+      [text/text
+       {:size   :paragraph-1
+        :weight :semi-bold}
+       account-name]
+      [text/text
+       {:style  (style/address-text theme)
+        :size   :paragraph-2
+        :weight :medium}
+       account-address]]]))

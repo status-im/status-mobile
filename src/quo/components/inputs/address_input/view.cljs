@@ -58,7 +58,7 @@
   [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan
            on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
            valid-ens-or-address? container-style]}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [status set-status]    (rn/use-state :default)
         [value set-value]      (rn/use-state nil)
         [focused? set-focused] (rn/use-state false)
@@ -128,7 +128,7 @@
        :auto-capitalize        :none
        :auto-correct           false
        :spell-check            false
-       :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
+       :keyboard-appearance    theme
        :on-focus               on-focus
        :on-blur                on-blur
        :on-change-text         on-change}]

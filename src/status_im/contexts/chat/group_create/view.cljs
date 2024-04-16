@@ -42,7 +42,7 @@
 
 (defn view
   []
-  (let [theme                         (quo.theme/use-theme-value)
+  (let [theme                         (quo.theme/use-theme)
         {window-width :width}         (rn/get-window)
         profile                       (rf/sub [:profile/profile-with-image])
         contacts                      (rf/sub [:selected-group-contacts])

@@ -5,7 +5,7 @@
     [quo.components.icon :as quo.icons]
     [quo.components.markdown.text :as text]
     [quo.foundations.customization-colors :as customization-colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]))
 
@@ -36,7 +36,7 @@
            customization-color (if (= type :primary) :blue nil)}}
    children]
   (let [[pressed-state? set-pressed-state] (rn/use-state false)
-        theme (theme/use-theme-value)
+        theme (quo.theme/use-theme)
         {:keys [icon-color background-color label-color border-color blur-type
                 blur-overlay-color border-radius overlay-customization-color]}
         (button-properties/get-values {:customization-color customization-color

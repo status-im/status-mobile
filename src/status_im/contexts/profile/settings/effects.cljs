@@ -26,7 +26,8 @@
                             (theme/device-theme-dark?)))
                  :dark
                  :light)]
-     (theme/set-theme theme)
+     (theme/set-legacy-theme theme)
+     (rf/dispatch [:theme/switch theme])
      (rf/dispatch [:reload-status-nav-color view-id])
      (when reload-ui?
        (re-frame/dispatch [:dismiss-all-overlays])

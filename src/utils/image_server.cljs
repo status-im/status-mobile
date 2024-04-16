@@ -189,8 +189,8 @@
   [:=>
    [:cat
     [:map
-     [:color string?]
      [:theme :schema.common/theme]
+     [:color string?]
      [:background-color {:optional true} [:maybe string?]]
      [:size number?]
      [:ratio float?]

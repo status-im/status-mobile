@@ -8,7 +8,6 @@
    [:catn
     [:props
      [:map
-      [:theme :schema.common/theme]
       [:network {:optional true} [:maybe :keyword]]
       [:status {:optional true} [:maybe ?network-bridge-status]]
       [:amount {:optional true} [:maybe :string]]

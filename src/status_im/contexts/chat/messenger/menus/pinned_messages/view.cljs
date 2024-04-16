@@ -24,16 +24,17 @@
   [message/message message context (atom false)])
 
 (defn empty-pinned-messages-state
-  [{:keys [theme]}]
-  [rn/view {:style style/no-pinned-messages-container}
-   [quo/empty-state
-    {:blur?       false
-     :image       (resources/get-themed-image :no-pinned-messages theme)
-     :title       (i18n/label :t/no-pinned-messages)
-     :description (i18n/label :t/no-pinned-messages-desc)}]])
+  []
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/no-pinned-messages-container}
+     [quo/empty-state
+      {:blur?       false
+       :image       (resources/get-themed-image :no-pinned-messages theme)
+       :title       (i18n/label :t/no-pinned-messages)
+       :description (i18n/label :t/no-pinned-messages-desc)}]]))
 
-(defn f-pinned-messages
-  [{:keys [theme chat-id disable-message-long-press?]}]
+(defn view
+  [{:keys [chat-id disable-message-long-press?]}]
   (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
         current-chat           (rf/sub [:chats/chat-by-id chat-id])
@@ -65,11 +66,4 @@
          :footer      [rn/view {:style style/list-footer}]
          :key-fn      list-key-fn
          :separator   [quo/separator {:style {:margin-vertical 8}}]}]
-       [empty-pinned-messages-state
-        {:theme theme}])]))
-
-(defn- internal-pinned-messages
-  [params]
-  [:f> f-pinned-messages params])
-
-(def view (quo.theme/with-theme internal-pinned-messages))
+       [empty-pinned-messages-state])]))

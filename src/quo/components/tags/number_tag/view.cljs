@@ -6,11 +6,12 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn view-internal
-  [{:keys [number size blur? theme] :as props}]
-  (let [size-value (get-in style/sizes [size :size])
+(defn view
+  [{:keys [number size blur?] :as props}]
+  (let [theme      (quo.theme/use-theme)
+        size-value (get-in style/sizes [size :size])
         icon-size  (get-in style/sizes [size :icon-size])]
-    [rn/view (style/container props)
+    [rn/view (style/container props theme)
      (if (and (> size-value 20) (< (count number) 3))
        [text/text
         {:size   (if (= size :size-32)
@@ -22,5 +23,3 @@
        [icons/icon :i/options
         {:size  icon-size
          :color (style/get-color blur? theme)}])]))
-
-(def view (quo.theme/with-theme view-internal))

@@ -10,7 +10,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.navigation.page-nav.style :as style]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [utils.worklets.profile-header :as header-worklet]))
@@ -107,8 +107,9 @@
       title]]))
 
 (defn- dropdown-center
-  [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
-  (let [dropdown-type  (cond
+  [{:keys [background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
+  (let [theme          (quo.theme/use-theme)
+        dropdown-type  (cond
                          (= background :photo)                      :grey
                          (and (= theme :dark) (= background :blur)) :grey
                          :else                                      :ghost)
@@ -123,54 +124,57 @@
       dropdown-text]]))
 
 (defn- token-center
-  [{:keys [theme background token-logo token-name token-abbreviation center-opacity]}]
-  [reanimated/view {:style (style/center-content-container false center-opacity)}
-   [rn/image {:style style/token-logo :source token-logo}]
-   [text/text
-    {:style           style/token-name
-     :weight          :semi-bold
-     :size            :paragraph-1
-     :number-of-lines 1}
-    token-name]
-   [text/text
-    {:style           (style/token-abbreviation theme background)
-     :weight          :medium
-     :size            :paragraph-2
-     :number-of-lines 1}
-    token-abbreviation]])
+  [{:keys [background token-logo token-name token-abbreviation center-opacity]}]
+  (let [theme (quo.theme/use-theme)]
+    [reanimated/view {:style (style/center-content-container false center-opacity)}
+     [rn/image {:style style/token-logo :source token-logo}]
+     [text/text
+      {:style           style/token-name
+       :weight          :semi-bold
+       :size            :paragraph-1
+       :number-of-lines 1}
+      token-name]
+     [text/text
+      {:style           (style/token-abbreviation theme background)
+       :weight          :medium
+       :size            :paragraph-2
+       :number-of-lines 1}
+      token-abbreviation]]))
 
 (defn- channel-center
-  [{:keys [theme background channel-emoji channel-name channel-icon center-opacity]}]
-  [reanimated/view {:style (style/center-content-container false center-opacity)}
-   [rn/text {:style style/channel-emoji}
-    channel-emoji]
-   [text/text
-    {:style           style/channel-name
-     :weight          :semi-bold
-     :size            :paragraph-1
-     :number-of-lines 1}
-    (str "# " channel-name)]
-   [icons/icon channel-icon {:size 16 :color (style/channel-icon-color theme background)}]])
+  [{:keys [background channel-emoji channel-name channel-icon center-opacity]}]
+  (let [theme (quo.theme/use-theme)]
+    [reanimated/view {:style (style/center-content-container false center-opacity)}
+     [rn/text {:style style/channel-emoji}
+      channel-emoji]
+     [text/text
+      {:style           style/channel-name
+       :weight          :semi-bold
+       :size            :paragraph-1
+       :number-of-lines 1}
+      (str "# " channel-name)]
+     [icons/icon channel-icon {:size 16 :color (style/channel-icon-color theme background)}]]))
 
 (defn- title-description-center
-  [{:keys [background theme picture title description center-opacity]}]
-  [reanimated/view {:style (style/center-content-container false center-opacity)}
-   (when picture
-     [rn/view {:style style/group-avatar-picture}
-      [group-avatar/view {:picture picture :size :size-28}]])
-   [rn/view {:style style/title-description-container}
-    [text/text
-     {:style           style/title-description-title
-      :weight          :semi-bold
-      :size            :paragraph-1
-      :number-of-lines 1}
-     title]
-    [text/text
-     {:style           (style/title-description-description theme background)
-      :weight          :medium
-      :size            :paragraph-2
-      :number-of-lines 1}
-     description]]])
+  [{:keys [background picture title description center-opacity]}]
+  (let [theme (quo.theme/use-theme)]
+    [reanimated/view {:style (style/center-content-container false center-opacity)}
+     (when picture
+       [rn/view {:style style/group-avatar-picture}
+        [group-avatar/view {:picture picture :size :size-28}]])
+     [rn/view {:style style/title-description-container}
+      [text/text
+       {:style           style/title-description-title
+        :weight          :semi-bold
+        :size            :paragraph-1
+        :number-of-lines 1}
+       title]
+      [text/text
+       {:style           (style/title-description-description theme background)
+        :weight          :medium
+        :size            :paragraph-2
+        :number-of-lines 1}
+       description]]]))
 
 (defn- community-network-center
   [{:keys [type community-logo network-logo community-name network-name center-opacity]}]
@@ -195,8 +199,58 @@
      :on-press networks-on-press
      :blur?    (= background :blur)} networks]])
 
-(defn- view-internal
-  "behind-overlay is necessary for us to know if the page-nav buttons are under the bottom sheet overlay or not."
+(defn page-nav
+  "Props:
+  - type: defaults to `:no-title`.
+  - background:
+    `:white`, `:neutral-5`, `:neutral-90`, `:neutral-95`, `:neutral-100`, `:photo` or `:blur`
+  - accessibility-label
+  - on-press: callback for left button
+  - icon-name: icon for left button
+  - right-side (optional):
+      - The `:account-switcher` keyword
+      - vector of maps to render buttons, e.g.:
+        {:icon-name           :i/my-icon
+         :on-press            (fn callback [] nil)
+         :accessibility-label \"an optional label\"}
+
+  - account-switcher (optional)
+      - props to render dropdown component (emoji only) e.g.:
+       {:customization-color :purple
+        :on-press            (fn [] nil)
+        :state               :default (inherit dropdown states)
+        :emoji               \"🍑\"}
+
+  Depending on the `type` selected, different properties are accepted:
+  `:title`
+    - title
+    - text-align: `:center` or `:left`
+    - scroll-y: a shared value (optional)
+   `:dropdown`
+    - dropdown-on-press:  a callback
+    - dropdown-selected?: a boolean
+    - dropdown-text
+  `:token`
+    - token-logo: a valid rn/image `:source` value
+    - token-name: string
+    - token-abbreviation: string
+  `:channel`
+    - channel-emoji: an emoji in a string
+    - channel-name
+    - channel-icon: an icon keyword (:i/members, :i/lock, etc.)
+  `:title-description`
+    - title
+    - description
+    - picture: a valid rn/image `:source` value
+  `:wallet-networks`
+    - networks: a vector of network image source
+    - networks-on-press: a callback
+  `:community`
+    - community-name
+    - community-logo: a valid rn/image `:source` value
+  `:network`
+    - network-name
+    - network-logo a valid rn/image `:source` value"
   [{:keys [type right-side background text-align account-switcher behind-overlay?]
     :or   {type       :no-title
            text-align :center
@@ -280,57 +334,3 @@
        :support-account-switcher? false}]]
 
     nil))
-
-(def page-nav
-  "Props:
-  - type: defaults to `:no-title`.
-  - background:
-    `:white`, `:neutral-5`, `:neutral-90`, `:neutral-95`, `:neutral-100`, `:photo` or `:blur`
-  - accessibility-label
-  - on-press: callback for left button
-  - icon-name: icon for left button
-  - right-side (optional):
-      - The `:account-switcher` keyword
-      - vector of maps to render buttons, e.g.:
-        {:icon-name           :i/my-icon
-         :on-press            (fn callback [] nil)
-         :accessibility-label \"an optional label\"}
-
-  - account-switcher (optional)
-      - props to render dropdown component (emoji only) e.g.:
-       {:customization-color :purple
-        :on-press            (fn [] nil)
-        :state               :default (inherit dropdown states)
-        :emoji               \"🍑\"}
-
-  Depending on the `type` selected, different properties are accepted:
-  `:title`
-    - title
-    - text-align: `:center` or `:left`
-    - scroll-y: a shared value (optional)
-   `:dropdown`
-    - dropdown-on-press:  a callback
-    - dropdown-selected?: a boolean
-    - dropdown-text
-  `:token`
-    - token-logo: a valid rn/image `:source` value
-    - token-name: string
-    - token-abbreviation: string
-  `:channel`
-    - channel-emoji: an emoji in a string
-    - channel-name
-    - channel-icon: an icon keyword (:i/members, :i/lock, etc.)
-  `:title-description`
-    - title
-    - description
-    - picture: a valid rn/image `:source` value
-  `:wallet-networks`
-    - networks: a vector of network image source
-    - networks-on-press: a callback
-  `:community`
-    - community-name
-    - community-logo: a valid rn/image `:source` value
-  `:network`
-    - network-name
-    - network-logo a valid rn/image `:source` value"
-  (theme/with-theme view-internal))

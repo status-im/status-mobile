@@ -207,13 +207,14 @@
         [quo/text {:style {:align-self :center}}
          (i18n/label :t/no-routes-found-confirmation)])]]))
 
-(defn- view-internal
+(defn view
   [_]
   (let [on-close (fn []
                    (rf/dispatch [:wallet/clean-suggested-routes])
                    (rf/dispatch [:navigate-back]))]
-    (fn [{:keys [theme]}]
-      (let [send-transaction-data        (rf/sub [:wallet/wallet-send])
+    (fn []
+      (let [theme                        (quo.theme/use-theme)
+            send-transaction-data        (rf/sub [:wallet/wallet-send])
             {:keys [token-display-name collectible amount route
                     to-address bridge-to-chain-id
                     from-values-by-chain
@@ -303,5 +304,3 @@
              :theme              theme
              :route              route
              :transaction-type   transaction-type}]]]]))))
-
-(def view (quo.theme/with-theme view-internal))

@@ -104,7 +104,7 @@
     (merge
      {:db                         (assoc db :bottom-sheet {:sheets rest-sheets :hide? false})
       :hide-bottom-sheet          nil
-      :reload-status-nav-color-fx (:view-id db)}
+      :reload-status-nav-color-fx [(:view-id db) (:theme db)]}
      (when (seq rest-sheets)
        {:dispatch [:show-next-bottom-sheet]}))))
 
@@ -138,12 +138,12 @@
   [{:keys [db]} view-id]
   (let [view-id (if (= view-id :shell-stack) (shell.utils/calculate-view-id) view-id)]
     {:db             (assoc db :view-id view-id)
-     :set-view-id-fx view-id}))
+     :set-view-id-fx [view-id (:theme db)]}))
 
 (rf/defn reload-status-nav-color
   {:events [:reload-status-nav-color]}
   [{:keys [db]} view-id]
-  {:reload-status-nav-color-fx (or view-id (:view-id db))})
+  {:reload-status-nav-color-fx [(or view-id (:view-id db)) (:theme db)]})
 
 (defn open-share
   [_ [config]]

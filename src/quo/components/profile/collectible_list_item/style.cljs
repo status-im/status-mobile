@@ -39,7 +39,7 @@
     :border-radius    14
     :border-width     1
     :border-color     (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)}
-   (shadows/get 2)))
+   (shadows/get 2 theme)))
 
 (def image
   {:width         "100%"

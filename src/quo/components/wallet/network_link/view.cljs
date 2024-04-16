@@ -35,8 +35,9 @@
      :stroke-width "1"}]])
 
 (defn link-linear
-  [{:keys [source theme]}]
-  (let [[container-width
+  [{:keys [source]}]
+  (let [theme                 (quo.theme/use-theme)
+        [container-width
          set-container-width] (rn/use-state 100)
         stroke-color          (colors/resolve-color source theme)
         fill-color            (colors/theme-colors colors/white colors/neutral-90 theme)
@@ -52,8 +53,9 @@
       [circle fill-color stroke-color]]]))
 
 (defn link-1x
-  [{:keys [source destination theme]}]
-  (let [[container-width
+  [{:keys [source destination]}]
+  (let [theme                 (quo.theme/use-theme)
+        [container-width
          set-container-width] (rn/use-state 100)
         stroke-color          "url(#gradient)"
         source-color          (colors/resolve-color source theme)
@@ -100,8 +102,9 @@
       [circle fill-color destination-color]]]))
 
 (defn link-2x
-  [{:keys [source destination theme]}]
-  (let [[container-width
+  [{:keys [source destination]}]
+  (let [theme                 (quo.theme/use-theme)
+        [container-width
          set-container-width] (rn/use-state 100)
         stroke-color          "url(#gradient)"
         source-color          (colors/resolve-color source theme)
@@ -155,6 +158,4 @@
      :1x     [link-1x props]
      :2x     [link-2x props])])
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

@@ -14,16 +14,11 @@
    [rn/view {:style (style/left-half theme)}]
    [rn/view {:style (style/right-half theme)}]])
 
-(defn- view-internal
-  [{:keys [color
-           selected?
-           on-press
-           blur?
-           theme
-           idx
-           window-width]
+(defn view
+  [{:keys [color selected? on-press blur? idx window-width]
     :as   props}]
-  (let [border?   (and (not blur?) (not selected?))
+  (let [theme     (quo.theme/use-theme)
+        border?   (and (not blur?) (not selected?))
         hex-color (if (= :feng-shui color)
                     (colors/theme-colors colors/neutral-100 colors/white theme)
                     (colors/theme-colors (colors/custom-color color 50)
@@ -38,6 +33,7 @@
      (if (and (= :feng-shui color) (not selected?))
        [feng-shui
         (assoc props
+               :theme     theme
                :hex-color hex-color
                :border?   border?)]
        [rn/view
@@ -49,5 +45,3 @@
             :color (if (= :feng-shui color)
                      (colors/theme-colors colors/white colors/neutral-100 theme)
                      colors/white)}])])]))
-
-(def view (quo.theme/with-theme view-internal))

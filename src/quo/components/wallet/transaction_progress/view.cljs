@@ -170,22 +170,21 @@
      :progress-value progress}]])
 
 (defn- view-internal
-  [{:keys [title on-press accessibility-label theme tag-photo tag-name tag-number networks]
+  [{:keys [title on-press accessibility-label tag-photo tag-name tag-number networks]
     :or   {accessibility-label :transaction-progress}}]
-  [rn/touchable-without-feedback
-   {:on-press            on-press
-    :accessibility-label accessibility-label}
-   [rn/view {:style (style/box-style theme)}
-    [title-internal
-     {:title    title
-      :theme    theme
-      :networks networks}]
-    [tag-internal tag-photo tag-name tag-number theme]
-    (for [network networks]
-      (let [assoc-props #(get-network networks %)]
-        ^{:key (:network network)}
-        [view-network (assoc-props (:network network))]))]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/touchable-without-feedback
+     {:on-press            on-press
+      :accessibility-label accessibility-label}
+     [rn/view {:style (style/box-style theme)}
+      [title-internal
+       {:title    title
+        :theme    theme
+        :networks networks}]
+      [tag-internal tag-photo tag-name tag-number theme]
+      (for [network networks]
+        (let [assoc-props #(get-network networks %)]
+          ^{:key (:network network)}
+          [view-network (assoc-props (:network network))]))]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

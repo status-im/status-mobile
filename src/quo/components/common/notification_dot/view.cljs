@@ -4,12 +4,11 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn view-internal
-  [{:keys [customization-color style theme blur?]}]
-  [rn/view
-   {:accessibility-label :notification-dot
-    :style               (merge
-                          (style/notification-dot customization-color theme blur?)
-                          style)}])
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [customization-color style blur?]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:accessibility-label :notification-dot
+      :style               (merge
+                            (style/notification-dot customization-color theme blur?)
+                            style)}]))

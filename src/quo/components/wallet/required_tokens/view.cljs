@@ -8,34 +8,33 @@
             [schema.core :as schema]))
 
 (defn- view-internal
-  [{:keys [type amount token token-img-src collectible-img-src collectible-name divider? theme
+  [{:keys [type amount token token-img-src collectible-img-src collectible-name divider?
            container-style]}]
-  [rn/view
-   {:style               (merge style/container container-style)
-    :accessibility-label :wallet-required-tokens}
-   (case type
-     :token       [token/view
-                   (assoc (if token-img-src
-                            {:image-source token-img-src}
-                            {:token token})
-                          :size
-                          14)]
-     :collectible [rn/image
-                   {:style  style/collectible-img
-                    :source collectible-img-src}]
-     nil)
-   [text/text
-    {:size   :paragraph-2
-     :weight :medium
-     :style  {:margin-left 4}}
-    (case type
-      :token       (str amount " " token)
-      :collectible (str amount " " collectible-name)
-      nil)]
-   (when divider?
-     [rn/view
-      {:style (style/divider theme)}])])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               (merge style/container container-style)
+      :accessibility-label :wallet-required-tokens}
+     (case type
+       :token       [token/view
+                     (assoc (if token-img-src
+                              {:image-source token-img-src}
+                              {:token token})
+                            :size
+                            14)]
+       :collectible [rn/image
+                     {:style  style/collectible-img
+                      :source collectible-img-src}]
+       nil)
+     [text/text
+      {:size   :paragraph-2
+       :weight :medium
+       :style  {:margin-left 4}}
+      (case type
+        :token       (str amount " " token)
+        :collectible (str amount " " collectible-name)
+        nil)]
+     (when divider?
+       [rn/view
+        {:style (style/divider theme)}])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal required-tokens-schema/?schema)))
+(def view (schema/instrument #'view-internal required-tokens-schema/?schema))

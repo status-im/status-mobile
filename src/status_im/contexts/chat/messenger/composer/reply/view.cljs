@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]
@@ -89,6 +90,7 @@
    in-chat-input? pin? recording-audio? input-ref]
   (let [[primary-name _]   (rf/sub [:contacts/contact-two-names-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
+        theme              (quo.theme/use-theme)
         content-type       (or content-type contentType)
         text               (get-quoted-text-with-mentions (or parsed-text (:parsed-text content)))]
     [rn/view
@@ -98,7 +100,7 @@
       (when-not pin?
         [quo/icon :i/connector
          {:size            16
-          :color           (colors/theme-colors colors/neutral-40 colors/neutral-60)
+          :color           (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
           :container-style {:position :absolute :left 0 :bottom -4 :width 16 :height 16}}])
       (if (or deleted? deleted-for-me?)
         [rn/view {:style (style/quoted-message pin?)}
@@ -121,7 +123,7 @@
          [quo/text
           {:size   :label
            :weight :regular
-           :style  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40)
+           :style  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
                     :margin-top 2}}
           (str " "
                (condp = (or content-type contentType)
@@ -142,8 +144,8 @@
         :i/close])
      (when (and in-chat-input? recording-audio?)
        [linear-gradient/linear-gradient
-        {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-90-opa-0)
-                  (colors/theme-colors colors/white colors/neutral-90)]
+        {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-90-opa-0 theme)
+                  (colors/theme-colors colors/white colors/neutral-90 theme)]
          :start  {:x 0 :y 0}
          :end    {:x 0.7 :y 0}
          :style  style/gradient}])]))

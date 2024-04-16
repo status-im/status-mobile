@@ -71,11 +71,12 @@
       :disabled?               community-member?}
      item]))
 
-(defn view-internal
-  [{:keys [theme]}]
+(defn view
+  []
   (fn []
     (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
-    (let [customization-color     (rf/sub [:profile/customization-color])
+    (let [theme                   (quo.theme/use-theme)
+          customization-color     (rf/sub [:profile/customization-color])
           {:keys [id]}            (rf/sub [:get-screen-params])
           contacts                (rf/sub [:contacts/filtered-active-sections])
           selected                (rf/sub [:group/selected-contacts])
@@ -137,5 +138,3 @@
              (if (= 1 selected-contacts-count)
                (i18n/label :t/invite-1-user)
                (i18n/label :t/invite-n-users {:count selected-contacts-count}))])])])))
-
-(def view (quo.theme/with-theme view-internal))

@@ -13,7 +13,7 @@
 
 (defn- internal-view
   [{:keys [customization-color status token metrics? values on-press on-long-press token-name]}]
-  (let [theme                 (quo.theme/use-theme-value)
+  (let [theme                 (quo.theme/use-theme)
         [state set-state]     (rn/use-state :default)
         bg-opacity            (case state
                                 :active  10
