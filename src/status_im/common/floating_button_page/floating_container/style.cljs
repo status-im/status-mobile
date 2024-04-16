@@ -2,7 +2,7 @@
   (:require [react-native.safe-area :as safe-area]))
 
 (defn content-container
-  [blur? keyboard-shown?]
+  [blur? keyboard-shown? extra-margin-bottom]
   (let [margin-bottom (if keyboard-shown? 0 (safe-area/get-bottom))]
     (cond-> {:margin-top         :auto
              :overflow           :hidden

@@ -1,8 +1,6 @@
 (ns status-im.common.alert-banner.style
   (:require [status-im.common.alert-banner.constants :as alert-banner.constants]))
 
-(def ^:const alert-banner-height 40)
-
 (defn container
   [background-color]
   {:background-color background-color})

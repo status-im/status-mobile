@@ -29,4 +29,5 @@
   {:margin-top    12
    :margin-bottom 8})
 
-(def slide-button-container {:z-index 1})
+(defn slide-button-container [bottom]
+  {:z-index 1})

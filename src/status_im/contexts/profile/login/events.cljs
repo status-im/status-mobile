@@ -231,7 +231,7 @@
 (rf/reg-event-fx
  :profile/show-testnet-mode-banner-if-enabled
  (fn [{:keys [db]}]
-   (when (or true (get-in db [:profile/profile :test-networks-enabled?]))
+   (when (get-in db [:profile/profile :test-networks-enabled?])
      {:fx [[:dispatch
             [:alert-banners/add
              {:type :alert

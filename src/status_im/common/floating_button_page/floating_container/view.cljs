@@ -14,9 +14,9 @@
     child]])
 
 (defn view-internal
-  [{:keys [theme on-layout keyboard-shown? blur?]} child]
+  [{:keys [theme on-layout keyboard-shown? blur? extra-margin-bottom]} child]
   [rn/view
-   {:style     (style/content-container blur? keyboard-shown?)
+   {:style     (style/content-container blur? keyboard-shown? extra-margin-bottom)
     :on-layout on-layout}
    (if blur?
      [blur-container child theme]
