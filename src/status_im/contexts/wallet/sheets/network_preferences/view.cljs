@@ -26,10 +26,11 @@
                                                     networks-count    (count
                                                                        @network-preferences-names-state)]
                                                 (if (and (= networks-count 1) contains-network?)
-                                                  (reset! network-preferences-names-state
-                                                    (set constants/default-network-names))
+                                                  (do
+                                                    (reset! state :default)
+                                                    (reset! network-preferences-names-state #{}))
                                                   (swap! network-preferences-names-state update-fn
-                                                    network-name))))
+                                                         network-name))))
         get-current-preferences-names       (fn []
                                               (if (= @state :default)
                                                 initial-network-preferences-names
@@ -41,7 +42,11 @@
             current-networks (filter (fn [network]
                                        (contains? (get-current-preferences-names)
                                                   (:network-name network)))
-                                     network-details)]
+                                     network-details)
+            _                (prn {:init          initial-network-preferences-names
+                                   :external-init selected-networks
+                                   :net-p-ns      @network-preferences-names-state
+                                   :current       (get-current-preferences-names)})]
         [:<>
          ;; quo/overlay isn't compatible with sheets
          (when blur?
@@ -107,3 +112,7 @@
                               :customization-color color}}]]))))
 
 (def view (quo.theme/with-theme view-internal))
+
+(comment
+  (contains? #{:a :b} 0)
+  ,)
