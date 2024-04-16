@@ -21,13 +21,20 @@
 
 (defn find-affordable-networks
   [{:keys [balances-per-chain input-value selected-networks disabled-chain-ids]}]
-  (let [input-value (if (string/blank? input-value) 0 input-value)]
+  (let [input-value                         (if (string/blank? input-value) 0 input-value)
+        total-balance-for-selected-networks (reduce money/add
+                                                    (map (fn [chain-id]
+                                                           (let [token-chain-balance (get
+                                                                                      balances-per-chain
+                                                                                      chain-id)
+                                                                 balance (:balance token-chain-balance)]
+                                                             (money/bignumber (or balance 0))))
+                                                         selected-networks))]
     (->> balances-per-chain
          (filter (fn [[_
-                       {:keys [balance chain-id]
-                        :or   {balance 0}}]]
+                       {:keys [chain-id]}]]
                    (and
-                    (money/greater-than-or-equals (money/bignumber balance)
+                    (money/greater-than-or-equals total-balance-for-selected-networks
                                                   (money/bignumber input-value))
                     (some #(= % chain-id) selected-networks)
                     (not-any? #(= % chain-id) disabled-chain-ids))))
