@@ -9,8 +9,9 @@
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
 (def min-length 5)
 
+;; Combine ASCII and Emoji into one regex
 (def bio-chars-regex
-  #"^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|[\u0000-\u007F]+)+$")
+  #"^[\u00a9\u00ae\u2000-\u3300\ud83c\ud000-\udfff\ud83d\ud000-\udfff\ud83e\ud000-\udfff\u0000-\u007F]+$")
 
 (def common-names ["Ethereum" "Bitcoin"])
 
