@@ -10,6 +10,7 @@
     [status-im.common.json-rpc.events]
     status-im.common.log
     status-im.common.password-authentication.events
+    status-im.common.shared-urls.events
     status-im.common.signals.events
     status-im.common.theme.events
     [status-im.common.toasts.events]

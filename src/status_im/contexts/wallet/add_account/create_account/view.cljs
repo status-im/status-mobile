@@ -47,7 +47,7 @@
       :image             :icon
       :image-props       :i/derivated-path
       :action            :button
-      :action-props      {:on-press    #(if (ff/enabled? :ff/wallet.edit-derivation-path)
+      :action-props      {:on-press    #(if (ff/enabled? ::ff/wallet.edit-derivation-path)
                                           (rf/dispatch [:standard-auth/authorize
                                                         {:on-auth-success   on-auth-success
                                                          :auth-button-label (i18n/label :t/continue)}])
