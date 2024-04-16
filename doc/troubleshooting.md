@@ -128,3 +128,19 @@ Status-mobile uses `shadow-cljs` for hot reloading changes and uses its own [rel
 
 ### Solution
 Open react native's [In-App Developer Menu](https://reactnative.dev/docs/debugging#accessing-the-in-app-developer-menu) and press "Disable Fast Refresh" or "Disable Hot Reloading"
+
+# App crashing after running `make run-ios`
+
+### Cause
+It's possible that installing XCode from a `.xip` file might cause XCode to act funny
+Since it's not installed from the App Store, Or you might be missing a Rosetta installation.
+
+[Reference/Similar issue](https://github.com/expo/expo-cli/issues/3197)
+
+You might see something like this after running `make run-ios`:
+```
+Underlying error (domain=FBSOpenApplicationServiceErrorDomain, code=1):
+```
+### Solution
+Run `softwareupdate --install-rosetta --agree-to-license`
+to accept XCode's license and install Rosetta.
