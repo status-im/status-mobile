@@ -111,14 +111,14 @@
 
 (rf/reg-event-fx
  :wallet/request-collectibles-for-current-viewing-account
- (fn [{:keys [db]} _]
+ (fn [{:keys [db]} [address]]
    (let [current-viewing-account (-> db :wallet :current-viewing-account-address)
          [request-id]            (get-unique-collectible-request-id 1)]
      {:db (assoc-in db [:wallet :ui :collectibles :pending-requests] 1)
       :fx [[:dispatch
             [:wallet/request-new-collectibles-for-account
              {:request-id request-id
-              :account    current-viewing-account
+              :account    (if address address current-viewing-account)
               :amount     collectibles-request-batch-size}]]]})))
 
 (defn- update-fetched-collectibles-progress

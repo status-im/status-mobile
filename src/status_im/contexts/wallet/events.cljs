@@ -184,7 +184,7 @@
                 :new-account?        true)
     :fx [[:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/clear-new-keypair]]
-         [:dispatch [:wallet/request-collectibles-for-current-viewing-account]]
+         [:dispatch [:wallet/request-collectibles-for-current-viewing-account address]]
          [:dispatch [:wallet/request-collectibles-for-all-accounts]]]}))
 
 (rf/reg-event-fx :wallet/add-account
