@@ -23,7 +23,7 @@
         chat-list-scroll-y     (reanimated/use-shared-value 0)]
     [rn/keyboard-avoiding-view
      {:style                    style/keyboard-avoiding-container
-      :keyboard-vertical-offset (- (:bottom insets))}
+      :keyboard-vertical-offset (:bottom insets)}
      [list.view/messages-list-content
       {:insets                                    insets
        :layout-height                             layout-height
