@@ -92,7 +92,7 @@ Since it's not installed from the App Store, Or you might be missing a Rosetta i
 
 [Reference/Similar issue](https://github.com/expo/expo-cli/issues/3197)
 
-You might see something like:
+You might see something like after running `make run-ios`:
 ```
 Underlying error (domain=FBSOpenApplicationServiceErrorDomain, code=1):
 ```
