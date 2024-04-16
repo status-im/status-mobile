@@ -84,3 +84,17 @@ It's possible that on a multi-user installation files provided to the build sand
 Issues:
 * https://github.com/NixOS/nix/issues/6115
 * https://github.com/NixOS/nix/issues/6217
+
+## App crashes on launch on iOS
+
+It's possible that installing XCode from a `.xip` file might cause XCode to act funny
+Since it's not installed from the App Store, Or you might be missing a Rosetta installation.
+
+[Reference/Similar issue](https://github.com/expo/expo-cli/issues/3197)
+
+You might see something like:
+```
+Underlying error (domain=FBSOpenApplicationServiceErrorDomain, code=1):
+```
+
+The solution is to run `softwareupdate --install-rosetta --agree-to-license` to accept XCode's license and install Rosetta.
