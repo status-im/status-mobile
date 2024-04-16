@@ -25,6 +25,11 @@
    [:type [:= :profile]]
    [:profile-picture [:maybe :schema.quo/profile-picture-source]]])
 
+(def ?channel
+  [:map
+   [:type [:= :channel]]
+   [:emoji {:optional true} [:maybe ?emoji]]])
+
 (def ?wallet
   [:map
    [:type [:= :wallet]]
@@ -60,6 +65,7 @@
    [:catn
     [:props
      [:multi {:dispatch :type}
+      [:channel [:merge ?base ?channel]]
       [:profile [:merge ?base ?profile]]
       [:wallet [:merge ?base ?address-base ?wallet]]
       [:saved-address [:merge ?base ?address-base ?saved-address]]

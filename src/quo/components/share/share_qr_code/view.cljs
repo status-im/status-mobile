@@ -163,6 +163,7 @@
                               :profile                   :profile
                               (:watched-address :wallet) :wallet-account
                               :saved-address             :saved-address
+                              :channel                   :channel
                               nil)
        :customization-color customization-color
        :full-name           full-name
