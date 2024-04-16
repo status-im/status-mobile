@@ -2,6 +2,7 @@
   (:require [clojure.set]
             [oops.core :as oops]
             [quo.components.avatars.account-avatar.view :as account-avatar]
+            [quo.components.avatars.channel-avatar.view :as channel-avatar]
             [quo.components.avatars.user-avatar.view :as user-avatar]
             [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
             [quo.components.buttons.button.view :as button]
@@ -129,6 +130,12 @@
                                  :size                32}]
     :saved-address             [wallet-user-avatar/wallet-user-avatar
                                 {:size                :size-32
+                                 :customization-color customization-color
+                                 :full-name           full-name}]
+    :channel                   [channel-avatar/view
+                                {:size                :size-32
+                                 :emoji               emoji
+                                 :locked-state        :not-set
                                  :customization-color customization-color
                                  :full-name           full-name}]
     nil))
