@@ -46,7 +46,7 @@
   with the 1st 5 characters of the encoded data followed by an ellipsis
   followed by the last 10 characters of the compressed public key"
   [universal-profile-url]
-  (when-let [re-find-result (re-find #"^https://(status.app/u/)(.*)#(.*)$" universal-profile-url)]
+  (when-let [re-find-result (re-find #"^https://(status.app/u/)(.*)#(.*)$" (str universal-profile-url))]
     (let [[_whole-url base-url encoded-data public-key] re-find-result]
       (when (> (count public-key) 9)
         (let [first-part-of-encoded-data (subs encoded-data 0 5)

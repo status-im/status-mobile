@@ -402,16 +402,16 @@
 (rf/reg-event-fx :wallet/share-account
  (fn [_ [{:keys [content title]}]]
    {:fx [[:effects.share/open
-          (if platform/ios?
-            {:activityItemSources
-             [{:placeholderItem {:type    "text"
-                                 :content content}
-               :item            {:default {:type    "text"
-                                           :content content}}
-               :linkMetadata    {:title title}}]}
-            {:title   title
-             :subject title
-             :message content})]]}))
+          {:options (if platform/ios?
+                      {:activityItemSources
+                       [{:placeholderItem {:type    :text
+                                           :content content}
+                         :item            {:default {:type    :text
+                                                     :content content}}
+                         :linkMetadata    {:title title}}]}
+                      {:title   title
+                       :subject title
+                       :message content})}]]}))
 
 (rf/reg-event-fx
  :wallet/blockchain-status-changed

@@ -5,6 +5,7 @@
     [react-native.core :as rn]
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
+    [react-native.share :as share]
     [status-im.contexts.shell.jump-to.constants :as shell.constants]
     [status-im.contexts.shell.jump-to.utils :as jump-to.utils]
     [status-im.navigation.options :as options]
@@ -182,6 +183,19 @@
                                   :type :modal})))
 
 (rf/reg-fx :open-modal-fx open-modal)
+
+;;;; Share
+
+(rf/reg-fx :effects.share/open
+ (fn [{:keys [options on-success on-error]}]
+   (cond-> (share/open options)
+     (fn? on-success) (.then on-success)
+     :always          (.catch (fn [error]
+                                (log/error "Failed to share content"
+                                           {:error  error
+                                            :effect :effects.share/open})
+                                (when (fn? on-error)
+                                  (on-error error)))))))
 
 ;;;; Overlay
 

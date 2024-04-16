@@ -1,6 +1,5 @@
 (ns status-im.contexts.profile.contact.share.view
-  (:require [legacy.status-im.ui.components.list-selection :as list-selection]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.qr-codes.view :as qr-codes]
@@ -19,7 +18,8 @@
         abbreviated-url (rn/use-memo (fn []
                                        (address/get-abbreviated-profile-url universal-profile-url))
                                      [universal-profile-url])
-        on-share-press  (rn/use-callback #(list-selection/open-share {:message universal-profile-url})
+        on-share-press  (rn/use-callback #(rf/dispatch [:open-share
+                                                        {:options {:message universal-profile-url}}])
                                          [universal-profile-url])
         on-copy-press   (rn/use-callback (fn []
                                            (rf/dispatch [:share/copy-text-and-show-toast
