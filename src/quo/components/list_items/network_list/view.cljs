@@ -40,6 +40,7 @@
    [:catn
     [:props
      [:map {:closed true}
+      [:theme :schema.common/theme]
       [:network-image :int]
       [:label :string]
       [:fiat-value :string]
