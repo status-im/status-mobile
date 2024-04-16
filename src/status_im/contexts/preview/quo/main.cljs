@@ -39,6 +39,8 @@
      channel-actions]
     [status-im.contexts.preview.quo.community.community-card-view :as
      community-card]
+    [status-im.contexts.preview.quo.community.community-detail-token-gating :as
+     community-detail-token-gating]
     [status-im.contexts.preview.quo.community.community-membership-list-view
      :as community-membership-list-view]
     [status-im.contexts.preview.quo.community.community-stat :as community-stat]
@@ -260,6 +262,8 @@
                         :component color/view}]
    :community         [{:name      :community-card-view
                         :component community-card/view}
+                       {:name      :community-detail-token-gating
+                        :component community-detail-token-gating/view}
                        {:name      :community-membership-list-view
                         :component community-membership-list-view/view}
                        {:name      :community-stat
