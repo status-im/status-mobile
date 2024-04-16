@@ -160,7 +160,7 @@
          {:color           colors/white-opa-40
           :container-style style/watched-account-icon}])]
      [share-button {:on-press on-share-press}]]
-    (when (not= share-qr-type :profile)
+    (when (not (contains? #{:profile :channel} share-qr-type))
       [header props])
     [quo.theme/provider :light
      [qr-code/view
