@@ -881,7 +881,9 @@ PODS:
     - React-Core
   - react-native-blur (4.3.3):
     - React-Core
-  - react-native-cameraroll (5.10.0):
+  - react-native-cameraroll (7.5.2):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - react-native-config (1.5.0):
     - react-native-config/App (= 1.5.0)
@@ -1475,7 +1477,7 @@ SPEC CHECKSUMS:
   react-native-biometrics: 352e5a794bfffc46a0c86725ea7dc62deb085bdc
   react-native-blob-util: 600972b1782380a5a7d5db61a3817ea32349dae9
   react-native-blur: c6d0a1dc2b4b519f7afe3b14d8151998632b6d18
-  react-native-cameraroll: 4701ae7c3dbcd3f5e9e150ca17f250a276154b35
+  react-native-cameraroll: af8eec1e585d053ff485d98ec837f9a8a11b5745
   react-native-config: 5330c8258265c1e5fdb8c009d2cabd6badd96727
   react-native-hole-view: 6935448993bac79f2b5a4ad7e9741094cf810679
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3

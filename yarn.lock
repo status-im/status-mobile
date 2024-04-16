@@ -2576,9 +2576,10 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1":
-  version "5.10.0"
-  resolved "git+https://github.com/status-im/react-native-camera-roll.git#174f8c6ad88e5bad9d9bd207f42173e567ec3138"
+"@react-native-camera-roll/camera-roll@7.5.2":
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-7.5.2.tgz#2b248a835fbb8b53d04fc0c2957adba1474d9c99"
+  integrity sha512-XiVIrW17EFXrFzqB48q6cQOaYeVnw0iC3tH+Jhl+MAHDYGLJp+ulzxCNNwngaMvnVAA5Q2mUMzRocUiJPy8q0g==
 
 "@react-native-clipboard/clipboard@1.13.2":
   version "1.13.2"

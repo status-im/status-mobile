@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.3",
-    "@react-native-camera-roll/camera-roll": "git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1",
+    "@react-native-camera-roll/camera-roll": "7.5.2",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
     "@react-native-community/blur": "git+https://github.com/status-im/react-native-blur.git#refs/tags/v4.3.3-status",
