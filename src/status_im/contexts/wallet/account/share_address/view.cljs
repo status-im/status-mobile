@@ -4,7 +4,6 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
-    [react-native.share :as share]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.account.share-address.style :as style]
@@ -18,18 +17,18 @@
 
 (defn- share-action
   [address share-title]
-  (share/open
-   (if platform/ios?
-     {:activityItemSources [{:placeholderItem {:type    "text"
-                                               :content address}
-                             :item            {:default {:type "text"
-                                                         :content
-                                                         address}}
-                             :linkMetadata    {:title share-title}}]}
-     {:title     share-title
-      :subject   share-title
-      :message   address
-      :isNewTask true})))
+  (rf/dispatch [:open-share
+                {:options (if platform/ios?
+                            {:activityItemSources [{:placeholderItem {:type    :text
+                                                                      :content address}
+                                                    :item            {:default {:type :text
+                                                                                :content
+                                                                                address}}
+                                                    :linkMetadata    {:title share-title}}]}
+                            {:title     share-title
+                             :subject   share-title
+                             :message   address
+                             :isNewTask true})}]))
 
 (defn- open-preferences
   [selected-networks]

@@ -23,5 +23,5 @@
 
 (defn home-container
   []
-  {:margin-top (safe-area/get-top)
+  {:margin-top (+ (safe-area/get-top) 8)
    :flex       1})

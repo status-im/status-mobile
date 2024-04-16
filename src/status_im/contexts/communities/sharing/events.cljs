@@ -38,23 +38,24 @@
                                     :url     %}])]
      {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
 
-(rf/reg-event-fx :communities/share-community-url-with-data
- (fn [_ [community-id]]
-   (let [title      (i18n/label :t/community-on-status)
+(rf/reg-event-fx :communities/share-community-channel-url-with-data
+ (fn [_ [chat-id]]
+   (let [title      (i18n/label :t/channel-on-status)
          on-success (fn [url]
-                      (share/open
-                       (if platform/ios?
-                         {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                   :content title}
-                                                 :item            {:default {:type    "url"
-                                                                             :content url}}
-                                                 :linkMetadata    {:title title}}]}
-                         {:title     title
-                          :subject   title
-                          :message   url
-                          :url       url
-                          :isNewTask true})))]
-     {:fx [[:dispatch [:communities/get-community-share-data community-id on-success]]]})))
+                      (rf/dispatch [:open-share
+                                    {:options (if platform/ios?
+                                                {:activityItemSources
+                                                 [{:placeholderItem {:type    :text
+                                                                     :content title}
+                                                   :item            {:default {:type    :url
+                                                                               :content url}}
+                                                   :linkMetadata    {:title title}}]}
+                                                {:title     title
+                                                 :subject   title
+                                                 :message   url
+                                                 :url       url
+                                                 :isNewTask true})}]))]
+     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
 
 (rf/reg-event-fx :communities/get-community-channel-share-data
  (fn [_ [chat-id on-success]]

@@ -1,7 +1,6 @@
 (ns status-im.contexts.shell.share.profile.view
   (:require
     [clojure.string :as string]
-    [legacy.status-im.ui.components.list-selection :as list-selection]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -30,7 +29,7 @@
         :width               (- window-width (* style/screen-padding 2))
         :qr-data             universal-profile-url
         :qr-data-label-shown abbreviated-url
-        :on-share-press      #(list-selection/open-share {:message universal-profile-url})
+        :on-share-press      #(rf/dispatch [:open-share {:options {:message universal-profile-url}}])
         :on-text-press       #(rf/dispatch [:share/copy-text-and-show-toast
                                             {:text-to-copy      universal-profile-url
                                              :post-copy-message (i18n/label :t/link-to-profile-copied)}])
