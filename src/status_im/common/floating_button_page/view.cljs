@@ -57,7 +57,7 @@
 
 (defn view
   [{:keys [header footer customization-color footer-container-padding header-container-style
-           gradient-cover? extra-margin-bottom]
+           gradient-cover?]
     :or   {footer-container-padding (safe-area/get-top)}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
@@ -115,7 +115,6 @@
           :pointer-events           :box-none}
          [floating-container/view
           {:on-layout           set-footer-container-height
-           :extra-margin-bottom extra-margin-bottom
            :keyboard-shown?     keyboard-shown?
            :blur?               show-background?}
           footer]]]])

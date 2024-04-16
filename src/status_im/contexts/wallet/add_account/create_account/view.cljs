@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im.common.alert-banner.constants :as alert-banner.constants]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.standard-authentication.core :as standard-auth]
@@ -127,7 +128,7 @@
                                                              (if new-keypair
                                                                (create-new-keypair-account password)
                                                                (create-existing-keypair-account
-                                                                password)))
+                                                                 password)))
                                       :auth-button-label   (i18n/label :t/confirm)
                                       :disabled?           (empty? @account-name)
                                       :container-style     (style/slide-button-container bottom)
