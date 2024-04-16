@@ -148,7 +148,7 @@
    (let [tokens     (data-store/rpc->tokens raw-tokens-data)
          add-tokens (fn [stored-accounts tokens-per-account]
                       (reduce-kv (fn [accounts address tokens-data]
-                                   (if (accounts address)
+                                   (if (contains? accounts address)
                                      (update accounts address assoc :tokens tokens-data)
                                      accounts))
                                  stored-accounts
