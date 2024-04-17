@@ -11,7 +11,7 @@
             [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [selected-networks account watch-only?]}]
+  [{:keys [title section-one-title section-two-title selected-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
                 network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
@@ -51,7 +51,7 @@
              :blur-amount 20
              :blur-radius 25}])
          [quo/drawer-top
-          {:title       (i18n/label :t/network-preferences)
+          {:title       (or title (i18n/label :t/network-preferences))
            :description (if watch-only?
                           (i18n/label :t/network-preferences-desc-1)
                           (i18n/label :t/network-preferences-desc-2))

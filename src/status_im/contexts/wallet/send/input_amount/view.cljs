@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -9,14 +10,15 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.send.input-amount.style :as style]
     [status-im.contexts.wallet.send.routes.view :as routes]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.network-preferences.view :as network-preferences]
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.re-frame :as rf]
-    [quo.foundations.colors :as colors]))
+    [utils.re-frame :as rf]))
 
 (defn- make-limit-label
   [amount currency]
@@ -78,8 +80,24 @@
                                    (rf/dispatch [:wallet/edit-token-to-send token])
                                    (clear-input!))}]]))
 
+(defn- open-preferences
+  [selected-networks account]
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [network-preferences/view
+                 {:title             (i18n/label :t/edit-receiver-networks)
+                  :section-one-title (i18n/label :t/preferred-by-receiver)
+                  :section-two-title (i18n/label :t/not-preferred-by-receiver)
+                  :selected-networks (vec (map network-utils/id->network selected-networks))
+                  :account           account
+                  :button-label      (i18n/label :t/display)
+                  :on-save           (fn [chain-ids]
+                                       (rf/dispatch [:hide-bottom-sheet])
+                                       (rf/dispatch [:wallet/update-receiver-networks chain-ids]))}])}]))
+
 (defn- token-not-available
-  [token-symbol]
+  [token-symbol selected-networks address]
   [rn/view {:style style/token-not-available-container}
    [rn/view
     [quo/icon :i/alert
@@ -93,7 +111,7 @@
     [quo/button
      {:size                24
       :customization-color colors/danger-50
-      :on-press            #()}
+      :on-press            #(open-preferences selected-networks address)}
      (i18n/label :t/add-networks-token-can-be-sent-to {:token-symbol token-symbol})]]])
 
 (defn view
@@ -246,6 +264,8 @@
            :input-value       (controlled-input/input-value input-state)
            :valid-input?      valid-input?
            :current-screen-id current-screen-id}]
+         (when token-not-supported-in-receiver-networks?
+           [token-not-available token-symbol selected-networks to-address])
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
