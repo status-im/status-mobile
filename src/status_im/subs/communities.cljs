@@ -4,6 +4,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
+    [status-im.contexts.communities.utils :as utils]
     [status-im.subs.chat.utils :as subs.utils]
     [utils.i18n :as i18n]
     [utils.money :as money]))
@@ -325,11 +326,12 @@
   (let [sym           (:symbol criteria)
         amount-in-wei (:amountInWei criteria)
         decimals      (:decimals criteria)]
-    {:symbol      sym
-     :sufficient? satisfied
-     :loading?    checking-permissions?
-     :amount      (money/to-fixed (money/token->unit amount-in-wei decimals))
-     :img-src     (get token-images sym)}))
+    {:symbol       sym
+     :sufficient?  satisfied
+     :collectible? (= (:type criteria) constants/community-token-type-erc721)
+     :loading?     checking-permissions?
+     :amount       (money/to-fixed (money/token->unit amount-in-wei decimals))
+     :img-src      (get token-images sym)}))
 
 (re-frame/reg-sub
  :communities/checking-permissions-by-id
@@ -407,6 +409,7 @@
                                             roles)]
      (mapv (fn [role]
              {:role       (:type role)
+              :role-text  (i18n/label (utils/role->translation-key (:type role)))
               :satisfied? (:satisfied role)
               :tokens     (map (fn [{:keys [tokenRequirement]}]
                                  (map

@@ -41,12 +41,13 @@
          :weight :medium
          :style  (style/label theme)}
         collectible-name]
-       [text/text
-        {:size        :paragraph-2
-         :weight      :medium
-         :margin-left 5
-         :style       (style/label theme)}
-        collectible-id]]]
+       (when collectible-id
+         [text/text
+          {:size        :paragraph-2
+           :weight      :medium
+           :margin-left 5
+           :style       (style/label theme)}
+          collectible-id])]]
      (when options
        [rn/view {:style (style/options-icon size)}
         [icons/icon (if (= options :hold) :i/hold :i/add-token)

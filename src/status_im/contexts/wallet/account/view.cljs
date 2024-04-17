@@ -6,19 +6,9 @@
     [status-im.contexts.wallet.account.style :as style]
     [status-im.contexts.wallet.account.tabs.view :as tabs]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-    [status-im.contexts.wallet.common.temp :as temp]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-(defn buy-drawer
-  []
-  [:<>
-   [quo/drawer-top {:title (i18n/label :t/buy-tokens)}]
-   [rn/flat-list
-    {:data      temp/buy-tokens-list
-     :style     {:padding-horizontal 8
-                 :padding-bottom     8}
-     :render-fn quo/settings-item}]])
 
 (def first-tab-id :assets)
 
@@ -55,7 +45,7 @@
                                               :flow-id     :wallet-flow}]))
              :receive-action #(rf/dispatch [:open-modal :screen/wallet.share-address {:status :receive}])
              :buy-action     #(rf/dispatch [:show-bottom-sheet
-                                            {:content buy-drawer}])
+                                            {:content buy-token/view}])
              :bridge-action  #(rf/dispatch [:wallet/start-bridge])}])
          [quo/tabs
           {:style            style/tabs
