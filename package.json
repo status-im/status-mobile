@@ -51,7 +51,7 @@
     "react-native-mail": "6.1.1",
     "react-native-navigation": "7.38.3",
     "react-native-orientation-locker": "^1.5.0",
-    "react-native-permissions": "3.8.0",
+    "react-native-permissions": "4.1.5",
     "react-native-reanimated": "3.6.1",
     "react-native-redash": "18.1.0",
     "react-native-shadow-2": "^7.0.8",
