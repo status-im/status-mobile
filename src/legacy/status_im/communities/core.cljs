@@ -4,6 +4,7 @@
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     legacy.status-im.communities.e2e
     [re-frame.core :as re-frame]
+    [status-im.contexts.shell.activity-center.events :as activity-center]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))
@@ -22,59 +23,9 @@
           {}
           requests))
 
-(defn- fetch-community-id-input
-  [{:keys [db]}]
-  (:communities/community-id-input db))
-
 (rf/defn handle-response
   [_ response-js]
   {:dispatch [:sanitize-messages-and-process-response response-js]})
-
-(rf/defn invite-users
-  {:events [::invite-people-confirmation-pressed]}
-  [cofx user-pk contacts]
-  (let [community-id (fetch-community-id-input cofx)
-        pks          (if (seq user-pk)
-                       (conj contacts user-pk)
-                       contacts)]
-    (when (seq pks)
-      {:json-rpc/call [{:method      "wakuext_inviteUsersToCommunity"
-                        :params      [{:communityId community-id
-                                       :users       pks}]
-                        :js-response true
-                        :on-success  #(re-frame/dispatch [::people-invited %])
-                        :on-error    #(do
-                                        (log/error "failed to invite-user community" %)
-                                        (re-frame/dispatch [::failed-to-invite-people %]))}]})))
-
-(rf/defn share-community
-  {:events [::share-community-confirmation-pressed]}
-  [cofx user-pk contacts]
-  (let [community-id (fetch-community-id-input cofx)
-        pks          (if (seq user-pk)
-                       (conj contacts user-pk)
-                       contacts)]
-    (when (seq pks)
-      {:json-rpc/call [{:method      "wakuext_shareCommunity"
-                        :params      [{:communityId community-id
-                                       :users       pks}]
-                        :js-response true
-                        :on-success  #(re-frame/dispatch [::people-invited %])
-                        :on-error    #(do
-                                        (log/error "failed to invite-user community" %)
-                                        (re-frame/dispatch [::failed-to-share-community %]))}]})))
-
-(re-frame/reg-event-fx :communities/invite-people-pressed
- (fn [{:keys [db]} [id]]
-   {:db (assoc db :communities/community-id-input id)
-    :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :legacy-invite-people-community {:invite? true}]]]}))
-
-(re-frame/reg-event-fx :communities/share-community-pressed
- (fn [{:keys [db]} [id]]
-   {:db (assoc db :communities/community-id-input id)
-    :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :legacy-invite-people-community {}]]]}))
 
 (rf/defn people-invited
   {:events [::people-invited]}
@@ -89,6 +40,14 @@
     :fx [[:dismiss-bottom-sheet-overlay-old]
          [:sanitize-messages-and-process-response response-js]
          [:activity-center.notifications/fetch-unread-count]]}))
+
+(rf/defn member-banned
+  {:events [::member-banned]}
+  [cofx response-js]
+  (rf/merge cofx
+            (bottom-sheet/hide-bottom-sheet-old)
+            (handle-response response-js)
+            (activity-center/notifications-fetch-unread-count)))
 
 (rf/defn member-ban
   {:events [::member-ban]}

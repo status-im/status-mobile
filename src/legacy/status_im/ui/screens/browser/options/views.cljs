@@ -10,9 +10,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.utils :as utils]
     [re-frame.core :as re-frame]
-    [status-im.constants :as constants]
-    [utils.i18n :as i18n]
-    [utils.url :as url]))
+    [utils.i18n :as i18n]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -40,13 +38,10 @@
        :on-press            #(hide-sheet-and-dispatch [:browser/revoke-dapp-permissions host])}]]))
 
 (defn browser-options
-  [url account empty-tab name]
+  [url _account empty-tab name]
   (fn []
-    (let [bookmarks   @(re-frame/subscribe [:bookmarks/active])
-          permissions @(re-frame/subscribe [:dapps/permissions])
-          fav?        (get bookmarks url)
-          connected?  (some #{constants/dapp-permission-web3}
-                            (get-in permissions [(url/url-host url) :permissions]))]
+    (let [bookmarks @(re-frame/subscribe [:bookmarks/active])
+          fav?      (get bookmarks url)]
       [react/view {:flex 1}
        [quo/button
         {:style               {:align-self   :flex-end
@@ -86,21 +81,4 @@
                                     #(browser/share-link url)
                                     200))}]
           [react/view {:style {:height 1 :background-color (colors/alpha colors/black 0.1)}}]])
-       (if connected?
-         [list.item/list-item
-          {:icon                [chat-icon/custom-icon-view-list (:name account) (:color account)]
-           :title               (:name account)
-           :subtitle            (i18n/label :t/connected)
-           :accessibility-label :connected-account
-           :chevron             true
-           :on-press            #(hide-sheet-and-dispatch
-                                  [:bottom-sheet/show-sheet-old
-                                   {:content (wallet-connection (url/url-host url) account)}])}]
-         [list.item/list-item
-          {:theme               :accent
-           :title               (i18n/label :t/connect-wallet)
-           :accessibility-label :connect-account
-           :icon                :main-icons/wallet
-           :on-press            #(hide-sheet-and-dispatch
-                                  [:browser/bridge-message-received
-                                   "{\"type\":\"api-request\",\"permission\":\"web3\"}"])}])])))
+      ])))

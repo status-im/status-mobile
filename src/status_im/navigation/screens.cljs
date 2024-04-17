@@ -14,10 +14,12 @@
     [status-im.contexts.chat.messenger.messages.view :as chat]
     [status-im.contexts.chat.messenger.photo-selector.view :as photo-selector]
     [status-im.contexts.communities.actions.accounts-selection.view :as communities.accounts-selection]
-    [status-im.contexts.communities.actions.addresses-for-permissions.view :as addresses-for-permissions]
+    [status-im.contexts.communities.actions.addresses-for-permissions.view :as
+     addresses-for-permissions]
     [status-im.contexts.communities.actions.airdrop-addresses.view :as airdrop-addresses]
     [status-im.contexts.communities.actions.channel-view-details.view :as
      channel-view-channel-members-and-details]
+    [status-im.contexts.communities.actions.invite-contacts.view :as communities.invite]
     [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -60,24 +62,26 @@
     [status-im.contexts.wallet.account.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.account.share-address.view :as wallet-share-address]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
-    [status-im.contexts.wallet.add-address-to-watch.confirm-address.view :as
+    [status-im.contexts.wallet.add-account.add-address-to-watch.confirm-address.view :as
      wallet-confirm-address-to-watch]
-    [status-im.contexts.wallet.add-address-to-watch.view :as wallet-add-address-to-watch]
+    [status-im.contexts.wallet.add-account.add-address-to-watch.view :as wallet-add-address-to-watch]
+    [status-im.contexts.wallet.add-account.create-account.edit-derivation-path.view :as
+     wallet-edit-derivation-path]
+    [status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.view :as
+     wallet-backup-recovery-phrase]
+    [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.view :as
+     wallet-check-your-backup]
+    [status-im.contexts.wallet.add-account.create-account.new-keypair.keypair-name.view :as
+     wallet-keypair-name]
+    [status-im.contexts.wallet.add-account.create-account.select-keypair.view :as wallet-select-keypair]
+    [status-im.contexts.wallet.add-account.create-account.view :as wallet-create-account]
     [status-im.contexts.wallet.bridge.bridge-to.view :as wallet-bridge-to]
     [status-im.contexts.wallet.bridge.input-amount.view :as wallet-bridge-input-amount]
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
-    [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
-    [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
-     wallet-backup-recovery-phrase]
-    [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
-     wallet-check-your-backup]
-    [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
-    [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
-    [status-im.contexts.wallet.create-account.view :as wallet-create-account]
+    [status-im.contexts.wallet.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
-    [status-im.contexts.wallet.send.save-address.view :as wallet-save-address]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im.contexts.wallet.send.select-collectible-amount.view :as wallet-select-collectible-amount]
@@ -124,6 +128,9 @@
      :options   {:sheet?           true
                  :skip-background? true}
      :component group-create/view}
+
+    {:name      :group-details
+     :component group-details/group-details}
 
     {:name      :community-requests-to-join
      :options   {:sheet? true}
@@ -455,6 +462,10 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component scan-profile-qr-page/view}
+
+    {:name      :invite-people-community
+     :options   {:sheet? true}
+     :component communities.invite/view}
 
     ;; Settings
 

@@ -782,7 +782,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.just_fyi("Receiver is checking if initial messages were delivered")
         for message in message_to_edit, message_to_delete:
             if not self.channel_1.chat_element_by_text(message).is_element_displayed(30):
-                self.channel_1.driver.fail("Message '%s' was not received")
+                self.channel_1.driver.fail("Message '%s' was not received" % message)
 
         self.channel_2.just_fyi("Turning on airplane mode and editing/deleting messages")
         self.channel_2.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)

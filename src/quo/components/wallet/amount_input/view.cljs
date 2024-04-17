@@ -4,7 +4,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.wallet.amount-input.schema :as amount-input.schema]
     [quo.components.wallet.amount-input.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -21,35 +21,34 @@
    icon])
 
 (defn- view-internal
-  [{:keys [on-inc-press on-dec-press theme status value min-value max-value
+  [{:keys [on-inc-press on-dec-press status value min-value max-value
            container-style]
     :or   {value     0
            min-value 0
            max-value 999999999}}]
-  [rn/view
-   {:style (merge style/container container-style)}
-   [amount-button
-    {:theme               theme
-     :accessibility-label :amount-input-dec-button
-     :icon                :i/remove
-     :on-press            on-dec-press
-     :disabled?           (>= min-value value)}]
-   [rn/view {:style style/input-container}
-    [text/text
-     {:number-of-lines     1
-      :accessibility-label :amount-input
-      :weight              :semi-bold
-      :size                :heading-1
-      :align-self          :center
-      :style               (style/input-text theme (or status :default))}
-     value]]
-   [amount-button
-    {:theme               theme
-     :icon                :i/add
-     :accessibility-label :amount-input-inc-button
-     :on-press            on-inc-press
-     :disabled?           (>= value max-value)}]])
+  (let [theme (quo.theme/use-theme-value)]
+    [rn/view
+     {:style (merge style/container container-style)}
+     [amount-button
+      {:theme               theme
+       :accessibility-label :amount-input-dec-button
+       :icon                :i/remove
+       :on-press            on-dec-press
+       :disabled?           (>= min-value value)}]
+     [rn/view {:style style/input-container}
+      [text/text
+       {:number-of-lines     1
+        :accessibility-label :amount-input
+        :weight              :semi-bold
+        :size                :heading-1
+        :align-self          :center
+        :style               (style/input-text theme (or status :default))}
+       value]]
+     [amount-button
+      {:theme               theme
+       :icon                :i/add
+       :accessibility-label :amount-input-inc-button
+       :on-press            on-inc-press
+       :disabled?           (>= value max-value)}]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal amount-input.schema/?schema)))
+(def view (schema/instrument #'view-internal amount-input.schema/?schema))

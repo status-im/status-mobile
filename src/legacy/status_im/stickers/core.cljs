@@ -38,22 +38,6 @@
                    :params     []
                    :on-success [:stickers/stickers-recent-success]})))
 
-(rf/defn load-packs
-  {:events [:stickers/load-packs]}
-  [{:keys [db]}]
-  {:json-rpc/call [{:method     "stickers_market"
-                    :params     [(chain/chain-id db)]
-                    :on-success #(re-frame/dispatch [:stickers/stickers-market-success %])}
-                   {:method     "stickers_installed"
-                    :params     []
-                    :on-success #(re-frame/dispatch [:stickers/stickers-installed-success %])}
-                   {:method     "stickers_pending"
-                    :params     []
-                    :on-success #(re-frame/dispatch [:stickers/stickers-pending-success %])}
-                   {:method     "stickers_recent"
-                    :params     []
-                    :on-success #(re-frame/dispatch [:stickers/stickers-recent-success %])}]})
-
 (rf/defn pending-pack
   {:events [:stickers/pending-pack]}
   [{db :db} id]

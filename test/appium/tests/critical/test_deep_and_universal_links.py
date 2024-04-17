@@ -52,8 +52,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 "Status mobile QA community max",
             "https://status.app/c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
                 "Open community for e2e",
-            "https://status.app/c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shspPKCZ1VPVQ9dLXGufUGvGphjxVwrcZ6rkZc7S39T4b3":
-                "closed community"
+            "https://status.app/c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
+                "Closed community"
         }
         for url, text in closed_community_urls.items():
             self.channel.just_fyi("Opening community '%s' by the url %s" % (text, url))
@@ -97,8 +97,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                 "Status mobile QA community max",
             "status.app://c/G1AAAGR0G-IRb2YJD4lRXwLusAFnGrDHGNl6Wt55MIARwVYvarnO873011-fdVSz1kHSan-qq0G96vOaMqyTRhJnQV74KCUr#zQ3shb9irJR66rhG1E8sQZX8pDU3dpGm4daYSmPVDd2e73ewE":
                 "Open community for e2e",
-            "status.app://c/G00AAGS9TbI9mSR-ZNmFrhRjNuEeXAAbcAIUaLLJyjMOG3ACJQ12oIHD78QhzO9s_T5bUeU7rnATWJg3mGgTUemrAg==#zQ3shspPKCZ1VPVQ9dLXGufUGvGphjxVwrcZ6rkZc7S39T4b3":
-                "closed community"
+            "status.app://c/GzAAAORtwyW4xNWM4td0F7hOnYZ1apSqCCRUUR0qxD19n3Ec97fX_aIVIGFWbdUM#zQ3shk6dgK8dYWWSC4m8Jj5c91zyfhfj1fFkgypS8D9gsXkrK":
+                "Closed community"
         }
         for link, text in community_links.items():
             self.channel.just_fyi("Opening community '%s' by the link %s" % (text, link))

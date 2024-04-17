@@ -2,6 +2,7 @@
   (:require [legacy.status-im.utils.core :as utils]
             [quo.foundations.colors :as colors]
             [status-im.common.not-implemented :as not-implemented]
+            [status-im.config :as config]
             [status-im.contexts.profile.edit.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
@@ -36,31 +37,33 @@
                :action          :arrow
                :container-style style/item-container}]}
 
-     {:label (i18n/label :t/showcase)
-      :items [{:title           (i18n/label :t/communities)
-               :on-press        not-implemented/alert
-               :blur?           true
-               :action          :arrow
-               :container-style style/item-container}
-              {:title           (i18n/label :t/accounts)
-               :on-press        not-implemented/alert
-               :blur?           true
-               :action          :arrow
-               :container-style style/item-container}
-              {:title           (i18n/label :t/collectibles)
-               :on-press        not-implemented/alert
-               :blur?           true
-               :action          :arrow
-               :container-style style/item-container}
-              {:title           (i18n/label :t/assets)
-               :on-press        not-implemented/alert
-               :blur?           true
-               :action          :arrow
-               :container-style style/item-container}]}
+     (when config/show-not-implemented-features?
+       {:label (i18n/label :t/showcase)
+        :items [{:title           (i18n/label :t/communities)
+                 :on-press        not-implemented/alert
+                 :blur?           true
+                 :action          :arrow
+                 :container-style style/item-container}
+                {:title           (i18n/label :t/accounts)
+                 :on-press        not-implemented/alert
+                 :blur?           true
+                 :action          :arrow
+                 :container-style style/item-container}
+                {:title           (i18n/label :t/collectibles)
+                 :on-press        not-implemented/alert
+                 :blur?           true
+                 :action          :arrow
+                 :container-style style/item-container}
+                {:title           (i18n/label :t/assets)
+                 :on-press        not-implemented/alert
+                 :blur?           true
+                 :action          :arrow
+                 :container-style style/item-container}]})
 
-     {:label (i18n/label :t/on-the-web)
-      :items [{:title           (i18n/label :t/links)
-               :on-press        not-implemented/alert
-               :blur?           true
-               :action          :arrow
-               :container-style style/item-container}]}]))
+     (when config/show-not-implemented-features?
+       {:label (i18n/label :t/on-the-web)
+        :items [{:title           (i18n/label :t/links)
+                 :on-press        not-implemented/alert
+                 :blur?           true
+                 :action          :arrow
+                 :container-style style/item-container}]})]))

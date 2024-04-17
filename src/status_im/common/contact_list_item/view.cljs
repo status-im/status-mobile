@@ -5,7 +5,7 @@
     [utils.re-frame :as rf]))
 
 (defn contact-list-item
-  [{:keys [on-press on-long-press accessory allow-multiple-presses?]}
+  [{:keys [on-press on-long-press accessory allow-multiple-presses? disabled?]}
    {:keys [primary-name secondary-name public-key compressed-key ens-verified added?]}
    theme]
   (let [photo-path          (rf/sub [:chats/photo-path public-key])
@@ -24,4 +24,5 @@
       :contact?                added?
       :on-press                on-press
       :on-long-press           on-long-press
-      :accessory               accessory}]))
+      :accessory               accessory
+      :disabled?               disabled?}]))

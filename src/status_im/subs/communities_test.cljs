@@ -21,37 +21,6 @@
         raw-communities)
       (is (match? raw-communities (rf/sub [sub-name]))))))
 
-(h/deftest-sub :communities/section-list
-  [sub-name]
-  (testing "builds sections using the first community name char (uppercased)"
-    (swap! rf-db/app-db assoc
-      :communities
-      {"0x1" {:name "civilized monkeys"}
-       "0x2" {:name "Civilized rats"}})
-    (is (match? [{:title "C"
-                  :data  [{:name "civilized monkeys"}
-                          {:name "Civilized rats"}]}]
-                (rf/sub [sub-name]))))
-
-  (testing "sorts by section ascending"
-    (swap! rf-db/app-db assoc
-      :communities
-      {"0x3" {:name "Memorable"}
-       "0x1" {:name "Civilized monkeys"}})
-    (is (match? [{:title "C" :data [{:name "Civilized monkeys"}]}
-                 {:title "M" :data [{:name "Memorable"}]}]
-                (rf/sub [sub-name]))))
-
-  (testing "builds default section for communities without a name"
-    (swap! rf-db/app-db assoc
-      :communities
-      {"0x2" {:id "0x2"}
-       "0x1" {:id "0x1"}})
-    (is (match? [{:title ""
-                  :data  [{:id "0x2"}
-                          {:id "0x1"}]}]
-                (rf/sub [sub-name])))))
-
 (h/deftest-sub :communities/unviewed-counts
   [sub-name]
   (testing "sums counts for a particular community"
@@ -352,15 +321,17 @@
     (swap! rf-db/app-db assoc-in [:communities/permissions-check community-id] checks)
     (is (match? {:can-request-access?     true
                  :networks-not-supported? nil
-                 :tokens                  [[{:symbol      "DAI"
-                                             :amount      "5"
-                                             :sufficient? true
-                                             :loading?    checking-permissions?}]
-                                           [{:symbol      "ETH"
-                                             :amount      "0.002"
-                                             :sufficient? false
-                                             :loading?    checking-permissions?
-                                             :img-src     token-image-eth}]]}
+                 :tokens                  [[{:symbol       "DAI"
+                                             :amount       "5"
+                                             :collectible? false
+                                             :sufficient?  true
+                                             :loading?     checking-permissions?}]
+                                           [{:symbol       "ETH"
+                                             :amount       "0.002"
+                                             :collectible? false
+                                             :sufficient?  false
+                                             :loading?     checking-permissions?
+                                             :img-src      token-image-eth}]]}
                 (rf/sub [sub-name community-id])))))
 
 (h/deftest-sub :communities/community-color
@@ -448,18 +419,20 @@
        (match? [{:role 1
                  :satisfied? true
                  :tokens
-                 [[{:symbol      "ETH"
-                    :sufficient? true
-                    :loading?    false
-                    :amount      "1"
-                    :img-src     token-image-eth}]]}
+                 [[{:symbol       "ETH"
+                    :sufficient?  true
+                    :loading?     false
+                    :collectible? false
+                    :amount       "1"
+                    :img-src      token-image-eth}]]}
                 {:role       2
                  :satisfied? false
-                 :tokens     [[{:symbol      "DAI"
-                                :sufficient? false
-                                :loading?    false
-                                :amount      "10"
-                                :img-src     nil}]]}]
+                 :tokens     [[{:symbol       "DAI"
+                                :sufficient?  false
+                                :collectible? false
+                                :loading?     false
+                                :amount       "10"
+                                :img-src      nil}]]}]
                (rf/sub [sub-name community-id])))))
   (testing
     "without any visible permissions"

@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.not-implemented :as not-implemented]
+            [status-im.config :as config]
             [status-im.contexts.profile.edit.header.view :as header]
             [status-im.contexts.profile.edit.list-items :as edit.items]
             [status-im.contexts.profile.edit.style :as style]
@@ -33,7 +34,8 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back])
-       :right-side [{:icon-name :i/reveal :on-press not-implemented/alert}]}]
+       :right-side (when config/show-not-implemented-features?
+                     [{:icon-name :i/reveal :on-press not-implemented/alert}])}]
      [rn/flat-list
       {:key                             :list
        :header                          [header/view]

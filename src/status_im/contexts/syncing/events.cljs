@@ -1,7 +1,6 @@
 (ns status-im.contexts.syncing.events
   (:require
     [clojure.string :as string]
-    [legacy.status-im.data-store.settings :as data-store.settings]
     [legacy.status-im.node.core :as node]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
@@ -26,14 +25,12 @@
 
 (defn- get-default-node-config
   [installation-id]
-  (let [db {:networks/current-network config/default-network
-            :networks/networks        (data-store.settings/rpc->networks config/default-networks)
-            :profile/profile          {:installation-id           installation-id
-                                       :device-name               (native-module/get-installation-name)
-                                       :log-level                 config/log-level
-                                       :waku-bloom-filter-mode    false
-                                       :custom-bootnodes          nil
-                                       :custom-bootnodes-enabled? false}}]
+  (let [db {:profile/profile {:installation-id           installation-id
+                              :device-name               (native-module/get-installation-name)
+                              :log-level                 config/log-level
+                              :waku-bloom-filter-mode    false
+                              :custom-bootnodes          nil
+                              :custom-bootnodes-enabled? false}}]
     (node/get-multiaccount-node-config db)))
 
 (defn- extract-error

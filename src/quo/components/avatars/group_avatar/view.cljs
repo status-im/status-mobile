@@ -1,7 +1,9 @@
 (ns quo.components.avatars.group-avatar.view
   (:require
+    [clojure.string :as string]
     [quo.components.avatars.group-avatar.style :as style]
     [quo.components.icon :as icon]
+    [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -21,7 +23,7 @@
 
 (defn- view-internal
   [_]
-  (fn [{:keys [size theme customization-color picture icon-name]
+  (fn [{:keys [size theme customization-color picture icon-name emoji chat-name]
         :or   {size                :size-20
                customization-color :blue
                picture             nil
@@ -38,8 +40,27 @@
           {:source picture
            :style  {:width  container-size
                     :height container-size}}]
-         [icon/icon icon-name
-          {:size  icon-size
-           :color colors/white-opa-70}])])))
+         (cond
+           emoji
+           (if (= size :size-80)
+             [rn/text
+              {:style (style/avatar-identifier theme)}
+              emoji]
+             [text/text
+              {:size  :paragraph-1
+               :style (dissoc (style/avatar-identifier theme) :font-size)}
+              emoji])
+           chat-name
+           (if (= size :size-80)
+             [rn/text
+              {:style (style/avatar-identifier theme)}
+              ((comp first string/upper-case) chat-name)]
+             [text/text
+              {:size :paragraph-1}
+              ((comp first string/upper-case) chat-name)])
+           :else
+           [icon/icon icon-name
+            {:size  icon-size
+             :color colors/white-opa-70}]))])))
 
 (def view (quo.theme/with-theme view-internal))

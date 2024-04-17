@@ -29,13 +29,13 @@
    :background-color (colors/resolve-color network-name nil 10)})
 
 (defn network-bar
-  [{:keys                                           [max-width on-top? bar-division? theme]
+  [{:keys                                           [bar-max-width on-top? bar-division? theme]
     {:keys [network-name translate-x-shared-value]} :bar}
    width-shared-value]
   (reanimated/apply-animations-to-style
    {:width     width-shared-value
     :transform [{:translate-x translate-x-shared-value}]}
-   {:max-width          max-width
+   {:max-width          bar-max-width
     :flex-direction     :row
     :justify-content    :flex-end
     :background-color   (colors/resolve-color network-name nil)

@@ -4,6 +4,7 @@
     [status-im.contexts.wallet.account.tabs.about.view :as about]
     [status-im.contexts.wallet.account.tabs.assets.view :as assets]
     [status-im.contexts.wallet.account.tabs.dapps.view :as dapps]
+    [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.common.activity-tab.view :as activity]
     [status-im.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im.contexts.wallet.common.empty-tab.view :as empty-tab]
@@ -21,7 +22,14 @@
                        :on-end-reached #(rf/dispatch
                                          [:wallet/request-collectibles-for-current-viewing-account])
                        :on-collectible-press (fn [{:keys [id]}]
-                                               (rf/dispatch [:wallet/get-collectible-details id]))}]
+                                               (rf/dispatch [:wallet/get-collectible-details id]))
+                       :on-collectible-long-press (fn [{:keys [preview-url collectible-details]}]
+                                                    (rf/dispatch
+                                                     [:show-bottom-sheet
+                                                      {:content (fn []
+                                                                  [options-drawer/view
+                                                                   {:name  (:name collectible-details)
+                                                                    :image (:uri preview-url)}])}]))}]
        :activity     [activity/view]
        :permissions  [empty-tab/view
                       {:title        (i18n/label :t/no-permissions)

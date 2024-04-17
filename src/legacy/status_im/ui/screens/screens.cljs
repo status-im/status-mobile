@@ -5,8 +5,6 @@
     [legacy.status-im.ui.screens.advanced-settings.views :as advanced-settings]
     [legacy.status-im.ui.screens.appearance.views :as appearance]
     [legacy.status-im.ui.screens.backup-settings.view :as backup-settings]
-    [legacy.status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
-    [legacy.status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [legacy.status-im.ui.screens.browser.bookmarks.views :as bookmarks]
     [legacy.status-im.ui.screens.bug-report :as bug-report]
     [legacy.status-im.ui.screens.communities.invite :as communities.invite]
@@ -44,7 +42,6 @@
     [legacy.status-im.ui.screens.sync-settings.views :as sync-settings]
     [legacy.status-im.ui.screens.wakuv2-settings.edit-node.views :as edit-wakuv2-node]
     [legacy.status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
-    [status-im.contexts.chat.group-details.view :as group-details]
     [utils.i18n :as i18n]))
 
 (defn topbar-options
@@ -69,10 +66,6 @@
     :component progress/progress}
 
    ;;CHAT
-   {:name      :group-chat-profile
-    ;;TODO animated-header
-    :options   {:insets {:top? true}}
-    :component group-details/group-details}
    {:name      :group-chat-invite
     ;;TODO parameter in the event
     :options   {:insets {:top? true}}
@@ -141,18 +134,10 @@
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
     :component edit-wakuv2-node/edit-node}
-   {:name      :bootnodes-settings
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component bootnodes-settings/bootnodes-settings}
    {:name      :installations
     :options   {:topBar (topbar-options (i18n/label :t/devices))
                 :insets {:top? true}}
     :component pairing/installations}
-   {:name      :edit-bootnode
-    ;;TODO dynamic title
-    :options   {:insets {:top? true}}
-    :component edit-bootnode/edit-bootnode}
    {:name      :offline-messaging-settings
     ;;TODO dynamic title
     :options   {:insets {:top? true}}

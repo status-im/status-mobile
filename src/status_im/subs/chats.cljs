@@ -1,12 +1,10 @@
 (ns status-im.subs.chats
   (:require
     [clojure.string :as string]
-    [legacy.status-im.group-chats.core :as group-chat]
     [legacy.status-im.group-chats.db :as group-chats.db]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
-    [status-im.contexts.chat.messenger.composer.constants :as composer.constants]
     [status-im.contexts.profile.utils :as profile.utils]))
 
 (def memo-chats-stack-items (atom nil))
@@ -46,36 +44,6 @@
                 (when (= (:community-id chat) community-id)
                   chat)))
         (sort-by :timestamp >))))
-
-(re-frame/reg-sub
- :chats/with-empty-category-by-community-id
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:chats/by-community-id community-id])
-    (re-frame/subscribe [:communities/community-chats community-id])])
- (fn [[chats comm-chats] [_ community-id]]
-   (filter #(string/blank? (get-in comm-chats
-                                   [(string/replace (:chat-id %) community-id "") :categoryID]))
-           chats)))
-
-(re-frame/reg-sub
- :chats/sorted-categories-by-community-id
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:chats/by-community-id community-id])
-    (re-frame/subscribe [:communities/community-chats community-id])])
- (fn [[chats comm-chats] [_ community-id]]
-   (let [chat-cat (into {}
-                        (map (fn [{:keys [id categoryID position]}]
-                               {(str community-id id) {:categoryID categoryID
-                                                       :position   position}})
-                             (vals comm-chats)))]
-     (group-by :categoryID (sort-by :position (map #(merge % (chat-cat (:chat-id %))) chats))))))
-
-(re-frame/reg-sub
- :chats/category-by-chat-id
- (fn [[_ community-id _]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [chats categories]}] [_ community-id chat-id]]
-   (get categories (get-in chats [(string/replace chat-id community-id "") :categoryID]))))
 
 (re-frame/reg-sub
  :chats/community-chat-by-id
@@ -135,35 +103,11 @@
    (get inputs chat-id)))
 
 (re-frame/reg-sub
- :chats/composer-height
- :<- [:chats/current-chat-input]
- :<- [:chats/link-previews-unfurled]
- (fn [[{:keys [input-content-height metadata]} link-previews]]
-   (let [{:keys [responding-to-message editing-message sending-image]} metadata]
-     (+ (max composer.constants/input-height input-content-height)
-        (when responding-to-message
-          composer.constants/reply-container-height)
-        (when editing-message
-          composer.constants/edit-container-height)
-        (when (seq sending-image)
-          composer.constants/images-container-height)
-        (when (seq link-previews)
-          composer.constants/links-container-height)
-        composer.constants/bar-container-height
-        composer.constants/actions-container-height))))
-
-(re-frame/reg-sub
  :chats/sending-image
  :<- [:chats/current-chat-id]
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
    (get-in inputs [chat-id :metadata :sending-image])))
-
-(re-frame/reg-sub
- :chats/timeline-chat-input-text
- :<- [:chats/timeline-chat-input]
- (fn [input]
-   (:input-text input)))
 
 (re-frame/reg-sub
  :chats/current-chat-membership
@@ -184,8 +128,6 @@
        inputs]]
    (when current-chat
      (cond-> current-chat
-       (chat.events/public-chat? current-chat)
-       (assoc :able-to-send-message? true)
 
        (and (chat.events/community-chat? current-chat)
             (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
@@ -241,7 +183,15 @@
                  :synced-to
                  :synced-from
                  :community-id
-                 :emoji])))
+                 :emoji
+                 :description
+                 :last-message])))
+
+(re-frame/reg-sub
+ :chats/current-chat-color
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (:color current-chat)))
 
 (re-frame/reg-sub
  :chats/community-channel-ui-details-by-id
@@ -292,26 +242,10 @@
       :can-delete-message-for-everyone? can-delete-message-for-everyone?})))
 
 (re-frame/reg-sub
- :current-chat/metadata
+ :chats/current-chat-one-to-one?
  :<- [:chats/current-raw-chat]
- (fn [current-chat]
-   (select-keys current-chat
-                [:community-id
-                 :contacts
-                 :public?
-                 :group-chat
-                 :chat-type
-                 :chat-id
-                 :chat-name
-                 :color
-                 :invitation-admin])))
-
-(re-frame/reg-sub
- :current-chat/one-to-one-chat?
- :<- [:chats/current-raw-chat]
- (fn [current-chat]
-   (not (or (chat.events/group-chat? current-chat)
-            (chat.events/public-chat? current-chat)))))
+ (fn [{:keys [chat-type]}]
+   (= chat-type constants/one-to-one-chat-type)))
 
 (re-frame/reg-sub
  :chats/photo-path
@@ -320,28 +254,6 @@
  (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
    (let [contact (or (when (= id public-key) multiaccount) (get contacts id))]
      (profile.utils/photo contact))))
-
-(re-frame/reg-sub
- :chats/unread-messages-number
- :<- [:chats/home-list-chats]
- (fn [chats _]
-   (reduce (fn [{:keys [public other]} {:keys [unviewed-messages-count public?] :as chat}]
-             (if (or public? (chat.events/community-chat? chat))
-               {:public (+ public unviewed-messages-count)
-                :other  other}
-               {:other  (+ other unviewed-messages-count)
-                :public public}))
-           {:public 0
-            :other  0}
-           chats)))
-
-(re-frame/reg-sub
- :chats/current-chat-cooldown-enabled?
- :<- [:chats/current-chat]
- :<- [:chats/cooldown-enabled?]
- (fn [[{:keys [public?]} cooldown-enabled?]]
-   (and public?
-        cooldown-enabled?)))
 
 (re-frame/reg-sub
  :chats/reply-message
@@ -361,12 +273,6 @@
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
    (get-in inputs [chat-id :audio])))
-
-(re-frame/reg-sub
- :chats/timeline-sending-image
- :<- [:chats/timeline-chat-input]
- (fn [{:keys [metadata]}]
-   (:sending-image metadata)))
 
 (defn filter-selected-contacts
   [selected-contacts contacts]
@@ -397,15 +303,6 @@
    (filter-contacts selected-contacts active-contacts)))
 
 (re-frame/reg-sub
- :group-chat/inviter-info
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:chats/chat-by-id chat-id])
-    (re-frame/subscribe [:multiaccount/public-key])])
- (fn [[chat my-public-key]]
-   {:member?    (group-chats.db/member? my-public-key chat)
-    :inviter-pk (group-chats.db/get-inviter-pk my-public-key chat)}))
-
-(re-frame/reg-sub
  :group-chat/invitations-by-chat-id
  :<- [:group-chat/invitations]
  (fn [invitations [_ chat-id]]
@@ -417,13 +314,6 @@
    [(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id])])
  (fn [[invitations]]
    (filter #(= constants/invitation-state-requested (:state %)) invitations)))
-
-(re-frame/reg-sub
- :group-chat/removed-from-current-chat?
- :<- [:chats/current-raw-chat]
- :<- [:multiaccount/public-key]
- (fn [[current-chat pk]]
-   (group-chat/member-removed? current-chat pk)))
 
 (re-frame/reg-sub
  :chat/mention-suggestions
@@ -462,13 +352,6 @@
  :<- [:chats/status-link-previews-unfurled]
  (fn [status-link-previews]
    (boolean (seq status-link-previews))))
-
-(re-frame/reg-sub
- :chat/check-channel-muted?
- (fn [[_ community-id channel-id]]
-   [(re-frame/subscribe [:chats/chat (str community-id channel-id)])])
- (fn [[chat]]
-   (:muted? chat)))
 
 (re-frame/reg-sub
  :camera-roll/total-photos-count-android

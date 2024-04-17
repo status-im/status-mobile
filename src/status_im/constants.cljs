@@ -448,6 +448,8 @@
 (def ^:const optimism-short-name "opt")
 (def ^:const arbitrum-short-name "arb1")
 
+(def ^:const default-multichain-address-prefix "eth:opt:arb1:")
+
 (def ^:const mainnet-abbreviated-name "Eth.")
 (def ^:const optimism-abbreviated-name "Opt.")
 (def ^:const arbitrum-abbreviated-name "Arb1.")
@@ -488,3 +490,5 @@
 (def ^:const alert-banner-height 40)
 
 (def ^:const status-hostname "status.app")
+
+(def ^:const community-joined-notification-type "communityJoined")

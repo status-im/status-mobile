@@ -29,6 +29,11 @@
 (def mainnet-chain-explorer-link "https://etherscan.io/address/")
 (def optimism-mainnet-chain-explorer-link "https://optimistic.etherscan.io/address/")
 (def arbitrum-mainnet-chain-explorer-link "https://arbiscan.io/address/")
+(def sepolia-chain-explorer-link "https://sepolia.etherscan.io/address/")
+(def optimism-sepolia-chain-explorer-link "https://sepolia-optimistic.etherscan.io/address/")
+(def arbitrum-sepolia-chain-explorer-link "https://sepolia.arbiscan.io/address/")
+(def goerli-chain-explorer-link "https://goerli.etherscan.io/address/")
+(def optimism-goerli-chain-explorer-link "https://goerli-optimistic.etherscan.io/address/")
 (def opensea-api-key OPENSEA_API_KEY)
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -54,6 +59,7 @@
 (def swap-enabled? (enabled? (get-config :SWAP_ENABLED "0")))
 (def stickers-test-enabled? (enabled? (get-config :STICKERS_TEST_ENABLED "0")))
 (def local-pairing-mode-enabled? (enabled? (get-config :LOCAL_PAIRING_ENABLED "1")))
+(def show-not-implemented-features? (enabled? (get-config :SHOW_NOT_IMPLEMENTED_FEATURES "0")))
 
 ;; CONFIG VALUES
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
@@ -98,62 +104,6 @@
 (defn default-visible-tokens
   [chain]
   (get-in default-multiaccount [:wallet-legacy/visible-tokens chain]))
-
-(def mainnet-networks
-  [{:id                  "mainnet_rpc"
-    :chain-explorer-link mainnet-chain-explorer-link
-    :name                "Mainnet with upstream RPC"
-    :config              {:NetworkId      (chain/chain-keyword->chain-id :mainnet)
-                          :DataDir        "/ethereum/mainnet_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL     mainnet-rpc-url}}}])
-
-(def sidechain-networks
-  [{:id                  "xdai_rpc"
-    :name                "xDai Chain"
-    :chain-explorer-link "https://blockscout.com/xdai/mainnet/address/"
-    :config              {:NetworkId      (chain/chain-keyword->chain-id :xdai)
-                          :DataDir        "/ethereum/xdai_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL     "https://gnosischain-rpc.gateway.pokt.network"}}}
-   {:id                  "bsc_rpc"
-    :chain-explorer-link "https://bscscan.com/address/"
-    :name                "BSC Network"
-    :config              {:NetworkId      (chain/chain-keyword->chain-id :bsc)
-                          :DataDir        "/ethereum/bsc_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL     "https://bsc-dataseed.binance.org"}}}])
-
-(def testnet-networks
-  [{:id                  "goerli_rpc"
-    :chain-explorer-link "https://goerli.etherscan.io/address/"
-    :name                "Goerli with upstream RPC"
-    :config              {:NetworkId      (chain/chain-keyword->chain-id :goerli)
-                          :DataDir        "/ethereum/goerli_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL     goerli-rpc-url}}}
-   {:id                  "bsc_testnet_rpc"
-    :chain-explorer-link "https://testnet.bscscan.com/address/"
-    :name                "BSC testnet"
-    :config              {:NetworkId      (chain/chain-keyword->chain-id :bsc-testnet)
-                          :DataDir        "/ethereum/bsc_testnet_rpc"
-                          :UpstreamConfig {:Enabled true
-                                           :URL "https://data-seed-prebsc-1-s1.binance.org:8545/"}}}])
-
-(def default-networks
-  (concat testnet-networks mainnet-networks sidechain-networks))
-
-(def default-networks-by-id
-  (into {}
-        (map (fn [{:keys [id] :as network}]
-               [id network])
-             default-networks)))
-
-(def default-network-id
-  (get-in default-networks-by-id [default-network :config :NetworkId]))
-
-(def default-network-rpc-url
-  (get-in default-networks-by-id [default-network :config :UpstreamConfig :URL]))
 
 (def waku-nodes-config
   {:status.prod

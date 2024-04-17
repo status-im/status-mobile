@@ -1,11 +1,8 @@
 (ns status-im.contexts.communities.events
   (:require
     [clojure.string :as string]
-    [legacy.status-im.data-store.chats :as data-store.chats]
     [legacy.status-im.data-store.communities :as data-store.communities]
     [legacy.status-im.mailserver.core :as mailserver]
-    [react-native.platform :as platform]
-    [react-native.share :as share]
     [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.link-preview.events :as link-preview.events]
@@ -14,9 +11,9 @@
     status-im.contexts.communities.actions.airdrop-addresses.events
     status-im.contexts.communities.actions.community-options.events
     status-im.contexts.communities.actions.leave.events
+    [status-im.contexts.communities.utils :as utils]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn handle-community
@@ -59,16 +56,11 @@
 
 (defn- handle-my-request
   [db {:keys [community-id state deleted] :as request}]
-  (let [{:keys [name]} (get-in db [:communities community-id])]
-    (cond (and (= constants/community-request-to-join-state-pending state) (not deleted))
-          (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
-          (and (= constants/community-request-to-join-state-accepted state) (not deleted))
-          (do (rf/dispatch [:toasts/upsert
-                            {:id   :joined-community
-                             :type :positive
-                             :text (i18n/label :t/joined-community {:community name})}])
-              (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))
-          :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id))))
+  (cond (and (= constants/community-request-to-join-state-pending state) (not deleted))
+        (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
+        (and (= constants/community-request-to-join-state-accepted state) (not deleted))
+        (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)
+        :else (update-in db [:communities/my-pending-requests-to-join] dissoc community-id)))
 
 (defn handle-admin-request
   [db {:keys [id community-id deleted] :as request}]
@@ -157,43 +149,83 @@
                      :on-success #(rf/dispatch [:communities/fetched-collapsed-categories-success %])
                      :on-error   #(log/error "failed to fetch collapsed community categories" %)}]}))
 
-(rf/reg-event-fx :communities/get-community-channel-share-data
- (fn [_ [chat-id on-success]]
-   (let [{:keys [community-id channel-id]} (data-store.chats/decode-chat-id chat-id)]
-     {:json-rpc/call
-      [{:method     "wakuext_shareCommunityChannelURLWithData"
-        :params     [{:CommunityID community-id :ChannelID channel-id}]
-        :on-success on-success
-        :on-error   (fn [err]
-                      (log/error "failed to retrieve community channel url with data"
-                                 {:error   err
-                                  :chat-id chat-id
-                                  :event   :communities/get-community-channel-share-data}))}]})))
+(defn update-previous-permission-addresses
+  [{:keys [db]} [community-id]]
+  (when community-id
+    (let [accounts                      (utils/sorted-non-watch-only-accounts db)
+          selected-permission-addresses (get-in db
+                                                [:communities community-id
+                                                 :selected-permission-addresses])
+          selected-accounts             (filter #(contains? selected-permission-addresses (:address %))
+                                                accounts)
+          current-airdrop-address       (get-in db [:communities community-id :airdrop-address])
+          share-all-addresses?          (get-in db [:communities community-id :share-all-addresses?])]
+      {:db (update-in db
+                      [:communities community-id]
+                      assoc
+                      :previous-share-all-addresses? share-all-addresses?
+                      :previous-permission-addresses selected-permission-addresses
+                      :airdrop-address               (if (contains? selected-permission-addresses
+                                                                    current-airdrop-address)
+                                                       current-airdrop-address
+                                                       (:address (first selected-accounts))))})))
 
-(rf/reg-event-fx :communities/share-community-channel-url-with-data
- (fn [_ [chat-id]]
-   (let [title      (i18n/label :t/channel-on-status)
-         on-success (fn [url]
-                      (share/open
-                       (if platform/ios?
-                         {:activityItemSources [{:placeholderItem {:type    "text"
-                                                                   :content title}
-                                                 :item            {:default {:type    "url"
-                                                                             :content url}}
-                                                 :linkMetadata    {:title title}}]}
-                         {:title     title
-                          :subject   title
-                          :message   url
-                          :url       url
-                          :isNewTask true})))]
-     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
+(rf/reg-event-fx :communities/update-previous-permission-addresses
+ update-previous-permission-addresses)
 
-(rf/reg-event-fx :communities/share-community-channel-url-qr-code
- (fn [_ [chat-id]]
-   (let [on-success #(rf/dispatch [:open-modal :share-community-channel
-                                   {:chat-id chat-id
-                                    :url     %}])]
-     {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))
+(defn toggle-selected-permission-address
+  [{:keys [db]} [address community-id]]
+  (let [selected-permission-addresses
+        (get-in db [:communities community-id :selected-permission-addresses])
+        updated-selected-permission-addresses
+        (if (contains? selected-permission-addresses address)
+          (disj selected-permission-addresses address)
+          (conj selected-permission-addresses address))]
+    {:db (assoc-in db
+          [:communities community-id :selected-permission-addresses]
+          updated-selected-permission-addresses)
+     :fx [(when community-id
+            [:dispatch
+             [:communities/check-permissions-to-join-community community-id
+              updated-selected-permission-addresses :based-on-client-selection]])]}))
+
+(rf/reg-event-fx :communities/toggle-selected-permission-address
+ toggle-selected-permission-address)
+
+(defn toggle-share-all-addresses
+  [{:keys [db]} [community-id]]
+  (let [share-all-addresses?      (get-in db [:communities community-id :share-all-addresses?])
+        next-share-all-addresses? (not share-all-addresses?)
+        accounts                  (utils/sorted-non-watch-only-accounts db)
+        addresses                 (set (map :address accounts))]
+    {:db (update-in db
+                    [:communities community-id]
+                    assoc
+                    :share-all-addresses?          next-share-all-addresses?
+                    :selected-permission-addresses addresses)
+     :fx [(when (and community-id next-share-all-addresses?)
+            [:dispatch
+             [:communities/check-permissions-to-join-community community-id
+              addresses :based-on-client-selection]])]}))
+
+(rf/reg-event-fx :communities/toggle-share-all-addresses
+ toggle-share-all-addresses)
+
+(rf/reg-event-fx :communities/reset-selected-permission-addresses
+ (fn [{:keys [db]} [community-id]]
+   (when community-id
+     {:db (update-in db
+                     [:communities community-id]
+                     assoc
+                     :selected-permission-addresses
+                     (get-in db [:communities community-id :previous-permission-addresses])
+                     :share-all-addresses?
+                     (get-in db [:communities community-id :previous-share-all-addresses?]))
+      :fx [[:dispatch [:communities/check-permissions-to-join-community community-id]]]})))
+
+(rf/reg-event-fx :communities/set-airdrop-address
+ (fn [{:keys [db]} [address community-id]]
+   {:db (assoc-in db [:communities community-id :airdrop-address] address)}))
 
 (defn community-fetched
   [{:keys [db]} [community-id community]]
@@ -293,8 +325,8 @@
 
 (rf/reg-event-fx :chat.ui/spectate-community spectate-community)
 
-(rf/defn navigate-to-serialized-community
-  [_ {:keys [community-id]}]
+(defn navigate-to-serialized-community
+  [community-id]
   {:serialization/deserialize-and-compress-key
    {:serialized-key community-id
     :on-success     #(rf/dispatch [:communities/navigate-to-community-overview %])
@@ -302,27 +334,30 @@
                                  :error        %
                                  :community-id community-id})}})
 
-(rf/reg-event-fx :communities/navigate-to-community-overview
- (fn [{:keys [db] :as cofx} [deserialized-key]]
-   (let [current-view-id (:view-id db)]
-     (if (string/starts-with? deserialized-key constants/serialization-key)
-       (navigate-to-serialized-community cofx deserialized-key)
-       (rf/merge
-        cofx
-        {:fx [[:dispatch
-               [:communities/fetch-community
-                {:community-id           deserialized-key
-                 :update-last-opened-at? true}]]
-              [:dispatch [:navigate-to :community-overview deserialized-key]]
-              (when (get-in db [:communities deserialized-key :joined])
-                [:dispatch
-                 [:activity-center.notifications/dismiss-community-overview deserialized-key]])]}
-        (when-not (or (= current-view-id :shell) (= current-view-id :communities-stack))
-          (navigation/pop-to-root :shell-stack)))))))
+(rf/defn navigate-to-community-overview
+  [{:keys [db] :as cofx} [community-id]]
+  (let [current-view-id (:view-id db)]
+    (if (string/starts-with? community-id constants/serialization-key)
+      (navigate-to-serialized-community community-id)
+      (rf/merge
+       cofx
+       {:fx [[:dispatch
+              [:communities/fetch-community
+               {:community-id           community-id
+                :update-last-opened-at? true}]]
+             [:dispatch [:navigate-to :community-overview community-id]]
+             (when (get-in db [:communities community-id :joined])
+               [:dispatch
+                [:activity-center.notifications/dismiss-community-overview community-id]])]}
+       (when-not (or (= current-view-id :shell) (= current-view-id :communities-stack))
+         (navigation/pop-to-root :shell-stack))))))
 
-(rf/reg-event-fx :communities/navigate-to-community-chat
- (fn [{:keys [db]} [chat-id pop-to-root?]]
-   (let [{:keys [community-id]} (get-in db [:chats chat-id])]
+(rf/reg-event-fx :communities/navigate-to-community-overview navigate-to-community-overview)
+
+(defn navigate-to-community-chat
+  [{:keys [db]} [chat-id pop-to-root? community-id]]
+  (let [community-id (or community-id (get-in db [:chats chat-id :community-id]))]
+    (merge
      {:fx [(when community-id
              [:dispatch
               [:communities/fetch-community
@@ -330,7 +365,11 @@
                 :update-last-opened-at? true}]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
-             [:dispatch [:chat/navigate-to-chat chat-id]])]})))
+             [:dispatch [:chat/navigate-to-chat chat-id]])]}
+     (when-not (get-in db [:chats chat-id :community-id])
+       {:db (assoc-in db [:chats chat-id :community-id] community-id)}))))
+
+(rf/reg-event-fx :communities/navigate-to-community-chat navigate-to-community-chat)
 
 (defn get-revealed-accounts
   [{:keys [db]} [community-id on-success]]

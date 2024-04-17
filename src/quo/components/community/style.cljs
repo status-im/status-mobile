@@ -102,7 +102,7 @@
    :right    8})
 
 (def token-tag-spacing
-  {:margin-top   10
+  {:padding-top  10
    :margin-right 8})
 
 (defn token-row
@@ -117,11 +117,12 @@
 (defn token-row-or-text
   [padding? theme]
   (merge
-   {:margin-top 4
-    :color      (colors/theme-colors
-                 colors/neutral-50
-                 colors/neutral-40
-                 theme)}
+   {:padding-top   4
+    :margin-bottom -2
+    :color         (colors/theme-colors
+                    colors/neutral-50
+                    colors/neutral-40
+                    theme)}
    (when padding?
      {:padding-left 12})))
 

@@ -41,8 +41,13 @@
 
 (defn f-send-button
   [props state animations window-height images? btn-opacity z-index edit]
-  (let [{:keys [text-value]} state
-        customization-color  (rf/sub [:profile/customization-color])]
+  (let [{:keys [text-value]}        state
+        profile-customization-color (rf/sub [:profile/customization-color])
+        {:keys      [chat-id chat-type]
+         chat-color :color}         (rf/sub [:chats/current-chat-chat-view])
+        contact-customization-color (when (= chat-type constants/one-to-one-chat-type)
+                                      (rf/sub [:contacts/contact-customization-color-by-address
+                                               chat-id]))]
     (rn/use-effect (fn []
                      ;; Handle send button opacity animation and z-index when input content changes
                      (if (or (seq @text-value) images?)
@@ -60,7 +65,7 @@
      [quo/button
       {:icon-only?          true
        :size                32
-       :customization-color customization-color
+       :customization-color (or contact-customization-color chat-color profile-customization-color)
        :accessibility-label :send-message-button
        :on-press            #(send-message props state animations window-height edit)}
       :i/arrow-up]]))

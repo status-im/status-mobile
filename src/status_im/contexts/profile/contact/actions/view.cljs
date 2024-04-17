@@ -48,7 +48,8 @@
                             (fn []
                               (rf/dispatch [:universal-links/generate-profile-url
                                             {:public-key public-key
-                                             :on-success #(rn/sharing {:message %})}]))
+                                             :on-success #(rf/dispatch [:open-share
+                                                                        {:options {:message %}}])}]))
                             [public-key])
         on-remove-contact  (rn/use-callback
                             (fn []

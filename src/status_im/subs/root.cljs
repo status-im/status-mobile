@@ -121,8 +121,6 @@
 (reg-root-key-sub :camera-roll/selected-album :camera-roll/selected-album)
 
 ;;group chat
-(reg-root-key-sub :group-chat-profile/editing? :group-chat-profile/editing?)
-(reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
 (reg-root-key-sub :group-chat/selected-participants :group-chat/selected-participants)
 (reg-root-key-sub :group-chat/deselected-members :group-chat/deselected-members)
 

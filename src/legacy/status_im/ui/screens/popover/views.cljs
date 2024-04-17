@@ -7,8 +7,6 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.profile.user.views :as profile.user]
     [legacy.status-im.ui.screens.reset-password.views :as reset-password.views]
-    [legacy.status-im.ui.screens.signing.sheets :as signing-sheets]
-    [legacy.status-im.ui.screens.signing.views :as signing]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [reagent.core :as reagent]))
@@ -132,14 +130,8 @@
                   (= :share-chat-key view)
                   [profile.user/share-chat-key]
 
-                  (= :transaction-data view)
-                  [signing/transaction-data]
-
                   (= :password-reset-popover view)
                   [reset-password.views/reset-password-popover]
-
-                  (= :fees-warning view)
-                  [signing-sheets/fees-warning]
 
                   :else
                   [view])]]]])))})))

@@ -4,6 +4,7 @@
     [legacy.status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
+    [status-im.contexts.communities.utils :as utils]
     [status-im.subs.chat.utils :as subs.utils]
     [utils.i18n :as i18n]
     [utils.money :as money]))
@@ -15,28 +16,10 @@
    (get info id)))
 
 (re-frame/reg-sub
- :communities/section-list
- :<- [:communities]
- (fn [communities]
-   (->> (vals communities)
-        (group-by (comp (fnil string/upper-case "") first :name))
-        (sort-by (fn [[title]] title))
-        (map (fn [[title data]]
-               {:title title
-                :data  data})))))
-
-(re-frame/reg-sub
  :communities/community
  :<- [:communities]
  (fn [communities [_ id]]
    (get communities id)))
-
-(re-frame/reg-sub
- :communities/community-chats
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [chats]}] _]
-   chats))
 
 (re-frame/reg-sub
  :communities/community-color
@@ -135,12 +118,6 @@
  (fn [contract-communities]
    (sort-by :name (vals (:other contract-communities)))))
 
-(re-frame/reg-sub
- :communities/community-ids
- :<- [:communities]
- (fn [communities]
-   (map :id (vals communities))))
-
 (def memo-communities-stack-items (atom nil))
 
 (defn- merge-opened-communities
@@ -230,16 +207,6 @@
  (fn [[communities {:keys [community-id]}]]
    (get communities community-id)))
 
-(re-frame/reg-sub
- :communities/unviewed-count
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:chats/by-community-id community-id])])
- (fn [[chats]]
-   (reduce (fn [acc {:keys [unviewed-messages-count]}]
-             (+ acc (or unviewed-messages-count 0)))
-           0
-           chats)))
-
 (defn calculate-unviewed-counts
   [chats]
   (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count muted]}]
@@ -268,22 +235,6 @@
      vals
      (filter (fn [{:keys [state]}]
                (= state constants/request-to-join-pending-state))))))
-
-(re-frame/reg-sub
- :community/categories
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [categories]}] _]
-   categories))
-
-(re-frame/reg-sub
- :communities/sorted-categories
- :<- [:communities]
- (fn [communities [_ id]]
-   (->> (get-in communities [id :categories])
-        (map #(assoc (get % 1) :community-id id))
-        (sort-by :position)
-        (into []))))
 
 (defn- reduce-over-categories
   [community-id
@@ -375,11 +326,12 @@
   (let [sym           (:symbol criteria)
         amount-in-wei (:amountInWei criteria)
         decimals      (:decimals criteria)]
-    {:symbol      sym
-     :sufficient? satisfied
-     :loading?    checking-permissions?
-     :amount      (money/to-fixed (money/token->unit amount-in-wei decimals))
-     :img-src     (get token-images sym)}))
+    {:symbol       sym
+     :sufficient?  satisfied
+     :collectible? (= (:type criteria) constants/community-token-type-erc721)
+     :loading?     checking-permissions?
+     :amount       (money/to-fixed (money/token->unit amount-in-wei decimals))
+     :img-src      (get token-images sym)}))
 
 (re-frame/reg-sub
  :communities/checking-permissions-by-id
@@ -457,6 +409,7 @@
                                             roles)]
      (mapv (fn [role]
              {:role       (:type role)
+              :role-text  (i18n/label (utils/role->translation-key (:type role)))
               :satisfied? (:satisfied role)
               :tokens     (map (fn [{:keys [tokenRequirement]}]
                                  (map

@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [quo.components.avatars.channel-avatar.view :as channel-avatar]
             [quo.components.avatars.collection-avatar.view :as collection-avatar]
+            [quo.components.avatars.group-avatar.view :as group-avatar]
             [quo.components.inputs.address-input.view :as address-input]
             [quo.components.inputs.recovery-phrase.view :as recovery-phrase]
             [quo.components.inputs.search-input.view :as search-input]
@@ -36,14 +37,17 @@
   [{:keys        [title title-accessibility-label input counter-top counter-bottom
                   title-right title-right-props]
     avatar-props :avatar}]
-  (let [title-props (assoc title-right-props
-                           :title               title
-                           :right               title-right
-                           :accessibility-label title-accessibility-label)]
+  (let [avatar-props (assoc avatar-props :size :size-32)
+        title-props  (assoc title-right-props
+                            :title               title
+                            :right               title-right
+                            :accessibility-label title-accessibility-label)]
     [rn/view {:style style/header}
      [rn/view {:style style/header-title}
       (when avatar-props
-        [channel-avatar/view (assoc avatar-props :size :size-32)])
+        (if (:group? avatar-props)
+          [group-avatar/view avatar-props]
+          [channel-avatar/view avatar-props]))
       [standard-title/view title-props]]
      (when (= input :recovery-phrase)
        [header-counter counter-top counter-bottom])]))

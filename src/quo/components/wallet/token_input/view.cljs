@@ -12,7 +12,6 @@
     [quo.foundations.common :as common]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [schema.core :as schema]))
 
 (defn fiat-format
@@ -75,7 +74,8 @@
    [token-name-text theme text]])
 
 (defn input-section
-  [{:keys [on-change-text value value-atom on-selection-change on-token-press]}]
+  [{:keys [on-change-text value value-internal set-value-internal on-selection-change
+           on-token-press]}]
   (let [input-ref               (atom nil)
         set-ref                 #(reset! input-ref %)
         focus-input             #(when-let [ref ^js @input-ref]
@@ -83,7 +83,7 @@
         controlled-input?       (some? value)
         handle-on-change-text   (fn [v]
                                   (when-not controlled-input?
-                                    (reset! value-atom v))
+                                    (set-value-internal v))
                                   (when on-change-text
                                     (on-change-text v)))
         handle-selection-change (fn [^js e]
@@ -117,41 +117,43 @@
                   :on-selection-change      handle-selection-change
                   :selection                (clj->js selection)}
            controlled-input?       (assoc :value value)
-           (not controlled-input?) (assoc :default-value @value-atom))]]
+           (not controlled-input?) (assoc :default-value value-internal))]]
        [token-label
         {:theme theme
          :text  (if crypto? token currency)
-         :value (if controlled-input? value @value-atom)}]])))
+         :value (if controlled-input? value value-internal)}]])))
 
 (defn- view-internal
-  []
-  (let [width      (:width (rn/get-window))
-        value-atom (reagent/atom nil)
-        crypto?    (reagent/atom true)]
-    (fn [{:keys [theme container-style value on-swap] :as props}]
-      (let [handle-on-swap (fn []
-                             (swap! crypto? not)
-                             (when on-swap (on-swap @crypto?)))]
-        [rn/view {:style (merge (style/main-container width) container-style)}
-         [rn/view {:style style/amount-container}
-          [input-section
-           (assoc props
-                  :value-atom value-atom
-                  :crypto?    @crypto?)]
-          [button/button
-           {:icon                true
-            :icon-only?          true
-            :size                32
-            :on-press            handle-on-swap
-            :type                :outline
-            :accessibility-label :reorder}
-           :i/reorder]]
-         [divider-line/view {:container-style (style/divider theme)}]
-         [data-info
-          (assoc props
-                 :crypto? @crypto?
-                 :amount  (or value @value-atom))]]))))
+  [{:keys [container-style value on-swap] :as props}]
+  (let [theme                               (quo.theme/use-theme-value)
+        width                               (:width (rn/get-window))
+        [value-internal set-value-internal] (rn/use-state nil)
+        [crypto? set-crypto]                (rn/use-state true)
+        handle-on-swap                      (rn/use-callback
+                                             (fn []
+                                               (set-crypto (not crypto?))
+                                               (when on-swap (on-swap (not crypto?))))
+                                             [crypto? on-swap])]
+    [rn/view {:style (merge (style/main-container width) container-style)}
+     [rn/view {:style style/amount-container}
+      [input-section
+       (assoc props
+              :value-internal     value-internal
+              :set-value-internal set-value-internal
+              :crypto?            crypto?)]
+      [button/button
+       {:icon                true
+        :icon-only?          true
+        :size                32
+        :on-press            handle-on-swap
+        :type                :outline
+        :accessibility-label :reorder}
+       :i/reorder]]
+     [divider-line/view {:container-style (style/divider theme)}]
+     [data-info
+      (assoc props
+             :theme   theme
+             :crypto? crypto?
+             :amount  (or value value-internal))]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

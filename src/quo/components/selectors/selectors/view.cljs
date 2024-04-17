@@ -3,47 +3,47 @@
     [quo.components.icon :as icons]
     [quo.components.selectors.selectors.style :as style]
     [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
-
-(defn- handle-press
-  [on-change checked-atom checked?]
-  (when checked-atom (swap! checked-atom not))
-  (when on-change (on-change (not checked?))))
+    [react-native.core :as rn]))
 
 (defn- base-selector
-  [{:keys [default-checked? checked?]}]
-  (let [controlled-component? (some? checked?)
-        internal-checked?     (when-not controlled-component?
-                                (reagent/atom (or default-checked? false)))]
-    (fn [{:keys [checked? disabled? blur? customization-color on-change container-style
-                 label-prefix outer-style-fn inner-style-fn icon-style-fn theme]
-          :or   {customization-color :blue}}]
-      (let [actual-checked?     (if controlled-component? checked? @internal-checked?)
-            accessibility-label (str label-prefix "-" (if actual-checked? "on" "off"))
-            test-id             (str label-prefix "-component")
-            outer-styles        (outer-style-fn {:checked?            actual-checked?
+  [{:keys [default-checked? checked? disabled? blur? customization-color on-change container-style
+           label-prefix outer-style-fn inner-style-fn icon-style-fn theme]
+    :or   {customization-color :blue}}]
+  (let [controlled-component?   (some? checked?)
+        [internal-checked?
+         set-internal-checked?] (rn/use-state (when-not controlled-component?
+                                                (or default-checked? false)))
+        actual-checked?         (if controlled-component? checked? internal-checked?)
+        accessibility-label     (str label-prefix "-" (if actual-checked? "on" "off"))
+        test-id                 (str label-prefix "-component")
+        outer-styles            (outer-style-fn {:checked?            actual-checked?
                                                  :disabled?           disabled?
                                                  :blur?               blur?
                                                  :container-style     container-style
                                                  :customization-color customization-color
-                                                 :theme               theme})]
-        [rn/pressable
-         (when-not disabled?
-           {:on-press                #(handle-press on-change internal-checked? actual-checked?)
-            :allow-multiple-presses? true})
-         [rn/view
-          {:style                             outer-styles
-           :needs-offscreen-alpha-compositing true
-           :accessibility-label               accessibility-label
-           :testID                            test-id}
-          [rn/view
-           {:style (inner-style-fn {:theme               theme
-                                    :checked?            actual-checked?
-                                    :blur?               blur?
-                                    :customization-color customization-color})}
-           (when (and icon-style-fn actual-checked?)
-             [icons/icon :i/check-small (icon-style-fn actual-checked? blur? theme)])]]]))))
+                                                 :theme               theme})
+        on-press                (rn/use-callback
+                                 (fn []
+                                   (when-not (nil? internal-checked?)
+                                     (set-internal-checked? (not internal-checked?)))
+                                   (when on-change (on-change (not actual-checked?))))
+                                 [internal-checked? actual-checked? on-change])]
+    [rn/pressable
+     (when-not disabled?
+       {:on-press                on-press
+        :allow-multiple-presses? true})
+     [rn/view
+      {:style                             outer-styles
+       :needs-offscreen-alpha-compositing true
+       :accessibility-label               accessibility-label
+       :testID                            test-id}
+      [rn/view
+       {:style (inner-style-fn {:theme               theme
+                                :checked?            actual-checked?
+                                :blur?               blur?
+                                :customization-color customization-color})}
+       (when (and icon-style-fn actual-checked?)
+         [icons/icon :i/check-small (icon-style-fn actual-checked? blur? theme)])]]]))
 
 (defn- toggle
   [props]

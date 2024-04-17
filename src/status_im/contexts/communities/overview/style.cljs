@@ -11,7 +11,7 @@
 (def community-tag-container
   {:padding-horizontal screen-horizontal-padding
    :margin-horizontal  (- screen-horizontal-padding)
-   :margin-bottom      20})
+   :margin-bottom      16})
 
 (def community-content-container
   {:padding-horizontal screen-horizontal-padding})
@@ -64,4 +64,5 @@
   {:border-radius 16
    :border-color  (colors/theme-colors colors/neutral-20 colors/neutral-80)
    :border-width  1
-   :padding-top   10})
+   :padding-top   10
+   :margin-bottom 106})

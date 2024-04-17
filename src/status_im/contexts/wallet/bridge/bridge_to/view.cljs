@@ -50,7 +50,8 @@
      [account-switcher/view
       {:on-press            #(rf/dispatch [:navigate-back])
        :icon-name           :i/arrow-left
-       :accessibility-label :top-bar}]
+       :accessibility-label :top-bar
+       :switcher-type       :select-account}]
      [quo/page-top {:title bridge-to-title}]
      [rn/view style/content-container
       [bridge-token-component (assoc mainnet :network-name :t/mainnet) account-token]]

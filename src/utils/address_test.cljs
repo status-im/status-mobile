@@ -35,4 +35,7 @@
                "https://status.app/uwu/abcdefg#zQ3shPrnUhhR42JJn3QdhodGest8w8MjiH8hPaimrdYpzeFUa"))))
 
   (testing "Ensure the function returns nil when given a public key shorter than 10 characters"
-    (is (nil? (utils.address/get-abbreviated-profile-url "https://status.app/u/abcdefg#012345678")))))
+    (is (nil? (utils.address/get-abbreviated-profile-url "https://status.app/u/abcdefg#012345678"))))
+
+  (testing "Ensure the function returns nil when given nil"
+    (is (nil? (utils.address/get-abbreviated-profile-url nil)))))

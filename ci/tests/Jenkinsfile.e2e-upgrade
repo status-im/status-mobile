@@ -35,6 +35,11 @@ pipeline {
     ))
   }
 
+  environment {
+    /* Avoid race conditions with other builds using virtualenv. */
+    VIRTUAL_ENV = "${WORKSPACE_TMP}/venv"
+    PATH = "${VIRTUAL_ENV}/bin:${PATH}"
+  }
 
   stages {
     stage('Prep') {
@@ -51,7 +56,8 @@ pipeline {
     stage('Setup') {
       steps { script {
         dir('test/appium') {
-          sh 'pip3 install --user -r requirements.txt'
+          sh "python3 -m venv ${VIRTUAL_ENV}"
+          sh 'pip3 install -r requirements.txt'
         }
       } }
     }

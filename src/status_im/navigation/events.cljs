@@ -144,3 +144,9 @@
   {:events [:reload-status-nav-color]}
   [{:keys [db]} view-id]
   {:reload-status-nav-color-fx (or view-id (:view-id db))})
+
+(defn open-share
+  [_ [config]]
+  {:fx [[:effects.share/open config]]})
+
+(rf/reg-event-fx :open-share open-share)

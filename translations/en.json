@@ -154,6 +154,7 @@
     "changed-amount-warning": "Amount was changed from {{old}} to {{new}}",
     "changed-asset-warning": "Asset was changed from {{old}} to {{new}}",
     "channel-on-status": "Channel on Status",
+    "community-on-status": "Community on Status",
     "chaos-mode": "Chaos mode",
     "chaos-unicorn-day": "Chaos Unicorn Day",
     "chaos-unicorn-day-details": "🦄🦄🦄🦄🦄🦄🦄🚀!",
@@ -605,7 +606,7 @@
     "skip": "Skip",
     "password-placeholder": "Password...",
     "confirm-password-placeholder": "Confirm your password...",
-    "ens-or-chat-key": "ENS or Chat key",
+    "ens-or-chat-key": "ENS or Chatkey",
     "user-found": "User found",
     "enter-pin": "Enter 6-digit passcode",
     "enter-puk-code": "Enter PUK code",
@@ -1745,7 +1746,6 @@
     "empty-tab": "Empty tab",
     "open-in-new-tab": "Open in new tab",
     "has-permissions": "has permission to access",
-    "connect-wallet": "Connect wallet",
     "open-chat": "Open chat",
     "favourite-description": "Your favourite websites will appear here",
     "transfers-fetching-failure": "Transfers history could not be updated. Check your connection and pull down to try again",
@@ -2575,5 +2575,12 @@
     "display": "Display",
     "testnet-mode-enabled": "Testnet mode enabled",
     "online-community-member": "Online",
-    "offline-community-member": "Offline"
+    "offline-community-member": "Offline",
+    "invite-to-community": "Invite to community",
+    "invite-n-users": "Invite {{count}} users",
+    "invite-1-user": "Invite 1 user",
+    "one-user-was-invited": "1 user was invited",
+    "n-users-were-invited": "{{count}} users were invited",
+    "invite-friend-to-status": "Invite friends to Status",
+    "send-community-link": "Send community link"
 }

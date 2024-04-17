@@ -1,6 +1,6 @@
 (ns status-im.contexts.profile.edit.header.events
   (:require [clojure.string :as string]
-            [status-im.common.profile-picture-picker.view :as profile-picture-picker]
+            [status-im.common.avatar-picture-picker.view :as profile-picture-picker]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 

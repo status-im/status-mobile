@@ -35,7 +35,6 @@
                           profile-pictures-visibility]}
                   [:profile/profile]
                   has-picture [:profile/has-picture]
-                  keycard? [:keycard-multiaccount?]
                   profile-pictures-show-to [:multiaccount/profile-pictures-show-to]]
     [react/scroll-view {:padding-vertical 8}
      [quo/list-header (i18n/label :t/security)]
@@ -92,16 +91,15 @@
                                           :t/anyone))
        :on-press            #(re-frame/dispatch [:navigate-to :messages-from-contacts-only])
        :accessibility-label :accept-new-chats-from}]
-     (when (not keycard?)
-       [list.item/list-item
-        {:size                :small
-         :title               (i18n/label :t/reset-password)
-         :chevron             true
-         :accessory           :text
-         :on-press            #(do
-                                 (re-frame/dispatch [::reset-password/clear-form-vals])
-                                 (re-frame/dispatch [:navigate-to :reset-password]))
-         :accessibility-label :reset-password}])
+     [list.item/list-item
+      {:size                :small
+       :title               (i18n/label :t/reset-password)
+       :chevron             true
+       :accessory           :text
+       :on-press            #(do
+                               (re-frame/dispatch [::reset-password/clear-form-vals])
+                               (re-frame/dispatch [:navigate-to :reset-password]))
+       :accessibility-label :reset-password}]
      (when platform/android?
        [list.item/list-item
         {:size               :small

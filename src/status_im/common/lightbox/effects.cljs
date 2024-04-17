@@ -3,7 +3,6 @@
             [react-native.cameraroll :as cameraroll]
             [react-native.fs :as fs]
             [react-native.platform :as platform]
-            [react-native.share :as share]
             [utils.re-frame :as rf]))
 
 (def config
@@ -15,10 +14,12 @@
    (blob/fetch uri
                config
                (fn [downloaded-url]
-                 (share/open {:url       (str (when platform/android? "file://") downloaded-url)
-                              :isNewTask true}
-                             #(fs/unlink downloaded-url)
-                             #(fs/unlink downloaded-url))))))
+                 (rf/dispatch [:open-share
+                               {:options    {:url       (str (when platform/android? "file://")
+                                                             downloaded-url)
+                                             :isNewTask true}
+                                :on-success #(fs/unlink downloaded-url)
+                                :on-error   #(fs/unlink downloaded-url)}])))))
 
 (rf/reg-fx :effects.lightbox/save-image-to-gallery
  (fn [[uri on-success]]

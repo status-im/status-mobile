@@ -9,7 +9,6 @@
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
     [taoensso.timbre :as log]
-    [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -39,19 +38,17 @@
 ;; login phase 1: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/login-existing-profile
  (fn [{:keys [db]} [settings account]]
-   (let [{:networks/keys [current-network networks]
+   (let [{:networks/keys [_current-network _networks]
           :as            settings}
          (data-store.settings/rpc->settings settings)
          profile-overview (profile.rpc/rpc->profiles-overview account)
          log-level (or (:log-level settings) config/log-level)
          pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)]
      {:db (cond-> (-> db
-                      (assoc :chats/loading?           true
-                             :networks/current-network current-network
-                             :networks/networks        (merge networks config/default-networks-by-id)
-                             :profile/profile          (merge profile-overview
-                                                              settings
-                                                              {:log-level log-level}))
+                      (assoc :chats/loading?  true
+                             :profile/profile (merge profile-overview
+                                                     settings
+                                                     {:log-level log-level}))
                       (assoc-in [:activity-center :loading?] true))
             pairing-completed?
             (dissoc :syncing))
@@ -89,18 +86,14 @@
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
  (fn [{:keys [db]}]
-   (let [{:networks/keys [current-network networks]} db
-         {:keys [notifications-enabled? key-uid
-                 preview-privacy?]}                  (:profile/profile db)
-         network-id                                  (str (get-in networks
-                                                                  [current-network :config :NetworkId]))]
+   (let [{:keys [notifications-enabled? key-uid
+                 preview-privacy?]} (:profile/profile db)]
      {:db db
       :fx [[:json-rpc/call
             [{:method     "wakuext_startMessenger"
               :on-success [:profile.login/messenger-started]
               :on-error   #(log/error
                             "failed to start messenger")}]]
-           [:check-eip1559-activation {:network-id network-id}]
            [:effects.profile/enable-local-notifications]
            [:contacts/initialize-contacts]
            [:browser/initialize-browser]
@@ -118,8 +111,7 @@
 
 (rf/reg-event-fx :profile.login/messenger-started
  (fn [{:keys [db]} [{:keys [mailservers]}]]
-   (let [chain-id     (chain/chain-id db)
-         new-account? (get db :onboarding/new-account?)]
+   (let [new-account? (get db :onboarding/new-account?)]
      {:db (-> db
               (assoc :messenger/started? true)
               (mailserver/add-mailservers mailservers))
@@ -128,7 +120,6 @@
               :on-success [:profile.login/node-info-fetched]
               :on-error   #(log/error "node-info: failed error" %)}]]
            [:pairing/get-our-installations]
-           [:stickers/load-packs chain-id]
            (when-not new-account?
              [:dispatch [:universal-links/process-stored-event]])]})))
 

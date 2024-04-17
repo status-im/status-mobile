@@ -179,26 +179,6 @@
  (fn [blocked-contacts]
    (count blocked-contacts)))
 
-(defn filter-recipient-contacts
-  [search-filter {:keys [primary-name secondary-name]}]
-  (or
-   (when primary-name
-     (string/includes? (string/lower-case (str primary-name)) search-filter))
-   (when secondary-name
-     (string/includes? (string/lower-case (str secondary-name)) search-filter))))
-
-(re-frame/reg-sub
- :contacts/active-with-ens-names
- :<- [:contacts/active]
- :<- [:wallet-legacy/search-recipient-filter]
- (fn [[contacts search-filter]]
-   (let [contacts (filter :ens-verified contacts)]
-     (if (string/blank? search-filter)
-       contacts
-       (filter (partial filter-recipient-contacts
-                        (string/lower-case search-filter))
-               contacts)))))
-
 (defn- enrich-contact
   [_ contact-identity ens-name port font-file]
   (let [contact (contact.db/enrich-contact
@@ -223,20 +203,6 @@
  :<- [:contacts/contacts]
  (fn [contacts [_ contact-identity]]
    (get contacts contact-identity {:public-key contact-identity})))
-
-(re-frame/reg-sub
- :contacts/contact-added?
- (fn [[_ contact-identity] _]
-   [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])])
- (fn [[contact] _]
-   (:added? contact)))
-
-(re-frame/reg-sub
- :contacts/contact-blocked?
- (fn [[_ contact-identity] _]
-   [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])])
- (fn [[contact] _]
-   (:blocked contact)))
 
 (re-frame/reg-sub
  :contacts/contact-two-names-by-identity
@@ -288,15 +254,11 @@
      (contact.db/find-contact-by-address contacts address))))
 
 (re-frame/reg-sub
- :contacts/contacts-by-address
- :<- [:contacts/contacts]
- (fn [contacts]
-   (reduce (fn [acc [_ {:keys [address] :as contact}]]
-             (if address
-               (assoc acc address contact)
-               acc))
-           {}
-           contacts)))
+ :contacts/contact-customization-color-by-address
+ (fn [[_ address]]
+   [(re-frame/subscribe [:contacts/contact-by-address address])])
+ (fn [[contact]]
+   (:customization-color contact)))
 
 (re-frame/reg-sub
  :contacts/filtered-active-sections

@@ -3,12 +3,10 @@
     ["eth-phishing-detect" :as eth-phishing-detect]
     [clojure.string :as string]
     [legacy.status-im.bottom-sheet.events :as bottom-sheet]
-    [legacy.status-im.browser.eip3326 :as eip3326]
     [legacy.status-im.browser.permissions :as browser.permissions]
     [legacy.status-im.browser.webview-ref :as webview-ref]
     [legacy.status-im.ethereum.ens :as ens]
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
-    [legacy.status-im.signing.core :as signing]
     [legacy.status-im.ui.components.list-selection :as list-selection]
     [legacy.status-im.utils.deprecated-types :as types]
     [legacy.status-im.utils.random :as random]
@@ -393,64 +391,6 @@
      constants/web3-eth-sign constants/web3-keycard-sign-typed-data}
    method))
 
-(rf/defn web3-send-async
-  [cofx dapp-name {:keys [method params id] :as payload} message-id]
-  (let [message?      (web3-sign-message? method)
-        dapps-address (get-in cofx [:db :profile/profile :dapps-address])
-        typed?        (and (not= constants/web3-personal-sign method)
-                           (not= constants/web3-eth-sign method))]
-    (if (or message? (= constants/web3-send-transaction method))
-      (let [[address data] (cond (and (= method constants/web3-keycard-sign-typed-data)
-                                      (not (vector? params)))
-                                 ;; We don't use signer argument for keycard sign-typed-data
-                                 ["0x0" params]
-                                 message?                     (normalize-sign-message-params params
-                                                                                             typed?)
-                                 :else                        [nil nil])]
-        (when (or (not message?) (and address data))
-          (signing/sign cofx
-                        (merge
-                         (if message?
-                           {:message {:address  address
-                                      :data     data
-                                      :v4       (= constants/web3-sign-typed-data-v4 method)
-                                      :typed?   typed?
-                                      :pinless? (= method constants/web3-keycard-sign-typed-data)
-                                      :from     dapps-address}}
-                           {:tx-obj (-> params
-                                        first
-                                        (update :from #(or % dapps-address))
-                                        (dissoc :gasPrice))})
-                         {:on-result [:browser.dapp/transaction-on-result message-id id]
-                          :on-error  [:browser.dapp/transaction-on-error message-id]}))))
-      (cond
-        (#{"eth_accounts" "eth_coinbase"} method)
-        (send-to-bridge
-         cofx
-         {:type      constants/web3-send-async-callback
-          :messageId message-id
-          :result    {:jsonrpc "2.0"
-                      :id      (int id)
-                      :result  (if (= method "eth_coinbase") dapps-address [dapps-address])}})
-        (= method "personal_ecRecover")
-        {:signing.fx/recover-message {:params       {:message   (first params)
-                                                     :signature (second params)}
-                                      :on-completed #(re-frame/dispatch
-                                                      [:browser.callback/call-rpc
-                                                       {:type      constants/web3-send-async-callback
-                                                        :messageId message-id
-                                                        :result    (types/json->clj %)}])}}
-        (= method "wallet_switchEthereumChain")
-        (eip3326/handle-switch-ethereum-chain cofx dapp-name id message-id (first params))
-
-        :else
-        {:browser/call-rpc [payload
-                            #(re-frame/dispatch [:browser.callback/call-rpc
-                                                 {:type      constants/web3-send-async-callback
-                                                  :messageId message-id
-                                                  :error     %1
-                                                  :result    %2}])]}))))
-
 (rf/defn handle-no-permissions
   [cofx {:keys [method id]} message-id]
   (if (= method "eth_accounts")
@@ -479,9 +419,8 @@
 
 (rf/defn web3-send-async-read-only
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
-  (if (has-permissions? db dapp-name method)
-    (handle-no-permissions cofx payload message-id)
-    (web3-send-async cofx dapp-name payload message-id)))
+  (when (has-permissions? db dapp-name method)
+    (handle-no-permissions cofx payload message-id)))
 
 (rf/defn handle-scanned-qr-code
   {:events [:browser.bridge.callback/qr-code-scanned]}

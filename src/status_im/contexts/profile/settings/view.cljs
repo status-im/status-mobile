@@ -5,7 +5,6 @@
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
-            [status-im.common.not-implemented :as not-implemented]
             [status-im.contexts.profile.settings.header.view :as settings.header]
             [status-im.contexts.profile.settings.list-items :as settings.items]
             [status-im.contexts.profile.settings.style :as style]
@@ -19,7 +18,7 @@
   [rf/delay-render
    [quo/category
     {:list-type       :settings
-     :container-style {:padding-bottom 0}
+     :container-style {:padding-bottom 12}
      :blur?           true
      :data            data}]])
 
@@ -60,11 +59,12 @@
         :scroll-y   scroll-y
         :icon-name  :i/close
         :on-press   #(rf/dispatch [:navigate-back])
-        :right-side [{:icon-name :i/multi-profile
-                      :on-press  #(rf/dispatch [:open-modal :screen/onboarding.sign-in])}
-                     {:icon-name :i/qr-code
+        :right-side [{:icon-name :i/qr-code
                       :on-press  #(debounce/throttle-and-dispatch [:open-modal :share-shell] 1000)}
-                     {:icon-name :i/share :on-press not-implemented/alert}]}]]
+                     {:icon-name :i/share
+                      :on-press  #(rf/dispatch [:open-share
+                                                {:options {:message (:universal-profile-url
+                                                                     profile)}}])}]}]]
      [rn/flat-list
       {:key                             :list
        :header                          [settings.header/view {:scroll-y scroll-y}]
