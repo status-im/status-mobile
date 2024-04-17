@@ -46,19 +46,18 @@
      {:title             (i18n/label :t/derivation-path)
       :image             :icon
       :image-props       :i/derivated-path
-      :action            :button
-      :action-props      {:on-press    #(if (ff/enabled? ::ff/wallet.edit-derivation-path)
-                                          (rf/dispatch [:standard-auth/authorize
-                                                        {:on-auth-success   on-auth-success
-                                                         :auth-button-label (i18n/label :t/continue)}])
-                                          (js/alert "Coming soon!"))
+      :action            (if (ff/enabled? ::ff/wallet.edit-derivation-path) :button :none)
+      :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
+                                                      {:on-auth-success   on-auth-success
+                                                       :auth-button-label (i18n/label :t/continue)}])
+
                           :button-text (i18n/label :t/edit)
                           :icon-left   :i/face-id
                           :alignment   :flex-start}
       :description       :text
       :description-props {:text formatted-path}}]))
 
-(defn- f-view
+(defn- view-internal
   [_]
   (let [top                   (safe-area/get-top)
         bottom                (safe-area/get-bottom)
@@ -179,9 +178,5 @@
                                          :new-keypair?        (boolean new-keypair)
                                          :derivation-path     derivation-path
                                          :customization-color customization-color})}]]))))
-
-(defn- view-internal
-  []
-  [:f> f-view])
 
 (def view (quo.theme/with-theme view-internal))
