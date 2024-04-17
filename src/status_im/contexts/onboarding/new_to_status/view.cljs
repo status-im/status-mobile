@@ -49,12 +49,13 @@
                                  [:screen/onboarding.enter-seed-phrase
                                   :screen/onboarding.new-to-status]])}]
       [rn/view {:style style/space-between-suboptions}]
-      [quo/small-option-card
-       {:variant  :icon
-        :title    (i18n/label :t/use-keycard)
-        :subtitle (i18n/label :t/use-keycard-subtitle)
-        :image    (resources/get-image :use-keycard)
-        :on-press #(js/alert "TODO: to be implemented")}]]]))
+      (when config/show-not-implemented-features?
+        [quo/small-option-card
+         {:variant  :icon
+          :title    (i18n/label :t/use-keycard)
+          :subtitle (i18n/label :t/use-keycard-subtitle)
+          :image    (resources/get-image :use-keycard)
+          :on-press #(js/alert "TODO: to be implemented")}])]]))
 
 (defn getting-started-doc
   []
