@@ -7,6 +7,7 @@
     [react-native.gesture :as gesture]
     [reagent.core :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.composer.reply.view :as reply]
     [status-im.contexts.chat.messenger.messages.drawers.style :as style]
@@ -140,7 +141,7 @@
                    (rf/dispatch
                     [:hide-bottom-sheet])
                    (rf/dispatch [:chat.ui/delete-message-for-me message-data
-                                 constants/delete-message-for-me-undo-time-limit-ms]))
+                                 config/delete-message-for-me-undo-time-limit-ms]))
 
        :label    (i18n/label :t/delete-for-me)
        :icon     :i/delete
@@ -155,7 +156,7 @@
        :on-press (fn []
                    (rf/dispatch [:hide-bottom-sheet])
                    (rf/dispatch [:chat.ui/delete-message message-data
-                                 constants/delete-message-undo-time-limit-ms]))
+                                 config/delete-message-undo-time-limit-ms]))
        :label    (i18n/label :t/delete-for-everyone)
        :icon     :i/delete
        :id       :delete-for-all}])))
