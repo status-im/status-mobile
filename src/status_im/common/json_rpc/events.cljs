@@ -40,12 +40,14 @@
   params: sequence - A positional sequence of zero or more arguments.
 
   on-success/on-error: function/vector (optional) - When a function, it will be
-  called with the transformed response as the sole argument. When a vector, it
-  is expected to be a valid re-frame event vector, and the event will be
-  dispatched with the transformed response conj'ed at the end.
+  called with the transformed response and id (request-id) as the argument.
+  When a vector, it is expected to be a valid re-frame event vector, and the event
+  will be dispatched with the transformed response and id conj'ed at the end.
 
   js-response: boolean - When non-nil, the successful response will not be
   recursively converted to Clojure data structures. Default: nil.
+
+  id: (optional) - id passed while making the RPC call will be returned in response
 
   number-of-retries: integer - The maximum number of retries in case of failure.
   Default: nil.
@@ -56,14 +58,14 @@
   Note that on-error is optional, but if not provided, a default implementation
   will be used.
   "
-  [{:keys [method params on-success on-error js-response] :as arg}]
+  [{:keys [method params on-success on-error js-response id] :as arg}]
   (let [params   (or params [])
         on-error (or on-error
                      (on-error-retry call arg)
                      #(log/warn :json-rpc/error method :error % :params params))]
     (native-module/call-private-rpc
      (transforms/clj->json {:jsonrpc "2.0"
-                            :id      1
+                            :id      (or id 1)
                             :method  method
                             :params  params})
      (fn [raw-response]
@@ -79,12 +81,13 @@
                  (rf/dispatch (conj on-error error))
                  (on-error error)))
              (when on-success
-               (let [result (if js-response
-                              (.-result response-js)
-                              (transforms/js->clj (.-result response-js)))]
+               (let [result     (if js-response
+                                  (.-result response-js)
+                                  (transforms/js->clj (.-result response-js)))
+                     request-id (.-id response-js)]
                  (if (vector? on-success)
-                   (rf/dispatch (conj on-success result))
-                   (on-success result)))))))))))
+                   (rf/dispatch (conj on-success result request-id))
+                   (on-success result request-id)))))))))))
 
 (re-frame/reg-fx
  :json-rpc/call
