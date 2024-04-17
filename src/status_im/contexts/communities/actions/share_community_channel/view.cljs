@@ -12,7 +12,12 @@
   []
   (fn []
     (let [{:keys [url chat-id]}           (rf/sub [:get-screen-params])
-          {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])]
+          {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])
+          on-share-community-channel      (rn/use-callback
+                                           #(rf/dispatch
+                                             [:communities/share-community-channel-url-with-data
+                                              chat-id])
+                                           [chat-id])]
       [quo/overlay {:type :shell}
        [rn/view
         {:style {:padding-top (safe-area/get-top)}
@@ -31,7 +36,8 @@
            :qr-data             url
            :customization-color color
            :emoji               emoji
-           :full-name           chat-name}]]
+           :full-name           chat-name
+           :on-share-press      on-share-community-channel}]]
         [quo/text
          {:size   :paragraph-2
           :weight :regular
