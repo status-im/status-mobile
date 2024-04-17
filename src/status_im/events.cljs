@@ -1,6 +1,5 @@
 (ns status-im.events
   (:require
-    [legacy.status-im.bottom-sheet.events]
     status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.async-storage.effects

@@ -285,12 +285,6 @@
 (rf/reg-fx :hide-visibility-status-popover
  (fn [] (navigation/dissmiss-overlay "visibility-status-popover")))
 
-(rf/reg-fx :show-bottom-sheet-overlay-old
- (fn [] (show-overlay "bottom-sheet-old")))
-
-(rf/reg-fx :dismiss-bottom-sheet-overlay-old
- (fn [] (navigation/dissmiss-overlay "bottom-sheet-old")))
-
 (rf/reg-fx :show-wallet-connect-sheet
  (fn [] (show-overlay "wallet-connect-sheet")))
 

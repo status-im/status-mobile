@@ -140,16 +140,6 @@
    (or seed {:step :intro})))
 
 (re-frame/reg-sub
- :bottom-sheet-old
- :<- [:bottom-sheet/show?]
- :<- [:bottom-sheet/view]
- :<- [:bottom-sheet/options]
- (fn [[show? view options]]
-   {:show?   show?
-    :view    view
-    :options options}))
-
-(re-frame/reg-sub
  :is-contact-selected?
  :<- [:group/selected-contacts]
  (fn [selected-contacts [_ element]]

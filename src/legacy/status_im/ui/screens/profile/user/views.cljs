@@ -218,7 +218,7 @@
          :use-insets        true
          :extended-header   (profile-header/extended-header
                              {:on-press  on-share
-                              :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+                              :on-edit   #(re-frame/dispatch [:show-bottom-sheet
                                                               {:content (edit/bottom-sheet
                                                                          has-picture)}])
                               :color     (user-avatar.style/customization-color customization-color

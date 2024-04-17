@@ -1,6 +1,5 @@
 (ns status-im.navigation.view
   (:require
-    [legacy.status-im.bottom-sheet.sheets :as bottom-sheets-old]
     [legacy.status-im.ui.screens.popover.views :as popover]
     [quo.foundations.colors :as colors]
     [quo.theme]
@@ -123,14 +122,6 @@
    functional-compiler))
 
 ;; LEGACY (should be removed in status 2.0)
-(def sheet-comp-old
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str "sheet-old" @reloader/cnt)}
-     [:<>
-      [inactive]
-      [bottom-sheets-old/bottom-sheet]])
-   functional-compiler))
 
 (def popover-comp
   (reagent/reactify-component
