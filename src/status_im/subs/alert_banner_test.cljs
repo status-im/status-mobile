@@ -13,14 +13,14 @@
       :alert-banners
       {:alert {:text "Alert"
                :type :alert}})
-    (is (= (rf/sub [sub-name]) 48)))
+    (is (= (rf/sub [sub-name]) 40)))
 
   (testing "returns 48 when only error banner"
     (swap! rf-db/app-db assoc
       :alert-banners
       {:error {:text "Error"
                :type :error}})
-    (is (= (rf/sub [sub-name]) 48)))
+    (is (= (rf/sub [sub-name]) 40)))
 
   (testing "returns 88 when both alert and error banner"
     (swap! rf-db/app-db assoc
@@ -29,4 +29,4 @@
                :type :alert}
        :error {:text "Error"
                :type :error}})
-    (is (= (rf/sub [sub-name]) 88))))
+    (is (= (rf/sub [sub-name]) 80))))

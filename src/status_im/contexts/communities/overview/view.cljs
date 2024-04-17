@@ -387,11 +387,11 @@
   [id]
   (let [id (or id (rf/sub [:get-screen-params :community-overview]))
         customization-color (rf/sub [:profile/customization-color])
-        alert-banners (rf/sub [:alert-banners])]
+        alert-banners-top-margin (rf/sub [:alert-banners/top-margin])]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [quo/floating-shell-button
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
-      (style/floating-shell-button alert-banners)]]))
+      (style/floating-shell-button alert-banners-top-margin)]]))

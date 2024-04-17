@@ -9,4 +9,4 @@
  (fn [banners]
    (let [banners-count (count banners)]
      (when (pos? banners-count)
-       (+ (* alert-banner.constants/alert-banner-height banners-count) 8)))))
+       (* alert-banner.constants/alert-banner-height banners-count)))))

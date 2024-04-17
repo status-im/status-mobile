@@ -50,11 +50,10 @@
    :right    0
    :bottom   0})
 
-(defn floating-shell-button [alert-banners]
+(defn floating-shell-button [alert-banners-top-margin]
   {:position :absolute
    :bottom   (+ jump-to.constants/default-bottom-spacing
-                (when (> (count alert-banners) 0)
-                  alert-banner.constants/hole-view-height))})
+                alert-banners-top-margin)})
 
 (defn channel-list-component
   []

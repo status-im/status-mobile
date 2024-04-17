@@ -146,7 +146,8 @@
 
 (defn f-composer
   [props]
-  (let [theme                   (quo.theme/use-theme-value)
+  (let [_ (js/console.log "ALWX COMPOSER" (clj->js props))
+        theme                   (quo.theme/use-theme-value)
         opacity                 (reanimated/use-shared-value 0)
         window-height           (:height (rn/get-window))
         background-y            (reanimated/use-shared-value (- window-height))
