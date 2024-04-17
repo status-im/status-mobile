@@ -4,7 +4,6 @@
             [quo.theme :as quo.theme]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
-            [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.network-preferences.style :as style]
             [utils.i18n :as i18n]
@@ -30,7 +29,7 @@
                                                     (reset! state :default)
                                                     (reset! network-preferences-names-state #{}))
                                                   (swap! network-preferences-names-state update-fn
-                                                         network-name))))
+                                                    network-name))))
         get-current-preferences-names       (fn []
                                               (if (= @state :default)
                                                 initial-network-preferences-names
@@ -111,4 +110,4 @@
 
 (comment
   (contains? #{:a :b} 0)
-  ,)
+)

@@ -198,13 +198,15 @@
    constants/optimism-short-name constants/optimism-network-name
    constants/arbitrum-short-name constants/arbitrum-network-name})
 
-(defn short-names->network-preference-prefix [short-names]
+(defn short-names->network-preference-prefix
+  [short-names]
   (str (string/join ":" short-names) ":"))
 
-(defn network-preference-prefix->network-names [prefix]
+(defn network-preference-prefix->network-names
+  [prefix]
   (as-> prefix $
-      (string/split $ ":")
-      (map short-name->network $)))
+    (string/split $ ":")
+    (map short-name->network $)))
 
 (defn- get-chain-id
   [{:keys [mainnet-chain-id sepolia-chain-id goerli-chain-id testnet-enabled? goerli-enabled?]}]
