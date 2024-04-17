@@ -11,7 +11,10 @@
 (defn view
   []
   (fn []
-    (let [{:keys [url chat-id]}           (rf/sub [:get-screen-params])
+    (let [params                          (rf/sub [:get-screen-params])
+          ;; NOTE(seanstrom): We need to store these screen params for when the modal closes
+          ;; because the screen params will be cleared.
+          {:keys [url chat-id]}           @(rn/use-ref-atom params)
           {:keys [color emoji chat-name]} (rf/sub [:chats/community-channel-ui-details-by-id chat-id])
           on-share-community-channel      (rn/use-callback
                                            #(rf/dispatch
