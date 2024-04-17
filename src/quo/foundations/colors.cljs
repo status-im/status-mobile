@@ -188,6 +188,8 @@
 (def danger "#E95460")
 
 ;; Danger with transparency
+(def danger-opa-5 (alpha danger 0.05))
+(def danger-opa-10 (alpha danger 0.1))
 (def danger-opa-40 (alpha danger 0.4))
 
 ;;Solid

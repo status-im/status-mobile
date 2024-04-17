@@ -15,7 +15,8 @@
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [quo.foundations.colors :as colors]))
 
 (defn- make-limit-label
   [amount currency]
@@ -76,6 +77,24 @@
        :on-token-press           (fn [token]
                                    (rf/dispatch [:wallet/edit-token-to-send token])
                                    (clear-input!))}]]))
+
+(defn- token-not-available
+  [token-symbol]
+  [rn/view {:style style/token-not-available-container}
+   [rn/view
+    [quo/icon :i/alert
+     {:size  16
+      :color colors/danger-50}]]
+   [rn/view {:style style/token-not-available-content-container}
+    [quo/text
+     {:style style/token-not-available-text
+      :size  :paragraph-2}
+     (i18n/label :t/token-not-available-on-receiver-networks {:token-symbol token-symbol})]
+    [quo/button
+     {:size                24
+      :customization-color colors/danger-50
+      :on-press            #()}
+     (i18n/label :t/add-networks-token-can-be-sent-to {:token-symbol token-symbol})]]])
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed

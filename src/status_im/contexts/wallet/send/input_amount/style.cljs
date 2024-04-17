@@ -1,4 +1,5 @@
-(ns status-im.contexts.wallet.send.input-amount.style)
+(ns status-im.contexts.wallet.send.input-amount.style
+  (:require [quo.foundations.colors :as colors]))
 
 (def screen
   {:flex 1})
@@ -38,3 +39,23 @@
   {:height      40
    :width       "100%"
    :align-items :center})
+
+(def token-not-available-container
+  {:max-height        90
+   :flex              1
+   :flex-direction    :row
+   :background-color  colors/danger-opa-5
+   :border-color      colors/danger-opa-10
+   :border-width      1
+   :border-radius     12
+   :margin-horizontal 20
+   :padding           12})
+
+(def token-not-available-content-container
+  {:margin-left 8
+   :align-items :flex-start})
+
+(def token-not-available-text
+  {:height 36
+   :flex   1
+   :color  colors/danger-50})
