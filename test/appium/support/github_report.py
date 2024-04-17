@@ -76,13 +76,19 @@ class GithubHtmlReport(BaseTestReport):
         from tests import pytest_config_global
         pr_id = pytest_config_global['pr_number']
 
+        from github import Github
+        from conftest import github_token
+        branch_name = Github(github_token).get_user('status-im').get_repo('status-mobile').get_pull(int(pr_id)).head.ref
+
         if not_executed_tests:
             html += "<li><a href=\"%s\">Rerun not executed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(
+                branch_name=branch_name,
                 pr_id=pr_id,
                 tr_case_ids=','.join([str(i) for i in tests]))
 
         if failed_tests:
             html += "<li><a href=\"%s\">Rerun failed tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(
+                branch_name=branch_name,
                 pr_id=pr_id,
                 tr_case_ids=','.join([str(test.testrail_case_id) for test in tests]))
 
@@ -141,7 +147,7 @@ class GithubHtmlReport(BaseTestReport):
             else:
                 html += "\n\n```\n%s\n```\n\n" % error.replace("[[", "<b>[[").replace("]]", "]]</b>")
             html += "<br/><br/>"
-        if last_testrun.jobs:
+        if last_testrun.jobs and not test.secured:
             html += self.build_device_sessions_html(last_testrun)
         html += "</td></tr>"
         return html
@@ -158,8 +164,8 @@ class GithubHtmlReport(BaseTestReport):
                         self.get_sauce_job_url(job_id, test_run.first_commands[job_id])
             else:
                 html += "<li><a href=\"%s\">Steps, video, logs</a></li>" % self.get_sauce_job_url(job_id)
-            if test_run.error:
-                html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
+            # if test_run.error:
+            #     html += "<li><a href=\"%s\">Failure screenshot</a></li>" % self.get_sauce_final_screenshot_url(job_id)
             html += "</ul></p>"
         html += "</ul></p>"
         return html

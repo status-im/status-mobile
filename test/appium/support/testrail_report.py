@@ -187,10 +187,14 @@ class TestrailReport(BaseTestReport):
                 test_steps += step + "\n"
             for i, device in enumerate(last_testrun.jobs):
                 if last_testrun.first_commands:
-                    devices += "# [Device %d](%s) \n" % (
-                        i + 1, self.get_sauce_job_url(job_id=device, first_command=last_testrun.first_commands[device]))
+                    first_command = last_testrun.first_commands[device]
                 else:
-                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device))
+                    first_command = 0
+                try:
+                    devices += "# [Device %d](%s) \n" % (i + 1, self.get_sauce_job_url(job_id=device,
+                                                                                       first_command=first_command))
+                except KeyError:
+                    devices += "# Device %s: SauceLabs session was not found \n" % (i + 1)
             comment = str()
             if test.group_name:
                 comment += "# Class: %s \n" % test.group_name
