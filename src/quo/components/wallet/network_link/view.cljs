@@ -63,7 +63,7 @@
         side-lines-path       (helpers/calculate-side-lines-path-1x container-width)
         central-transform     (helpers/calculate-transform container-width)
         on-layout             (rn/use-callback #(set-container-width
-                                                 (oget e :nativeEvent :layout :width)))]
+                                                 (oget % :nativeEvent :layout :width)))]
     [rn/view
      {:style     style/link-1x-container
       :on-layout on-layout}
