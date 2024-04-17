@@ -165,4 +165,8 @@
         [incoming-contact-request-view props]]
 
        :else
-       [incoming-contact-request-view props])]))
+       [gesture/touchable-without-feedback
+        {:on-press (fn []
+                     (rf/dispatch [:hide-popover])
+                     (rf/dispatch [:chat.ui/show-profile author]))}
+        [incoming-contact-request-view props]])]))
