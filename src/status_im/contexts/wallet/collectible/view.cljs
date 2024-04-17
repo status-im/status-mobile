@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.collectible.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.svg :as svg]
@@ -36,10 +37,13 @@
      :icon-left       :i/send}
     (i18n/label :t/send)]
    [quo/button
-    {:container-style style/opensea-button
-     :type            :outline
-     :size            40
-     :icon-left       :i/opensea}
+    {:container-style  style/opensea-button
+     :type             :outline
+     :size             40
+     :icon-left        :i/opensea
+     :icon-left-color  (colors/theme-colors colors/neutral-100 colors/neutral-40)
+     :icon-right       :i/external
+     :icon-right-color (colors/theme-colors colors/neutral-50 colors/neutral-40)}
     (i18n/label :t/opensea)]])
 
 (def tabs-data
