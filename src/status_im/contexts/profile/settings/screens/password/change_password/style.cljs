@@ -4,13 +4,11 @@
     [react-native.safe-area :as safe-area]))
 
 (def form-container
-  {:flex               1
-   :padding-horizontal 20})
+  {:margin-horizontal 20})
 
 (def heading
-  {:margin-bottom     20
-   :margin-horizontal 20
-   :margin-top        12})
+  {:margin-bottom 20
+   :margin-top    12})
 
 (def heading-subtitle {:color colors/white})
 
@@ -50,8 +48,7 @@
    :justify-content   :space-between})
 
 (def bottom-part
-  {:flex            1
-   :margin-bottom   (+ (safe-area/get-bottom) 12)
+  {:margin-bottom   (+ (safe-area/get-bottom) 12)
    :justify-content :flex-end})
 
 (def disclaimer-container

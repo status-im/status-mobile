@@ -8,8 +8,6 @@
      new-password-form]
     [status-im.contexts.profile.settings.screens.password.change-password.old-password-form :as
      old-password-form]
-    [status-im.contexts.profile.settings.screens.password.change-password.style :as style]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn- navigate-back
@@ -35,17 +33,6 @@
       [rn/keyboard-avoiding-view
        {:style                  {:flex 1}
         :keyboardVerticalOffset (- (safe-area/get-bottom))}
-       [rn/view {:style style/heading}
-        [quo/text
-         {:style  style/heading-title
-          :weight :semi-bold
-          :size   :heading-1}
-         (i18n/label :t/change-password)]
-        [quo/text
-         {:style  style/heading-subtitle
-          :weight :regular
-          :size   :paragraph-1}
-         (i18n/label :t/change-password-description)]]
        (condp = current-step
          :old-password [old-password-form/view]
          :new-password [new-password-form/view])]]]))

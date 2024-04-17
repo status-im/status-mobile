@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [status-im.constants :as constant]
     [status-im.contexts.profile.settings.screens.password.change-password.events]
+    [status-im.contexts.profile.settings.screens.password.change-password.header :as header]
     [status-im.contexts.profile.settings.screens.password.change-password.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -113,7 +114,8 @@
                                                           [:change-password/confirm-new-password
                                                            (security/mask-data password)]))]
     [:<>
-     [rn/view {:style style/form-container}
+     [rn/scroll-view {:style style/form-container}
+      [header/view]
       [password-with-hint
        {:hint           {:text   (i18n/label :t/password-creation-hint)
                          :status (if long-enough? :success :default)
