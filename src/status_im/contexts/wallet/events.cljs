@@ -9,6 +9,7 @@
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.events.collectibles]
+    [status-im.contexts.wallet.events.saved-addresses]
     [status-im.contexts.wallet.item-types :as item-types]
     [taoensso.timbre :as log]
     [utils.collection]

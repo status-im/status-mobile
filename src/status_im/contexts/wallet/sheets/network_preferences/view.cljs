@@ -42,11 +42,7 @@
             current-networks (filter (fn [network]
                                        (contains? (get-current-preferences-names)
                                                   (:network-name network)))
-                                     network-details)
-            _                (prn {:init          initial-network-preferences-names
-                                   :external-init selected-networks
-                                   :net-p-ns      @network-preferences-names-state
-                                   :current       (get-current-preferences-names)})]
+                                     network-details)]
         [:<>
          ;; quo/overlay isn't compatible with sheets
          (when blur?

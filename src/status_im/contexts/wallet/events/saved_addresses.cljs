@@ -6,20 +6,21 @@
 (rf/reg-event-fx
  :wallet/save-address
  (fn [_
-      [{:keys [address name customization-color on-success on-error chain-short-names ens test?]
-        :or   {on-success        (fn [])
-               on-error          (fn [])
-               name              ""
-               ens               ""
-               test?             false
-               ;; the chain short names should be a string like eth: or eth:arb:opt:
-               chain-short-names (str constants/mainnet-short-name ":")}}]]
-   (let [address-to-save {:address           address
-                          :name              name
-                          :color-id          customization-color
-                          :ens               ens
-                          :is-test           test?
-                          :chain-short-names chain-short-names}]
+     [{:keys [address name customization-color on-success on-error chain-short-names ens test?]
+       :or   {on-success        (fn [])
+              on-error          (fn [])
+              name              ""
+              ens               ""
+              test?             false
+              ;; the chain short names should be a string like eth: or eth:arb:opt:
+              chain-short-names (str constants/mainnet-short-name ":")}}]]
+   (let [address-to-save {:address         address
+                          :name            name
+                          :colorId         customization-color
+                          :ens             ens
+                          :isTest          test?
+                          :chainShortNames chain-short-names}]
+     (prn :address-to-save address-to-save)
      {:json-rpc/call
       [{:method     "wakuext_upsertSavedAddress"
         :params     [address-to-save]
