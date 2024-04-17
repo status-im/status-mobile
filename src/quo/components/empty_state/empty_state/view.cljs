@@ -15,9 +15,10 @@
   [rn/view {:style (merge styles/container container-style)}
    (if placeholder?
      [rn/view {:style styles/image-placeholder}]
-     [fast-image/fast-image
-      {:style  styles/image
-       :source image}])
+     [rn/view {:style styles/image-container}
+      [fast-image/fast-image
+       {:style  styles/image
+        :source image}]])
    [rn/view {:style styles/text-container}
     [text/text
      {:style           (styles/title blur?)
