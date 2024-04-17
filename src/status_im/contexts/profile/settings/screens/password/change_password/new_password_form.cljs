@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.settings.screens.password.change-password.new-password-form
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -12,7 +13,7 @@
     [utils.string :as utils.string]))
 
 (defn- password-with-hint
-  [{{:keys [text status shown]} :hint :as input-props}]
+  [{{:keys [text status shown?]} :hint :as input-props}]
   [:<>
    [quo/input
     (-> input-props
@@ -20,22 +21,21 @@
         (assoc :type  :password
                :blur? true))]
    [rn/view {:style style/info-message}
-    (when shown
+    (when shown?
       [quo/info-message
-       {:type       status
-        :size       :default
-        :icon       (if (= status :success) :i/positive-state :i/info)
-        :text-color (when (= status :default)
-                      colors/white-70-blur)
-        :icon-color (when (= status :default)
-                      colors/white-70-blur)}
+       (cond-> {:type status
+                :size :default}
+         (not= :success status) (assoc :icon :i/info)
+         (= :success status)    (assoc :icon :i/positive-state)
+         (= :default status)    (assoc :text-color colors/white-70-blur
+                                       :icon-color colors/white-70-blur))
        text])]])
 
 (defn- calc-password-strength
   [validations]
   (->> (vals validations)
        (filter true?)
-       (count)))
+       count))
 
 (defn- help
   [{:keys [validations]}]
@@ -71,11 +71,12 @@
         [show-validation? set-show-validation]         (rn/use-state false)
 
         ;; validations
+        not-blank?                                     (complement string/blank?)
         validations                                    (password-validations password)
         long-enough?                                   (utils.string/at-least-n-chars?
                                                         password
                                                         constant/new-password-min-length)
-        empty-password?                                (empty? password)
+        empty-password?                                (string/blank? password)
         same-passwords?                                (and (not empty-password?)
                                                             (= password repeat-password))
         meet-requirements?                             (and (not empty-password?)
@@ -89,13 +90,13 @@
         ;; handlers
         on-change-password                             (fn [new-value]
                                                          (set-password new-value)
-                                                         (when (and (seq new-value)
+                                                         (when (and (not-blank? new-value)
                                                                     (= (count new-value)
                                                                        (count repeat-password)))
                                                            (set-show-validation true)))
         on-change-repeat-password                      (fn [new-value]
                                                          (set-repeat-password new-value)
-                                                         (when (and (seq new-value)
+                                                         (when (and (not-blank? new-value)
                                                                     (= (count new-value)
                                                                        (count password)))
                                                            (set-show-validation true)))
@@ -116,7 +117,7 @@
       [password-with-hint
        {:hint           {:text   (i18n/label :t/password-creation-hint)
                          :status (if long-enough? :success :default)
-                         :shown  true}
+                         :shown? true}
         :placeholder    (i18n/label :t/change-password-new-password-placeholder)
         :label          (i18n/label :t/change-password-new-password-label)
         :on-change-text on-change-password
@@ -128,7 +129,7 @@
                                    (i18n/label :t/password-creation-match)
                                    (i18n/label :t/password-creation-dont-match))
                          :status (if same-passwords? :success :error)
-                         :shown  (and (not empty-password?)
+                         :shown? (and (not empty-password?)
                                       show-validation?)}
         :error?         error?
         :placeholder    (i18n/label :t/change-password-repeat-password-placeholder)

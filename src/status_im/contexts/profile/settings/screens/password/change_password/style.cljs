@@ -30,11 +30,11 @@
   {:margin-top 12})
 
 (defn loading-container
-  [insets]
+  [{:keys [top bottom]}]
   {:flex            1
    :justify-content :space-between
-   :padding-top     (:top insets)
-   :padding-bottom  (:bottom insets)})
+   :padding-top     top
+   :padding-bottom  bottom})
 
 (def loading-content
   {:flex               1

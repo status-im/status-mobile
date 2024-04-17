@@ -19,9 +19,7 @@
 (defn view
   []
   (let [{:keys [top]} (safe-area/get-insets)
-        current-step  (or (rf/sub
-                           [:settings/change-password-current-step])
-                          :old-password)]
+        current-step  (rf/sub [:settings/change-password-current-step])]
     (rn/use-unmount #(rf/dispatch [:change-password/reset]))
     [quo/overlay {:type :shell}
      [rn/pressable

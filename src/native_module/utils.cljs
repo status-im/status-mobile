@@ -7,10 +7,12 @@
 (defn- promisify-callback
   [res rej]
   (fn [result]
-    (let [error (let [{:keys [error]} (types/json->clj result)]
-                  (when-not (string/blank? error)
-                    error))]
-      (if error (rej error) (res result)))))
+    (let [native-error (let [{:keys [error]} (types/json->clj result)]
+                         (when-not (string/blank? error)
+                           error))]
+      (if native-error
+        (rej (ex-info "Native module call error" {:error native-error}))
+        (res result)))))
 
 (defn promisify-native-module-call
   [f & args]

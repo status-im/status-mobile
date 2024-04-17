@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.settings.screens.password.change-password.old-password-form
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.constants :as constant]
@@ -19,7 +20,7 @@
                                   (when error
                                     (rf/dispatch [:change-password/reset-error]))
                                   (set-password new-value))
-        meet-requirements?      (and (seq password)
+        meet-requirements?      (and ((complement string/blank?) password)
                                      (utils.string/at-least-n-chars? password
                                                                      constant/min-password-length))
         on-submit               (fn []

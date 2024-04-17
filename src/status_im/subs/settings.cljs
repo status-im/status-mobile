@@ -4,7 +4,7 @@
 (rf/reg-sub :settings/change-password-current-step
  :<- [:settings/change-password]
  (fn [change-password]
-   (get change-password :current-step)))
+   (or (get change-password :current-step) :old-password)))
 
 (rf/reg-sub :settings/change-password-loading
  :<- [:settings/change-password]

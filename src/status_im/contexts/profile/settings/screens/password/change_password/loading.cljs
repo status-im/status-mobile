@@ -32,13 +32,13 @@
        :style (style/loading-container insets)}
       [quo/page-nav]
       [quo/page-top
-       (cond-> {:description :text}
-         (not done?) (assoc
-                      :title            (i18n/label :t/change-password-loading-header)
-                      :description-text (i18n/label :t/change-password-loading-description))
-         done?       (assoc
-                      :title            (i18n/label :t/change-password-done-header)
-                      :description-text (i18n/label :t/change-password-done-description)))]
+       {:description      :text
+        :title            (if done?
+                            (i18n/label :t/change-password-done-header)
+                            (i18n/label :t/change-password-loading-header))
+        :description-text (if done?
+                            (i18n/label :t/change-password-done-description)
+                            (i18n/label :t/change-password-loading-description))}]
       [rn/view
        {:style style/loading-content}
        (when-not done?
