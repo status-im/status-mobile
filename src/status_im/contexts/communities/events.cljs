@@ -325,8 +325,8 @@
 
 (rf/reg-event-fx :chat.ui/spectate-community spectate-community)
 
-(rf/defn navigate-to-serialized-community
-  [_ {:keys [community-id]}]
+(defn navigate-to-serialized-community
+  [community-id]
   {:serialization/deserialize-and-compress-key
    {:serialized-key community-id
     :on-success     #(rf/dispatch [:communities/navigate-to-community-overview %])
@@ -334,27 +334,30 @@
                                  :error        %
                                  :community-id community-id})}})
 
-(rf/reg-event-fx :communities/navigate-to-community-overview
- (fn [{:keys [db] :as cofx} [deserialized-key]]
-   (let [current-view-id (:view-id db)]
-     (if (string/starts-with? deserialized-key constants/serialization-key)
-       (navigate-to-serialized-community cofx deserialized-key)
-       (rf/merge
-        cofx
-        {:fx [[:dispatch
-               [:communities/fetch-community
-                {:community-id           deserialized-key
-                 :update-last-opened-at? true}]]
-              [:dispatch [:navigate-to :community-overview deserialized-key]]
-              (when (get-in db [:communities deserialized-key :joined])
-                [:dispatch
-                 [:activity-center.notifications/dismiss-community-overview deserialized-key]])]}
-        (when-not (or (= current-view-id :shell) (= current-view-id :communities-stack))
-          (navigation/pop-to-root :shell-stack)))))))
+(rf/defn navigate-to-community-overview
+  [{:keys [db] :as cofx} [community-id]]
+  (let [current-view-id (:view-id db)]
+    (if (string/starts-with? community-id constants/serialization-key)
+      (navigate-to-serialized-community community-id)
+      (rf/merge
+       cofx
+       {:fx [[:dispatch
+              [:communities/fetch-community
+               {:community-id           community-id
+                :update-last-opened-at? true}]]
+             [:dispatch [:navigate-to :community-overview community-id]]
+             (when (get-in db [:communities community-id :joined])
+               [:dispatch
+                [:activity-center.notifications/dismiss-community-overview community-id]])]}
+       (when-not (or (= current-view-id :shell) (= current-view-id :communities-stack))
+         (navigation/pop-to-root :shell-stack))))))
 
-(rf/reg-event-fx :communities/navigate-to-community-chat
- (fn [{:keys [db]} [chat-id pop-to-root?]]
-   (let [{:keys [community-id]} (get-in db [:chats chat-id])]
+(rf/reg-event-fx :communities/navigate-to-community-overview navigate-to-community-overview)
+
+(defn navigate-to-community-chat
+  [{:keys [db]} [chat-id pop-to-root? community-id]]
+  (let [community-id (or community-id (get-in db [:chats chat-id :community-id]))]
+    (merge
      {:fx [(when community-id
              [:dispatch
               [:communities/fetch-community
@@ -362,7 +365,11 @@
                 :update-last-opened-at? true}]])
            (if pop-to-root?
              [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
-             [:dispatch [:chat/navigate-to-chat chat-id]])]})))
+             [:dispatch [:chat/navigate-to-chat chat-id]])]}
+     (when-not (get-in db [:chats chat-id :community-id])
+       {:db (assoc-in db [:chats chat-id :community-id] community-id)}))))
+
+(rf/reg-event-fx :communities/navigate-to-community-chat navigate-to-community-chat)
 
 (defn get-revealed-accounts
   [{:keys [db]} [community-id on-success]]

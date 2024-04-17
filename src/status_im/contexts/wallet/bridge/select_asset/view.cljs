@@ -16,7 +16,8 @@
       [rn/view {:style {:flex 1}}
        [account-switcher/view
         {:on-press            #(rf/dispatch [:navigate-back])
-         :accessibility-label :top-bar}]
+         :accessibility-label :top-bar
+         :switcher-type       :select-account}]
        [quo/page-top {:title (i18n/label :t/bridge)}]
        [quo/input
         {:container-style style/input-container

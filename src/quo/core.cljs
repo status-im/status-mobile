@@ -32,6 +32,7 @@
     quo.components.community.channel-action.view
     quo.components.community.channel-actions.view
     quo.components.community.community-card-view
+    quo.components.community.community-detail-token-gating.view
     quo.components.community.community-list-view
     quo.components.community.community-stat.view
     quo.components.community.community-view
@@ -224,6 +225,7 @@
 
 ;;;; Community
 (def community-card-view-item quo.components.community.community-card-view/view)
+(def community-detail-token-gating quo.components.community.community-detail-token-gating.view/view)
 (def communities-membership-list-item
   quo.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo.components.community.community-view/community-stats-column)

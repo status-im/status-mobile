@@ -10,5 +10,5 @@
       [:blur? {:optional true} [:maybe :boolean]]
       [:collectible-img-src :schema.common/image-source]
       [:collectible-name :string]
-      [:collectible-id :string]]]]
+      [:collectible-id {:optional true} [:maybe :string]]]]]
    :any])

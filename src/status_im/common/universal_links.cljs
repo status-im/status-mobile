@@ -116,14 +116,16 @@
     (log/debug "universal-links: no url")))
 
 (rf/defn on-handle
-  {:events [::match-value]}
-  [cofx url {:keys [type chat-id] :as data}]
+  {:events [:universal-links/match-value]}
+  [cofx url {:keys [type chat-id community-id] :as data}]
   (case type
     :group-chat         (handle-group-chat cofx data)
     :private-chat       (handle-private-chat cofx data)
     :community-requests (handle-community-requests cofx data)
-    :community          (communities.events/navigate-to-serialized-community cofx data)
-    :community-chat     {:dispatch [:communities/navigate-to-community-chat chat-id :pop-to-root]}
+    :community          (communities.events/navigate-to-community-overview cofx [community-id])
+    :community-chat     (communities.events/navigate-to-community-chat cofx
+                                                                       [chat-id :pop-to-root
+                                                                        community-id])
     :contact            (handle-view-profile cofx data)
     :browser            (handle-browse cofx data)
     :eip681             (handle-eip681 cofx data)
@@ -136,7 +138,7 @@
   {:router/handle-uri {:chain (chain/chain-keyword db)
                        :chats (:chats db)
                        :uri   url
-                       :cb    #(re-frame/dispatch [::match-value url %])}})
+                       :cb    #(re-frame/dispatch [:universal-links/match-value url %])}})
 
 (rf/defn store-url-for-later
   "Store the url in the db to be processed on login"
