@@ -73,19 +73,25 @@
 
 (defn check-permissions-to-join-for-selection
   [{:keys [db]} [community-id addresses]]
-  (if (empty? addresses)
-    ;; When there are no addresses we can't just check permissions, otherwise
-    ;; status-go will consider all possible addresses and the user will see the
-    ;; incorrect highest permission role.
-    {:db (update db :communities/permissions-checks-for-selection dissoc community-id)}
-    {:db (assoc-in db [:communities/permissions-checks-for-selection community-id :checking?] true)
-     :fx [[:json-rpc/call
-           [{:method     :wakuext_checkPermissionsToJoinCommunity
-             :params     [{:communityId community-id :addresses addresses}]
-             :on-success [:communities/check-permissions-to-join-during-selection-success
-                          community-id]
-             :on-error   [:communities/check-permissions-to-join-during-selection-failure
-                          community-id addresses]}]]]}))
+  (let [request-id (rand-int 10000000)]
+    (if (empty? addresses)
+      ;; When there are no addresses we can't just check permissions, otherwise
+      ;; status-go will consider all possible addresses and the user will see the
+      ;; incorrect highest permission role.
+      {:db (update db :communities/permissions-checks-for-selection dissoc community-id)}
+      {:db (update-in db
+                      [:communities/permissions-checks-for-selection community-id]
+                      assoc
+                      :checking?         true
+                      :latest-request-id request-id)
+       :fx [[:json-rpc/call
+             [{:method     :wakuext_checkPermissionsToJoinCommunity
+               :params     [{:communityId community-id :addresses addresses}]
+               :id         request-id
+               :on-success [:communities/check-permissions-to-join-during-selection-success
+                            community-id]
+               :on-error   [:communities/check-permissions-to-join-during-selection-failure
+                            community-id addresses]}]]]})))
 
 ;; This event should be used to check permissions temporarily because it won't
 ;; mutate the state `:communities/permissions-check` (used by many other
@@ -94,12 +100,14 @@
  check-permissions-to-join-for-selection)
 
 (rf/reg-event-fx :communities/check-permissions-to-join-during-selection-success
- (fn [{:keys [db]} [community-id result]]
-   {:db (assoc-in db
-         [:communities/permissions-checks-for-selection community-id]
-         {:checking?                  false
-          :based-on-client-selection? true
-          :check                      result})}))
+ (fn [{:keys [db]} [community-id result request-id]]
+   (when (= (get-in db [:communities/permissions-checks-for-selection community-id :latest-request-id])
+            request-id)
+     {:db (assoc-in db
+           [:communities/permissions-checks-for-selection community-id]
+           {:checking?                  false
+            :based-on-client-selection? true
+            :check                      result})})))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-during-selection-failure
  (fn [_ [community-id addresses error]]
