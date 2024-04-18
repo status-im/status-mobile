@@ -90,8 +90,9 @@
                   :section-one-title (i18n/label :t/preferred-by-receiver)
                   :section-two-title (i18n/label :t/not-preferred-by-receiver)
                   :selected-networks (vec (map network-utils/id->network selected-networks))
+                  :receiver?         true
                   :account           account
-                  :button-label      (i18n/label :t/display)
+                  :button-label      "Apply"
                   :on-save           (fn [chain-ids]
                                        (rf/dispatch [:hide-bottom-sheet])
                                        (rf/dispatch [:wallet/update-receiver-networks chain-ids]))}])}]))

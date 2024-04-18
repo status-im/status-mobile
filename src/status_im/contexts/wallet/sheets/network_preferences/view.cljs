@@ -11,7 +11,7 @@
             [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [title section-one-title section-two-title selected-networks account watch-only?]}]
+  [{:keys [title receiver? section-one-title section-two-title selected-networks account watch-only?]}]
   (let [state                               (reagent/atom :default)
         {:keys [color address
                 network-preferences-names]} (or account (rf/sub [:wallet/current-viewing-account]))
@@ -56,24 +56,25 @@
                           (i18n/label :t/network-preferences-desc-1)
                           (i18n/label :t/network-preferences-desc-2))
            :blur?       blur?}]
-         [quo/data-item
-          {:status          :default
-           :size            :default
-           :description     :default
-           :label           :none
-           :blur?           blur?
-           :card?           true
-           :title           (i18n/label :t/address)
-           :custom-subtitle (fn []
-                              [quo/address-text
-                               {:networks current-networks
-                                :address  address
-                                :blur?    blur?
-                                :format   :long}])
-           :container-style (merge style/data-item
-                                   {:background-color (colors/theme-colors colors/neutral-2_5
-                                                                           colors/neutral-90
-                                                                           theme)})}]
+         (when-not receiver?
+           [quo/data-item
+            {:status          :default
+             :size            :default
+             :description     :default
+             :label           :none
+             :blur?           blur?
+             :card?           true
+             :title           (i18n/label :t/address)
+             :custom-subtitle (fn []
+                                [quo/address-text
+                                 {:networks current-networks
+                                  :address  address
+                                  :blur?    blur?
+                                  :format   :long}])
+             :container-style (merge style/data-item
+                                     {:background-color (colors/theme-colors colors/neutral-2_5
+                                                                             colors/neutral-90
+                                                                             theme)})}])
          [quo/category
           {:list-type :settings
            :blur?     blur?
@@ -105,4 +106,4 @@
                               :on-press            (fn []
                                                      (let [chain-ids (map :chain-id current-networks)]
                                                        (on-save chain-ids)))
-                              :customization-color color}}]]))))
+                              :customization-color (or color :blue)}}]]))))
