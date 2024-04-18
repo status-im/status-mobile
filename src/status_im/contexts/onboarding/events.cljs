@@ -85,6 +85,7 @@
               (not seed-phrase)
               (assoc :effects.profile/create-and-login profile)))))
 
+;; TODO(alwx): fix this
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}
   [{:keys [db] :as cofx}]

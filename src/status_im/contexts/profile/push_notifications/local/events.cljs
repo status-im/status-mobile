@@ -43,6 +43,7 @@
    :body-type
    bodyType))
 
+;; TODO(alwx):
 (rf/defn process
   [cofx {:keys [bodyType] :as event}]
   (if (push-notification-types bodyType)

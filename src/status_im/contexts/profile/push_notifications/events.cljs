@@ -35,27 +35,24 @@
     (native-module.pn/add-listener "remoteNotificationReceived"
                                    #(handle-notification-press (transforms/json->clj %)))))
 
-(rf/defn handle-enable-notifications-event
-  {:events [:push-notifications/registered-for-push-notifications]}
-  [_ token]
-  {:json-rpc/call [{:method     "wakuext_registerForPushNotifications"
-                    :params     [token (if platform/ios? config/apn-topic)
-                                 (if platform/ios? apn-token-type firebase-token-type)]
-                    :on-success #(log/info "[push-notifications] register-success" %)
-                    :on-error   #(log/info "[push-notifications] register-error" %)}]})
+(rf/reg-event-fx :push-notifications/registered-for-push-notifications
+  (fn [_ [token]]
+    {:json-rpc/call [{:method     "wakuext_registerForPushNotifications"
+                      :params     [token (if platform/ios? config/apn-topic)
+                                   (if platform/ios? apn-token-type firebase-token-type)]
+                      :on-success #(log/info "[push-notifications] register-success" %)
+                      :on-error   #(log/info "[push-notifications] register-error" %)}]}))
 
-(rf/defn handle-disable-notifications-event
-  {:events [:push-notifications/unregistered-from-push-notifications]}
-  [_]
-  {:json-rpc/call [{:method     "wakuext_unregisterFromPushNotifications"
-                    :params     []
-                    :on-success #(log/info "[push-notifications] unregister-success" %)
-                    :on-error   #(log/info "[push-notifications] unregister-error" %)}]})
+(rf/reg-event-fx :push-notifications/unregistered-from-push-notifications
+  (fn [_]
+    {:json-rpc/call [{:method     "wakuext_unregisterFromPushNotifications"
+                      :params     []
+                      :on-success #(log/info "[push-notifications] unregister-success" %)
+                      :on-error   #(log/info "[push-notifications] unregister-error" %)}]}))
 
-(rf/defn handle-preferences-load
-  {:events [:push-notifications/preferences-loaded]}
-  [{:keys [db]} preferences]
-  {:db (assoc db :push-notifications/preferences preferences)})
+(rf/reg-event-fx :push-notifications/preferences-loaded
+  (fn [{:keys [db]} [preferences]]
+    {:db (assoc db :push-notifications/preferences preferences)}))
 
 (re-frame/reg-fx :push-notifications/load-preferences
  (fn []
