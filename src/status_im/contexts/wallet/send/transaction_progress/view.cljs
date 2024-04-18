@@ -28,7 +28,9 @@
 (defn- footer
   [{:keys [color leave-page]}]
   (let [send-to-address      (rf/sub [:wallet/wallet-send-to-address])
-        save-address-hidden? (rf/sub [:wallet/address-saved? send-to-address])]
+        saved-address        (rf/sub [:wallet/saved-address-by-address send-to-address])
+        save-address-hidden? true ;; (rf/sub [:wallet/address-saved? send-to-address])
+       ]
     [quo/bottom-actions
      {:actions          (if save-address-hidden? :one-action :two-actions)
       :button-two-label (i18n/label :t/save-address)
@@ -36,7 +38,9 @@
                          :icon-left           :i/contact-book
                          :accessibility-label :save-address
                          :on-press            (rn/use-callback
-                                               #(rf/dispatch [:open-modal :screen/wallet.save-address]))}
+                                               #(rf/dispatch [:open-modal :screen/wallet.save-address
+                                                              {:saved-address saved-address}])
+                                               [saved-address])}
       :button-one-label (i18n/label :t/done)
       :button-one-props {:customization-color color
                          :type                :primary

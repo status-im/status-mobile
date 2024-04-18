@@ -323,7 +323,7 @@
                                                  :filled-checkbox
                                                  :checkbox)
                           :customization-color color
-                          :checked?            (some #(= network-name %) networks)
+                          :checked?            (contains? networks network-name)
                           :on-change           on-change}}
 
     label-props

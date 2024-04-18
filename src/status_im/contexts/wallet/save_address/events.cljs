@@ -20,7 +20,6 @@
                           :ens             ens
                           :isTest          test?
                           :chainShortNames chain-short-names}]
-     (prn :address-to-save address-to-save)
      {:json-rpc/call
       [{:method     "wakuext_upsertSavedAddress"
         :params     [address-to-save]

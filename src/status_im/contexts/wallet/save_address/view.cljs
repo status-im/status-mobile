@@ -41,8 +41,7 @@
                              {:content
                               (fn []
                                 [network-preferences/view
-                                 {:blur              false
-                                  :selected-networks (->> selected-networks
+                                 {:selected-networks (->> selected-networks
                                                           (map :network-name)
                                                           set)
                                   :account           {:address address}
@@ -51,8 +50,7 @@
                                                       (fn [chain-ids]
                                                         (set-selected-networks
                                                          (map wallet-common-utils/id->network chain-ids))
-                                                        (rf/dispatch [:hide-bottom-sheet])))}
-                                ])}]))
+                                                        (rf/dispatch [:hide-bottom-sheet])))}])}]))
                          [selected-networks])
        :container-style style/data-item}]]))
 
@@ -88,6 +86,7 @@
       :footer                   [quo/button
                                  {:accessibility-label :save-address-button
                                   :type :primary
+                                  :customization-color address-color
                                   :container-style style/save-address-button
                                   :on-press
                                   (rn/use-callback
@@ -136,25 +135,3 @@
       {:selected-networks     selected-networks-or-fallback
        :set-selected-networks set-selected-networks}]]))
 
-(comment
-  (rf/dispatch [:open-modal :screen/wallet.save-address])
-  (rf/dispatch [:navigate-to :screen/wallet.transaction-progress])
-
-  (contains? [:a :b :c] 5)
-  (some #(= :a %) [:a :b])
-
-
-  (list :main :arb)
-
-
-
-  (rf/dispatch [:wallet/get-saved-addresses])
-
-  (do
-    (rf/dispatch [:profile/on-password-input-changed {:password "      "}])
-    (rf/dispatch [:profile.login/login])
-
-    (rf/dispatch [:wallet-temp/set-to-address
-                  "0x26fe3219384a55e4e89fdb0e4420b15439221428"])
-    )
-  )
