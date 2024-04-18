@@ -150,4 +150,3 @@
         nil)])])
 
 (def view (quo.theme/with-theme view-internal))
-
