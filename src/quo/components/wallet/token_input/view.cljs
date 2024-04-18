@@ -125,6 +125,7 @@
 
 (defn- view-internal
   [{:keys [container-style value on-swap] :as props}]
+  (tap> props)
   (let [theme                               (quo.theme/use-theme-value)
         width                               (:width (rn/get-window))
         [value-internal set-value-internal] (rn/use-state nil)
