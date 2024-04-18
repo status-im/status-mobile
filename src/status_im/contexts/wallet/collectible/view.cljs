@@ -1,21 +1,29 @@
 (ns status-im.contexts.wallet.collectible.view
   (:require
+    [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
     [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.worklets.header-animations :as header-animations]))
 
 (defn header
-  [collectible-name collection-name collection-image-url]
-  [rn/view {:style style/header}
+  [collectible-name collection-name collection-image-url set-title-ref]
+  [rn/view
+   {:style       style/header
+    :ref         set-title-ref
+    :collapsable false}
    [quo/text
     {:weight :semi-bold
      :size   :heading-1}
@@ -64,13 +72,74 @@
     :label               (i18n/label :t/about)
     :accessibility-label :about-tab}])
 
-(defn view
+(def navigate-back #(rf/dispatch [:navigate-back]))
+
+(defn animated-header
+  [{:keys [scroll-amount title-opacity page-nav-type picture title description theme]}]
+  (let [blur-amount   (header-animations/use-blur-amount scroll-amount)
+        layer-opacity (header-animations/use-layer-opacity
+                       scroll-amount
+                       "transparent"
+                       (colors/theme-colors colors/white-opa-50 colors/neutral-95-opa-70-blur theme))]
+    [rn/view {:style style/animated-header}
+     [reanimated/blur-view
+      {:style         {:flex 1}
+       :blur-type     :transparent
+       :overlay-color :transparent
+       :blur-amount   blur-amount
+       :blur-radius   blur-amount}
+      [reanimated/view {:style layer-opacity}
+       [quo/page-nav
+        {:type                page-nav-type
+         :picture             picture
+         :title               title
+         :description         description
+         :background          :blur
+         :icon-name           :i/close
+         :accessibility-label :back-button
+         :on-press            navigate-back
+         :right-side          [{:icon-name :i/options
+                                :on-press  #(rf/dispatch
+                                             [:show-bottom-sheet
+                                              {:content (fn []
+                                                          [options-drawer/view
+                                                           {:name  title
+                                                            :image picture}])
+                                               :theme   theme}])}]
+         :center-opacity      title-opacity}]]]]))
+
+(defn on-scroll
+  [e scroll-amount title-opacity title-bottom-coord]
+  (let [scroll-y    (oops/oget e "nativeEvent.contentOffset.y")
+        new-opacity (if (>= scroll-y @title-bottom-coord) 1 0)]
+    (reanimated/set-shared-value scroll-amount scroll-y)
+    (reanimated/set-shared-value title-opacity
+                                 (reanimated/with-timing new-opacity #js {:duration 300}))))
+
+(defn- gradient-layer
+  [image-uri]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/gradient-layer}
+     [rn/image
+      {:style       style/image-background
+       :source      {:uri image-uri}
+       :blur-radius 14}]
+     [rn/view {:style style/gradient}
+      [linear-gradient/linear-gradient
+       {:style     {:flex 1}
+        :colors    (colors/theme-colors
+                    [colors/white-opa-70 colors/white colors/white]
+                    [colors/neutral-95-opa-70 colors/neutral-95 colors/neutral-95]
+                    theme)
+        :locations [0 0.9 1]}]]]))
+
+(defn collectible-details
   [_]
   (let [selected-tab  (reagent/atom :overview)
         on-tab-change #(reset! selected-tab %)]
-    (fn []
-      (let [theme                       (quo.theme/use-theme)
-            collectible                 (rf/sub [:wallet/last-collectible-details])
+    (fn [{:keys [collectible set-title-bottom theme]}]
+      (let [title-ref                   (rn/use-ref-atom nil)
+            set-title-ref               (rn/use-callback #(reset! title-ref %))
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
             collectible-owner           (rf/sub [:wallet/last-collectible-details-owner])
             {:keys [id
@@ -95,51 +164,47 @@
                                          :id           token-id
                                          :header       collectible-name
                                          :description  collection-name}
-            total-owned                 (utils/total-owned-collectible (:ownership collectible)
-                                                                       (:address collectible-owner))]
-        (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
-        [scroll-page/scroll-page
-         {:navigate-back? true
-          :height         148
-          :page-nav-props {:type        :title-description
-                           :title       collectible-name
-                           :description collection-name
-                           :right-side  [{:icon-name :i/options
-                                          :on-press  #(rf/dispatch
-                                                       [:show-bottom-sheet
-                                                        {:content (fn [] [options-drawer/view
-                                                                          {:name  collectible-name
-                                                                           :image preview-uri}])
-                                                         :theme   theme}])}]
-                           :picture     preview-uri
-                           :blur?       true}}
-         [rn/view {:style style/container}
+            total-owned                 (utils/total-owned-collectible
+                                         (:ownership collectible)
+                                         (:address collectible-owner))]
+        [rn/view {:style style/container}
+         [rn/view
+          [gradient-layer preview-uri]
           [quo/expanded-collectible
-           {:image-src       preview-uri
-            :container-style style/preview-container
-            :counter         (utils/collectible-owned-counter total-owned)
-            :native-ID       (when (= animation-shared-element-id token-id) :shared-element)
-            :supported-file? (utils/supported-file? (:animation-media-type collectible-data))
-            :on-press        (fn []
-                               (if svg?
-                                 (js/alert "Can't visualize SVG images in lightbox")
-                                 (rf/dispatch
-                                  [:lightbox/navigate-to-lightbox
-                                   token-id
-                                   {:images           [collectible-image]
-                                    :index            0
-                                    :on-options-press #(rf/dispatch [:show-bottom-sheet
-                                                                     {:content
-                                                                      (fn []
-                                                                        [options-drawer/view
-                                                                         {:name  collectible-name
-                                                                          :image preview-uri}])}])}])))}]
-          [header collectible-name collection-name collection-image]
+           {:image-src           preview-uri
+            :container-style     style/preview-container
+            :counter             (utils/collectible-owned-counter total-owned)
+            :native-ID           (when (= animation-shared-element-id token-id) :shared-element)
+            :supported-file?     (utils/supported-file? (:animation-media-type collectible-data))
+            :on-press            (fn []
+                                   (if svg?
+                                     (js/alert "Can't visualize SVG images in lightbox")
+                                     (rf/dispatch
+                                      [:lightbox/navigate-to-lightbox
+                                       token-id
+                                       {:images           [collectible-image]
+                                        :index            0
+                                        :on-options-press #(rf/dispatch [:show-bottom-sheet
+                                                                         {:content
+                                                                          (fn []
+                                                                            [options-drawer/view
+                                                                             {:name collectible-name
+                                                                              :image
+                                                                              preview-uri}])}])}])))
+            :on-collectible-load (fn []
+                                   ;; We need to delay the measurement because the
+                                   ;; navigation has an animation
+                                   (js/setTimeout
+                                    #(some-> @title-ref
+                                             (oops/ocall "measureInWindow" set-title-bottom))
+                                    300))}]]
+         [rn/view {:style (style/background-color theme)}
+          [header collectible-name collection-name collection-image set-title-ref]
           [cta-buttons
            {:chain-id         chain-id
             :token-id         token-id
             :contract-address contract-address
-            :watch-only?      false ;(:watch-only? collectible-owner)
+            :watch-only?      (:watch-only? collectible-owner)
             :collectible      collectible}]
           [quo/tabs
            {:size           32
@@ -149,3 +214,41 @@
             :on-change      on-tab-change
             :data           tabs-data}]
           [tabs/view {:selected-tab @selected-tab}]]]))))
+
+(defn view
+  [_]
+  (let [{:keys [top]}              (safe-area/get-insets)
+        theme                      (quo.theme/use-theme)
+        title-bottom-coord         (rn/use-ref-atom 0)
+        set-title-bottom           (rn/use-callback
+                                    (fn [_ y _ height]
+                                      (reset! title-bottom-coord
+                                        (+ y height -100 (if platform/ios? (- top) top)))))
+        scroll-amount              (reanimated/use-shared-value 0)
+        title-opacity              (reanimated/use-shared-value 0)
+        collectible                (rf/sub [:wallet/last-collectible-details])
+        {:keys [preview-url
+                collection-data
+                collectible-data]} collectible
+        {preview-uri :uri}         preview-url
+        {collectible-name :name}   collectible-data
+        {collection-name :name}    collection-data]
+
+    (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
+
+    [rn/view {:style (style/background-color theme)}
+     [animated-header
+      {:scroll-amount scroll-amount
+       :title-opacity title-opacity
+       :page-nav-type :title-description
+       :picture       preview-uri
+       :title         collectible-name
+       :description   collection-name
+       :theme         theme}]
+     [reanimated/scroll-view
+      {:style     (style/scroll-view top)
+       :on-scroll #(on-scroll % scroll-amount title-opacity title-bottom-coord)}
+      [collectible-details
+       {:collectible      collectible
+        :set-title-bottom set-title-bottom
+        :theme            theme}]]]))
