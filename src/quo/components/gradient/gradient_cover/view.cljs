@@ -11,7 +11,7 @@
   ;; destructuring won't work because it's only applied when the `:customization-color` key is
   ;; non-existent. While deleting an account the key exists and has a `nil` value.
   (let [color-top    (colors/resolve-color customization-color 50 20)
-        color-bottom (or bottom-color-override (colors/resolve-color colors/white 50 5))]
+        color-bottom (or bottom-color-override (colors/resolve-color customization-color 50 0))]
     (when (and color-top color-bottom)
       [linear-gradient/linear-gradient
        {:accessibility-label :gradient-cover

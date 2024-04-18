@@ -1,6 +1,7 @@
 (ns status-im.contexts.communities.actions.share-community.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [react-native.platform :as platform]
@@ -50,8 +51,9 @@
             :title           (i18n/label :t/share-community)}]
           [rn/view {:style style/qr-code-wrapper}
            [quo/gradient-cover
-            {:container-style     (style/gradient-cover-wrapper window-width)
-             :customization-color color}]
+            {:container-style       (style/gradient-cover-wrapper window-width)
+             :customization-color   color
+             :bottom-color-override colors/white-opa-5}]
            [rn/view
             {:style style/qr-top-wrapper}
             [rn/view {:flex-direction :row}
