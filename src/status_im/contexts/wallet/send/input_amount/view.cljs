@@ -86,7 +86,7 @@
 (defn- reset-input-error
   [new-value prev-value input-error]
   (reset! input-error
-    (> new-value prev-value)))
+    (> (js/parseFloat new-value) (js/parseFloat prev-value))))
 
 (defn delete-from-string
   [s idx]
