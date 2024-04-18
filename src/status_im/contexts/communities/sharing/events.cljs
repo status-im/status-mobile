@@ -15,8 +15,7 @@
 (rf/reg-event-fx :communities/share-community-pressed
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
-    :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :legacy-invite-people-community {:id id}]]]}))
+    :fx [[:dispatch [:communities/share-community-url-with-data id]]]}))
 
 (rf/reg-event-fx :communities/share-community-confirmation-pressed
  (fn [_ [users-public-keys community-id]]

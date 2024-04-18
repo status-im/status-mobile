@@ -112,7 +112,7 @@
   {:icon                :i/share
    :accessibility-label :share-community
    :label               (i18n/label :t/share-community)
-   :on-press            #(hide-sheet-and-dispatch [:communities/share-community-pressed id])})
+   :on-press            #(rf/dispatch [:communities/share-community-pressed id])})
 
 (defn leave-community
   [id color]
