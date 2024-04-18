@@ -119,7 +119,8 @@
            :page-nav-props page-nav-props
            :overlay-shown? overlay-shown?}]
          [rn/scroll-view
-          {:content-container-style           {:flex-grow 1}
+          {:bounces                           false
+           :content-container-style           {:flex-grow 1}
            :content-inset-adjustment-behavior :never
            :shows-vertical-scroll-indicator   false
            :scroll-event-throttle             16
