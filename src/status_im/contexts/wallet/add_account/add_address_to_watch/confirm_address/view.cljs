@@ -25,9 +25,7 @@
     (fn []
       [rn/view {:style style/container}
        [create-or-edit-account/view
-        {:page-nav-right-side [{:icon-name :i/info
-                                :on-press  #(js/alert "Get info (to be implemented)")}]
-         :placeholder         placeholder
+        {:placeholder         placeholder
          :account-name        @account-name
          :account-emoji       @account-emoji
          :account-color       @account-color

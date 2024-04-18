@@ -20,9 +20,6 @@
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)
       :add-divider?        true}
-     {:icon                :i/keycard-card
-      :accessibility-label :import-from-keycard
-      :label               (i18n/label :t/import-from-keycard)}
      {:icon                :i/key
       :accessibility-label :import-private-key
       :label               (i18n/label :t/import-private-key)}]]])

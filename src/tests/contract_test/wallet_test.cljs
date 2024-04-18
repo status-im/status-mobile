@@ -105,6 +105,7 @@
                                                          chain-id
                                                          ens-address)]
         (assert-address-details response)))))
+
 (defn assert-search-ens
   [expected-result actual-result]
   (is (= expected-result actual-result)))

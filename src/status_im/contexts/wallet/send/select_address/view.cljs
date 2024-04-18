@@ -11,6 +11,7 @@
     [status-im.contexts.wallet.item-types :as types]
     [status-im.contexts.wallet.send.select-address.style :as style]
     [status-im.contexts.wallet.send.select-address.tabs.view :as tabs]
+    [status-im.feature-flags :as ff]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -18,7 +19,8 @@
 (def ^:private tabs-data
   [{:id :tab/recent :label (i18n/label :t/recent) :accessibility-label :recent-tab}
    {:id :tab/saved :label (i18n/label :t/saved) :accessibility-label :saved-tab}
-   {:id :tab/contacts :label (i18n/label :t/contacts) :accessibility-label :contacts-tab}
+   (when (ff/enabled? ::wallet.contacts)
+     {:id :tab/contacts :label (i18n/label :t/contacts) :accessibility-label :contacts-tab})
    {:id :tab/my-accounts :label (i18n/label :t/my-accounts) :accessibility-label :my-accounts-tab}])
 
 (defn- address-input
