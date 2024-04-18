@@ -27,8 +27,8 @@
 
   (h/test "should display the wallet tab"
     (render-wallet-view)
-    (-> (h/wait-for #(h/get-by-text "Wallet One"))
-        (.then (fn [] (h/is-truthy (h/get-by-text "Wallet One"))))))
+    (-> (h/expect (h/query-by-text "Wallet One"))
+        (h/is-truthy)))
 
   (h/test "should display the legacy account"
     (render-wallet-view)
