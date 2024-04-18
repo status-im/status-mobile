@@ -100,7 +100,7 @@
      :options   options/transparent-screen-options
      :component activity-center/view}
 
-    {:name      :share-shell
+    {:name      :screen/share-shell
      :options   options/transparent-screen-options
      :component share/view}
 

@@ -39,7 +39,7 @@
       :accessibility-label :show-qr-button
       :on-press            (fn []
                              (rf/dispatch [:navigate-back])
-                             (rf/dispatch [:open-modal :share-shell]))}
+                             (rf/dispatch [:open-modal :screen/share-shell]))}
      :i/qr-code]]
    [quo/text
     {:size   :heading-1
