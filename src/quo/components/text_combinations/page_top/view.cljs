@@ -37,7 +37,8 @@
   [{:keys        [title title-accessibility-label input counter-top counter-bottom
                   title-right title-right-props]
     avatar-props :avatar}]
-  (let [avatar-props (assoc avatar-props :size :size-32)
+  (let [avatar-props (when avatar-props
+                       (assoc avatar-props :size :size-32))
         title-props  (assoc title-right-props
                             :title               title
                             :right               title-right
