@@ -53,7 +53,7 @@
   [{:keys [account index]}]
   (let [{window-width :width} (rn/get-window)
         selected-networks     (reagent/atom constants/default-network-names)
-        wallet-type           (reagent/atom :legacy)
+        wallet-type           (reagent/atom :multichain)
         on-settings-press     #(open-preferences selected-networks account)
         on-legacy-press       #(reset! wallet-type :legacy)
         on-multichain-press   #(reset! wallet-type :multichain)]
