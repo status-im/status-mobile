@@ -35,9 +35,7 @@
     [rn/pressable
      {:style    style/step-item
       :hit-slop {:top 8 :bottom 8}
-      :on-press #(swap! checked? assoc
-                   (keyword (str index))
-                   (not value))}
+      :on-press #(swap! checked? assoc item-key (not value))}
      [quo/selectors
       {:type                :checkbox
        :checked?            value
