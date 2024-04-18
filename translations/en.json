@@ -2546,8 +2546,8 @@
     "derivation-path-desc": "Derivation paths are the routes your Status Wallet uses to generate addresses from your private key.",
     "select-networks": "Select networks",
     "generating-keypair": "Generating keypair...",
-    "keypair-name": "Keypair name",
-    "keypair-name-description": "Name keypair for your own personal reference",
+    "keypair-name": "Key pair name",
+    "keypair-name-description": "Name key pair for your own personal reference",
     "keypair-name-input-placeholder": "Collectibles account, Old vault....",
     "goerli-testnet-toggle-confirmation": "Are you sure you want to toggle Goerli? This will log you out and you will have to login again.",
     "bridged-to": "Bridged to {{network}}",
@@ -2574,7 +2574,6 @@
     "key-name-error-special-char": "Special characters are not allowed",
     "display": "Display",
     "testnet-mode-enabled": "Testnet mode enabled",
-<<<<<<< HEAD
     "online-community-member": "Online",
     "offline-community-member": "Offline",
     "invite-to-community": "Invite to community",
@@ -2595,7 +2594,10 @@
     "scanning-for-activity": "Scanning for activity..."
 =======
     "send-community-link": "Send community link"
+<<<<<<< HEAD
 =======
 >>>>>>> eb996e861 (lint)
 >>>>>>> 4c97cd202 (lint)
+=======
+>>>>>>> aa6b144b4 (lint)
 }

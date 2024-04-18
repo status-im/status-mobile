@@ -3,6 +3,7 @@
     [legacy.status-im.ui.screens.screens :as old-screens]
     [quo.foundations.colors :as colors]
     [status-im.common.emoji-picker.view :as emoji-picker]
+    [status-im.common.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.common.lightbox.view :as lightbox]
     [status-im.config :as config]
     [status-im.contexts.chat.group-create.view :as group-create]
@@ -29,7 +30,6 @@
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
     [status-im.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im.contexts.onboarding.identifiers.view :as identifiers]
     [status-im.contexts.onboarding.intro.view :as intro]
@@ -88,19 +88,7 @@
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
-<<<<<<< HEAD
     [status-im.contexts.wallet.save-address.view :as wallet-save-address]
-=======
-    [status-im.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
-    [status-im.contexts.wallet.create-account.new-keypair.backup-recovery-phrase.view :as
-     wallet-backup-recovery-phrase]
-    [status-im.contexts.wallet.create-account.new-keypair.check-your-backup.view :as
-     wallet-check-your-backup]
-    [status-im.contexts.wallet.create-account.new-keypair.keypair-name.view :as wallet-keypair-name]
-    [status-im.contexts.wallet.create-account.recovery-phrase.view :as wallet-recovery-phrase]
-    [status-im.contexts.wallet.create-account.select-keypair.view :as wallet-select-keypair]
-    [status-im.contexts.wallet.create-account.view :as wallet-create-account]
->>>>>>> eb996e861 (lint)
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
     [status-im.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im.contexts.wallet.send.select-asset.view :as wallet-select-asset]
@@ -316,7 +304,7 @@
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
-     :component enter-seed-phrase/enter-seed-phrase}
+     :component enter-seed-phrase/view}
 
     {:name      :screen/onboarding.enable-notifications
      :options   {:theme                  :dark
@@ -425,10 +413,6 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-select-keypair/view}
 
-    {:name      :screen/wallet.recovery-phrase
-     :options   {:insets {:top? true :bottom? true}}
-     :component wallet-recovery-phrase/view}
-
     {:name      :screen/wallet.create-account
      :options   {:insets {:top? true}}
      :component wallet-create-account/view}
@@ -444,6 +428,9 @@
     {:name      :screen/wallet.keypair-name
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-keypair-name/view}
+
+    {:name      :screen/wallet.recovery-phrase
+     :component enter-seed-phrase/view}
 
     {:name      :screen/wallet.share-address
      :options   options/transparent-screen-options

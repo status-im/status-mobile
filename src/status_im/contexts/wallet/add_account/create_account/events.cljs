@@ -30,6 +30,13 @@
 
 (rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
 
+(defn store-recovery-phrase
+  [{:keys [db]} [{:keys [secret-phrase]}]]
+  {:db (assoc-in db [:wallet :ui :create-account :secret-phrase] secret-phrase)
+   :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]})
+
+(rf/reg-event-fx :wallet/store-recovery-phrase store-recovery-phrase)
+
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
   {:db (assoc-in db [:wallet :ui :create-account :new-keypair] new-keypair)
