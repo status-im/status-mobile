@@ -101,7 +101,7 @@
   [id]
   {:icon                :i/qr-code
    :accessibility-label :show-qr
-   :on-press            #(js/alert (str "implement action" id))
+   :on-press            #(rf/dispatch [:communities/share-community-url-qr-code id])
    :label               (i18n/label :t/show-qr)})
 
 (defn share-community
