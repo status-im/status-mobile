@@ -25,17 +25,20 @@
 (defn enable-biometrics-buttons
   [insets]
   (let [supported-biometric-type (rf/sub [:biometrics/supported-type])
-        bio-type-label           (biometric/get-label-by-type supported-biometric-type)
-        profile-color            (or (:color (rf/sub [:onboarding/profile]))
-                                     (rf/sub [:profile/customization-color]))
-        syncing-results?         (= :screen/onboarding.syncing-results @state/root-id)]
+        bio-type-label (biometric/get-label-by-type supported-biometric-type)
+        profile-color (or (:color (rf/sub [:onboarding/profile]))
+                          (rf/sub [:profile/customization-color]))
+        syncing-results? (= :screen/onboarding.syncing-results @state/root-id)]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:size                40
        :accessibility-label :enable-biometrics-button
        :icon-left           :i/face-id
        :customization-color profile-color
-       :on-press            #(rf/dispatch [:onboarding/enable-biometrics])}
+       :on-press            (fn []
+                              (rf/dispatch [:biometric/authenticate
+                                            {:on-success #(rf/dispatch [:onboarding/biometrics-done])
+                                             :on-fail    #(rf/dispatch [:biometric/show-message (ex-cause %)])}]))}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
       {:accessibility-label :maybe-later-button
