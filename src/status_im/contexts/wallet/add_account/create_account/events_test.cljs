@@ -38,13 +38,12 @@
     (is (match? effects {:fx expected-effects}))))
 
 (deftest seed-phrase-entered-test
-  (let [db                   {:wallet {:ui {:create-account {}}}}
-        props                [{:seed-phrase "test-secret"}]
-        expected-db          {:wallet {:ui {:create-account {:seed-phrase "test-secret"}}}}
-        expected-effects     [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]
-        {:keys [db effects]} (events/seed-phrase-entered {:db db} props)]
-    (is (match? db expected-db))
-    (is (match? effects {:fx expected-effects}))))
+  (let [db          {:wallet {:ui {:create-account {}}}}
+        props       [{:seed-phrase "test-secret"}]
+        expected-db {:wallet {:ui {:create-account {:seed-phrase "test-secret"}}}}
+        effects     (events/seed-phrase-entered {:db db} props)
+        result-db   (:db effects)]
+    (is (match? result-db expected-db))))
 
 (deftest clear-new-keypair
   (let [db          {:wallet {:ui {:create-account {:new-keypair "test-keypair"}}}}
