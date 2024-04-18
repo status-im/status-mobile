@@ -30,9 +30,13 @@
 
 (defn- step-item
   [item index _ {:keys [checked? customization-color]}]
-  [rn/view {:style style/step-item}
+  [rn/pressable
+   {:style    style/step-item
+    :hit-slop {:top 8 :bottom 8}
+    :on-press #(swap! checked? assoc (keyword (str index)) (not (get @checked? (keyword (str index)))))}
    [quo/selectors
     {:type                :checkbox
+     :checked?            (get @checked? (keyword (str index)))
      :customization-color customization-color
      :on-change           #(swap! checked? assoc (keyword (str index)) %)}]
    [quo/text {:style {:margin-left 12}} (i18n/label item)]])
