@@ -161,13 +161,14 @@
 
 (defn view
   []
-  (let [{navigation-bar-top :top} (safe-area/get-insets)
-        {:keys [keypair?]}        (rf/sub [:get-screen-params])]
-    [rn/view {:style style/full-layout}
-     [rn/keyboard-avoiding-view {:style style/page-container}
-      [quo/page-nav
-       {:margin-top navigation-bar-top
-        :background :blur
-        :icon-name  (if keypair? :i/close :i/arrow-left)
-        :on-press   #(rf/dispatch [:navigate-back])}]
-      [screen keypair?]]]))
+  (let [{navigation-bar-top :top} (safe-area/get-insets)]
+    (fn []
+      (let [{:keys [keypair?]} (rf/sub [:get-screen-params])]
+        [rn/view {:style style/full-layout}
+         [rn/keyboard-avoiding-view {:style style/page-container}
+          [quo/page-nav
+           {:margin-top navigation-bar-top
+            :background :blur
+            :icon-name  (if keypair? :i/close :i/arrow-left)
+            :on-press   #(rf/dispatch [:navigate-back])}]
+          [screen keypair?]]]))))
