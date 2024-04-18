@@ -320,6 +320,17 @@
                                aggregated-tokens)})))
 
 (rf/reg-sub
+ :wallet/total-owned-accounts-balance
+ :<- [:wallet/accounts-without-watched-accounts]
+ :<- [:wallet/balances-in-selected-networks]
+ :<- [:profile/currency-symbol]
+ (fn [[accounts balances currency-symbol]]
+   (let [raw-balance       (utils/calculate-balance-from-accounts accounts balances)
+         formatted-balance (utils/prettify-balance currency-symbol raw-balance)]
+     {:balance           raw-balance
+      :formatted-balance formatted-balance})))
+
+(rf/reg-sub
  :wallet/network-preference-details
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/network-details]

@@ -43,7 +43,7 @@
         networks                        (rf/sub [:wallet/selected-network-details])
         account-cards-data              (rf/sub [:wallet/account-cards-data])
         cards                           (conj account-cards-data (new-account-card-data))
-        {:keys [formatted-balance]}     (rf/sub [:wallet/aggregated-token-values-and-balance])]
+        {:keys [formatted-balance]}     (rf/sub [:wallet/total-owned-accounts-balance])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref

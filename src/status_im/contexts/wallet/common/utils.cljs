@@ -130,6 +130,13 @@
                :token    %}))
        (reduce money/add)))
 
+(defn calculate-balance-from-accounts
+  [accounts balances]
+  (reduce (fn [acc item]
+            (money/add acc (get balances (:address item))))
+          (money/bignumber 0)
+          accounts))
+
 (defn- add-balances-per-chain
   [b1 b2]
   {:raw-balance (money/add (:raw-balance b1) (:raw-balance b2))
