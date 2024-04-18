@@ -3,7 +3,9 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     status-im.common.biometric.events
+    [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.config :as profile.config]
     [status-im.contexts.profile.create.events :as profile.create]
     [status-im.contexts.profile.recover.events :as profile.recover]
     [taoensso.timbre :as log]
@@ -46,19 +48,42 @@
                          [:onboarding/finalize-setup]
                          [:onboarding/create-account-and-login])]]})))
 
-;; TODO(alwx): fix that shit
 (rf/reg-event-fx
   :onboarding/create-account-and-login
-  (fn [{:keys [db] :as cofx}]
-    (let [{:keys [display-name seed-phrase password image-path color] :as profile} (:onboarding/profile db)]
-      {:fx [[:dispatch [:navigate-to-within-stack
-                        [:screen/onboarding.generating-keys :screen/onboarding.new-to-status]]]
-            [:dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
-                               :dispatch [:onboarding/navigate-to-identifiers]}]]]
-       :db (-> db
-               (dissoc :profile/login)
-               (dissoc :auth-method)
-               (assoc :onboarding/new-account? true))})))
+  (fn [{:keys [db]}]
+    (let [{:keys [display-name
+                  seed-phrase
+                  password
+                  image-path
+                  color]} (:onboarding/profile db)
+          login-sha3-password (native-module/sha3 (security/safe-unmask-data password))
+          profile (merge (profile.config/create)
+                         {:displayName        display-name
+                          :password           login-sha3-password
+                          :imagePath          (profile.config/strip-file-prefix image-path)
+                          :customizationColor color
+                          :emoji              (emoji-picker.utils/random-emoji)})]
+      (cond-> {:fx [[:dispatch [:navigate-to-within-stack
+                                [:screen/onboarding.generating-keys :screen/onboarding.new-to-status]]]
+                    [:dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
+                                       :dispatch [:onboarding/navigate-to-identifiers]}]]]
+               :db (-> db
+                       (dissoc :profile/login)
+                       (dissoc :auth-method)
+                       (assoc :onboarding/new-account? true)
+                       (assoc-in [:syncing :login-sha3-password] login-sha3-password))}
+
+              seed-phrase
+              (assoc-in [:db :onboarding/recovered-account?] true)
+
+              seed-phrase
+              (assoc :effects.profile/restore-and-login
+                     (merge profile
+                            {:mnemonic    (security/safe-unmask-data seed-phrase)
+                             :fetchBackup true}))
+
+              (not seed-phrase)
+              (assoc :effects.profile/create-and-login profile)))))
 
 (rf/defn create-account-and-login
   {:events [:onboarding/create-account-and-login]}
