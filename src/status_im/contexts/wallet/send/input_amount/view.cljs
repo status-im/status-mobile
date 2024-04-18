@@ -19,7 +19,7 @@
    [utils.re-frame :as rf]))
 
 (defn- make-limit-label
-  [{:keys [amount currency]}]
+  [amount currency]
   (str amount
        " "
        (some-> currency
@@ -86,13 +86,6 @@
         bottom                (safe-area/get-bottom)
         clear-input!          #(controlled-input/delete-all input-state)
         crypto-currency?      (reagent/atom initial-crypto-currency?)
-        handle-swap           (fn [{:keys [crypto? limit-fiat limit-crypto]}]
-                                (tap> "swap")
-                                (let [current-limit (if crypto? limit-crypto limit-fiat)]
-                                  (reset! crypto-currency? crypto?)
-                                  (controlled-input/set-upper-limit input-state current-limit)))
-        
-          
         on-navigate-back      on-navigate-back
         fetch-routes          (fn [input-num-value current-limit-amount bounce-duration-ms]
                                 (let [nav-current-screen-id (rf/sub [:view-id])
@@ -133,8 +126,6 @@
             to-address                 (rf/sub [:wallet/wallet-send-to-address])
             disabled-from-chain-ids    (rf/sub
                                         [:wallet/wallet-send-disabled-from-chain-ids])
-            from-values-by-chain       (rf/sub [:wallet/wallet-send-from-values-by-chain])
-            to-values-by-chain         (rf/sub [:wallet/wallet-send-to-values-by-chain])
             on-confirm                 (or default-on-confirm handle-on-confirm)
             crypto-decimals            (or default-crypto-decimals
                                            (utils/get-crypto-decimals-count token))
@@ -145,8 +136,6 @@
             fiat-limit                 (.toFixed (* token-balance conversion-rate) 2)
             current-limit              #(if @crypto-currency? crypto-limit fiat-limit)
             current-currency           (if @crypto-currency? token-symbol fiat-currency)
-            limit-label                (make-limit-label {:amount   (current-limit)
-                                                          :currency current-currency})
             input-num-value (controlled-input/numeric-value input-state)
             confirm-disabled?          (or (nil? route)
                                            (empty? route)
@@ -201,6 +190,9 @@
          #(when (> (count affordable-networks) 0)
             (fetch-routes input-num-value (current-limit) 0))
          [disabled-from-chain-ids])
+        (rn/use-effect
+         #(controlled-input/set-upper-limit input-state (current-limit))
+         [@crypto-currency?])
         [rn/view
          {:style               style/screen
           :accessibility-label (str "container" (when (controlled-input/input-error input-state) "-error"))}
@@ -215,17 +207,14 @@
            :crypto-decimals     crypto-decimals
            :error?              (controlled-input/input-error input-state)
            :networks            (seq token-networks)
-           :title               (i18n/label :t/send-limit {:limit limit-label})
+           :title               (i18n/label :t/send-limit {:limit (make-limit-label (current-limit) current-currency)})
            :conversion          conversion-rate
            :show-keyboard?      false
            :value               (controlled-input/input-value input-state)
-           :on-swap #(do (reset! crypto-currency? %)
-                         (controlled-input/set-upper-limit input-state (current-limit)))
-           
+           :on-swap             #(reset! crypto-currency? %)
            :on-token-press      show-select-asset-sheet}]
          [routes/view
-          {:from-values-by-chain   from-values-by-chain
-           :to-values-by-chain     to-values-by-chain
+          {
            :affordable-networks    affordable-networks
            :routes                 best-routes
            :token                  token

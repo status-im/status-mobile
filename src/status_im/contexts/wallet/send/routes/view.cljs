@@ -275,10 +275,12 @@
       :on-press-to-network   on-press-to-network}]))
 
 (defn- view-internal
-  [{:keys [from-values-by-chain to-values-by-chain routes token theme fetch-routes
+  [{:keys [routes token theme fetch-routes
            affordable-networks disabled-from-networks on-press-from-network on-press-to-network]}]
   (let [token-symbol              (:symbol token)
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        from-values-by-chain       (rf/sub [:wallet/wallet-send-from-values-by-chain])
+            to-values-by-chain         (rf/sub [:wallet/wallet-send-to-values-by-chain])
         network-links             (if loading-suggested-routes? affordable-networks routes)]
     (if (or (and (not-empty affordable-networks) loading-suggested-routes?) (not-empty routes))
       (let [initial-network-links-count   (count network-links)
