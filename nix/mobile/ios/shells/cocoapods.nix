@@ -16,7 +16,7 @@ in mkShell {
       else
         # CocoaPods are trash and can't handle other pod instances running
         ./scripts/wait-for.sh 240 'pod install'
-        (cd ios && pod install)
+        (cd ios && RCT_NEW_ARCH_ENABLED=1 pod install)
       fi
     }
     popd > /dev/null
