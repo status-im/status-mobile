@@ -86,7 +86,7 @@
        (take 7)))
 
 (defn screen
-  [keypair?]
+  [recovering-keypair?]
   (reagent/with-let [keyboard-shown?         (reagent/atom false)
                      keyboard-show-listener  (.addListener rn/keyboard
                                                            "keyboardDidShow"
@@ -103,7 +103,7 @@
                                                (reset! seed-phrase new-phrase))
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
-                                               (if keypair?
+                                               (if recovering-keypair?
                                                  (rf/dispatch [:wallet/seed-phrase-entered
                                                                {:seed-phrase (security/mask-data
                                                                               @seed-phrase)}])
@@ -151,7 +151,7 @@
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
            {:type     suggestions-state
-            :blur?    (not keypair?)
+            :blur?    (not recovering-keypair?)
             :text     suggestions-text
             :words    (keyboard-suggestions last-word)
             :on-press pick-suggested-word}]])])
@@ -163,12 +163,12 @@
   []
   (let [{navigation-bar-top :top} (safe-area/get-insets)]
     (fn []
-      (let [{:keys [keypair?]} (rf/sub [:get-screen-params])]
+      (let [{:keys [recovering-keypair?]} (rf/sub [:get-screen-params])]
         [rn/view {:style style/full-layout}
          [rn/keyboard-avoiding-view {:style style/page-container}
           [quo/page-nav
            {:margin-top navigation-bar-top
             :background :blur
-            :icon-name  (if keypair? :i/close :i/arrow-left)
+            :icon-name  (if recovering-keypair? :i/close :i/arrow-left)
             :on-press   #(rf/dispatch [:navigate-back])}]
-          [screen keypair?]]]))))
+          [screen recovering-keypair?]]]))))

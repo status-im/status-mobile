@@ -20,16 +20,9 @@
      {:icon                :i/seed
       :accessibility-label :import-using-phrase
       :label               (i18n/label :t/import-using-phrase)
-<<<<<<< HEAD
-      :add-divider?        true}
-=======
       :add-divider?        true
-<<<<<<< HEAD
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.recovery-phrase])}
->>>>>>> d81082798 (lint)
-=======
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.recovery-phrase {:keypair? true}])}
->>>>>>> 53389eb42 (lint)
+      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.enter-seed-phrase
+                                          {:recovering-keypair? true}])}
      {:icon                :i/key
       :accessibility-label :import-private-key
       :label               (i18n/label :t/import-private-key)

@@ -61,16 +61,16 @@
 
 (defn view
   []
-  (let [random-indices                        (random-selection)
-        quiz-index                            (reagent/atom 0)
-        incorrect-count                       (reagent/atom 0)
-        show-error?                           (reagent/atom false)
-        {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/create-account])
-        secret-phrase                         (security/safe-unmask-data secret-phrase)]
+  (let [random-indices                      (random-selection)
+        quiz-index                          (reagent/atom 0)
+        incorrect-count                     (reagent/atom 0)
+        show-error?                         (reagent/atom false)
+        {:keys [seed-phrase random-phrase]} (rf/sub [:wallet/create-account])
+        unmasked-seed-phrase                (security/safe-unmask-data seed-phrase)]
     (fn []
       (let [current-word-index            (get random-indices
                                                (min @quiz-index (dec questions-count)))
-            current-word                  (get secret-phrase current-word-index)
+            current-word                  (get unmasked-seed-phrase current-word-index)
             [options-row-0 options-row-1] (random-words-with-string random-phrase current-word)
             on-button-press               (fn [word]
                                             (if (= word current-word)
@@ -115,7 +115,7 @@
 
                                                     :else
                                                     :disabled)
-                                        :word     (get secret-phrase num)
+                                        :word     (get unmasked-seed-phrase num)
                                         :number   (inc num)
                                         :on-press #(when (= @quiz-index index)
                                                      (reset! show-error? false))}])

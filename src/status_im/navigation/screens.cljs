@@ -429,7 +429,7 @@
      :options   {:insets {:top? true :bottom? true}}
      :component wallet-keypair-name/view}
 
-    {:name      :screen/wallet.recovery-phrase
+    {:name      :screen/wallet.enter-seed-phrase
      :component enter-seed-phrase/view}
 
     {:name      :screen/wallet.share-address
