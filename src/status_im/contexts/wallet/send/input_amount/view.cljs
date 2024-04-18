@@ -119,9 +119,7 @@
             conversion-rate            (-> token :market-values-per-currency :usd :price)
             loading-routes?            (rf/sub
                                         [:wallet/wallet-send-loading-suggested-routes?])
-            suggested-routes           (rf/sub [:wallet/wallet-send-suggested-routes])
-            best-routes                (when suggested-routes
-                                         (or (:best suggested-routes) []))
+            
             route                      (rf/sub [:wallet/wallet-send-route])
             to-address                 (rf/sub [:wallet/wallet-send-to-address])
             disabled-from-chain-ids    (rf/sub
@@ -214,9 +212,7 @@
            :on-swap             #(reset! crypto-currency? %)
            :on-token-press      show-select-asset-sheet}]
          [routes/view
-          {
-           :affordable-networks    affordable-networks
-           :routes                 best-routes
+          {:affordable-networks    affordable-networks
            :token                  token
            :input-value            (controlled-input/input-value input-state)
            :fetch-routes           #(fetch-routes % (current-limit) 2000)
