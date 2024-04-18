@@ -3,7 +3,7 @@
     [quo.components.loaders.skeleton-list.constants :as constants]
     [quo.components.loaders.skeleton-list.style :as style]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.masked-view :as masked-view]
     [react-native.reanimated :as reanimated]
@@ -86,9 +86,10 @@
   [props]
   [:f> f-animated-skeleton-view props])
 
-(defn- f-internal-view
-  [{:keys [content theme blur? parent-height animated?] :as props}]
-  (let [{window-width :width}   (rn/get-window)
+(defn view
+  [{:keys [content blur? parent-height animated?] :as props}]
+  (let [theme                   (quo.theme/use-theme)
+        {window-width :width}   (rn/get-window)
         translate-x             (reanimated/use-shared-value (- window-width))
         animated-gradient-style (reanimated/apply-animations-to-style
                                  {:transform [{:translateX translate-x}]}
@@ -114,8 +115,3 @@
                 :skeleton-height skeleton-height
                 :style           animated-gradient-style})])]))
 
-(defn- internal-view
-  [props]
-  [:f> f-internal-view props])
-
-(def view (theme/with-theme internal-view))

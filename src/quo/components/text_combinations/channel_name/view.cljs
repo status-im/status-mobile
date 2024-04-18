@@ -6,28 +6,29 @@
             [react-native.core :as rn]))
 
 (defn icons
-  [{:keys [theme unlocked? muted? blur?]}]
-  [rn/view {:style style/icons-container}
-   (when unlocked?
-     [rn/view
-      {:style               style/icon
-       :accessibility-label :channel-name-unlocked-icon}
-      [icon/icon :i/unlocked
-       {:color (style/unlocked-icon-color theme blur?)
-        :size  20}]])
+  [{:keys [unlocked? muted? blur?]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style style/icons-container}
+     (when unlocked?
+       [rn/view
+        {:style               style/icon
+         :accessibility-label :channel-name-unlocked-icon}
+        [icon/icon :i/unlocked
+         {:color (style/unlocked-icon-color theme blur?)
+          :size  20}]])
 
-   (when (and unlocked? muted?)
-     [rn/view {:style style/icons-gap}])
+     (when (and unlocked? muted?)
+       [rn/view {:style style/icons-gap}])
 
-   (when muted?
-     [rn/view
-      {:style               style/icon
-       :accessibility-label :channel-name-muted-icon}
-      [icon/icon :i/muted
-       {:color (style/muted-icon-color theme blur?)
-        :size  20}]])])
+     (when muted?
+       [rn/view
+        {:style               style/icon
+         :accessibility-label :channel-name-muted-icon}
+        [icon/icon :i/muted
+         {:color (style/muted-icon-color theme blur?)
+          :size  20}]])]))
 
-(defn- view-internal
+(defn view
   [{:keys [unlocked? muted? channel-name] :as props}]
   [rn/view {:style style/container}
    [text/text
@@ -36,5 +37,3 @@
     (str "# " channel-name)]
    (when (or unlocked? muted?)
      [icons props])])
-
-(def view (quo.theme/with-theme view-internal))

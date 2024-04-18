@@ -197,7 +197,7 @@
 
 (defn view-internal
   [{:keys [networks container-style] :as params}]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [total-width
          set-total-width] (rn/use-state nil)
         on-layout         (rn/use-callback #(let [width (oops/oget % "nativeEvent.layout.width")]

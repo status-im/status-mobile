@@ -6,23 +6,22 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
-  [{:keys [title networks status theme blur? container-style] :or {status :default}}]
-  [rn/view
-   {:style (merge (style/container {:status status
-                                    :theme  theme
-                                    :blur?  blur?})
-                  container-style)}
-   [preview-list/view
-    {:type   :network
-     :number (count networks)
-     :size   :size-16}
-    networks]
-   [text/text
-    {:weight :medium
-     :size   :paragraph-2
-     :style  (style/title-style {:status status
-                                 :theme  theme})}
-    title]])
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [title networks status blur? container-style] :or {status :default}}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style (merge (style/container {:status status
+                                      :theme  theme
+                                      :blur?  blur?})
+                    container-style)}
+     [preview-list/view
+      {:type   :network
+       :number (count networks)
+       :size   :size-16}
+      networks]
+     [text/text
+      {:weight :medium
+       :size   :paragraph-2
+       :style  (style/title-style {:status status
+                                   :theme  theme})}
+      title]]))

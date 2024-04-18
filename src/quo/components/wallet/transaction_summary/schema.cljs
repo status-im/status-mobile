@@ -6,7 +6,6 @@
    [:catn
     [:props
      [:map
-      [:theme :schema.common/theme]
       [:transaction {:optional true} [:maybe [:enum :send :swap :bridge]]]
       [:first-tag {:optional true} [:maybe context-tag-schema/?schema]]
       [:second-tag {:optional true} [:maybe context-tag-schema/?schema]]

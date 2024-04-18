@@ -1,7 +1,6 @@
 (ns status-im.navigation.options
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.platform :as platform]
     [status-im.navigation.transitions :as transitions]))
 
@@ -13,7 +12,7 @@
 (defn statusbar-and-navbar-options
   [theme status-bar-theme nav-bar-color]
   (let [[status-bar-theme nav-bar-color]
-        (if (= :dark (or theme (quo.theme/get-theme)))
+        (if (= :dark theme)
           [(or status-bar-theme :light) (or nav-bar-color colors/neutral-100)]
           [(or status-bar-theme :dark) (or nav-bar-color colors/white)])]
     (if platform/android?
@@ -26,14 +25,16 @@
 
 (defn root-options
   [{:keys [background-color theme status-bar-theme nav-bar-color]}]
-  (merge (statusbar-and-navbar-options theme status-bar-theme nav-bar-color)
-         {:topBar {:visible false}
-          :layout {:componentBackgroundColor (or background-color
-                                                 (colors/theme-colors colors/white colors/neutral-100))
-                   :orientation              ["portrait"]
-                   :backgroundColor          (or background-color
-                                                 (colors/theme-colors colors/white
-                                                                      colors/neutral-100))}}))
+  (merge
+   (statusbar-and-navbar-options theme status-bar-theme nav-bar-color)
+   {:topBar {:visible false}
+    :layout {:componentBackgroundColor (or background-color
+                                           (colors/theme-colors colors/white colors/neutral-100 theme))
+             :orientation              ["portrait"]
+             :backgroundColor          (or background-color
+                                           (colors/theme-colors colors/white
+                                                                colors/neutral-100
+                                                                theme))}}))
 
 (defn dark-root-options
   []

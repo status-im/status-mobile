@@ -3,11 +3,10 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.empty-state.empty-state.styles :as styles]
     [quo.components.markdown.text :as text]
-    [quo.theme :as theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]))
 
-(defn- empty-state-internal
+(defn empty-state
   [{:keys        [customization-color image title description blur? placeholder? container-style]
     upper-button :upper-button
     lower-button :lower-button
@@ -50,5 +49,3 @@
           :background      :blur
           :on-press        lower-button-on-press}
          lower-button-text])])])
-
-(def empty-state (theme/with-theme empty-state-internal))

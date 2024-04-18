@@ -3,7 +3,7 @@
     [quo.foundations.colors :as colors]))
 
 (defn divider-line
-  [{:keys [blur? container-style theme]}]
+  [{:keys [blur? container-style]} theme]
   (merge
    {:border-color        (if blur?
                            (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)

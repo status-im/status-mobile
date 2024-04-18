@@ -16,7 +16,7 @@
 (defn segmented-control
   [{:keys [data size blur? container-style item-container-style
            active-item-container-style default-active on-change]}]
-  (let [theme               (quo.theme/use-theme-value)
+  (let [theme               (quo.theme/use-theme)
         [active-tab-id
          set-active-tab-id] (rn/use-state default-active)
         on-press            (rn/use-callback

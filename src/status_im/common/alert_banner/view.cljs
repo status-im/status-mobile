@@ -39,7 +39,7 @@
 (defn view
   []
   (let [banners       (rf/sub [:alert-banners])
-        theme         (quo.theme/use-theme-value)
+        theme         (quo.theme/use-theme)
         banners-count (count banners)
         alert-banner  (:alert banners)
         error-banner  (:error banners)

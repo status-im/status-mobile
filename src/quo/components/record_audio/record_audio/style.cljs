@@ -55,7 +55,7 @@
     :background-color colors/danger-50}))
 
 (defn record-button-big-gray-overlay
-  [gray-overlay-opacity]
+  [gray-overlay-opacity theme]
   (reanimated/apply-animations-to-style
    {:opacity gray-overlay-opacity}
    {:position         :absolute
@@ -63,7 +63,7 @@
     :left             0
     :right            0
     :bottom           0
-    :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80)}))
+    :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80 theme)}))
 
 (defn record-button-big-icon-container
   [icon-opacity]
@@ -138,7 +138,7 @@
     :left            20}))
 
 (defn lock-button-connector
-  [opacity width height border-radius-first-half border-radius-second-half]
+  [opacity width height border-radius-first-half border-radius-second-half theme]
   (reanimated/apply-animations-to-style
    {:opacity                    opacity
     :width                      width
@@ -150,11 +150,11 @@
    {:justify-content  :center
     :align-items      :center
     :align-self       :center
-    :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80)
+    :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80 theme)
     :overflow         :hidden}))
 
 (defn lock-button
-  [translate-x-y opacity]
+  [translate-x-y opacity theme]
   (reanimated/apply-animations-to-style
    {:transform [{:translateX translate-x-y}
                 {:translateY translate-x-y}]
@@ -163,7 +163,7 @@
     :height           32
     :justify-content  :center
     :align-items      :center
-    :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80)
+    :background-color (colors/theme-colors colors/neutral-80-opa-5-opaque colors/neutral-80 theme)
     :border-radius    16
     :position         :absolute
     :top              24
@@ -236,10 +236,10 @@
    :height 128})
 
 (defn recording-bar-container
-  []
+  [theme]
   {:height           4
    :border-radius    2
-   :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80)
+   :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :overflow         :hidden
    :position         :absolute
    :left             80
@@ -247,13 +247,13 @@
    :bottom           34})
 
 (defn recording-bar
-  [fill-percentage ready-to-delete?]
+  [fill-percentage ready-to-delete? theme]
   {:width            (str fill-percentage "%")
    :height           4
    :border-radius    2
    :background-color (if ready-to-delete?
-                       (colors/theme-colors colors/danger-50 colors/danger-60)
-                       (colors/theme-colors colors/primary-50 colors/primary-60))})
+                       (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+                       (colors/theme-colors colors/primary-50 colors/primary-60 theme))})
 
 (defn timer-container
   [reviewing-audio?]
@@ -264,19 +264,19 @@
    :align-items    :center})
 
 (defn timer-circle
-  []
+  [theme]
   {:width            8
    :height           8
    :border-radius    4
    :margin-right     6
-   :background-color (colors/theme-colors colors/danger-50 colors/danger-60)})
+   :background-color (colors/theme-colors colors/danger-50 colors/danger-60 theme)})
 
 (defn timer-text
-  []
-  {:color (colors/theme-colors colors/danger-50 colors/danger-60)})
+  [theme]
+  {:color (colors/theme-colors colors/danger-50 colors/danger-60 theme)})
 
 (defn play-button
-  []
+  [theme]
   {:position         :absolute
    :bottom           20
    :left             20
@@ -285,4 +285,4 @@
    :border-radius    16
    :align-items      :center
    :justify-content  :center
-   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-90)})
+   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-90 theme)})

@@ -1,5 +1,6 @@
 (ns status-im.contexts.chat.messenger.composer.mentions.view
   (:require
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -32,6 +33,7 @@
 (defn- f-view
   [suggestions-atom props state animations max-height cursor-pos images link-previews? reply edit]
   (let [suggestions (rf/sub [:chat/mention-suggestions])
+        theme (quo.theme/use-theme)
         opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
         size (count suggestions)
         data {:keyboard-height @(:kb-height state)
@@ -52,7 +54,7 @@
        (reanimated/animate opacity (if (seq suggestions) 1 0)))
      [(seq suggestions)])
     [reanimated/view
-     {:style (style/container opacity mentions-pos)}
+     {:style (style/container opacity mentions-pos theme)}
      [rn/flat-list
       {:keyboard-should-persist-taps :always
        :data                         (vals @suggestions-atom)

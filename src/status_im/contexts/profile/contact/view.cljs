@@ -26,7 +26,7 @@
   (let [{:keys [customization-color]} (rf/sub [:contacts/current-contact])
         profile-customization-color   (rf/sub [:profile/customization-color])
         scroll-y                      (reanimated/use-shared-value 0)
-        theme                         (quo.theme/use-theme-value)]
+        theme                         (quo.theme/use-theme)]
     [:<>
      [scroll-page/scroll-page
       {:navigate-back?   true

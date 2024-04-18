@@ -14,6 +14,7 @@
     [quo.components.record-audio.record-audio.style :as style]
     [quo.components.record-audio.soundtrack.view :as soundtrack]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [taoensso.timbre :as log]
@@ -21,30 +22,33 @@
 
 (defn- recording-bar
   [recording-length-ms ready-to-delete?]
-  (let [fill-percentage (/ (* recording-length-ms 100) record-audio.constants/max-audio-duration-ms)]
-    [rn/view {:style (style/recording-bar-container)}
-     [rn/view {:style (style/recording-bar fill-percentage ready-to-delete?)}]]))
+  (let [theme           (quo.theme/use-theme)
+        fill-percentage (/ (* recording-length-ms 100) record-audio.constants/max-audio-duration-ms)]
+    [rn/view {:style (style/recording-bar-container theme)}
+     [rn/view {:style (style/recording-bar fill-percentage ready-to-delete? theme)}]]))
 
 (defn- time-counter
   [recording? recording-length-ms ready-to-delete? reviewing-audio? audio-current-time-ms]
-  (let [s        (quot (if recording? recording-length-ms audio-current-time-ms) 1000)
+  (let [theme    (quo.theme/use-theme)
+        s        (quot (if recording? recording-length-ms audio-current-time-ms) 1000)
         time-str (gstring/format "%02d:%02d" (quot s 60) (mod s 60))]
     [rn/view {:style (style/timer-container reviewing-audio?)}
      (when-not reviewing-audio?
-       [rn/view {:style (style/timer-circle)}])
+       [rn/view {:style (style/timer-circle theme)}])
      [text/text
       (merge
        {:size   :label
         :weight :semi-bold}
        (when ready-to-delete?
-         {:style (style/timer-text)}))
+         {:style (style/timer-text theme)}))
       time-str]]))
 
 (defn- play-button
   [playing-audio? set-playing-audio player-ref playing-timer set-audio-current-time-ms seeking-audio?
    set-seeking-audio
    max-duration-ms]
-  (let [on-play  (fn []
+  (let [theme    (quo.theme/use-theme)
+        on-play  (fn []
                    (set-playing-audio true)
                    (reset! playing-timer
                      (js/setInterval
@@ -82,11 +86,11 @@
                     on-pause
                     #(log/error "[record-audio] toggle play / pause - error: " %)))]
     [rn/touchable-opacity
-     {:style    (style/play-button)
+     {:style    (style/play-button theme)
       :on-press on-press}
      [icons/icon
       (if playing-audio? :i/pause :i/play)
-      {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))
+      {:color (colors/theme-colors colors/neutral-100 colors/white theme)}]]))
 
 (defn record-audio
   [{:keys [on-init on-start-recording on-send on-cancel on-reviewing-audio audio-file on-lock

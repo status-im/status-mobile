@@ -3,9 +3,9 @@
     [quo.foundations.colors :as colors]))
 
 (defn context-container
-  []
+  [theme]
   {:flex-direction   :row
-   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+   :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :border-radius    20
    :align-items      :center
    :align-self       :flex-start

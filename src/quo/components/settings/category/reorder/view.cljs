@@ -13,7 +13,7 @@
 
 (defn reorder-category
   [{:keys [label data blur? container-style]}]
-  (let [theme                     (quo.theme/use-theme-value)
+  (let [theme                     (quo.theme/use-theme)
         [atom-data set-atom-data] (rn/use-state data)
         render-fn                 (rn/use-callback
                                    (fn [item _ _ _ _ drag]

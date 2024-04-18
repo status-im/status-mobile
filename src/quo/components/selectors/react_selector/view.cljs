@@ -8,10 +8,10 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
-  [{:keys [emoji clicks state use-case on-press accessibility-label on-long-press container-style
-           theme]}]
-  (let [numeric-value (int clicks)
+(defn view
+  [{:keys [emoji clicks state use-case on-press accessibility-label on-long-press container-style]}]
+  (let [theme         (quo.theme/use-theme)
+        numeric-value (int clicks)
         icon-color    (if (= :pinned use-case)
                         (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
                         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))]
@@ -42,5 +42,3 @@
          :weight :semi-bold
          :style  style/reaction-count}
         (str (if (pos? numeric-value) numeric-value 1))]])))
-
-(def view (quo.theme/with-theme view-internal))

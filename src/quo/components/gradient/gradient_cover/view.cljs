@@ -2,10 +2,9 @@
   (:require
     [quo.components.gradient.gradient-cover.style :as style]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.linear-gradient :as linear-gradient]))
 
-(defn- view-internal
+(defn view
   [{:keys [customization-color opacity container-style height]
     :or   {customization-color :blue}}]
   ;; `when` added for safety, `linear-gradient` will break if `nil` is passed, the `:or`
@@ -21,5 +20,3 @@
         :end                 {:x 0 :y 1}
         :style               (merge (style/root-container opacity height)
                                     container-style)}])))
-
-(def view (quo.theme/with-theme view-internal))

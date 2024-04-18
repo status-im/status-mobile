@@ -18,7 +18,7 @@
     :or   {max-length    0
            auto-focus    false
            default-value ""}}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [focused? set-focused] (rn/use-state auto-focus)
         [value set-value]      (rn/use-state default-value)
         input-ref              (rn/use-ref-atom nil)
@@ -45,10 +45,11 @@
        {:style                  (text/text-style
                                  {:size   (or size :heading-1)
                                   :weight :semi-bold
-                                  :style  (style/title-text theme)})
+                                  :style  (style/title-text theme)}
+                                 nil)
         :default-value          default-value
         :accessibility-label    :profile-title-input
-        :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
+        :keyboard-appearance    theme
         :return-key-type        return-key-type
         :on-focus               on-focus
         :on-blur                on-blur

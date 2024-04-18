@@ -13,7 +13,7 @@
    :flex    1})
 
 (defn blur-slider
-  [animation height]
+  [animation height theme]
   (reanimated/apply-animations-to-style
    {:transform [{:translateY animation}]}
    {:z-index          5
@@ -25,7 +25,8 @@
     :background-color (if platform/ios?
                         (colors/theme-colors
                          colors/white-opa-70
-                         colors/neutral-95-opa-70)
+                         colors/neutral-95-opa-70
+                         theme)
                         :transparent)}))
 
 (defn sticky-header-title

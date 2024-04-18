@@ -47,7 +47,7 @@
            error-pred-written-words (constantly false)}
     :as   props}
    text]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         on-focus          (rn/use-callback
                            (fn []
@@ -64,7 +64,7 @@
               :style                  (style/input)
               :placeholder-text-color (style/placeholder-color state theme blur?)
               :cursor-color           (style/cursor-color customization-color theme)
-              :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
+              :keyboard-appearance    theme
               :multiline              true
               :on-focus               on-focus
               :on-blur                on-blur}

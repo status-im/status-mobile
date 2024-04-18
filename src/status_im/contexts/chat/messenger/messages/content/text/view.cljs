@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.contexts.chat.messenger.messages.content.link-preview.view :as link-preview]
@@ -11,7 +12,7 @@
     [utils.re-frame :as rf]))
 
 (defn render-inline
-  [units {:keys [type literal destination]} chat-id style-override first-child-mention]
+  [units {:keys [type literal destination]} chat-id style-override first-child-mention theme]
   (let [show-as-plain-text? (seq style-override)]
     (case (keyword type)
       :code
@@ -19,7 +20,7 @@
             [quo/text
              {:style  (if show-as-plain-text?
                         {:color colors/white}
-                        (merge style/block (style/code)))
+                        (merge style/block (style/code theme)))
               :weight :code} literal])
 
       :emph
@@ -50,7 +51,7 @@
       :link
       (conj units
             [quo/text
-             {:style    {:color (colors/theme-colors colors/primary-50 colors/primary-60)}
+             {:style    {:color (colors/theme-colors colors/primary-50 colors/primary-60 theme)}
               :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
              destination])
 
@@ -62,7 +63,7 @@
          :style    (style/mention-tag-wrapper first-child-mention)}
         [quo/text
          {:weight :medium
-          :style  style/mention-tag-text
+          :style  (style/mention-tag-text theme)
           :size   :paragraph-1}
          (rf/sub [:messages/resolve-mention literal])]])
 
@@ -73,7 +74,8 @@
               :style  {:font-size 11 ; Font-size must be used instead of props or the
                        ; styles will clash with original message text
                        :color     (colors/theme-colors colors/neutral-40
-                                                       colors/neutral-50)}}
+                                                       colors/neutral-50
+                                                       theme)}}
              literal])
       :status-tag
       (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
@@ -95,7 +97,7 @@
        (empty? (get-in children [0 :literal]))))
 
 (defn render-block
-  [blocks {:keys [type literal children]} chat-id style-override]
+  [blocks {:keys [type literal children]} chat-id style-override theme]
   (let [mention-first (first-child-mention children)]
     (case (keyword type)
       :paragraph
@@ -103,7 +105,7 @@
             [rn/view
              (reduce
               (fn [acc e]
-                (render-inline acc e chat-id style-override mention-first))
+                (render-inline acc e chat-id style-override mention-first theme))
               [quo/text
                {:size  :paragraph-1
                 :key   (rand-int 1000000) ;; https://github.com/status-im/status-mobile/pull/19203
@@ -117,7 +119,7 @@
       (conj blocks
             (reduce
              (fn [acc e]
-               (render-inline acc e chat-id style-override first-child-mention))
+               (render-inline acc e chat-id style-override first-child-mention theme))
              [quo/text {:size :paragraph-1}]
              children))
 
@@ -128,7 +130,7 @@
 
       :codeblock
       (conj blocks
-            [rn/view {:style (merge style/block (style/code))}
+            [rn/view {:style (merge style/block (style/code theme))}
              [quo/text (subs literal 0 (dec (count literal)))]])
       blocks)))
 
@@ -150,16 +152,17 @@
 (defn render-parsed-text
   [{:keys [content chat-id edited-at style-override on-layout]}]
   ^{:key (:parsed-text content)}
-  [rn/view
-   {:style               style-override
-    :on-layout           on-layout
-    :accessibility-label :message-text-content}
-   (reduce (fn [acc e]
-             (render-block acc e chat-id style-override))
-           [:<>]
-           (cond-> (:parsed-text content)
-             edited-at
-             add-edited-tag))])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               style-override
+      :on-layout           on-layout
+      :accessibility-label :message-text-content}
+     (reduce (fn [acc e]
+               (render-block acc e chat-id style-override theme))
+             [:<>]
+             (cond-> (:parsed-text content)
+               edited-at
+               add-edited-tag))]))
 
 (defn text-content
   [message-data]

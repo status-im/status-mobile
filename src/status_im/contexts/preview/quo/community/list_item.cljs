@@ -60,7 +60,7 @@
   (conj descriptors-base {:type :text :key :subtitle}))
 
 (defn descriptors
-  [{:keys [members? info] :as state}]
+  [{:keys [members? info] :as state} theme]
   (let [descs (case (:type state)
                 :discover (cond-> descriptors-type-discover
                             members?
@@ -76,7 +76,7 @@
                             (into [descriptor-unread-count]))
                 :share    descriptors-type-share
                 nil)]
-    (if (quo.theme/dark?)
+    (if (= :dark theme)
       (into [descriptor-blur] descs)
       descs)))
 
@@ -94,15 +94,16 @@
                              :active-count        112100
                              :unread-count        5})]
     (fn []
-      [preview/preview-container {:state state :descriptor (descriptors @state)}
-       [quo/community-list
-        (merge @state
-               {:container-style {:width 335}
-                :logo            (resources/get-mock-image :status-logo)
-                :tokens          (:tokens data/community)
-                :on-press        #(js/alert "List item pressed")
-                :on-long-press   #(js/alert "Long pressed item")
-                :on-press-info   #(js/alert "Info pressed")
-                :members         (when (:members? @state)
-                                   {:members-count (:members-count @state)
-                                    :active-count  (:active-count @state)})})]])))
+      (let [theme (quo.theme/use-theme)]
+        [preview/preview-container {:state state :descriptor (descriptors @state theme)}
+         [quo/community-list
+          (merge @state
+                 {:container-style {:width 335}
+                  :logo            (resources/get-mock-image :status-logo)
+                  :tokens          (:tokens data/community)
+                  :on-press        #(js/alert "List item pressed")
+                  :on-long-press   #(js/alert "Long pressed item")
+                  :on-press-info   #(js/alert "Info pressed")
+                  :members         (when (:members? @state)
+                                     {:members-count (:members-count @state)
+                                      :active-count  (:active-count @state)})})]]))))

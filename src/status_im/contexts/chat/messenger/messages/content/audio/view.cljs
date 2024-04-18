@@ -4,6 +4,7 @@
     [goog.string :as gstring]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -148,7 +149,8 @@
 (defn f-audio-message
   [player-state progress seeking-audio? {:keys [audio-duration-ms message-id]}
    {:keys [in-pinned-view?]}]
-  (let [player-key       (get-player-key message-id in-pinned-view?)
+  (let [theme            (quo.theme/use-theme)
+        player-key       (get-player-key message-id in-pinned-view?)
         player           (@active-players player-key)
         duration         (min constants/audio-max-duration-ms audio-duration-ms)
         time-secs        (quot
@@ -188,7 +190,7 @@
        (i18n/label :t/error-loading-audio)]
       [rn/view
        {:accessibility-label :audio-message-container
-        :style               (style/container)}
+        :style               (style/container theme)}
        [rn/touchable-opacity
         {:accessibility-label     :play-pause-audio-message-button
          :allow-multiple-presses? true
@@ -200,7 +202,7 @@
                                                        :seeking-audio?    seeking-audio?
                                                        :user-interaction? true
                                                        :mediaserver-port  mediaserver-port})
-         :style                   (style/play-pause-container)}
+         :style                   (style/play-pause-container theme)}
         [quo/icon
          (cond
            (= @player-state :preparing)

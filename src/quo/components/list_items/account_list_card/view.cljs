@@ -13,7 +13,7 @@
 
 (defn- internal-view
   [{:keys [action blur? account-props networks on-press on-options-press]}]
-  (let [theme             (quo.theme/use-theme-value)
+  (let [theme             (quo.theme/use-theme)
         [state set-state] (rn/use-state :default)
         on-press-in       (rn/use-callback #(set-state :pressed))
         on-press-out      (rn/use-callback #(set-state :default))]

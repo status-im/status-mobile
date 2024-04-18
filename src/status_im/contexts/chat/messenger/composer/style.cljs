@@ -2,7 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
-    [quo.theme :as quo.theme]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.constants :as constants]))
@@ -110,7 +109,7 @@
   [theme]
   {:style       {:flex 1}
    :blur-radius (if platform/ios? 20 10)
-   :blur-type   (quo.theme/theme-value :light :dark theme)
+   :blur-type   theme
    :blur-amount 20})
 
 (defn shell-button

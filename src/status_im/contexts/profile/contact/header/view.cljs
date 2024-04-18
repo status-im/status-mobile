@@ -33,7 +33,7 @@
         full-name           (profile.utils/displayed-name contact)
         profile-picture     (profile.utils/photo contact)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
-        theme               (quo.theme/use-theme-value)
+        theme               (quo.theme/use-theme)
         contact-status      (rn/use-memo (fn []
                                            (cond
                                              (= contact-request-state

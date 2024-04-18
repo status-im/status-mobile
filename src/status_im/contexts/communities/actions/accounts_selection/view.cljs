@@ -1,6 +1,7 @@
 (ns status-im.contexts.communities.actions.accounts-selection.view
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.contexts.communities.actions.accounts-selection.style :as style]
@@ -14,7 +15,8 @@
 
 (defn view
   []
-  (let [{id :community-id} (rf/sub [:get-screen-params])
+  (let [theme (quo.theme/use-theme)
+        {id :community-id} (rf/sub [:get-screen-params])
         {:keys [name color images joined]} (rf/sub [:communities/community id])
         has-permissions? (rf/sub [:communities/has-permissions? id])
         airdrop-account (rf/sub [:communities/airdrop-account id])
@@ -138,7 +140,7 @@
        (when-not can-edit-addresses?
          [community-rules/view id])]]
      (when-not can-edit-addresses?
-       [rn/view {:style (style/bottom-actions)}
+       [rn/view {:style (style/bottom-actions theme)}
         [quo/slide-button
          {:size                :size-48
           :track-text          (i18n/label :t/slide-to-request-to-join)

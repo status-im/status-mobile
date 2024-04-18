@@ -2,6 +2,7 @@
   (:require
     [oops.core :as oops]
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -27,7 +28,8 @@
 (defn f-scroll-page-header
   [{:keys [scroll-height height page-nav-right-section-buttons sticky-header
            top-nav title-colum navigate-back? collapsed? page-nav-props overlay-shown?]}]
-  (let [input-range         [0 10]
+  (let [theme               (quo.theme/use-theme)
+        input-range         [0 10]
         output-range        [-208 -45]
         y                   (reanimated/use-shared-value scroll-height)
         translate-animation (reanimated/interpolate y
@@ -49,7 +51,7 @@
       {:blur-amount   20
        :blur-type     :transparent
        :overlay-color :transparent
-       :style         (style/blur-slider translate-animation height)}]
+       :style         (style/blur-slider translate-animation height theme)}]
      [rn/view
       {:style {:z-index  6
                :position :absolute

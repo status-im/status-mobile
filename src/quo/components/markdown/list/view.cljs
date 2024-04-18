@@ -6,7 +6,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn get-colors
@@ -39,32 +39,31 @@
        :size                :paragraph-2}
       description-after-tag]]))
 
-(defn- internal-view
-  [{:keys [theme title description tag-picture tag-name description-after-tag step-number
+(defn view
+  [{:keys [title description tag-picture tag-name description-after-tag step-number
            customization-color type blur? container-style]
     :or   {type :bullet}}]
-  [rn/view {:style (style/container container-style)}
-   [rn/view {:style style/index}
-    (if (= type :step)
-      [step/view
-       {:in-blur-view?       blur?
-        :customization-color customization-color
-        :type                (if customization-color :complete :neutral)} step-number]
-      [icon/icon :i/bullet {:color (get-colors theme blur?)}])]
-   [rn/view {:style style/text-container}
-    (when title
-      [text/text
-       {:accessibility-label :list-item-title
-        :weight              :semi-bold
-        :size                :paragraph-2}
-       title])
-    (when description
-      [rn/view (when title {:style {:margin-top 0}})
-       [description-text
-        {:description           description
-         :tag-name              tag-name
-         :tag-picture           tag-picture
-         :description-after-tag description-after-tag
-         :blur?                 blur?}]])]])
-
-(def view (theme/with-theme internal-view))
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/container container-style)}
+     [rn/view {:style style/index}
+      (if (= type :step)
+        [step/view
+         {:in-blur-view?       blur?
+          :customization-color customization-color
+          :type                (if customization-color :complete :neutral)} step-number]
+        [icon/icon :i/bullet {:color (get-colors theme blur?)}])]
+     [rn/view {:style style/text-container}
+      (when title
+        [text/text
+         {:accessibility-label :list-item-title
+          :weight              :semi-bold
+          :size                :paragraph-2}
+         title])
+      (when description
+        [rn/view (when title {:style {:margin-top 0}})
+         [description-text
+          {:description           description
+           :tag-name              tag-name
+           :tag-picture           tag-picture
+           :description-after-tag description-after-tag
+           :blur?                 blur?}]])]]))

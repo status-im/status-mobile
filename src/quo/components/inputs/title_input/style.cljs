@@ -18,7 +18,7 @@
 (defn get-char-count-color
   [blur? theme]
   (if blur?
-    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40)
+    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
     (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)))
 
 (defn get-selection-color

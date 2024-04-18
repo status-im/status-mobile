@@ -66,7 +66,7 @@
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
            gradient-cover? customization-color hide-handle? blur-radius]
     :or   {border-radius 12}}]
-  (let [theme                             (quo.theme/use-theme-value)
+  (let [theme                             (quo.theme/use-theme)
         {window-height :height}           (rn/get-window)
         [sheet-height set-sheet-height]   (rn/use-state 0)
         [layout-height set-layout-height] (rn/use-state window-height)

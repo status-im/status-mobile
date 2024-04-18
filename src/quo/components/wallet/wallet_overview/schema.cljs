@@ -15,7 +15,6 @@
       [:end-date {:optional true} [:maybe :string]]
       [:currency-change {:optional true} [:maybe :string]]
       [:percentage-change {:optional true} [:maybe :string]]
-      [:theme :schema.common/theme]
       [:dropdown-on-press {:optional true} [:maybe fn?]]
       [:networks {:optional true}
        [:maybe [:sequential [:map [:source [:maybe :schema.common/image-source]]]]]]

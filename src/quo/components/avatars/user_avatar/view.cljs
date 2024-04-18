@@ -11,9 +11,10 @@
     utils.string))
 
 (defn initials-avatar
-  [{:keys [full-name size customization-color theme]
+  [{:keys [full-name size customization-color]
     :or   {customization-color :blue}}]
-  (let [font-size       (get-in style/sizes [size :font-size])
+  (let [theme           (quo.theme/use-theme)
+        font-size       (get-in style/sizes [size :font-size])
         amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
     [rn/view
      {:accessibility-label :initials-avatar
@@ -31,14 +32,14 @@
    When calling the `profile-picture-fn` and passing the `:ring?` key, be aware that the `profile-picture-fn`
    may have an `:override-ring?` value. If it does then the `:ring?` value will not be used.
    For reference, refer to the `utils.image-server` namespace for these `profile-picture-fn` are generated."
-  [{:keys [full-name size profile-picture static?
-           status-indicator? online? ring? theme]
+  [{:keys [full-name size profile-picture static? status-indicator? online? ring?]
     :or   {size              :big
            status-indicator? true
            online?           true
            ring?             true}
     :as   props}]
-  (let [full-name          (or full-name "Your Name")
+  (let [theme              (quo.theme/use-theme)
+        full-name          (or full-name "Your Name")
         ;; image generated with `profile-picture-fn` is round cropped
         ;; no need to add border-radius for them
         outer-styles       (style/outer size (not (:fn profile-picture)))
@@ -49,7 +50,7 @@
         font-size          (get-in style/sizes [size :font-size])
         amount-initials    (if (#{:xs :xxs :xxxs} size) 1 2)
         sizes              (get style/sizes size)
-        indicator-color    (get (style/indicator-color) (if online? :online :offline))
+        indicator-color    (get (style/indicator-color theme) (if online? :online :offline))
         profile-picture-fn (:fn profile-picture)]
 
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
@@ -66,7 +67,8 @@
                       {:length                   amount-initials
                        :full-name                full-name
                        :font-size                (:font-size (text/text-style {:size
-                                                                               font-size}))
+                                                                               font-size}
+                                                                              nil))
                        :indicator-size           (when status-indicator?
                                                    (:status-indicator sizes))
                        :indicator-border         (when status-indicator?
@@ -87,6 +89,4 @@
 
                :else {:uri profile-picture})}])]))
 
-(def user-avatar
-  (quo.theme/with-theme
-   (schema/instrument #'user-avatar-internal component-schema/?schema)))
+(def user-avatar (schema/instrument #'user-avatar-internal component-schema/?schema))

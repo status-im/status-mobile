@@ -16,8 +16,9 @@
     [utils.i18n :as i18n]))
 
 (defn status-description
-  [{:keys [description-props blur? theme]}]
-  (let [{:keys [online? text]} description-props]
+  [{:keys [description-props blur?]}]
+  (let [theme                  (quo.theme/use-theme)
+        {:keys [online? text]} description-props]
     [rn/view {:style style/status-container}
      [rn/view {:style (style/status-dot online? blur?)}]
      [text/text
@@ -26,8 +27,9 @@
       (if online? (i18n/label :t/online-now) text)]]))
 
 (defn text-description
-  [{:keys [description-props blur? theme]}]
-  (let [{:keys [text icon]} description-props]
+  [{:keys [description-props blur?]}]
+  (let [theme               (quo.theme/use-theme)
+        {:keys [text icon]} description-props]
     [rn/view
      {:style (style/sub-container :center)}
      [text/text
@@ -49,14 +51,15 @@
     nil))
 
 (defn image-component
-  [{:keys [image image-props description tag blur? theme]}]
-  [rn/view
-   {:style (style/image-container description tag image)}
-   (case image
-     :icon        [icon/icon image-props (style/color blur? theme)]
-     :avatar      [user-avatar/user-avatar image-props]
-     :icon-avatar [icon-avatar/icon-avatar image-props]
-     nil)])
+  [{:keys [image image-props description tag blur?]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style (style/image-container description tag image)}
+     (case image
+       :icon        [icon/icon image-props (style/color blur? theme)]
+       :avatar      [user-avatar/user-avatar image-props]
+       :icon-avatar [icon-avatar/icon-avatar image-props]
+       nil)]))
 
 (defn tag-component
   [{:keys [tag tag-props]}]
@@ -101,7 +104,7 @@
      :selector [selectors/view action-props]
      nil)])
 
-(defn- internal-view
+(defn view
   [{:keys [title on-press action-props accessibility-label blur? container-style] :as props}]
   [rn/pressable
    {:style               (merge style/container container-style)
@@ -118,5 +121,3 @@
    [rn/view {:style (style/sub-container (:alignment action-props))}
     [label-component props]
     [action-component props]]])
-
-(def view (quo.theme/with-theme internal-view))

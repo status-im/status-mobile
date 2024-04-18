@@ -57,43 +57,41 @@
    [sm-icon icon]
    [rn/view {:style style/system-message-base-content-wrapper} child]])
 
-(defn system-message-deleted-internal
-  [{:keys [label child theme timestamp]}]
-  [system-message-base
-   {:icon {:icon    :i/delete
-           :color   :danger
-           :opacity 5}}
-   [rn/view {:style style/system-message-deleted-wrapper}
-    (if child
-      child
-      [text/text
-       {:size  :paragraph-2
-        :style (style/system-message-deleted-text theme)}
-       (or label (i18n/label :t/message-deleted))])
-    [sm-timestamp timestamp theme]]])
+(defn system-message-deleted
+  [{:keys [label child timestamp]}]
+  (let [theme (quo.theme/use-theme)]
+    [system-message-base
+     {:icon {:icon    :i/delete
+             :color   :danger
+             :opacity 5}}
+     [rn/view {:style style/system-message-deleted-wrapper}
+      (if child
+        child
+        [text/text
+         {:size  :paragraph-2
+          :style (style/system-message-deleted-text theme)}
+         (or label (i18n/label :t/message-deleted))])
+      [sm-timestamp timestamp theme]]]))
 
-(def system-message-deleted (quo.theme/with-theme system-message-deleted-internal))
-
-(defn system-message-contact-internal
-  [{:keys [display-name photo-path customization-color theme timestamp]} label icon]
-  [system-message-base
-   {:icon {:icon    icon
-           :color   (or customization-color :primary)
-           :opacity 5}}
-   [rn/view
-    {:style style/system-message-contact-wrapper}
-    [rn/view {:style style/system-message-contact-account-wrapper}
-     [sm-user-avatar display-name photo-path]
-     [text/text
-      {:weight          :semi-bold
-       :number-of-lines 1
-       :style           style/system-message-contact-account-name
-       :size            :paragraph-2}
-      display-name]]
-    [split-text label theme true]
-    [sm-timestamp timestamp theme]]])
-
-(def system-message-contact (quo.theme/with-theme system-message-contact-internal))
+(defn system-message-contact
+  [{:keys [display-name photo-path customization-color timestamp]} label icon]
+  (let [theme (quo.theme/use-theme)]
+    [system-message-base
+     {:icon {:icon    icon
+             :color   (or customization-color :primary)
+             :opacity 5}}
+     [rn/view
+      {:style style/system-message-contact-wrapper}
+      [rn/view {:style style/system-message-contact-account-wrapper}
+       [sm-user-avatar display-name photo-path]
+       [text/text
+        {:weight          :semi-bold
+         :number-of-lines 1
+         :style           style/system-message-contact-account-name
+         :size            :paragraph-2}
+        display-name]]
+      [split-text label theme true]
+      [sm-timestamp timestamp theme]]]))
 
 (defn system-message-added
   [data]
@@ -108,48 +106,46 @@
      (i18n/label :t/contact-request-removed-as-contact))
    :i/sad])
 
-(defn system-message-contact-request-internal
-  [{:keys [display-name photo-path customization-color theme timestamp incoming?]}]
-  [system-message-base
-   {:icon {:icon    :i/add-user
-           :color   (or customization-color :primary)
-           :opacity 5}}
-   [rn/view
-    {:style style/system-message-contact-request-wrapper}
-    (when-not incoming? [split-text "Contact request sent to" theme false])
-    [rn/view {:style style/system-message-contact-request-account-wrapper}
-     [sm-user-avatar display-name photo-path]
-     [text/text
-      {:weight          :semi-bold
-       :number-of-lines 1
-       :style           style/system-message-contact-request-account-name
-       :size            :paragraph-2}
-      display-name]]
-    (when incoming? [split-text "sent you a contact request" theme true])
-    [sm-timestamp timestamp theme]]])
+(defn system-message-contact-request
+  [{:keys [display-name photo-path customization-color timestamp incoming?]}]
+  (let [theme (quo.theme/use-theme)]
+    [system-message-base
+     {:icon {:icon    :i/add-user
+             :color   (or customization-color :primary)
+             :opacity 5}}
+     [rn/view
+      {:style style/system-message-contact-request-wrapper}
+      (when-not incoming? [split-text "Contact request sent to" theme false])
+      [rn/view {:style style/system-message-contact-request-account-wrapper}
+       [sm-user-avatar display-name photo-path]
+       [text/text
+        {:weight          :semi-bold
+         :number-of-lines 1
+         :style           style/system-message-contact-request-account-name
+         :size            :paragraph-2}
+        display-name]]
+      (when incoming? [split-text "sent you a contact request" theme true])
+      [sm-timestamp timestamp theme]]]))
 
-(def system-message-contact-request (quo.theme/with-theme system-message-contact-request-internal))
-
-(defn system-message-pinned-internal
-  [{:keys [pinned-by child customization-color theme timestamp]}]
-  [system-message-base
-   {:icon {:icon    :i/pin
-           :color   (or customization-color :primary)
-           :opacity 5}}
-   [rn/view {:style style/system-message-pinned-wrapper}
-    [rn/view
-     {:style style/system-message-pinned-content-wrapper}
-     [text/text
-      {:weight          :semi-bold
-       :number-of-lines 1
-       :style           style/system-message-pinned-content-pinned-by
-       :size            :paragraph-2}
-      pinned-by]
-     [split-text (i18n/label :t/pinned-a-message) theme true]
-     [sm-timestamp timestamp theme]]
-    (when child child)]])
-
-(def system-message-pinned (quo.theme/with-theme system-message-pinned-internal))
+(defn system-message-pinned
+  [{:keys [pinned-by child customization-color timestamp]}]
+  (let [theme (quo.theme/use-theme)]
+    [system-message-base
+     {:icon {:icon    :i/pin
+             :color   (or customization-color :primary)
+             :opacity 5}}
+     [rn/view {:style style/system-message-pinned-wrapper}
+      [rn/view
+       {:style style/system-message-pinned-content-wrapper}
+       [text/text
+        {:weight          :semi-bold
+         :number-of-lines 1
+         :style           style/system-message-pinned-content-pinned-by
+         :size            :paragraph-2}
+        pinned-by]
+       [split-text (i18n/label :t/pinned-a-message) theme true]
+       [sm-timestamp timestamp theme]]
+      (when child child)]]))
 
 (defn f-system-message
   [{:keys [type animate-bg-color? bg-color-animation-duration on-long-press]

@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.home.actions.view :as actions]
     [status-im.constants :as constants]
@@ -148,7 +149,8 @@
 (defn last-message-preview
   "Render the preview of a last message to a maximum of max-subheader-length characters"
   [group-chat {:keys [deleted? outgoing from deleted-for-me?] :as message}]
-  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
+  (let [theme            (quo.theme/use-theme)
+        [primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
         preview-text     (if deleted-for-me?
                            (i18n/label :t/you-deleted-a-message)
                            (if deleted?
@@ -161,7 +163,8 @@
     [quo/text
      {:size                :paragraph-2
       :style               {:color (colors/theme-colors colors/neutral-50
-                                                        colors/neutral-40)
+                                                        colors/neutral-40
+                                                        theme)
                             :flex  1}
       :number-of-lines     1
       :ellipsize-mode      :tail
@@ -195,6 +198,7 @@
 (defn notification
   [{:keys [muted group-chat unviewed-messages-count unviewed-mentions-count]}]
   (let [customization-color (rf/sub [:profile/customization-color])
+        theme               (quo.theme/use-theme)
         unread-messages?    (pos? unviewed-messages-count)
         unread-mentions?    (pos? unviewed-mentions-count)]
     (cond
@@ -214,7 +218,7 @@
       (and group-chat unread-messages?)
       [notification-layout
        [rn/view
-        {:style               (style/grey-dot)
+        {:style               (style/grey-dot theme)
          :accessibility-label :unviewed-messages-public}]]
 
       unread-messages?

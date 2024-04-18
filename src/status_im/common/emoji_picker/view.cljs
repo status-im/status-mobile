@@ -120,8 +120,9 @@
     :window-size                     (if @sheet-animating? 1 10)}])
 
 (defn- footer
-  [{:keys [theme active-category scroll-ref]}]
-  (let [on-press (fn [id index]
+  [{:keys [active-category scroll-ref]}]
+  (let [theme    (quo.theme/use-theme)
+        on-press (fn [id index]
                    (on-press-category
                     {:id              id
                      :index           index
@@ -133,8 +134,8 @@
         {:style         style/category-blur-container
          :blur-radius   (if platform/android? 20 10)
          :blur-amount   (if platform/ios? 20 10)
-         :blur-type     (quo.theme/theme-value (if platform/ios? :light :xlight) :dark theme)
-         :overlay-color (quo.theme/theme-value colors/white-70-blur colors/neutral-95-opa-70-blur theme)}
+         :blur-type     (if (= theme :light) (if platform/ios? :light :xlight) :dark)
+         :overlay-color (if (= theme :light) colors/white-70-blur colors/neutral-95-opa-70-blur)}
         [quo/showcase-nav
          {:state     :scroll
           :active-id @active-category
@@ -147,8 +148,8 @@
   (reset! filtered-data nil)
   (reset! search-text ""))
 
-(defn f-view
-  [{:keys [search-active? on-change-text clear-states active-category scroll-ref theme]
+(defn sheet-view
+  [{:keys [search-active? on-change-text clear-states active-category scroll-ref]
     :as   sheet-opts}]
   [rn/keyboard-avoiding-view
    {:style                    style/flex-spacer
@@ -165,11 +166,10 @@
     [render-list sheet-opts]
     (when-not search-active?
       [footer
-       {:theme           theme
-        :active-category active-category
+       {:active-category active-category
         :scroll-ref      scroll-ref}])]])
 
-(defn- view-internal
+(defn view
   [_]
   (let [{:keys [on-select]}       (rf/sub [:get-screen-params])
         scroll-ref                (atom nil)
@@ -198,7 +198,7 @@
                                       :active-category                active-category
                                       :should-update-active-category? (nil? @filtered-data)}))]
     (fn [sheet-opts]
-      [:f> f-view
+      [sheet-view
        (assoc sheet-opts
               :search-active?            (pos? (count @search-text))
               :on-change-text            on-change-text
@@ -209,5 +209,3 @@
               :on-viewable-items-changed on-viewable-items-changed
               :active-category           active-category
               :scroll-ref                scroll-ref)])))
-
-(def view (quo.theme/with-theme view-internal))

@@ -44,7 +44,7 @@
 (defn f-home-stack
   []
   (let [shared-values            @state/shared-values-atom
-        theme                    (quo.theme/use-theme-value)
+        theme                    (quo.theme/use-theme)
         {:keys [width height]}   (utils/dimensions)
         alert-banners-top-margin (rf/sub [:alert-banners/top-margin])]
     [reanimated/view

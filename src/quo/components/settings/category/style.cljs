@@ -11,7 +11,7 @@
    :padding-bottom     8})
 
 (defn settings-items
-  [{:keys [label blur? theme]}]
+  [{:keys [label blur?]} theme]
   {:margin-top       (if label 12 4)
    :border-radius    16
    :background-color (if blur?
@@ -23,7 +23,7 @@
                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn label
-  [{:keys [blur? theme]}]
+  [{:keys [blur?]} theme]
   {:color (if blur?
             colors/white-opa-40
             (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
@@ -55,8 +55,8 @@
    :overflow :hidden})
 
 (defn blur-view
-  []
+  [theme]
   {:style       {:flex 1}
    :blur-radius 10
-   :blur-type   (colors/theme-colors :light :dark)
+   :blur-type   theme
    :blur-amount 20})

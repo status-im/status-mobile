@@ -9,7 +9,7 @@
     [status-im.contexts.preview.quo.preview :as preview]))
 
 (defn demo-box
-  [shadow? description shadow-style]
+  [shadow? description shadow-style theme]
   [rn/view
    {:style {:margin-left   :auto
             :margin-right  :auto
@@ -21,7 +21,7 @@
     {:style (merge {:width            60
                     :height           60
                     :border-radius    16
-                    :background-color (colors/theme-colors colors/white colors/neutral-90)}
+                    :background-color (colors/theme-colors colors/white colors/neutral-90 theme)}
                    (when shadow? shadow-style))}]])
 
 (def descriptor
@@ -31,7 +31,8 @@
 (defn view
   []
   (let [state   (reagent/atom {:shadow? true})
-        shadow? (reagent/cursor state [:shadow?])]
+        shadow? (reagent/cursor state [:shadow?])
+        theme   (quo.theme/use-theme)]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
        [quo/text
@@ -39,19 +40,19 @@
                  :margin-right :auto
                  :align-items  :center}}
         "Normal Scales"]
-       [demo-box @shadow? "Shadow 1" (shadows/get 1)]
-       [demo-box @shadow? "Shadow 2" (shadows/get 2)]
-       [demo-box @shadow? "Shadow 3" (shadows/get 3)]
-       [demo-box @shadow? "Shadow 4" (shadows/get 4)]
+       [demo-box @shadow? "Shadow 1" (shadows/get 1 theme) theme]
+       [demo-box @shadow? "Shadow 2" (shadows/get 2 theme) theme]
+       [demo-box @shadow? "Shadow 3" (shadows/get 3 theme) theme]
+       [demo-box @shadow? "Shadow 4" (shadows/get 4 theme) theme]
        [quo/text
         {:style {:margin-left  :auto
                  :margin-right :auto
                  :align-items  :center}}
         "Inverted Scales"]
-       [demo-box @shadow? "Shadow 1" (shadows/get 1 (quo.theme/get-theme) :inverted)]
-       [demo-box @shadow? "Shadow 2" (shadows/get 2 (quo.theme/get-theme) :inverted)]
-       [demo-box @shadow? "Shadow 3" (shadows/get 3 (quo.theme/get-theme) :inverted)]
-       [demo-box @shadow? "Shadow 4" (shadows/get 4 (quo.theme/get-theme) :inverted)]
+       [demo-box @shadow? "Shadow 1" (shadows/get 1 theme :inverted) theme]
+       [demo-box @shadow? "Shadow 2" (shadows/get 2 theme :inverted) theme]
+       [demo-box @shadow? "Shadow 3" (shadows/get 3 theme :inverted) theme]
+       [demo-box @shadow? "Shadow 4" (shadows/get 4 theme :inverted) theme]
        [quo/text
         {:style {:margin-left  :auto
                  :margin-right :auto

@@ -20,52 +20,50 @@
      {:style (merge (style/action-container theme) style)}]
     children)])
 
-(defn toast-undo-action-internal
-  [{:keys [undo-duration undo-on-press theme]}]
-  [toast-action-container
-   {:on-press            undo-on-press
-    :accessibility-label :toast-undo-action
-    :theme               theme}
-   [rn/view {:style {:margin-right 5}}
-    [count-down-circle/circle-timer {:duration undo-duration}]]
-   [text/text
-    {:size   :paragraph-2
-     :weight :medium
-     :style  (style/text theme)}
-    [i18n/label :t/undo]]])
+(defn toast-undo-action
+  [{:keys [undo-duration undo-on-press]}]
+  (let [theme (quo.theme/use-theme)]
+    [toast-action-container
+     {:on-press            undo-on-press
+      :accessibility-label :toast-undo-action
+      :theme               theme}
+     [rn/view {:style {:margin-right 5}}
+      [count-down-circle/circle-timer {:duration undo-duration}]]
+     [text/text
+      {:size   :paragraph-2
+       :weight :medium
+       :style  (style/text theme)}
+      [i18n/label :t/undo]]]))
 
-(def ^:private toast-undo-action (quo.theme/with-theme toast-undo-action-internal))
-
-(defn- toast-container-internal
-  [{:keys [left title text right container-style theme]}]
-  [rn/view {:style (merge (style/box-container theme) container-style)}
-   [blur/view
-    {:style         style/blur-container
-     :blur-amount   13
-     :blur-radius   10
-     :blur-type     :transparent
-     :overlay-color :transparent}]
-   [rn/view {:style (style/content-container theme)}
-    [rn/view {:style style/left-side-container}
-     left]
-    [rn/view {:style style/right-side-container}
-     (when title
-       [text/text
-        {:size                :paragraph-1
-         :weight              :semi-bold
-         :style               (style/title theme)
-         :accessibility-label :toast-title}
-        title])
-     (when text
-       [text/text
-        {:size                :paragraph-2
-         :weight              :medium
-         :style               (style/text theme)
-         :accessibility-label :toast-content}
-        text])]
-    right]])
-
-(def ^:private toast-container (quo.theme/with-theme toast-container-internal))
+(defn toast-container
+  [{:keys [left title text right container-style]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (merge (style/box-container theme) container-style)}
+     [blur/view
+      {:style         style/blur-container
+       :blur-amount   13
+       :blur-radius   10
+       :blur-type     :transparent
+       :overlay-color :transparent}]
+     [rn/view {:style (style/content-container theme)}
+      [rn/view {:style style/left-side-container}
+       left]
+      [rn/view {:style style/right-side-container}
+       (when title
+         [text/text
+          {:size                :paragraph-1
+           :weight              :semi-bold
+           :style               (style/title theme)
+           :accessibility-label :toast-title}
+          title])
+       (when text
+         [text/text
+          {:size                :paragraph-2
+           :weight              :medium
+           :style               (style/text theme)
+           :accessibility-label :toast-content}
+          text])]
+      right]]))
 
 (defn toast
   "Options:
@@ -74,7 +72,7 @@
    "
   [{:keys [type icon title text action undo-duration undo-on-press container-style theme user]
     :or   {type :neutral icon :i/placeholder}}]
-  (let [context-theme (or theme (quo.theme/get-theme))
+  (let [context-theme theme
         icon-name     (case type
                         :positive (if (= theme :light)
                                     :i/correct
@@ -83,7 +81,7 @@
                                     :i/incorrect
                                     :i/incorrect-dark)
                         :neutral  icon)]
-    [quo.theme/provider {:theme context-theme}
+    [quo.theme/provider context-theme
      [toast-container
       {:left            (cond user
                               [user-avatar/user-avatar user]

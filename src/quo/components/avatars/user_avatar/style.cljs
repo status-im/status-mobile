@@ -66,8 +66,8 @@
      :background-color (colors/resolve-color customization-color theme)}))
 
 (defn indicator-color
-  []
-  {:online  (colors/theme-colors colors/success-50 colors/success-60)
+  [theme]
+  {:online  (colors/theme-colors colors/success-50 colors/success-60 theme)
    :offline colors/neutral-40})
 
 (defn outer

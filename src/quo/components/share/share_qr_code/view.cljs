@@ -155,7 +155,7 @@
      [share-button {:on-press on-share-press}]]
     (when (not= share-qr-type :profile)
       [header props])
-    [quo.theme/provider {:theme :light}
+    [quo.theme/provider :light
      [qr-code/view
       {:qr-image-uri        qr-image-uri
        :size                (style/qr-code-size component-width)
@@ -185,7 +185,7 @@
         props                 (-> props
                                   (assoc :component-width (or provided-width calculated-width))
                                   (clojure.set/rename-keys {:type :share-qr-type}))]
-    [quo.theme/provider {:theme :dark}
+    [quo.theme/provider :dark
      [rn/view
       {:accessibility-label :share-qr-code
        :style               style/outer-container

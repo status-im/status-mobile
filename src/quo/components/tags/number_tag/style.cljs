@@ -56,7 +56,7 @@
     (get-in sizes [size (if widen? :width-extra :size)])))
 
 (defn container
-  [{:keys [type number size blur? theme container-style]}]
+  [{:keys [type number size blur? container-style]} theme]
   {:style (assoc container-style
                  :width            (get-width size number)
                  :height           (get-in sizes [size :size])

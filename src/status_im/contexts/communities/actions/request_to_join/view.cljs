@@ -22,10 +22,11 @@
 
   (rf/dispatch [:navigate-back]))
 
-(defn- view-internal
-  [{:keys [theme]}]
+(defn view
+  []
   (fn []
-    (let [{:keys [id]}                (rf/sub [:get-screen-params])
+    (let [theme                       (quo.theme/use-theme)
+          {:keys [id]}                (rf/sub [:get-screen-params])
           {:keys [color name images]} (rf/sub [:communities/community id])]
       [rn/safe-area-view {:flex 1}
        [gesture/scroll-view {:style style/container}
@@ -67,5 +68,3 @@
          {:size  :paragraph-2
           :style style/final-disclaimer-text}
          (i18n/label :t/request-to-join-disclaimer)]]])))
-
-(def view (quo.theme/with-theme view-internal))

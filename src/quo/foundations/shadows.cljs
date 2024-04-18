@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [get])
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.platform :as platform]
     [utils.number]))
 
@@ -83,8 +82,6 @@
   `theme` - :light/:dark (optional).
   `scale-type` - :normal/:inverted (optional).
   "
-  ([weight]
-   (get weight (quo.theme/get-theme)))
   ([weight theme]
    (get weight theme :normal))
   ([weight theme scale-type]

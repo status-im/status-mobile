@@ -2,9 +2,9 @@
   (:require [quo.foundations.colors :as colors]))
 
 (defn container-outer
-  []
+  [theme]
   {:flex               1
-   :background-color   (colors/theme-colors colors/white colors/neutral-95)
+   :background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
    :justify-content    :space-between
    :align-items        :center
    :margin-top         2
@@ -16,11 +16,11 @@
            :margin-top     8}})
 
 (defn text-description
-  []
+  [theme]
   {:size   :paragraph-2
    :weight :medium
    :style  {:margin-bottom 6
-            :color         (colors/theme-colors colors/neutral-50 colors/neutral-40)}})
+            :color         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}})
 
 (def icon-invalid
   {:size  16
@@ -47,7 +47,7 @@
    :align-self     :stretch})
 
 (defn found-user-container
-  []
+  [theme]
   {:flex-direction   :row
    :align-items      :center
    :padding-top      8
@@ -56,31 +56,36 @@
    :padding-bottom   8
    :color            (colors/theme-colors
                       colors/black
-                      colors/white)
+                      colors/white
+                      theme)
    :background-color (colors/theme-colors
                       colors/white
-                      colors/neutral-95)
+                      colors/neutral-95
+                      theme)
    :border-width     1
    :border-radius    12
    :border-color     (colors/theme-colors
                       colors/neutral-20
-                      colors/neutral-80)})
+                      colors/neutral-80
+                      theme)})
 
 (def found-user-text
   {:margin-left    8
    :flex-direction :column})
 
 (defn found-user-display-name
-  []
+  [theme]
   {:color (colors/theme-colors
            colors/black
-           colors/white)})
+           colors/white
+           theme)})
 
 (defn found-user-key
-  []
+  [theme]
   {:color (colors/theme-colors
            colors/neutral-50
-           colors/neutral-40)})
+           colors/neutral-40
+           theme)})
 
 (def button-view-profile
   {:margin-top 24

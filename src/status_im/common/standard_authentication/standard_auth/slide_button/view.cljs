@@ -10,7 +10,7 @@
   [{:keys [track-text customization-color auth-button-label on-auth-success on-auth-fail
            auth-button-icon-left size blur? container-style disabled? dependencies]
     :or   {container-style {:flex 1}}}]
-  (let [theme           (quo.theme/use-theme-value)
+  (let [theme           (quo.theme/use-theme)
         auth-method     (rf/sub [:auth-method])
         biometric-auth? (= auth-method constants/auth-method-biometric)
         on-complete     (rn/use-callback

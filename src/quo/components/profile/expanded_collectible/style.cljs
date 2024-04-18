@@ -2,8 +2,9 @@
   (:require [quo.foundations.colors :as colors]
             [quo.foundations.shadows :as shadows]))
 
-(def container
-  (merge (shadows/get 2)
+(defn container
+  [theme]
+  (merge (shadows/get 2 theme)
          {:align-items     :center
           :justify-content :center
           :border-radius   16}))

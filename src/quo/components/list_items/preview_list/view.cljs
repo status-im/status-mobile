@@ -5,7 +5,6 @@
     [quo.components.list-items.preview-list.properties :as properties]
     [quo.components.tags.number-tag.view :as number-tag]
     [quo.components.utilities.token.view :as token]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [react-native.hole-view :as hole-view]))
@@ -67,7 +66,7 @@
        :type     type
        :size-key size-key}]]))
 
-(defn- view-internal
+(defn view
   "[preview-list opts items]
    opts
    {:type   :user/:communities/:accounts/:tokens/:collectibles/:dapps/:network
@@ -97,5 +96,3 @@
          :size            size-key
          :blur?           blur?
          :container-style {:margin-left margin-left}}])]))
-
-(def view (quo.theme/with-theme view-internal))

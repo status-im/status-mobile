@@ -7,6 +7,8 @@
     [quo.components.profile.expanded-collectible.style :as style]
     [quo.foundations.colors :as colors]
     [quo.theme]
+    [quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -33,7 +35,7 @@
 
 (defn view-internal
   [{:keys [container-style square? on-press counter image-src native-ID supported-file?]}]
-  (let [theme                          (quo.theme/use-theme-value)
+  (let [theme                          (quo.theme/use-theme)
         [image-size set-image-size]    (rn/use-state {})
         [image-error? set-image-error] (rn/use-state false)]
     (rn/use-effect
@@ -46,7 +48,7 @@
     [rn/pressable
      {:on-press            (when (and (not image-error?) supported-file?) on-press)
       :accessibility-label :expanded-collectible
-      :style               (merge container-style style/container)}
+      :style               (merge container-style (style/container theme))}
      (cond
        (not supported-file?)
        [fallback-view

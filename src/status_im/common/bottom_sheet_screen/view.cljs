@@ -1,7 +1,7 @@
 (ns status-im.common.bottom-sheet-screen.view
   (:require
     [oops.core :as oops]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -40,7 +40,7 @@
   (let [y (oops/oget e "nativeEvent.contentOffset.y")]
     (reset! curr-scroll y)))
 
-(defn- f-view
+(defn view
   [_]
   (let [scroll-enabled?     (reagent/atom true)
         curr-scroll         (reagent/atom 0)
@@ -48,8 +48,9 @@
         set-animating-true  #(reset! animating? true)
         set-animating-false (fn [ms]
                               (js/setTimeout #(reset! animating? false) ms))]
-    (fn [{:keys [content skip-background? theme]}]
-      (let [{:keys [top] :as insets} (safe-area/get-insets)
+    (fn [{:keys [content skip-background?]}]
+      (let [theme                    (quo.theme/use-theme)
+            {:keys [top] :as insets} (safe-area/get-insets)
             alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
             padding-top              (+ alert-banners-top-margin
                                         (if platform/ios? top (+ top 10)))
@@ -95,9 +96,3 @@
              :current-scroll   curr-scroll
              :on-scroll        #(on-scroll % curr-scroll)
              :sheet-animating? animating?}]]]]))))
-
-(defn- internal-view
-  [params]
-  [:f> f-view params])
-
-(def view (theme/with-theme internal-view))

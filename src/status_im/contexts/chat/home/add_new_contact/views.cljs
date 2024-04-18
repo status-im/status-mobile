@@ -1,6 +1,7 @@
 (ns status-im.contexts.chat.home.add-new-contact.views
   (:require [clojure.string :as string]
             [quo.core :as quo]
+            [quo.theme]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
             [status-im.common.floating-button-page.view :as floating-button-page]
@@ -13,12 +14,13 @@
 (defn found-contact
   [public-key]
   (let [{:keys [primary-name compressed-key]} (rf/sub [:contacts/contact-by-identity public-key])
-        photo-path                            (rf/sub [:chats/photo-path public-key])]
+        photo-path                            (rf/sub [:chats/photo-path public-key])
+        theme                                 (quo.theme/use-theme)]
     (when primary-name
       [rn/view style/found-user
-       [quo/text (style/text-description)
+       [quo/text (style/text-description theme)
         (i18n/label :t/user-found)]
-       [rn/view (style/found-user-container)
+       [rn/view (style/found-user-container theme)
         [quo/user-avatar
          {:full-name         primary-name
           :profile-picture   photo-path
@@ -28,12 +30,12 @@
          [quo/text
           {:weight :semi-bold
            :size   :paragraph-1
-           :style  (style/found-user-display-name)}
+           :style  (style/found-user-display-name theme)}
           primary-name]
          [quo/text
           {:weight :regular
            :size   :paragraph-2
-           :style  (style/found-user-key)}
+           :style  (style/found-user-key theme)}
           (address/get-shortened-compressed-key compressed-key)]]]])))
 
 (defn- search-input
@@ -111,7 +113,8 @@
 (defn new-contact
   []
   (let [{:keys [public-key ens state msg]} (rf/sub [:contacts/new-identity])
-        customization-color                (rf/sub [:profile/customization-color])]
+        customization-color                (rf/sub [:profile/customization-color])
+        theme                              (quo.theme/use-theme)]
     [floating-button-page/view
      {:header-container-style {:margin-top 8}
       :header                 [quo/page-nav
@@ -139,7 +142,7 @@
        :description      :text
        :description-text (i18n/label :t/find-your-friends)
        :container-style  {:padding-vertical 8}}]
-     [rn/view {:style (style/container-outer)}
+     [rn/view {:style (style/container-outer theme)}
       [search-input]
       (case state
         :invalid [invalid-text msg]

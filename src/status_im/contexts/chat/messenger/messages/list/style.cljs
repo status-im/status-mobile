@@ -2,7 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.foundations.shadows :as shadows]
-    [quo.theme :as quo.theme]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.messages.constants :as messages.constants]))
 
@@ -26,7 +25,7 @@
   (reanimated/apply-animations-to-style
    {:bottom bottom}
    (merge
-    (shadows/get 2 (quo.theme/get-theme) :inverted)
+    (shadows/get 2 theme :inverted)
     {:background-color   (colors/theme-colors colors/white colors/neutral-95 theme)
      :padding-horizontal 20
      :border-radius      20

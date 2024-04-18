@@ -1,7 +1,7 @@
 (ns quo.components.ios.drawer-bar.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]))
+    [quo.theme]))
 
 (def handle-container
   {:padding-vertical 8
@@ -9,9 +9,9 @@
    :align-items      :center})
 
 (defn handle
-  [{:keys [theme]}]
+  [theme]
   {:width            32
    :height           4
    :background-color (colors/theme-colors colors/neutral-100 colors/white theme)
-   :opacity          (theme/theme-value 0.05 0.1 theme)
+   :opacity          (if (= theme :light) 0.05 0.1)
    :border-radius    100})

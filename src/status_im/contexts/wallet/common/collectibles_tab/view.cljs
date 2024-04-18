@@ -27,7 +27,7 @@
       :on-long-press        #(when on-long-press
                                (on-long-press collectible))}]))
 
-(defn- view-internal
+(defn view
   [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address
            on-collectible-long-press]}]
   (let [no-results-match-query? (and filtered? (empty? collectibles))]
@@ -60,5 +60,3 @@
                                                on-collectible-long-press))
         :on-end-reached           on-end-reached
         :on-end-reached-threshold 4}])))
-
-(def view (quo.theme/with-theme view-internal))

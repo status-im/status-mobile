@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -29,6 +30,7 @@
   (let [{:keys [primary-name nickname public-key]} contact
         entered-nickname                           (reagent/atom (or nickname ""))
         photo-path                                 (rf/sub [:chats/photo-path public-key])
+        theme                                      (quo.theme/use-theme)
         insets                                     (safe-area/get-insets)]
     (fn [{:keys [title description accessibility-label
                  close-button-text]}]
@@ -38,7 +40,7 @@
        [quo/text
         {:weight :semi-bold
          :size   :heading-2} title]
-       [rn/view {:style (style/context-container)}
+       [rn/view {:style (style/context-container theme)}
         [quo/context-tag
          {:type            :default
           :blur?           false
@@ -60,11 +62,11 @@
         {:style style/nickname-description-container}
         [quo/icon :i/info
          {:size  16
-          :color (colors/theme-colors colors/black colors/white)}]
+          :color (colors/theme-colors colors/black colors/white theme)}]
         [quo/text
          {:weight :regular
           :size   :paragraph-2
-          :style  (style/nickname-description)}
+          :style  (style/nickname-description theme)}
          description]]
        [rn/view {:style style/buttons-container}
         [quo/button

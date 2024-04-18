@@ -119,35 +119,34 @@
                 [rn/text {:adjusts-font-size-to-fit true} emoji]]))
         emojis))
 
-(defn- view-internal
-  [{:keys  [theme description title input blur? input-props container-style]
+(defn view
+  [{:keys  [description title input blur? input-props container-style]
     emojis :emoji-dash
     :as    props}]
-  [rn/view {:style container-style}
-   [rn/view {:style style/top-container}
-    (when (or title input)
-      [header props])
-    (when description
-      [description-container props])
-    (when emojis
-      [emoji-dash emojis])]
-   (when input
-     [rn/view {:style (style/input-container theme input blur?)}
-      (case input
-        :search
-        [search-input/search-input
-         (assoc input-props
-                :container-style style/search-input-container
-                :blur?           blur?)]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style container-style}
+     [rn/view {:style style/top-container}
+      (when (or title input)
+        [header props])
+      (when description
+        [description-container props])
+      (when emojis
+        [emoji-dash emojis])]
+     (when input
+       [rn/view {:style (style/input-container theme input blur?)}
+        (case input
+          :search
+          [search-input/search-input
+           (assoc input-props
+                  :container-style style/search-input-container
+                  :blur?           blur?)]
 
-        :address
-        [address-input/address-input (assoc input-props :blur? blur?)]
+          :address
+          [address-input/address-input (assoc input-props :blur? blur?)]
 
-        :recovery-phrase
-        [recovery-phrase/recovery-phrase-input
-         (assoc input-props
-                :container-style style/recovery-phrase-container
-                :blur?           blur?)]
-        nil)])])
-
-(def view (quo.theme/with-theme view-internal))
+          :recovery-phrase
+          [recovery-phrase/recovery-phrase-input
+           (assoc input-props
+                  :container-style style/recovery-phrase-container
+                  :blur?           blur?)]
+          nil)])]))

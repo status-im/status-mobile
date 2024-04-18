@@ -74,23 +74,22 @@
 
 (defn- view-internal
   [{:keys [title description loading? icon banner members-count active-members-count
-           theme on-press size]}]
-  [rn/pressable
-   {:style               (style/container size theme)
-    :accessibility-label :internal-link-card
-    :on-press            on-press}
-   (if loading?
-     [loading-view theme size]
-     [:<>
-      [rn/view {:style style/header-container}
-       (when icon
-         [logo-comp icon])
-       [title-comp title]]
-      (when description
-        [description-comp description members-count active-members-count])
-      (when banner
-        [thumbnail-comp banner size])])])
+           on-press size]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/pressable
+     {:style               (style/container size theme)
+      :accessibility-label :internal-link-card
+      :on-press            on-press}
+     (if loading?
+       [loading-view theme size]
+       [:<>
+        [rn/view {:style style/header-container}
+         (when icon
+           [logo-comp icon])
+         [title-comp title]]
+        (when description
+          [description-comp description members-count active-members-count])
+        (when banner
+          [thumbnail-comp banner size])])]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))
