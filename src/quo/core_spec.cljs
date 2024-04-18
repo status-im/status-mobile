@@ -65,8 +65,6 @@
     quo.components.numbered-keyboard.keyboard-key.component-spec
     quo.components.onboarding.small-option-card.component-spec
     quo.components.password.tips.component-spec
-    quo.components.profile.collectible-list-item.component-spec
-    quo.components.profile.expanded-collectible.component-spec
     quo.components.profile.link-card.component-spec
     quo.components.profile.select-profile.component-spec
     quo.components.profile.showcase-nav.component-spec

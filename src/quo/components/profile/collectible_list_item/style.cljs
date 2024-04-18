@@ -28,9 +28,6 @@
    :bottom   12
    :left     12})
 
-(def container
-  {:flex 1})
-
 (defn card-view-container
   [theme]
   (merge
@@ -85,6 +82,17 @@
 
 (defn loading-image
   [theme]
-  {:flex             1
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0
    :border-radius    container-border-radius
-   :background-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)})
+   :background-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
+   :z-index          2})
+
+(defn avatar-container
+  [loaded?]
+  {:flex           1
+   :flex-direction :row
+   :opacity        (when-not loaded? 0)})

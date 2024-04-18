@@ -32,9 +32,10 @@
     label]])
 
 (defn view-internal
-  [{:keys [container-style square? status on-press counter image-src] :or {status :default}}]
-  (let [theme                       (quo.theme/use-theme-value)
-        [image-size set-image-size] (rn/use-state {})]
+  [{:keys [container-style square? on-press counter image-src native-ID supported-file?]}]
+  (let [theme                          (quo.theme/use-theme-value)
+        [image-size set-image-size]    (rn/use-state {})
+        [image-error? set-image-error] (rn/use-state false)]
     (rn/use-effect
      (fn []
        (promesa/let [[image-width image-height] (rn/image-get-size image-src)]
@@ -43,22 +44,29 @@
                           :aspect-ratio (/ image-width image-height)})))
      [image-src])
     [rn/pressable
-     {:on-press            on-press
+     {:on-press            (when (and (not image-error?) supported-file?) on-press)
       :accessibility-label :expanded-collectible
       :style               (merge container-style style/container)}
-     (case status
-       :unsupported [fallback-view
-                     {:label   (i18n/label :t/unsupported-file)
-                      :counter counter
-                      :theme   theme}]
-       :cant-fetch  [fallback-view
-                     {:label   (i18n/label :t/cant-fetch-info)
-                      :counter counter
-                      :theme   theme}]
+     (cond
+       (not supported-file?)
+       [fallback-view
+        {:label   (i18n/label :t/unsupported-file)
+         :counter counter
+         :theme   theme}]
+
+       image-error?
+       [fallback-view
+        {:label   (i18n/label :t/cant-fetch-info)
+         :counter counter
+         :theme   theme}]
+
+       (and (not image-error?) supported-file?)
        [rn/view
         [rn/image
-         {:style  (style/image square? (:aspect-ratio image-size))
-          :source image-src}]
+         {:style     (style/image square? (:aspect-ratio image-size))
+          :source    image-src
+          :native-ID native-ID
+          :on-error  #(set-image-error true)}]
         [counter-view counter]])]))
 
 (def ?schema
@@ -67,10 +75,11 @@
     [:props
      [:map {:closed true}
       [:image-src {:optional true} [:maybe string?]]
+      [:supported-file? {:optional true} [:maybe boolean?]]
       [:container-style {:optional true} [:maybe :map]]
+      [:native-ID {:optional true} [:maybe [:or string? keyword?]]]
       [:square? {:optional true} [:maybe boolean?]]
       [:counter {:optional true} [:maybe string?]]
-      [:status {:optional true} [:maybe [:enum :default :loading :cant-fetch :unsupported]]]
       [:on-press {:optional true} [:maybe fn?]]]]]
    :any])
 

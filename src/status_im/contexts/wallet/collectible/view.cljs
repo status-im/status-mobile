@@ -4,12 +4,12 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [react-native.svg :as svg]
     [reagent.core :as reagent]
     [status-im.common.scroll-page.view :as scroll-page]
     [status-im.contexts.wallet.collectible.options.view :as options-drawer]
     [status-im.contexts.wallet.collectible.style :as style]
     [status-im.contexts.wallet.collectible.tabs.view :as tabs]
+    [status-im.contexts.wallet.collectible.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -61,6 +61,7 @@
     (fn []
       (let [collectible                 (rf/sub [:wallet/last-collectible-details])
             animation-shared-element-id (rf/sub [:animation-shared-element-id])
+            wallet-address              (rf/sub [:wallet/current-viewing-account-address])
             {:keys [id
                     preview-url
                     collection-data
@@ -80,7 +81,9 @@
                                          :image-height 300
                                          :id           token-id
                                          :header       collectible-name
-                                         :description  collection-name}]
+                                         :description  collection-name}
+            total-owned                 (utils/total-owned-collectible (:ownership collectible)
+                                                                       wallet-address)]
         (rn/use-unmount #(rf/dispatch [:wallet/clear-last-collectible-details]))
         [scroll-page/scroll-page
          {:navigate-back? true
@@ -97,10 +100,13 @@
                                                          :theme   theme}])}]
                            :picture     preview-uri}}
          [rn/view {:style style/container}
-          [rn/view {:style style/preview-container}
-           [rn/touchable-opacity
-            {:active-opacity 1
-             :on-press       (fn []
+          [quo/expanded-collectible
+           {:image-src       preview-uri
+            :container-style style/preview-container
+            :counter         (utils/collectible-owned-counter total-owned)
+            :native-ID       (when (= animation-shared-element-id token-id) :shared-element)
+            :supported-file? (utils/supported-file? (:animation-media-type collectible-data))
+            :on-press        (fn []
                                (if svg?
                                  (js/alert "Can't visualize SVG images in lightbox")
                                  (rf/dispatch
@@ -113,17 +119,7 @@
                                                                       (fn []
                                                                         [options-drawer/view
                                                                          {:name  collectible-name
-                                                                          :image preview-uri}])}])}])))}
-            (if svg?
-              [rn/view
-               {:style     (assoc style/preview :overflow :hidden)
-                :native-ID (when (= animation-shared-element-id token-id)
-                             :shared-element)}
-               [svg/svg-uri (assoc style/preview :uri preview-uri)]]
-              [rn/image
-               {:source    preview-uri
-                :style     style/preview
-                :native-ID (when (= animation-shared-element-id token-id) :shared-element)}])]]
+                                                                          :image preview-uri}])}])}])))}]
           [header collectible-name collection-name collection-image]
           [cta-buttons]
           [quo/tabs

@@ -37,6 +37,8 @@
      [quo/expanded-collectible
       {:image-src       preview-uri
        :square?         true
+       :supported-file? (utils/supported-file? (get-in collectible
+                                                       [:collectible-data :animation-media-type]))
        :container-style style/collectible-container}]
      [quo/network-tags
       {:title           (i18n/label :t/max {:number balance})
