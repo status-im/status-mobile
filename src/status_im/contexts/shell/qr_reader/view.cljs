@@ -71,13 +71,10 @@
 (defn on-qr-code-scanned
   [scanned-text]
   (cond
-    (text-for-url-path? scanned-text router/community-with-data-path)
-    ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
-
-    (text-for-url-path? scanned-text router/channel-path)
-    ;; TODO: https://github.com/status-im/status-mobile/issues/18743
-    nil
+    (or
+     (text-for-url-path? scanned-text router/community-with-data-path)
+     (text-for-url-path? scanned-text router/channel-path))
+    (debounce/debounce-and-dispatch [:universal-links/handle-url scanned-text] 300)
 
     (text-for-url-path? scanned-text router/user-with-data-path)
     (let [address (extract-id scanned-text)]

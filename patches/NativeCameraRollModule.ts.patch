@@ -1,0 +1,11 @@
+--- /tmp/tmp-status-mobile-3907e6b2e/tmp.juxTO1BeCM/NativeCameraRollModule.ts	2024-04-16 15:21:28.379979000 +0200
++++ ./node_modules/@react-native-camera-roll/camera-roll/src/NativeCameraRollModule.ts	2024-04-16 15:21:40.490391291 +0200
+@@ -81,6 +81,8 @@
+   getPhotos(params: Object): Promise<PhotoIdentifiersPage>;
+   getAlbums(params: Object): Promise<Album[]>;
+   deletePhotos(photoUris: Array<string>): Promise<void>;
++  getPhotosCountiOS(arg: string): Promise<number>;
++  getFavoritesiOS(arg: string): Promise<Album>;
+   getPhotoByInternalID(
+     internalID: string,
+     options: Object,

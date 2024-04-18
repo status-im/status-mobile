@@ -13,6 +13,7 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="new_four_2")
 @marks.new_ui_critical
+@marks.secured
 class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

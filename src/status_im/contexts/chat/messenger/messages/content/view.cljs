@@ -51,7 +51,7 @@
     [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
-  [{:keys [response-to
+  [{:keys [content
            compressed-key
            last-in-group?
            pinned-by
@@ -61,7 +61,7 @@
    show-reactions?
    in-reaction-and-action-menu?
    show-user-info?]
-  (when (or (and (seq response-to) quoted-message)
+  (when (or (and (seq (:response-to content)) quoted-message)
             last-in-group?
             pinned-by
             show-user-info?
