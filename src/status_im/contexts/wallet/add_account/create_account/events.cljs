@@ -2,6 +2,7 @@
   (:require [camel-snake-kebab.extras :as cske]
             [status-im.contexts.wallet.data-store :as data-store]
             [utils.re-frame :as rf]
+            [utils.security.core :as security]
             [utils.transforms :as transforms]))
 
 (defn get-keypairs-success
@@ -30,12 +31,12 @@
 
 (rf/reg-event-fx :wallet/store-secret-phrase store-secret-phrase)
 
-(defn store-recovery-phrase
-  [{:keys [db]} [{:keys [secret-phrase]}]]
-  {:db (assoc-in db [:wallet :ui :create-account :secret-phrase] secret-phrase)
+(defn seed-phrase-entered
+  [{:keys [db]} [{:keys [seed-phrase]}]]
+  {:db (assoc-in db [:wallet :ui :create-account :secret-phrase] seed-phrase)
    :fx [[:dispatch [:navigate-to :screen/wallet.keypair-name]]]})
 
-(rf/reg-event-fx :wallet/store-recovery-phrase store-recovery-phrase)
+(rf/reg-event-fx :wallet/seed-phrase-entered seed-phrase-entered)
 
 (defn new-keypair-created
   [{:keys [db]} [{:keys [new-keypair]}]]
@@ -48,7 +49,7 @@
   [{:keys [db]} [{:keys [keypair-name]}]]
   (let [secret-phrase (get-in db [:wallet :ui :create-account :secret-phrase])]
     {:fx [[:effects.wallet/create-account-from-mnemonic
-           {:secret-phrase secret-phrase
+           {:secret-phrase (security/safe-unmask-data secret-phrase)
             :keypair-name  keypair-name}]]}))
 
 (rf/reg-event-fx :wallet/new-keypair-continue new-keypair-continue)

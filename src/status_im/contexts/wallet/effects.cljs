@@ -8,7 +8,9 @@
  :effects.wallet/create-account-from-mnemonic
  (fn [{:keys [secret-phrase keypair-name]}]
    (native-module/create-account-from-mnemonic
-    {:MnemonicPhrase (if string? secret-phrase (string/join " " secret-phrase))}
+    {:MnemonicPhrase (if (string? secret-phrase)
+                       secret-phrase
+                       (string/join " " secret-phrase))}
     (fn [new-keypair]
       (rf/dispatch [:wallet/new-keypair-created
                     {:new-keypair (assoc new-keypair :keypair-name keypair-name)}])))))

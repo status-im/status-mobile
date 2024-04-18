@@ -5,7 +5,8 @@
     [reagent.core :as reagent]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.check-your-backup.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (def secret-words-count 12)
 
@@ -64,7 +65,8 @@
         quiz-index                            (reagent/atom 0)
         incorrect-count                       (reagent/atom 0)
         show-error?                           (reagent/atom false)
-        {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/create-account])]
+        {:keys [secret-phrase random-phrase]} (rf/sub [:wallet/create-account])
+        secret-phrase                         (security/safe-unmask-data secret-phrase)]
     (fn []
       (let [current-word-index            (get random-indices
                                                (min @quiz-index (dec questions-count)))

@@ -104,8 +104,9 @@
                      on-submit               (fn []
                                                (swap! seed-phrase clean-seed-phrase)
                                                (if keypair?
-                                                 (rf/dispatch [:wallet/store-recovery-phrase
-                                                               {:secret-phrase @seed-phrase}])
+                                                 (rf/dispatch [:wallet/seed-phrase-entered
+                                                               {:seed-phrase (security/mask-data
+                                                                              @seed-phrase)}])
                                                  (rf/dispatch [:onboarding/seed-phrase-entered
                                                                (security/mask-data @seed-phrase)
                                                                set-invalid-seed-phrase])))]
@@ -150,7 +151,7 @@
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
            {:type     suggestions-state
-            :blur?    true
+            :blur?    (not keypair?)
             :text     suggestions-text
             :words    (keyboard-suggestions last-word)
             :on-press pick-suggested-word}]])])
