@@ -15,6 +15,7 @@
     [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
+    [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (defn- make-limit-label
@@ -85,8 +86,11 @@
 
 (defn- reset-input-error
   [new-value prev-value input-error]
-  (reset! input-error
-    (> (js/parseFloat new-value) (js/parseFloat prev-value))))
+  (let [converted-new-value  (money/bignumber new-value)
+        converted-prev-value (money/bignumber prev-value)]
+    (when (and converted-new-value converted-prev-value)
+      (reset! input-error
+        (money/greater-than converted-new-value converted-prev-value)))))
 
 (defn delete-from-string
   [s idx]
