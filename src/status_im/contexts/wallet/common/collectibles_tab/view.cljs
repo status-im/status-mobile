@@ -27,11 +27,10 @@
       :on-long-press        #(when on-long-press
                                (on-long-press collectible))}]))
 
-(defn- view-internal
+(defn view
   [{:keys [theme collectibles filtered? on-collectible-press on-end-reached current-account-address
            on-collectible-long-press]}]
-  (let [theme                   (quo.theme/use-theme)
-        no-results-match-query? (and filtered? (empty? collectibles))]
+  (let [no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       no-results-match-query?
       [rn/view {:style {:flex 1 :justify-content :center}}
