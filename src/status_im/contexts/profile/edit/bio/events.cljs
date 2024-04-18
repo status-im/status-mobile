@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.edit.bio.events
   (:require [clojure.string :as string]
+            [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -27,6 +28,7 @@
              :params     [new-bio]
              :on-success [:profile/edit-profile-bio-success
                           {:bio    new-bio
-                           :added? (string/blank? bio)}]}]]]}))
+                           :added? (string/blank? bio)}]
+             :on-error   #(log/error "failed to set bio " %)}]]]}))
 
 (rf/reg-event-fx :profile/edit-bio edit-profile-bio)
