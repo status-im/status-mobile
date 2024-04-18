@@ -87,7 +87,7 @@
 (defn input
   [colors-by-status small? multiple-lines? weight]
   (let [padding    (if small? 4 8)
-        base-props (assoc (text/text-style {:size :paragraph-1 :weight (or weight :regular)})
+        base-props (assoc (text/text-style {:size :paragraph-1 :weight (or weight :regular)} nil)
                           :flex           1
                           :padding-right  0
                           :padding-left   padding

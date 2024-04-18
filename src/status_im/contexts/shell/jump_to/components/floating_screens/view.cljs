@@ -20,7 +20,7 @@
 
 (defn f-screen
   [{:keys [screen-id id animation clock] :as screen-param}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     ;; First render screen, then animate (smoother animation)
     (rn/use-effect
      (fn []

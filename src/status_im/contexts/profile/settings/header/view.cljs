@@ -12,9 +12,10 @@
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.re-frame :as rf]))
 
-(defn- f-view
-  [{:keys [theme scroll-y]}]
-  (let [{:keys [public-key emoji-hash bio] :as profile} (rf/sub [:profile/profile-with-image])
+(defn view
+  [{:keys [scroll-y]}]
+  (let [theme (quo.theme/use-theme)
+        {:keys [public-key emoji-hash bio] :as profile} (rf/sub [:profile/profile-with-image])
         online? (rf/sub [:visibility-status-updates/online?
                          public-key])
         status (rf/sub
@@ -25,7 +26,7 @@
         profile-picture (profile.utils/photo profile)
         emoji-string (string/join emoji-hash)
         {:keys [status-title status-icon]} (header.utils/visibility-status-type-data status)
-        border-theme (quo.theme/get-theme)]
+        border-theme theme]
     [:<>
      [header.shape/view
       {:scroll-y            scroll-y
@@ -60,5 +61,3 @@
        :emoji-hash                emoji-string
        :description               bio
        :title                     full-name}]]))
-
-(def view (quo.theme/with-theme f-view))

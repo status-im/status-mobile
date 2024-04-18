@@ -8,7 +8,7 @@
 
 (defn page-setting
   [{:keys [setting-text customization-color checked? container-style on-change disabled?]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view
      {:style (merge (style/container theme)
                     container-style)}

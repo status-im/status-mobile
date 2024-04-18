@@ -154,7 +154,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.wallet_view.click_system_back_button()
         self.wallet_view.close_account_button.click_until_presence_of_element(self.home_view.show_qr_code_button)
 
-        self.wallet_view.just_fyi("Checking that the new wallet is added to the Sare QR Code menu")
+        self.wallet_view.just_fyi("Checking that the new wallet is added to the Share QR Code menu")
         self.home_view.show_qr_code_button.click()
         self.home_view.share_wallet_tab_button.click()
         if self.home_view.account_name_text.text != 'Account 1':
@@ -162,10 +162,14 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.qr_code_image_element.swipe_left_on_element()
         try:
             self.home_view.account_name_text.wait_for_element_text(text=new_account_name, wait_time=3)
-            if self.home_view.copy_wallet_address() != new_wallet_address.split(':')[-1]:
-                self.home_view.driver.fail("Incorrect address")
         except Failed:
             self.errors.append("Can't swipe between accounts, newly added account is not shown")
+        else:
+            shown_address = self.home_view.copy_wallet_address()
+            if set(shown_address.split(':')) != set(new_wallet_address.split(':')):
+                self.errors.append(
+                    "Incorrect address '%s' is shown when swiping between accounts, expected one is '%s'" % (
+                        shown_address, new_wallet_address))
         self.home_view.click_system_back_button()
 
         self.wallet_view.just_fyi("Removing newly added account")
@@ -189,7 +193,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             pytest.fail("Account to watch was not added")
         self.wallet_view.close_account_button.click_until_presence_of_element(self.home_view.show_qr_code_button)
 
-        self.wallet_view.just_fyi("Checking that the new wallet is added to the Sare QR Code menu")
+        self.wallet_view.just_fyi("Checking that the new wallet is added to the Share QR Code menu")
         self.home_view.show_qr_code_button.click()
         self.home_view.share_wallet_tab_button.click()
         if self.home_view.account_name_text.text != 'Account 1':
@@ -197,10 +201,14 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.qr_code_image_element.swipe_left_on_element()
         try:
             self.home_view.account_name_text.wait_for_element_text(text=new_account_name, wait_time=3)
-            if self.home_view.copy_wallet_address() != address_to_watch:
-                self.home_view.driver.fail("Incorrect address")
         except Failed:
             self.errors.append("Can't swipe between accounts, account to watch is not shown")
+        else:
+            shown_address = self.home_view.copy_wallet_address()
+            if set(shown_address.split(':')) != {'eth', 'arb1', 'opt', address_to_watch}:
+                self.home_view.driver.fail(
+                    "Incorrect address '%s' is shown when swiping between accounts, expected one is '%s'" % (
+                        shown_address, ':'.join(address_to_watch)))
         self.home_view.click_system_back_button()
 
         self.wallet_view.just_fyi("Removing account to watch")

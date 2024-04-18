@@ -22,20 +22,19 @@
       :container-style     style/button-container}
      icon]))
 
-(defn- view-internal
-  [{:keys [theme container-style default-active state data on-press active-id]}]
-  [rn/view
-   {:style               container-style
-    :accessibility-label :showcase-nav}
-   [rn/flat-list
-    {:data                              data
-     :key-fn                            :id
-     :horizontal                        true
-     :shows-horizontal-scroll-indicator false
-     :content-container-style           (style/container state theme)
-     :render-fn                         render-button
-     :render-data                       {:state     state
-                                         :on-press  on-press
-                                         :active-id (or active-id default-active)}}]])
-
-(def view (quo.theme/with-theme view-internal))
+(defn view
+  [{:keys [container-style default-active state data on-press active-id]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               container-style
+      :accessibility-label :showcase-nav}
+     [rn/flat-list
+      {:data                              data
+       :key-fn                            :id
+       :horizontal                        true
+       :shows-horizontal-scroll-indicator false
+       :content-container-style           (style/container state theme)
+       :render-fn                         render-button
+       :render-data                       {:state     state
+                                           :on-press  on-press
+                                           :active-id (or active-id default-active)}}]]))

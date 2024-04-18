@@ -24,7 +24,7 @@
 (def max-value 100)
 
 (defn root-container
-  [{:keys [customization-color state theme full-width?]}]
+  [{:keys [customization-color state full-width?]} theme]
   (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color
                                                                                      theme)
                                                         [theme (if full-width? :pending state)])]
@@ -39,7 +39,7 @@
      :margin-vertical   2}))
 
 (defn progressed-bar
-  [{:keys [customization-color state theme progressed-value]}]
+  [{:keys [customization-color state progressed-value]} theme]
   (let [{:keys [background-color]} (get-in (border-and-background-color customization-color theme)
                                            [theme state])
         progress                   (if (> progressed-value max-value) max-value progressed-value)]

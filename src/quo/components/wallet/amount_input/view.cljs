@@ -26,7 +26,7 @@
     :or   {value     0
            min-value 0
            max-value 999999999}}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view
      {:style (merge style/container container-style)}
      [amount-button

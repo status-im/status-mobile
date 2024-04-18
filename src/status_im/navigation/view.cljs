@@ -3,7 +3,7 @@
     [legacy.status-im.bottom-sheet.sheets :as bottom-sheets-old]
     [legacy.status-im.ui.screens.popover.views :as popover]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -30,23 +30,24 @@
 
 (defn inactive
   []
-  (when (rf/sub [:hide-screen?])
-    [rn/view
-     {:position         :absolute
-      :flex             1
-      :top              0
-      :bottom           0
-      :left             0
-      :right            0
-      :background-color (colors/theme-colors colors/white colors/neutral-100)
-      :z-index          999999999999999999}]))
+  (let [theme (rf/sub [:theme])]
+    (when (rf/sub [:hide-screen?])
+      [rn/view
+       {:position         :absolute
+        :flex             1
+        :top              0
+        :bottom           0
+        :left             0
+        :right            0
+        :background-color (colors/theme-colors colors/white colors/neutral-100 theme)
+        :z-index          999999999999999999}])))
 
 (defn wrapped-screen-style
-  [{:keys [top? bottom? background-color alert-banners-top-margin]}]
+  [{:keys [top? bottom? background-color alert-banners-top-margin theme]}]
   (merge
    {:flex             1
     :margin-top       alert-banners-top-margin
-    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100))}
+    :background-color (or background-color (colors/theme-colors colors/white colors/neutral-100 theme))}
    (when bottom?
      {:padding-bottom (safe-area/get-bottom)})
    (when top?
@@ -67,15 +68,17 @@
            {:keys [component options]} (or qualified-screen-details screen-details)
            {:keys [insets sheet? theme
                    skip-background?]}  options
-           user-theme                  (theme/get-theme)
            alert-banners-top-margin    (rf/sub [:alert-banners/top-margin])
            background-color            (or (get-in options [:layout :backgroundColor])
-                                           (when sheet? :transparent))]
+                                           (when sheet? :transparent))
+           app-theme                   (rf/sub [:theme])
+           theme                       (or theme app-theme)]
        ^{:key (str "root" screen-key @reloader/cnt)}
-       [theme/provider {:theme (or theme user-theme)}
+       [quo.theme/provider theme
         [rn/view
          {:style (wrapped-screen-style (assoc
                                         insets
+                                        :theme                    theme
                                         :background-color         background-color
                                         :alert-banners-top-margin alert-banners-top-margin))}
          [inactive]
@@ -91,14 +94,14 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [{:keys [sheets hide?]}   (rf/sub [:bottom-sheet])
+     (let [app-theme                (rf/sub [:theme])
+           {:keys [sheets hide?]}   (rf/sub [:bottom-sheet])
            sheet                    (last sheets)
            {:keys [theme]}          sheet
            insets                   (safe-area/get-insets)
-           user-theme               (theme/get-theme)
            keyboard-vertical-offset (- (max 20 (:bottom insets)))]
        ^{:key (str "sheet" @reloader/cnt)}
-       [theme/provider {:theme (or theme user-theme)}
+       [quo.theme/provider (or theme app-theme)
         [inactive]
         [rn/keyboard-avoiding-view
          {:style                    {:position :relative :flex 1}
@@ -115,7 +118,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "alert-banner" @reloader/cnt)}
-     [theme/provider {:theme :dark}
+     [quo.theme/provider :dark
       [alert-banner/view]])
    functional-compiler))
 

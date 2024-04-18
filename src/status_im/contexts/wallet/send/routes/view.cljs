@@ -200,10 +200,11 @@
       :on-press-from-network on-press-from-network
       :on-press-to-network   on-press-to-network}]))
 
-(defn- view-internal
-  [{:keys [from-values-by-chain to-values-by-chain routes token theme fetch-routes
+(defn view
+  [{:keys [from-values-by-chain to-values-by-chain routes token fetch-routes
            affordable-networks disabled-from-networks on-press-from-network on-press-to-network]}]
-  (let [token-symbol              (:symbol token)
+  (let [theme                     (quo.theme/use-theme)
+        token-symbol              (:symbol token)
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         network-links             (if loading-suggested-routes? affordable-networks routes)]
     (if (or (and (not-empty affordable-networks) loading-suggested-routes?) (not-empty routes))
@@ -241,5 +242,3 @@
       [rn/view {:style style/empty-container}
        (when (and (not (nil? routes)) (not loading-suggested-routes?))
          [quo/text (i18n/label :t/no-routes-found)])])))
-
-(def view (quo.theme/with-theme view-internal))

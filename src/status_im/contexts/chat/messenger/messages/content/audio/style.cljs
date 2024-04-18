@@ -1,10 +1,10 @@
 (ns status-im.contexts.chat.messenger.messages.content.audio.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]))
+    [quo.theme]))
 
 (defn container
-  []
+  [theme]
   {:width            295
    :height           56
    :border-radius    12
@@ -13,8 +13,8 @@
    :flex-direction   :row
    :align-items      :center
    :justify-content  :space-between
-   :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80)
-   :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80-opa-40)})
+   :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80-opa-40 theme)})
 
 (def play-pause-slider-container
   {:flex-direction :row
@@ -27,8 +27,8 @@
    :bottom   nil})
 
 (defn play-pause-container
-  []
-  {:background-color (get-in colors/customization [:blue (if (theme/dark?) 60 50)])
+  [theme]
+  {:background-color (get-in colors/customization [:blue (if (= :dark theme) 60 50)])
    :width            32
    :height           32
    :border-radius    16

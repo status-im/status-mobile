@@ -7,6 +7,6 @@
    :align-items    :center})
 
 (defn message-status-text
-  []
+  [theme]
   {:margin-left 4
-   :color       (colors/theme-colors colors/neutral-40 colors/neutral-50)})
+   :color       (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)})

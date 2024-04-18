@@ -14,7 +14,7 @@
     :warning (colors/resolve-color :warning theme)
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
-(defn view-internal
+(defn info-message
   "[info-message opts \"message\"]
   opts
   {:type           :default/:success/:error
@@ -23,9 +23,10 @@
    :text-color     colors/white  ;; text color override
    :icon-color     colors/white  ;; icon color override
    :no-icon-color? false         ;; disable tint color for icon"
-  [{:keys [type size theme icon text-color icon-color no-icon-color? style accessibility-label
+  [{:keys [type size icon text-color icon-color no-icon-color? style accessibility-label
            container-style]} message]
-  (let [weight     (if (= size :default) :regular :medium)
+  (let [theme      (quo.theme/use-theme)
+        weight     (if (= size :default) :regular :medium)
         icon-size  (if (= size :default) 16 12)
         size       (if (= size :default) :paragraph-2 :label)
         text-color (or text-color (get-color type theme))
@@ -45,5 +46,3 @@
        :weight              weight
        :style               {:color             text-color
                              :margin-horizontal 4}} message]]))
-
-(def info-message (quo.theme/with-theme view-internal))

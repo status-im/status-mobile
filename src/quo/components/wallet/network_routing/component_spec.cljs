@@ -22,7 +22,7 @@
         ;; Fires on-layout callback since the total width is required
         (h/fire-event :layout component #js {:nativeEvent #js {:layout #js {:width 1000}}})
         ;; Update props to trigger rerender, otherwise it won't be updated
-        (rerender-fn [quo.theme/provider {:theme :light}
+        (rerender-fn [quo.theme/provider :light
                       [network-routing/view (assoc default-props :requesting-data? true)]])
         ;; Check number of networks rendered
         (->> (js->clj (h/query-all-by-label-text :network-routing-bar))

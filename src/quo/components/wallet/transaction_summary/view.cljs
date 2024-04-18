@@ -68,40 +68,39 @@
     content]])
 
 (defn- view-internal
-  [{:keys [theme first-tag second-tag third-tag fourth-tag second-tag-prefix
+  [{:keys [first-tag second-tag third-tag fourth-tag second-tag-prefix
            third-tag-prefix fourth-tag-prefix fifth-tag max-fees
            nonce input-data]
     :as   props}]
-  [rn/view
-   {:style               (style/container theme)
-    :accessibility-label :transaction-summary}
-   [transaction-header props]
-   [rn/view {:style style/content}
-    [rn/view {:style style/content-line}
-     (when first-tag [prop-tag first-tag])
-     (when second-tag-prefix [prop-text second-tag-prefix theme])
-     (when second-tag [prop-tag second-tag])]
-    [rn/view {:style style/content-line}
-     (when third-tag-prefix [prop-text third-tag-prefix theme])
-     (when third-tag [prop-tag third-tag])
-     (when fourth-tag-prefix [prop-text fourth-tag-prefix theme])
-     (when fourth-tag [prop-tag fourth-tag])
-     (when fifth-tag [prop-tag fifth-tag])]]
-   [rn/view {:style (style/divider theme)}]
-   [rn/view {:style style/extras-container}
-    [extra-info
-     {:header  (i18n/label :t/max-fees)
-      :content max-fees
-      :theme   theme}]
-    [extra-info
-     {:header  (i18n/label :t/nonce)
-      :content nonce
-      :theme   theme}]
-    [extra-info
-     {:header  (i18n/label :t/input-data)
-      :content input-data
-      :theme   theme}]]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               (style/container theme)
+      :accessibility-label :transaction-summary}
+     [transaction-header props]
+     [rn/view {:style style/content}
+      [rn/view {:style style/content-line}
+       (when first-tag [prop-tag first-tag])
+       (when second-tag-prefix [prop-text second-tag-prefix theme])
+       (when second-tag [prop-tag second-tag])]
+      [rn/view {:style style/content-line}
+       (when third-tag-prefix [prop-text third-tag-prefix theme])
+       (when third-tag [prop-tag third-tag])
+       (when fourth-tag-prefix [prop-text fourth-tag-prefix theme])
+       (when fourth-tag [prop-tag fourth-tag])
+       (when fifth-tag [prop-tag fifth-tag])]]
+     [rn/view {:style (style/divider theme)}]
+     [rn/view {:style style/extras-container}
+      [extra-info
+       {:header  (i18n/label :t/max-fees)
+        :content max-fees
+        :theme   theme}]
+      [extra-info
+       {:header  (i18n/label :t/nonce)
+        :content nonce
+        :theme   theme}]
+      [extra-info
+       {:header  (i18n/label :t/input-data)
+        :content input-data
+        :theme   theme}]]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

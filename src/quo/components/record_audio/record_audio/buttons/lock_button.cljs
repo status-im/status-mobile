@@ -10,7 +10,7 @@
 
 (defn lock-button
   [recording? ready-to-lock? locked?]
-  (let [theme                     (quo.theme/use-theme-value)
+  (let [theme                     (quo.theme/use-theme)
         translate-x-y             (reanimated/use-shared-value 20)
         opacity                   (reanimated/use-shared-value 0)
         connector-opacity         (reanimated/use-shared-value 0)
@@ -77,9 +77,10 @@
                                             width
                                             height
                                             border-radius-first-half
-                                            border-radius-second-half)}]]
+                                            border-radius-second-half
+                                            theme)}]]
      [reanimated/view
-      {:style          (style/lock-button translate-x-y opacity)
+      {:style          (style/lock-button translate-x-y opacity theme)
        :pointer-events :none}
       [icons/icon (if ready-to-lock? :i/locked :i/unlocked)
        {:color (colors/theme-colors colors/black colors/white theme)

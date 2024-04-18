@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.pin.banner.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -10,18 +10,19 @@
 
 (defn f-banner
   [{:keys [chat-id banner-opacity top-offset]} latest-pin-text pins-count]
-  [reanimated/view {:style (style/container-animated-style top-offset banner-opacity)}
-   [blur/view
-    {:style       style/container
-     :blur-radius (if platform/ios? 20 10)
-     :blur-type   (if (theme/dark?) :dark :light)
-     :blur-amount 20}]
-   [quo/banner
-    {:latest-pin-text latest-pin-text
-     :pins-count      pins-count
-     :on-press        (fn []
-                        (rf/dispatch [:dismiss-keyboard])
-                        (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))}]])
+  (let [theme (quo.theme/use-theme)]
+    [reanimated/view {:style (style/container-animated-style top-offset banner-opacity)}
+     [blur/view
+      {:style       style/container
+       :blur-radius (if platform/ios? 20 10)
+       :blur-type   theme
+       :blur-amount 20}]
+     [quo/banner
+      {:latest-pin-text latest-pin-text
+       :pins-count      pins-count
+       :on-press        (fn []
+                          (rf/dispatch [:dismiss-keyboard])
+                          (rf/dispatch [:pin-message/show-pins-bottom-sheet chat-id]))}]]))
 
 (defn banner
   [{:keys [chat-id] :as props}]

@@ -5,7 +5,7 @@
     [quo.components.icon :as icons]
     [quo.components.info.information-box.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn- info-type->button-type
@@ -57,7 +57,7 @@
            on-button-press on-close no-icon-color? icon-size]}
    message]
   (when-not closed?
-    (let [theme           (theme/get-theme)
+    (let [theme           (quo.theme/use-theme)
           include-button? (not (string/blank? button-label))]
       [rn/view
        {:accessibility-label :information-box

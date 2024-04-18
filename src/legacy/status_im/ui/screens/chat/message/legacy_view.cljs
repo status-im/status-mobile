@@ -6,6 +6,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events]
@@ -26,7 +27,7 @@
 
 (defn render-inline
   [_message-text content-type acc {:keys [type literal destination]}
-   community-id]
+   community-id theme]
   (case type
     ""
     (conj acc literal)
@@ -35,24 +36,25 @@
     (conj acc [rn/text literal])
 
     "emph"
-    (conj acc [rn/text (style/emph-style) literal])
+    (conj acc [rn/text (style/emph-style theme) literal])
 
     "strong"
-    (conj acc [rn/text (style/strong-style) literal])
+    (conj acc [rn/text (style/strong-style theme) literal])
 
     "strong-emph"
-    (conj acc [quo/text (style/strong-emph-style) literal])
+    (conj acc [quo/text (style/strong-emph-style theme) literal])
 
     "del"
-    (conj acc [rn/text (style/strikethrough-style) literal])
+    (conj acc [rn/text (style/strikethrough-style theme) literal])
 
     "link"
-    (conj acc
-          [rn/text
-           {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
-                       :text-decoration-line :underline}
-            :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
-           destination])
+    (conj
+     acc
+     [rn/text
+      {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60 theme)
+                  :text-decoration-line :underline}
+       :on-press #(rf/dispatch [:browser.ui/message-link-pressed destination])}
+      destination])
 
     "mention"
     (conj
@@ -66,17 +68,18 @@
                     #(rf/dispatch [:chat.ui/show-profile literal]))}
        [mention-element literal]]])
     "status-tag"
-    (conj acc
-          [rn/text
-           (when community-id
-             {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60)
-                         :text-decoration-line :underline}
-              :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
-           "#"
-           literal])
+    (conj
+     acc
+     [rn/text
+      (when community-id
+        {:style    {:color                (colors/theme-colors colors/primary-50 colors/primary-60 theme)
+                    :text-decoration-line :underline}
+         :on-press #(rf/dispatch [:communities/status-tag-pressed community-id literal])})
+      "#"
+      literal])
 
     "edited"
-    (conj acc [rn/text (style/edited-style) (str " (" (i18n/label :t/edited) ")")])
+    (conj acc [rn/text (style/edited-style theme) (str " (" (i18n/label :t/edited) ")")])
 
     (conj acc literal)))
 
@@ -84,7 +87,7 @@
 (defn render-block
   [{:keys [content content-type edited-at in-popover?]} acc
    {:keys [type ^js literal children]}
-   community-id]
+   community-id theme]
 
   (case type
 
@@ -96,8 +99,9 @@
                             content-type
                             acc
                             e
-                            community-id))
-           [rn/text (style/text-style content-type in-popover?)]
+                            community-id
+                            theme))
+           [rn/text (style/text-style content-type in-popover? theme)]
            (conj
             children
             (when edited-at
@@ -106,7 +110,7 @@
     "blockquote"
     (conj acc
           [rn/view (style/blockquote-style)
-           [rn/text (style/blockquote-text-style)
+           [rn/text (style/blockquote-text-style theme)
             (.substring literal 0 (.-length literal))]])
 
     "codeblock"
@@ -119,12 +123,14 @@
 (defn render-parsed-text
   [{:keys [content chat-id]
     :as   message-data}]
-  (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
+  (let [community-id (rf/sub [:community-id-by-chat-id chat-id])
+        theme        (quo.theme/use-theme)]
     (reduce (fn [acc e]
               (render-block message-data
                             acc
                             e
-                            community-id))
+                            community-id
+                            theme))
             [:<>]
             (:parsed-text content))))
 
@@ -137,12 +143,13 @@
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
   [{:keys [content content-type]}]
-  [rn/view style/status-container
-   [rn/text {:style (style/status-text)}
-    (reduce
-     (fn [acc e] (render-inline (:text content) content-type acc e nil))
-     [rn/text {:style (style/status-text)}]
-     (-> content :parsed-text peek :children))]])
+  (let [theme (quo.theme/use-theme)]
+    [rn/view style/status-container
+     [rn/text {:style (style/status-text)}
+      (reduce
+       (fn [acc e] (render-inline (:text content) content-type acc e nil theme))
+       [rn/text {:style (style/status-text)}]
+       (-> content :parsed-text peek :children))]]))
 
 (defn contact-request-status-pending
   []

@@ -19,9 +19,9 @@
     :right    0}))
 
 (defn top-gradient
-  [opacity z-index showing-extra-space?]
-  {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0)
-            (colors/theme-colors colors/white colors/neutral-95)]
+  [opacity z-index showing-extra-space? theme]
+  {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0 theme)
+            (colors/theme-colors colors/white colors/neutral-95 theme)]
    :start  {:x 0 :y 1}
    :end    {:x 0 :y 0}
    :style  (top-gradient-style opacity z-index showing-extra-space?)})
@@ -34,9 +34,9 @@
    :right    0})
 
 (defn bottom-gradient
-  []
-  {:colors [(colors/theme-colors colors/white colors/neutral-95)
-            (colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0)]
+  [theme]
+  {:colors [(colors/theme-colors colors/white colors/neutral-95 theme)
+            (colors/theme-colors colors/white-opa-0 colors/neutral-95-opa-0 theme)]
    :start  {:x 0 :y 1}
    :end    {:x 0 :y 0}
    :style  bottom-gradient-style})

@@ -30,7 +30,7 @@
 (h/describe "Transaction Progress"
   (h/test "component renders without props"
     (h/render-with-theme-provider
-     [quo/transaction-progress])
+     [quo/transaction-progress {}])
     (h/is-truthy (h/get-by-label-text :transaction-progress)))
 
   (h/test "component renders when state is pending and network is mainnet"

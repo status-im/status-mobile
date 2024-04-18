@@ -56,9 +56,10 @@
 
 
 (defn root-container
-  [{:keys [type size theme customization-color]
+  [{:keys [type size customization-color]
     :or   {size                default-size
-           customization-color :blue}}]
+           customization-color :blue}}
+   theme]
   (let [watch-only? (= type :watch-only)
         width       (cond-> size
                       (keyword? size) (container-size size))]

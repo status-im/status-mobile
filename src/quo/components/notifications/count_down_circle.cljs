@@ -50,7 +50,7 @@
 
 (defn circle-timer
   [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time]}]
-  (let [theme                           (quo.theme/use-theme-value)
+  (let [theme                           (quo.theme/use-theme)
         rotation                        (or rotation :clockwise)
         duration                        (or duration 4)
         stroke-width                    (or stroke-width 1)

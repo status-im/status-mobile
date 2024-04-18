@@ -25,8 +25,8 @@
    :right    20})
 
 (defn close-button-container
-  []
-  {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80)
+  [theme]
+  {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :width            32
    :height           32
    :border-radius    10
@@ -36,17 +36,17 @@
    :left             20})
 
 (defn title-container
-  []
+  [theme]
   {:flex-direction     :row
-   :background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80)
+   :background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :border-radius      10
    :padding-horizontal 12
    :padding-vertical   5
    :align-self         :center})
 
 (defn chevron-container
-  []
-  {:background-color (colors/theme-colors colors/neutral-30 colors/neutral-100)
+  [theme]
+  {:background-color (colors/theme-colors colors/neutral-30 colors/neutral-100 theme)
    :width            14
    :height           14
    :border-radius    7
@@ -65,11 +65,11 @@
    :border-top-right-radius (when (= index 2) 20)})
 
 (defn overlay
-  [window-width]
+  [window-width theme]
   {:position         :absolute
    :width            (- (/ window-width 3) 0.67)
    :height           (/ window-width 3)
-   :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)})
+   :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40 theme)})
 
 (def image-count
   {:position :absolute

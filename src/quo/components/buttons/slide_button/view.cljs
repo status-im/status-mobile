@@ -48,7 +48,7 @@
   "
   [{:keys [on-complete track-text track-icon disabled? customization-color size
            container-style type blur?]}]
-  (let [theme                         (quo.theme/use-theme-value)
+  (let [theme                         (quo.theme/use-theme)
         x-pos                         (reanimated/use-shared-value 0)
         [track-width set-track-width] (rn/use-state nil)
         [sliding-complete?

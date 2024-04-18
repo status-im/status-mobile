@@ -29,8 +29,8 @@
 ;; TODO: duplicate of `quo.components.common.unread-grey-dot.style`
 ;; Replace it when this component is defined as part of `quo.components`
 (defn grey-dot
-  []
+  [theme]
   {:width            8
    :height           8
    :border-radius    4
-   :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
+   :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)})

@@ -127,11 +127,11 @@
             :on-change-text           #(handler/change-text % props state)
             :on-selection-change      #(handler/selection-change % props state)
             :on-selection             #(selection/on-selection % props state)
-            :keyboard-appearance      (quo.theme/theme-value :light :dark)
+            :keyboard-appearance      theme
             :max-font-size-multiplier 1
             :multiline                true
             :placeholder              (i18n/label :t/type-something)
-            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
+            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
             :style                    (style/input-text props
                                                         state
                                                         {:max-height max-height
@@ -146,7 +146,7 @@
 
 (defn f-composer
   [props]
-  (let [theme                   (quo.theme/use-theme-value)
+  (let [theme                   (quo.theme/use-theme)
         opacity                 (reanimated/use-shared-value 0)
         window-height           (:height (rn/get-window))
         background-y            (reanimated/use-shared-value (- window-height))

@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [re-frame.db]
     [react-native.blur :as blur]
     [react-native.core :as rn]
@@ -21,7 +22,8 @@
 
 (defn header-content-container
   [{:keys [chat distance-from-list-top all-loaded? chat-screen-layout-calculations-complete?]}]
-  (let [{:keys [chat-id group-chat chat-type chat-name
+  (let [theme                 (quo.theme/use-theme)
+        {:keys [chat-id group-chat chat-type chat-name
                 emoji color]} chat
         display-name          (cond
                                 (= chat-type constants/one-to-one-chat-type)
@@ -68,20 +70,21 @@
        {:weight          :semi-bold
         :size            :paragraph-1
         :number-of-lines 1
-        :style           (style/header-display-name)}
+        :style           (style/header-display-name theme)}
        display-name]
       (when-not group-chat
         [quo/text
          {:number-of-lines 1
           :weight          :medium
           :size            :paragraph-2
-          :style           (style/header-status)}
+          :style           (style/header-status theme)}
          (i18n/label
           (if online? :t/online :t/offline))])]]))
 
 (defn animated-background-and-pinned-banner
   [{:keys [chat-id navigation-view-height distance-from-list-top all-loaded?]}]
-  (let [animation-distance messages.constants/header-animation-distance
+  (let [theme              (quo.theme/use-theme)
+        animation-distance messages.constants/header-animation-distance
         props              {:distance-from-list-top distance-from-list-top
                             :all-loaded?            all-loaded?}
         background-opacity (worklets/interpolate-navigation-view-opacity
@@ -106,7 +109,7 @@
        {:style         {:flex 1}
         :blur-amount   20
         :blur-type     :transparent
-        :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur)
+        :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
         :blur-radius   (if platform/ios? 20 10)}]]
      [pin.banner/banner
       {:chat-id        chat-id

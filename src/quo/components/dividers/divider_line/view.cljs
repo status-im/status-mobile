@@ -4,8 +4,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
-(defn- view-internal
+(defn view
   [props]
-  [rn/view {:style (style/divider-line props)}])
-
-(def view (quo.theme/with-theme view-internal))
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/divider-line props theme)}]))

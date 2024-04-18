@@ -347,7 +347,7 @@
 (defn messages-list-content
   [{:keys [insets distance-from-list-top content-height layout-height distance-atom
            chat-screen-layout-calculations-complete? chat-list-scroll-y]}]
-  (let [theme                                (quo.theme/use-theme-value)
+  (let [theme                                (quo.theme/use-theme)
         {:keys [chat-type chat-id] :as chat} (rf/sub [:chats/current-chat-chat-view])
         one-to-one-chat?                     (= chat-type constants/one-to-one-chat-type)
         community-channel?                   (= constants/community-chat-type chat-type)

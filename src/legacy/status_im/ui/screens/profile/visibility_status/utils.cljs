@@ -3,6 +3,7 @@
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.screens.profile.visibility-status.styles :as styles]
     [quo.foundations.colors :as quo.colors]
+    [quo.theme]
     [status-im.constants :as constants]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
@@ -90,13 +91,15 @@
 (defn icon-visibility-status-dot
   [public-key container-size]
   (let [status    (rf/sub [:visibility-status-updates/visibility-status-update public-key])
+        theme     (quo.theme/use-theme)
         size      (icon-dot-size container-size)
         margin    -2
         dot-color (icon-dot-color status)
         new-ui?   true]
     (merge (styles/visibility-status-dot {:color   dot-color
                                           :size    size
-                                          :new-ui? new-ui?})
+                                          :new-ui? new-ui?}
+                                         theme)
            {:bottom              margin
             :right               margin
             :position            :absolute

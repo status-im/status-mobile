@@ -22,23 +22,16 @@
    :border-radius      6
    :transform          [{:translateY (if platform/ios? (if first-child-mention 4.5 3) 4.5)}]})
 
-(def mention-tag-text
+(defn mention-tag-text
+  [theme]
   {:color                 (colors/theme-colors colors/primary-50
-                                               colors/primary-60)
+                                               colors/primary-60
+                                               theme)
    :selection-color       :transparent
    :suppress-highlighting true})
 
 (defn code
-  []
-  {:background-color (colors/theme-colors colors/neutral-5 colors/white-opa-5)
+  [theme]
+  {:background-color (colors/theme-colors colors/neutral-5 colors/white-opa-5 theme)
    :border-width     1
-   :border-color     (colors/theme-colors colors/neutral-20 colors/white-opa-20)})
-
-(def edited-block
-  {:margin-top 4})
-
-(defn edited-tag
-  []
-  {:font-size  11
-   :margin-top 4
-   :color      (colors/theme-colors colors/neutral-40 colors/neutral-50)})
+   :border-color     (colors/theme-colors colors/neutral-20 colors/white-opa-20 theme)})

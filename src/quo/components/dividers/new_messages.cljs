@@ -6,10 +6,11 @@
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]))
 
-(defn- view-internal
+(defn view
   "new-messages params - label, customization-color, theme"
-  [{:keys [label customization-color theme] :or {customization-color :blue}}]
-  (let [bg-color   (colors/resolve-color customization-color theme 5)
+  [{:keys [label customization-color] :or {customization-color :blue}}]
+  (let [theme      (quo.theme/use-theme)
+        bg-color   (colors/resolve-color customization-color theme 5)
         text-color (colors/resolve-color customization-color theme)]
     [linear-gradient/linear-gradient
      {:colors [bg-color "rgba(0,0,0,0)"]
@@ -24,5 +25,3 @@
         :weight :medium
         :style  {:color text-color}}
        label]]]))
-
-(def view (quo.theme/with-theme view-internal))

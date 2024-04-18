@@ -3,7 +3,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -99,7 +99,7 @@
 
 (defn- info-button
   []
-  (let [theme (theme/use-theme)]
+  (let [theme (quo.theme/use-theme)]
     [rn/pressable
      {:on-press
       #(rf/dispatch
@@ -133,7 +133,8 @@
 
 (defn- token-requirements
   [{:keys [id color role-permissions?]}]
-  (let [{:keys [can-request-access?
+  (let [theme (quo.theme/use-theme)
+        {:keys [can-request-access?
                 no-member-permission?
                 tokens
                 networks-not-supported?
@@ -150,7 +151,7 @@
       [request-access-button id color]
 
       :else
-      [rn/view {:style (style/token-gated-container)}
+      [rn/view {:style (style/token-gated-container theme)}
        [rn/view
         {:style {:padding-horizontal 12
                  :flex-direction     :row
@@ -323,7 +324,8 @@
                                           (swap! categories-heights select-keys categories)
                                           (reset! first-channel-height height))]
     (fn [id joined name images]
-      (let [cover                 {:uri (get-in images [:banner :uri])}
+      (let [theme                 (quo.theme/use-theme)
+            cover                 {:uri (get-in images [:banner :uri])}
             logo                  {:uri (get-in images [:thumbnail :uri])}
             collapsed?            (and initial-joined? joined)
             first-category-height (->> @categories-heights
@@ -340,7 +342,7 @@
           :navigate-back?   true
           :height           148
           :overlay-shown?   overlay-shown?
-          :background-color (colors/theme-colors colors/white colors/neutral-95)
+          :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
           :page-nav-props   {:type           :community
                              :right-side     (page-nav-right-section-buttons id)
                              :community-name name

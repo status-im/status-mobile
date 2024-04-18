@@ -63,10 +63,8 @@
         :network-image (quo.resources/get-network network-name)
         :subtitle      subtitle}]]]))
 
-(defn- view-internal
+(defn view
   []
   [:<>
    [info]
    [traits-section]])
-
-(def view (quo.theme/with-theme view-internal))

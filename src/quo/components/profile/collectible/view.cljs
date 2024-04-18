@@ -6,10 +6,10 @@
     [react-native.core :as rn]))
 
 (defn remaining-tiles
-  [amount]
-  [rn/view {:style (merge style/bottom-right (style/remaining-tiles))}
+  [amount theme]
+  [rn/view {:style (merge style/bottom-right (style/remaining-tiles theme))}
    [text/text
-    {:style  (style/remaining-tiles-text)
+    {:style  (style/remaining-tiles-text theme)
      :size   :paragraph-2
      :weight :medium}
     (str "+" amount)]])

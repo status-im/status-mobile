@@ -50,41 +50,40 @@
 
 (defn- view-internal
   [{:keys
-    [checked? disabled? on-change token-details keycard? theme container-style customization-color]
+    [checked? disabled? on-change token-details keycard? container-style customization-color]
     {:keys
      [name address emoji]
      :as account} :account
     :or {customization-color :blue}}]
-  [rn/view
-   {:style               (merge (style/container theme) container-style)
-    :accessibility-label :wallet-account-permissions}
-   [rn/view {:style style/row1}
-    [account-avatar/view
-     {:size                32
-      :emoji               emoji
-      :customization-color (:customization-color account)}]
-    [rn/view {:style style/account-details}
-     [rn/view {:style style/name-and-keycard}
-      [text/text
-       {:size   :paragraph-1
-        :weight :semi-bold} name]
-      (when keycard?
-        [icons/icon :i/keycard-card
-         {:accessibility-label :wallet-account-permissions-keycard
-          :size                20
-          :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])]
-     [address-text/view
-      {:address address
-       :format  :short}]]
-    [selectors/view
-     {:type                :checkbox
-      :checked?            checked?
-      :customization-color customization-color
-      :disabled?           disabled?
-      :on-change           on-change}]]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style               (merge (style/container theme) container-style)
+      :accessibility-label :wallet-account-permissions}
+     [rn/view {:style style/row1}
+      [account-avatar/view
+       {:size                32
+        :emoji               emoji
+        :customization-color (:customization-color account)}]
+      [rn/view {:style style/account-details}
+       [rn/view {:style style/name-and-keycard}
+        [text/text
+         {:size   :paragraph-1
+          :weight :semi-bold} name]
+        (when keycard?
+          [icons/icon :i/keycard-card
+           {:accessibility-label :wallet-account-permissions-keycard
+            :size                20
+            :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])]
+       [address-text/view
+        {:address address
+         :format  :short}]]
+      [selectors/view
+       {:type                :checkbox
+        :checked?            checked?
+        :customization-color customization-color
+        :disabled?           disabled?
+        :on-change           on-change}]]
 
-   [token-details-section token-details]])
+     [token-details-section token-details]]))
 
-(def view
-  (quo.theme/with-theme
-   (schema/instrument #'view-internal component-schema/?schema)))
+(def view (schema/instrument #'view-internal component-schema/?schema))

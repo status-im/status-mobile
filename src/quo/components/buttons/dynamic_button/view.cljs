@@ -52,7 +52,7 @@
     :count               mentions or notifications count
     :customization-color customize jump-to and mention button color}"
   [{:keys [type label on-press customization-color style] :as args}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         button-color           (get-button-color {:type                type
                                                   :pressed?            pressed?

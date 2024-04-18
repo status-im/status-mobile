@@ -4,6 +4,6 @@
     [react-native.core :as rn]))
 
 (defn view
-  []
+  [theme]
   [rn/view
-   {:style (style/skeleton-container)}])
+   {:style (style/skeleton-container theme)}])

@@ -10,20 +10,20 @@
 (def text-default typography/paragraph-1)
 
 (defn field-active-bg-color
-  []
-  (colors/theme-colors colors/primary-50 colors/primary-60))
+  [theme]
+  (colors/theme-colors colors/primary-50 colors/primary-60 theme))
 
 (defn field-default-color
-  []
-  (colors/theme-colors colors/neutral-100 colors/white))
+  [theme]
+  (colors/theme-colors colors/neutral-100 colors/white theme))
 
 (defn field-default-bg-color
-  []
-  (colors/theme-colors colors/neutral-20 colors/neutral-80))
+  [theme]
+  (colors/theme-colors colors/neutral-20 colors/neutral-80 theme))
 
 (defn field-default-border-color
-  []
-  (colors/theme-colors colors/neutral-30 colors/neutral-70))
+  [theme]
+  (colors/theme-colors colors/neutral-30 colors/neutral-70 theme))
 
 (def field-row
   {:flex-direction   :row
@@ -34,78 +34,78 @@
   {:flex field-flex-percentage})
 
 (defn field-container
-  [active?]
+  [active? theme]
   (merge text-default
          {:color              (if active?
-                                (colors/theme-colors colors/white colors/white-opa-95)
-                                (colors/theme-colors colors/neutral-100 colors/white))
+                                (colors/theme-colors colors/white colors/white-opa-95 theme)
+                                (colors/theme-colors colors/neutral-100 colors/white theme))
           :border-width       1
-          :border-color       (field-default-border-color)
+          :border-color       (field-default-border-color theme)
           :border-radius      field-border-radius
           :padding-vertical   9
           :padding-horizontal 12}))
 
 (defn field-text
-  [active?]
+  [active? theme]
   (merge text-default
          {:color (if active?
-                   (colors/theme-colors colors/white colors/white-opa-95)
-                   (field-default-color))}))
+                   (colors/theme-colors colors/white colors/white-opa-95 theme)
+                   (field-default-color theme))}))
 
 (def customizer-container
   {:flex-shrink 1
    :padding-top 12})
 
 (defn multi-select-option
-  []
-  (merge (field-container false)
+  [theme]
+  (merge (field-container false theme)
          {:justify-content  :space-between
           :align-items      :space-between
           :flex             1
           :flex-direction   :row
           :margin-vertical  4
-          :background-color (field-default-bg-color)}))
+          :background-color (field-default-bg-color theme)}))
 
 (defn select-container
-  []
-  (merge (field-container false)
+  [theme]
+  (merge (field-container false theme)
          {:flex-direction   :row
           :align-items      :center
           :border-radius    field-border-radius
-          :background-color (field-default-bg-color)
+          :background-color (field-default-bg-color theme)
           :border-width     1
-          :border-color     (field-default-border-color)}))
+          :border-color     (field-default-border-color theme)}))
 
 (defn field-select
-  []
+  [theme]
   (merge text-default
          {:flex-grow 1
-          :color     (field-default-color)}))
+          :color     (field-default-color theme)}))
 
 (defn select-option
-  [selected?]
-  (merge (field-container selected?)
+  [selected? theme]
+  (merge (field-container selected? theme)
          {:justify-content :center
           :flex            1
           :margin-vertical 4}
          (if selected?
-           {:border-color     (field-active-bg-color)
-            :background-color (field-active-bg-color)}
-           {:background-color (field-default-bg-color)})))
+           {:border-color     (field-active-bg-color theme)
+            :background-color (field-active-bg-color theme)}
+           {:background-color (field-default-bg-color theme)})))
 
 (defn select-button
-  []
-  (merge (select-option false) {:align-items :center}))
+  [theme]
+  (merge (select-option false theme) {:align-items :center}))
 
 (def label-container
   {:flex          (- 1 field-flex-percentage)
    :padding-right 8})
 
 (defn label
-  []
+  [theme]
   (merge text-default
          typography/font-medium
-         {:color (field-default-color)}))
+         {:color (field-default-color theme)}))
 
 (defn boolean-container
   []
@@ -114,20 +114,20 @@
    :border-radius  field-border-radius})
 
 (defn boolean-button
-  [{:keys [active? left?]}]
+  [{:keys [active? left?]} theme]
   (cond-> {:flex                1
            :align-items         :center
            :justify-content     :center
            :padding-vertical    9
            :padding-horizontal  12
            :border-color        (if active?
-                                  (field-active-bg-color)
-                                  (field-default-border-color))
+                                  (field-active-bg-color theme)
+                                  (field-default-border-color theme))
            :border-top-width    1
            :border-bottom-width 1
            :background-color    (if active?
-                                  (field-active-bg-color)
-                                  (field-default-bg-color))}
+                                  (field-active-bg-color theme)
+                                  (field-default-bg-color theme))}
     left?
     (assoc :border-top-left-radius    field-border-radius
            :border-bottom-left-radius field-border-radius
@@ -141,33 +141,33 @@
 ;;;; Modal
 
 (defn modal-overlay
-  []
+  [theme]
   {:flex               1
    :justify-content    :center
    :padding-horizontal 24
-   :background-color   (colors/theme-colors colors/neutral-80-opa-60 colors/neutral-80-opa-80)})
+   :background-color   (colors/theme-colors colors/neutral-80-opa-60 colors/neutral-80-opa-80 theme)})
 
 (defn modal-container
-  []
+  [theme]
   {:padding-horizontal 16
    :padding-vertical   8
    :border-radius      12
    :margin-vertical    100
-   :background-color   (colors/theme-colors colors/white colors/neutral-95)})
+   :background-color   (colors/theme-colors colors/white colors/neutral-95 theme)})
 
 (defn footer
-  []
+  [theme]
   {:flex-direction   :row
    :padding-top      10
    :margin-top       10
    :border-top-width 1
-   :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-80)})
+   :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)})
 
 ;;;; Misc
 
 (defn panel-basic
-  []
-  {:background-color (colors/theme-colors colors/white colors/neutral-95)
+  [theme]
+  {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
    :flex             1})
 
 (def component-container
@@ -177,8 +177,8 @@
    :padding-horizontal 20})
 
 (defn main
-  []
+  [theme]
   {:flex               1
    :padding-bottom     8
    :padding-horizontal 16
-   :background-color   (colors/theme-colors colors/white colors/neutral-90)})
+   :background-color   (colors/theme-colors colors/white colors/neutral-90 theme)})

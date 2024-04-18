@@ -8,7 +8,7 @@ The generally accepted requirements for its use are described below:
 - Once a PR is created, it moves to the ```REVIEW``` column where a review will be requested automatically.
 - You can also request a review inside the PR from a particular person if needed.
 - When creating a PR, do not forget to assign it to yourself.
-- Also in case the PR adds new functionality, a short description would be appreciated.
+- Also in case the PR adds new functionality, a description **MUST** be added.
 
 ### What if the work is still in progress?
 
@@ -28,26 +28,11 @@ Ready for testing, a PR should meet the following criteria:
 4. Has the label: `request-manual-qa` or `skip-manual-qa`.
 5. PRs **MUST** identify what area is affected and should have a description.
 
-**NOTE:** Make sure that QAs are OK with that
-
-### Adding `skip-manual-qa`
-
-- Please ask another team member before adding the `skip-manual-qa` label (PR/Status community/DMs) so that there's a second opinion.
-- The PR MUST have a proper reasoning why manual QA is skipped.
-- The PR MUST include the steps of testing that has been done by the developer prior to moving it forward.
-**From the perspective of a developer it means that once work on PR is finished:**
-
-1. It should be rebased to the latest `develop`. If there are conflicts - they should be resolved if possible.
-2. If the PR was in the `Contributor` column - it should be moved to `Review` column.
-3. Wait for the review.
-4. Make sure that after review and before requesting manual QA your PR is rebased to current develop.
-5. The PR **MUST** be moved to the E2E column when it is ready for testing (**mandatory for all PRs**).
-That will also trigger e2e tests run. QAs are monitoring PRs from E2E column and take it into test. 
-
-6. After that - PR will be taken into manual testing by the QA team.
 
 ### E2E tests and analyzing the results
 
+The PR **MUST** be moved to the E2E column when it is ready for testing (**mandatory for all PRs**).
+That will also trigger e2e tests run. QAs are monitoring PRs from E2E column and take it into test. 
 This step cannot be skipped. So, at least one comment from the `status-im-auto` bot with results is a prerequisite for moving forward.
 Information on how to analyze tests can be found [here](https://github.com/status-im/status-mobile/blob/develop/doc/how-to-launch-e2e.md).
 Tests might be flaky, as they depend on infrastructure - SauceLabs and Waku.
@@ -58,6 +43,20 @@ If there are `Failed tests` and you are not sure about the reason, you can alway
 Please, respect this rule.**
 
 ## Testing PR
+
+### Adding `skip-manual-qa`
+
+**Do not hesitate to use a `skip-manual-qa`** if you're sure that it is a simple flow and you checked it. 
+- Please ask another team member before adding the `skip-manual-qa` label (PR/Status community/DMs) so that there's a second opinion.
+- The PR MUST have a proper reasoning why manual QA is skipped.
+- The PR MUST include the steps of testing that has been done by the developer prior to moving it forward.
+
+**NOTE:** Make sure that QAs are OK with that;
+
+Before merging PRs, please make sure that information is added about how you tested the PRs, that e2s have been passed and their results have been reviewed. 
+
+The QA team appreciates your help!
+
 
 ### Manual testing
 
@@ -99,7 +98,7 @@ There are three possible scenarios when the design review is completed:
 ---
 **Notes:**
 - If your PR has a long story and started from `develop` branch several days ago, please rebase it to current develop before adding label
-- if PR can be tested by developer (in case of small changes) and/or developer is sure that the changes made cannot introduce a regression, then PR can be merged without manual testing. Also, currently, PRs are not manually tested if the changes relate only the design (creation of components, etc.) and do not affect the functionality.
+- if PR can be tested by developer (in case of small changes) and/or developer is sure that the changes made cannot introduce a regression, then PR can be merged without manual testing. Also, currently, PRs are not manually tested if the changes relate only the design (creation of components, etc.) and do not affect the functionality (see `skip-manual-qa` label)
 ---        
 
 #### Why my PR is in `Contributor` column?

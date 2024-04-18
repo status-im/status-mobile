@@ -51,9 +51,10 @@
          :emoji
          (get constants/reactions (:emoji-id reaction))))
 
-(defn- view-internal
-  [{:keys [message-id chat-id pinned-by preview? theme]} user-message-content]
-  (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
+(defn message-reactions-row
+  [{:keys [message-id chat-id pinned-by preview?]} user-message-content]
+  (let [theme     (quo.theme/use-theme)
+        reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
        [quo/react
@@ -71,5 +72,3 @@
          :on-press-add    #(on-press-add {:chat-id              chat-id
                                           :message-id           message-id
                                           :user-message-content user-message-content})}])]))
-
-(def message-reactions-row (quo.theme/with-theme view-internal))

@@ -18,6 +18,5 @@
       [:active-members-count {:optional true} [:maybe [:or :int :string]]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:emoji-hash {:optional true} [:maybe :string]]
-      [:size {:optional true} [:maybe :keyword]]
-      [:theme :schema.common/theme]]]]
+      [:size {:optional true} [:maybe :keyword]]]]]
    :any])

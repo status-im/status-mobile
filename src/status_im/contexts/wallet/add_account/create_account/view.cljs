@@ -57,7 +57,7 @@
       :description       :text
       :description-props {:text formatted-path}}]))
 
-(defn- view-internal
+(defn view
   [_]
   (let [top                   (safe-area/get-top)
         bottom                (safe-area/get-bottom)
@@ -68,8 +68,9 @@
         on-change-text        #(reset! account-name %)
         show-account-origin   #(rf/dispatch [:show-bottom-sheet
                                              {:content account-origin/view}])]
-    (fn [{:keys [theme]}]
-      (let [number-of-accounts                    (count (rf/sub
+    (fn []
+      (let [theme                                 (quo.theme/use-theme)
+            number-of-accounts                    (count (rf/sub
                                                           [:wallet/accounts-without-watched-accounts]))
             {:keys [address customization-color]} (rf/sub [:profile/profile])
             {:keys [new-keypair]}                 (rf/sub [:wallet/create-account])
@@ -178,5 +179,3 @@
                                          :new-keypair?        (boolean new-keypair)
                                          :derivation-path     derivation-path
                                          :customization-color customization-color})}]]))))
-
-(def view (quo.theme/with-theme view-internal))

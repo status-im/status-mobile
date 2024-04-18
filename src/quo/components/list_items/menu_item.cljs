@@ -3,24 +3,26 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors :refer [theme-colors]]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn themes
-  [type]
+  [type theme]
   (case type
-    :main        {:icon-color (theme-colors colors/neutral-50 colors/neutral-40)
-                  :background (theme-colors colors/white colors/neutral-95)
-                  :text-color (theme-colors colors/neutral-100 colors/white)}
-    :danger      {:icon-color (theme-colors colors/danger-50 colors/danger-60)
-                  :background (theme-colors colors/white colors/neutral-95)
-                  :text-color (theme-colors colors/danger-50 colors/danger-60)}
-    :transparent {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
-                  :text-color (theme-colors colors/neutral-100 colors/white)}))
+    :main        {:icon-color (theme-colors colors/neutral-50 colors/neutral-40 theme)
+                  :background (theme-colors colors/white colors/neutral-95 theme)
+                  :text-color (theme-colors colors/neutral-100 colors/white theme)}
+    :danger      {:icon-color (theme-colors colors/danger-50 colors/danger-60 theme)
+                  :background (theme-colors colors/white colors/neutral-95 theme)
+                  :text-color (theme-colors colors/danger-50 colors/danger-60 theme)}
+    :transparent {:icon-color (theme-colors colors/neutral-50 colors/neutral-10 theme)
+                  :text-color (theme-colors colors/neutral-100 colors/white theme)}))
 
 (defn menu-item
   [{:keys [type title accessibility-label icon on-press style-props subtitle subtitle-color]
     :or   {type :main}}]
-  (let [{:keys [icon-color text-color background]} (themes type)]
+  (let [theme                                      (quo.theme/use-theme)
+        {:keys [icon-color text-color background]} (themes type theme)]
     [rn/touchable-opacity
      (merge {:accessibility-label accessibility-label
              :style               (merge style-props

@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
@@ -170,19 +171,21 @@
   []
   (let [state (reagent/atom {:size 32})]
     (fn []
-      [preview/preview-container
-       {:state                     state
-        :component-container-style {:margin-bottom 40}
-        :descriptor                descriptor}
-       (when @state
-         (for [{:keys [tokens]} community-tokens]
-           ^{:key tokens}
-           [rn/view
-            {:margin-top 20
-             :align-self :flex-end}
-            [quo/permission-tag
-             (merge @state
-                    {:tokens           tokens
-                     :background-color (colors/theme-colors
-                                        colors/neutral-10
-                                        colors/neutral-80)})]]))])))
+      (let [theme (quo.theme/use-theme)]
+        [preview/preview-container
+         {:state                     state
+          :component-container-style {:margin-bottom 40}
+          :descriptor                descriptor}
+         (when @state
+           (for [{:keys [tokens]} community-tokens]
+             ^{:key tokens}
+             [rn/view
+              {:margin-top 20
+               :align-self :flex-end}
+              [quo/permission-tag
+               (merge @state
+                      {:tokens           tokens
+                       :background-color (colors/theme-colors
+                                          colors/neutral-10
+                                          colors/neutral-80
+                                          theme)})]]))]))))

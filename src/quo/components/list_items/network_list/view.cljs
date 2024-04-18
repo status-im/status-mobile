@@ -22,7 +22,7 @@
 
 (defn- values
   [{:keys [token-value fiat-value]}]
-  (let [theme (quo.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme)]
     [rn/view {:style style/values-container}
      [text/text
       {:weight          :medium
@@ -40,21 +40,21 @@
    [:catn
     [:props
      [:map {:closed true}
+      [:theme :schema.common/theme]
       [:network-image :int]
       [:label :string]
       [:fiat-value :string]
       [:token-value :string]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:state {:optional true} [:enum :pressed :active :default]]
-      [:on-press {:optional true} [:maybe fn?]]
-      [:theme :schema.common/theme]]]]
+      [:on-press {:optional true} [:maybe fn?]]]]]
    :any])
 
 (defn- view-internal
   [{:keys [on-press state customization-color]
     :as   props
     :or   {customization-color :blue}}]
-  (let [theme                  (quo.theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))

@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.add-account.create-account.new-keypair.backup-recovery-phrase.style
   (:require
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.platform :as platform]))
 
 (defn seed-phrase-container
@@ -45,7 +44,7 @@
   [theme]
   {:style       {:flex 1}
    :blur-radius 25
-   :blur-type   (quo.theme/theme-value :light :dark theme)
+   :blur-type   theme
    :blur-amount 20})
 
 (def slide-button

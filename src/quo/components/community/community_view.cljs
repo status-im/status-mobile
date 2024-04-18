@@ -6,7 +6,7 @@
     [quo.components.tags.permission-tag :as permission]
     [quo.components.tags.tag :as tag]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]))
 
@@ -70,16 +70,15 @@
        :style               {:margin-top (if (= size :large) 8 2)}}
       description])])
 
-(defn- permission-tag-container-internal
-  [{:keys [locked? blur? tokens on-press theme]}]
-  [permission/tag
-   {:accessibility-label :permission-tag
-    :background-color    (if (and (= :dark theme) blur?)
-                           colors/white-opa-10
-                           (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
-    :locked?             locked?
-    :tokens              tokens
-    :size                24
-    :on-press            on-press}])
-
-(def permission-tag-container (theme/with-theme permission-tag-container-internal))
+(defn permission-tag-container
+  [{:keys [locked? blur? tokens on-press]}]
+  (let [theme (quo.theme/use-theme)]
+    [permission/tag
+     {:accessibility-label :permission-tag
+      :background-color    (if (and (= :dark theme) blur?)
+                             colors/white-opa-10
+                             (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
+      :locked?             locked?
+      :tokens              tokens
+      :size                24
+      :on-press            on-press}]))

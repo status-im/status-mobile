@@ -59,7 +59,7 @@
                                                                         shared-values))]
     (utils/load-stack @state/selected-stack-id)
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
-    [quo.theme/provider {:theme :dark}
+    [quo.theme/provider :dark
      [reanimated/view
       {:style (style/bottom-tabs-container pass-through? (:bottom-tabs-height shared-values))}
       (when pass-through?

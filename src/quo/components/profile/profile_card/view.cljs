@@ -11,7 +11,7 @@
     [react-native.hole-view :as hole-view]
     [utils.i18n :as i18n]))
 
-(defn- f-profile-card-component
+(defn profile-card
   [{:keys [keycard-account? profile-picture name
            customization-color emoji-hash on-options-press
            show-emoji-hash? show-options-button? show-user-hash?
@@ -89,9 +89,9 @@
           :number-of-lines 1
           :style           style/user-name} name]
         (when keycard-account?
-          (icon/icon
+          [icon/icon
            :i/keycard
-           style/keycard-icon))]
+           style/keycard-icon])]
        (when show-user-hash?
          [text/text
           {:weight :monospace
@@ -102,7 +102,3 @@
           {:weight          :monospace
            :number-of-lines 1
            :style           style/emoji-hash} emoji-hash])]]]))
-
-(defn profile-card
-  [props]
-  [:f> f-profile-card-component props])

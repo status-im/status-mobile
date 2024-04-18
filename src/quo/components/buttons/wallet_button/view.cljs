@@ -3,12 +3,12 @@
     [quo.components.buttons.wallet-button.style :as style]
     [quo.components.icon :as quo.icons]
     [quo.foundations.colors :as colors]
-    [quo.theme :as theme]
+    [quo.theme]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [on-press on-long-press disabled? icon accessibility-label container-style]}]
-  (let [theme                  (theme/use-theme-value)
+  (let [theme                  (quo.theme/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed nil))]
