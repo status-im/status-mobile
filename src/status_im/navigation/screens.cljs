@@ -145,8 +145,6 @@
      :options   options/transparent-screen-options
      :component share-community/view}
 
-
-
     ;; Note: the sheet screen is used when selecting addresses to share when
     ;; joining a community. The non-sheet screen is used when editing shared
     ;; addresses after the join request was sent.
