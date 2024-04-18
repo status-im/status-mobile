@@ -141,7 +141,7 @@
      :options   options/transparent-screen-options
      :component share-community-channel/view}
 
-    {:name      :share-community
+    {:name      :screen/share-community
      :options   options/transparent-screen-options
      :component share-community/view}
 
