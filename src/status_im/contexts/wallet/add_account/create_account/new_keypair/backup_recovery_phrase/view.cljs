@@ -30,16 +30,20 @@
 
 (defn- step-item
   [item index _ {:keys [checked? customization-color]}]
-  [rn/pressable
-   {:style    style/step-item
-    :hit-slop {:top 8 :bottom 8}
-    :on-press #(swap! checked? assoc (keyword (str index)) (not (get @checked? (keyword (str index)))))}
-   [quo/selectors
-    {:type                :checkbox
-     :checked?            (get @checked? (keyword (str index)))
-     :customization-color customization-color
-     :on-change           #(swap! checked? assoc (keyword (str index)) %)}]
-   [quo/text {:style {:margin-left 12}} (i18n/label item)]])
+  (let [item-key (keyword (str index))
+        value    (get @checked? item-key)]
+    [rn/pressable
+     {:style    style/step-item
+      :hit-slop {:top 8 :bottom 8}
+      :on-press #(swap! checked? assoc
+                   (keyword (str index))
+                   (not value))}
+     [quo/selectors
+      {:type                :checkbox
+       :checked?            value
+       :customization-color customization-color
+       :on-change           #(swap! checked? assoc item-key %)}]
+     [quo/text {:style {:margin-left 12}} (i18n/label item)]]))
 
 (defn view
   []
