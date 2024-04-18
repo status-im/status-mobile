@@ -2576,9 +2576,10 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1":
-  version "5.10.0"
-  resolved "git+https://github.com/status-im/react-native-camera-roll.git#174f8c6ad88e5bad9d9bd207f42173e567ec3138"
+"@react-native-camera-roll/camera-roll@7.5.2":
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-7.5.2.tgz#2b248a835fbb8b53d04fc0c2957adba1474d9c99"
+  integrity sha512-XiVIrW17EFXrFzqB48q6cQOaYeVnw0iC3tH+Jhl+MAHDYGLJp+ulzxCNNwngaMvnVAA5Q2mUMzRocUiJPy8q0g==
 
 "@react-native-clipboard/clipboard@1.13.2":
   version "1.13.2"
@@ -7933,9 +7934,10 @@ react-native-lottie-splash-screen@^1.0.1:
     lottie-ios "3.2.3"
     lottie-react-native "^5.1.3"
 
-"react-native-mail@git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.2-status":
+react-native-mail@6.1.1:
   version "6.1.1"
-  resolved "git+https://github.com/status-im/react-native-mail.git#6d28780dfe156dfed87d8a4ceba520cc7db019c5"
+  resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.1.tgz#f1b1f8034c84d2510a93e4a2a795f0db5a13595e"
+  integrity sha512-pTs180wwyh7hN/iyTC9SfOX579U4YhDlHOLxi47IGvhPJENqO/QFdBq+wWKxyhNqdQuVSy+LoeIxLreWnIeYmg==
 
 react-native-navigation@7.38.3:
   version "7.38.3"

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.3",
-    "@react-native-camera-roll/camera-roll": "git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1",
+    "@react-native-camera-roll/camera-roll": "7.5.2",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
     "@react-native-community/blur": "git+https://github.com/status-im/react-native-blur.git#refs/tags/v4.3.3-status",
@@ -48,7 +48,7 @@
     "react-native-keychain": "8.1.2",
     "react-native-linear-gradient": "^2.8.0",
     "react-native-lottie-splash-screen": "^1.0.1",
-    "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.2-status",
+    "react-native-mail": "6.1.1",
     "react-native-navigation": "7.38.3",
     "react-native-orientation-locker": "^1.5.0",
     "react-native-permissions": "3.8.0",

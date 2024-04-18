@@ -1,0 +1,56 @@
+--- /tmp/tmp-status-mobile-3907e6b2e/tmp.O0mkyjqnsy/RNCCameraRoll.mm	2024-04-16 15:26:23.070258000 +0200
++++ ./node_modules/@react-native-camera-roll/camera-roll/ios/RNCCameraRoll.mm	2024-04-16 15:26:32.664996066 +0200
+@@ -955,6 +955,53 @@
+     return [albumTitles copy];
+ }
+ 
++RCT_EXPORT_METHOD(getPhotosCountiOS:(NSString *)blank
++                  resolve:(RCTPromiseResolveBlock)resolve
++                  reject:(RCTPromiseRejectBlock)reject)
++{
++    __block NSInteger intTotalCount=0;
++    PHFetchOptions *allPhotosOptions = [PHFetchOptions new];
++    allPhotosOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType == %d ",PHAssetMediaTypeImage];
++    PHFetchResult *allPhotosResult = [PHAsset fetchAssetsWithOptions:allPhotosOptions];
++    intTotalCount+=allPhotosResult.count;
++
++    resolve(@(intTotalCount));
++}
++
++RCT_EXPORT_METHOD(getFavoritesiOS:(NSString *)blank
++                  resolve:(RCTPromiseResolveBlock)resolve
++                  reject:(RCTPromiseRejectBlock)reject)
++{
++    __block NSInteger intTotalCount=0;
++    PHFetchOptions *fetchOptions = [PHFetchOptions new];
++    NSString *format = @"(favorite == true)";
++    fetchOptions.predicate = [NSPredicate predicateWithFormat:format];
++    PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsWithOptions:fetchOptions];
++    PHAsset *imageAsset = [assetsFetchResult firstObject];
++    NSMutableArray * result = [NSMutableArray new];
++
++    for (PHAsset* asset in assetsFetchResult) {
++        NSArray *resources = [PHAssetResource assetResourcesForAsset:asset ];
++        if ([resources count] < 1) continue;
++        NSString *orgFilename = ((PHAssetResource*)resources[0]).originalFilename;
++        NSString *uit = ((PHAssetResource*)resources[0]).uniformTypeIdentifier;
++        NSString *mimeType = (NSString *)CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(uit), kUTTagClassMIMEType));
++        CFStringRef extension = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(uit), kUTTagClassFilenameExtension);
++        [result addObject:@{
++            @"width": @([asset pixelWidth]),
++            @"height": @([asset pixelHeight]),
++            @"filename": orgFilename ?: @"",
++            @"mimeType": mimeType ?: @"",
++            @"id": [asset localIdentifier],
++            @"creationDate": [asset creationDate],
++            @"uri": [NSString stringWithFormat:@"ph://%@", [asset localIdentifier]],
++            @"duration": @([asset duration])
++        }];
++    }
++    [result addObject:@{@"count": @(assetsFetchResult.count)}];
++    resolve(result);
++}
++
+ static void checkPhotoLibraryConfig()
+ {
+ #if RCT_DEV

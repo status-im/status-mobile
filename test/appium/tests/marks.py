@@ -12,3 +12,4 @@ flaky = pytest.mark.flaky
 upgrade = pytest.mark.upgrade
 skip = pytest.mark.skip
 xfail = pytest.mark.xfail
+secured = pytest.mark.secured
