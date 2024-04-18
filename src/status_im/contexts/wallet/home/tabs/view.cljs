@@ -34,4 +34,4 @@
                        :on-end-reached            request-collectibles
                        :on-collectible-press      (fn [{:keys [id]}]
                                                     (rf/dispatch [:wallet/get-collectible-details id]))}]
-       [activity/view])]))
+       [activity/view {:activities []}])]))
