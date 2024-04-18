@@ -6,6 +6,7 @@
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -76,5 +77,9 @@
        :size           32
        :default-active selected-tab
        :data           tabs-data
-       :on-change      #(set-selected-tab %)}]
+       :on-change      (fn [tab]
+                         (when (and (ff/enabled? ::ff/wallet.activities)
+                                    (= :activity tab))
+                           (rf/dispatch [:wallet/fetch-activities]))
+                         (set-selected-tab tab))}]
      [tabs/view {:selected-tab selected-tab}]]))

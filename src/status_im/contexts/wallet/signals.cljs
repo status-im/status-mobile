@@ -37,6 +37,9 @@
        "wallet-blockchain-status-changed"         {:fx [[:dispatch
                                                          [:wallet/blockchain-status-changed
                                                           (transforms/js->clj event-js)]]]}
+       "wallet-activity-filtering-done"           {:fx [[:dispatch
+                                                         [:wallet/activity-filtering-done
+                                                          (transforms/js->clj event-js)]]]}
        (log/debug ::unknown-wallet-event
                   :type  event-type
                   :event (transforms/js->clj event-js))))))
