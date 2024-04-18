@@ -493,3 +493,25 @@
 (def ^:const status-hostname "status.app")
 
 (def ^:const community-joined-notification-type "communityJoined")
+
+(def ^:const wallet-activity-error-code-success 1)
+(def ^:const wallet-activity-error-code-task-canceled 2)
+(def ^:const wallet-activity-error-code-failed 3)
+
+(def ^:const wallet-activity-type-send 0)
+(def ^:const wallet-activity-type-receive 1)
+(def ^:const wallet-activity-type-buy 2)
+(def ^:const wallet-activity-type-swap 3)
+(def ^:const wallet-activity-type-bridge 4)
+(def ^:const wallet-activity-type-contract-deployment 5)
+(def ^:const wallet-activity-type-mint 6)
+
+(def ^:const wallet-activity-status-failed 0)
+(def ^:const wallet-activity-status-pending 1)
+(def ^:const wallet-activity-status-complete 2)
+(def ^:const wallet-activity-status-finalized 3)
+
+(def ^:const wallet-activity-token-type-native 0)
+(def ^:const wallet-activity-token-type-erc-20 1)
+(def ^:const wallet-activity-token-type-erc-721 2)
+(def ^:const wallet-activity-token-type-erc-1155 3)
