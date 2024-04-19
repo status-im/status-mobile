@@ -280,8 +280,6 @@
 
 (defn fetch-routes
   [amount routes-can-be-fetched? bounce-duration-ms]
-  (tap> {:in `fetch-routes
-         :routes-can-be-fetched? routes-can-be-fetched?})
   (if routes-can-be-fetched?
     (debounce/debounce-and-dispatch
      [:wallet/get-suggested-routes {:amount amount}]
@@ -323,10 +321,6 @@
      #(when (> (count affordable-networks) 0)
         (fetch-routes input-value routes-can-be-fetched? 0))
      [disabled-from-chain-ids])
-    (tap> {:in `view-internal
-           :affordable-networks affordable-networks
-           :input-value input-value
-           :show-routes? show-routes?})
     (if show-routes?
       (let [initial-network-links-count (count network-links)
             disabled-count (count disabled-from-chain-ids)
