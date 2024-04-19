@@ -234,7 +234,9 @@
         online?                (rf/sub [:visibility-status-updates/online? chat-id])
         contact                (when-not group-chat
                                  (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path             (rf/sub [:chats/photo-path chat-id])
+        photo-path             (if group-chat
+                                 (rf/sub [:chats/group-chat-image chat-id])
+                                 (rf/sub [:chats/photo-path chat-id]))
         top-margin             (+ (safe-area/get-top)
                                   messages.constants/top-bar-height
                                   messages.constants/header-container-top-margin
