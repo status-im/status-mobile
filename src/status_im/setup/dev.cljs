@@ -2,7 +2,6 @@
   (:require
     ["react-native" :refer (DevSettings LogBox)]
     [react-native.platform :as platform]
-    [status-im.feature-flags :as ff]
     [status-im.setup.schema :as schema]
     [utils.re-frame :as rf]))
 
@@ -49,7 +48,6 @@
                            :json-rpc/call})
   (when ^:boolean js/goog.DEBUG
     (schema/setup!)
-    (ff/load-flags)
     (when (and platform/ios? DevSettings)
       ;;on Android this method doesn't work
       (when-let [nm (.-_nativeModule DevSettings)]

@@ -21,10 +21,10 @@
     [status-im.contexts.profile.push-notifications.events :as notifications]
     [status-im.contexts.shell.jump-to.state :as shell.state]
     [status-im.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im.feature-flags :as ff]
     [status-im.navigation.core :as navigation]
     status-im.contexts.wallet.signals
     status-im.events
-    status-im.navigation.core
     [status-im.setup.dev :as dev]
     [status-im.setup.global-error :as global-error]
     [status-im.setup.interceptors :as interceptors]
@@ -62,6 +62,9 @@
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
   (async-storage/get-item :screen-height #(reset! shell.state/screen-height %))
+
+  (when config/quo-preview-enabled?
+    (ff/load-flags))
 
   (dev/setup)
   (log/info "hermesEnabled ->" (is-hermes))
