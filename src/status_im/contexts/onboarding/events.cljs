@@ -8,6 +8,7 @@
     [status-im.contexts.profile.config :as profile.config]
     [status-im.contexts.profile.create.events :as profile.create]
     [status-im.contexts.profile.recover.events :as profile.recover]
+    [status-im.contexts.profile.utils :as profile.utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -51,18 +52,9 @@
 (rf/reg-event-fx
   :onboarding/create-account-and-login
   (fn [{:keys [db]}]
-    (let [{:keys [display-name
-                  seed-phrase
-                  password
-                  image-path
-                  color]} (:onboarding/profile db)
-          login-sha3-password (native-module/sha3 (security/safe-unmask-data password))
-          profile (merge (profile.config/create)
-                         {:displayName        display-name
-                          :password           login-sha3-password
-                          :imagePath          (profile.config/strip-file-prefix image-path)
-                          :customizationColor color
-                          :emoji              (emoji-picker.utils/random-emoji)})]
+    (let [{:keys [seed-phrase] :as profile} (:onboarding/profile db)
+          restore? (boolean seed-phrase)
+          {:keys [password] :as profile} (profile.utils/create-profile-config profile restore?)]
       (cond-> {:fx [[:dispatch [:navigate-to-within-stack
                                 [:screen/onboarding.generating-keys :screen/onboarding.new-to-status]]]
                     [:dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
@@ -71,38 +63,16 @@
                        (dissoc :profile/login)
                        (dissoc :auth-method)
                        (assoc :onboarding/new-account? true)
-                       (assoc-in [:syncing :login-sha3-password] login-sha3-password))}
+                       (assoc-in [:syncing :login-sha3-password] password))}
 
-              seed-phrase
+              restore?
               (assoc-in [:db :onboarding/recovered-account?] true)
 
-              seed-phrase
-              (assoc :effects.profile/restore-and-login
-                     (merge profile
-                            {:mnemonic    (security/safe-unmask-data seed-phrase)
-                             :fetchBackup true}))
+              restore?
+              (assoc :effects.profile/restore-and-login profile)
 
-              (not seed-phrase)
+              (not restore?)
               (assoc :effects.profile/create-and-login profile)))))
-
-;; TODO(alwx): fix this
-(rf/defn create-account-and-login
-  {:events [:onboarding/create-account-and-login]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [display-name seed-phrase password image-path color] :as profile}
-        (:onboarding/profile db)]
-    (rf/merge cofx
-              {:dispatch       [:navigate-to-within-stack
-                                [:screen/onboarding.generating-keys :screen/onboarding.new-to-status]]
-               :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
-                                 :dispatch [:onboarding/navigate-to-identifiers]}]
-               :db             (-> db
-                                   (dissoc :profile/login)
-                                   (dissoc :auth-method)
-                                   (assoc :onboarding/new-account? true))}
-              (if seed-phrase
-                (profile.recover/recover-profile-and-login profile)
-                (profile.create/create-profile-and-login profile)))))
 
 (rf/reg-event-fx
   :onboarding/on-delete-profile-success
