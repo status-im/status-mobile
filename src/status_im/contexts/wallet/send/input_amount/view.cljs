@@ -14,7 +14,7 @@
    [status-im.contexts.wallet.send.input-amount.style :as style]
    [status-im.contexts.wallet.send.routes.view :as routes]
    [utils.address :as address]
-   [utils.debounce :as debounce]
+   
    [utils.i18n :as i18n]
    [utils.re-frame :as rf]))
 
@@ -87,43 +87,28 @@
         clear-input!          #(controlled-input/delete-all input-state)
         crypto-currency?      (reagent/atom initial-crypto-currency?)
         on-navigate-back      on-navigate-back
-        fetch-routes          (fn [input-num-value current-limit-amount bounce-duration-ms]
-                                (let [nav-current-screen-id (rf/sub [:view-id])
-                                      input-num-value       (or input-num-value 0)]
-                                        ; this check is to prevent effect being triggered when screen is
-                                        ; loaded but not being shown to the user (deep in the navigation
-                                        ; stack) and avoid undesired behaviors
-                                  (when (= nav-current-screen-id current-screen-id)
-                                    (if-not (or (empty? (controlled-input/input-value input-state))
-                                                (<= input-num-value 0)
-                                                (> input-num-value current-limit-amount))
-                                      (debounce/debounce-and-dispatch
-                                       [:wallet/get-suggested-routes {:amount (controlled-input/input-value input-state)}]
-                                       bounce-duration-ms)
-                                      (rf/dispatch [:wallet/clean-suggested-routes])))))
+        
         handle-on-confirm     (fn []
                                 (rf/dispatch [:wallet/send-select-amount
                                               {:amount   (controlled-input/input-value input-state)
                                                :stack-id current-screen-id}]))]
     (fn []
-(tap> input-state)
       (let [{fiat-currency :currency}  (rf/sub [:profile/profile])
             {token-symbol   :symbol
              token-networks :networks} (rf/sub [:wallet/wallet-send-token])
             {token-balance :total-balance
-             token-balances-per-chain :balances-per-chain
              :as
              token}                    (rf/sub
-                                        [:wallet/current-viewing-account-tokens-filtered
-                                         (str token-symbol)])
+             [:wallet/current-viewing-account-tokens-filtered
+              (str token-symbol)])
             conversion-rate            (-> token :market-values-per-currency :usd :price)
             loading-routes?            (rf/sub
                                         [:wallet/wallet-send-loading-suggested-routes?])
             
             route                      (rf/sub [:wallet/wallet-send-route])
             to-address                 (rf/sub [:wallet/wallet-send-to-address])
-            disabled-from-chain-ids    (rf/sub
-                                        [:wallet/wallet-send-disabled-from-chain-ids])
+            nav-current-screen-id (rf/sub [:view-id])
+            
             on-confirm                 (or default-on-confirm handle-on-confirm)
             crypto-decimals            (or default-crypto-decimals
                                            (utils/get-crypto-decimals-count token))
@@ -133,6 +118,10 @@
                                             token-balance))
             fiat-limit                 (.toFixed (* token-balance conversion-rate) 2)
             current-limit              #(if @crypto-currency? crypto-limit fiat-limit)
+            routes-can-be-fetched?     (and (= nav-current-screen-id current-screen-id)
+                                            (not (or (empty? (controlled-input/input-value input-state))
+                                                     (<= (controlled-input/numeric-value input-state) 0)
+                                                     (> (controlled-input/numeric-value input-state) (current-limit)))))
             current-currency           (if @crypto-currency? token-symbol fiat-currency)
             input-num-value (controlled-input/numeric-value input-state)
             confirm-disabled?          (or (nil? route)
@@ -167,27 +156,13 @@
                                          [:show-bottom-sheet
                                           {:content (fn []
                                                       [select-asset-bottom-sheet
-                                                       clear-input!])}])
-            selected-networks          (rf/sub [:wallet/wallet-send-selected-networks])
-            affordable-networks        (send-utils/find-affordable-networks
-                                        {:balances-per-chain token-balances-per-chain
-                                         :input-value        (controlled-input/input-value input-state)
-                                         :selected-networks  selected-networks
-                                         :disabled-chain-ids disabled-from-chain-ids})]
+                                                       clear-input!])}])]
         (rn/use-mount
          (fn []
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
-        (rn/use-effect
-         #(do
-            (when (> (count affordable-networks) 0)
-              (fetch-routes input-num-value (current-limit) 2000)))
-         [@input-state])
-        (rn/use-effect
-         #(when (> (count affordable-networks) 0)
-            (fetch-routes input-num-value (current-limit) 0))
-         [disabled-from-chain-ids])
+        
         (rn/use-effect
          #(controlled-input/set-upper-limit input-state (current-limit))
          [@crypto-currency?])
@@ -212,25 +187,10 @@
            :on-swap             #(reset! crypto-currency? %)
            :on-token-press      show-select-asset-sheet}]
          [routes/view
-          {:affordable-networks    affordable-networks
+          {
            :token                  token
            :input-value            (controlled-input/input-value input-state)
-           :fetch-routes           #(fetch-routes % (current-limit) 2000)
-           :disabled-from-networks disabled-from-chain-ids
-           :on-press-from-network  (fn [chain-id _]
-                                     (let [disabled-chain-ids (if (contains? (set
-                                                                              disabled-from-chain-ids)
-                                                                             chain-id)
-                                                                (vec (remove #(= % chain-id)
-                                                                             disabled-from-chain-ids))
-                                                                (conj disabled-from-chain-ids
-                                                                      chain-id))
-                                           re-enabling-chain? (< (count disabled-chain-ids)
-                                                                 (count disabled-from-chain-ids))]
-                                       (when (or re-enabling-chain?
-                                                 (> (count affordable-networks) 1))
-                                         (rf/dispatch [:wallet/disable-from-networks
-                                                       disabled-chain-ids]))))}]
+           :routes-can-be-fetched? routes-can-be-fetched?}]
          (when (or loading-routes? (seq route))
            [estimated-fees
             {:loading-suggested-routes? loading-routes?
