@@ -1,7 +1,6 @@
 (ns legacy.status-im.communities.core
   (:require
     [clojure.set :as set]
-    [legacy.status-im.bottom-sheet.events :as bottom-sheet]
     legacy.status-im.communities.e2e
     [re-frame.core :as re-frame]
     [status-im.contexts.shell.activity-center.events :as activity-center]
@@ -34,18 +33,11 @@
             (navigation/navigate-back)
             (handle-response response-js)))
 
-(re-frame/reg-event-fx ::member-banned
- (fn [{:keys [db]} [response-js]]
-   {:db (assoc db :bottom-sheet/show? false)
-    :fx [[:dismiss-bottom-sheet-overlay-old]
-         [:sanitize-messages-and-process-response response-js]
-         [:activity-center.notifications/fetch-unread-count]]}))
-
 (rf/defn member-banned
   {:events [::member-banned]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet-old)
+            (navigation/hide-bottom-sheet)
             (handle-response response-js)
             (activity-center/notifications-fetch-unread-count)))
 
@@ -66,7 +58,7 @@
   {:events [::member-kicked]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet-old)
+            (navigation/hide-bottom-sheet)
             (handle-response response-js)))
 
 (rf/defn member-kick
@@ -100,7 +92,7 @@
   {:events [:community.member/role-updated]}
   [cofx response-js]
   (rf/merge cofx
-            (bottom-sheet/hide-bottom-sheet-old)
+            (navigation/hide-bottom-sheet)
             (handle-response response-js)))
 
 (rf/defn add-role-to-member

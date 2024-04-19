@@ -74,7 +74,7 @@
                  (not= public-key current-user-identity))
         {:accessory [quo/button
                      {:on-press            #(re-frame/dispatch
-                                             [:bottom-sheet/show-sheet-old
+                                             [:bottom-sheet/show-sheet
                                               {:content (fn []
                                                           [member-sheet chat-id member admin?])}])
                       :type                :icon
@@ -146,7 +146,7 @@
     [list.item/list-item
      {:title    (profile.utils/displayed-name contact)
       :icon     [chat-icon/contact-icon-contacts-tab contact]
-      :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+      :on-press #(re-frame/dispatch [:show-bottom-sheet
                                      {:content (fn []
                                                  [invitation-sheet invitation contact])}])}]))
 

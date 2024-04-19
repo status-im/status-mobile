@@ -114,7 +114,7 @@
               :params     [key-uid (string/replace-first path #"file://" "") ax ay bx
                            by]
               :on-success [:profile.settings/update-local-picture]}]]
-           [:dismiss-bottom-sheet-overlay-old]]})))
+           [:dispatch [:hide-bottom-sheet]]]})))
 
 (rf/reg-event-fx :profile.settings/save-profile-picture-from-url
  (fn [{:keys [db]} [url]]
@@ -126,7 +126,7 @@
               :params     [key-uid url]
               :on-error   #(log/error "::save-profile-picture-from-url error" %)
               :on-success [:profile.settings/update-local-picture]}]]
-           [:dismiss-bottom-sheet-overlay-old]]})))
+           [:dispatch [:hide-bottom-sheet]]]})))
 
 (rf/reg-event-fx :profile.settings/delete-profile-picture
  (fn [{:keys [db]}]
@@ -140,7 +140,7 @@
               ;; NOTE: In case of an error we could fallback to previous image in
               ;; UI with a toast error
               :on-success #(log/info "[profile] Delete profile image" %)}]]
-           [:dismiss-bottom-sheet-overlay-old]]})))
+           [:dispatch [:hide-bottom-sheet]]]})))
 
 (rf/reg-event-fx :profile.settings/update-local-picture
  (fn [{:keys [db]} [images]]
