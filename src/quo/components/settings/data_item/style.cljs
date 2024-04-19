@@ -4,7 +4,6 @@
 
 (defn container
   [{:keys [size card? blur? actionable? theme]}]
-  (println "ddd" actionable?)
   {:flex-direction     :row
    :justify-content    :space-between
    :padding-vertical   (when (= size :default) 8)

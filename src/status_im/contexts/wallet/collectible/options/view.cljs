@@ -30,7 +30,6 @@
                                  #(rf/dispatch [:toasts/upsert
                                                 {:id              :random-id
                                                  :type            :positive
-                                                 :container-style {:bottom (when platform/android? 20)}
                                                  :text            (i18n/label :t/photo-saved)}])]))}]
       [{:icon                :i/share
         :accessibility-label :share-collectible
