@@ -188,7 +188,7 @@
                                      :chat-name "test"
                                      :image     image-data)}]
       (swap! rf-db/app-db assoc
-             :chats
-             chats)
+        :chats
+        chats)
       (let [result (rf/sub [sub-name chat-id])]
         (= image-data result)))))
