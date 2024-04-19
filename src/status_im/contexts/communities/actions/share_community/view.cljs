@@ -54,7 +54,7 @@
          :bottom-color-override colors/white-opa-5}]
        [rn/view
         {:style style/qr-top-wrapper}
-        [rn/view {:flex-direction :row}
+        [rn/view style/flex-direction-row
          (when thumbnail
            [fast-image/fast-image
             {:source thumbnail
@@ -74,8 +74,7 @@
            :on-press            on-press-share}
           :i/share]]]
        [rn/view
-        {:style {:padding-vertical 12
-                 :align-items      :center}}
+        {:style style/qr-code-view}
         [qr-codes/qr-code
          {:size                (style/qr-code-size window-width)
           :url                 url
