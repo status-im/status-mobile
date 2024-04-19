@@ -37,7 +37,7 @@
             (all-screens-params component screen-params))
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:dismiss-keyboard]]
-         [:open-modal-fx component]]}))
+         [:open-modal-fx [component (:theme db)]]]}))
 
 (rf/defn dismiss-modal
   {:events [:dismiss-modal]}
@@ -79,15 +79,6 @@
   [{:keys [db]} stack-id]
   {:db                       (assoc db :view-id stack-id)
    :effects.shell/change-tab stack-id})
-
-(rf/defn navigate-replace
-  {:events [:navigate-replace]}
-  [{:keys [db]} go-to-view-id screen-params]
-  (let [db (cond-> (assoc db :view-id go-to-view-id)
-             (seq screen-params)
-             (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
-    {:db                  db
-     :navigate-replace-fx go-to-view-id}))
 
 (rf/defn hide-bottom-sheet
   {:events [:hide-bottom-sheet]}

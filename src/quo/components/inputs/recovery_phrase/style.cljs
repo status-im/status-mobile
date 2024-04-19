@@ -12,8 +12,8 @@
          container-style))
 
 (defn input
-  []
-  (assoc (text/text-style {} nil)
+  [theme]
+  (assoc (text/text-style {} theme)
          :height              32
          :flex-grow           1
          :padding-vertical    5
