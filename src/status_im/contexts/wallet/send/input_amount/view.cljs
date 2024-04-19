@@ -1,22 +1,21 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.common.controlled-input.utils :as controlled-input]
-   [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
-   [status-im.contexts.wallet.common.asset-list.view :as asset-list]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.utils.send :as send-utils]
-   [status-im.contexts.wallet.send.input-amount.style :as style]
-   [status-im.contexts.wallet.send.routes.view :as routes]
-   [utils.address :as address]
-   
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
+    [status-im.contexts.wallet.common.asset-list.view :as asset-list]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.send :as send-utils]
+    [status-im.contexts.wallet.send.input-amount.style :as style]
+    [status-im.contexts.wallet.send.routes.view :as routes]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- make-limit-label
   [amount currency]
@@ -82,16 +81,16 @@
     initial-crypto-currency? :initial-crypto-currency?
     :or                      {initial-crypto-currency? true}}]
   (let [_ (rn/dismiss-keyboard!)
-        input-state (controlled-input/create-input-state)
-        bottom                (safe-area/get-bottom)
-        clear-input!          #(controlled-input/delete-all input-state)
-        crypto-currency?      (reagent/atom initial-crypto-currency?)
-        on-navigate-back      on-navigate-back
-        
-        handle-on-confirm     (fn []
-                                (rf/dispatch [:wallet/send-select-amount
-                                              {:amount   (controlled-input/input-value input-state)
-                                               :stack-id current-screen-id}]))]
+        input-state       (controlled-input/create-input-state)
+        bottom            (safe-area/get-bottom)
+        clear-input!      #(controlled-input/delete-all input-state)
+        crypto-currency?  (reagent/atom initial-crypto-currency?)
+        on-navigate-back  on-navigate-back
+
+        handle-on-confirm (fn []
+                            (rf/dispatch [:wallet/send-select-amount
+                                          {:amount   (controlled-input/input-value input-state)
+                                           :stack-id current-screen-id}]))]
     (fn []
       (let [{fiat-currency :currency}  (rf/sub [:profile/profile])
             {token-symbol   :symbol
@@ -99,16 +98,16 @@
             {token-balance :total-balance
              :as
              token}                    (rf/sub
-             [:wallet/current-viewing-account-tokens-filtered
-              (str token-symbol)])
+                                        [:wallet/current-viewing-account-tokens-filtered
+                                         (str token-symbol)])
             conversion-rate            (-> token :market-values-per-currency :usd :price)
             loading-routes?            (rf/sub
                                         [:wallet/wallet-send-loading-suggested-routes?])
-            
+
             route                      (rf/sub [:wallet/wallet-send-route])
             to-address                 (rf/sub [:wallet/wallet-send-to-address])
-            nav-current-screen-id (rf/sub [:view-id])
-            
+            nav-current-screen-id      (rf/sub [:view-id])
+
             on-confirm                 (or default-on-confirm handle-on-confirm)
             crypto-decimals            (or default-crypto-decimals
                                            (utils/get-crypto-decimals-count token))
@@ -121,9 +120,10 @@
             routes-can-be-fetched?     (and (= nav-current-screen-id current-screen-id)
                                             (not (or (empty? (controlled-input/input-value input-state))
                                                      (<= (controlled-input/numeric-value input-state) 0)
-                                                     (> (controlled-input/numeric-value input-state) (current-limit)))))
+                                                     (> (controlled-input/numeric-value input-state)
+                                                        (current-limit)))))
             current-currency           (if @crypto-currency? token-symbol fiat-currency)
-            input-num-value (controlled-input/numeric-value input-state)
+            input-num-value            (controlled-input/numeric-value input-state)
             confirm-disabled?          (or (nil? route)
                                            (empty? route)
                                            (empty? (controlled-input/input-value input-state))
@@ -162,33 +162,34 @@
            (let [dismiss-keyboard-fn   #(when (= % "active") (rn/dismiss-keyboard!))
                  app-keyboard-listener (.addEventListener rn/app-state "change" dismiss-keyboard-fn)]
              #(.remove app-keyboard-listener))))
-        
+
         (rn/use-effect
          #(controlled-input/set-upper-limit input-state (current-limit))
          [@crypto-currency?])
         [rn/view
          {:style               style/screen
-          :accessibility-label (str "container" (when (controlled-input/input-error input-state) "-error"))}
+          :accessibility-label (str "container"
+                                    (when (controlled-input/input-error input-state) "-error"))}
          [account-switcher/view
           {:icon-name     :i/arrow-left
            :on-press      on-navigate-back
            :switcher-type :select-account}]
          [quo/token-input
-          {:container-style     style/input-container
-           :token               token-symbol
-           :currency            current-currency
-           :crypto-decimals     crypto-decimals
-           :error?              (controlled-input/input-error input-state)
-           :networks            (seq token-networks)
-           :title               (i18n/label :t/send-limit {:limit (make-limit-label (current-limit) current-currency)})
-           :conversion          conversion-rate
-           :show-keyboard?      false
-           :value               (controlled-input/input-value input-state)
-           :on-swap             #(reset! crypto-currency? %)
-           :on-token-press      show-select-asset-sheet}]
+          {:container-style style/input-container
+           :token           token-symbol
+           :currency        current-currency
+           :crypto-decimals crypto-decimals
+           :error?          (controlled-input/input-error input-state)
+           :networks        (seq token-networks)
+           :title           (i18n/label :t/send-limit
+                                        {:limit (make-limit-label (current-limit) current-currency)})
+           :conversion      conversion-rate
+           :show-keyboard?  false
+           :value           (controlled-input/input-value input-state)
+           :on-swap         #(reset! crypto-currency? %)
+           :on-token-press  show-select-asset-sheet}]
          [routes/view
-          {
-           :token                  token
+          {:token                  token
            :input-value            (controlled-input/input-value input-state)
            :routes-can-be-fetched? routes-can-be-fetched?}]
          (when (or loading-routes? (seq route))
@@ -204,15 +205,15 @@
                                     {:disabled? confirm-disabled?
                                      :on-press  on-confirm})}]
          [quo/numbered-keyboard
-          {:container-style (style/keyboard-container bottom)
-           :left-action :dot
-           :delete-key? true
-           :on-press (fn [c]
-                       (when-not loading-routes?
-                         (controlled-input/add-character input-state c)))
-           :on-delete (fn []
-                        (when-not loading-routes?
-                          (controlled-input/delete-last input-state)))
+          {:container-style      (style/keyboard-container bottom)
+           :left-action          :dot
+           :delete-key?          true
+           :on-press             (fn [c]
+                                   (when-not loading-routes?
+                                     (controlled-input/add-character input-state c)))
+           :on-delete            (fn []
+                                   (when-not loading-routes?
+                                     (controlled-input/delete-last input-state)))
            :on-long-press-delete (fn []
                                    (when-not loading-routes?
                                      (controlled-input/delete-all input-state)))}]]))))

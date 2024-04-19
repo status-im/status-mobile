@@ -1,12 +1,12 @@
 (ns status-im.common.controlled-input.utils
   (:require
-   [clojure.string :as string]
-   [reagent.core :as reagent]))
+    [clojure.string :as string]
+    [reagent.core :as reagent]))
 
 (defn create-input-state
   []
-  (reagent/atom {:value ""
-                 :error? false
+  (reagent/atom {:value       ""
+                 :error?      false
                  :upper-limit nil}))
 
 (defn input-value
@@ -60,7 +60,7 @@
 (defn- can-add-character?
   [state c]
   (let [max-length          12
-        current (input-value state)
+        current             (input-value state)
         length-overflow?    (>= (count current) max-length)
         extra-dot?          (and (= c dot) (string/includes? current dot))
         extra-leading-zero? (and (= current "0") (= "0" (str c)))
@@ -88,7 +88,7 @@
 
 (defn delete-last
   [state]
-  (let [value (input-value state)
+  (let [value     (input-value state)
         new-value (subs value 0 (dec (count value)))]
     (set-input-value state new-value)))
 

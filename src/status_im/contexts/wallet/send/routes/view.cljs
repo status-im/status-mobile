@@ -1,20 +1,20 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.foundations.resources :as resources]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im.constants :as constants]
-   [status-im.contexts.wallet.common.utils :as utils]
-   [status-im.contexts.wallet.common.utils.send :as send-utils]
-   [status-im.contexts.wallet.send.routes.style :as style]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [utils.vector :as vector-utils]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as resources]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.common.utils.send :as send-utils]
+    [status-im.contexts.wallet.send.routes.style :as style]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.vector :as vector-utils]))
 
 (def ^:private network-priority-score
   {:ethereum 1
@@ -119,75 +119,6 @@
                                                    (fetch-routes))
                             :customization-color color}}]])))
 
-#_(defn edit-network-amount
-    [{:keys [ theme amount network] :as props}]
-    (tap> props)
-    (let [network-details     (rf/sub [:wallet/network-details])
-          {:keys [color]}     (rf/sub [:wallet/current-viewing-account])
-          selected-networks   (rf/sub [:wallet/wallet-send-selected-networks])
-          prefix              (rf/sub [:wallet/wallet-send-address-prefix])
-          prefix-seq          (string/split prefix #":")
-          grouped-details     (group-by #(contains? (set prefix-seq) (:short-name %)) network-details)
-          preferred           (get grouped-details true [])
-          not-preferred       (get grouped-details false [])
-          network-preferences (reagent/atom selected-networks)
-          toggle-network      (fn [{:keys [chain-id]}]
-                                (swap! network-preferences
-                                       (fn [preferences]
-                                         (if (some #(= % chain-id) preferences)
-                                           (vec (remove #(= % chain-id) preferences))
-                                           (conj preferences chain-id)))))]
-      (fn []
-        [rn/view
-         [quo/drawer-top {:title (i18n/label :t/send-from-network {:network network})
-                          :subtitle (i18n/label :t/define-amount-sent-from-network {:network network})}]
-
-       
-      
-         [quo/token-input
-          { ;; :container-style     style/input-container
-           :token :ETH
-           ;; :currency            current-currency
-           ;; :crypto-decimals     crypto-decimals
-           ;; :error?              @input-error
-           :networks '(network)
-           :title               (i18n/label :t/send-limit {:limit "12"})
-           ;; :conversion          conversion-rate 
-           :show-keyboard? false 
-           :value "80"        ; @input-value
-           ;; :selection           @input-selection
-           ;; :on-change-text      #(handle-on-change % (current-limit))
-           ;; :on-selection-change selection-change
-           ;; :on-swap             #(handle-swap
-           ;;                        {:crypto?      %
-           ;;                         :currency     current-currency
-           ;;                         :token-symbol token-symbol
-           ;;                         :limit-fiat   fiat-limit
-           ;;                         :limit-crypto crypto-limit})
-           ;; :on-token-press      show-select-asset-sheet
-           }] 
-       
-       
-         [quo/disclaimer
-          {:blur?     true
-           :on-change               #()
-           :checked?  false}
-          (i18n/label :t/dont-auto-recalculate-network {:network network})]
-         [quo/bottom-actions
-          {:button-one-label (i18n/label :t/apply-changes)
-           :button-one-props {:disabled?           (= selected-networks @network-preferences)
-                              :on-press            (fn [])
-                              :customization-color color}}]
-         [quo/numbered-keyboard
-          { ;; :container-style      (style/keyboard-container bottom)
-           :left-action          :dot
-           :delete-key?          true
-           ;; :on-press             #(handle-keyboard-press % loading-routes? (current-limit))
-           ;; :on-delete            #(handle-delete loading-routes? (current-limit))
-           ;; :on-long-press-delete #(on-long-press-delete loading-routes?)
-           }]])))
-
-
 (defn route-item
   [{:keys [first-item? from-amount to-amount token-symbol from-chain-id to-chain-id from-network
            to-network on-press-from-network on-press-to-network status theme fetch-routes disabled?
@@ -206,14 +137,7 @@
        :network  from-network
        :status   status
        :on-press #(when (and on-press-from-network (not loading?))
-                    (on-press-from-network from-chain-id from-amount))
-       ;; :on-long-press #(rf/dispatch [:show-bottom-sheet
-       ;;                                {:content (fn [] [edit-network-amount
-       ;;                                                  {:amount from-amount
-       ;;                                                   :theme        theme
-       ;;                                                   :network from-network
-       ;;                                                   }])}])
-       }]
+                    (on-press-from-network from-chain-id from-amount))}]
      (if (= status :default)
        [quo/network-link
         {:shape           :linear
@@ -289,29 +213,33 @@
 (defn- view-internal
   [{:keys [token theme input-value routes-can-be-fetched?
            on-press-to-network]}]
-  
-  (let [token-symbol (:symbol token)
-        loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
-        from-values-by-chain (rf/sub [:wallet/wallet-send-from-values-by-chain])
-        to-values-by-chain (rf/sub [:wallet/wallet-send-to-values-by-chain])
-        suggested-routes (rf/sub [:wallet/wallet-send-suggested-routes])
-        selected-networks (rf/sub [:wallet/wallet-send-selected-networks])
-        disabled-from-chain-ids (rf/sub
-                                 [:wallet/wallet-send-disabled-from-chain-ids])
-        routes (when suggested-routes
-                 (or (:best suggested-routes) []))
+
+  (let [token-symbol                                   (:symbol token)
+        loading-suggested-routes?                      (rf/sub
+                                                        [:wallet/wallet-send-loading-suggested-routes?])
+        from-values-by-chain                           (rf/sub
+                                                        [:wallet/wallet-send-from-values-by-chain])
+        to-values-by-chain                             (rf/sub [:wallet/wallet-send-to-values-by-chain])
+        suggested-routes                               (rf/sub [:wallet/wallet-send-suggested-routes])
+        selected-networks                              (rf/sub [:wallet/wallet-send-selected-networks])
+        disabled-from-chain-ids                        (rf/sub
+                                                        [:wallet/wallet-send-disabled-from-chain-ids])
+        routes                                         (when suggested-routes
+                                                         (or (:best suggested-routes) []))
         {token-balances-per-chain :balances-per-chain} (rf/sub
                                                         [:wallet/current-viewing-account-tokens-filtered
                                                          (str token-symbol)])
-        affordable-networks (send-utils/find-affordable-networks
-                             {:balances-per-chain token-balances-per-chain
-                              :input-value input-value
-                              :selected-networks selected-networks
-                              :disabled-chain-ids disabled-from-chain-ids})
-        network-links (if loading-suggested-routes? affordable-networks routes)
-        show-routes? (or (and (not-empty affordable-networks)
-                              loading-suggested-routes?)
-                         (not-empty routes))]
+        affordable-networks                            (send-utils/find-affordable-networks
+                                                        {:balances-per-chain token-balances-per-chain
+                                                         :input-value        input-value
+                                                         :selected-networks  selected-networks
+                                                         :disabled-chain-ids disabled-from-chain-ids})
+        network-links                                  (if loading-suggested-routes?
+                                                         affordable-networks
+                                                         routes)
+        show-routes?                                   (or (and (not-empty affordable-networks)
+                                                                loading-suggested-routes?)
+                                                           (not-empty routes))]
 
     (rn/use-effect
      #(when (> (count affordable-networks) 0)
@@ -322,13 +250,13 @@
         (fetch-routes input-value routes-can-be-fetched? 0))
      [disabled-from-chain-ids])
     (if show-routes?
-      (let [initial-network-links-count (count network-links)
-            disabled-count (count disabled-from-chain-ids)
-            network-links (if (not-empty disabled-from-chain-ids)
-                            (add-disabled-networks network-links
-                                                   disabled-from-chain-ids
-                                                   loading-suggested-routes?)
-                            network-links)
+      (let [initial-network-links-count   (count network-links)
+            disabled-count                (count disabled-from-chain-ids)
+            network-links                 (if (not-empty disabled-from-chain-ids)
+                                            (add-disabled-networks network-links
+                                                                   disabled-from-chain-ids
+                                                                   loading-suggested-routes?)
+                                            network-links)
             network-links-with-add-button (if (and (< (- (count network-links) disabled-count)
                                                       constants/default-network-count)
                                                    (pos? initial-network-links-count))
@@ -339,32 +267,33 @@
           :content-container-style style/routes-container
           :header [rn/view {:style style/routes-header-container}
                    [quo/section-label
-                    {:section (i18n/label :t/from-label)
+                    {:section         (i18n/label :t/from-label)
                      :container-style style/section-label-left}]
                    [quo/section-label
-                    {:section (i18n/label :t/to-label)
+                    {:section         (i18n/label :t/to-label)
                      :container-style style/section-label-right}]]
-          :render-data {:from-values-by-chain from-values-by-chain
-                        :to-values-by-chain to-values-by-chain
-                        :theme theme
-                        :fetch-routes #(fetch-routes % routes-can-be-fetched? 2000)
-                        :on-press-from-network (fn [chain-id _]
-                                                 (let [disabled-chain-ids (if (contains? (set
-                                                                                          disabled-from-chain-ids)
-                                                                                         chain-id)
-                                                                            (vec (remove #(= % chain-id)
-                                                                                         disabled-from-chain-ids))
-                                                                            (conj disabled-from-chain-ids
-                                                                                  chain-id))
-                                                       re-enabling-chain? (< (count disabled-chain-ids)
-                                                                             (count disabled-from-chain-ids))]
-                                                   (when (or re-enabling-chain?
-                                                             (> (count affordable-networks) 1))
-                                                     (rf/dispatch [:wallet/disable-from-networks
-                                                                   disabled-chain-ids]))))
-                        :on-press-to-network on-press-to-network
-                        :token-symbol token-symbol
-                        :loading-suggested-routes? loading-suggested-routes?}
+          :render-data
+          {:from-values-by-chain      from-values-by-chain
+           :to-values-by-chain        to-values-by-chain
+           :theme                     theme
+           :fetch-routes              #(fetch-routes % routes-can-be-fetched? 2000)
+           :on-press-from-network     (fn [chain-id _]
+                                        (let [disabled-chain-ids (if (contains? (set
+                                                                                 disabled-from-chain-ids)
+                                                                                chain-id)
+                                                                   (vec (remove #(= % chain-id)
+                                                                                disabled-from-chain-ids))
+                                                                   (conj disabled-from-chain-ids
+                                                                         chain-id))
+                                              re-enabling-chain? (< (count disabled-chain-ids)
+                                                                    (count disabled-from-chain-ids))]
+                                          (when (or re-enabling-chain?
+                                                    (> (count affordable-networks) 1))
+                                            (rf/dispatch [:wallet/disable-from-networks
+                                                          disabled-chain-ids]))))
+           :on-press-to-network       on-press-to-network
+           :token-symbol              token-symbol
+           :loading-suggested-routes? loading-suggested-routes?}
           :render-fn render-network-link}])
       [rn/view {:style style/empty-container}
        (when (and (not (nil? routes)) (not loading-suggested-routes?))
