@@ -64,16 +64,15 @@
         [quo/page-nav
          (cond-> {:margin-top     (safe-area/get-top)
                   :type           :no-title
-                  :background     (if (= 1 (reanimated/get-shared-value opacity-animation))
-                                    :blur
-                                    :photo)
+                  :background     :blur
                   :right-side     page-nav-right-section-buttons
                   :center-opacity opacity-animation
                   :overlay-shown? overlay-shown?}
            navigate-back? (assoc :icon-name           :i/close
                                  :accessibility-label :back-button
                                  :on-press            #(rf/dispatch [:navigate-back]))
-           page-nav-props (merge page-nav-props))])
+           page-nav-props (merge page-nav-props))]
+      )
       (when title-colum
         title-colum)
       sticky-header]]))
