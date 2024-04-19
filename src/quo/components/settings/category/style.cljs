@@ -32,7 +32,7 @@
   {:margin-top 12})
 
 (defn settings-separator
-  [{:keys [blur? theme]}]
+  [{:keys [blur?]} theme]
   {:height           1
    :background-color (if blur?
                        colors/white-opa-5

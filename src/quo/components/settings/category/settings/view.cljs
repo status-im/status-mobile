@@ -23,4 +23,4 @@
         [:<>
          [settings-item/view item]
          (when-not (= item (last settings-item))
-           [rn/view {:style (style/settings-separator props)}])])]]))
+           [rn/view {:style (style/settings-separator props theme)}])])]]))
