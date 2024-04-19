@@ -71,7 +71,7 @@
 
 (rf/reg-event-fx :communities/share-community-url-with-data
  (fn [_ [community-id]]
-   (let [title      (i18n/label :t/channel-on-status)
+   (let [title      (i18n/label :t/community-on-status)
          on-success (fn [url]
                       (rf/dispatch [:open-share
                                     {:options (if platform/ios?
