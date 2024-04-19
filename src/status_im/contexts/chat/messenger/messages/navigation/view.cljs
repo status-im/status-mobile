@@ -35,7 +35,7 @@
                                 :else (str emoji chat-name))
         online?               (when-not group-chat (rf/sub [:visibility-status-updates/online? chat-id]))
         photo-path            (if group-chat
-                                (rf/sub [:chats/group-chat-images chat-id])
+                                (rf/sub [:chats/group-chat-image chat-id])
                                 (rf/sub [:chats/photo-path chat-id]))
         header-opacity        (worklets/navigation-header-opacity
                                distance-from-list-top
