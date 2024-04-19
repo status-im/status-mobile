@@ -5,7 +5,6 @@
     [legacy.status-im.ui.components.animation :as anim]
     [legacy.status-im.ui.components.colors :as colors]
     [legacy.status-im.ui.components.react :as react]
-    [legacy.status-im.ui.screens.profile.user.views :as profile.user]
     [legacy.status-im.ui.screens.reset-password.views :as reset-password.views]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
@@ -126,9 +125,6 @@
                 (cond
                   (vector? view)
                   view
-
-                  (= :share-chat-key view)
-                  [profile.user/share-chat-key]
 
                   (= :password-reset-popover view)
                   [reset-password.views/reset-password-popover]

@@ -4,7 +4,10 @@
     [legacy.status-im.ui.components.list.views :as list]
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.screens.log-level-settings.styles :as styles]
-    [re-frame.core :as re-frame])
+    [quo.core :as quo]
+    [re-frame.core :as re-frame]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
 
 (defn- log-level-icon
@@ -46,9 +49,16 @@
 (views/defview log-level-settings
   []
   (views/letsubs [current-log-level [:log-level/current-log-level]]
-    [list/flat-list
-     {:data               log-levels
-      :default-separator? false
-      :key-fn             :name
-      :render-data        current-log-level
-      :render-fn          render-row}]))
+    [:<>
+     [quo/page-nav
+      {:type       :title
+       :title      (i18n/label :t/log-level-settings)
+       :background :blur
+       :icon-name  :i/close
+       :on-press   #(rf/dispatch [:navigate-back])}]
+     [list/flat-list
+      {:data               log-levels
+       :default-separator? false
+       :key-fn             :name
+       :render-data        current-log-level
+       :render-fn          render-row}]]))
